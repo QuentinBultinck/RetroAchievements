@@ -118,140 +118,147 @@ function isGameRunning() => bit0(0xA9F034) == 1
 // ACHIEVEMENTS \\
 // ************ \\
 
-// Achievement triggers related to main story completion & branching paths
-_mainStoryTriggers = {
-	"PrologueComplete": function CoreTrigger_1() {
-		return 
-			// Core group
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			(
-				// Alt 1 => true when last prologue cutscene finishes (has been running for 2010 frames)
-				(
-					unless(!isCurrentChapter("Prologue")) &&
-					repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
-					repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
-					repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
-					repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
-					repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
-					repeated(2010, currentCutsceneId(19) == 0x4a007500)					
-				) ||
-				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("Prologue"))
-			)},
-	"Chapter1Complete": function CoreTrigger_2() {
-		return 
-			// Core group 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			( 	
-				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
-				(
-					unless(!isCurrentChapter("Chapter1")) &&
-					repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
-					repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
-					repeated(610, priorCutsceneId(17) == 0x5e0000) &&
-					repeated(610, currentCutsceneId(14) == 0xae99999) &&				
-					repeated(610, currentCutsceneId(15) == 0x168e7af) &&				
-					repeated(610, currentCutsceneId(17) == 0x800108) 
-				) ||
-				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("Chapter1"))
-			)},
-	"Chapter2Complete": function CoreTrigger_3() {
-		return 
-			// Core group => always true
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			(
-				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
-				(
-					unless(!isCurrentChapter("Chapter1")) &&
-					unless(
-						currentCutsceneId(2) == 0x479ff42 &&
-						currentCutsceneId(20) == 0xf372f766 &&
-						currentCutsceneId(21) == 0x2ea0e6e5
-						) && 
-					repeated(3, oneFrameTimer() < prev(oneFrameTimer()))
-				) ||
-				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("Chapter1"))
-			)}
-}
-
-// Achievement triggers related to side story content completion & extra/secret cutscenes
-_sideStoryTriggers = {
-	"AcquireOrnamentalEgg": function sub1Trigger_1() {
-		return 
-			never(
-				!isGameRunning() || 
-				!isCutsceneActive() ||
-				!isCurrentChapter("Chapter1")
-			) && 
-			// last cutsceneIDs run for about 380 frames
-			repeated(380, priorCutsceneId(10) == 0xfffe8366) &&
-			repeated(380, priorCutsceneId(13) == 0x3cd31cf) &&
-			repeated(380, priorCutsceneId(15) == 0x11110597) && 
-			repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
-			repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
-			repeated(380, currentCutsceneId(15) == 0x99991119)},
-	"TheBarmansEggsChapter1": function sub1Trigger_2() {
-		return 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			never(!isCurrentChapter("Chapter1")) &&
-			// last cutsceneIDs run for about 420 frames
-			repeated(420, priorCutsceneId(11) == 0x4d5fc40) &&
-			repeated(420, priorCutsceneId(14) == 0x55005ce) &&
-			repeated(420, priorCutsceneId(16) == 0x88065620) && 
-			repeated(420, currentCutsceneId(11) == 0x11111112) &&
-			repeated(420, currentCutsceneId(14) == 0x30ff26b) &&
-			repeated(420, currentCutsceneId(16) == 0x11d8fa)
-			},
-	"TheBarmansEggsExtra": function Sub1Trigger_3() {
-		return 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			// never() &&
-			isCurrentSelectedInventoryItem("OrnamentalEgg")},
-
-			// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
-            //    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
-            //    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))
-	
-}
-
-// Divided by subset
+// Divided by core set & subsets => further divided category
 _achievementTriggers = {
-	"MainStory": _mainStoryTriggers,
-	"SideStory": _sideStoryTriggers
-}
+	"CoreSet_MainStory": { // Achievement triggers related to main story completion & branching paths
+		"Completion": { // Achievements related to story, chapter & different ending completion
+			"PrologueComplete": function ms_c_1() {
+				return 
+					// Core group
+					never(!isGameRunning()) &&
+					never(!isCutsceneActive()) &&
+					(
+						// Alt 1 => true when last prologue cutscene finishes (has been running for 2010 frames)
+						(
+							unless(!isCurrentChapter("Prologue")) &&
+							repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
+							repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
+							repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
+							repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
+							repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
+							repeated(2010, currentCutsceneId(19) == 0x4a007500)					
+						) ||
+						// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+						(isChapterFinished("Prologue"))
+					)
+			},
+			"Chapter1Complete": function ms_c_2() {
+				return 
+					// Core group 
+					never(!isGameRunning()) &&
+					never(!isCutsceneActive()) &&
+					( 	
+						// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
+						(
+							unless(!isCurrentChapter("Chapter1")) &&
+							repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
+							repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
+							repeated(610, priorCutsceneId(17) == 0x5e0000) &&
+							repeated(610, currentCutsceneId(14) == 0xae99999) &&				
+							repeated(610, currentCutsceneId(15) == 0x168e7af) &&				
+							repeated(610, currentCutsceneId(17) == 0x800108) 
+						) ||
+						// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+						(isChapterFinished("Chapter1"))
+					)
+			},
+			"Chapter2Complete": function ms_c_3() {
+				return 
+					// Core group => always true
+					never(!isGameRunning()) &&
+					never(!isCutsceneActive()) &&
+					(
+						// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
+						(
+							unless(!isCurrentChapter("Chapter1")) &&
+							unless(
+								currentCutsceneId(2) == 0x479ff42 &&
+								currentCutsceneId(20) == 0xf372f766 &&
+								currentCutsceneId(21) == 0x2ea0e6e5
+								) && 
+							repeated(3, oneFrameTimer() < prev(oneFrameTimer()))
+						) ||
+						// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+						(isChapterFinished("Chapter1"))
+					)
+			}
+		},
+		"BranchingPaths": { // Achievements related to branching paths in the story
+			"AcquireOrnamentalEgg": function ms_bp_1() {
+				return 
+					never(
+						!isGameRunning() || 
+						!isCutsceneActive() ||
+						!isCurrentChapter("Chapter1")
+					) && 
+					// last cutsceneIDs run for about 380 frames
+					repeated(380, priorCutsceneId(10) == 0xfffe8366) &&
+					repeated(380, priorCutsceneId(13) == 0x3cd31cf) &&
+					repeated(380, priorCutsceneId(15) == 0x11110597) && 
+					repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
+					repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
+					repeated(380, currentCutsceneId(15) == 0x99991119)
+			},
+			"TheBarmansEggsChapter1": function ms_bp_2() {
+				return 
+					never(!isGameRunning()) &&
+					never(!isCutsceneActive()) &&
+					never(!isCurrentChapter("Chapter1")) &&
+					// last cutsceneIDs run for about 420 frames
+					repeated(420, priorCutsceneId(11) == 0x4d5fc40) &&
+					repeated(420, priorCutsceneId(14) == 0x55005ce) &&
+					repeated(420, priorCutsceneId(16) == 0x88065620) && 
+					repeated(420, currentCutsceneId(11) == 0x11111112) &&
+					repeated(420, currentCutsceneId(14) == 0x30ff26b) &&
+					repeated(420, currentCutsceneId(16) == 0x11d8fa)
+			}
+		}
+	},			
+	"Subset_SideStory": { // Achievement triggers related to side story content completion & extra/secret cutscenes
+		"TheBarmansEggsExtra": function ss_1() {
+			return 
+				never(!isGameRunning()) &&
+				never(!isCutsceneActive()) &&
+				// never() &&
+				isCurrentSelectedInventoryItem("OrnamentalEgg")
+		}
+	}
 
-// Main story achievements
-// -----------------------
+				// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
+				//    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
+				//    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))}
+} 
+
+// Story completion
 achievement(title = "[Base] Prologue complete", description = "Defied fate...",	points = 3,
-	trigger = _achievementTriggers["MainStory"]["PrologueComplete"]
+	trigger = _achievementTriggers["CoreSet_MainStory"]["Completion"]["PrologueComplete"]
 )
 achievement(title = "[Base] Chapter 1 complete", description = "Defied fate... again?", points = 3, 
-	trigger = _achievementTriggers["MainStory"]["Chapter1Complete"]
+	trigger = _achievementTriggers["CoreSet_MainStory"]["Completion"]["Chapter1Complete"]
 )
 achievement(title = "[Base] Chapter 2 complete", description = "Defied fate, but not without loose ends", points = 3,
-    trigger = _achievementTriggers["MainStory"]["Chapter2Complete"]
+    trigger = _achievementTriggers["CoreSet_MainStory"]["Completion"]["Chapter2Complete"]
 )
-
-// Side story achievements
+// Branching paths
 achievement(title = "[BranchingPath] An egg?", description = "Receive a gift from a performer during chapter 1", points = 3,
-	trigger = _achievementTriggers["SideStory"]["AcquireOrnamentalEgg"]	
+	trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["AcquireOrnamentalEgg"]
 )
-achievement(
-    title = "[BranchingPath] Egg collection #1", points = 5,
-    description = "Give an egg to a barman during chapter 1",
-    trigger = _achievementTriggers["SideStory"]["TheBarmansEggsChapter1"]	
+achievement(title = "[BranchingPath] Egg collection #1", description = "Give an egg to a barman during chapter 1", points = 5,    
+    trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["TheBarmansEggsChapter1"]
 )
-achievement(title = "[Extra] An interesting shape", description = "Introduce the barman's ancestor to eggs during chapter 2", points = 5, 
-    trigger = _achievementTriggers["SideStory"]["TheBarmansEggsExtra"]
+// Side content 
+achievement(title = "[Extra] An interesting shape", description = "Introduce eggs to the barman's ancestor during chapter 2", points = 5, 
+    trigger = _achievementTriggers["Subset_SideStory"]["TheBarmansEggsExtra"]
 )
-
+// achievement(
+//     title = "[Game over] Erasing, that's a big no no", points = 5,
+//     description = "Warn yourself of the coming threat during the prologue",
+//     id = 306883, badge = "00000", published = "5/04/2023 15:44:04", modified = "9/04/2023 8:20:54",
+//     trigger = never(ChapterId() != 1) && never(bit3(0xA9EB2E) == 1) && repeated(1070, prior(CutsceneId()) ==
+//                1258802389) && repeated(1070, prior(CutsceneId()) == 3758142976) && repeated(1070,
+//                prior(CutsceneId()) == 2699486719) && repeated(1070, CutsceneId() == 1375953920) && 
+//               repeated(1070, CutsceneId() == 1207193634) && repeated(1070, CutsceneId() == 1610506217)
+// )
 
 
 // ************* \\
