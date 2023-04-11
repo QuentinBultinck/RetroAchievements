@@ -181,18 +181,7 @@ _mainStoryTriggers = {
 
 // Achievement triggers related to side story content completion & extra/secret cutscenes
 _sideStoryTriggers = {
-	"TheBarmansEggsExtra": function Sub1Trigger_1() {
-		return 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			// never() &&
-			isCurrentSelectedInventoryItem("OrnamentalEgg")},
-
-			// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
-            //    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
-            //    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))
-	
-	"AcquireOrnamentalEgg": function sub1Trigger_2() {
+	"AcquireOrnamentalEgg": function sub1Trigger_1() {
 		return 
 			never(
 				!isGameRunning() || 
@@ -205,7 +194,31 @@ _sideStoryTriggers = {
 			repeated(380, priorCutsceneId(15) == 0x11110597) && 
 			repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
 			repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
-			repeated(380, currentCutsceneId(15) == 0x99991119)}
+			repeated(380, currentCutsceneId(15) == 0x99991119)},
+	"TheBarmansEggsChapter1": function sub1Trigger_2() {
+		return 
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			never(!isCurrentChapter("Chapter1")) &&
+			// last cutsceneIDs run for about 420 frames
+			repeated(420, priorCutsceneId(11) == 0x4d5fc40) &&
+			repeated(420, priorCutsceneId(14) == 0x55005ce) &&
+			repeated(420, priorCutsceneId(16) == 0x88065620) && 
+			repeated(420, currentCutsceneId(11) == 0x11111112) &&
+			repeated(420, currentCutsceneId(14) == 0x30ff26b) &&
+			repeated(420, currentCutsceneId(16) == 0x11d8fa)
+			},
+	"TheBarmansEggsExtra": function Sub1Trigger_3() {
+		return 
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			// never() &&
+			isCurrentSelectedInventoryItem("OrnamentalEgg")},
+
+			// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
+            //    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
+            //    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))
+	
 }
 
 // Divided by subset
@@ -229,6 +242,11 @@ achievement(title = "[Base] Chapter 2 complete", description = "Defied fate, but
 // Side story achievements
 achievement(title = "[BranchingPath] An egg?", description = "Receive a gift from a performer during chapter 1", points = 3,
 	trigger = _achievementTriggers["SideStory"]["AcquireOrnamentalEgg"]	
+)
+achievement(
+    title = "[BranchingPath] Egg collection #1", points = 5,
+    description = "Give an egg to a barman during chapter 1",
+    trigger = _achievementTriggers["SideStory"]["TheBarmansEggsChapter1"]	
 )
 achievement(title = "[Extra] An interesting shape", description = "Introduce the barman's ancestor to eggs during chapter 2", points = 5, 
     trigger = _achievementTriggers["SideStory"]["TheBarmansEggsExtra"]
