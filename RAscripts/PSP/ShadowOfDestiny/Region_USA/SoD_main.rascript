@@ -12,7 +12,7 @@
 // CODE NOTES & VARIABLES \\
 // ********************** \\
 
-// Timers
+// Timers/counters
 //	- Resets at certain times or between cutscene transitions
 //	- Different timers sometimes reset at different moments
 // --------------------------------------------------
@@ -62,10 +62,12 @@ _cutsceneIds = {
 	16: 0x1DFAC91, // $1DFAC91
 	17: 0x1DFAD9A, // $1DFAD9A
 	18: 0x1DFB0F0, // $1DFB0F0
-	19: 0x1DFB22B // $1DFB22B
+	19: 0x1DFB22B, // $1DFB22B
+	20: 0x1DF5A0C, // 1DF5A0C
+	21: 0x1DF5950 // $1DF5950
 }
-function currentCutsceneId(id) => dword(_cutsceneIds[id])
-function priorCutsceneId(id) => prior(dword(_cutsceneIds[id]))
+function currentCutsceneId(int_cutsceneId) => dword(_cutsceneIds[int_cutsceneId])
+function priorCutsceneId(int_cutsceneId) => prior(dword(_cutsceneIds[int_cutsceneId]))
 
 
 // Chapter IDs
@@ -85,9 +87,9 @@ _chapterIds = {
 	// "EX chapter": ???
 }
 // $B95704: [8-bit] Chapter ID
-function currentChapterId() => byte(0xB95704)
-function isCurrentChapter(chapter) => currentChapterId() == _chapterIds[chapter]
-function isCurrentChapterFinished() => prev(currentChapterId()) == currentChapterId()
+function chapterId() => byte(0xB95704)
+function isCurrentChapter(string_chapter) => chapterId() == _chapterIds[string_chapter]
+function isChapterFinished(string_chapter) => prior(chapterId()) == _chapterIds[string_chapter] && chapterId() == _chapterIds[string_chapter]+0x1
 
 // $A9F111: [8-bit] Currently selected item ID in inventory
 function currentSelectedItemID() => byte(0xA9F111)
@@ -112,32 +114,99 @@ function isGameRunning() => bit0(0xA9F034) == 1
 // ACHIEVEMENTS \\
 // ************ \\
 
+// Achievement triggers related to main story completion & branching paths
+_mainStoryTriggers = {
+	"PrologueComplete": function CoreTrigger_1() {
+		return 
+			// Core group
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			(
+				// Alt 1 => true when last prologue cutscene finishes (has been running for 2010 frames)
+				(
+					unless(!isCurrentChapter("prologue")) &&
+					repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
+					repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
+					repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
+					repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
+					repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
+					repeated(2010, currentCutsceneId(19) == 0x4a007500)					
+				) ||
+				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				(isChapterFinished("prologue"))
+			)},
+	"Chapter1Complete": function CoreTrigger_2() {
+		return 
+			// Core group 
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			( 	
+				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
+				(
+					unless(!isCurrentChapter("chapter1")) &&
+					repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
+					repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
+					repeated(610, priorCutsceneId(17) == 0x5e0000) &&
+					repeated(610, currentCutsceneId(14) == 0xae99999) &&				
+					repeated(610, currentCutsceneId(15) == 0x168e7af) &&				
+					repeated(610, currentCutsceneId(17) == 0x800108) 
+				) ||
+				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				(isChapterFinished("chapter1"))
+			)},
+	"Chapter2Complete": function CoreTrigger_3() {
+		return 
+			// Core group => always true
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			(
+				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
+				(
+					unless(!isCurrentChapter("chapter2")) &&
+					unless(
+						currentCutsceneId(2) == 0x479ff42 &&
+						currentCutsceneId(20) == 0xf372f766 &&
+						currentCutsceneId(21) == 0x2ea0e6e5
+						) && 
+					repeated(3, oneFrameTimer() < prev(oneFrameTimer()))
+				) ||
+				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				(isChapterFinished("chapter2"))
+			)}
+}
+
+// Achievement triggers related to side story content completion & extra/secret cutscenes
+_sideStoryTriggers = {
+	"TheBarmansEggsExtra": function Sub1Trigger_1() {
+		return true
+			// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
+            //    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
+            //    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))
+	}
+}
+
+// Divided by subset
+_achievementTriggers = {
+	"MainStory": _mainStoryTriggers,
+	"SideStory": _sideStoryTriggers
+}
+
 // Main story achievements
 // -----------------------
-achievement(
-    title = "Prologue complete", 
-    description = "Defied fate...",	points = 3,
-	trigger = 
-		// Core group => always true
-		always_true() && 
-		(
-			// Alt 1 => true when last prologue cutscene finishes (has been running for 2010 frames)
-			(
-				never(!isCurrentChapter("prologue")) &&
-				never(isCutsceneActive()) &&
-				repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
-				repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
-				repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
-				repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
-				repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
-				repeated(2010, currentCutsceneId(19) == 0x4a007500) 
-			) ||
-			// Alt 2 => true when chapter changes. Safety for when cutscene would be skipped, but first playthrough is never skippable
-			(isCurrentChapterFinished())
-		)    
+achievement(title = "[Base] Prologue complete", description = "Defied fate...",	points = 3,
+	trigger = _achievementTriggers["MainStory"]["PrologueComplete"]
 )
-// Side story/content achievements
-// -------------------------------
+achievement(title = "[Base] Chapter 1 complete", description = "Defied fate... again?", points = 3, 
+	trigger = _achievementTriggers["MainStory"]["Chapter1Complete"]
+)
+achievement(title = "[Base] Chapter 2 complete", description = "Defied fate, but not without loose ends", points = 3,
+    trigger = _achievementTriggers["MainStory"]["Chapter2Complete"]
+)
+
+// Side story achievements
+achievement(title = "[Extra] An interesting shape", description = "Introduce the barman's ancestor to eggs during chapter 2", points = 5, 
+    trigger = _achievementTriggers["SideStory"]["TheBarmansEggsExtra"]
+)
 
 
 // ************* \\
