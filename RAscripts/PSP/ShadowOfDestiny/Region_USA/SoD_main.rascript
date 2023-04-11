@@ -73,16 +73,16 @@ function priorCutsceneId(int_cutsceneId) => prior(dword(_cutsceneIds[int_cutscen
 // Chapter IDs
 // ---------------------
 _chapterIds = {
-	"prologue": 0x1,
-	"chapter1": 0x2,
+	"Prologue": 0x1,
+	"Chapter1": 0x2,
 	"chapter2": 0x3,
 	"chapter3": 0x4,
 	"chapter4": 0x5,
-	"chapter5": 0x6,
-	"chapter6": 0x7,
-	"chapter7": 0x8,
-	"chapter8": 0x9,
-	"epilogue": 0xA
+	"Chapter5": 0x6,
+	"Chapter6": 0x7,
+	"Chapter7": 0x8,
+	"Chapter8": 0x9,
+	"Epilogue": 0xA
 	// "Different endings": ??? // TODO Check different endings & EX chapter
 	// "EX chapter": ???
 }
@@ -92,7 +92,11 @@ function isCurrentChapter(string_chapter) => chapterId() == _chapterIds[string_c
 function isChapterFinished(string_chapter) => prior(chapterId()) == _chapterIds[string_chapter] && chapterId() == _chapterIds[string_chapter]+0x1
 
 // $A9F111: [8-bit] Currently selected item ID in inventory
+_inventoryItemIds = {
+	"OrnamentalEgg": 0x2
+}
 function currentSelectedItemID() => byte(0xA9F111)
+function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
 
 // [32-bit] ID for flower or statue choice in chapter 2
 function flowerStatueChoiceID_1() => dword(0xAC31E8) // $AC31E8
@@ -124,7 +128,7 @@ _mainStoryTriggers = {
 			(
 				// Alt 1 => true when last prologue cutscene finishes (has been running for 2010 frames)
 				(
-					unless(!isCurrentChapter("prologue")) &&
+					unless(!isCurrentChapter("Prologue")) &&
 					repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
 					repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
 					repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
@@ -133,7 +137,7 @@ _mainStoryTriggers = {
 					repeated(2010, currentCutsceneId(19) == 0x4a007500)					
 				) ||
 				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("prologue"))
+				(isChapterFinished("Prologue"))
 			)},
 	"Chapter1Complete": function CoreTrigger_2() {
 		return 
@@ -143,7 +147,7 @@ _mainStoryTriggers = {
 			( 	
 				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
 				(
-					unless(!isCurrentChapter("chapter1")) &&
+					unless(!isCurrentChapter("Chapter1")) &&
 					repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
 					repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
 					repeated(610, priorCutsceneId(17) == 0x5e0000) &&
@@ -152,7 +156,7 @@ _mainStoryTriggers = {
 					repeated(610, currentCutsceneId(17) == 0x800108) 
 				) ||
 				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("chapter1"))
+				(isChapterFinished("Chapter1"))
 			)},
 	"Chapter2Complete": function CoreTrigger_3() {
 		return 
@@ -162,7 +166,7 @@ _mainStoryTriggers = {
 			(
 				// Alt 1 => true when last chapter cutscene finishes (has been running for 610 frames)
 				(
-					unless(!isCurrentChapter("chapter2")) &&
+					unless(!isCurrentChapter("Chapter1")) &&
 					unless(
 						currentCutsceneId(2) == 0x479ff42 &&
 						currentCutsceneId(20) == 0xf372f766 &&
@@ -171,18 +175,37 @@ _mainStoryTriggers = {
 					repeated(3, oneFrameTimer() < prev(oneFrameTimer()))
 				) ||
 				// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				(isChapterFinished("chapter2"))
+				(isChapterFinished("Chapter1"))
 			)}
 }
 
 // Achievement triggers related to side story content completion & extra/secret cutscenes
 _sideStoryTriggers = {
 	"TheBarmansEggsExtra": function Sub1Trigger_1() {
-		return true
+		return 
+			never(!isGameRunning()) &&
+			never(!isCutsceneActive()) &&
+			// never() &&
+			isCurrentSelectedInventoryItem("OrnamentalEgg")},
+
 			// never(ChapterId() != 3) && never(bit3(0xA9EB2E) < prior(bit3(0xA9EB2E))) && repeated(420,
             //    CutsceneId() == 4291690652) && repeated(420, CutsceneId() == 11077697) && repeated(420,
             //    CutsceneId() == 843251806) && CurrentlySelectedItemInInventory() == 2 && bit3(0xA9EB2E) > prev(bit3(0xA9EB2E))
-	}
+	
+	"AcquireOrnamentalEgg": function sub1Trigger_2() {
+		return 
+			never(
+				!isGameRunning() || 
+				!isCutsceneActive() ||
+				!isCurrentChapter("Chapter1")
+			) && 
+			// last cutsceneIDs run for about 380 frames
+			repeated(380, priorCutsceneId(10) == 0xfffe8366) &&
+			repeated(380, priorCutsceneId(13) == 0x3cd31cf) &&
+			repeated(380, priorCutsceneId(15) == 0x11110597) && 
+			repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
+			repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
+			repeated(380, currentCutsceneId(15) == 0x99991119)}
 }
 
 // Divided by subset
@@ -204,9 +227,13 @@ achievement(title = "[Base] Chapter 2 complete", description = "Defied fate, but
 )
 
 // Side story achievements
+achievement(title = "[BranchingPath] An egg?", description = "Receive a gift from a performer during chapter 1", points = 3,
+	trigger = _achievementTriggers["SideStory"]["AcquireOrnamentalEgg"]	
+)
 achievement(title = "[Extra] An interesting shape", description = "Introduce the barman's ancestor to eggs during chapter 2", points = 5, 
     trigger = _achievementTriggers["SideStory"]["TheBarmansEggsExtra"]
 )
+
 
 
 // ************* \\
