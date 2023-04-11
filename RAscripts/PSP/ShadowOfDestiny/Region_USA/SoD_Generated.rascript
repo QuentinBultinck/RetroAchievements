@@ -307,11 +307,14 @@ achievement(
     description = "Defied fate...",
     id = 306884, badge = "00000", published = "5/04/2023 15:44:04", modified = "9/04/2023 8:20:53",
     trigger = never(ChapterId() != 1) && never(bit3(0xA9EB2E) == 1) &&
-              ((repeated(2010, prior(CutsceneId()) == 3314207892) && repeated(2010, prior(CutsceneId()) ==
+            (
+                (repeated(2010, prior(CutsceneId()) == 3314207892) && repeated(2010, prior(CutsceneId()) ==
                  570425580) && repeated(2010, prior(CutsceneId()) == 1137019994) && repeated(2010, CutsceneId()
                  == 3470786308) && repeated(2010, CutsceneId() == 1241543936) && repeated(2010, CutsceneId() ==
                  3622307327)) ||
-               (prior(ChapterId()) == 1))
+               (prior(ChapterId()) == 1)
+            )
+
 )
 
 achievement(
