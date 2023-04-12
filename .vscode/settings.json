@@ -29,8 +29,7 @@
             "FIXME",
             "BUG",
         ],
-        "WIP": [
-            "WIP",
+        "TEST": [
             "TEST",
             "TESTING"
         ]
@@ -53,25 +52,31 @@
             "rulerLane": "right",
             "hideFromStatusBar": true
         },
-        "DONE": {   
-            "icon": "issue-closed"            
-        },
         "TODO": {
             "icon": "issue-draft" 
         },
         "WIP": {
-            "foreground": "#e8c70e",
-            "background": "#003b10",
+            "foreground": "#ffe54f",
+            "background": "#027c16",            
             "type": "whole-line", 
-            "opacity": 42,       
+            "opacity": 37,
             "icon": "tools"
+        },
+        "TEST": {
+            "foreground": "#fad55c",
+            "background": "#037a23",
+            "opacity": 37,  
+            "icon": "unverified"
+        },
+        "DONE": {   
+            "icon": "verified"            
         },
         "FIXME": {
             "foreground": "#fc5353",
             "background": "#612c03",
             "type": "text-and-comment", 
             "opacity" : 42,
-            "icon": "alert-fill"
+            "icon": "stop"
         }
     },
     "todo-tree.highlights.enabled": true,
