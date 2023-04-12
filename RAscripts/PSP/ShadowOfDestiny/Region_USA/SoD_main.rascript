@@ -134,16 +134,6 @@ function isGameRunning() => bit0(0xA9F034) == 1
 // ACHIEVEMENT LOGIC \\
 // ***************** \\
 
-// Story completion
-// achievement(title = enterDevTags(["Base"]) + enterAchievementTitle() , description = "Defied fate...",	points = 3,
-// 	trigger = getAchievementTrigger("PrologueComplete") // _achievementTriggers["CoreSet_MainStory"]["Completion"]["test1"][1]   
-// )
-// achievement(title = "[Base] Chapter 1 complete", description = "Defied fate... again?", points = 3, 
-// 	trigger = _achievementTriggers["CoreSet_MainStory"]["Completion"]["Chapter1Complete"]
-// )
-// achievement(title = "[Base] Chapter 2 complete", description = "Defied fate, but not without loose ends", points = 3,
-//     trigger = _achievementTriggers["CoreSet_MainStory"]["Completion"]["Chapter2Complete"]
-// )
 // // Branching paths
 // achievement(title = "[BranchingPath] An egg?", description = "Receive a gift from a performer during chapter 1", points = 3,
 // 	trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["AcquireOrnamentalEgg"]
@@ -172,74 +162,36 @@ _achievements = {
 	2: { // Chapter1Complete
 		"id": 2, "points": 4,
 		"devTags": {0: 0}, "devInfo": "triggers when chapter 1 completes", 
-		"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}, "achievementCategoryID": 1},
-	"Chapter2Complete": {},
-	"AcquireOrnamentalEgg": {},
-	"TheBarmansEggsChapter1": {},
-	"TheBarmansEggsExtra": {
-		
-	},
-	"EikeThePyromancer": {},
-	"EikeTheMagician": {},	
-}
+		"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}, "achievementCategoryID": 2},
+	3: { // Chapter2Complete
+		"id": 3, "points": 5,
+		"devTags": {0: 0}, "devInfo": "triggers when chapter 2 completes", 
+		"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}, "achievementCategoryID": 3},
+	// 4: { // Chapter3Complete
+	// 	"id": 3, "points": 5,
+	// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 2 completes", 
+	// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}, "achievementCategoryID": 00000},
 
-// Achievement titles
-// --------------------
-function getAchievementTitle(int_achievementId, dict_devTagRequests, string_languageCode) {
-	function enterDevTags(dict_devTagRequests) {
-		_achievementDevTags = {
-			0: "TODO",
-			1: "Base",
-			2: "BranchingPath",
-			3: "Extra",
-			4: "Game over"
-		}
-		let_DevTagString = ""
-		if isDevModeActive() {
-			if length(dict_devTagRequests) > 0 {
-				for key in dict_devTagRequests {
-					let_DevTagString = let_DevTagString + "[" + dict_devTagRequests[key] + "] "
-				}
-			} 
-		}
-		return let_DevTagString
-	}	
-	function enterAchievementTitle(int_achievementID, string_languageCode) {
-		_achievementTitles = {
-			1: {"en": "Prologue completed",
-				"nl": "Proloog voltooid",
-				"fr": "Prologue terminé"},
-			2: {"en": "Chapter 1 completed",
-				"nl": "Hoofdstuk 1 voltooid",
-				"fr": "Chapitre 1 terminé"},
-		}
-		return _achievementTitles[int_achievementID][string_languageCode]
-	}
-	return enterDevTags(dict_devTagRequests) + enterAchievementTitle(int_achievementId, string_languageCode)
-}
-
-// Achievement descriptions
-// --------------------------
-function getAchievementDescription(int_achievementID, string_devInfo, string_languageCode) {	
-	function enterAchievementDescription(int_achievementID, string_languageCode) {
-		_achievementDescriptions = {
-			1: {"en": "Defied fate",
-				"nl": "Lot getrotseerd",
-				"fr": "Défié le destine"},
-			2: {"en": "Defied fate... again",
-				"nl": "Lot getrotseerd... nogmaals",
-				"fr": "Défié le destin... encore"}
-		}
-		return _achievementDescriptions[int_achievementID][string_languageCode]
-	}
-	function enterDefInfo(string_devInfo) {
-		let_devInfoString = ""
-		if isDevModeActive() && string_devInfo != "" {
-			 let_devInfoString = let_devInfoString + " (" + string_devInfo + ")"
-		}
-		return let_devInfoString
-	}	
-	return enterAchievementDescription(int_achievementID, string_languageCode) + enterDefInfo(string_devInfo)
+	// 4: { // AcquireOrnamentalEgg
+	// 	"id": 4, "points": 3,
+	// 	"devTags": {2: 2}, "devInfo": "triggers when acquiring egg from performer in chapter 1", 
+	// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}, "achievementCategoryID": 00000},
+	// 5: { // TheBarmansEggsChapter1
+	// 	"id": 5, "points": 5,
+	// 	"devTags": {00000: 00000}, "devInfo": "triggers when giving egg to barmen in chapter 1", 
+	// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}, "achievementCategoryID": 00000},
+	// 6: { // TheBarmansEggsExtra
+	// 	"id": 6, "points": 3,
+	// 	"devTags": {00000: 00000}, "devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2 ", 
+	// 	"achievementSet": "Subset_SideStory", "achievementCategories": {1: "00000"}, "achievementCategoryID": 00000},
+	// 7: { // EikeThePyromancer
+	// 	"id": 7, "points": 2,
+	// 	"devTags": {3: 3}, "devInfo": "triggers during chapter 2 when selecting the lighter to scare people off", 
+	// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}, "achievementCategoryID": 00000},
+	// 8: { // EikeTheMagician
+	// 	"id": 8, "points": 2,
+	// 	"devTags": {3: 3}, "devInfo": "triggers during chapter 2 when selecting the phone to scare people off", 
+	// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}, "achievementCategoryID": 00000},
 }
 
 // Achievement triggers 
@@ -408,6 +360,67 @@ function getAchievementTrigger(string_achievementSet, dict_achievementCategories
 		}	
 	}
 	return searchTrigger(_achievementTriggers[string_achievementSet], dict_achievementCategories, int_achievementCategoryID)
+}
+
+// Achievement titles
+// --------------------
+function getAchievementTitle(int_achievementId, dict_devTagRequests, string_languageCode) {
+	function enterDevTags(dict_devTagRequests) {
+		_achievementDevTags = {
+			0: "TODO",
+			1: "Base",
+			2: "BranchingPath",
+			3: "Extra",
+			4: "Game over"
+		}
+		let_DevTagString = ""
+		if isDevModeActive() {
+			if length(dict_devTagRequests) > 0 {
+				for key in dict_devTagRequests {
+					let_DevTagString = let_DevTagString + "[" + dict_devTagRequests[key] + "] "
+				}
+			} 
+		}
+		return let_DevTagString
+	}	
+	function enterAchievementTitle(int_achievementID, string_languageCode) {
+		_achievementTitles = {
+			1: {"en": "Prologue completed",
+				"nl": "Proloog voltooid",
+				"fr": "Prologue terminé"},
+			2: {"en": "Chapter 1 completed",
+				"nl": "Hoofdstuk 1 voltooid",
+				"fr": "Chapitre 1 terminé"},
+			3: {"en": "Chapter 2 completed"},
+		}
+		return _achievementTitles[int_achievementID][string_languageCode]
+	}
+	return enterDevTags(dict_devTagRequests) + enterAchievementTitle(int_achievementId, string_languageCode)
+}
+
+// Achievement descriptions
+// --------------------------
+function getAchievementDescription(int_achievementID, string_devInfo, string_languageCode) {	
+	function enterAchievementDescription(int_achievementID, string_languageCode) {
+		_achievementDescriptions = {
+			1: {"en": "Defied fate",
+				"nl": "Lot getrotseerd",
+				"fr": "Défié le destine"},
+			2: {"en": "Defied fate... again",
+				"nl": "Lot getrotseerd... nogmaals",
+				"fr": "Défié le destin... encore"},
+			3: {"en": "Defied fate, but not without loose ends"}
+		}
+		return _achievementDescriptions[int_achievementID][string_languageCode]
+	}
+	function enterDefInfo(string_devInfo) {
+		let_devInfoString = ""
+		if isDevModeActive() && string_devInfo != "" {
+			 let_devInfoString = let_devInfoString + " (" + string_devInfo + ")"
+		}
+		return let_devInfoString
+	}	
+	return enterAchievementDescription(int_achievementID, string_languageCode) + enterDefInfo(string_devInfo)
 }
 
 // Achievement contstructor
