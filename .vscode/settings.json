@@ -60,5 +60,7 @@
         }
     },
     "todo-tree.highlights.enabled": true,
-    "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^//\\s*\\[x\\]|^//\\s*\\[ \\])"
+    "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^//\\s*\\[x\\]|^//\\s*\\[ \\])",
+
+    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements"
 }
