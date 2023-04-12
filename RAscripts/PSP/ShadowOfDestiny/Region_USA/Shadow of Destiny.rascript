@@ -384,7 +384,7 @@ _achievementTriggers = {
 		once(flowerStatueChoiceID_1() == 0)						&&
 		once(flowerStatueChoiceID_2() == 0)						&&
 		once(flowerStatueChoiceID_3() == 0)},
-	"a_SquireOrdersStatue": function EikteTheSculptor() { return
+	"a_SquireOrdersStatue": function SquireOrdersStatue() { return
 		never(!isGameRunning())					&&
 		never(!isCutsceneActive())				&&
 		never(isCurrentChapter("Chapter2"))		&&
