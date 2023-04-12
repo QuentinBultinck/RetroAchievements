@@ -3,6 +3,8 @@
         "comments": "#00960c"
     },
     "todo-tree.general.tags": [
+        "$",
+
         "DONE",
 
         "TODO",
@@ -38,6 +40,14 @@
         "gutterIcon": true
     },
     "todo-tree.highlights.customHighlight": {
+        "$": {
+            "foreground": "#02a80a",
+            "background": "#6a7c05",
+            "opacity": 12,
+            "icon": "bookmark",
+            "type": "text-and-comment",
+            "rulerLane": "right"
+        },
         "DONE": {   
             "icon": "issue-closed"            
         },
