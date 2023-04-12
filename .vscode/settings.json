@@ -2,30 +2,34 @@
     "editor.tokenColorCustomizations": {        
         "comments": "#00960c"
     },
+    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements",
     "todo-tree.general.tags": [
         "$",
 
         "DONE",
+        "WORKS",
+        "WORKING",
 
         "TODO",
 
         "FIXME",
         "BUG",
 
-        "WORK",
-        "WORKING",
         "WIP",
         "TEST",
         "TESTING"
     ],
     "todo-tree.general.tagGroups": {
+        "DONE": [
+            "DONE",
+            "WORKING",
+            "WORKS"
+        ],
         "FIXME": [
             "FIXME",
             "BUG",
         ],
         "WIP": [
-            "WORK",
-            "WORKING",
             "WIP",
             "TEST",
             "TESTING"
@@ -46,7 +50,8 @@
             "opacity": 12,
             "icon": "bookmark",
             "type": "text-and-comment",
-            "rulerLane": "right"
+            "rulerLane": "right",
+            "hideFromStatusBar": true
         },
         "DONE": {   
             "icon": "issue-closed"            
@@ -71,6 +76,12 @@
     },
     "todo-tree.highlights.enabled": true,
     "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^//\\s*\\[x\\]|^//\\s*\\[ \\])",
-
-    "openInGitHub.remote.name": "/QuentinBultinck/RetroAchievements"
+    "todo-tree.filtering.includedWorkspaces": [
+        "RAscripts"
+    ], 
+    "todo-tree.filtering.excludeGlobs": [
+        "RAscripts\/PSP\/ShadowOfDestiny\/Region_USA\/SoD_Generated.rascript"
+    ],
+    "todo-tree.general.showIconsInsteadOfTagsInStatusBar": true,
+    "todo-tree.general.statusBar": "current file"
 }
