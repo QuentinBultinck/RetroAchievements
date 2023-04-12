@@ -1,0 +1,64 @@
+{
+    "editor.tokenColorCustomizations": {        
+        "comments": "#00960c"
+    },
+    "todo-tree.general.tags": [
+        "DONE",
+
+        "TODO",
+
+        "FIXME",
+        "BUG",
+
+        "WORK",
+        "WORKING",
+        "WIP",
+        "TEST",
+        "TESTING"
+    ],
+    "todo-tree.general.tagGroups": {
+        "FIXME": [
+            "FIXME",
+            "BUG",
+        ],
+        "WIP": [
+            "WORK",
+            "WORKING",
+            "WIP",
+            "TEST",
+            "TESTING"
+        ]
+    },
+    "todo-tree.highlights.defaultHighlight": {
+        "foreground": "#1cdb07",
+        "background": "#164f04",
+        "type": "tag-and-comment", 
+        "opacity": 42,              
+        "icon": "info",
+        "gutterIcon": true
+    },
+    "todo-tree.highlights.customHighlight": {
+        "DONE": {   
+            "icon": "issue-closed"            
+        },
+        "TODO": {
+            "icon": "issue-draft" 
+        },
+        "WIP": {
+            "foreground": "#e8c70e",
+            "background": "#003b10",
+            "type": "whole-line", 
+            "opacity": 42,       
+            "icon": "tools"
+        },
+        "FIXME": {
+            "foreground": "#fc5353",
+            "background": "#612c03",
+            "type": "text-and-comment", 
+            "opacity" : 42,
+            "icon": "alert-fill"
+        }
+    },
+    "todo-tree.highlights.enabled": true,
+    "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^//\\s*\\[x\\]|^//\\s*\\[ \\])"
+}

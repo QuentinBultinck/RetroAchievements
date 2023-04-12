@@ -142,246 +142,241 @@ function isGameRunning() => bit0(0xA9F034) == 1
 //  //  //  //  //  //  //  //  //  //  //    ACHIEVEMENT LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#########################################################################################################\\
 
-// // Branching paths
-// achievement(title = "[BranchingPath] An egg?", description = "Receive a gift from a performer during chapter 1", points = 3,
-// 	trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["AcquireOrnamentalEgg"]
-// )
-// achievement(title = "[BranchingPath] Egg collection #1", description = "Give an egg to a barman during chapter 1", points = 5,    
-//     trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["TheBarmansEggsChapter1"]
-// )
-// achievement(title = "[Extra] Eike the pyromancer", description = "Build a statue of a pyrokinetic during chapter 2", points = 2,  
-//     trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["EikeThePyromancer"]
-// )
-// achievement(title = "[Extra] Eike the magician", description = "Scare the crowd away with a magic box during chapter 2", points = 2,
-//     trigger = _achievementTriggers["CoreSet_MainStory"]["BranchingPaths"]["EikeTheMagician"]
-// )
-// // Side content 
-// achievement(title = "[Extra] An interesting shape", description = "Introduce eggs to the barman's ancestor during chapter 2", points = 5, 
-//     trigger = _achievementTriggers["Subset_SideStory"]["ExtraCutscenes"]["TheBarmansEggsExtra"]
-// )
-
 // ACHIEVEMENT DICTIONARY
 //	- Divided by category => when in dev mode, category tags are added to achievement titles
 // 	- check if key (achievementname) => is unique with ctrl+F
 // ************************************************************
-// Template
-// ----------
-// "xxxxxxx": { // TODO 
-// 	"points": xxxxxxx,
-// 	"devTags": {xxxxxxx: xxxxxxx}, "devInfo": "xxxxxxx", 
-// 	"achievementSet": "xxxxxxx", "achievementCategories": {1: "xxxxxxx"}},
 _achievements = {
-	"c_Chapter": { // Category - Completing chapters
-		"a_PrologueComplete": {
-			"points": 2,
+	// Template
+	// ----------
+	// "xxxxxxx": { // TODO 
+	// 	"points": xxxxxxx,
+	// 	"devTags": {xxxxxxx: xxxxxxx}, "devInfo": "xxxxxxx", 
+	// 	"achievementSet": "xxxxxxx", "achievementCategories": {1: "xxxxxxx"}},
+	"c_Completion": { // Category - Completing chapters
+		"a_PrologueComplete": { // DONE
+			"points": 3,
 			"devInfo": "triggers when prologue completes"},
 		"a_Chapter1Complete": {
-			"points": 4,
+			"points": 3,
 			"devInfo": "triggers when chapter 1 completes"},
 		"a_Chapter2Complete": {
-			"points": 6,
+			"points": 5,
 			"devInfo": "triggers when chapter 2 completes"},
 		// TODO "a_Chapter3Complete": {
-		// 	"points": 8,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 3 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
+		// 	"points": 5,
+		// 	"devInfo": "triggers when chapter 3 completes",
 		// TODO "a_Chapter4Complete": {
-		// 	"points": 10,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 4 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
+		// 	"points": 7,
+		//	"devInfo": "triggers when chapter 4 completes",
 		// TODO "a_Chapter5Complete": {
-		// 	"points": 12,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 5 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
+		//	"points": 7,
+		//	"devInfo": "triggers when chapter 5 completes",
 		// TODO "a_Chapter6omplete": {
-		// 	"points": 14,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 6 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
+		// 	"points": 9,
+		// 	"devInfo": "triggers when chapter 6 completes",
 		// TODO "a_Chapter7Complete": {
-		// 	"points": 16,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 7 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
-		// TODO "a_Chapter8Complete": {
-		// 	"points": 18,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when chapter 8 completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
-		// TODO "a_EpilogueComplete": {
-		// 	"points": 20,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when epilogue completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},
-		// TODO "a_EXChapterComplete": {	// 	"points": 25,
-		// 	"devTags": {0: 0}, "devInfo": "triggers when EX chapter completes", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "Completion"}},	
+		// 	"points": 9,
+		// 	"devInfo": "triggers when chapter 7 completes"},
+		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings 
+		// 	"points": 10,
+		// 	"devInfo": "triggers when chapter 8 completes"},
+		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings 
+		// 	"points": 10,
+		// 	"devInfo": "triggers when epilogue completes"},
+		// TODO "a_EXChapterComplete": {	
+		// 	"points": 50,
+		// 	"devInfo": "triggers when EX chapter completes"},
+		// TODO "a_Achieve100%Achievement": { // TODO check if this is possible 
+		// 	"points": 50,
+		// 	"devInfo": "Seen ALL the cutscenes, should be saved in the MAIN safe file of the game"},
 	},
 	"c_Branch": { // Category - Branching path
+		"a_AcquireOrnamentalEggFromPerformer": { // WIP
+			"points": 5,
+			"devInfo": "triggers when acquiring egg from performer in chapter 1 @ marktzplatz"},
+		"a_AcquireFryingPanFromBarmanChapter1": { // WIP
+			"points": 7,
+			"devInfo": "triggers when giving egg to barman in chapter 1, before fire @ bar"},
+		// TODO "AcquireFryingPanFromBarmanChapter3": {
+		// 	"points": 7,
+		// 	"devInfo": "triggers when giving egg to barman in chapter 3 @ his bar"},
 	},
 	"c_Endings": { // Category - Achieving different endings
+		// TODO "a_EndingA": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending A: Ancestress => Homunculus => Town Square"},
+		// TODO "a_EndingB1": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending B1: Ancestress => Homunculus => Town Square"},
+		// TODO "a_EndingB2": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending B2: Ancestress => Fortuneteller => Town Square"},
+		// TODO "a_EndingC": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending C: Ancestress => Destroyed Lab"},
+		// TODO "a_EndingD": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending D: Not an Ancestress => Do Not Save Dana => Destroyed Lab"},
+		// TODO "a_EndingE": {	
+		// 	"points": 12,
+		// 	"devInfo": "Ending E: Not an Ancestress => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		// TODO "AcquireOrnamentalEgg": {
-		// 	"points": 3,
-		// 	"devTags": {2: 2}, "devInfo": "triggers when acquiring egg from performer in chapter 1", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}},
-		// TODO "TheBarmansEggsChapter1": {
-		// 	"points": 5,
-		// 	"devTags": {00000: 00000}, "devInfo": "triggers when giving egg to barmen in chapter 1", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}},
-		// TODO "TheBarmansEggsExtra": {
-		// 	"points": 3,
-		// 	"devTags": {00000: 00000}, "devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2 ", 
-		// 	"achievementSet": "Subset_SideStory", "achievementCategories": {1: "00000"}},
-		// TODO "EikeThePyromancer": {
-		// 	"points": 2,
-		// 	"devTags": {3: 3}, "devInfo": "triggers during chapter 2 when selecting the lighter to scare people off", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}},
-		// TODO "EikeTheMagician": {
-		// 	"points": 2,
-		// 	"devTags": {3: 3}, "devInfo": "triggers during chapter 2 when selecting the phone to scare people off", 
-		// 	"achievementSet": "CoreSet_MainStory", "achievementCategories": {1: "00000"}},
+		"a_TheBarmansEggsExtra": { // WIP
+			"points": 7,
+			"devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2"},
+		"a_EikeThePyromancer": { // WIP
+			"points": 2,
+			"devInfo": "triggers during chapter 2 when selecting the lighter to scare people off"},
+		"a_EikeTheMagician": { // WIP
+			"points": 2,
+			"devInfo": "triggers during chapter 2 when selecting the phone to scare people off"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 	},
 }
 
+
 // ACHIEVEMENT TRIGGERS
 // 	- check if key (achievementname) => is unique with ctrl+F
 // ***********************************************************************************
 _achievementTriggers = {
-	"a_PrologueComplete": function PrologueComplete() { 
-		return 
-			// Core group
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			(
-				( // Alt 1 => true when last prologue cutscene finishes (has been running for 2010+ frames)
-					unless(!isCurrentChapter("Prologue")) &&
-					repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
-					repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
-					repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
-					repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
-					repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
-					repeated(2010, currentCutsceneId(19) == 0x4a007500)					
-				) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-					isChapterFinished("Prologue")
-				)
-			)},
-	"a_Chapter1Complete": function Chapter1Complete() { 
-		return 
-			// Core group 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			( 	
-				( // Alt 1 => true when last chapter cutscene finishes (has been running for 610+ frames)
-					unless(!isCurrentChapter("Chapter1")) &&
-					repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
-					repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
-					repeated(610, priorCutsceneId(17) == 0x5e0000) &&
-					repeated(610, currentCutsceneId(14) == 0xae99999) &&				
-					repeated(610, currentCutsceneId(15) == 0x168e7af) &&				
-					repeated(610, currentCutsceneId(17) == 0x800108) 
-				) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-					isChapterFinished("Chapter1")
-				)
-			)},
-	"a_Chapter2Complete": function Chapter2Complete() {
-		return 
-			// Core group => always true
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			(
-				( // Alt 1 => true when last chapter cutscene is active AND oneFrameTimerHasReset 3 times
-					unless(
-						!isCurrentChapter("Chapter2") || 
-						(
-							currentCutsceneId(2) != 0x479ff42 &&
-							currentCutsceneId(20) != 0xf372f766 &&
-							currentCutsceneId(21) != 0x2ea0e6e5
-						)
-					) && 
-					repeated(3, hasOneFrameTimerReset()) // Unlock achievement when cutscene is done => oneFrameTimerHasReset 3 times
-				) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-					isChapterFinished("Chapter2")
-				)
-			)},
-	"a_AcquireOrnamentalEgg": function AcquireOrnamentalEgg() { 
-		return 
-			never(
-				!isGameRunning() || 
-				!isCutsceneActive() ||
-				!isCurrentChapter("Chapter1")
-			) && 
-			// last cutsceneIDs run for about 380 frames
-			repeated(380, priorCutsceneId(10) == 0xfffe8366) &&
-			repeated(380, priorCutsceneId(13) == 0x3cd31cf) &&
-			repeated(380, priorCutsceneId(15) == 0x11110597) && 
-			repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
-			repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
-			repeated(380, currentCutsceneId(15) == 0x99991119)},
-	"a_TheBarmansEggsChapter1": function TheBarmansEggsChapter1() {
-		return 
-			never(!isGameRunning()) &&
-			never(!isCutsceneActive()) &&
-			never(!isCurrentChapter("Chapter1")) &&
-			// last cutsceneIDs run for about 4202 frames
-			repeated(420, priorCutsceneId(11) == 0x4d5fc40) &&
-			repeated(420, priorCutsceneId(14) == 0x55005ce) &&
-			repeated(420, priorCutsceneId(16) == 0x88065620) && 
-			repeated(420, currentCutsceneId(11) == 0x11111112) &&
-			repeated(420, currentCutsceneId(14) == 0x30ff26b) &&
-			repeated(420, currentCutsceneId(16) == 0x11d8fa)},
-	"a_EikeThePyromancer": function EikeThePyromancer() {
-		return
-			// Core group => true when specific cutscene has run 270+ frames
-			never(
-				!isGameRunning() || 
-				!isCutsceneActive() ||
-				!isCurrentChapter("Chapter2")
-			) &&
-			repeated(270, prior(currentCutsceneId(2)) == 0x2ff955) &&	
-			repeated(270, prior(currentCutsceneId(4)) == 0xe6de04a6) &&	
-			repeated(270, prior(currentCutsceneId(6)) == 0x1100040a) &&
-			repeated(270, currentCutsceneId(2) == 0x10111112) &&	
-			repeated(270, currentCutsceneId(4) == 0xde980748) &&	
-			repeated(270, currentCutsceneId(6) == 0x12480620) &&
-			(
-				( // Alt group 1 => true when twoFrameTimer has reset once AND incremented 1600 times
-					
-					disable_when(once(hasTwoFrameTimerReset()), until = always_true()) &&
-					repeated(1600, hasTwoFrameTimerIncremented())
-				) || ( // Alt group 2 => true when twoFrameTimer has reset twice, when whole cutscene sequence is over
-					repeated(2, hasTwoFrameTimerReset())
-				)
-			)},
-	"a_EikeTheMagician": function EikeTheMagician() {
-		return
-			never(
-				!isGameRunning() || 
-				!isCutsceneActive() ||
-				!isCurrentChapter("Chapter2")
-			) && 
-			// Cutscene has run for 1050+ frames
-			repeated(1050, prior(currentCutsceneId(14)) == 0xc1f05529) &&
-			repeated(1050, prior(currentCutsceneId(17)) == 0x90190290) &&
-			repeated(1050, prior(currentCutsceneId(18)) == 0x66d2507) &&
-			repeated(1050, currentCutsceneId(14) == 0xfed5fe0b) &&
-			repeated(1050, currentCutsceneId(17) == 0x2d7ff567) &&
-			repeated(1050, currentCutsceneId(18) == 0xf57d2254) &&
-			// Pop achievement when twoframeTimer has incremented 1820 times without resetting 
-			// ResetNextIf example
-			repeated(1820, hasTwoFrameTimerIncremented() && never(hasOneFrameTimerReset()))}, // resets only this hitcount when never(isTrue)
-	"a_TheBarmansEggsExtra": function TheBarmansEggsExtra() {
-				return 
-					never(!isGameRunning()) &&
-					never(!isCutsceneActive()) &&					
-					isCurrentSelectedInventoryItem("OrnamentalEgg") && 
-					// Last cutscene stays on for about 500+ frames
-					repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) &&	
-					repeated(500, prior(currentCutsceneId(15)) == 0x168ec1a) &&	
-					repeated(500, prior(currentCutsceneId(17)) == 0x1ca92f3c) &&
-					repeated(500, currentCutsceneId(14) == 0xa90841) &&	
-					repeated(500, currentCutsceneId(15) == 0x19) &&	
-					repeated(500, currentCutsceneId(17) == 0x0) &&
-					repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
+	"a_PrologueComplete": function PrologueComplete() { return
+		// Core group
+		never(!isGameRunning()) &&
+		never(!isCutsceneActive()) &&
+		(
+			( // Alt 1 => true when last prologue cutscene finishes (has been running for 2010+ frames)
+				unless(!isCurrentChapter("Prologue")) &&
+				repeated(2010, priorCutsceneId(16) == 0x43c58c5a) &&
+				repeated(2010, priorCutsceneId(18) == 0xc58acc94) && 
+				repeated(2010, priorCutsceneId(19) == 0x220000ec) &&
+				repeated(2010, currentCutsceneId(16) == 0xd7e805ff) &&
+				repeated(2010, currentCutsceneId(18) == 0xcedfff04) &&
+				repeated(2010, currentCutsceneId(19) == 0x4a007500)					
+			) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Prologue")
+			)
+		)
+	},
+	"a_Chapter1Complete": function Chapter1Complete() { return
+		// Core group 
+		never(!isGameRunning()) &&
+		never(!isCutsceneActive()) &&
+		( 	
+			( // Alt 1 => true when last chapter cutscene finishes (has been running for 610+ frames)
+				unless(!isCurrentChapter("Chapter1")) &&
+				repeated(610, priorCutsceneId(14) == 0x50ff199a) && 
+				repeated(610, priorCutsceneId(15) == 0x41354bf6) &&				
+				repeated(610, priorCutsceneId(17) == 0x5e0000) &&
+				repeated(610, currentCutsceneId(14) == 0xae99999) &&				
+				repeated(610, currentCutsceneId(15) == 0x168e7af) &&				
+				repeated(610, currentCutsceneId(17) == 0x800108) 
+			) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Chapter1")
+			)
+		)
+	},
+	"a_Chapter2Complete": function Chapter2Complete() { return
+		// Core group => always true
+		never(!isGameRunning()) &&
+		never(!isCutsceneActive()) &&
+		(
+			( // Alt 1 => true when last chapter cutscene is active AND oneFrameTimerHasReset 3 times
+				unless(
+					!isCurrentChapter("Chapter2") || 
+					(
+						currentCutsceneId(2) != 0x479ff42 &&
+						currentCutsceneId(20) != 0xf372f766 &&
+						currentCutsceneId(21) != 0x2ea0e6e5
+					)
+				) && 
+				repeated(3, hasOneFrameTimerReset()) // Unlock achievement when cutscene is done => oneFrameTimerHasReset 3 times
+			) || ( // Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Chapter2")
+			)
+		)
+	},
+	"a_AcquireOrnamentalEggFromPerformer": function AcquireOrnamentalEgg() { return
+		never(
+			!isGameRunning() || 
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter1")
+		) && 
+		// last cutsceneIDs run for about 380 frames
+		repeated(380, priorCutsceneId(10) == 0xfffe8366) &&
+		repeated(380, priorCutsceneId(13) == 0x3cd31cf) &&
+		repeated(380, priorCutsceneId(15) == 0x11110597) && 
+		repeated(380, currentCutsceneId(10) == 0x1ce0d25d) &&
+		repeated(380, currentCutsceneId(13) == 0xc841ccb) &&
+		repeated(380, currentCutsceneId(15) == 0x99991119)
+	},
+	"a_AcquireFryingPanFromBarmanChapter1": function a_AcquireFryingPanFromBarmanChapter1() { return		 
+		never(!isGameRunning()) &&
+		never(!isCutsceneActive()) &&
+		never(!isCurrentChapter("Chapter1")) &&
+		// last cutsceneIDs run for about 4202 frames
+		repeated(420, priorCutsceneId(11) == 0x4d5fc40) &&
+		repeated(420, priorCutsceneId(14) == 0x55005ce) &&
+		repeated(420, priorCutsceneId(16) == 0x88065620) && 
+		repeated(420, currentCutsceneId(11) == 0x11111112) &&
+		repeated(420, currentCutsceneId(14) == 0x30ff26b) &&
+		repeated(420, currentCutsceneId(16) == 0x11d8fa)
+	},
+	"a_TheBarmansEggsExtra": function TheBarmansEggsExtra() { return 
+		never(!isGameRunning()) &&
+		never(!isCutsceneActive()) &&					
+		isCurrentSelectedInventoryItem("OrnamentalEgg") && 
+		// Last cutscene stays on for about 500+ frames
+		repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) &&	
+		repeated(500, prior(currentCutsceneId(15)) == 0x168ec1a) &&	
+		repeated(500, prior(currentCutsceneId(17)) == 0x1ca92f3c) &&
+		repeated(500, currentCutsceneId(14) == 0xa90841) &&	
+		repeated(500, currentCutsceneId(15) == 0x19) &&	
+		repeated(500, currentCutsceneId(17) == 0x0) &&
+		repeated(3, (hasOneFrameTimerReset())) // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
+	}, 
+	"a_EikeThePyromancer": function EikeThePyromancer() { return 
+		// Core group => true when specific cutscene has run 270+ frames
+		never(
+			!isGameRunning() || 
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter2")
+		) &&
+		repeated(270, prior(currentCutsceneId(2)) == 0x2ff955) &&	
+		repeated(270, prior(currentCutsceneId(4)) == 0xe6de04a6) &&	
+		repeated(270, prior(currentCutsceneId(6)) == 0x1100040a) &&
+		repeated(270, currentCutsceneId(2) == 0x10111112) &&	
+		repeated(270, currentCutsceneId(4) == 0xde980748) &&	
+		repeated(270, currentCutsceneId(6) == 0x12480620) &&
+		(
+			( // Alt group 1 => true when twoFrameTimer has reset once AND incremented 1600 times
+				
+				disable_when(once(hasTwoFrameTimerReset()), until = always_true()) &&
+				repeated(1600, hasTwoFrameTimerIncremented())
+			) || ( // Alt group 2 => true when twoFrameTimer has reset twice, when whole cutscene sequence is over
+				repeated(2, hasTwoFrameTimerReset())
+			)
+		)
+	},
+	"a_EikeTheMagician": function EikeTheMagician() { return
+		never(
+			!isGameRunning() || 
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter2")
+		) && 
+		// Cutscene has run for 1050+ frames
+		repeated(1050, prior(currentCutsceneId(14)) == 0xc1f05529) &&
+		repeated(1050, prior(currentCutsceneId(17)) == 0x90190290) &&
+		repeated(1050, prior(currentCutsceneId(18)) == 0x66d2507) &&
+		repeated(1050, currentCutsceneId(14) == 0xfed5fe0b) &&
+		repeated(1050, currentCutsceneId(17) == 0x2d7ff567) &&
+		repeated(1050, currentCutsceneId(18) == 0xf57d2254) &&
+		// Pop achievement when twoframeTimer has incremented 1820 times without resetting 
+		// ResetNextIf example
+		repeated(1820, hasTwoFrameTimerIncremented() && never(hasOneFrameTimerReset())) // resets only this hitcount when never(isTrue)
+	}, 
 }
 // ACHIEVEMENT TITLES & DESCRIPTIONS
 // 	- Multi-language support 		// TODO necessary? 
@@ -396,6 +391,12 @@ _achievementTitles = {
 		"nl": "Hoofdstuk 1 voltooid",
 		"fr": "Chapitre 1 terminé"},
 	"a_Chapter2Complete": {"en": "Chapter 2 completed"},
+	"a_AcquireOrnamentalEggFromPerformer": {"en": "An egg?"}, 
+	"a_AcquireFryingPanFromBarmanChapter1": {"en": "Egg collection #1"},
+	"a_TheBarmansEggsExtra": {"en": "An interesting shape"},
+	"a_EikeThePyromancer": {"en": "Eike the pyromancer"},
+	"a_EikeTheMagician": {"en": "Eike the magician"},
+	// Template => "a_XXXXX": {"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
 	"a_PrologueComplete": {
@@ -406,7 +407,13 @@ _achievementDescriptions = {
 		"en": "Defied fate... again",
 		"nl": "Lot getrotseerd... nogmaals",
 		"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": {"en": "Defied fate, but not without loose ends"}
+	"a_Chapter2Complete": {"en": "Defied fate, but not without loose ends"},
+	"a_AcquireOrnamentalEggFromPerformer": {"en": "Receive a gift from a performer during chapter 1"},
+	"a_TheBarmansEggsExtra": {"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_AcquireFryingPanFromBarmanChapter1": {"en": "Give an egg to a barman during chapter 1"},
+	"a_EikeThePyromancer": {"en": "Build a statue of a pyrokinetic during chapter 2"},
+	"a_EikeTheMagician": {"en": "Scare the crowd away with a magic box during chapter 2"},
+	// Template => "a_XXXXX": {"en": "xxxxx"},
 }
 
 // ACHIEVEMENT INITIALIZER
