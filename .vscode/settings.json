@@ -50,7 +50,8 @@
             "icon": "bookmark",
             "type": "text-and-comment",
             "rulerLane": "right",
-            "hideFromStatusBar": true
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true
         },
         "TODO": {
             "icon": "issue-draft" 
@@ -65,6 +66,7 @@
         "TEST": {
             "foreground": "#fad55c",
             "background": "#037a23",
+            "type": "line", 
             "opacity": 37,  
             "icon": "unverified"
         },
@@ -88,5 +90,6 @@
         "RAscripts\/PSP\/ShadowOfDestiny\/Region_USA\/SoD_Generated.rascript"
     ],
     "todo-tree.general.showIconsInsteadOfTagsInStatusBar": true,
-    "todo-tree.general.statusBar": "current file"
+    "todo-tree.general.statusBar": "current file",
+    "todo-tree.general.showActivityBarBadge": true
 }
