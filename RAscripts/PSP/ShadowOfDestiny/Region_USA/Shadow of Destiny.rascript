@@ -209,7 +209,7 @@ _achievements = {
 		// 	"devInfo": "Ending E: Not an Ancestress => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_TheBarmansEggsExtra": { // TEST
+		"a_TheBarmansEggsExtra": { // WORKING
 			"id": 307023, "points": 5,
 			"devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // WORKING
@@ -433,7 +433,7 @@ _achievementDescriptions = {
 	"a_GetOrnamentalEgg": 								{"en": "Receive a gift from a performer during chapter 1"},
 	"a_TheBarmansEggsExtra": 							{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 								{"en": "Give an egg to a barman during chapter 1"},
-	"a_EikeThePyromancer": 								{"en": "Build a statue of a pyrokinetic during chapter 2"},
+	"a_EikeThePyromancer": 								{"en": "Use pyrokinetics to scare the crowd chapter 2"},
 	"a_EikeTheMagician": 								{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 							{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":								{"en": "Built a statue during chapter 2"},
