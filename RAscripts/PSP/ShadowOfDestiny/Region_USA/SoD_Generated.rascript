@@ -448,7 +448,7 @@ achievement(
 
 achievement(
     title = "[EXTRA] Lost young couple #1", points = 3,
-    description = "Help a lost couple reunite during chapter 2 (Only completable without reloading)",
+    description = "Help a lost couple reunite during chapter 2 (Once started don't reload)",
     trigger = unless((CutsceneId() != 825085588 && CutsceneId() != 3873374878 && CutsceneId() != 3303464709
                && bit0(0xA9EB2C) == 1)) && unless((CutsceneId() != 286331153 && CutsceneId() != 62062817 &&
                CutsceneId() != 1292999168 && bit0(0xA9EB2C) == 1)) && measured(tally(2, 
