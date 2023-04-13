@@ -57,15 +57,15 @@
             "icon": "issue-draft" 
         },
         "WIP": {
-            "foreground": "#ffe54f",
-            "background": "#027c16",            
+            "foreground": "#eaff71",
+            "background": "#8a8100",            
             "type": "whole-line", 
             "opacity": 37,
             "icon": "tools"
         },
         "TEST": {
-            "foreground": "#fad55c",
-            "background": "#037a23",
+            "foreground": "#fafc8a",
+            "background": "#aa6f00",
             "type": "line", 
             "opacity": 37,  
             "icon": "unverified"

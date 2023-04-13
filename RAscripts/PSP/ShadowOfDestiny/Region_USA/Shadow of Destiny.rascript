@@ -42,11 +42,11 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 
 // CUTSCENES
 // ***********
-// 	=> Some cutscenes could be identified by INTERACTION IDs
+// TODO	=> Some cutscenes could be identified by INTERACTION IDs
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
-_cutsceneIDs = {		// 17 - 18 - 19
+_cutsceneIDs = {		// 
 	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
@@ -67,7 +67,8 @@ _cutsceneIDs = {		// 17 - 18 - 19
 	18: 0x1DFB0F0, 		// $1DFB0F0: [32-bit] Cutscene ID
 	19: 0x1DFB22B, 		// $1DFB22B: [32-bit] Cutscene ID
 	20: 0x1DF5A0C, 		// $1DF5A0C: [32-bit] Cutscene ID
-	21: 0x1DF5950 		// $1DF5950: [32-bit] Cutscene ID
+	21: 0x1DF5950,		// $1DF5950: [32-bit] Cutscene ID
+	22: 0x1DF81BA		// $1DF81BA: [32-bit] Cutscene ID
 }
 function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
 function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
@@ -94,9 +95,8 @@ function isCurrentChapter(string_chapter) {
 }
 function isChapterFinished(string_chapter) {
 	return 
-		chapterId() > prev(chapterId()) &&
-		prior(chapterId()) == _chapterIDs[string_chapter] && 
-		chapterId() == _chapterIDs[string_chapter]+0x1
+		prev(chapterId()) == _chapterIDs[string_chapter] &&
+		chapterId() == _chapterIDs[string_chapter] + 0x1
 }
 
 // INVENTORY LOGIC
@@ -230,9 +230,9 @@ _achievements = {
 		// TODO "a_EnigmaticCouple1": { 
 		//	"id": 307495, "points": 0000000,
 		//	"devInfo": "Help the coated couple in the present during chapter 1"},
-		// TODO "a_EnigmaticCouple1": { 
-		//	"id": 306984, "points": 0000000,
-		//	"devInfo": "xxxxxxx"},
+		"a_LostYoungCouple1": { // WIP
+			"id": 306984, "points": 5, 
+			"devInfo": "Help the couple in 1580 during chapter 2"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		// TODO "a_MetYouBefore": { 
@@ -400,6 +400,36 @@ _achievementTriggers = {
 		once(flowerStatueChoiceID_1() == 0)					&&
 		once(flowerStatueChoiceID_2() == 0)					&&
 		once(flowerStatueChoiceID_3() == 0)},
+	"a_LostYoungCouple1": function LostYoungCouple1() {
+		// WIP  	=> Make usage of interaction IDs	=> test in seperate code block 		=> Save State F5 & F10
+		// Private functions
+		function measuredComparison() {
+			return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
+				deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
+				repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
+				deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
+				currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
+			])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
+		function measuredIfComparison() { return
+			isGameRunning() && 
+			repeated(100, isCurrentChapter("Chapter2"))} 	// Hit count 100 => when loading another save to another chapter, there's a few 
+															// frames where both these comparisons are true. So this hit counts fixes that
+
+		// Trigger 
+		return
+			unless(
+				currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
+				currentCutsceneId(7) == 0x312dce94 	&&
+				currentCutsceneId(10) == 0xe6df029e &&
+				!isCutsceneActive()
+			) &&
+			unless(
+				currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
+				currentCutsceneId(16) == 0x4d119a00 &&
+				currentCutsceneId(22) == 0xffdffe63 && 
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())}
 }
 
 
@@ -420,6 +450,7 @@ _achievementTitles = {
 	"a_EikeTheMagician": 								{"en": "Eike the magician"},
 	"a_SquireOrdersFlowers": 							{"en": "Squire's orders: 'Just the flowers'"},
 	"a_SquireOrdersStatue":								{"en": "Squire's orders: 'No, a statue'"}, 
+	"a_LostYoungCouple1": 								{"en": "Lost young couple #1"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -437,6 +468,7 @@ _achievementDescriptions = {
 	"a_EikeTheMagician": 								{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 							{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":								{"en": "Built a statue during chapter 2"},
+	"a_LostYoungCouple1": 								{"en": "Help a lost couple reunite during chapter 2 - [Must be complete in one session]"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
@@ -466,7 +498,7 @@ function initializeAchievements() {
 		function enterDefInfo(string_devInfo) {
 			let_devInfoString = ""
 			if isDevModeActive() && string_devInfo != "" {
-				let_devInfoString = let_devInfoString + " (" + string_devInfo + ")"
+				let_devInfoString = let_devInfoString + " <:" + string_devInfo + ":>"
 			}
 			return let_devInfoString
 		}	
