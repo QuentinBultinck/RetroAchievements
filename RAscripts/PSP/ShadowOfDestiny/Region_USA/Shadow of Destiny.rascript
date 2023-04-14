@@ -70,7 +70,10 @@ _cutsceneIDs = {		//
 	19: 0x1DFB22B, 		// $1DFB22B: [32-bit] Cutscene ID
 	20: 0x1DF5A0C, 		// $1DF5A0C: [32-bit] Cutscene ID
 	21: 0x1DF5950,		// $1DF5950: [32-bit] Cutscene ID
-	22: 0x1DF81BA		// $1DF81BA: [32-bit] Cutscene ID
+	22: 0x1DF81BA,		// $1DF81BA: [32-bit] Cutscene ID
+	23: 0x1E49D38,		// $1E49D38: [32-bit] Cutscene ID
+	24: 0x1E4FD60,		// $1E4FD60: [32-bit] Cutscene ID
+	25: 0x1E52F80		// $1E52F80: [32-bit] Cutscene ID
 }
 function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
 function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
@@ -235,9 +238,9 @@ _achievements = {
 			"devInfo": "Help the couple in 1580 during chapter 2"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
-		// TODO "a_MetYouBefore": { 
-		//	"id": 306888, "points": 5,
-		//	"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
+		"a_MetYouBefore": {  // WORKING 	// TEST: Check consistency on used cutscene ID's
+			"id": 306888, "points": 5,
+			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5,
 			"devInfo": "Talk to yourself at cafe Sonné in past during prologue"},
@@ -303,9 +306,10 @@ _achievementTriggers = {
 			)
 		)},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
-		never(	!isGameRunning() 				|| 
-				!isCutsceneActive() 			||
-				!isCurrentChapter("Chapter1")) 	&& 
+		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
+			!isGameRunning() 				|| 
+			!isCutsceneActive() 			||
+			!isCurrentChapter("Chapter1")) 	&& 
 		repeated(380, priorCutsceneId(10) == 0xfffe8366)		&& // this block => last cutscene has run for about 380 frames
 		repeated(380, priorCutsceneId(13) == 0x3cd31cf) 		&&
 		repeated(380, priorCutsceneId(15) == 0x11110597) 		&& 
@@ -313,7 +317,7 @@ _achievementTriggers = {
 		repeated(380, currentCutsceneId(13) == 0xc841ccb) 		&&
 		repeated(380, currentCutsceneId(15) == 0x99991119)},
 	"a_EggCollection1": function a_EggCollection1() { return		 
-		never(!isGameRunning()) 				&&
+		never(!isGameRunning()) 				&& // This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 				&&
 		never(!isCurrentChapter("Chapter1")) 	&&	
 		repeated(420, priorCutsceneId(11) == 0x4d5fc40) 	&& // This block => last cutscene has run for about 420 frames
@@ -323,7 +327,7 @@ _achievementTriggers = {
 		repeated(420, currentCutsceneId(14) == 0x30ff26b) 	&&
 		repeated(420, currentCutsceneId(16) == 0x11d8fa)},
 	"a_EggCollection2": function EggCollection2() { return 
-		never(
+		never( // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning() 				||
 			!isCurrentChapter("Chapter3") 	||
 			!isCutsceneActive())			&&		
@@ -334,11 +338,11 @@ _achievementTriggers = {
 		repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
 		repeated(470, currentCutsceneId(17) == 0xff2009cc)},
 	"a_TheBarmansEggsExtra": function TheBarmansEggsExtra() { return 
-		never(!isGameRunning()) 						&&
+		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 						&&
 		never(!isCurrentChapter("Chapter2"))			&&
-		isCurrentSelectedInventoryItem("OrnamentalEgg") && 
 
+		isCurrentSelectedInventoryItem("OrnamentalEgg") && 	// Is currently selected item the 'OrnamentalEgg'
 		repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) 	&&	// this block => last cutscene has run for about 380 frames
 		repeated(500, prior(currentCutsceneId(15)) == 0x168ec1a) 	&&
 		repeated(500, prior(currentCutsceneId(17)) == 0x1ca92f3c) 	&&
@@ -379,9 +383,10 @@ _achievementTriggers = {
 																							// ResetNextIf example																																
 		repeated(1820, hasTwoFrameTimerIncremented() && never(hasOneFrameTimerReset()))}, 	// resets only this hitcount when never(isTrue) 
 	"a_SquireOrdersFlowers": function TheSquiresFlowers() { return
-		never(	!isGameRunning() 				|| 
-				!isCutsceneActive() 			||
-				!isCurrentChapter("Chapter2")) 	&& 
+		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
+			!isGameRunning() 				|| 
+			!isCutsceneActive() 			||
+			!isCurrentChapter("Chapter2")) 	&& 
 		isCurrentSelectedInventoryItem("SquireCrest") 		&& 
 		
 		currentCutsceneId(14) == 0x4831736					&& // This block => check if cutscene after choice is has started
@@ -449,13 +454,13 @@ _achievementTriggers = {
 				deduct(once(interactionID_2() == 0x08a30a94)), 			// Sub hit: -1			=> for talking to man 2nd time
 				repeated(2, interactionID_2() == 0x08a30a94),			// Add hit: +2 == +1 
 				deduct(repeated(3, interactionID_2() == 0x08a30be8)),	// Sub hit: -3			=> for talking to woman 2nd time
-				interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 - 3
+				interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 hits - 3
 			])}															// 				== 4 	=> this way measured will show 1/4
 		function measuredIfComparison() { return
 			isGameRunning() && 
 			(
 				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
-				repeated(100, isCurrentChapter("Chapter1"))		// frames where both these comparisons are true. So this hit counts fixes that
+				repeated(100, isCurrentChapter("Chapter1"))		// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
 			)}
 		// Trigger 
 		return
@@ -518,8 +523,18 @@ _achievementTriggers = {
 		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
 		repeated(1050, currentCutsceneId(8) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
-		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},
-	
+		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
+	"a_MetYouBefore": function MetYouBefore() { return 
+		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
+			!isGameRunning()				||
+			!isCurrentChapter("Chapter2") 	||
+			!isCutsceneActive())			&&
+			prior(currentCutsceneId(23)) == 0xfffe91b8 	&&	// Block is true => last cutscene has changed into death cutscene
+			prior(currentCutsceneId(24)) == 0xcdc31e34 	&&	 			
+			prior(currentCutsceneId(25)) == 0x310143 	&&	
+			currentCutsceneId(23) == 0x0047ff27 		&&	
+			currentCutsceneId(24) == 0xfe1cfcbb  		&&
+			currentCutsceneId(25) == 0x45abc269},
 	// "a_Template": function Template() {},
 }
 
@@ -545,6 +560,7 @@ _achievementTitles = {
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_ErasingEike": 								{"en": "That's a big no no"},	 
+	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -559,13 +575,14 @@ _achievementDescriptions = {
 	"a_TheBarmansEggsExtra": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
-	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd chapter 2"},
+	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
+	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2 - [Tip: Die a total of 4 times to the tree killer]"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
