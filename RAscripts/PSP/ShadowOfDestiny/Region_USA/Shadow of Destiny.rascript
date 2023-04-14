@@ -406,10 +406,10 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				deduct(once(interactionID_2() == 0x08a329c0)), 	// Sub hit: -1
-				repeated(2, interactionID_2() == 0x08a329c0),	// Add hit: +2 == +1 	=> for talking to man 
-				deduct(once(interactionID_2() == 0x08a32a10)),	// Sub hit: -1
-				interactionID_2() == 0x08a32a10					// Add hit: +2 == +1 	=> for talking to woman
+				deduct(once(interactionID_2() == 0x08a329c0)), 	// Sub hit: -1			=> for talking to man
+				repeated(2, interactionID_2() == 0x08a329c0),	// Add hit: +2 == +1  
+				deduct(once(interactionID_2() == 0x08a32a10)),	// Sub hit: -1			=> for talking to woman
+				interactionID_2() == 0x08a32a10					// Add hit: +2 == +1 
 			])}													// 		1 + 1 == 2 		=> this way measured will show 1/2
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
@@ -473,15 +473,15 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
-				deduct(once(interactionID_2() == 0x08a30bd4)), 	// Sub hit: -1
-				repeated(2, interactionID_2() == 0x08a30bd4),	// Add hit: +2 == +1 	=> for talking to woman 1st time
-				deduct(once(interactionID_2() == 0x08a30a80)), 	// Sub hit: -1
-				repeated(2, interactionID_2() == 0x08a30a80),	// Add hit: +2 == +1 	=> for talking to man 1st time
-				deduct(once(interactionID_2() == 0x08a30a94)), 	// Sub hit: -1
-				repeated(2, interactionID_2() == 0x08a30a94),	// Add hit: +2 == +1 	=> for talking to man 2nd time
-				deduct(once(interactionID_2() == 0x08a30be8)),	// Sub hit: -1
-				interactionID_2() == 0x08a30be8					// Add hit: +2 == +1 	=> for talking to woman 2nd time
-			])}													// 				== 4 	=> this way measured will show 1/4
+				deduct(once(interactionID_2() == 0x08a30bd4)), 			// Sub hit: -1			=> for talking to woman 1st time
+				repeated(2, interactionID_2() == 0x08a30bd4),			// Add hit: +2 == +1 
+				deduct(once(interactionID_2() == 0x08a30a80)), 			// Sub hit: -1			=> for talking to man 1st time
+				repeated(2, interactionID_2() == 0x08a30a80),			// Add hit: +2 == +1 
+				deduct(once(interactionID_2() == 0x08a30a94)), 			// Sub hit: -1			=> for talking to man 2nd time
+				repeated(2, interactionID_2() == 0x08a30a94),			// Add hit: +2 == +1 
+				deduct(repeated(3, interactionID_2() == 0x08a30be8)),	// Sub hit: -3			=> for talking to woman 2nd time
+				interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 - 3
+			])}															// 				== 4 	=> this way measured will show 1/4
 		function measuredIfComparison() { return
 			isGameRunning() && 
 			(
