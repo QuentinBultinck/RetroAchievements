@@ -48,7 +48,7 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
-_cutsceneIDs = {		// 
+_cutsceneIDs = {		//  8 - 3 - 9
 	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
@@ -229,9 +229,9 @@ _achievements = {
 		// TODO "a_ArtEnthusiast": { 
 		//	"id": 307499, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
-		// TODO "a_EnigmaticCouple1": { 
-		//	"id": 307495, "points": 0000000,
-		//	"devInfo": "Help the coated couple in the present during chapter 1"},
+		"a_EnigmaticCouple1": { // WIP
+			"id": 307495, "points": 5,
+			"devInfo": "Help the coated couple in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, 
 			"devInfo": "Help the couple in 1580 during chapter 2"},
@@ -240,9 +240,9 @@ _achievements = {
 		// TODO "a_MetYouBefore": { 
 		//	"id": 306888, "points": 5,
 		//	"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
-		// TODO "a_ErasingEike": { 
-		//	"id": 306883, "points": 5,
-		//	"devInfo": "Talk to yourself @ cafe during prologue"},
+		"a_ErasingEike": { // WORKING
+			"id": 306883, "points": 5,
+			"devInfo": "Talk to yourself at cafe Sonné in past during prologue"},
 	},
 }
 
@@ -458,45 +458,103 @@ _achievementTriggers = {
 		// 			!isCutsceneActive()
 		// 		) &&
 		// 		measured(measuredComparison(), measuredIfComparison())},
+	"a_ErasingEike": function ErasingEike() { return 
+		never(
+			!isGameRunning()				||
+			!isCurrentChapter("Prologue") 	||
+			!isCutsceneActive())			&&
+		repeated(1050, prior(currentCutsceneId(8)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
+		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
+		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
+		repeated(1050, currentCutsceneId(8) == 0x52036400) 			&&
+		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
+		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},
+	"a_EnigmaticCouple1": function EnigmaticCouple1() { // WORKING
+		// Private functions
+		function measuredComparison() { return
+			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
+				deduct(once(interactionID_2() == 0x08a30bd4)), 	// Sub hit: -1
+				repeated(2, interactionID_2() == 0x08a30bd4),	// Add hit: +2 == +1 	=> for talking to woman 1st time
+				deduct(once(interactionID_2() == 0x08a30a80)), 	// Sub hit: -1
+				repeated(2, interactionID_2() == 0x08a30a80),	// Add hit: +2 == +1 	=> for talking to man 1st time
+				deduct(once(interactionID_2() == 0x08a30a94)), 	// Sub hit: -1
+				repeated(2, interactionID_2() == 0x08a30a94),	// Add hit: +2 == +1 	=> for talking to man 2nd time
+				deduct(once(interactionID_2() == 0x08a30be8)),	// Sub hit: -1
+				interactionID_2() == 0x08a30be8					// Add hit: +2 == +1 	=> for talking to woman 2nd time
+			])}													// 				== 4 	=> this way measured will show 1/4
+		function measuredIfComparison() { return
+			isGameRunning() && 
+			(
+				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
+				repeated(100, isCurrentChapter("Chapter1"))		// frames where both these comparisons are true. So this hit counts fixes that
+			)}
+		// Trigger 
+		return
+			unless(
+				interactionID_2() == 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() == 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_2() == 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() == 0x56			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() == 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_2() == 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() == 0x56			&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	// "a_Template": function Template() {},
 }
 
 
 // ACHIEVEMENT TITLES & DESCRIPTIONS
 // ***********************************************************************************
 _achievementTitles = {
-	"a_PrologueComplete": { 							"en": "Prologue completed",															
-														"nl": "Proloog voltooid",
-														"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {								"en": "Chapter 1 completed",															
-														"nl": "Hoofdstuk 1 voltooid",
-														"fr": "Chapitre 1 terminé"},
-	"a_Chapter2Complete": 								{"en": "Chapter 2 completed"},
-	"a_GetOrnamentalEgg": 								{"en": "An egg?"}, 
-	"a_EggCollection1": 								{"en": "Egg collection #1"},
-	"a_TheBarmansEggsExtra": 							{"en": "An interesting shape"},
-	"a_EikeThePyromancer":								{"en": "Eike the pyromancer"},
-	"a_EikeTheMagician": 								{"en": "Eike the magician"},
-	"a_SquireOrdersFlowers": 							{"en": "Squire's orders: 'Just the flowers'"},
-	"a_SquireOrdersStatue":								{"en": "Squire's orders: 'No, a statue'"}, 
-	"a_LostYoungCouple1": 								{"en": "Lost young couple #1"}, 
+	"a_PrologueComplete": { 						"en": "Prologue completed",															
+													"nl": "Proloog voltooid",
+													"fr": "Prologue terminé"},
+	"a_Chapter1Complete": {							"en": "Chapter 1 completed",															
+													"nl": "Hoofdstuk 1 voltooid",
+													"fr": "Chapitre 1 terminé"},
+	"a_Chapter2Complete": 							{"en": "Chapter 2 completed"},
+	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
+	"a_EggCollection1": 							{"en": "Egg collection #1"},
+	"a_TheBarmansEggsExtra": 						{"en": "An interesting shape"},
+	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
+	"a_EikeTheMagician": 							{"en": "Eike the magician"},
+	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Just the flowers'"},
+	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
+	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
+	"a_ErasingEike": 								{"en": "That's a big no no"},
+	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
-	"a_PrologueComplete": {								"en": "Defied fate",															
-														"nl": "Lot getrotseerd",
-														"fr": "Défié le destine"},
-	"a_Chapter1Complete": {								"en": "Defied fate... again",															
-														"nl": "Lot getrotseerd... nogmaals",
-														"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": 								{"en": "Defied fate, but not without loose ends"},
-	"a_GetOrnamentalEgg": 								{"en": "Receive a gift from a performer during chapter 1"},
-	"a_TheBarmansEggsExtra": 							{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
-	"a_EggCollection1": 								{"en": "Give an egg to a barman during chapter 1"},
-	"a_EikeThePyromancer": 								{"en": "Use pyrokinetics to scare the crowd chapter 2"},
-	"a_EikeTheMagician": 								{"en": "Scare the crowd away with a magic box during chapter 2"},
-	"a_SquireOrdersFlowers": 							{"en": "Planted flowers during chapter 2"},
-	"a_SquireOrdersStatue":								{"en": "Built a statue during chapter 2"},
-	"a_LostYoungCouple1": 								{"en": "Help a lost couple reunite during chapter 2 - [Unlock criteria: Once started, complete in same session, otherwise restart chapter]"}, 
+	"a_PrologueComplete": {							"en": "Defied fate",															
+													"nl": "Lot getrotseerd",
+													"fr": "Défié le destine"},
+	"a_Chapter1Complete": {							"en": "Defied fate... again",															
+													"nl": "Lot getrotseerd... nogmaals",
+													"fr": "Défié le destin... encore"},
+	"a_Chapter2Complete": 							{"en": "Defied fate, but not without loose ends"},
+	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
+	"a_TheBarmansEggsExtra": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
+	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd chapter 2"},
+	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic box during chapter 2"},
+	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
+	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
+	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
+	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
+	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
@@ -526,7 +584,7 @@ function initializeAchievements() {
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
 			if isDevModeActive() && string_devInfo != "" {
-				let_devInfoString = let_devInfoString + " {(" + string_devInfo + ")}"
+				let_devInfoString = let_devInfoString + " - {(" + string_devInfo + ")}"
 			}
 			return let_devInfoString
 		}	
