@@ -212,7 +212,7 @@ _achievements = {
 		// 	"devInfo": "Ending E: Not an Ancestress => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_TheBarmansEggsExtra": { // WORKING
+		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5,
 			"devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // WORKING
@@ -227,9 +227,9 @@ _achievements = {
 		"a_SquireOrdersStatue": { // WORKING
 			"id": 306919, "points": 1,
 			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
-		// "a_HistoryInArt": { // WIP
-		// 	"id": 307499, "points": 2,
-		// 	"devInfo": "xxxxxxx"},
+		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
+			"id": 307499, "points": 2,
+			"devInfo": "Watch all 7 painting in the Brum Museum during chapter 3"}, 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5,
 			"devInfo": "Help the coated couple in the present during the prologue or chapter 1"},
@@ -337,7 +337,7 @@ _achievementTriggers = {
 		repeated(470, currentCutsceneId(8) == 0xd4faa9fa) 	&&
 		repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
 		repeated(470, currentCutsceneId(17) == 0xff2009cc)},
-	"a_TheBarmansEggsExtra": function TheBarmansEggsExtra() { return 
+	"a_IntroduceEggCollecting": function IntroduceEggCollecting() { return 
 		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 						&&
 		never(!isCurrentChapter("Chapter2"))			&&
@@ -425,9 +425,8 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
-
 		// Trigger 
-		return
+		return 
 			unless(
 				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman
 				interactionID_2() == 0x08a32a10 	&&
@@ -449,25 +448,15 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30a80),					// Add hit: +1	=> for talking to man 1st time
 				once(interactionID_2() == 0x08a30bd4),					// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
-			])}															
-			// tally(4, [	// this hit count becomes the hit count for the final comparison in the array
-			// 	deduct(once(interactionID_2() == 0x08a30bd4)), 			// Sub hit: -1			=> for talking to woman 1st time
-			// 	repeated(2, interactionID_2() == 0x08a30bd4),			// Add hit: +2 == +1 
-			// 	deduct(once(interactionID_2() == 0x08a30a80)), 			// Sub hit: -1			=> for talking to man 1st time
-			// 	repeated(2, interactionID_2() == 0x08a30a80),			// Add hit: +2 == +1 
-			// 	deduct(once(interactionID_2() == 0x08a30a94)), 			// Sub hit: -1			=> for talking to man 2nd time
-			// 	repeated(2, interactionID_2() == 0x08a30a94),			// Add hit: +2 == +1 
-			// 	deduct(repeated(3, interactionID_2() == 0x08a30be8)),	// Sub hit: -3			=> for talking to woman 2nd time
-			// 	interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 hits - 3
-			// ])}															// 				== 4 	=> this way measured will show 1/4
+			])}
 		function measuredIfComparison() { return
 			isGameRunning() && 
 			(
 				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter1"))		// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
 			)}
-		// Trigger 
-		return
+		// Trigger
+		return  
 			unless(
 				interactionID_2() == 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
 				interactionID_3() == 0x57			&&
@@ -489,9 +478,59 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	// "a_HistoryInArt": function HistoryInArt() { // WIP
-
-	// },
+	"a_ArtAppreciator": function ArtAppreciator() {
+		// Private functions
+		function measuredComparison() { return
+			tally(7, [										//			= 7
+				once(interactionID_2() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting
+				once(interactionID_2() == 0x08a32240),		// Add hit: +1	=> Town planter painting
+				once(interactionID_2() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting
+				once(interactionID_2() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait
+				once(interactionID_2() == 0x08a322e0),		// Add hit: +1	=> Burning house painting
+				once(interactionID_2() == 0x08a3231c),		// Add hit: +1	=> Landscape painting
+				once(interactionID_2() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting
+			])}
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter3")) && 		// Hit count 100 => when loading another save to another chapter, there's a few							 
+			isGameRunning()}									// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
+		// Trigger 
+		return 
+			unless(
+				interactionID_2() == 0x08a32204 	&&		// Block => Squire's crest painting
+				interactionID_3() == 0x164			&&	
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_2() == 0x08a32240 	&&		// Block => Town planter painting
+				interactionID_3() == 0x165			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a3227c 	&&		// Block => Oddly dressed man painting
+				interactionID_3() == 0x166			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_2() == 0x08a322b8 	&&		// Block => Alchemist portrait
+				interactionID_3() == 0x167			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a322e0 	&&		// Block => Burning house painting
+				interactionID_3() == 0x168			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a3231c 	&&		// Block => Landscape painting
+				interactionID_3() == 0x169			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a32344 	&&		// Block => Alchemy lab painting
+				interactionID_3() == 0x16a			&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isGameRunning()				||
@@ -531,15 +570,16 @@ _achievementTitles = {
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
 	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
-	"a_TheBarmansEggsExtra": 						{"en": "An interesting shape"},
+	"a_IntroduceEggCollecting": 					{"en": "An interesting shape"},
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
 	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Just the flowers'"},
 	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
-	"a_ErasingEike": 								{"en": "That's a big no no"},	 
+	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
+	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -551,7 +591,7 @@ _achievementDescriptions = {
 													"fr": "Défié le destin... encore"},
 	"a_Chapter2Complete": 							{"en": "Defied fate, but not without loose ends"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
-	"a_TheBarmansEggsExtra": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
 	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
@@ -562,6 +602,7 @@ _achievementDescriptions = {
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2 - [Tip: Die a total of 4 times to the tree killer]"},
+	"a_ArtAppreciator": 							{"en": "Admire the paintings in the Brum Museum - [Tip: Interact with all 7 paintings in the Brum Museum] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
