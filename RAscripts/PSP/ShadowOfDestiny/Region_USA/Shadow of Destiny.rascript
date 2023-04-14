@@ -49,14 +49,14 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
 _cutsceneIDs = {		//  
-	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID
+	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID // unused
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
 	4: 0x1DF6724, 		// $1DF6724: [32-bit] Cutscene ID
-	5: 0x1DF7140, 		// $1DF7140: [32-bit] Cutscene ID
+	5: 0x1DF6F60, 		// $1DF6F60: [32-bit] Cutscene ID
 	6: 0x1DF742A, 		// $1DF742A: [32-bit] Cutscene ID
 	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID
-	8: 0x1DF81E5, 		// $1DF81E5: [32-bit] Cutscene ID
+	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID // Unused
 	9: 0x1DF8229, 		// $1DF8229: [32-bit] Cutscene ID
 	10: 0x1DF8442,		// $1DF8442: [32-bit] Cutscene ID
 	11: 0x1DF8B14, 		// $1DF8B14: [32-bit] Cutscene ID
@@ -70,10 +70,7 @@ _cutsceneIDs = {		//
 	19: 0x1DFB22B, 		// $1DFB22B: [32-bit] Cutscene ID
 	20: 0x1DF5A0C, 		// $1DF5A0C: [32-bit] Cutscene ID
 	21: 0x1DF5950,		// $1DF5950: [32-bit] Cutscene ID
-	22: 0x1DF81BA,		// $1DF81BA: [32-bit] Cutscene ID
-	23: 0x1E49D38,		// $1E49D38: [32-bit] Cutscene ID
-	24: 0x1E4FD60,		// $1E4FD60: [32-bit] Cutscene ID
-	25: 0x1E52F80		// $1E52F80: [32-bit] Cutscene ID
+	22: 0x1DF81E5		// $1DF81E5: [32-bit] Cutscene ID
 }
 function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
 function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
@@ -193,7 +190,7 @@ _achievements = {
 		// 	"devInfo": "Seen ALL the cutscenes, should be saved in the MAIN safe file of the game"},
 	},
 	"c_Branch": { // Category - Branching path
-		"a_GetOrnamentalEgg": { // WORKING
+		"a_GetOrnamentalEgg": { // TEST
 			"id": 306885, "points": 5,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
 		"a_EggCollection1": { // WORKING
@@ -343,10 +340,10 @@ _achievementTriggers = {
 			!isGameRunning() 				||
 			!isCurrentChapter("Chapter3") 	||
 			!isCutsceneActive())			&&		
-		repeated(470, priorCutsceneId(8) == 0x68df3900) 	&& // This block => last cutscene has run for about 470 frames
+		repeated(470, priorCutsceneId(22) == 0x68df3900) 	&& // This block => last cutscene has run for about 470 frames
 		repeated(470, priorCutsceneId(12) == 0x18e6) 		&&
 		repeated(470, priorCutsceneId(17) == 0x66319a2) 	&& 
-		repeated(470, currentCutsceneId(8) == 0xd4faa9fa) 	&&
+		repeated(470, currentCutsceneId(22) == 0xd4faa9fa) 	&&
 		repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
 		repeated(470, currentCutsceneId(17) == 0xff2009cc)},
 	"a_IntroduceEggCollecting": function IntroduceEggCollecting() { return 
@@ -548,10 +545,10 @@ _achievementTriggers = {
 			!isGameRunning()				||
 			!isCurrentChapter("Prologue") 	||
 			!isCutsceneActive())			&&
-		repeated(1050, prior(currentCutsceneId(8)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
+		repeated(1050, prior(currentCutsceneId(22)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
 		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
 		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
-		repeated(1050, currentCutsceneId(8) == 0x52036400) 			&&
+		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
 	"a_MetYouBefore": function MetYouBefore() { return 
