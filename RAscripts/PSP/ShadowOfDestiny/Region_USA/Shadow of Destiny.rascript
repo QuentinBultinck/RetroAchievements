@@ -104,22 +104,34 @@ function isChapterFinished(string_chapter) {
 		chapterId() == _chapterIDs[string_chapter] + 0x1
 }
 
-// INVENTORY LOGIC
+// INVENTORY LOGIC 
 // *****************
-_inventoryItemIds = {
+_inventoryItemIds = { 
 	"OrnamentalEgg": 0x2,
 	"SquireCrest": 0xf,
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
 
+// ON-SCREEN TEXT 
+// ****************
+//	- Master ID	=> Identifies a series of subtitles, can stay the same over multiple text changes
+//	- Other IDs => Changes on each text/subtitle change 
+_onScreenTextID = {
+	0: 0xAC31E4,	// $AC31E4: [32-bit] On-screen text ID_master
+	1: 0xAC31E8,	// $AC31E8: [32-bit] On-screen text ID
+	2: 0xAC326C,	// $AC326C: [32-bit] On-screen text ID
+	3: 0xAC32A8,	// $AC32A8: [32-bit] On-screen text ID
+	4: 0xAC3314,	// $AC3314: [32-bit] On-screen text ID
+	5: 0xAC33E8,	// $AC33E8: [32-bit] On-screen text ID
+	6: 0xAC350C,	// $AC350C: [32-bit] On-screen text ID
+	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
+	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
+}
+function OnScreenTextID(int_id) => dword(_onScreenTextID[int_id])
+
 // OTHER LOGIC
 // *************
-															// IDs for flower or statue choice in chapter 2
-function flowerStatueChoiceID_1() 	=> dword(0xAC31E8) 		// $AC31E8: [32-bit] Flowers or statue choice ID #1
-function flowerStatueChoiceID_2() 	=> dword(0xAC3538) 		// $AC3538: [32-bit] Flowers or statue choice ID #2
-function flowerStatueChoiceID_3() 	=> dword(0xAC3658) 		// $AC3658: [32-bit] Flowers or statue choice ID #3
-
 function cutsceneFlag() => bit0(0xA9Eb2C)					// $A9Eb2C: [bit-0] Flag -> is cutscene active
 function isCutsceneActive() => cutsceneFlag() == 0			//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
 															//		- 1 = no cutscene active
@@ -215,16 +227,16 @@ _achievements = {
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // WORKING
+		"a_EikeThePyromancer": { // Working // CONCEPT Change back into a_EikeThePyromancer => Trigger/Measure => pop a_ when chapter finishes
 			"id": 306911, "points": 2,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING
+		"a_EikeTheMagician": { // Working // CONCEPT Change back into a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
 			"id": 306906, "points": 2,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_SquireOrdersFlowers": { // WORKING
+		"a_SquireOrdersFlowers": { // Working // CONCEPT Change back into a_EikeTheFlorist => pop a_ when chapter finishes
 			"id": 306920, "points": 1,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_SquireOrdersStatue": { // WORKING
+		"a_SquireOrdersStatue": { // Working // CONCEPT Change back into a_EikeThePyromancer & a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
 			"id": 306919, "points": 1,
 			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
@@ -238,7 +250,7 @@ _achievements = {
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
-		"a_MetYouBefore": {  // FIXME => No consistency on used cutscene ID's
+		"a_MetYouBefore": {  // WORKING
 			"id": 306888, "points": 5,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
@@ -388,33 +400,33 @@ _achievementTriggers = {
 			!isCutsceneActive() 			||
 			!isCurrentChapter("Chapter2")) 	&& 
 		isCurrentSelectedInventoryItem("SquireCrest") 		&& 
-		
+
 		currentCutsceneId(14) == 0x4831736					&& // This block => check if cutscene after choice is has started
 		currentCutsceneId(15) == 0x431ab010					&&
 		currentCutsceneId(17) == 0x4f1f9ae					&&
 
-		once(prior(flowerStatueChoiceID_1()) == 0x003fff5f)		&& // This block => check if flowers is chosen
-		once(prior(flowerStatueChoiceID_2()) == 0x0050ffea)		&&
-		once(prior(flowerStatueChoiceID_3()) == 0x005000a3)		&&
-		once(flowerStatueChoiceID_1() == 0)						&&
-		once(flowerStatueChoiceID_2() == 0)						&&
-		once(flowerStatueChoiceID_3() == 0)},
+		prior(OnScreenTextID(1)) == 0x003fff5f		&& // This block => check if flowers is chosen
+		prior(OnScreenTextID(7)) == 0x0050ffea		&&
+		prior(OnScreenTextID(8)) == 0x005000a3		&&
+		OnScreenTextID(1) == 0						&&
+		OnScreenTextID(7) == 0						&&
+		OnScreenTextID(8) == 0},
 	"a_SquireOrdersStatue": function SquireOrdersStatue() { return
 		never(!isGameRunning())					&&
 		never(!isCutsceneActive())				&&
-		never(isCurrentChapter("Chapter2"))		&&
+		never(!isCurrentChapter("Chapter2"))		&&
 		isCurrentSelectedInventoryItem("SquireCrest") 	&& 
 
 		currentCutsceneId(14) == 0x4831736				&& // This block => check if cutscene after choice is has started
 		currentCutsceneId(15) == 0x431ab010				&&
 		currentCutsceneId(17) == 0x4f1f9ae				&&
 
-		once(prior(flowerStatueChoiceID_1()) == 0x40ff60) 	&& // This block => check if statue is chosen
-		once(prior(flowerStatueChoiceID_2()) == 0x4fffe9) 	&&
-		once(prior(flowerStatueChoiceID_3()) == 0x4f00a2)	&&
-		once(flowerStatueChoiceID_1() == 0)					&&
-		once(flowerStatueChoiceID_2() == 0)					&&
-		once(flowerStatueChoiceID_3() == 0)},
+		prior(OnScreenTextID(1)) == 0x40ff60 	&& // This block => check if statue is chosen
+		prior(OnScreenTextID(7)) == 0x4fffe9 	&&
+		prior(OnScreenTextID(8)) == 0x4f00a2	&&
+		OnScreenTextID(1) == 0					&&
+		OnScreenTextID(7) == 0					&&
+		OnScreenTextID(8) == 0},
 	"a_LostYoungCouple1": function LostYoungCouple1() {
 		// Private functions
 		function measuredComparison() { return
@@ -547,12 +559,22 @@ _achievementTriggers = {
 			!isGameRunning()				||
 			!isCurrentChapter("Chapter2") 	||
 			!isCutsceneActive())			&&
-			prior(currentCutsceneId(23)) == 0xfffe91b8 	&&	// Block is true => last cutscene has changed into death cutscene
-			prior(currentCutsceneId(24)) == 0xcdc31e34 	&&	 			
-			prior(currentCutsceneId(25)) == 0x310143 	&&	
-			currentCutsceneId(23) == 0x0047ff27 		&&	
-			currentCutsceneId(24) == 0xfe1cfcbb  		&&
-			currentCutsceneId(25) == 0x45abc269},
+		repeated(1400, OnScreenTextID(0) == 0x4b) &&	// Block => identifies the cutscene (code might be too bloated but better safe than sorry)
+		once(prev(OnScreenTextID(0)) == 0x4b && OnScreenTextID(0) == 0x2d) &&	// Text sequence A
+		once(prev(OnScreenTextID(0)) == 0x2d && OnScreenTextID(0) == 0x1e) &&	// Text sequence B
+		once(prev(OnScreenTextID(0)) == 0xf0 && OnScreenTextID(0) == 0x78) &&	// Text sequence C
+		once(prev(OnScreenTextID(0)) == 0x78 && OnScreenTextID(0) == 0x4b) &&	// Text sequence E
+		once(prev(OnScreenTextID(0)) == 0xb4 && OnScreenTextID(0) == 0x4b) &&	// Text sequence D
+		once(prev(OnScreenTextID(0)) == 0x78 && OnScreenTextID(0) == 0x50) &&	// Text sequence F
+		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0040ff86) &&	// Text A
+		once(prev(OnScreenTextID(5)) == 0x0 && OnScreenTextID(5) == 0x0050ffd0) &&	// Text A
+		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0048ffc9) &&	// Text B
+		once(prev(OnScreenTextID(3)) == 0x0 && OnScreenTextID(3) == 0x00480029) &&	// Text B
+		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0040ff9e) &&	// Text E
+		once(prev(OnScreenTextID(4)) == 0x0 && OnScreenTextID(4) == 0x00080009) &&	// Text E
+		prior(OnScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
+		prior(OnScreenTextID(5)) == 0x00500045 							&&	// Last text
+		prev(OnScreenTextID(0)) == 0x50},		// Last text
 	// "a_Template": function Template() {},
 }
 
@@ -573,7 +595,7 @@ _achievementTitles = {
 	"a_IntroduceEggCollecting": 					{"en": "An interesting shape"},
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
-	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Just the flowers'"},
+	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Flowers only'"},
 	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
