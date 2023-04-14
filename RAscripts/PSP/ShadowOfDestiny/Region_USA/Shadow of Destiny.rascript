@@ -142,85 +142,85 @@ _achievements = {
 	//	"id": 000000, "points": 0000000,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // TEST
+		"a_PrologueComplete": { // WORKING
 			"id": 306884, "points": 1,
-			"devInfo": "triggers when prologue completes"},
-		"a_Chapter1Complete": { // TEST
+			"devInfo": "Complete the prologue"},
+		"a_Chapter1Complete": { // WORKING
 			"id": 306886, "points": 1,
-			"devInfo": "triggers when chapter 1 completes"},
-		"a_Chapter2Complete": { // TEST
+			"devInfo": "Complete chapter 1"},
+		"a_Chapter2Complete": { // WORKING
 			"id": 306922, "points": 2,
-			"devInfo": "triggers when chapter 2 completes"},
+			"devInfo": "Complete chapter 2"},
 		// TODO "a_Chapter3Complete": {
 		//	"id": 306921, "points": 3,
-		// 	"devInfo": "triggers when chapter 3 completes",
+		// 	"devInfo": "Complete chapter 3",
 		// TODO "a_Chapter4Complete": {
 		//	"id": 000000, "points": 4,
-		//	"devInfo": "triggers when chapter 4 completes",
+		//	"devInfo": "Complete chapter 4",
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 4,
-		//	"devInfo": "triggers when chapter 5 completes",
+		//	"devInfo": "Complete chapter 5",
 		// TODO "a_Chapter6omplete": {
 		//	"id": 000000, "points": 5,
-		// 	"devInfo": "triggers when chapter 6 completes",
+		// 	"devInfo": "Complete chapter 6",
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5,
-		// 	"devInfo": "triggers when chapter 7 completes"},
-		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings 
+		// 	"devInfo": "Complete chapter 7"},
+		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "triggers when chapter 8 completes"},
+		// 	"devInfo": "Complete chapter 8"},
 		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "triggers when epilogue completes"},
+		// 	"devInfo": "Complete the epilogue "}, 
 		// TODO "a_EXChapterComplete": {
 		//	"id": 000000, "points": 50,
-		// 	"devInfo": "triggers when EX chapter completes"},
-		// TODO "a_Achieve100%Achievement": { // TODO check if this is possible 
+		// 	"devInfo": "Complete the EX chapter"},
+		// TODO "a_Achieve100%Achievement": { // TODO check if this is possible to implement as achievement
 		//	"id": 000000,
 		// 	"points": 100,
 		// 	"devInfo": "Seen ALL the cutscenes, should be saved in the MAIN safe file of the game"},
 	},
 	"c_Branch": { // Category - Branching path
-		"a_GetOrnamentalEgg": { // TEST
+		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 5,
-			"devInfo": "triggers when acquiring egg from performer in chapter 1 @ marktzplatz"},
-		"a_EggCollection1": { // TEST
+			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
+		"a_EggCollection1": { // WORKING
 			"id": 306977, "points": 5,
-			"devInfo": "triggers when giving egg to barman before the fire at his bar during chapter 1"},
+			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_EggCollection2": { // WORKING
 			"id": 306976, "points": 5,
-			"devInfo": "triggers when giving egg to barman at his bar during chapter 3 "},
+			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 "},
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending A: Ancestress => Homunculus => Town Square"},
+		// 	"devInfo": "Ending A: Margarette (Ancestress) => Homunculus => Town Square"},
 		// TODO "a_EndingB1": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending B1: Ancestress => Homunculus => Town Square"},
+		// 	"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
 		// TODO "a_EndingB2": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending B2: Ancestress => Fortuneteller => Town Square"},
+		// 	"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		// TODO "a_EndingC": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending C: Ancestress => Destroyed Lab"},
+		// 	"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
 		// TODO "a_EndingD": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending D: Not an Ancestress => Do Not Save Dana => Destroyed Lab"},
+		// 	"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		// TODO "a_EndingE": {	
 		//	"id": 000000, "points": 10,
-		// 	"devInfo": "Ending E: Not an Ancestress => Save Dana => Destroyed Lab"},
+		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5,
-			"devInfo": "triggers when showing egg to townplanter in 1580 in chapter 2"},
+			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 2,
-			"devInfo": "triggers during chapter 2 when selecting the lighter to scare people off"},
+			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheMagician": { // WORKING
 			"id": 306906, "points": 2,
-			"devInfo": "triggers during chapter 2 when selecting the phone to scare people off"},
+			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
 		"a_SquireOrdersFlowers": { // WORKING
 			"id": 306920, "points": 1,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
@@ -229,21 +229,21 @@ _achievements = {
 			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
 			"id": 307499, "points": 2,
-			"devInfo": "Watch all 7 painting in the Brum Museum during chapter 3"}, 
+			"devInfo": "Interact with all 7 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5,
-			"devInfo": "Help the coated couple in the present during the prologue or chapter 1"},
+			"devInfo": "Interact with the coated man and woman in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, 
-			"devInfo": "Help the couple in 1580 during chapter 2"},
+			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
-		"a_MetYouBefore": {  // WORKING 	// TEST: Check consistency on used cutscene ID's
+		"a_MetYouBefore": {  // FIXME => No consistency on used cutscene ID's
 			"id": 306888, "points": 5,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5,
-			"devInfo": "Talk to yourself at cafe Sonné in past during prologue"},
+			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
 	},
 }
 
