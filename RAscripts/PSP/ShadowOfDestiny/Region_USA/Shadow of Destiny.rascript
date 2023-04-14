@@ -48,7 +48,7 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
-_cutsceneIDs = {		//  8 - 3 - 9
+_cutsceneIDs = {		//  
 	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
@@ -179,16 +179,14 @@ _achievements = {
 	},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // TEST
-			"id": 306885,
-			"points": 5,
+			"id": 306885, "points": 5,
 			"devInfo": "triggers when acquiring egg from performer in chapter 1 @ marktzplatz"},
 		"a_EggCollection1": { // TEST
-			"id": 306977,
-			"points": 5,
-			"devInfo": "triggers when giving egg to barman in chapter 1, before fire @ bar"},
-		// TODO "a_EggCollection2": {
-		//	"id": 306976, "points": 5,
-		// 	"devInfo": "triggers when giving egg to barman in chapter 3 @ his bar"},
+			"id": 306977, "points": 5,
+			"devInfo": "triggers when giving egg to barman before the fire at his bar during chapter 1"},
+		"a_EggCollection2": { // WORKING
+			"id": 306976, "points": 5,
+			"devInfo": "triggers when giving egg to barman at his bar during chapter 3 "},
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
@@ -229,7 +227,7 @@ _achievements = {
 		// TODO "a_ArtEnthusiast": { 
 		//	"id": 307499, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
-		"a_EnigmaticCouple1": { // WIP
+		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5,
 			"devInfo": "Help the coated couple in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
@@ -318,13 +316,23 @@ _achievementTriggers = {
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive()) 				&&
 		never(!isCurrentChapter("Chapter1")) 	&&	
-
 		repeated(420, priorCutsceneId(11) == 0x4d5fc40) 	&& // This block => last cutscene has run for about 420 frames
 		repeated(420, priorCutsceneId(14) == 0x55005ce) 	&&
 		repeated(420, priorCutsceneId(16) == 0x88065620) 	&& 
 		repeated(420, currentCutsceneId(11) == 0x11111112) 	&&
 		repeated(420, currentCutsceneId(14) == 0x30ff26b) 	&&
 		repeated(420, currentCutsceneId(16) == 0x11d8fa)},
+	"a_EggCollection2": function EggCollection2() { return 
+		never(
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter3") 	||
+			!isCutsceneActive())			&&		
+		repeated(470, priorCutsceneId(8) == 0x68df3900) 	&& // This block => last cutscene has run for about 470 frames
+		repeated(470, priorCutsceneId(12) == 0x18e6) 		&&
+		repeated(470, priorCutsceneId(17) == 0x66319a2) 	&& 
+		repeated(470, currentCutsceneId(8) == 0xd4faa9fa) 	&&
+		repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
+		repeated(470, currentCutsceneId(17) == 0xff2009cc)},
 	"a_TheBarmansEggsExtra": function TheBarmansEggsExtra() { return 
 		never(!isGameRunning()) 						&&
 		never(!isCutsceneActive()) 						&&
@@ -430,46 +438,7 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	// "test_LostYoungCouple1": function LostYoungCouple1() { // test_LostYoungCouple1 double => this one works with cutscene IDs 		
-		// 	// Private functions
-		// 	function measuredComparison() {
-		// 		return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-		// 			deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
-		// 			repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
-		// 			deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
-		// 			currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
-		// 		])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
-		// 	function measuredIfComparison() { return
-		// 		repeated(100, isCurrentChapter("Chapter2")) &&		// Hit count 100 => when loading another save to another chapter, there's a few
-		// 		isGameRunning()} 	 								// frames where both these comparisons are true. So this hit counts fixes that
-				
-		// 	// Trigger 
-		// 	return
-		// 		unless(
-		// 			currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
-		// 			currentCutsceneId(7) == 0x312dce94 	&&
-		// 			currentCutsceneId(10) == 0xe6df029e &&
-		// 			!isCutsceneActive()
-		// 		) &&
-		// 		unless(
-		// 			currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
-		// 			currentCutsceneId(16) == 0x4d119a00 &&
-		// 			currentCutsceneId(22) == 0xffdffe63 && 
-		// 			!isCutsceneActive()
-		// 		) &&
-		// 		measured(measuredComparison(), measuredIfComparison())},
-	"a_ErasingEike": function ErasingEike() { return 
-		never(
-			!isGameRunning()				||
-			!isCurrentChapter("Prologue") 	||
-			!isCutsceneActive())			&&
-		repeated(1050, prior(currentCutsceneId(8)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
-		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
-		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
-		repeated(1050, currentCutsceneId(8) == 0x52036400) 			&&
-		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
-		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},
-	"a_EnigmaticCouple1": function EnigmaticCouple1() { // WORKING
+	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
@@ -511,11 +480,51 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
+	// "test_LostYoungCouple1": function LostYoungCouple1() { // test_LostYoungCouple1 double => this one works with cutscene IDs 		
+		// 	// Private functions
+		// 	function measuredComparison() {
+		// 		return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
+		// 			deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
+		// 			repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
+		// 			deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
+		// 			currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
+		// 		])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
+		// 	function measuredIfComparison() { return
+		// 		repeated(100, isCurrentChapter("Chapter2")) &&		// Hit count 100 => when loading another save to another chapter, there's a few
+		// 		isGameRunning()} 	 								// frames where both these comparisons are true. So this hit counts fixes that
+				
+		// 	// Trigger 
+		// 	return
+		// 		unless(
+		// 			currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
+		// 			currentCutsceneId(7) == 0x312dce94 	&&
+		// 			currentCutsceneId(10) == 0xe6df029e &&
+		// 			!isCutsceneActive()
+		// 		) &&
+		// 		unless(
+		// 			currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
+		// 			currentCutsceneId(16) == 0x4d119a00 &&
+		// 			currentCutsceneId(22) == 0xffdffe63 && 
+		// 			!isCutsceneActive()
+		// 		) &&
+		// 		measured(measuredComparison(), measuredIfComparison())},
+	"a_ErasingEike": function ErasingEike() { return 
+		never(
+			!isGameRunning()				||
+			!isCurrentChapter("Prologue") 	||
+			!isCutsceneActive())			&&
+		repeated(1050, prior(currentCutsceneId(8)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
+		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
+		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
+		repeated(1050, currentCutsceneId(8) == 0x52036400) 			&&
+		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
+		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},
+	
 	// "a_Template": function Template() {},
 }
 
 
-// ACHIEVEMENT TITLES & DESCRIPTIONS
+// ACHIEVEMENT TITLES & DESCRIPTIONS		// IDEA: put tips behind link => somewhere on a github README.md file?
 // ***********************************************************************************
 _achievementTitles = {
 	"a_PrologueComplete": { 						"en": "Prologue completed",															
@@ -527,14 +536,15 @@ _achievementTitles = {
 	"a_Chapter2Complete": 							{"en": "Chapter 2 completed"},
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
+	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
 	"a_TheBarmansEggsExtra": 						{"en": "An interesting shape"},
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
 	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Just the flowers'"},
 	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
-	"a_ErasingEike": 								{"en": "That's a big no no"},
-	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"}, 
+	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
+	"a_ErasingEike": 								{"en": "That's a big no no"},	 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -548,13 +558,14 @@ _achievementDescriptions = {
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_TheBarmansEggsExtra": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
+	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
 	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
-	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1 - [Tip: Talk to them twice] - [Measured: Once started, complete in same session, otherwise restart chapter]"}, 
+	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
