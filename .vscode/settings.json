@@ -17,7 +17,10 @@
 
         "WIP",
         "TEST",
-        "TESTING"
+        "TESTING",
+
+        "IDEA",
+        "CONCEPT"
     ],
     "todo-tree.general.tagGroups": {
         "DONE": [
@@ -32,6 +35,10 @@
         "TEST": [
             "TEST",
             "TESTING"
+        ],
+        "IDEA": [
+            "IDEA",
+            "CONCEPT"
         ]
     },
     "todo-tree.highlights.defaultHighlight": {
@@ -77,8 +84,15 @@
             "foreground": "#fc5353",
             "background": "#612c03",
             "type": "text-and-comment", 
-            "opacity" : 42,
+            
             "icon": "stop"
+        },
+        "IDEA": {
+            "foreground": "#53f9ff",
+            "background": "#005b6b",
+            "opacity" : 42,
+            "type": "text-and-comment", 
+            "icon": "light-bulb"
         }
     },
     "todo-tree.highlights.enabled": true,
