@@ -34,11 +34,13 @@ function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer(
 function interactionID_1() 	=> dword(0xA9EFDC)			// $A9EFDC: [32-bit] Interaction ID 1
 														//		- Changes on interaction
 														// 		- Doesn't reset back to a default value after interaction is done
+														// 		- Unique per interaction 
 function interactionID_2() 	=> dword(0xA9EFE4)			// $A9EFE4: [32-bit] Interaction ID 2
 														// 		- Resets to 0x0 when interaction is done
+														//		- Unique per interaction 
 function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interaction ID 3 
-														//		- This ID stays the same for each NPC and item, between differenct cutscenes and chapters
-														// 		- Resets to 0x0 when interaction is done 
+														//		- Unique per interactable NPC or environment item
+														// 		- Resets to 0x0 when interaction is done
 
 // CUTSCENES
 // ***********
@@ -230,7 +232,7 @@ _achievements = {
 		// TODO "a_EnigmaticCouple1": { 
 		//	"id": 307495, "points": 0000000,
 		//	"devInfo": "Help the coated couple in the present during chapter 1"},
-		"a_LostYoungCouple1": { // WIP
+		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, 
 			"devInfo": "Help the couple in 1580 during chapter 2"},
 	},
@@ -401,35 +403,61 @@ _achievementTriggers = {
 		once(flowerStatueChoiceID_2() == 0)					&&
 		once(flowerStatueChoiceID_3() == 0)},
 	"a_LostYoungCouple1": function LostYoungCouple1() {
-		// WIP  	=> Make usage of interaction IDs	=> test in seperate code block 		=> Save State F5 & F10
 		// Private functions
-		function measuredComparison() {
-			return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
-				repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
-				deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
-				currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
-			])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
+		function measuredComparison() { return
+			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
+				deduct(once(interactionID_2() == 0x08a329c0)), 	// Sub hit: -1
+				repeated(2, interactionID_2() == 0x08a329c0),	// Add hit: +2 == +1 	=> for talking to man 
+				deduct(once(interactionID_2() == 0x08a32a10)),	// Sub hit: -1
+				interactionID_2() == 0x08a32a10					// Add hit: +2 == +1 	=> for talking to woman
+			])}													// 		1 + 1 == 2 		=> this way measured will show 1/2
 		function measuredIfComparison() { return
-			isGameRunning() && 
-			repeated(100, isCurrentChapter("Chapter2"))} 	// Hit count 100 => when loading another save to another chapter, there's a few 
-															// frames where both these comparisons are true. So this hit counts fixes that
+			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
+			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
 
 		// Trigger 
 		return
 			unless(
-				currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
-				currentCutsceneId(7) == 0x312dce94 	&&
-				currentCutsceneId(10) == 0xe6df029e &&
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman
+				interactionID_2() == 0x08a32a10 	&&
+				interactionID_3() == 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
-				currentCutsceneId(16) == 0x4d119a00 &&
-				currentCutsceneId(22) == 0xffdffe63 && 
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man
+				interactionID_2() == 0x08a329c0 	&&
+				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
 			) &&
-			measured(measuredComparison(), measuredIfComparison())}
+			measured(measuredComparison(), measuredIfComparison())},
+	// "test_LostYoungCouple1": function LostYoungCouple1() { // test_LostYoungCouple1 double => this one works with cutscene IDs 		
+		// 	// Private functions
+		// 	function measuredComparison() {
+		// 		return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
+		// 			deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
+		// 			repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
+		// 			deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
+		// 			currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
+		// 		])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
+		// 	function measuredIfComparison() { return
+		// 		repeated(100, isCurrentChapter("Chapter2")) &&		// Hit count 100 => when loading another save to another chapter, there's a few
+		// 		isGameRunning()} 	 								// frames where both these comparisons are true. So this hit counts fixes that
+				
+		// 	// Trigger 
+		// 	return
+		// 		unless(
+		// 			currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
+		// 			currentCutsceneId(7) == 0x312dce94 	&&
+		// 			currentCutsceneId(10) == 0xe6df029e &&
+		// 			!isCutsceneActive()
+		// 		) &&
+		// 		unless(
+		// 			currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
+		// 			currentCutsceneId(16) == 0x4d119a00 &&
+		// 			currentCutsceneId(22) == 0xffdffe63 && 
+		// 			!isCutsceneActive()
+		// 		) &&
+		// 		measured(measuredComparison(), measuredIfComparison())},
 }
 
 
@@ -468,7 +496,7 @@ _achievementDescriptions = {
 	"a_EikeTheMagician": 								{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 							{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":								{"en": "Built a statue during chapter 2"},
-	"a_LostYoungCouple1": 								{"en": "Help a lost couple reunite during chapter 2 - [Must be complete in one session]"}, 
+	"a_LostYoungCouple1": 								{"en": "Help a lost couple reunite during chapter 2 - [Unlock criteria: Once started, complete in same session, otherwise restart chapter]"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
@@ -495,14 +523,14 @@ function initializeAchievements() {
 		function lookUpAchievementDescription(string_achievementName, string_languageCode) {
 			return _achievementDescriptions[string_achievementName][string_languageCode]
 		}
-		function enterDefInfo(string_devInfo) {
+		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
 			if isDevModeActive() && string_devInfo != "" {
-				let_devInfoString = let_devInfoString + " <:" + string_devInfo + ":>"
+				let_devInfoString = let_devInfoString + " {(" + string_devInfo + ")}"
 			}
 			return let_devInfoString
 		}	
-		return lookUpAchievementDescription(string_achievementName, string_languageCode) + enterDefInfo(string_devInfo)
+		return lookUpAchievementDescription(string_achievementName, string_languageCode) + enterDevInfo(string_devInfo)
 	}
 	// Return the achievement trigger 
 	function lookUpAchievementTrigger(string_achievementName) {
