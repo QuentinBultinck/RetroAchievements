@@ -227,9 +227,9 @@ _achievements = {
 		"a_SquireOrdersStatue": { // WORKING
 			"id": 306919, "points": 1,
 			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
-		// TODO "a_ArtEnthusiast": { 
-		//	"id": 307499, "points": 0000000,
-		//	"devInfo": "xxxxxxx"},
+		// "a_HistoryInArt": { // WIP
+		// 	"id": 307499, "points": 2,
+		// 	"devInfo": "xxxxxxx"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5,
 			"devInfo": "Help the coated couple in the present during the prologue or chapter 1"},
@@ -419,11 +419,9 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				deduct(once(interactionID_2() == 0x08a329c0)), 	// Sub hit: -1			=> for talking to man
-				repeated(2, interactionID_2() == 0x08a329c0),	// Add hit: +2 == +1  
-				deduct(once(interactionID_2() == 0x08a32a10)),	// Sub hit: -1			=> for talking to woman
-				interactionID_2() == 0x08a32a10					// Add hit: +2 == +1 
-			])}													// 		1 + 1 == 2 		=> this way measured will show 1/2
+				once(interactionID_2() == 0x08a329c0),		// Add hit: +1  	=> for talking to man
+				once(interactionID_2() == 0x08a32a10)		// Add hit: +1 = 2 	=> for talking to woman 
+			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
@@ -446,16 +444,22 @@ _achievementTriggers = {
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		// Private functions
 		function measuredComparison() { return
-			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
-				deduct(once(interactionID_2() == 0x08a30bd4)), 			// Sub hit: -1			=> for talking to woman 1st time
-				repeated(2, interactionID_2() == 0x08a30bd4),			// Add hit: +2 == +1 
-				deduct(once(interactionID_2() == 0x08a30a80)), 			// Sub hit: -1			=> for talking to man 1st time
-				repeated(2, interactionID_2() == 0x08a30a80),			// Add hit: +2 == +1 
-				deduct(once(interactionID_2() == 0x08a30a94)), 			// Sub hit: -1			=> for talking to man 2nd time
-				repeated(2, interactionID_2() == 0x08a30a94),			// Add hit: +2 == +1 
-				deduct(repeated(3, interactionID_2() == 0x08a30be8)),	// Sub hit: -3			=> for talking to woman 2nd time
-				interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 hits - 3
-			])}															// 				== 4 	=> this way measured will show 1/4
+			tally(4, [													// 			= 4
+				once(interactionID_2() == 0x08a30a94),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a30a80),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a30bd4),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
+			])}															
+			// tally(4, [	// this hit count becomes the hit count for the final comparison in the array
+			// 	deduct(once(interactionID_2() == 0x08a30bd4)), 			// Sub hit: -1			=> for talking to woman 1st time
+			// 	repeated(2, interactionID_2() == 0x08a30bd4),			// Add hit: +2 == +1 
+			// 	deduct(once(interactionID_2() == 0x08a30a80)), 			// Sub hit: -1			=> for talking to man 1st time
+			// 	repeated(2, interactionID_2() == 0x08a30a80),			// Add hit: +2 == +1 
+			// 	deduct(once(interactionID_2() == 0x08a30a94)), 			// Sub hit: -1			=> for talking to man 2nd time
+			// 	repeated(2, interactionID_2() == 0x08a30a94),			// Add hit: +2 == +1 
+			// 	deduct(repeated(3, interactionID_2() == 0x08a30be8)),	// Sub hit: -3			=> for talking to woman 2nd time
+			// 	interactionID_2() == 0x08a30be8							// Add hit: +4 == +1	=> this comparison will have 'measured' flag => so 4 hits - 3
+			// ])}															// 				== 4 	=> this way measured will show 1/4
 		function measuredIfComparison() { return
 			isGameRunning() && 
 			(
@@ -485,34 +489,9 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	// "test_LostYoungCouple1": function LostYoungCouple1() { // test_LostYoungCouple1 double => this one works with cutscene IDs 		
-		// 	// Private functions
-		// 	function measuredComparison() {
-		// 		return tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-		// 			deduct(once(currentCutsceneId(7) == 0x312dce94)), 	// Sub hit: -1
-		// 			repeated(2, currentCutsceneId(7) == 0x312dce94),	// Add hit: +2 == +1 	=> for talking to woman 
-		// 			deduct(once(currentCutsceneId(16) == 0x4d119a00)),	// Sub hit: -1
-		// 			currentCutsceneId(16) == 0x4d119a00					// Add hit: +2 == +1 	=> for talking to man
-		// 		])}														// 		1 + 1 == 2 		=> this way measured will show 1/2				
-		// 	function measuredIfComparison() { return
-		// 		repeated(100, isCurrentChapter("Chapter2")) &&		// Hit count 100 => when loading another save to another chapter, there's a few
-		// 		isGameRunning()} 	 								// frames where both these comparisons are true. So this hit counts fixes that
-				
-		// 	// Trigger 
-		// 	return
-		// 		unless(
-		// 			currentCutsceneId(3) == 0xc4e6df05 	&&		// Block => cutscene when talking to woman
-		// 			currentCutsceneId(7) == 0x312dce94 	&&
-		// 			currentCutsceneId(10) == 0xe6df029e &&
-		// 			!isCutsceneActive()
-		// 		) &&
-		// 		unless(
-		// 			currentCutsceneId(1) == 0x3b300e1 	&&		// Block => cutscene when talking to man
-		// 			currentCutsceneId(16) == 0x4d119a00 &&
-		// 			currentCutsceneId(22) == 0xffdffe63 && 
-		// 			!isCutsceneActive()
-		// 		) &&
-		// 		measured(measuredComparison(), measuredIfComparison())},
+	// "a_HistoryInArt": function HistoryInArt() { // WIP
+
+	// },
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isGameRunning()				||
