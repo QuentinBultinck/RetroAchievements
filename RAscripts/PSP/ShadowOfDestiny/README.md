@@ -11,7 +11,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs
 
 <Details>
-    <summary><h3>Collapse me to view the achievement guide</h3> :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
+    <summary><h3>Click me :raised_hand: to view the achievement guide</h3> :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
 
 :trophy: **Achievements** *divided by category*
 ----------------------------------
