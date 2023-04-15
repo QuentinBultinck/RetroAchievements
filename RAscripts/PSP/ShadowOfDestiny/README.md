@@ -5,11 +5,12 @@
 
 This guide explains how to unlock each achievement in the core set for the PSP version of Shadow of Destiny.
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
+
 + https://shadowofmemories.fandom.com/wiki/Shadow_of_Memories_Wiki
 + https://www.youtube.com/@shadowofmemorieswiki/videos
 + https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs
 
-
+<Details>
 :trophy: **Achievements** *divided by category*
 ----------------------------------
 ### :diamonds: Story completion
@@ -66,7 +67,4 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_ErasingEike | Feels like I met you before... | Talk to yourself at cafe Sonné in the past during the prologue | / |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-
-
-
-    
+</details> 
