@@ -1,13 +1,15 @@
-#Shadow of Destiny - Achievement guide
+| # Shadow of Destiny - Achievement guide
+
 <figure style="position: absolute; right:0;">
-    <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" alt="Shadow of Destiny (PSP) Logo]">
-    <figcaption><i>Shadow of Destiny logo</i></figcaption>
+    <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" 
+    alt="Shadow of Destiny (PSP) Logo]" width=200 style='border-radius: 7px'>
+    <figcaption style="text-align: center; opacity:0.77"><i>Shadow of Destiny logo</i></figcaption>
 </figure>
 
 
-:trophy:
 
-<h2>Achievements Divided by category</h2> 
+
+## Achievements Divided by category
 <ul>
     <li>cheevo 2</li>
 </ul>
