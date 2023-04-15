@@ -20,10 +20,11 @@ figure.logo figcaption {
 <h1 >Shadow of Destiny achievement guide</h1>
 <figure class="logo">
     <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" alt="Shadow of Destiny (PSP) Logo]">
-    <figcaption><i>Shadow of Destiny logo</i></figcaption>
+    <figcaption style="position: absolute; right:0;"><i>Shadow of Destiny logo</i></figcaption>
 </figure>
-<h2 style="display: inline">Achievements</h2> <p style="display: inline">divided by category</p>
-<h3>Main story completion</h3>
+
+:trophy:
+<h2>Achievements</h2> Divided by category
 <ul>
     <li>cheevo 2</li>
 </ul>
