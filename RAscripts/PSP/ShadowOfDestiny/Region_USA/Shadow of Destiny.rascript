@@ -168,7 +168,7 @@ _achievements = {
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 4,
 		//	"devInfo": "Complete chapter 5",
-		// TODO "a_Chapter6omplete": {
+		// TODO "a_Chapter6Complete": {
 		//	"id": 000000, "points": 5,
 		// 	"devInfo": "Complete chapter 6",
 		// TODO "a_Chapter7Complete": {
