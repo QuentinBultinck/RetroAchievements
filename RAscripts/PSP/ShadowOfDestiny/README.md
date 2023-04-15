@@ -1,21 +1,15 @@
 **Shadow of Destiny - Achievement guide**
 =======================================
-
-
-<figure>
-    <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" 
+<img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" 
     alt="Shadow of Destiny (PSP) Logo]" width=150 align=center>
-    <figcaption><i>Shadow of Destiny logo</i></figcaption>
-</figure>
-
-
 
 :trophy: **Achievements** *divided by category*
 ----------------------------------
-### :gem: Main story completion
-:trophy: Cheevo 1
-
-:trophy: Cheevo 2
+### Main story completion
+| Achievement name | State |
+|------------------|-------|
+| Cheevo 1 | [x]
+| Cheevo 2 | [x]
 
 ### :gem: Branching paths
 :trophy: Cheevo 1
