@@ -11,16 +11,13 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs
 
 <Details>
-    <summary><h2>Click me :raised_hand: to view the achievement guide</h2> :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
+    <summary><h2>Click me/expand me :raised_hand:</h2> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
 
 ***
 
 ### **Achievements** *divided by category*
 
 #### :trophy: Story completion
-
------
-
 
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
