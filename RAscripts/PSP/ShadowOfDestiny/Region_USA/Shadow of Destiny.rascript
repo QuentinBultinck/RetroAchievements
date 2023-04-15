@@ -107,6 +107,7 @@ _inventoryItemIds = {
 	"OrnamentalEgg": 0x2,
 	"SquireCrest": 0xf,
 	"Lighter": 0x6,
+	"Cellphone": 0x1
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -223,16 +224,16 @@ _achievements = {
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // WORKING
+		"a_EikeThePyromancer": { // TEST
 			"id": 306911, "points": 5, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // Working // CONCEPT Change back into a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
+		"a_EikeTheMagician": { // TEST	// TODO add tips
 			"id": 306906, "points": 2, "hasTips": false,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_SquireOrdersFlowers": { // Working // CONCEPT Change back into a_EikeTheFlorist => pop a_ when chapter finishes
+		"a_SquireOrdersFlowers": { // WORKING // TODO add tips
 			"id": 306920, "points": 1, "hasTips": false,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		// "a_SquireOrdersStatue": { // OFF // CONCEPT Change back into a_EikeThePyromancer & a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
+		// "a_SquireOrdersStatue": { // OFF, but working => double implementation in a_EikeTheMagician & a_EikeThePyromancer
 		// 	"id": 306919, "points": 1, "hasTips": false,
 		// 	"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
@@ -359,114 +360,141 @@ _achievementTriggers = {
 		repeated(500, currentCutsceneId(17) == 0x0) 				&&
 
 		repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
-	"a_EikeThePyromancer": function EikeThePyromancer() {  
-		function measuredComparison() { 
-			function A_1() { return
+	"a_EikeThePyromancer": function EikeThePyromancer() {
+		return 
+			disable_when( // Disable achievement when flowers is picked, instead of statue
+				isCurrentSelectedInventoryItem("SquireCrest") && 
+				currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
+				currentCutsceneId(15) == 0x431ab010	&&
+				currentCutsceneId(17) == 0x4f1f9ae	&&
+				prior(onScreenTextID(1)) == 0x003fff5f	&& // This block => check if flowers is chosen
+				prior(onScreenTextID(7)) == 0x0050ffea	&&
+				prior(onScreenTextID(8)) == 0x005000a3	&&
+				onScreenTextID(1) == 0					&&
+				onScreenTextID(7) == 0					&&
+				onScreenTextID(8) == 0
+			) &&
+			never(
+				!isGameRunning() || 
+				!isCurrentChapter("Chapter2")
+			) &&
+			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the lighter
 				repeated(270,
 					isCurrentSelectedInventoryItem("Lighter") 	&&
-					prior(currentCutsceneId(2)) == 0x2ff955 	&&
-					prior(currentCutsceneId(4)) == 0xe6de04a6 	&&
-					prior(currentCutsceneId(6)) == 0x1100040a 	&&
-					currentCutsceneId(2) == 0x10111112 			&&
-					currentCutsceneId(4) == 0xde980748 			&&
-					currentCutsceneId(6) == 0x12480620)}
-			function A_2(int_hitCount) { return
-				repeated(int_hitCount,
-					onScreenTextID(0) == 0x23 && 
+					prior(currentCutsceneId(2)) == 0x2ff955 	&& 	currentCutsceneId(2) == 0x10111112 	&&
+					prior(currentCutsceneId(4)) == 0xe6de04a6 	&&	currentCutsceneId(4) == 0xde980748	&&
+					prior(currentCutsceneId(6)) == 0x1100040a 	&&	currentCutsceneId(6) == 0x12480620),
+				repeated(200,
+					isCurrentSelectedInventoryItem("Lighter") 	&& 
+					onScreenTextID(0) == 0x23 					&& 
 					prior(onScreenTextID(1)) == 0x48ffcb && onScreenTextID(1) == 0x0 &&
-					prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)}
-			function C_1() { return
-				repeated(1900, 
-					isCurrentSelectedInventoryItem("D-pad") &&
-					currentCutsceneId(22) == 0x7c000000 	&&
-					currentCutsceneId(12) == 0xfd7c0000 	&&
-					currentCutsceneId(1) == 0xefff0000)}
-			function C_2(int_hitCount) { return
-				repeated(int_hitCount,
-					onScreenTextID(0) == 0x50 	&&
-					onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
-					onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)}
-			return tally(3, [	// (644 - 643) + 1 + (2024 - 2023) = 3 => each block counts 1 
-				// Block A	(+644 hits)	=> IDs the cutscene where Eike scares the crowd with the lighter 
-				A_1(),
-				once(prev(onScreenTextID(0)) == 0x1e 	&& onScreenTextID(0) == 0x2d),
-				once(prev(onScreenTextID(0)) == 0x105 	&& onScreenTextID(0) == 0x6f),
-				once(prev(onScreenTextID(0)) == 0x6f 	&& onScreenTextID(0) == 0x64),
-				once(prev(onScreenTextID(0)) == 0x5f 	&& onScreenTextID(0) == 0x23),
-				repeated(250, onScreenTextID(1) == 0x40ff88 && onScreenTextID(5) == 0x50ffb5),
-				A_2(120),
-				// Block A deduction (-643 hits) 	=> so measured shows 1/3
-				deduct(A_1()),
-				deduct(once(prev(onScreenTextID(0)) == 0x1e 	&& onScreenTextID(0) == 0x2d)),
-				deduct(once(prev(onScreenTextID(0)) == 0x105 	&& onScreenTextID(0) == 0x6f)),
-				deduct(once(prev(onScreenTextID(0)) == 0x6f 	&& onScreenTextID(0) == 0x64)),
-				deduct(once(prev(onScreenTextID(0)) == 0x5f 	&& onScreenTextID(0) == 0x23)), 	
-				deduct(repeated(250, onScreenTextID(1) == 0x40ff88 && onScreenTextID(5) == 0x50ffb5)), 
-				deduct(A_2(119)),	// one less deducted on this comparison
-
-				// Block B	(+1 hit)			=> IDs the cutscene with the townplanter where player picks between flowers or statue 
-				once(isCurrentSelectedInventoryItem("SquireCrest") &&					
-					// Block B1 		=> IDs cutscene after choice has been made
-					currentCutsceneId(6) == 0xfb39dc80 	&& priorCutsceneId(6) == 0xd8ccfde3 	&&
-					currentCutsceneId(15) == 0x431ab010	&& priorCutsceneId(15) == 0x6def1111 	&&
-					currentCutsceneId(17) == 0x4f1f9ae 	&& priorCutsceneId(17) == 0x82a655a2 	&&
-					// Block B3			=> checks if statue choice is picked
-					prior(onScreenTextID(1)) == 0x40ff60 && onScreenTextID(1) == 0 	&&
-					prior(onScreenTextID(7)) == 0x4fffe9 && onScreenTextID(7) == 0 	&&
-					prior(onScreenTextID(8)) == 0x4f00a2 && onScreenTextID(8) == 0),
-				// Block B no deduction, because it's only 1 hit
-
-				// Block C (+2024 hit)	=> IDs the last cutscene of the chapter with the tree changing into a statue or flowers
-				C_1(),
-				once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
-				once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
-				once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
-				once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
-				C_2(145),
-				// Block A deduction (-2023 hits)
-				deduct(C_1()),
-				deduct(once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195)),
-				deduct(once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102)),
-				deduct(once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a)),
-				deduct(once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30)),
-				deduct(C_2(144))
-			])
-		}
-		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter2")
+					prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)
+			) &&
+			trigger_when(
+				tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
+					repeated(1900, 
+						isCurrentSelectedInventoryItem("D-pad") &&
+						currentCutsceneId(22) == 0x7c000000 	&&
+						currentCutsceneId(12) == 0xfd7c0000 	&&
+						currentCutsceneId(1) == 0xefff0000),
+					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
+					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
+					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
+					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
+					repeated(150,
+						isCurrentSelectedInventoryItem("D-pad") &&
+						onScreenTextID(0) == 0x50 	&&
+						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
+						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
+				)
+			)}, 
+	"a_EikeTheMagician": function EikeTheMagician() {
 		return 
-			unless(!isCutsceneActive()) && 
-			measured(measuredComparison(), measuredIfComparison())
-		},
-	"a_EikeTheMagician": function EikeTheMagician() { return
-		never(
-			!isGameRunning() 							|| 
-			!isCutsceneActive() 						||
-			!isCurrentChapter("Chapter2")) 				&& 
-		repeated(1050, prior(currentCutsceneId(14)) == 0xc1f05529) 	&& 	// This block => Cutscene has run for 1050+ frames
-		repeated(1050, prior(currentCutsceneId(17)) == 0x90190290) 	&&
-		repeated(1050, prior(currentCutsceneId(18)) == 0x66d2507) 	&&
-		repeated(1050, currentCutsceneId(14) == 0xfed5fe0b) 		&&
-		repeated(1050, currentCutsceneId(17) == 0x2d7ff567) 		&&
-		repeated(1050, currentCutsceneId(18) == 0xf57d2254) 		&&						// Pop achievement when twoframeTimer has incremented 1820 times without resetting
-																							// ResetNextIf example																																
-		repeated(1820, hasTwoFrameTimerIncremented() && never(hasOneFrameTimerReset()))}, 	// resets only this hitcount when never(isTrue) 
+			disable_when( // Disable achievement when flowers is picked, instead of statue
+				isCurrentSelectedInventoryItem("SquireCrest") && 
+				currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
+				currentCutsceneId(15) == 0x431ab010	&&
+				currentCutsceneId(17) == 0x4f1f9ae	&&
+				prior(onScreenTextID(1)) == 0x003fff5f	&& // This block => check if flowers is chosen
+				prior(onScreenTextID(7)) == 0x0050ffea	&&
+				prior(onScreenTextID(8)) == 0x005000a3	&&
+				onScreenTextID(1) == 0					&&
+				onScreenTextID(7) == 0					&&
+				onScreenTextID(8) == 0
+			) &&
+			never(
+				!isGameRunning() || 
+				!isCurrentChapter("Chapter2")
+			) &&
+			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the cellphone
+				repeated(200,  
+					isCutsceneActive() &&
+					isCurrentSelectedInventoryItem("Cellphone") && 
+					currentCutsceneId(11) == 0xc4612c05 && priorCutsceneId(11) == 0xff9c1670 &&
+					currentCutsceneId(15) == 0x0 		&& priorCutsceneId(15) == 0xc57c78c2 &&
+					currentCutsceneId(18) == 0x1276 	&& priorCutsceneId(18) == 0xfc240056),
+				repeated(270, 
+					isCutsceneActive() &&
+					isCurrentSelectedInventoryItem("Cellphone") && 
+					currentCutsceneId(3) == 0x50000000 && priorCutsceneId(3) == 0xfe51a2ff &&
+					currentCutsceneId(8) == 0x0481fede && priorCutsceneId(8) == 0xfbd101d3 &&
+					currentCutsceneId(11) == 0x2169fb15 && priorCutsceneId(11) == 0xc4612c05)
+			) &&
+			trigger_when(
+				tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
+					repeated(1900, 
+						isCutsceneActive() &&
+						isCurrentSelectedInventoryItem("D-pad") &&
+						currentCutsceneId(22) == 0x7c000000 	&&
+						currentCutsceneId(12) == 0xfd7c0000 	&&
+						currentCutsceneId(1) == 0xefff0000),
+					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
+					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
+					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
+					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
+					repeated(150,
+						isCutsceneActive() &&
+						isCurrentSelectedInventoryItem("D-pad") &&
+						onScreenTextID(0) == 0x50 	&&
+						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
+						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
+				)
+			)}, 	
 	"a_SquireOrdersFlowers": function TheSquiresFlowers() { return
-		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
-			!isGameRunning() 				|| 
-			!isCutsceneActive() 			||
-			!isCurrentChapter("Chapter2")) 	&& 
-		isCurrentSelectedInventoryItem("SquireCrest") 		&& 
-
-		currentCutsceneId(14) == 0x4831736					&& // This block => check if cutscene after choice has started
-		currentCutsceneId(15) == 0x431ab010					&&
-		currentCutsceneId(17) == 0x4f1f9ae					&&
-
-		prior(onScreenTextID(1)) == 0x003fff5f		&& // This block => check if flowers is chosen
-		prior(onScreenTextID(7)) == 0x0050ffea		&&
-		prior(onScreenTextID(8)) == 0x005000a3		&&
-		onScreenTextID(1) == 0						&&
-		onScreenTextID(7) == 0						&&
-		onScreenTextID(8) == 0},
+		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
+			!isGameRunning() || 
+			!isCurrentChapter("Chapter2")
+		) && 
+		once(
+			isCutsceneActive() 								&&
+			isCurrentSelectedInventoryItem("SquireCrest") 	&& 
+			currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
+			currentCutsceneId(15) == 0x431ab010	&&
+			currentCutsceneId(17) == 0x4f1f9ae	&&
+			prior(onScreenTextID(1)) == 0x003fff5f	&& onScreenTextID(1) == 0	&&	// This block => check if flowers is chosen
+			prior(onScreenTextID(7)) == 0x0050ffea	&& onScreenTextID(7) == 0	&&
+			prior(onScreenTextID(8)) == 0x005000a3	&& onScreenTextID(8) == 0
+		) &&
+		trigger_when(
+			tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
+					repeated(1900, 
+						isCutsceneActive() &&
+						isCurrentSelectedInventoryItem("D-pad") &&
+						currentCutsceneId(22) == 0x7c000000 	&&
+						currentCutsceneId(12) == 0xfd7c0000 	&&
+						currentCutsceneId(1) == 0xefff0000),
+					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
+					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
+					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
+					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
+					repeated(150,
+						isCutsceneActive() &&
+						isCurrentSelectedInventoryItem("D-pad") &&
+						onScreenTextID(0) == 0x50 	&&
+						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
+						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
+				)
+		)},
 	"a_SquireOrdersStatue": function SquireOrdersStatue() { return
 		never(!isGameRunning())					&&
 		never(!isCutsceneActive())				&&
