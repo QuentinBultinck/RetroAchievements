@@ -2,9 +2,9 @@
 =======================================
 
 
-<figure width=200 align=center>
+<figure>
     <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" 
-    alt="Shadow of Destiny (PSP) Logo]" width=150>
+    alt="Shadow of Destiny (PSP) Logo]" width=150 align=center>
     <figcaption><i>Shadow of Destiny logo</i></figcaption>
 </figure>
 
