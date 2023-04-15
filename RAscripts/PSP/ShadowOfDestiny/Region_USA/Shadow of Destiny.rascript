@@ -55,7 +55,7 @@ _cutsceneIDs = {		//
 	4: 0x1DF6724, 		// $1DF6724: [32-bit] Cutscene ID
 	5: 0x1DF6F60, 		// $1DF6F60: [32-bit] Cutscene ID
 	6: 0x1DF742A, 		// $1DF742A: [32-bit] Cutscene ID
-	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID
+	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID // Unused
 	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID // Unused
 	9: 0x1DF8229, 		// $1DF8229: [32-bit] Cutscene ID
 	10: 0x1DF8442,		// $1DF8442: [32-bit] Cutscene ID
@@ -190,7 +190,7 @@ _achievements = {
 		// 	"devInfo": "Seen ALL the cutscenes, should be saved in the MAIN safe file of the game"},
 	},
 	"c_Branch": { // Category - Branching path
-		"a_GetOrnamentalEgg": { // TEST
+		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 5,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
 		"a_EggCollection1": { // WORKING
@@ -319,12 +319,12 @@ _achievementTriggers = {
 			!isGameRunning() 				|| 
 			!isCutsceneActive() 			||
 			!isCurrentChapter("Chapter1")) 	&& 
-		repeated(380, priorCutsceneId(10) == 0xfffe8366)		&& // this block => last cutscene has run for about 380 frames
-		repeated(380, priorCutsceneId(13) == 0x3cd31cf) 		&&
-		repeated(380, priorCutsceneId(15) == 0x11110597) 		&& 
-		repeated(380, currentCutsceneId(10) == 0x1ce0d25d) 		&&
-		repeated(380, currentCutsceneId(13) == 0xc841ccb) 		&&
-		repeated(380, currentCutsceneId(15) == 0x99991119)},
+		repeated(350, priorCutsceneId(10) == 0xfffe8366)		&& // this block => last cutscene has run for about 350 frames
+		repeated(350, priorCutsceneId(13) == 0x3cd31cf) 		&&
+		repeated(350, priorCutsceneId(15) == 0x11110597) 		&& 
+		repeated(350, currentCutsceneId(10) == 0x1ce0d25d) 		&&
+		repeated(350, currentCutsceneId(13) == 0xc841ccb) 		&&
+		repeated(350, currentCutsceneId(15) == 0x99991119)},
 	"a_EggCollection1": function a_EggCollection1() { return		 
 		never(!isGameRunning()) 				&& // This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 				&&
