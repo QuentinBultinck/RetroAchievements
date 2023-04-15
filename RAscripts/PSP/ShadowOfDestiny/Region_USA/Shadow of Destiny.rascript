@@ -128,11 +128,10 @@ _onScreenTextID = {
 function OnScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
 // OTHER LOGIC
-// *************
-function cutsceneFlag() => bit0(0xA9Eb2C)					// $A9Eb2C: [bit-0] Flag -> is cutscene active
-function isCutsceneActive() => cutsceneFlag() == 0			//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
+// *************											
+function isCutsceneActive() => bit0(0xA9Eb2C) == 0			// $A9Eb2C: [bit-0] Flag -> is cutscene active
+															//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
 															//		- 1 = no cutscene active
-
 function isGameRunning() => bit0(0xA9F034) == 1				// $A9F034: [bit-0] Flag -> is game running
 															//		- 0 = game is not running, it's in the title screen
 															//		- 1 = game is running
