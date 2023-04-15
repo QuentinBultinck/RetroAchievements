@@ -15,6 +15,8 @@
         "FIXME",
         "BUG",
 
+        "OFF",
+
         "WIP",
         "TEST",
         "TESTING",
@@ -83,9 +85,15 @@
         "FIXME": {
             "foreground": "#fc5353",
             "background": "#612c03",
-            "type": "text-and-comment", 
-            
+            "type": "text-and-comment",             
             "icon": "stop"
+        },
+        "OFF": {
+            "foreground": "#ffffff",
+            "background": "#990000",
+            "type": "tag-and-comment",
+            "opacity": 50,            
+            "icon": "no-entry"
         },
         "IDEA": {
             "foreground": "#53f9ff",
