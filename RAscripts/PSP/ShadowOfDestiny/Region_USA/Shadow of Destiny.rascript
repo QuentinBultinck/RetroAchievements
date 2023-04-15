@@ -435,7 +435,7 @@ _achievementTriggers = {
 		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter2")
 		return 
 			unless(!isCutsceneActive()) && 
-			measured(measuredComparison(), measuredIfComparison)
+			measured(measuredComparison(), measuredIfComparison())
 		},
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never(
