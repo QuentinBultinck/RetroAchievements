@@ -34,7 +34,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_EXChapterComplete | EX chapter completed| / | / |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-##### :trophy: Branching paths
+#### :trophy: Branching paths
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_GetOrnamentalEgg | An egg? | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
@@ -42,7 +42,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_EggCollection2 | Egg collection #2 | Prerequisite achievement => a_GetOrnamentalEgg <br> In chapter 3 go to the bar and head downstairs | / |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-##### :trophy: Endings
+#### :trophy: Endings
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_EndingA | _title_ | _explanation_ | _unlockCriteria_ |
@@ -65,7 +65,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_LostYoungCouple1 | Lost young couple #1 | - Talk to both the man and woman multiple times to progress the dialogue <br>- You can find them in the past during chapter 2 <br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP")| Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-##### :trophy: Hidden cutscenes that lead to death
+#### :trophy: Hidden cutscenes that lead to death
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_MetYouBefore | That's a big no no | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
