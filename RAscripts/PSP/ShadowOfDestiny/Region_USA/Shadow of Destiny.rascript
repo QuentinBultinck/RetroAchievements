@@ -7,11 +7,10 @@
 //  //  //  // //  //  //  //  //  //  //  //  //   UTILITY    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#########################################################################################################\\
 
-devmode = 1					// if active => extra information may be displayed on achievement titles & descriptions
+devmode = 1											// if active => extra information may be displayed on achievement titles & descriptions
 function isDevModeActive() => devmode == 1
-
-achievementLanguage = "en"		// ISO 639-1 language codes 		// TODO check if multi-language support is needed 
-
+achievementLanguage = "en"							// ISO 639-1 language codes 		// TODO check if multi-language support is needed 
+achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
 //#########################################################################################################\\
 //  //  //  //  //  //  //  //  //    CODE NOTES & MEMORY ADDRESS LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -147,110 +146,109 @@ function isGameRunning() => bit0(0xA9F034) == 1				// $A9F034: [bit-0] Flag -> i
 // ************************************************************
 _achievements = {
 	// TODO "a_Template": { 
-	//	"id": 000000, "points": 0000000,
+	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
 		"a_PrologueComplete": { // WORKING
-			"id": 306884, "points": 1,
+			"id": 306884, "points": 1, "hasTips": false,
 			"devInfo": "Complete the prologue"},
 		"a_Chapter1Complete": { // WORKING
-			"id": 306886, "points": 1,
+			"id": 306886, "points": 1, "hasTips": false,
 			"devInfo": "Complete chapter 1"},
 		"a_Chapter2Complete": { // WORKING
-			"id": 306922, "points": 2,
+			"id": 306922, "points": 2, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
 		// TODO "a_Chapter3Complete": {
-		//	"id": 306921, "points": 3,
+		//	"id": 306921, "points": 3, "hasTips": false,
 		// 	"devInfo": "Complete chapter 3",
 		// TODO "a_Chapter4Complete": {
-		//	"id": 000000, "points": 4,
+		//	"id": 000000, "points": 4, "hasTips": false,
 		//	"devInfo": "Complete chapter 4",
 		// TODO "a_Chapter5Complete": {
-		//	"id": 000000, "points": 4,
+		//	"id": 000000, "points": 4, "hasTips": false,
 		//	"devInfo": "Complete chapter 5",
 		// TODO "a_Chapter6Complete": {
-		//	"id": 000000, "points": 5,
+		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 6",
 		// TODO "a_Chapter7Complete": {
-		//	"id": 000000, "points": 5,
+		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 7"},
 		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Complete chapter 8"},
 		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Complete the epilogue "}, 
 		// TODO "a_EXChapterComplete": {
-		//	"id": 000000, "points": 50,
+		//	"id": 000000, "points": 50, "hasTips": false,
 		// 	"devInfo": "Complete the EX chapter"},
 		// TODO "a_Achieve100%Achievement": { // TODO check if this is possible to implement as achievement
-		//	"id": 000000,
-		// 	"points": 100,
+		//	"id": 000000, "points": 100, "hasTips": false,
 		// 	"devInfo": "Seen ALL the cutscenes, should be saved in the MAIN safe file of the game"},
 	},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // WORKING
-			"id": 306885, "points": 5,
+			"id": 306885, "points": 5, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
 		"a_EggCollection1": { // WORKING
-			"id": 306977, "points": 5,
+			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_EggCollection2": { // WORKING
-			"id": 306976, "points": 5,
+			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 "},
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending A: Margarette (Ancestress) => Homunculus => Town Square"},
 		// TODO "a_EndingB1": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
 		// TODO "a_EndingB2": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		// TODO "a_EndingC": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
 		// TODO "a_EndingD": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		// TODO "a_EndingE": {	
-		//	"id": 000000, "points": 10,
+		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_IntroduceEggCollecting": { // WORKING
-			"id": 307023, "points": 5,
+			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // Working // CONCEPT Change back into a_EikeThePyromancer => Trigger/Measure => pop a_ when chapter finishes
-			"id": 306911, "points": 2,
+			"id": 306911, "points": 2, "hasTips": false,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheMagician": { // Working // CONCEPT Change back into a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
-			"id": 306906, "points": 2,
+			"id": 306906, "points": 2, "hasTips": false,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
 		"a_SquireOrdersFlowers": { // Working // CONCEPT Change back into a_EikeTheFlorist => pop a_ when chapter finishes
-			"id": 306920, "points": 1,
+			"id": 306920, "points": 1, "hasTips": false,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_SquireOrdersStatue": { // Working // CONCEPT Change back into a_EikeThePyromancer & a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
-			"id": 306919, "points": 1,
+			"id": 306919, "points": 1, "hasTips": false,
 			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
-			"id": 307499, "points": 2,
+			"id": 307499, "points": 2, "hasTips": true,
 			"devInfo": "Interact with all 7 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
 		"a_EnigmaticCouple1": { // WORKING
-			"id": 307495, "points": 5,
+			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the coated man and woman in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
-			"id": 306984, "points": 5, 
+			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
-			"id": 306888, "points": 5,
+			"id": 306888, "points": 5, "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
-			"id": 306883, "points": 5,
+			"id": 306883, "points": 5, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
 	},
 }
@@ -578,10 +576,10 @@ _achievementTriggers = {
 // ACHIEVEMENT TITLES & DESCRIPTIONS		// IDEA: put tips behind link => somewhere on a github README.md file?
 // ***********************************************************************************
 _achievementTitles = {
-	"a_PrologueComplete": { 						"en": "Prologue completed",															
+	"a_PrologueComplete": { 						"en": "Prologue completed",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Chapter 1 completed",													\		
+	"a_Chapter1Complete": {							"en": "Chapter 1 completed",
 													"nl": "Hoofdstuk 1 voltooid",
 													"fr": "Chapitre 1 terminé"},
 	"a_Chapter2Complete": 							{"en": "Chapter 2 completed"},
@@ -608,19 +606,19 @@ _achievementDescriptions = {
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
 	"a_Chapter2Complete": 							{"en": "Defied fate, but not without loose ends"},
-	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1 - [Tips: bit.ly/ShadowOfDestiny]"},
-	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2 - [Tips: bit.ly/ShadowOfDestiny]"},
-	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1 - [Tips: bit.ly/ShadowOfDestiny]"},
-	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3 - [Tips: bit.ly/ShadowOfDestiny]"},
+	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
+	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
+	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
 	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic box during chapter 2"},
 	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
-	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2 - [Tips: bit.ly/ShadowOfDestiny]"}, 
-	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1 - [Tips: bit.ly/ShadowOfDestiny]"}, 
-	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue - [Tips: bit.ly/ShadowOfDestiny]"},
-	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2 - [Tips: bit.ly/ShadowOfDestiny]"},
-	"a_ArtAppreciator": 							{"en": "Admire the paintings in the Brum Museum - [Tips: bit.ly/ShadowOfDestiny]"}, 
+	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
+	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
+	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
+	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
+	"a_ArtAppreciator": 							{"en": "Admire the paintings in the Brum Museum"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
@@ -643,18 +641,23 @@ function initializeAchievements() {
 		return enterCategoryName(string_achievementCategory) + lookUpAchievementTitle(string_achievementName, string_languageCode)
 	}
 	// Generate achievement desciption (with extra develop information if devmode == 1)
-	function generateAchievementDescription(string_achievementName, string_devInfo, string_languageCode) {	
+	function generateAchievementDescription(string_achievementName, boolean_hasTips, string_devInfo, string_languageCode) {	
 		function lookUpAchievementDescription(string_achievementName, string_languageCode) {
 			return _achievementDescriptions[string_achievementName][string_languageCode]
 		}
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
 			if isDevModeActive() && string_devInfo != "" {
-				let_devInfoString = let_devInfoString + " - {(" + string_devInfo + ")}"
+				let_devInfoString = let_devInfoString + " - [DEV: " + string_devInfo + "]"
 			}
 			return let_devInfoString
 		}	
-		return lookUpAchievementDescription(string_achievementName, string_languageCode) + enterDevInfo(string_devInfo)
+		function enterTipsLink(boolean_hasTips) {
+			let_tipsLink = ""
+			if(boolean_hasTips == true) let_tipsLink = " - [Tips available: " + achievementGuideLink + "]"
+			return let_tipsLink 
+		}
+		return lookUpAchievementDescription(string_achievementName, string_languageCode) + enterTipsLink(boolean_hasTips) + enterDevInfo(string_devInfo) 
 	}
 	// Return the achievement trigger 
 	function lookUpAchievementTrigger(string_achievementName) {
@@ -668,7 +671,7 @@ function initializeAchievements() {
 			achievement(
 				id = let_cheevment["id"],
 				title = generateAchievementTitle(cheevmentName, categoryName, achievementLanguage), 
-				description = generateAchievementDescription(cheevmentName, let_cheevment["devInfo"], achievementLanguage),
+				description = generateAchievementDescription(cheevmentName, let_cheevment["hasTips"], let_cheevment["devInfo"], achievementLanguage),
 				points = let_cheevment["points"],
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
