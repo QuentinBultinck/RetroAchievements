@@ -103,8 +103,10 @@ function isChapterFinished(string_chapter) {
 // INVENTORY LOGIC 
 // *****************
 _inventoryItemIds = { 
+	"D-pad": 0x0,
 	"OrnamentalEgg": 0x2,
 	"SquireCrest": 0xf,
+	"Lighter": 0x6,
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -124,7 +126,7 @@ _onScreenTextID = {
 	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
 	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
 }
-function OnScreenTextID(int_id) => dword(_onScreenTextID[int_id])
+function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
 // OTHER LOGIC
 // *************											
@@ -221,8 +223,8 @@ _achievements = {
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // Working // CONCEPT Change back into a_EikeThePyromancer => Trigger/Measure => pop a_ when chapter finishes
-			"id": 306911, "points": 2, "hasTips": false,
+		"a_EikeThePyromancer": { // WORKING
+			"id": 306911, "points": 5, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheMagician": { // Working // CONCEPT Change back into a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
 			"id": 306906, "points": 2, "hasTips": false,
@@ -230,9 +232,9 @@ _achievements = {
 		"a_SquireOrdersFlowers": { // Working // CONCEPT Change back into a_EikeTheFlorist => pop a_ when chapter finishes
 			"id": 306920, "points": 1, "hasTips": false,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_SquireOrdersStatue": { // Working // CONCEPT Change back into a_EikeThePyromancer & a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
-			"id": 306919, "points": 1, "hasTips": false,
-			"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
+		// "a_SquireOrdersStatue": { // OFF // CONCEPT Change back into a_EikeThePyromancer & a_EikeTheMagician => Trigger/Measure => pop a_ when chapter finishes
+		// 	"id": 306919, "points": 1, "hasTips": false,
+		// 	"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
 			"id": 307499, "points": 2, "hasTips": true,
 			"devInfo": "Interact with all 7 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
@@ -357,24 +359,84 @@ _achievementTriggers = {
 		repeated(500, currentCutsceneId(17) == 0x0) 				&&
 
 		repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
-	"a_EikeThePyromancer": function EikeThePyromancer() { return 
-		// Core group => true when specific cutscene has run 270+ frames				
-		never(	!isGameRunning() 				|| 
-				!isCutsceneActive() 			||
-				!isCurrentChapter("Chapter2")) 	&&
-		repeated(270, prior(currentCutsceneId(2)) == 0x2ff955) 		&&	
-		repeated(270, prior(currentCutsceneId(4)) == 0xe6de04a6) 	&&	
-		repeated(270, prior(currentCutsceneId(6)) == 0x1100040a) 	&&
-		repeated(270, currentCutsceneId(2) == 0x10111112) 			&&	
-		repeated(270, currentCutsceneId(4) == 0xde980748) 			&&	
-		repeated(270, currentCutsceneId(6) == 0x12480620) 			&&
-		(
-			( 		// Alt group 1 => true when twoFrameTimer has incremented 1600 times without resetting
-				repeated(1600, hasTwoFrameTimerIncremented() && never(hasTwoFrameTimerReset()))
-			) || ( 	// Alt group 2 => true when twoFrameTimer has reset twice, when whole cutscene sequence is over
-				repeated(2, hasTwoFrameTimerReset())
-			)
-		)},
+	"a_EikeThePyromancer": function EikeThePyromancer() {  
+		function measuredComparison() { 
+			function A_1() { return
+				repeated(270,
+					isCurrentSelectedInventoryItem("Lighter") 	&&
+					prior(currentCutsceneId(2)) == 0x2ff955 	&&
+					prior(currentCutsceneId(4)) == 0xe6de04a6 	&&
+					prior(currentCutsceneId(6)) == 0x1100040a 	&&
+					currentCutsceneId(2) == 0x10111112 			&&
+					currentCutsceneId(4) == 0xde980748 			&&
+					currentCutsceneId(6) == 0x12480620)}
+			function A_2(int_hitCount) { return
+				repeated(int_hitCount,
+					onScreenTextID(0) == 0x23 && 
+					prior(onScreenTextID(1)) == 0x48ffcb && onScreenTextID(1) == 0x0 &&
+					prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)}
+			function C_1() { return
+				repeated(1900, 
+					isCurrentSelectedInventoryItem("D-pad") &&
+					currentCutsceneId(22) == 0x7c000000 	&&
+					currentCutsceneId(12) == 0xfd7c0000 	&&
+					currentCutsceneId(1) == 0xefff0000)}
+			function C_2(int_hitCount) { return
+				repeated(int_hitCount,
+					onScreenTextID(0) == 0x50 	&&
+					onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
+					onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)}
+			return tally(3, [	// (644 - 643) + 1 + (2024 - 2023) = 3 => each block counts 1 
+				// Block A	(+644 hits)	=> IDs the cutscene where Eike scares the crowd with the lighter 
+				A_1(),
+				once(prev(onScreenTextID(0)) == 0x1e 	&& onScreenTextID(0) == 0x2d),
+				once(prev(onScreenTextID(0)) == 0x105 	&& onScreenTextID(0) == 0x6f),
+				once(prev(onScreenTextID(0)) == 0x6f 	&& onScreenTextID(0) == 0x64),
+				once(prev(onScreenTextID(0)) == 0x5f 	&& onScreenTextID(0) == 0x23),
+				repeated(250, onScreenTextID(1) == 0x40ff88 && onScreenTextID(5) == 0x50ffb5),
+				A_2(120),
+				// Block A deduction (-643 hits) 	=> so measured shows 1/3
+				deduct(A_1()),
+				deduct(once(prev(onScreenTextID(0)) == 0x1e 	&& onScreenTextID(0) == 0x2d)),
+				deduct(once(prev(onScreenTextID(0)) == 0x105 	&& onScreenTextID(0) == 0x6f)),
+				deduct(once(prev(onScreenTextID(0)) == 0x6f 	&& onScreenTextID(0) == 0x64)),
+				deduct(once(prev(onScreenTextID(0)) == 0x5f 	&& onScreenTextID(0) == 0x23)), 	
+				deduct(repeated(250, onScreenTextID(1) == 0x40ff88 && onScreenTextID(5) == 0x50ffb5)), 
+				deduct(A_2(119)),	// one less deducted on this comparison
+
+				// Block B	(+1 hit)			=> IDs the cutscene with the townplanter where player picks between flowers or statue 
+				once(isCurrentSelectedInventoryItem("SquireCrest") &&					
+					// Block B1 		=> IDs cutscene after choice has been made
+					currentCutsceneId(6) == 0xfb39dc80 	&& priorCutsceneId(6) == 0xd8ccfde3 	&&
+					currentCutsceneId(15) == 0x431ab010	&& priorCutsceneId(15) == 0x6def1111 	&&
+					currentCutsceneId(17) == 0x4f1f9ae 	&& priorCutsceneId(17) == 0x82a655a2 	&&
+					// Block B3			=> checks if statue choice is picked
+					prior(onScreenTextID(1)) == 0x40ff60 && onScreenTextID(1) == 0 	&&
+					prior(onScreenTextID(7)) == 0x4fffe9 && onScreenTextID(7) == 0 	&&
+					prior(onScreenTextID(8)) == 0x4f00a2 && onScreenTextID(8) == 0),
+				// Block B no deduction, because it's only 1 hit
+
+				// Block C (+2024 hit)	=> IDs the last cutscene of the chapter with the tree changing into a statue or flowers
+				C_1(),
+				once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
+				once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
+				once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
+				once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
+				C_2(145),
+				// Block A deduction (-2023 hits)
+				deduct(C_1()),
+				deduct(once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195)),
+				deduct(once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102)),
+				deduct(once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a)),
+				deduct(once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30)),
+				deduct(C_2(144))
+			])
+		}
+		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter2")
+		return 
+			unless(!isCutsceneActive()) && 
+			measured(measuredComparison(), measuredIfComparison)
+		},
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never(
 			!isGameRunning() 							|| 
@@ -395,16 +457,16 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter2")) 	&& 
 		isCurrentSelectedInventoryItem("SquireCrest") 		&& 
 
-		currentCutsceneId(14) == 0x4831736					&& // This block => check if cutscene after choice is has started
+		currentCutsceneId(14) == 0x4831736					&& // This block => check if cutscene after choice has started
 		currentCutsceneId(15) == 0x431ab010					&&
 		currentCutsceneId(17) == 0x4f1f9ae					&&
 
-		prior(OnScreenTextID(1)) == 0x003fff5f		&& // This block => check if flowers is chosen
-		prior(OnScreenTextID(7)) == 0x0050ffea		&&
-		prior(OnScreenTextID(8)) == 0x005000a3		&&
-		OnScreenTextID(1) == 0						&&
-		OnScreenTextID(7) == 0						&&
-		OnScreenTextID(8) == 0},
+		prior(onScreenTextID(1)) == 0x003fff5f		&& // This block => check if flowers is chosen
+		prior(onScreenTextID(7)) == 0x0050ffea		&&
+		prior(onScreenTextID(8)) == 0x005000a3		&&
+		onScreenTextID(1) == 0						&&
+		onScreenTextID(7) == 0						&&
+		onScreenTextID(8) == 0},
 	"a_SquireOrdersStatue": function SquireOrdersStatue() { return
 		never(!isGameRunning())					&&
 		never(!isCutsceneActive())				&&
@@ -415,12 +477,12 @@ _achievementTriggers = {
 		currentCutsceneId(15) == 0x431ab010				&&
 		currentCutsceneId(17) == 0x4f1f9ae				&&
 
-		prior(OnScreenTextID(1)) == 0x40ff60 	&& // This block => check if statue is chosen
-		prior(OnScreenTextID(7)) == 0x4fffe9 	&&
-		prior(OnScreenTextID(8)) == 0x4f00a2	&&
-		OnScreenTextID(1) == 0					&&
-		OnScreenTextID(7) == 0					&&
-		OnScreenTextID(8) == 0},
+		prior(onScreenTextID(1)) == 0x40ff60 	&& // This block => check if statue is chosen
+		prior(onScreenTextID(7)) == 0x4fffe9 	&&
+		prior(onScreenTextID(8)) == 0x4f00a2	&&
+		onScreenTextID(1) == 0					&&
+		onScreenTextID(7) == 0					&&
+		onScreenTextID(8) == 0},
 	"a_LostYoungCouple1": function LostYoungCouple1() {
 		// Private functions
 		function measuredComparison() { return
@@ -553,27 +615,27 @@ _achievementTriggers = {
 			!isGameRunning()				||
 			!isCurrentChapter("Chapter2") 	||
 			!isCutsceneActive())			&&
-		repeated(1400, OnScreenTextID(0) == 0x4b) &&	// Block => identifies the cutscene (code might be too bloated but better safe than sorry)
-		once(prev(OnScreenTextID(0)) == 0x4b && OnScreenTextID(0) == 0x2d) &&	// Text sequence A
-		once(prev(OnScreenTextID(0)) == 0x2d && OnScreenTextID(0) == 0x1e) &&	// Text sequence B
-		once(prev(OnScreenTextID(0)) == 0xf0 && OnScreenTextID(0) == 0x78) &&	// Text sequence C
-		once(prev(OnScreenTextID(0)) == 0x78 && OnScreenTextID(0) == 0x4b) &&	// Text sequence E
-		once(prev(OnScreenTextID(0)) == 0xb4 && OnScreenTextID(0) == 0x4b) &&	// Text sequence D
-		once(prev(OnScreenTextID(0)) == 0x78 && OnScreenTextID(0) == 0x50) &&	// Text sequence F
-		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0040ff86) &&	// Text A
-		once(prev(OnScreenTextID(5)) == 0x0 && OnScreenTextID(5) == 0x0050ffd0) &&	// Text A
-		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0048ffc9) &&	// Text B
-		once(prev(OnScreenTextID(3)) == 0x0 && OnScreenTextID(3) == 0x00480029) &&	// Text B
-		once(prev(OnScreenTextID(1)) == 0x0 && OnScreenTextID(1) == 0x0040ff9e) &&	// Text E
-		once(prev(OnScreenTextID(4)) == 0x0 && OnScreenTextID(4) == 0x00080009) &&	// Text E
-		prior(OnScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
-		prior(OnScreenTextID(5)) == 0x00500045 							&&	// Last text
-		prev(OnScreenTextID(0)) == 0x50},		// Last text
+		repeated(1400, onScreenTextID(0) == 0x4b) &&	// Block => identifies the cutscene (code might be too bloated but better safe than sorry)
+		once(prev(onScreenTextID(0)) == 0x4b && onScreenTextID(0) == 0x2d) &&	// Text sequence A
+		once(prev(onScreenTextID(0)) == 0x2d && onScreenTextID(0) == 0x1e) &&	// Text sequence B
+		once(prev(onScreenTextID(0)) == 0xf0 && onScreenTextID(0) == 0x78) &&	// Text sequence C
+		once(prev(onScreenTextID(0)) == 0x78 && onScreenTextID(0) == 0x4b) &&	// Text sequence E
+		once(prev(onScreenTextID(0)) == 0xb4 && onScreenTextID(0) == 0x4b) &&	// Text sequence D
+		once(prev(onScreenTextID(0)) == 0x78 && onScreenTextID(0) == 0x50) &&	// Text sequence F
+		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0040ff86) &&	// Text A
+		once(prev(onScreenTextID(5)) == 0x0 && onScreenTextID(5) == 0x0050ffd0) &&	// Text A
+		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0048ffc9) &&	// Text B
+		once(prev(onScreenTextID(3)) == 0x0 && onScreenTextID(3) == 0x00480029) &&	// Text B
+		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0040ff9e) &&	// Text E
+		once(prev(onScreenTextID(4)) == 0x0 && onScreenTextID(4) == 0x00080009) &&	// Text E
+		prior(onScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
+		prior(onScreenTextID(5)) == 0x00500045 							&&	// Last text
+		prev(onScreenTextID(0)) == 0x50},		// Last text
 	// "a_Template": function Template() {},
 }
 
 
-// ACHIEVEMENT TITLES & DESCRIPTIONS		// IDEA: put tips behind link => somewhere on a github README.md file?
+// ACHIEVEMENT TITLES & DESCRIPTIONS
 // ***********************************************************************************
 _achievementTitles = {
 	"a_PrologueComplete": { 						"en": "Prologue completed",

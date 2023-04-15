@@ -60,7 +60,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>An interesting shape</b><br><i>a_IntroduceEggCollecting</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
-| :trophy: <b>Eike the pyromancer</b><br><i>a_EikeThePyromancer</i> | _explanation_ | _unlockCriteria_ |
+| :trophy: <b>Eike the pyromancer</b><br><i>a_EikeThePyromancer</i> | - 1/3: In chapter 2, in the past use the lighter to scare off the crowd <br> - 2/3: Chose to build a statue when talking to the townplanter with the squire's crest <br> - 3/3: finish the chapter by teleporting back to the past | Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | :trophy: <b>Eike the magician</b><br><i>a_EikeTheMagician</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>Squire's orders: 'Flowers only'</b><br><i>a_SquireOrdersFlowers</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>Squire's orders: 'No, a statue'</b><br><i>a_SquireOrdersStatue</i> | _explanation_ | _unlockCriteria_ |
