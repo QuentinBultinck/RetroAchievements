@@ -12,6 +12,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 ### General tips for unlocking the achievements in this set
 + Don't skip the cutscenes, this should only be a problem if you're replaying the game, since you can't skip if you haven't seen the cutscene yet.
++ Fast forwarding with emulator tools is allowed and should still trigger the achievements.
 
 <Details>
     <summary><h2>Click me/expand me :raised_hand:</h2> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
