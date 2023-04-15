@@ -1,4 +1,4 @@
-**Shadow of Destiny - Achievement guide**
+**Shadow of Destiny :diamonds: Achievement guide**
 =======================================
 <img src="../../../Assets/Images/Logo_ShadowOfDestiny.jpg" 
     alt="Shadow of Destiny (PSP) Logo]" width=150>
@@ -13,9 +13,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 <Details>
     <summary><h3>Click me :raised_hand: to view the achievement guide</h3> :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
 
-:trophy: **Achievements** *divided by category*
+**Achievements** *divided by category*
 ----------------------------------
-### :diamonds: Story completion
+### :trophy: Story completion
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_PrologueComplete | Prologue completed | / | / |
@@ -31,7 +31,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_EXChapterComplete | EX chapter completed| / | / |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-#### :diamonds: Branching paths
+#### :trophy: Branching paths
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_GetOrnamentalEgg | An egg? | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
@@ -39,7 +39,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_EggCollection2 | Egg collection #2 | Prerequisite achievement => a_GetOrnamentalEgg <br> In chapter 3 go to the bar and head downstairs | / |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-#### :diamonds: Endings
+#### :trophy: Endings
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_EndingA | _title_ | _explanation_ | _unlockCriteria_ |
@@ -49,7 +49,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_EndingD | _title_ | _explanation_ | _unlockCriteria_ |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-### :diamonds: Side content & extra cutscenes
+### :trophy: Side content & extra cutscenes
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_IntroduceEggCollecting | An interesting shape | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
@@ -62,7 +62,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | a_LostYoungCouple1 | Lost young couple #1 | - Talk to both the man and woman multiple times to progress the dialogue <br>- You can find them in the past during chapter 2 <br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP")| Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | _a_templateID_ | _title_ | _explanation_ | _unlockCriteria_ |
 
-#### :diamonds: Hidden cutscenes that lead to death
+#### :trophy: Hidden cutscenes that lead to death
 | ID (dev info) | Title | Explanation & tips | Specific unlock criteria |
 |----|---|---|---|
 | a_MetYouBefore | That's a big no no | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
