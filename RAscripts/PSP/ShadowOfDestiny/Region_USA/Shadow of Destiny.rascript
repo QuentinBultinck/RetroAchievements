@@ -243,6 +243,9 @@ _achievements = {
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
+		// TODO "a_FindAllEnergyOrbs1979": { // CONCEPT a_FindAllEnergyOrbs1979 after energy is drained? Possible?
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Find all energy orbs "}, 
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -251,7 +254,7 @@ _achievements = {
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
-		"a_ExcuseMeMyMy": { // WIP 
+		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
 	},
