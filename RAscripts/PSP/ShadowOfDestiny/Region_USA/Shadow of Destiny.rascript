@@ -86,11 +86,10 @@ _chapterIDs = {
 	"Chapter8": 0x9,
 	"Epilogue": 0xA,
 	// TODO "Different endings": ???
-	// TODO "EX chapter": ??? // EX chapter needs to be lower than Chapter3/0x4 => because a_RefillZPad is only completable during or after chapter 3, EX chapter is actually prologue again
+	// TODO "EX chapter": ??? 
 }
 function chapterId() => byte(0xB95704)						// $B95704: [8-bit] Chapter ID
 function isCurrentChapter(string_chapter) => chapterId() == _chapterIDs[string_chapter]
-function isCurrentChapterAfter(string_chapter) => chapterId() > _chapterIDs[string_chapter]
 function isChapterFinished(string_chapter) {
 	return 
 		prev(chapterId()) == _chapterIDs[string_chapter] &&
@@ -167,7 +166,7 @@ _achievements = {
 		//	"id": 306921, "points": 3, "hasTips": false,
 		// 	"devInfo": "Complete chapter 3",
 		// TODO "a_Chapter4Complete": {
-		//	"id": 000000, "points": 4, "hasTips": false,
+		//	"id": 308964, "points": 4, "hasTips": false,
 		//	"devInfo": "Complete chapter 4",
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 4, "hasTips": false,
@@ -244,9 +243,6 @@ _achievements = {
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
-		"a_RefillZPad": { // TEST if a_RefillZPad pops
-			"id": 308964, "points": 10, "hasTips": true,
-			"devInfo": "Refill the energy bar of the Z-pad to full after it is fully drained by Homonculus in chapter 3"},	
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -707,32 +703,7 @@ _achievementTriggers = {
 				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x440000 	&&
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x41fff6)
 		)},
-	"a_RefillZPad": function RefillZPad() {
-		function measuredComparison() { 
-			return tally(10, [
-				energyUnitsZPad() > prev(energyUnitsZPad()),		// Incremented by at least 1 => +1 hit
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 2,	// Incremented by at least 2 => +1 hit
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 3,	// Incremented by at least 3 => +1 hit
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 4,	// etc...
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 5,
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 6,
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 7,
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 8,
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 9,
-				energyUnitsZPad() - prev(energyUnitsZPad()) >= 10,
-				deduct(energyUnitsZPad() < prev(energyUnitsZPad())),		// Decremented by at least 1 => -1 hit
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 2),	// Decremented by at least 2 => -1 hit
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 3),	// Decremented by at least 3 => -1 hit
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 4),	// etc...
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 5),
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 6),
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 7),
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 8),
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 9),
-				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 10)
-			])} 
-		function measuredIfComparison() => isGameRunning() && isCurrentChapterAfter("Chapter2")
-		return measured(measuredComparison(), measuredIfComparison())},
+
 	// "a_Template": function Template() {},
 }
 
@@ -760,7 +731,6 @@ _achievementTitles = {
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
 	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
-	"a_RefillZPad": 								{"en": "Handled a little thing"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -784,7 +754,6 @@ _achievementDescriptions = {
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
-	"a_RefillZPad": 								{"en": "Refill the Z-Pad, time travel device, to full energy after it is drained by the devil"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
