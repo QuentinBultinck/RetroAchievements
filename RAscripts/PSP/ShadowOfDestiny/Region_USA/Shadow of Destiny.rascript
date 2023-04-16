@@ -224,16 +224,16 @@ _achievements = {
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // TEST
+		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 5, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // TEST	// TODO add tips
-			"id": 306906, "points": 2, "hasTips": false,
+		"a_EikeTheMagician": { // WORKING	
+			"id": 306906, "points": 2, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_SquireOrdersFlowers": { // WORKING // TODO add tips
-			"id": 306920, "points": 1, "hasTips": false,
+		"a_SquireOrdersFlowers": { // WORKING 
+			"id": 306920, "points": 1, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		// "a_SquireOrdersStatue": { // OFF, but working => double implementation in a_EikeTheMagician & a_EikeThePyromancer
+		// "a_SquireOrdersStatue": { // OFF, but working => implemented in a_EikeTheMagician & a_EikeThePyromancer
 		// 	"id": 306919, "points": 1, "hasTips": false,
 		// 	"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
@@ -701,7 +701,7 @@ _achievementDescriptions = {
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
 	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
-	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic box during chapter 2"},
+	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic during chapter 2"},
 	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
