@@ -230,7 +230,7 @@ _achievements = {
 		"a_EikeTheMagician": { // WORKING	
 			"id": 306906, "points": 2, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_SquireOrdersFlowers": { // WORKING 
+		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 1, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		// "a_SquireOrdersStatue": { // OFF, but working => implemented in a_EikeTheMagician & a_EikeThePyromancer
@@ -460,7 +460,7 @@ _achievementTriggers = {
 						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
 				)
 			)}, 	
-	"a_SquireOrdersFlowers": function TheSquiresFlowers() { return
+	"a_EikeTheFlorist": function EikeTheFlorist() { return
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
 			!isGameRunning() || 
 			!isCurrentChapter("Chapter2")
@@ -679,7 +679,7 @@ _achievementTitles = {
 	"a_IntroduceEggCollecting": 					{"en": "An interesting shape"},
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
-	"a_SquireOrdersFlowers": 						{"en": "Squire's orders: 'Flowers only'"},
+	"a_EikeTheFlorist": 							{"en": "Eike the florist"},
 	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
@@ -702,7 +702,7 @@ _achievementDescriptions = {
 	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
 	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic during chapter 2"},
-	"a_SquireOrdersFlowers": 						{"en": "Planted flowers during chapter 2"},
+	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
 	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
