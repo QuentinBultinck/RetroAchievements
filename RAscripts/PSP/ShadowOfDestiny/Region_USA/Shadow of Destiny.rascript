@@ -42,7 +42,6 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 
 // CUTSCENES
 // ***********
-// TODO	=> Some cutscenes could be identified by INTERACTION IDs
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
@@ -87,17 +86,17 @@ _chapterIDs = {
 	"Chapter8": 0x9,
 	"Epilogue": 0xA,
 	// TODO "Different endings": ???
-	// TODO "EX chapter": ???
+	// TODO "EX chapter": ??? // EX chapter needs to be lower than Chapter3/0x4 => because a_RefillZPad is only completable during or after chapter 3, EX chapter is actually prologue again
 }
 function chapterId() => byte(0xB95704)						// $B95704: [8-bit] Chapter ID
-function isCurrentChapter(string_chapter) {
-	return chapterId() == _chapterIDs[string_chapter]
-}
+function isCurrentChapter(string_chapter) => chapterId() == _chapterIDs[string_chapter]
+function isCurrentChapterAfter(string_chapter) => chapterId() > _chapterIDs[string_chapter]
 function isChapterFinished(string_chapter) {
 	return 
 		prev(chapterId()) == _chapterIDs[string_chapter] &&
 		chapterId() == _chapterIDs[string_chapter] + 0x1
 }
+
 
 // INVENTORY LOGIC 
 // *****************
@@ -126,16 +125,20 @@ _onScreenTextID = {
 	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
 	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
 }
+currentCutsceneId(11)
 function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
 // OTHER LOGIC
-// *************											
-function isCutsceneActive() => bit0(0xA9Eb2C) == 0			// $A9Eb2C: [bit-0] Flag -> is cutscene active
-															//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
-															//		- 1 = no cutscene active
-function isGameRunning() => bit0(0xA9F034) == 1				// $A9F034: [bit-0] Flag -> is game running
-															//		- 0 = game is not running, it's in the title screen
-															//		- 1 = game is running
+// *************
+function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
+												//		- Used for the time travel machine (Z-Pad)
+												//		- Min => 0x0 		Max => 0x0a
+function isCutsceneActive() => bit0(0xA9Eb2C) == 0	// $A9Eb2C: [bit-0] Flag -> is cutscene active
+													//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
+													//		- 1 = no cutscene active
+function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running
+												//		- 0 = game is not running, it's in the title screen
+												//		- 1 = game is running
 
 
 //#########################################################################################################\\
@@ -224,26 +227,26 @@ _achievements = {
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // WORKING
-			"id": 306911, "points": 5, "hasTips": true,
+			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheMagician": { // WORKING	
-			"id": 306906, "points": 2, "hasTips": true,
+			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheFlorist": { // WORKING 
-			"id": 306920, "points": 1, "hasTips": true,
+			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		// "a_SquireOrdersStatue": { // OFF, but working => implemented in a_EikeTheMagician & a_EikeThePyromancer
-		// 	"id": 306919, "points": 1, "hasTips": false,
-		// 	"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
-			"id": 307499, "points": 2, "hasTips": true,
-			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
+		"a_ArtAppreciator": { // WORKING 		// TODO check if a_ArtAppreciator is completable in other chapters
+			"id": 307499, "points": 5, "hasTips": true,
+			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the coated man and woman in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
+		"a_RefillZPad": { // TEST if a_RefillZPad pops
+			"id": 000000, "points": 25, "hasTips": true,
+			"devInfo": "Refill the energy bar of the Z-pad to full after it is fully drained by Homonculus in chapter 3"},	
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -252,6 +255,9 @@ _achievements = {
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
+		"a_ExcuseMeMyMy": { // WIP 
+			"id": 306919, "points": 1, "hasTips": true,
+			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
 	},
 }
 
@@ -657,7 +663,7 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
-	"a_MetYouBefore": function MetYouBefore() { return 
+	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning()				||
 			!isCurrentChapter("Chapter2") 	||
@@ -678,6 +684,55 @@ _achievementTriggers = {
 		prior(onScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
 		prior(onScreenTextID(5)) == 0x00500045 							&&	// Last text
 		prev(onScreenTextID(0)) == 0x50},		// Last text
+	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return 
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter3")
+		) &&
+		tally(2,
+			once(	// +1 when "excuse me" option is chosen
+				currentCutsceneId(13) == 0xf6e80000 && priorCutsceneId(13) == 0xe8921922 && // Block => IDs cutscene after picking "excuse me"
+				currentCutsceneId(16) == 0x001111ea && priorCutsceneId(16) == 0x85000000 &&
+				currentCutsceneId(18) == 0xf1451010 && priorCutsceneId(18) == 0x680813 	&&
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x3fffb7 && // Block => true when picked "excuse me"
+				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x3f0017 &&
+				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x510025),
+			once(	// +1 when cutscene in limbo finishes
+				currentCutsceneId(5) == 0xd0161111 && priorCutsceneId(5) == 0x19dfd71f 	&& // Block => IDs cutscene in limbo after death
+				currentCutsceneId(8) == 0x3e82c254 && priorCutsceneId(8) == 0xfd5df960 	&&
+				currentCutsceneId(11) == 0x02acfd43 && priorCutsceneId(11) == 0x6c6ffa5 &&
+				onScreenTextID(0) == 0x69 && prior(onScreenTextID(0)) == 0xaf 		&&	// Block => true when cutscene dialogue in limbo finishes 
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff89 	&& 
+				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x440000 	&&
+				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x41fff6)
+		)},
+	"a_RefillZPad": function RefillZPad() {
+		function measuredComparison() { 
+			return tally(10, [
+				energyUnitsZPad() > prev(energyUnitsZPad()),		// Incremented by at least 1 => +1 hit
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 2,	// Incremented by at least 2 => +1 hit
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 3,	// Incremented by at least 3 => +1 hit
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 4,	// etc...
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 5,
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 6,
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 7,
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 8,
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 9,
+				energyUnitsZPad() - prev(energyUnitsZPad()) >= 10,
+				deduct(energyUnitsZPad() < prev(energyUnitsZPad())),		// Decremented by at least 1 => -1 hit
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 2),	// Decremented by at least 2 => -1 hit
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 3),	// Decremented by at least 3 => -1 hit
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 4),	// etc...
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 5),
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 6),
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 7),
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 8),
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 9),
+				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 10)
+			])} 
+		function measuredIfComparison() => isGameRunning() && isCurrentChapterAfter("Chapter2")
+		return measured(measuredComparison(), measuredIfComparison())
 	// "a_Template": function Template() {},
 }
 
@@ -699,12 +754,13 @@ _achievementTitles = {
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
 	"a_EikeTheFlorist": 							{"en": "Eike the florist"},
-	"a_SquireOrdersStatue":							{"en": "Squire's orders: 'No, a statue'"}, 
 	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
+	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
+	"a_RefillZPad": 								{"en": "Handled a little thing"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -719,15 +775,16 @@ _achievementDescriptions = {
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
-	"a_EikeThePyromancer": 							{"en": "Use pyrokinetics to scare the crowd during chapter 2"},
-	"a_EikeTheMagician": 							{"en": "Scare the crowd away with a magic during chapter 2"},
+	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
+	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
-	"a_SquireOrdersStatue":							{"en": "Built a statue during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
-	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"}, 
+	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
+	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
+	"a_RefillZPad": 								{"en": "Refill the Z-Pad, time travel device, to full energy after it is drained by the devil"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
