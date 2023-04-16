@@ -732,7 +732,7 @@ _achievementTriggers = {
 				deduct(prev(energyUnitsZPad()) - energyUnitsZPad() >= 10)
 			])} 
 		function measuredIfComparison() => isGameRunning() && isCurrentChapterAfter("Chapter2")
-		return measured(measuredComparison(), measuredIfComparison())
+		return measured(measuredComparison(), measuredIfComparison())},
 	// "a_Template": function Template() {},
 }
 
