@@ -245,7 +245,7 @@ _achievements = {
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
 		"a_RefillZPad": { // TEST if a_RefillZPad pops
-			"id": 308964, "points": 25, "hasTips": true,
+			"id": 308964, "points": 10, "hasTips": true,
 			"devInfo": "Refill the energy bar of the Z-pad to full after it is fully drained by Homonculus in chapter 3"},	
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
