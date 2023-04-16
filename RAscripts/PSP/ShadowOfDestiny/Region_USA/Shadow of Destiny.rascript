@@ -31,9 +31,8 @@ function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer(
 // INTERACTION IDs WITH NPCs, ENVIRONMENT & ITEMS 
 // ************************************************
 function interactionID_1() 	=> dword(0xA9EFDC)			// $A9EFDC: [32-bit] Interaction ID 1
-														//		- Changes on interaction
+														//		- Unique per interactable NPC or environment item
 														// 		- Doesn't reset back to a default value after interaction is done
-														// 		- Unique per interaction 
 function interactionID_2() 	=> dword(0xA9EFE4)			// $A9EFE4: [32-bit] Interaction ID 2
 														// 		- Resets to 0x0 when interaction is done
 														//		- Unique per interaction 
@@ -238,7 +237,7 @@ _achievements = {
 		// 	"devInfo": "Choose to build a statue, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this is completable in other chapters
 			"id": 307499, "points": 2, "hasTips": true,
-			"devInfo": "Interact with all 7 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
+			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor"}, 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the coated man and woman in the present during the prologue or chapter 1"},
@@ -514,9 +513,11 @@ _achievementTriggers = {
 	"a_LostYoungCouple1": function LostYoungCouple1() {
 		// Private functions
 		function measuredComparison() { return
-			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a329c0),		// Add hit: +1  	=> for talking to man
-				once(interactionID_2() == 0x08a32a10)		// Add hit: +1 = 2 	=> for talking to woman 
+			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a329ac),				// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a329fc),				// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a329c0),		// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a32a10)		// Add hit: +1 = 4 	=> for talking to woman 2nd time
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
@@ -524,13 +525,25 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() == 0x08a329fc 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() == 0x08a329ac 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
 				interactionID_2() == 0x08a32a10 	&&
 				interactionID_3() == 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
 				interactionID_2() == 0x08a329c0 	&&
 				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
@@ -577,14 +590,15 @@ _achievementTriggers = {
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
-			tally(7, [										//			= 7
-				once(interactionID_2() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting
-				once(interactionID_2() == 0x08a32240),		// Add hit: +1	=> Town planter painting
-				once(interactionID_2() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting
-				once(interactionID_2() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait
-				once(interactionID_2() == 0x08a322e0),		// Add hit: +1	=> Burning house painting
-				once(interactionID_2() == 0x08a3231c),		// Add hit: +1	=> Landscape painting
-				once(interactionID_2() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting
+			tally(8, [										//			= 8
+				once(interactionID_2() == 0x08a321c8),		// Add hit: +1 	=> Town Streets painting (downstairs)
+				once(interactionID_2() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting (upstairs)
+				once(interactionID_2() == 0x08a32240),		// Add hit: +1	=> Town planter painting (upstairs)
+				once(interactionID_2() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting (upstairs)
+				once(interactionID_2() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait (upstairs)
+				once(interactionID_2() == 0x08a322e0),		// Add hit: +1	=> Burning house painting (upstairs)
+				once(interactionID_2() == 0x08a3231c),		// Add hit: +1	=> Landscape painting (upstairs)
+				once(interactionID_2() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting (upstairs)
 			])}
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter3")) && 		// Hit count 100 => when loading another save to another chapter, there's a few							 
@@ -592,37 +606,42 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_2() == 0x08a32204 	&&		// Block => Squire's crest painting
+				interactionID_2() == 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
+				interactionID_3() == 0x163			&&	
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_2() == 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
 				interactionID_3() == 0x164			&&	
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a32240 	&&		// Block => Town planter painting
+				interactionID_2() == 0x08a32240 	&&		// Block => Town planter painting (upstairs)
 				interactionID_3() == 0x165			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a3227c 	&&		// Block => Oddly dressed man painting
+				interactionID_2() == 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
 				interactionID_3() == 0x166			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a322b8 	&&		// Block => Alchemist portrait
+				interactionID_2() == 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
 				interactionID_3() == 0x167			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a322e0 	&&		// Block => Burning house painting
+				interactionID_2() == 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
 				interactionID_3() == 0x168			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a3231c 	&&		// Block => Landscape painting
+				interactionID_2() == 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
 				interactionID_3() == 0x169			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a32344 	&&		// Block => Alchemy lab painting
+				interactionID_2() == 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
 				interactionID_3() == 0x16a			&&
 				!isCutsceneActive()
 			) &&
@@ -708,7 +727,7 @@ _achievementDescriptions = {
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
-	"a_ArtAppreciator": 							{"en": "Admire the paintings in the Brum Museum"}, 
+	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
