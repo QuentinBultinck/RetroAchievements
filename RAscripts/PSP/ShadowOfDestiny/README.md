@@ -21,7 +21,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 <Details>
     <summary><h3>:arrow_down_small: Click me/expand me :arrow_down_small: </h3> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
     
-*Achievements are divided by category*
+*(Achievements are divided by category)*
 
 ## :gem: Story completion
 
