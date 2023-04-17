@@ -243,7 +243,7 @@ _achievements = {
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
-		"a_LostYoungCouple2": { // WIP
+		"a_LostYoungCouple2": { // WORKING
 			"id": 00000, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
@@ -518,7 +518,7 @@ _achievementTriggers = {
 		onScreenTextID(1) == 0					&&
 		onScreenTextID(7) == 0					&&
 		onScreenTextID(8) == 0},
-	"a_LostYoungCouple1": function LostYoungCouple1() { // TODO update to also talk to them both a third time
+	"a_LostYoungCouple1": function LostYoungCouple1() { 
 		// Private functions
 		function measuredComparison() { return
 			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
@@ -526,7 +526,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a329fc),			// Add hit: +1  	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a329c0),			// Add hit: +1  	=> for talking to man 2nd time
 				once(interactionID_2() == 0x08a32a10),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2() == 0x08a329d4),				// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2() == 0x08a329d4),			// Add hit: +1  	=> for talking to man 3rd time
 				once(interactionID_2() == 0x08a32a24)			// Add hit: +1 = 6	=> for talking to woman 3rd time
 			])}	
 		function measuredIfComparison() { return
@@ -574,38 +574,52 @@ _achievementTriggers = {
 	"a_LostYoungCouple2": function LostYoungCouple2() {  
 		// Private functions
 		function measuredComparison() { return
-			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a329ac),				// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a329fc),				// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a329c0),		// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a32a10)		// Add hit: +1 = 4 	=> for talking to woman 2nd time
+			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a32c18),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a32c68),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a32c2c),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a32c7c),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2() == 0x08a32c40),			// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2() == 0x08a32c90)			// Add hit: +1 = 6	=> for talking to woman 3rd time
 			])}	
 		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
+			repeated(100, isCurrentChapter("Chapter3")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() == 0x08a329fc 	&&
+				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() == 0x08a32c68 	&&
 				interactionID_3() == 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() == 0x08a329ac 	&&
+				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() == 0x08a32c18 	&&
 				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() == 0x08a32a10 	&&
+				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() == 0x08a32c7c 	&&
 				interactionID_3() == 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() == 0x08a329c0 	&&
+				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() == 0x08a32c2c 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() == 0x08a32c90 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() == 0x08a32c40 	&&
 				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
 			) &&
