@@ -162,18 +162,18 @@ _achievements = {
 		"a_Chapter2Complete": { // WORKING
 			"id": 306922, "points": 2, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
-		// TODO "a_Chapter3Complete": {
-		//	"id": 306921, "points": 3, "hasTips": false,
-		// 	"devInfo": "Complete chapter 3",
+		"a_Chapter3Complete": { // WORKING
+			"id": 306921, "points": 3, "hasTips": false,
+			"devInfo": "Complete chapter 3"},
 		// TODO "a_Chapter4Complete": {
 		//	"id": 308964, "points": 4, "hasTips": false,
-		//	"devInfo": "Complete chapter 4",
+		//	"devInfo": "Complete chapter 4},
 		// TODO "a_Chapter5Complete": {
-		//	"id": 000000, "points": 4, "hasTips": false,
-		//	"devInfo": "Complete chapter 5",
+		//	"id": 000000, "points": 5, "hasTips": false,
+		//	"devInfo": "Complete chapter 5},
 		// TODO "a_Chapter6Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
-		// 	"devInfo": "Complete chapter 6",
+		// 	"devInfo": "Complete chapter 6},
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 7"},
@@ -244,9 +244,9 @@ _achievements = {
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
 		"a_LostYoungCouple2": { // WORKING
-			"id": 00000, "points": 5, "hasTips": true,
+			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
-		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
+		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ is Chapter 3 => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs "}, 
 	},
@@ -321,6 +321,35 @@ _achievementTriggers = {
 				isChapterFinished("Chapter2")
 			)
 		)},
+	"a_Chapter3Complete": function Chapter3Complete() { return
+		// Core group 
+		never(!isGameRunning()) 	&&
+		never(!isCutsceneActive()) 	&&
+		( 	
+			( 		// Alt 1 => true when last chapter cutscene finishes
+				unless(!isCurrentChapter("Chapter3")) &&
+				tally(3, [
+					once(	// Block A => IDs 1st cutscene sequence 
+						currentCutsceneId(1) == 0xd88c0086 	&& 
+						currentCutsceneId(6) == 0xfe4d2e91 	&&
+						currentCutsceneId(14) == 0x01bd0079),	
+					once(	// Block B => IDs 2nd cutscene sequence 
+						currentCutsceneId(3) == 0x11101119	&& 
+						currentCutsceneId(11) == 0x17f8e6df	&&
+						currentCutsceneId(18) == 0x011bfc57),
+					once(	// Block C => IDs 3rd cutscene sequence 
+						currentCutsceneId(2) == 0x0098fe51 	&& 
+						currentCutsceneId(9) == 0xf2e68100 	&&
+						currentCutsceneId(19) == 0x00012000)]) 	&&
+				tally(2160, [
+					repeated(720, currentCutsceneId(12) == 0xffcd0467 && priorCutsceneId(12) == 0xfd08c001), 
+					repeated(720, currentCutsceneId(15) == 0xfcff142d && priorCutsceneId(15) == 0xe6c5), 
+					repeated(720, currentCutsceneId(18) == 0x19191920 && priorCutsceneId(18) == 0x44607539), 
+				])
+			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Chapter3")
+			)
+		)},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning() 				|| 
@@ -332,7 +361,8 @@ _achievementTriggers = {
 		repeated(350, currentCutsceneId(10) == 0x1ce0d25d) 		&&
 		repeated(350, currentCutsceneId(13) == 0xc841ccb) 		&&
 		repeated(350, currentCutsceneId(15) == 0x99991119)},
-	"a_EggCollection1": function a_EggCollection1() { return		 
+
+	"a_EggCollection1": function EggCollection1() { return		 
 		never(!isGameRunning()) 				&& // This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 				&&
 		never(!isCurrentChapter("Chapter1")) 	&&	
@@ -784,13 +814,14 @@ _achievementTriggers = {
 // ACHIEVEMENT TITLES & DESCRIPTIONS
 // ***********************************************************************************
 _achievementTitles = {
-	"a_PrologueComplete": { 						"en": "Prologue completed",
+	"a_PrologueComplete": { 						"en": "Complete the prologue",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Chapter 1 completed",
+	"a_Chapter1Complete": {							"en": "Complete chapter 1",
 													"nl": "Hoofdstuk 1 voltooid",
 													"fr": "Chapitre 1 terminé"},
-	"a_Chapter2Complete": 							{"en": "Chapter 2 completed"},
+	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
+	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
 	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
@@ -814,7 +845,8 @@ _achievementDescriptions = {
 	"a_Chapter1Complete": {							"en": "Defied fate... again",															
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": 							{"en": "Defied fate, but not without loose ends"},
+	"a_Chapter2Complete": 							{"en": "Defied fate, but left a loose ends"},
+	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},

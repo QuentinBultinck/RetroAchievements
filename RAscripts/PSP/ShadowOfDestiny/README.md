@@ -25,17 +25,17 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title + <i>ID (dev info)</i> | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>Prologue completed</b><br><i>a_PrologueComplete</i> | / | / |
-| :trophy: <b>Chapter 1 completed</b><br><i>a_Chapter1Complete</i> | / | / |
-| :trophy: <b>Chapter 2 completed</b><br><i>a_Chapter2Complete</i> | / | / |
-| :trophy: <b>Chapter 3 completed</b><br><i>a_Chapter3Complete</i> | / | / |
-| :trophy: <b>Chapter 4 completed</b><br><i>a_Chapter4Complete</i> | / | / |
-| :trophy: <b>Chapter 5 completed</b><br><i>a_Chapter6Complete</i> | / | / |
-| :trophy: <b>Chapter 6 completed</b><br><i>a_Chapter6Complete</i> | / | / |
-| :trophy: <b>Chapter 7 completed</b><br><i>a_Chapter7Complete</i> | / | / |
-| :trophy: <b>Chapter 8 completed</b><br><i>a_Chapter8Complete</i> | / | / |
-| :trophy: <b>Epilogue completed</b><br><i>a_EpilogueComplete</i> | / | / |
-| :trophy: <b>EX chapter completed</b><br><i>a_EXChapterComplete</i> | / | / |
+| :trophy: <b>Complete the prologue</b><br><i>a_PrologueComplete</i> | / | / |
+| :trophy: <b>Complete chapter 1</b><br><i>a_Chapter1Complete</i> | / | / |
+| :trophy: <b>Complete chapter 2</b><br><i>a_Chapter2Complete</i> | / | / |
+| :trophy: <b>Complete chapter 3</b><br><i>a_Chapter3Complete</i> | / | / |
+| :trophy: <b>Complete chapter 4</b><br><i>a_Chapter4Complete</i> | / | / |
+| :trophy: <b>Complete chapter 5</b><br><i>a_Chapter6Complete</i> | / | / |
+| :trophy: <b>Complete chapter 6</b><br><i>a_Chapter6Complete</i> | / | / |
+| :trophy: <b>Complete chapter 7</b><br><i>a_Chapter7Complete</i> | / | / |
+| :trophy: <b>Complete chapter 8</b><br><i>a_Chapter8Complete</i> | / | / |
+| :trophy: <b>Complete the prologue</b><br><i>a_EpilogueComplete</i> | / | / |
+| :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | / | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### :gem: Branching paths
