@@ -16,6 +16,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + Don't skip the cutscenes, this should only be a problem if you're replaying the game, since you can't skip if you haven't seen the cutscene yet.
 + Fast forwarding with emulator tools is allowed and should still trigger the achievements.
 
+***
+
 <Details>
     <summary><h3>:arrow_down_small: Click me/expand me :arrow_down_small: </h3> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
 
