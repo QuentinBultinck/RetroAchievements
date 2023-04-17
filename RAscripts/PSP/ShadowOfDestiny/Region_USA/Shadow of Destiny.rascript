@@ -239,11 +239,14 @@ _achievements = {
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the coated man and woman in the present during the prologue or chapter 1"},
+			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the lost man and woman in 1580 during chapter 2"},
-		// TODO "a_FindAllEnergyOrbs1979": { // CONCEPT a_FindAllEnergyOrbs1979 after energy is drained? Possible?
+			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
+		"a_LostYoungCouple2": { // WIP
+			"id": 00000, "points": 5, "hasTips": true,
+			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
+		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs "}, 
 	},
@@ -515,7 +518,60 @@ _achievementTriggers = {
 		onScreenTextID(1) == 0					&&
 		onScreenTextID(7) == 0					&&
 		onScreenTextID(8) == 0},
-	"a_LostYoungCouple1": function LostYoungCouple1() {
+	"a_LostYoungCouple1": function LostYoungCouple1() { // TODO update to also talk to them both a third time
+		// Private functions
+		function measuredComparison() { return
+			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a329ac),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a329fc),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a329c0),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a32a10),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2() == 0x08a329d4),				// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2() == 0x08a32a24)			// Add hit: +1 = 6	=> for talking to woman 3rd time
+			])}	
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
+			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+		// Trigger 
+		return 
+			unless(
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() == 0x08a329fc 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() == 0x08a329ac 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() == 0x08a32a10 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() == 0x08a329c0 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() == 0x08a32a24 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() == 0x08a329d4 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_LostYoungCouple2": function LostYoungCouple2() {  
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [	// this hit count becomes the hit count for the final comparison in the array
@@ -728,7 +784,8 @@ _achievementTitles = {
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
 	"a_EikeTheFlorist": 							{"en": "Eike the florist"},
-	"a_LostYoungCouple1": 							{"en": "Lost young couple #1"},
+	"a_LostYoungCouple1": 							{"en": "Reunited, part 1"},
+	"a_LostYoungCouple2": 							{"en": "Reunited, part 2"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
@@ -752,6 +809,7 @@ _achievementDescriptions = {
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
+	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
