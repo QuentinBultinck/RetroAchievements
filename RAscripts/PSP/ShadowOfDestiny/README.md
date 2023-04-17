@@ -17,7 +17,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + Fast forwarding with emulator tools is allowed and should still trigger the achievements.
 
 <Details>
-    <summary><h3>Click me/expand me :arrow_down_small: </h3> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
+    <summary><h3>:arrow_down_small: Click me/expand me :arrow_down_small: </h3> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
 
 
 
