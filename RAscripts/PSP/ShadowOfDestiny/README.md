@@ -20,12 +20,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 <Details>
     <summary><h3>:arrow_down_small: Click me/expand me :arrow_down_small: </h3> to view the achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:</summary>
+    
+<b>Achievements</b> *divided by category*
 
-
-
-## <b>Achievements</b> *divided by category*
-
-### :gem: Story completion
+## :gem: Story completion
 
 | Title + <i>ID (dev info)</i> | Explanation & tips | Specific unlock criteria |
 |----|---|---|
@@ -42,7 +40,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | / | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-### :gem: Branching paths
+## :gem: Branching paths
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>An egg?</b><br><i>a_GetOrnamentalEgg</i> | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
@@ -50,7 +48,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Egg collection #2</b><br><i>a_EggCollection2</i> | Prerequisite achievement => a_GetOrnamentalEgg <br> In chapter 3 go to the bar and head downstairs | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-### :gem: Endings
+## :gem: Endings
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>_title</b> <br> <i>a_EndingA</i> | _explanation_ | _unlockCriteria_ |
@@ -60,7 +58,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>_title</b> <br> <i>a_EndingD</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-### :gem: Side content & extra cutscenes
+## :gem: Side content & extra cutscenes
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>An interesting shape</b><br><i>a_IntroduceEggCollecting</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
@@ -74,7 +72,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Reunited, part 2</b><br><i>a_LostYoungCouple2</i> | - Find & interact with the lost man and woman in the Middle Ages <br> 1. Talk to both once <br> 2. Talk to both again (2nd time) <br> 3. Go to Margarette's house (Alchemist's house) <br> 4. Find & interact with both the man and woman again (3rd time) <br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP")| Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-### :gem: Hidden cutscenes that lead to death
+## :gem: Hidden cutscenes that lead to death
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>That's a big no no</b><br><i>a_MetYouBefore</i> | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
