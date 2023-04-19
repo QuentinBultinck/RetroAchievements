@@ -46,14 +46,14 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
 _cutsceneIDs = {		//  
-	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID // unused
+	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID 
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
 	4: 0x1DF6724, 		// $1DF6724: [32-bit] Cutscene ID
 	5: 0x1DF6F60, 		// $1DF6F60: [32-bit] Cutscene ID
 	6: 0x1DF742A, 		// $1DF742A: [32-bit] Cutscene ID
 	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID // Unused
-	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID // Unused
+	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID
 	9: 0x1DF8229, 		// $1DF8229: [32-bit] Cutscene ID
 	10: 0x1DF8442,		// $1DF8442: [32-bit] Cutscene ID
 	11: 0x1DF8B14, 		// $1DF8B14: [32-bit] Cutscene ID
@@ -91,14 +91,14 @@ _chapterIDs = {
 function chapterId() => byte(0xB95704)						// $B95704: [8-bit] Chapter ID
 function isCurrentChapter(string_chapter) => chapterId() == _chapterIDs[string_chapter]
 function isChapterFinished(string_chapter) { return 
-	prior(chapterId()) == _chapterIDs[string_chapter] &&
+	prev(chapterId()) == _chapterIDs[string_chapter] &&
 	chapterId() == _chapterIDs[string_chapter] + 0x1}
 
 
 // INVENTORY LOGIC 
 // *****************
 _inventoryItemIds = { 
-	"D-pad": 0x0,
+	"D-pad": 0x0, // PSP version this is called Z-Pad
 	"OrnamentalEgg": 0x2,
 	"Cellphone": 0x1,
 	"FryingPan": 0x4,
@@ -240,9 +240,9 @@ _achievements = {
 		"a_ArtAppreciator": { // WORKING 		// TODO check if this cheevo is completable in other chapters
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		 "a_AntiquesEule": { // WORKING 		// TODO check if antiques change based on choices
+		 "a_AntiquesEule": { // WORKING 		// TODO choices in chapter 4 => change relics in chapter 6
 			"id": 310132, "points": 3, "hasTips": true,
-			"devInfo": "Visit 'Antique shop Eule' and interact with all relics, Shop is open in chapter 3, 4 and 6 (1980)"},
+			"devInfo": "Visit 'Antique shop Eule' and interact with all original relics, Shop is open in chapter 3, 4 and 6 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
@@ -252,6 +252,9 @@ _achievements = {
 		"a_EnigmaticCouple3": { // WORKING
 			"id": 310134, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
+		"a_EnigmaticCouple4": { // WIP
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
@@ -593,39 +596,39 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() == 0x08a329fc 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() != 0x08a329fc 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() == 0x08a329ac 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() != 0x08a329ac 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() == 0x08a32a10 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() != 0x08a32a10 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() == 0x08a329c0 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() != 0x08a329c0 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97810 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() == 0x08a32a24 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() != 0x08a32a24 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b97804 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() == 0x08a329d4 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() != 0x08a329d4 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -647,39 +650,39 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() == 0x08a32c68 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() != 0x08a32c68 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() == 0x08a32c18 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() != 0x08a32c18 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() == 0x08a32c7c 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() != 0x08a32c7c 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() == 0x08a32c2c 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() != 0x08a32c2c 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() == 0x08a32c90 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() != 0x08a32c90 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() == 0x08a32c40 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() != 0x08a32c40 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -701,39 +704,39 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() == 0x08a33050 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() != 0x08a33050 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() == 0x08a33000 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() != 0x08a33000 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() == 0x08a33064 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() != 0x08a33064 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() == 0x08a33014 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() != 0x08a33014 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() == 0x08a33078 	&&
-				interactionID_3() == 0x197			&&
+				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() != 0x08a33078 	&&
+				interactionID_3() != 0x197			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() == 0x08a33028 	&&
-				interactionID_3() == 0x198			&&
+				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() != 0x08a33028 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -756,23 +759,23 @@ _achievementTriggers = {
 		// Trigger
 		return  
 			unless(
-				interactionID_2() == 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() == 0x57			&&
+				interactionID_2() != 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() != 0x57			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() == 0x56			&&
+				interactionID_2() != 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() != 0x56			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() == 0x57			&&
+				interactionID_2() != 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() != 0x57			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() == 0x56			&&
+				interactionID_2() != 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() != 0x56			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -790,27 +793,27 @@ _achievementTriggers = {
 		// Trigger
 		return  
 			unless(
-				interactionID_1() == 0x08b994d0 	&&
-				interactionID_2() == 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() == 0x57			&&
+				interactionID_1() != 0x08b994d0 	&&
+				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() != 0x57			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_1() == 0x08b994c4		&&
-				interactionID_2() == 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() == 0x56			&&
+				interactionID_1() != 0x08b994c4		&&
+				interactionID_2() != 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() != 0x56			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b994d0 		&&
-				interactionID_2() == 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() == 0x57				&&
+				interactionID_1() != 0x08b994d0 		&&
+				interactionID_2() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() != 0x57				&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_1() == 0x08b994c4 		&&
-				interactionID_2() == 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() == 0x56				&&
+				interactionID_1() != 0x08b994c4 		&&
+				interactionID_2() != 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() != 0x56				&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -828,30 +831,60 @@ _achievementTriggers = {
 		// Trigger
 		return  
 			unless(
-				interactionID_1() == 0x08b9dc8c 	&&
-				interactionID_2() == 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() == 0x57			&&
+				interactionID_1() != 0x08b9dc8c 	&&
+				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() != 0x57			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_1() == 0x08b9dc80		&&
-				interactionID_2() == 0x08a30af8		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() == 0x56			&&
+				interactionID_1() != 0x08b9dc80		&&
+				interactionID_2() != 0x08a30af8		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() != 0x56			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b9dc8c 		&&
-				interactionID_2() == 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() == 0x57				&&
+				interactionID_1() != 0x08b9dc8c 		&&
+				interactionID_2() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() != 0x57				&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_1() == 0x08b9dc80 		&&
-				interactionID_2() == 0x08a30b0c 		&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() == 0x56				&&
+				interactionID_1() != 0x08b9dc80 		&&
+				interactionID_2() != 0x08a30b0c 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() != 0x56				&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnigmaticCouple4": function EnigmaticCouple4() {
+		// Private functions
+		function measuredComparison() { return
+			tally(3, [													// 			= 3
+				once(interactionID_2() == 0x08a30b5c),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a30b70),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a30c9c),					// Add hit: +1	=> for talking to woman 
+			])}
+		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter5"))
+		// Trigger
+		return  
+			unless(
+				interactionID_1() != 0x08b9d400 	&&
+				interactionID_2() != 0x08a30c9c 	&&		// Block => cutscene when talking to woman
+				interactionID_3() != 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() != 0x08b9d3f4		&&
+				interactionID_2() != 0x08a30b5c		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() != 0x56			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() != 0x08b9d3f4 	&&
+				interactionID_2() != 0x08a30b70 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() != 0x56			&&
+				!isCutsceneActive()
+			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
@@ -872,43 +905,43 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_2() == 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
-				interactionID_3() == 0x163			&&	
+				interactionID_2() != 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
+				interactionID_3() != 0x163			&&	
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
-				interactionID_3() == 0x164			&&	
+				interactionID_2() != 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
+				interactionID_3() != 0x164			&&	
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a32240 	&&		// Block => Town planter painting (upstairs)
-				interactionID_3() == 0x165			&&
+				interactionID_2() != 0x08a32240 	&&		// Block => Town planter painting (upstairs)
+				interactionID_3() != 0x165			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
-				interactionID_3() == 0x166			&&
+				interactionID_2() != 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
+				interactionID_3() != 0x166			&&
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_2() == 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
-				interactionID_3() == 0x167			&&
+				interactionID_2() != 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
+				interactionID_3() != 0x167			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
-				interactionID_3() == 0x168			&&
+				interactionID_2() != 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
+				interactionID_3() != 0x168			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
-				interactionID_3() == 0x169			&&
+				interactionID_2() != 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
+				interactionID_3() != 0x169			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_2() == 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
-				interactionID_3() == 0x16a			&&
+				interactionID_2() != 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
+				interactionID_3() != 0x16a			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() &&
@@ -933,27 +966,27 @@ _achievementTriggers = {
 		// Trigger 
 		return 
 			unless(
-				interactionID_1() == 0x08b99500		&&	// Block => Festival mask
-				interactionID_2() == 0x08a31610 	&&
-				interactionID_3() == 0xc6			&&	
+				interactionID_1() != 0x08b99500		&&	// Block => Festival mask
+				interactionID_2() != 0x08a31610 	&&
+				interactionID_3() != 0xc6			&&	
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b9950c		&&	// Block => Old rope
-				interactionID_2() == 0x08a315c0 	&&
-				interactionID_3() == 0x98			&&	
+				interactionID_1() != 0x08b9950c		&&	// Block => Old rope
+				interactionID_2() != 0x08a315c0 	&&
+				interactionID_3() != 0x98			&&	
 				!isCutsceneActive()
 			) &&
 			unless(	
-				interactionID_1() == 0x08b994f4		&&	// Block => Old antidote bottle
-				interactionID_2() == 0x08a31638 	&&
-				interactionID_3() == 0x79			&&
+				interactionID_1() != 0x08b994f4		&&	// Block => Old antidote bottle
+				interactionID_2() != 0x08a31638 	&&
+				interactionID_3() != 0x79			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() == 0x08b994e8		&&	// Block => Franssen Shop sign
-				interactionID_2() == 0x08a315e8 	&&
-				interactionID_3() == 0x8e			&&
+				interactionID_1() != 0x08b994e8		&&	// Block => Franssen Shop sign
+				interactionID_2() != 0x08a315e8 	&&
+				interactionID_3() != 0x8e			&&
 				!isCutsceneActive()
 			) &&
 			isCutsceneFinished() && 
@@ -1042,6 +1075,7 @@ _achievementTitles = {
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_EnigmaticCouple2": 							{"en": "Enigmatic couple #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic couple #3"}, 
+	"a_EnigmaticCouple4": 							{"en": "Enigmatic couple #4"},	
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
@@ -1072,10 +1106,11 @@ _achievementDescriptions = {
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
+	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman during chapter 5"},	
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
-	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule"},
+	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
