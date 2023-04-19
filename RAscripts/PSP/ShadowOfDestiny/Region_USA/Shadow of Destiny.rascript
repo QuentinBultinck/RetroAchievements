@@ -200,7 +200,7 @@ _achievements = {
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_EggCollection2": { // WORKING
 			"id": 306976, "points": 5, "hasTips": true,
-			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 "},
+			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
@@ -386,16 +386,25 @@ _achievementTriggers = {
 		repeated(420, currentCutsceneId(14) == 0x30ff26b) 	&&
 		repeated(420, currentCutsceneId(16) == 0x11d8fa)},
 	"a_EggCollection2": function EggCollection2() { return 
-		never( // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
-			!isGameRunning() 				||
-			!isCurrentChapter("Chapter3") 	||
-			!isCutsceneActive())			&&		
-		repeated(470, priorCutsceneId(22) == 0x68df3900) 	&& // This block => last cutscene has run for about 470 frames
-		repeated(470, priorCutsceneId(12) == 0x18e6) 		&&
-		repeated(470, priorCutsceneId(17) == 0x66319a2) 	&& 
-		repeated(470, currentCutsceneId(22) == 0xd4faa9fa) 	&&
-		repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
-		repeated(470, currentCutsceneId(17) == 0xff2009cc)},
+		never(!isGameRunning() || !isCutsceneActive()) &&
+		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
+		(	
+			(
+				repeated(470, priorCutsceneId(22) == 0x68df3900) 	&& // Block => IDs cutscene in chapter 3 when giving egg to barman
+				repeated(470, priorCutsceneId(12) == 0x18e6) 		&&
+				repeated(470, priorCutsceneId(17) == 0x66319a2) 	&& 
+				repeated(470, currentCutsceneId(22) == 0xd4faa9fa) 	&&
+				repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
+				repeated(470, currentCutsceneId(17) == 0xff2009cc)
+			) || (
+				repeated(470, priorCutsceneId(19) == 0x2000000) 	&& // Block => IDs cutscene in chapter 4 when giving egg to barman
+				repeated(470, priorCutsceneId(12) == 0xfe1506b8) 	&&
+				repeated(470, priorCutsceneId(17) == 0x2881cf5) 	&& 
+				repeated(470, currentCutsceneId(19) == 0x04006a00) 	&&
+				repeated(470, currentCutsceneId(12) == 0x00b20009) 	&&
+				repeated(470, currentCutsceneId(17) == 0x167014f2)
+			)
+		)},
 	"a_IntroduceEggCollecting": function IntroduceEggCollecting() { return 
 		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 						&&
@@ -1028,8 +1037,8 @@ _achievementDescriptions = {
 	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
-	"a_EggCollection1": 							{"en": "Give an egg to a barman during chapter 1"},
-	"a_EggCollection2": 							{"en": "Give an egg to a barman during chapter 3"},
+	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
+	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},

@@ -45,7 +45,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 |----|---|---|
 | :trophy: <b>An egg?</b><br><i>a_GetOrnamentalEgg</i> | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
 | :trophy: <b>Egg collection #1</b><br><i>a_EggCollection1</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> 1. In chapter 1, head into the burning bar. <br> 2. Time travel to the past <br> 3. Interact with the fortune teller <br> 4. Go back to the present, Back in the burning bar, interact with the stairs, the door and walk around the bar <br> 5. Go back to the past, this time you spawn inside the bar, if not repeat from step 4. <br> 6. Now go downstairs twice. The second time you go down and if you have the ornamental egg, you will unlock this achievement. | / |
-| :trophy: <b>Egg collection #2</b><br><i>a_EggCollection2</i> | Prerequisite achievement => a_GetOrnamentalEgg <br> In chapter 3 go to the bar and head downstairs | / |
+| :trophy: <b>Egg collection #2</b><br><i>a_EggCollection2</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - In chapter 3 or 4 go to the bar and head downstairs| / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ## :gem: Endings
