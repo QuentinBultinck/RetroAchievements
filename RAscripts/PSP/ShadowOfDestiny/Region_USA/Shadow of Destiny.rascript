@@ -135,6 +135,7 @@ function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units 
 function isCutsceneActive() => bit0(0xA9Eb2C) == 0	// $A9Eb2C: [bit-0] Flag -> is cutscene active
 													//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
 													//		- 1 = no cutscene active
+function isCutsceneFinished() => prior(bit0(0xA9Eb2C)) == 0
 function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running
 												//		- 0 = game is not running, it's in the title screen
 												//		- 1 = game is running
@@ -234,21 +235,30 @@ _achievements = {
 		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // WORKING 		// TODO check if a_ArtAppreciator is completable in other chapters
-			"id": 307499, "points": 3, "hasTips": true,
+		"a_ArtAppreciator": { // WORKING 		// TODO check if this cheevo is completable in other chapters
+			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
+		 "a_AntiquesEule": { // WORKING 		// TODO check if antiques change based on choices
+			"id": 000000, "points": 3, "hasTips": true,
+			"devInfo": "Visit 'Antique shop Eule' and interact with all relics, Shop is open in chapter 3, 4 and 6 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
 		"a_EnigmaticCouple2": { // WORKING
 			"id": 310131, "points": 5, "hasTips": true,
-			"devInfo": "Find the coated couple in the present during the prologue or chapter 3"},
+			"devInfo": "Find the coated couple in the present during chapter 3"},
+		"a_EnigmaticCouple3": { // WORKING
+			"id": 000, "points": 5, "hasTips": true,
+			"devInfo": "Find the coated couple in the present during chapter 4"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
 		"a_LostYoungCouple2": { // WORKING
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
+		"a_LostYoungCouple3": {
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Interact with the lost couple in 1580 during chapter 4"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ is Chapter 3 => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs "}, 
@@ -535,22 +545,6 @@ _achievementTriggers = {
 						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
 				)
 		)},
-	"a_SquireOrdersStatue": function SquireOrdersStatue() { return
-		never(!isGameRunning())					&&
-		never(!isCutsceneActive())				&&
-		never(!isCurrentChapter("Chapter2"))		&&
-		isCurrentSelectedInventoryItem("SquireCrest") 	&& 
-
-		currentCutsceneId(14) == 0x4831736				&& // This block => check if cutscene after choice is has started
-		currentCutsceneId(15) == 0x431ab010				&&
-		currentCutsceneId(17) == 0x4f1f9ae				&&
-
-		prior(onScreenTextID(1)) == 0x40ff60 	&& // This block => check if statue is chosen
-		prior(onScreenTextID(7)) == 0x4fffe9 	&&
-		prior(onScreenTextID(8)) == 0x4f00a2	&&
-		onScreenTextID(1) == 0					&&
-		onScreenTextID(7) == 0					&&
-		onScreenTextID(8) == 0},
 	"a_LostYoungCouple1": function LostYoungCouple1() { 
 		// Private functions
 		function measuredComparison() { return
@@ -603,6 +597,7 @@ _achievementTriggers = {
 				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
 			) &&
+			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple2": function LostYoungCouple2() {  
 		// Private functions
@@ -656,6 +651,61 @@ _achievementTriggers = {
 				interactionID_3() == 0x198			&&
 				!isCutsceneActive()
 			) &&
+			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_LostYoungCouple3" : function LostYoungCouple3() {
+				// Private functions
+		function measuredComparison() { return
+			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a33000),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a33050),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a33014),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a33064),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2() == 0x08a33028),			// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2() == 0x08a33078)			// Add hit: +1 = 6	=> for talking to woman 3rd time
+			])}	
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
+			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+		// Trigger 
+		return 
+			unless(
+				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() == 0x08a33050 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() == 0x08a33000 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() == 0x08a33064 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() == 0x08a33014 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2() == 0x08a33078 	&&
+				interactionID_3() == 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2() == 0x08a33028 	&&
+				interactionID_3() == 0x198			&&
+				!isCutsceneActive()
+			) &&
+			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		// Private functions
@@ -694,6 +744,7 @@ _achievementTriggers = {
 				interactionID_3() == 0x56			&&
 				!isCutsceneActive()
 			) &&
+			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
 		// Private functions
@@ -731,6 +782,45 @@ _achievementTriggers = {
 				interactionID_3() == 0x56				&&
 				!isCutsceneActive()
 			) &&
+			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnigmaticCouple3": function EnigmaticCouple3() {
+		// Private functions
+		function measuredComparison() { return
+			tally(4, [													// 			= 4
+				once(interactionID_2() == 0x08a30b0c),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a30af8),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
+			])}
+		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter4"))
+		// Trigger
+		return  
+			unless(
+				interactionID_1() == 0x08b9dc8c 	&&
+				interactionID_2() == 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() == 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() == 0x08b9dc80		&&
+				interactionID_2() == 0x08a30af8		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() == 0x56			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b9dc8c 		&&
+				interactionID_2() == 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() == 0x57				&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() == 0x08b9dc80 		&&
+				interactionID_2() == 0x08a30b0c 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() == 0x56				&&
+				!isCutsceneActive()
+			) &&
+			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
@@ -747,7 +837,7 @@ _achievementTriggers = {
 			])}
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter3")) && 		// Hit count 100 => when loading another save to another chapter, there's a few							 
-			isGameRunning()}									// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
+			isGameRunning()}									// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that	
 		// Trigger 
 		return 
 			unless(
@@ -790,6 +880,52 @@ _achievementTriggers = {
 				interactionID_3() == 0x16a			&&
 				!isCutsceneActive()
 			) &&
+			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_AntiquesEule": function AntiquesEule() {
+		// Private functions
+		function measuredComparison() { return
+			tally(4, [										//			= 4
+				once(interactionID_2() == 0x08a31610),		// Add hit: +1 	=> Festival mask
+				once(interactionID_2() == 0x08a315c0),		// Add hit: +1 	=> Old rope
+				once(interactionID_2() == 0x08a31638),		// Add hit: +1	=> Old antidote bottle
+				once(interactionID_2() == 0x08a315e8)		// Add hit: +1	=> Franssen Shop sign
+
+			])}
+		function measuredIfComparison() { return
+			isGameRunning() && 
+			(
+				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
+				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
+				repeated(100, isCurrentChapter("Chapter6"))	
+			)}
+		// Trigger 
+		return 
+			unless(
+				interactionID_1() == 0x08b99500		&&	// Block => Festival mask
+				interactionID_2() == 0x08a31610 	&&
+				interactionID_3() == 0xc6			&&	
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b9950c		&&	// Block => Old rope
+				interactionID_2() == 0x08a315c0 	&&
+				interactionID_3() == 0x98			&&	
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() == 0x08b994f4		&&	// Block => Old antidote bottle
+				interactionID_2() == 0x08a31638 	&&
+				interactionID_3() == 0x79			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b994e8		&&	// Block => Franssen Shop sign
+				interactionID_2() == 0x08a315e8 	&&
+				interactionID_3() == 0x8e			&&
+				!isCutsceneActive()
+			) &&
+			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
@@ -846,7 +982,6 @@ _achievementTriggers = {
 				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x440000 	&&
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x41fff6)
 		)},
-
 	// "a_Template": function Template() {},
 }
 
@@ -869,13 +1004,16 @@ _achievementTitles = {
 	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
 	"a_EikeTheMagician": 							{"en": "Eike the magician"},
 	"a_EikeTheFlorist": 							{"en": "Eike the florist"},
-	"a_LostYoungCouple1": 							{"en": "Reunited, part 1"},
-	"a_LostYoungCouple2": 							{"en": "Reunited, part 2"},
+	"a_LostYoungCouple1": 							{"en": "Reunion, part 1"},
+	"a_LostYoungCouple2": 							{"en": "Reunion, part 2"},
+	"a_LostYoungCouple3": 							{"en": "Reunion"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_EnigmaticCouple2": 							{"en": "Enigmatic couple #2"}, 
+	"a_EnigmaticCouple3": 							{"en": "Enigmatic couple #3"}, 
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
+	"a_AntiquesEule": 								{"en": "'Historically' important artifacts"},
 	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
@@ -897,11 +1035,14 @@ _achievementDescriptions = {
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
 	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
+	"a_LostYoungCouple3": 							{"en": "Reunite the lost couple during chapter 4"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
+	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
+	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
