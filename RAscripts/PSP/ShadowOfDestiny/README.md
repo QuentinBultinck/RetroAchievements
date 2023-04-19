@@ -31,7 +31,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Complete chapter 1</b><br><i>a_Chapter1Complete</i> | / | / |
 | :trophy: <b>Complete chapter 2</b><br><i>a_Chapter2Complete</i> | / | / |
 | :trophy: <b>Complete chapter 3</b><br><i>a_Chapter3Complete</i> | / | / |
-| :trophy: <b>Complete chapter 4</b><br><i>a_Chapter4Complete</i> | / | / |
+| :trophy: <b>Complete chapter 4, using a frying pan</b><br><i>a_Chapter4CompletePan</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - [Youtube guide - Frying Pan](https://www.youtube.com/watch?v=0nY35mtvdHQ "Shadow of Destiny - Frying Pan") | / |
 | :trophy: <b>Complete chapter 5</b><br><i>a_Chapter6Complete</i> | / | / |
 | :trophy: <b>Complete chapter 6</b><br><i>a_Chapter6Complete</i> | / | / |
 | :trophy: <b>Complete chapter 7</b><br><i>a_Chapter7Complete</i> | / | / |

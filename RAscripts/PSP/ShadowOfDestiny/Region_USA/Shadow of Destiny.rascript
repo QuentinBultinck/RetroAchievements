@@ -90,11 +90,9 @@ _chapterIDs = {
 }
 function chapterId() => byte(0xB95704)						// $B95704: [8-bit] Chapter ID
 function isCurrentChapter(string_chapter) => chapterId() == _chapterIDs[string_chapter]
-function isChapterFinished(string_chapter) {
-	return 
-		prev(chapterId()) == _chapterIDs[string_chapter] &&
-		chapterId() == _chapterIDs[string_chapter] + 0x1
-}
+function isChapterFinished(string_chapter) { return 
+	prior(chapterId()) == _chapterIDs[string_chapter] &&
+	chapterId() == _chapterIDs[string_chapter] + 0x1}
 
 
 // INVENTORY LOGIC 
@@ -102,9 +100,10 @@ function isChapterFinished(string_chapter) {
 _inventoryItemIds = { 
 	"D-pad": 0x0,
 	"OrnamentalEgg": 0x2,
-	"SquireCrest": 0xf,
+	"Cellphone": 0x1,
+	"FryingPan": 0x4,
 	"Lighter": 0x6,
-	"Cellphone": 0x1
+	"SquireCrest": 0xf,
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -166,15 +165,18 @@ _achievements = {
 		"a_Chapter3Complete": { // WORKING
 			"id": 306921, "points": 3, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
-		// TODO "a_Chapter4Complete": {
-		//	"id": 308964, "points": 4, "hasTips": false,
-		//	"devInfo": "Complete chapter 4},
+		"a_Chapter4CompletePan": { // WORKING
+			"id": 308964, "points": 4, "hasTips": true,
+			"devInfo": "Complete chapter 4, using a frying pan"},
+		// TODO "a_Chapter4CompleteSign": {
+		// 	"id": 00000, "points": 4, "hasTips": false,
+		// 	"devInfo": "Complete chapter 4, using a sign"},
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
-		//	"devInfo": "Complete chapter 5},
+		//	"devInfo": "Complete chapter 5"},
 		// TODO "a_Chapter6Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
-		// 	"devInfo": "Complete chapter 6},
+		// 	"devInfo": "Complete chapter 6"},
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 7"},
@@ -183,7 +185,7 @@ _achievements = {
 		// 	"devInfo": "Complete chapter 8"},
 		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Complete the epilogue "}, 
+		// 	"devInfo": "Complete the epilogue"}, 
 		// TODO "a_EXChapterComplete": {
 		//	"id": 000000, "points": 50, "hasTips": false,
 		// 	"devInfo": "Complete the EX chapter"},
@@ -361,6 +363,26 @@ _achievementTriggers = {
 				])
 			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
 				isChapterFinished("Chapter3")
+			)
+		)},
+	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
+		// Core group 
+		never(!isGameRunning()) 	&&
+		never(!isCutsceneActive()) 	&&
+		isCurrentSelectedInventoryItem("FryingPan") &&
+		( 	
+			( 		// Alt 1 => true when last chapter cutscene finishes AND frying pan was used
+				unless(!isCurrentChapter("Chapter4")) &&
+				tally(3, [
+					once(currentCutsceneId(2) == 0xf5e5191f),
+					once(currentCutsceneId(6) == 0x08b20921),
+					once(currentCutsceneId(11) == 0xec2328a8)
+				]) && 
+				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x55 && 
+				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Chapter4")
 			)
 		)},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
@@ -1006,6 +1028,7 @@ _achievementTitles = {
 													"fr": "Chapitre 1 terminé"},
 	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
 	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
+	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
 	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
@@ -1035,6 +1058,7 @@ _achievementDescriptions = {
 													"fr": "Défié le destin... encore"},
 	"a_Chapter2Complete": 							{"en": "Defied fate, but left a loose ends"},
 	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
+	"a_Chapter4CompletePan": 						{"en": "Saved by an iron skillet"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
