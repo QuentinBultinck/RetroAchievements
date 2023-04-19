@@ -31,7 +31,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Complete chapter 1</b><br><i>a_Chapter1Complete</i> | / | / |
 | :trophy: <b>Complete chapter 2</b><br><i>a_Chapter2Complete</i> | / | / |
 | :trophy: <b>Complete chapter 3</b><br><i>a_Chapter3Complete</i> | / | / |
-| :trophy: <b>Complete chapter 4, using a frying pan</b><br><i>a_Chapter4CompletePan</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - [Youtube guide - Frying Pan](https://www.youtube.com/watch?v=0nY35mtvdHQ "Shadow of Destiny - Frying Pan") | / |
+| :trophy: <b>Complete chapter 4, using a frying pan</b><br><i>a_Chapter4CompletePan</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - [Youtube guide - Frying Pan](https://www.youtube.com/watch?v=0nY35mtvdHQ "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki: Frying Pan](https://shadowofmemories.fandom.com/wiki/Frying_Pan "Shadow of Destiny wiki: Frying Pan")| / || / |
+| :trophy: <b>Complete chapter 4, using a sign</b><br><i>a_Chapter4CompleteSign</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - [Youtube guide - Frying Pan](https://youtu.be/1lyX-I3FTvU "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki - Photo Shop Sign](https://shadowofmemories.fandom.com/wiki/Photo_Shop_Sign "Shadow of Destiny wiki - Photo Shop Sign")| / |
 | :trophy: <b>Complete chapter 5</b><br><i>a_Chapter6Complete</i> | / | / |
 | :trophy: <b>Complete chapter 6</b><br><i>a_Chapter6Complete</i> | / | / |
 | :trophy: <b>Complete chapter 7</b><br><i>a_Chapter7Complete</i> | / | / |

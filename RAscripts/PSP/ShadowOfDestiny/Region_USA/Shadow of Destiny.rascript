@@ -102,6 +102,7 @@ _inventoryItemIds = {
 	"OrnamentalEgg": 0x2,
 	"Cellphone": 0x1,
 	"FryingPan": 0x4,
+	"Sign": 0x5,
 	"Lighter": 0x6,
 	"SquireCrest": 0xf,
 }
@@ -154,23 +155,23 @@ _achievements = {
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
 		"a_PrologueComplete": { // WORKING
-			"id": 306884, "points": 1, "hasTips": false,
+			"id": 306884, "points": 5, "hasTips": false,
 			"devInfo": "Complete the prologue"},
 		"a_Chapter1Complete": { // WORKING
-			"id": 306886, "points": 1, "hasTips": false,
+			"id": 306886, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 1"},
 		"a_Chapter2Complete": { // WORKING
-			"id": 306922, "points": 2, "hasTips": false,
+			"id": 306922, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
 		"a_Chapter3Complete": { // WORKING
-			"id": 306921, "points": 3, "hasTips": false,
+			"id": 306921, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
 		"a_Chapter4CompletePan": { // WORKING
-			"id": 308964, "points": 4, "hasTips": true,
+			"id": 308964, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		// TODO "a_Chapter4CompleteSign": {
-		// 	"id": 00000, "points": 4, "hasTips": false,
-		// 	"devInfo": "Complete chapter 4, using a sign"},
+		"a_Chapter4CompleteSign": { // WORKING
+			"id": 00000, "points": 5, "hasTips": true,
+			"devInfo": "Complete chapter 4, using a sign"},
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
 		//	"devInfo": "Complete chapter 5"},
@@ -197,12 +198,16 @@ _achievements = {
 		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 5, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
+		// TODO "a_BecomeThePerformer": { // CONCEPT also finish chapter 4 when this is done => chapter 4 ending cutscene has extra stuff
+		// 	"id": 00000, "points": 5, "hasTips": true,
+		// 	"devInfo": "In chapter4, use the costume to give yourself a message"},
 		"a_EggCollection1": { // WORKING
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_EggCollection2": { // WORKING
 			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
+
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
@@ -253,7 +258,7 @@ _achievements = {
 			"id": 310134, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
 		"a_EnigmaticCouple4": { // WIP
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
@@ -382,6 +387,26 @@ _achievementTriggers = {
 					once(currentCutsceneId(11) == 0xec2328a8)
 				]) && 
 				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x55 && 
+				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+				isChapterFinished("Chapter4")
+			)
+		)},		
+	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
+		// Core group 
+		never(!isGameRunning()) 	&&
+		never(!isCutsceneActive()) 	&&
+		isCurrentSelectedInventoryItem("Sign") &&
+		( 	
+			( 		// Alt 1 => true when last chapter cutscene finishes AND frying pan was used
+				unless(!isCurrentChapter("Chapter4")) &&
+				tally(3, [
+					once(currentCutsceneId(6) == 0x0bf71852),
+					once(currentCutsceneId(21) == 0x3231f791),
+					once(currentCutsceneId(18) == 0x01f51110)
+				]) && 
+				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x65 && 
 				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
 				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
 			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
@@ -1062,6 +1087,7 @@ _achievementTitles = {
 	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
 	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
 	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
+	"a_Chapter4CompleteSign": 						{"en": "Complete chapter 4, using a sign"},	
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
 	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
@@ -1093,6 +1119,7 @@ _achievementDescriptions = {
 	"a_Chapter2Complete": 							{"en": "Defied fate, but left a loose ends"},
 	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
 	"a_Chapter4CompletePan": 						{"en": "Saved by an iron skillet"},
+	"a_Chapter4CompleteSign": 						{"en": "Saved by an artist's sign"},	
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
