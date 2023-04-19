@@ -170,7 +170,7 @@ _achievements = {
 			"id": 308964, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
 		"a_Chapter4CompleteSign": { // WORKING
-			"id": 00000, "points": 5, "hasTips": true,
+			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		// TODO "a_Chapter5Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
@@ -207,7 +207,6 @@ _achievements = {
 		"a_EggCollection2": { // WORKING
 			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
-
 	},
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
@@ -230,6 +229,9 @@ _achievements = {
 		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
+		"a_DoctorateTimeTraveling": { // WORKING
+			"id": 00000, "points": 10, "hasTips": true,
+			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
@@ -257,7 +259,7 @@ _achievements = {
 		"a_EnigmaticCouple3": { // WORKING
 			"id": 310134, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
-		"a_EnigmaticCouple4": { // WIP
+		"a_EnigmaticCouple4": { // WORKING
 			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_LostYoungCouple1": { // WORKING
@@ -377,42 +379,84 @@ _achievementTriggers = {
 		// Core group 
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
-		isCurrentSelectedInventoryItem("FryingPan") &&
-		( 	
-			( 		// Alt 1 => true when last chapter cutscene finishes AND frying pan was used
-				unless(!isCurrentChapter("Chapter4")) &&
-				tally(3, [
-					once(currentCutsceneId(2) == 0xf5e5191f),
-					once(currentCutsceneId(6) == 0x08b20921),
-					once(currentCutsceneId(11) == 0xec2328a8)
-				]) && 
-				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x55 && 
-				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				isChapterFinished("Chapter4")
-			)
-		)},		
+		isCurrentSelectedInventoryItem("FryingPan") && isChapterFinished("Chapter4")
+		// ( 	
+		// 	( 		// Alt 1 => IDs last chapter cutscene while using the frying pan WITHOUT taking the picture 
+		// 		unless(!isCurrentChapter("Chapter4")) &&
+		// 		tally(3, [
+		// 			once(currentCutsceneId(2) == 0xf5e5191f),
+		// 			once(currentCutsceneId(6) == 0x08b20921),
+		// 			once(currentCutsceneId(11) == 0xec2328a8)
+		// 		]) && 
+		// 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x55 && 
+		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+		// 	) || (	// Alt 2 => IDs last chapter cutscene while using the frying pan AND taking the picture 
+		// 		unless(!isCurrentChapter("Chapter4")) &&
+		// 		tally(3, [
+		// 			once(currentCutsceneId(7) == 0x0c111863),
+		// 			once(currentCutsceneId(9) == 0x21999911),
+		// 			once(currentCutsceneId(10) == 0x000014c8)
+		// 		]) &&
+		// 		repeated(150, onScreenTextID(0) == 0x65) && 
+		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+		// 	) || ( 	// Alt 3 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+		// 		isChapterFinished("Chapter4")
+		// 	)
+		// )
+		},		
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		// Core group 
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
-		isCurrentSelectedInventoryItem("Sign") &&
-		( 	
-			( 		// Alt 1 => true when last chapter cutscene finishes AND frying pan was used
-				unless(!isCurrentChapter("Chapter4")) &&
-				tally(3, [
-					once(currentCutsceneId(6) == 0x0bf71852),
-					once(currentCutsceneId(21) == 0x3231f791),
-					once(currentCutsceneId(18) == 0x01f51110)
-				]) && 
-				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x65 && 
-				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-				isChapterFinished("Chapter4")
-			)
-		)},
+		isCurrentSelectedInventoryItem("Sign") && isChapterFinished("Chapter4")
+		// ( 	
+		// 	( 		// Alt 1 => IDs last chapter cutscene while using the sign WITHOUT taking the picture 
+		// 		unless(!isCurrentChapter("Chapter4")) &&
+		// 		tally(3, [
+		// 			once(currentCutsceneId(6) == 0x0bf71852),
+		// 			once(currentCutsceneId(21) == 0x3231f791),
+		// 			once(currentCutsceneId(18) == 0x01f51110)
+		// 		]) && 
+		// 		repeated(150, onScreenTextID(0) == 0x65) && 
+		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+		// 	) || (	// Alt 2 => IDs last chapter cutscene while using the sign AND taking the picture 
+		// 		unless(!isCurrentChapter("Chapter4")) &&
+		// 		tally(3, [
+		// 			once(currentCutsceneId(7) == 0x0c111863),
+		// 			once(currentCutsceneId(9) == 0x21999911),
+		// 			once(currentCutsceneId(10) == 0x000014c8)
+		// 		]) &&
+		// 		repeated(150, onScreenTextID(0) == 0x65) && 
+		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
+		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
+		// 	) || ( 	// Alt 3 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+		// 		isChapterFinished("Chapter4")
+		// 	)
+		// )
+		},
+	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
+		never(!isGameRunning()) 	&&
+		never(!isCutsceneActive()) 	&&
+		(isCurrentSelectedInventoryItem("Sign") || isCurrentSelectedInventoryItem("FryingPan")) && 
+		never(!isCurrentChapter("Chapter4")) &&
+		tally(8, [
+			once(
+				currentCutsceneId(19) == 0x00008000 && priorCutsceneId(19) == 0x77c45331 &&
+				currentCutsceneId(15) == 0x11111000 && priorCutsceneId(15) == 0x40),
+			once(
+				currentCutsceneId(17) == 0xff95ff72 && priorCutsceneId(17) == 0x37760000 &&
+				currentCutsceneId(14) == 0xf655fff3 && priorCutsceneId(14) == 0x500050),
+			once(onScreenTextID(0) == 0x1e && prior(onScreenTextID(0)) == 0x7d),
+			once(onScreenTextID(0) == 0x3c && prior(onScreenTextID(0)) == 0xa0),
+			once(onScreenTextID(0) == 0x33b && prior(onScreenTextID(0)) == 0x3cf),
+			once(onScreenTextID(0) == 0x20d && prior(onScreenTextID(0)) == 0x2c1),
+			once(onScreenTextID(0) == 0x4e && prior(onScreenTextID(0)) == 0xd3),
+			once(onScreenTextID(0) == 0x53 && prior(onScreenTextID(0)) == 0x82)
+		]) &&
+		onScreenTextID(0) == 0x00 && prior(onScreenTextID(0)) == 0x2d},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning() 				|| 
@@ -424,7 +468,6 @@ _achievementTriggers = {
 		repeated(350, currentCutsceneId(10) == 0x1ce0d25d) 		&&
 		repeated(350, currentCutsceneId(13) == 0xc841ccb) 		&&
 		repeated(350, currentCutsceneId(15) == 0x99991119)},
-
 	"a_EggCollection1": function EggCollection1() { return		 
 		never(!isGameRunning()) 				&& // This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 				&&
@@ -1088,6 +1131,7 @@ _achievementTitles = {
 	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
 	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
 	"a_Chapter4CompleteSign": 						{"en": "Complete chapter 4, using a sign"},	
+	"a_DoctorateTimeTraveling": 					{"en": "Doctorate in time shifting"}, 
 	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
 	"a_EggCollection1": 							{"en": "Egg collection #1"},
 	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
@@ -1119,7 +1163,8 @@ _achievementDescriptions = {
 	"a_Chapter2Complete": 							{"en": "Defied fate, but left a loose ends"},
 	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
 	"a_Chapter4CompletePan": 						{"en": "Saved by an iron skillet"},
-	"a_Chapter4CompleteSign": 						{"en": "Saved by an artist's sign"},	
+	"a_Chapter4CompleteSign": 						{"en": "Saved by an artist's sign"},
+	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
