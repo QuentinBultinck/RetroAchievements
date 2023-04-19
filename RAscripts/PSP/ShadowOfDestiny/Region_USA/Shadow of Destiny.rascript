@@ -239,7 +239,7 @@ _achievements = {
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		 "a_AntiquesEule": { // WORKING 		// TODO check if antiques change based on choices
-			"id": 000000, "points": 3, "hasTips": true,
+			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Visit 'Antique shop Eule' and interact with all relics, Shop is open in chapter 3, 4 and 6 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
@@ -248,7 +248,7 @@ _achievements = {
 			"id": 310131, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
 		"a_EnigmaticCouple3": { // WORKING
-			"id": 000, "points": 5, "hasTips": true,
+			"id": 310134, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
@@ -257,7 +257,7 @@ _achievements = {
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
 		"a_LostYoungCouple3": {
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 4"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ is Chapter 3 => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
