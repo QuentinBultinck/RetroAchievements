@@ -240,6 +240,9 @@ _achievements = {
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
+		"a_EnigmaticCouple2": { // WORKING
+			"id": 310131, "points": 5, "hasTips": true,
+			"devInfo": "Find the coated couple in the present during the prologue or chapter 3"},
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
@@ -692,6 +695,43 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
+		// Private functions
+		function measuredComparison() { return
+			tally(4, [													// 			= 4
+				once(interactionID_2() == 0x08a30ad0),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2() == 0x08a30abc),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
+			])}
+		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter3"))
+		// Trigger
+		return  
+			unless(
+				interactionID_1() == 0x08b994d0 	&&
+				interactionID_2() == 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() == 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() == 0x08b994c4		&&
+				interactionID_2() == 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3() == 0x56			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() == 0x08b994d0 		&&
+				interactionID_2() == 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() == 0x57				&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() == 0x08b994c4 		&&
+				interactionID_2() == 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3() == 0x56				&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
@@ -832,6 +872,7 @@ _achievementTitles = {
 	"a_LostYoungCouple1": 							{"en": "Reunited, part 1"},
 	"a_LostYoungCouple2": 							{"en": "Reunited, part 2"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
+	"a_EnigmaticCouple2": 							{"en": "Enigmatic couple #2"}, 
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
@@ -857,6 +898,7 @@ _achievementDescriptions = {
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
 	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
+	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
