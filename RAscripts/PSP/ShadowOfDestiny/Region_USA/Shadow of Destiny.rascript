@@ -173,7 +173,7 @@ _achievements = {
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		// TODO "a_Chapter5Complete": {
-		//	"id": 000000, "points": 5, "hasTips": false,
+		//	"id": 310162, "points": 5, "hasTips": false,
 		//	"devInfo": "Complete chapter 5"},
 		// TODO "a_Chapter6Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
@@ -230,7 +230,7 @@ _achievements = {
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_DoctorateTimeTraveling": { // WORKING
-			"id": 00000, "points": 10, "hasTips": true,
+			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
@@ -266,7 +266,7 @@ _achievements = {
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
 		"a_LostYoungCouple2": { // WORKING
-			"id": 309393, "points": 5, "hasTips": true,
+			"id": 310133, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
 		"a_LostYoungCouple3": {
 			"id": 309393, "points": 5, "hasTips": true,
