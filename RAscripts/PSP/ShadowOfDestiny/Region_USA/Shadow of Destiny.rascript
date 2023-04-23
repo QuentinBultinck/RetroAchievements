@@ -198,7 +198,7 @@ _achievements = {
 		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 5, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
-		// TODO "a_BecomeThePerformer": { // CONCEPT also finish chapter 4 when this is done => chapter 4 ending cutscene has extra stuff
+		// TODO "a_BecomeThePerformer": { // CONCEPT also finish chapter 4 when this is achieved => chapter 4 ending cutscene might have has extra stuff
 		// 	"id": 00000, "points": 5, "hasTips": true,
 		// 	"devInfo": "In chapter4, use the costume to give yourself a message"},
 		"a_EggCollection1": { // WORKING
@@ -1200,6 +1200,7 @@ _achievementTitles = {
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
 	"a_AntiquesEule": 								{"en": "'Historically' important artifacts"},
 	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
+	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -1235,6 +1236,7 @@ _achievementDescriptions = {
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
+	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
