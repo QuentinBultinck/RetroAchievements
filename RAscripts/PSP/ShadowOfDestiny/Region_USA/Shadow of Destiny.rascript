@@ -173,7 +173,7 @@ _achievements = {
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		// TODO "a_Chapter5Complete": {
-		//	"id": 310162, "points": 5, "hasTips": false,
+		//	"id": 000000, "points": 5, "hasTips": false,
 		//	"devInfo": "Complete chapter 5"},
 		// TODO "a_Chapter6Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
@@ -229,6 +229,9 @@ _achievements = {
 		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
+		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 6)
+			"id": 310426, "points": 10, "hasTips": true,
+			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},
 		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
@@ -271,6 +274,9 @@ _achievements = {
 		"a_LostYoungCouple3": {
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 4"},
+		"a_LostYoungCouple4": {
+			"id": 310162, "points": 3, "hasTips": true,
+			"devInfo": "Interact with the lost man in 1580 during chapter 5"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ is Chapter 3 => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs "}, 
@@ -756,7 +762,7 @@ _achievementTriggers = {
 			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
-				// Private functions
+		// Private functions
 		function measuredComparison() { return
 			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
 				once(interactionID_2() == 0x08a33000),			// Add hit: +1  	=> for talking to man 1st time
@@ -804,6 +810,28 @@ _achievementTriggers = {
 			unless(
 				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
 				interactionID_2() != 0x08a33028 	&&
+				interactionID_3() != 0x198			&&
+				!isCutsceneActive()
+			) &&
+			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_LostYoungCouple4": function LostYoungCouple4() {
+		function measuredComparison() { return
+			tally(2, [
+				once(interactionID_2() == 0x08a331cc),		// => cutscene when talking to man 1st time
+				once(interactionID_2() == 0x08a331e0)		// => cutscene when talking to man 2nd time
+			])}
+		function measuredIfComparison() => repeated(100, isCurrentChapter("Chapter5")) && isGameRunning()
+		return
+			unless(
+				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() != 0x08a331cc 	&&
+				interactionID_3() != 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2() != 0x08a331e0 	&&
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
@@ -1059,6 +1087,25 @@ _achievementTriggers = {
 			) &&
 			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_TimeTravellingCat": function TimeTravellingCat() { return
+		// TODO acquire cat in chapter 4-5 after taking picture => talk to sibylla again => talk to eckart => give cat before chapter 7
+		never(
+			!isGameRunning() || !isCutsceneActive() || 
+			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && !isCurrentChapter("Chapter6")
+		) &&
+		tally(2, [
+			once(
+				currentCutsceneId(4) == 0xff4700a3 	&& priorCutsceneId(4) == 0x77 			&& // Blocks => IDs the cutscenes
+				currentCutsceneId(20) == 0x2622fab8 && priorCutsceneId(20) == 0xf9c20180	&&
+				currentCutsceneId(14) == 0xc4a7d2c5 && priorCutsceneId(14) == 0x5cb			&&
+				onScreenTextID(0) == 0x37			&& prior(onScreenTextID(0)) == 0x4c),
+			once(
+				currentCutsceneId(7) == 0x88880011 	&& priorCutsceneId(7) == 0x71 			&&
+				currentCutsceneId(17) == 0xf6e1fffe && priorCutsceneId(17) == 0x473d4f		&&
+				currentCutsceneId(11) == 0xff4fffec && priorCutsceneId(11) == 0xfd640278	&&
+				onScreenTextID(0) == 0x4c			&& prior(onScreenTextID(0)) == 0x73),		
+		]) && 
+		repeated(160, onScreenTextID(0) == 0x0)}, // trigger when last text in cutscene is finished
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isGameRunning()				||
@@ -1142,12 +1189,14 @@ _achievementTitles = {
 	"a_LostYoungCouple1": 							{"en": "Reunion, part 1"},
 	"a_LostYoungCouple2": 							{"en": "Reunion, part 2"},
 	"a_LostYoungCouple3": 							{"en": "Reunion"},
+	"a_LostYoungCouple4": 							{"en": "Seperation"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
 	"a_EnigmaticCouple2": 							{"en": "Enigmatic couple #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic couple #3"}, 
 	"a_EnigmaticCouple4": 							{"en": "Enigmatic couple #4"},	
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
+	"a_TimeTravellingCat":							{"en": "Time travelling kitten"},
 	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
 	"a_AntiquesEule": 								{"en": "'Historically' important artifacts"},
 	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
@@ -1175,12 +1224,14 @@ _achievementDescriptions = {
 	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
 	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
 	"a_LostYoungCouple3": 							{"en": "Reunite the lost couple during chapter 4"},
+	"a_LostYoungCouple4": 							{"en": "Consult the waiting man during chapter 5"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
 	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman during chapter 5"},	
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
+	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during chapter 4, 5 or 6"},
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
