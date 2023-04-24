@@ -271,15 +271,28 @@ _achievements = {
 		"a_LostYoungCouple2": { // WORKING
 			"id": 310133, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
-		"a_LostYoungCouple3": {
+		"a_LostYoungCouple3": { // WORKING
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 4"},
-		"a_LostYoungCouple4": {
+		"a_LostYoungCouple4": { // WORKING
 			"id": 310162, "points": 3, "hasTips": true,
-			"devInfo": "Interact with the lost man in 1580 during chapter 5"},
-		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ is Chapter 3 => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
+			"devInfo": "Interact with the lost man in 1584 during chapter 5"},
+		"a_HugoMotherChild": {  // WORKING
+			"id": 311466, "points": 5, "hasTips": true,
+			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
+		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Find all energy orbs "}, 
+		//	"devInfo": "Find all energy orbs in a map"}, 
+		// TODO "a_NewCakeInvention???": { 
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
+		// TODO "a_OlegMovieChoice": { 
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "2 choices => one choice ends in death?"}, 
+		// TODO "a_IntroduceEggCollecting2": { 
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Introduce the egg shaped pocket watch to the barman ancestor in 1900's"},
+
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -1087,7 +1100,31 @@ _achievementTriggers = {
 			) &&
 			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_TimeTravellingCat": function TimeTravellingCat() { return
+	"a_HugoMotherChild": function HugoMotherChild() { return
+		never(
+			!isGameRunning() 	|| 
+			!isCutsceneActive() || 
+			!isCurrentChapter("Chapter5")
+		) && 
+		tally (290, [
+			repeated(70,
+				onScreenTextID(0) == 0x52 && prior(onScreenTextID(0)) == 0x79 				&&
+				currentCutsceneId(8) == 0x00001111 && priorCutsceneId(8) == 0xe6df0168 		&&
+				currentCutsceneId(16) == 0xb12cbb1a && priorCutsceneId(16) == 0x20ecffc5 	&&
+				currentCutsceneId(22) == 0xcd59d6c4 && priorCutsceneId(22) == 0x1100101c),
+			repeated(150,
+				onScreenTextID(0) == 0x87 && prior(onScreenTextID(0)) == 0x32 				&&
+				currentCutsceneId(5) == 0x00c10008 && priorCutsceneId(5) == 0xff1dfc57 		&&
+				currentCutsceneId(13) == 0x00000485 && priorCutsceneId(13) == 0x2188319e 	&&
+				currentCutsceneId(17) == 0x061d045c && priorCutsceneId(17) == 0xe6dfe0c3),
+			repeated(70,
+				onScreenTextID(0) == 0x50 && prior(onScreenTextID(0)) == 0x59 				&&
+				currentCutsceneId(8) == 0xf71e0000 && priorCutsceneId(8) == 0x5d5ec415 		&&
+				currentCutsceneId(11) == 0x30300678 && priorCutsceneId(11) == 0x1921	 	&&
+				currentCutsceneId(22) == 0x9d818991 && priorCutsceneId(22) == 0x28024500)]
+		) &&
+		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x26},
+ 	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		// TODO acquire cat in chapter 4-5 after taking picture => talk to sibylla again => talk to eckart => give cat before chapter 7
 		never(
 			!isGameRunning() || !isCutsceneActive() || 
@@ -1168,52 +1205,53 @@ _achievementTriggers = {
 // ACHIEVEMENT TITLES & DESCRIPTIONS
 // ***********************************************************************************
 _achievementTitles = {
-	"a_PrologueComplete": { 						"en": "Complete the prologue",
-													"nl": "Proloog voltooid",
-													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Complete chapter 1",
-													"nl": "Hoofdstuk 1 voltooid",
-													"fr": "Chapitre 1 terminé"},
-	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
-	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
-	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
-	"a_Chapter4CompleteSign": 						{"en": "Complete chapter 4, using a sign"},	
-	"a_DoctorateTimeTraveling": 					{"en": "Doctorate in time shifting"}, 
-	"a_GetOrnamentalEgg": 							{"en": "An egg?"}, 
-	"a_EggCollection1": 							{"en": "Egg collection #1"},
-	"a_EggCollection2": 							{"en": "Egg collection #2"}, 
-	"a_IntroduceEggCollecting": 					{"en": "An interesting shape"},
-	"a_EikeThePyromancer":							{"en": "Eike the pyromancer"},
-	"a_EikeTheMagician": 							{"en": "Eike the magician"},
-	"a_EikeTheFlorist": 							{"en": "Eike the florist"},
-	"a_LostYoungCouple1": 							{"en": "Reunion, part 1"},
-	"a_LostYoungCouple2": 							{"en": "Reunion, part 2"},
-	"a_LostYoungCouple3": 							{"en": "Reunion"},
-	"a_LostYoungCouple4": 							{"en": "Seperation"},
-	"a_EnigmaticCouple1": 							{"en": "Enigmatic couple #1"},
-	"a_EnigmaticCouple2": 							{"en": "Enigmatic couple #2"}, 
-	"a_EnigmaticCouple3": 							{"en": "Enigmatic couple #3"}, 
-	"a_EnigmaticCouple4": 							{"en": "Enigmatic couple #4"},	
+	"a_PrologueComplete": { 						"en": "Defied Fate",															
+													"nl": "Lot getrotseerd",
+													"fr": "Défié le destine"},
+	"a_Chapter1Complete": {							"en": "Defied Fate... Again",															
+													"nl": "Lot getrotseerd... nogmaals",
+													"fr": "Défié le destin... encore"},
+	"a_Chapter2Complete": 							{"en": "Unraveling a Tapestry of Destiny"},
+	"a_Chapter3Complete": 							{"en": "The Devil, a Red Stone and an Alchemist"},
+	"a_Chapter4CompletePan": 						{"en": "Pan-tastic Resilience"},
+	"a_Chapter4CompleteSign": 						{"en": "Through the Lens of Survival"},	
+	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
+	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
+	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
+	"a_EggCollection2": 							{"en": "A Mysterious Exchange #2"}, 
+	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past #1"},
+	"a_EikeThePyromancer":							{"en": "The Pyromancer's Legacy"},
+	"a_EikeTheMagician": 							{"en": "The Magician's Legacy"},
+	"a_EikeTheFlorist": 							{"en": "A Blossoming Plan"},
+	"a_LostYoungCouple1": 							{"en": "Destined to Miss"},
+	"a_LostYoungCouple2": 							{"en": "The Place Where We Almost Met"},
+	"a_LostYoungCouple3": 							{"en": "Destiny's Promise Fulfilled"},
+	"a_LostYoungCouple4": 							{"en": "The Pain of Parting"},
+	"a_EnigmaticCouple1": 							{"en": "Memories of Past Love #1"},
+	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
+	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
+	"a_EnigmaticCouple4": 							{"en": "Memories of Past Love #4"},	
 	"a_ErasingEike": 								{"en": "That's a big no no"}, 
-	"a_MetYouBefore": 								{"en": "Feels like I met you before..."},
-	"a_TimeTravellingCat":							{"en": "Time travelling kitten"},
-	"a_ArtAppreciator": 							{"en": "Art appreciator"}, 
-	"a_AntiquesEule": 								{"en": "'Historically' important artifacts"},
-	"a_ExcuseMeMyMy":								{"en": "My my, died again..."},
+	"a_MetYouBefore": 								{"en": "Mysterious Familiarity at the Marktplatz"},
+	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
+	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
+	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
+	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
+	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die"},
 	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
-	"a_PrologueComplete": {							"en": "Defied fate",															
-													"nl": "Lot getrotseerd",
-													"fr": "Défié le destine"},
-	"a_Chapter1Complete": {							"en": "Defied fate... again",															
-													"nl": "Lot getrotseerd... nogmaals",
-													"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": 							{"en": "Defied fate, but left a loose ends"},
-	"a_Chapter3Complete": 							{"en": "The devil, a red stone and an alchemist"},
-	"a_Chapter4CompletePan": 						{"en": "Saved by an iron skillet"},
-	"a_Chapter4CompleteSign": 						{"en": "Saved by an artist's sign"},
+	"a_PrologueComplete": {							"en": "Complete the Prologue",
+													"nl": "Proloog voltooid",
+													"fr": "Prologue terminé"},
+	"a_Chapter1Complete": {							"en": "Complete Chapter 1",
+													"nl": "Hoofdstuk 1 voltooid",
+													"fr": "Chapitre 1 terminé"},													
+	"a_Chapter2Complete": 							{"en": "Complete Chapter 2"},
+	"a_Chapter3Complete": 							{"en": "Complete Chapter 3"},
+	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
+	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
@@ -1233,6 +1271,7 @@ _achievementDescriptions = {
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktzplats tree during chapter 2"},
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during chapter 4, 5 or 6"},
+	"a_HugoMotherChild":							{"en": "Look for Hugo during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
