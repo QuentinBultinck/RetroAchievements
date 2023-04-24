@@ -29,7 +29,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 |----|---|---|
 | :trophy: <b>Defied Fate</b><br><i>a_PrologueComplete</i> | / | / |
 | :trophy: <b>Defied Fate... Again</b><br><i>a_Chapter1Complete</i> | / | / |
-| :trophy: <b>Unraveling a Tapestry of Destiny</b><br><i>a_Chapter2Complete</i> | / | / |
+| :trophy: <b>Unraveling a Tapestry of Time</b><br><i>a_Chapter2Complete</i> | / | / |
 | :trophy: <b>The Devil, a Red Stone and an Alchemist</b><br><i>a_Chapter3Complete</i> | / | / |
 | :trophy: <b>Pan-tastic Resilience</b><br><i>a_Chapter4CompletePan</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - Once the frying pan is acquired head back to the present and use it before dying. <br> - [Youtube guide - Frying Pan](https://www.youtube.com/watch?v=0nY35mtvdHQ "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki: Frying Pan](https://shadowofmemories.fandom.com/wiki/Frying_Pan "Shadow of Destiny wiki - Frying Pan")| / || / |
 | :trophy: <b>Through the Lens of Survival</b><br><i>a_Chapter4CompleteSign</i> | 1. In chapter 4, after you've visited Eckart's ancestor Alfred Brum. Go to the Franssen's Photo Shop and take the loose hanging sign outside. <br> 2. Go back to the present and use the sign before dying <br> - [Youtube guide - Frying Pan](https://youtu.be/1lyX-I3FTvU "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki - Photo Shop Sign](https://shadowofmemories.fandom.com/wiki/Photo_Shop_Sign "Shadow of Destiny wiki - Photo Shop Sign")| / |
