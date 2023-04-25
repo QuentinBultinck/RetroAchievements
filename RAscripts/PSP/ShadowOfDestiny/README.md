@@ -27,18 +27,18 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title + <i>ID (dev info)</i> | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>Defied Fate</b><br><i>a_PrologueComplete</i> | / | / |
-| :trophy: <b>Defied Fate... Again</b><br><i>a_Chapter1Complete</i> | / | / |
-| :trophy: <b>Unraveling a Tapestry of Time</b><br><i>a_Chapter2Complete</i> | / | / |
-| :trophy: <b>The Devil, a Red Stone and an Alchemist</b><br><i>a_Chapter3Complete</i> | / | / |
+| :trophy: <b>Defied Fate</b><br><i>a_PrologueComplete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Defied Fate... Again</b><br><i>a_Chapter1Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Left in the Past: An Unintended Consequence</b><br><i>a_Chapter2Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>A Homonculus, a Red Stone and an Alchemist</b><br><i>a_Chapter3Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>Pan-tastic Resilience</b><br><i>a_Chapter4CompletePan</i> | - There's multiple chapters in the game where you could acquire the frying pan. It all revolves around using the ornamental egg with the barman. <br> - Once the frying pan is acquired head back to the present and use it before dying. <br> - [Youtube guide - Frying Pan](https://www.youtube.com/watch?v=0nY35mtvdHQ "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki: Frying Pan](https://shadowofmemories.fandom.com/wiki/Frying_Pan "Shadow of Destiny wiki - Frying Pan")| / || / |
 | :trophy: <b>Through the Lens of Survival</b><br><i>a_Chapter4CompleteSign</i> | 1. In chapter 4, after you've visited Eckart's ancestor Alfred Brum. Go to the Franssen's Photo Shop and take the loose hanging sign outside. <br> 2. Go back to the present and use the sign before dying <br> - [Youtube guide - Frying Pan](https://youtu.be/1lyX-I3FTvU "Shadow of Destiny - Frying Pan") <br> - [Shadow of Destiny wiki - Photo Shop Sign](https://shadowofmemories.fandom.com/wiki/Photo_Shop_Sign "Shadow of Destiny wiki - Photo Shop Sign")| / |
-| :trophy: <b>Complete chapter 5</b><br><i>a_Chapter6Complete</i> | / | / |
-| :trophy: <b>Complete chapter 6</b><br><i>a_Chapter6Complete</i> | / | / |
-| :trophy: <b>Complete chapter 7</b><br><i>a_Chapter7Complete</i> | / | / |
-| :trophy: <b>Complete chapter 8</b><br><i>a_Chapter8Complete</i> | / | / |
-| :trophy: <b>Complete the prologue</b><br><i>a_EpilogueComplete</i> | / | / |
-| :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | / | / |
+| :trophy: <b>Remedy from the Past</b><br><i>a_Chapter5Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Director's Cut</b><br><i>a_Chapter6Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Complete chapter 7</b><br><i>a_Chapter7Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Complete chapter 8</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Complete the Epilogue</b><br><i>a_EpilogueComplete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ## :gem: Branching paths
@@ -47,7 +47,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>A Performer's Clue</b><br><i>a_GetOrnamentalEgg</i> | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
 | :trophy: <b>A Mysterious Exchange #1</b><br><i>a_EggCollection1</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> 1. In chapter 1, head into the burning bar. <br> 2. Time travel to the past <br> 3. Interact with the fortune teller <br> 4. Go back to the present, Back in the burning bar, interact with the stairs, the door and walk around the bar <br> 5. Go back to the past, this time you spawn inside the bar, if not repeat from step 4. <br> 6. Now go downstairs twice. The second time you go down and if you have the ornamental egg, you will unlock this achievement. | / |
 | :trophy: <b>A Mysterious Exchange #2</b><br><i>a_EggCollection2</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - In chapter 3 or 4 go to the bar and head downstairs| / |
-| :trophy: <b>Even I can do that</b><br><i>a_BecomeThePerformer</i> | - In chapter 4, when you haven't gotten the ornamentel egg (see a_GetOrnamentalEgg), there's only 2 ways to complete the chpater. By using Franssen's Shop Sign or becoming the performer <br> 1. Go to 1908 and when you have the costume equipped you should be able to time travel back to chapter 1 <br> 2. Use your jugglery item at the Marktzplatz, just as you've seen in the chapter 1 ending cutscene <br> 3. Once you return back to the current present, you should have a frying pan in your inventory, use it to finish chapter 4 | / |
+| :trophy: <b>'Even I can do that'</b><br><i>a_BecomeThePerformer</i> | - In chapter 4, when you haven't gotten the ornamentel egg (see a_GetOrnamentalEgg), there's only 2 ways to complete the chpater. By using Franssen's Shop Sign or becoming the performer <br> 1. Go to 1908 and when you have the costume equipped you should be able to time travel back to chapter 1 <br> 2. Use your jugglery item at the Marktzplatz, just as you've seen in the chapter 1 ending cutscene <br> 3. Once you return back to the current present, you should have a frying pan in your inventory, use it to finish chapter 4 | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ## :gem: Endings
@@ -80,14 +80,16 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>The Pain of Parting</b><br><i>a_LostYoungCouple4</i> | - Prerequisite maybe: "a_LostYoungCouple3" <br> - Find & interact with the lost man in the 1584 during chapter 5<br> - Talk to him twice <br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP") | Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | :trophy: <b>Nine lives across generations</b><br><i>a_TimeTravellingCat</i> | 1. Take the picture in 1908 dressed in the white costume (this must be done in chapter 4 or 5) <br> 2. Talk to Sibylla again (this must be done in chapter 4 or 5) <br> 3. Talk to Eckart in the present, to receive a kitten (this must be before chapter 7) <br> 4. Give the kitten to Sibylla in 1908 (during chapter 4 to 8) | / |
 | :trophy: <b>A Mother's child Forever</b><br><i>a_HugoMotherChild</i> | 1. In chapter 5, go to 1584 and find the key inside the alchemist's house <br> 2. time travel to 1580 and head to the Martkzplatz to view a secret cutscene <br> - [Youtube - Secret cutscene: Hugo bullied](https://www.youtube.com/watch?v=wvgHnCbaS6A "Shadow of Destiny - Secret cutscene: Hugo bullied") | / |
+| :trophy: <b>'Picked up a baby the other day'</b><br><i>a_SnowyCrimeScene</i> | - In chapter 6, after speaking to Oleg, don't go back to the present yet. Walk around Hauptstreet. <br> There's 3 cutscenes to watch to unlock this achievement | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ## :gem: Hidden cutscenes that lead to death
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>Mysterious Familiarity at the Marktplatz</b><br><i>a_MetYouBefore</i> | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
-| :trophy: <b>That's a big no no</b><br><i>a_ErasingEike</i> | Talk to yourself at cafe Sonné in the past during the prologue | / |
-| :trophy: <b>My my, so eager to die</b><br><i>a_ExcuseMeMyMy</i> | In chapter 3, when meeting Homonculus for the first time at the Brum Musuem, chose to excuse yourself | / |
+| :trophy: <b>An Uncanny Familiarity</b><br><i>a_MetYouBefore</i> | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
+| :trophy: <b>'That's a big no no'</b><br><i>a_ErasingEike</i> | Talk to yourself at cafe Sonné in the past during the prologue | / |
+| :trophy: <b>'My my, so eager to die'</b><br><i>a_ExcuseMeMyMy</i> | In chapter 3, when meeting Homonculus for the first time at the Brum Musuem, chose to excuse yourself | / |
+| :trophy: <b>The Scripts of Time</b><br><i>a_MoviePosters</i> | - In chapter 6, when talking to Oleg in 1980, try out every possible picture idea and view its movie poster in the present. | Measured achievement => Once started, complete in the same session, otherwise you may have to restart the chapter |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 </details> 

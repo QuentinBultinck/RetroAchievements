@@ -105,6 +105,7 @@ _inventoryItemIds = {
 	"Sign": 0x5,
 	"Lighter": 0x6,
 	"SquireCrest": 0xf,
+	"Antidote": 0x11,
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -172,12 +173,12 @@ _achievements = {
 		"a_Chapter4CompleteSign": { // WORKING
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
-		// TODO "a_Chapter5Complete": {
-		//	"id": 000000, "points": 5, "hasTips": false,
-		//	"devInfo": "Complete chapter 5"},
-		// TODO "a_Chapter6Complete": {
-		//	"id": 000000, "points": 5, "hasTips": false,
-		// 	"devInfo": "Complete chapter 6"},
+		"a_Chapter5Complete": { // WORKING
+			"id": 311616, "points": 10, "hasTips": false,
+			"devInfo": "Complete chapter 5"},
+		"a_Chapter6Complete": { // WIP
+			"id": 000000, "points": 5, "hasTips": false,
+			"devInfo": "Complete chapter 6"},
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 7"},
@@ -211,7 +212,7 @@ _achievements = {
 	"c_Endings": { // Category - Achieving different endings
 		// TODO "a_EndingA": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending A: Margarette (Ancestress) => Homunculus => Town Square"},
+		// 	"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
 		// TODO "a_EndingB1": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
@@ -280,6 +281,9 @@ _achievements = {
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
+		"a_SnowyCrimeScene": {  // WIP
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs in a map"}, 
@@ -291,8 +295,7 @@ _achievements = {
 		//	"devInfo": "2 choices => one choice ends in death?"}, 
 		// TODO "a_IntroduceEggCollecting2": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Introduce the egg shaped pocket watch to the barman ancestor in 1900's"},
-
+		//	"devInfo": "Introduce the egg shaped pocket watch to the barman ancestor in 1900's"},	
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -304,6 +307,9 @@ _achievements = {
 		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
+		"a_MoviePosters": { // WIP 
+			"id": 0000, "points": 5, "hasTips": true,
+			"devInfo": "During chapter 6, view every possible movie outcome"},
 	},
 }
 
@@ -455,6 +461,25 @@ _achievementTriggers = {
 		// 		isChapterFinished("Chapter4")
 		// 	)
 		// )
+		},
+	"a_Chapter5Complete": function Chapter5Complete() { return
+		never(!isGameRunning()) 	&&
+		never(!isCutsceneActive()) 	&&
+		isCurrentSelectedInventoryItem("Antidote") && 
+		(
+			(
+				repeated(1920, 
+					currentCutsceneId(7) == 0x1a5f414b 	&&
+					currentCutsceneId(10) == 0x11111110 &&
+					currentCutsceneId(11) == 0x129e16dd &&
+					currentCutsceneId(15) == 0xd0eaf60d &&
+					currentCutsceneId(21) == 0x00300058)
+			) || (
+				isChapterFinished("Chapter5")
+			)
+		)},
+	"a_Chapter6Complete": function Chapter6Complete() {	return // WIP
+			always_false()
 		},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 	&&
@@ -1100,6 +1125,9 @@ _achievementTriggers = {
 			) &&
 			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_SnowyCrimeScene": function SnowyCrimeScene() { return // WIP
+			always_false()
+		},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!isGameRunning() 	|| 
@@ -1154,6 +1182,9 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
+	"a_MoviePosters": function MoviePosters() {	return // WIP save => F2
+			always_false()
+		},
 	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning()				||
@@ -1211,10 +1242,12 @@ _achievementTitles = {
 	"a_Chapter1Complete": {							"en": "Defied Fate... Again",															
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": 							{"en": "Unraveling a Tapestry of Time"},
-	"a_Chapter3Complete": 							{"en": "The Devil, a Red Stone and an Alchemist"},
+	"a_Chapter2Complete": 							{"en": "Left in the Past: An Unintended Consequence"},
+	"a_Chapter3Complete": 							{"en": "A Homonculus, a Red Stone and an Alchemist"},
 	"a_Chapter4CompletePan": 						{"en": "Pan-tastic Resilience"},
 	"a_Chapter4CompleteSign": 						{"en": "Through the Lens of Survival"},	
+	"a_Chapter5Complete": 							{"en": "Remedy from the Past"}, 
+	"a_Chapter6Complete":							{"en": "Director's Cut"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1231,14 +1264,16 @@ _achievementTitles = {
 	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
 	"a_EnigmaticCouple4": 							{"en": "Memories of Past Love #4"},	
-	"a_ErasingEike": 								{"en": "That's a big no no"}, 
-	"a_MetYouBefore": 								{"en": "Mysterious Familiarity at the Marktplatz"},
+	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
+	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
+	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
 	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
+	"a_MoviePosters":								{"en": "The Scripts of Time"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
-	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die"},
-	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
+	"a_ExcuseMeMyMy":								{"en": "'My my, so eager to die'"},
+	"a_BecomeThePerformer":							{"en": "'Even I can do that'"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -1252,6 +1287,8 @@ _achievementDescriptions = {
 	"a_Chapter3Complete": 							{"en": "Complete Chapter 3"},
 	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
 	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
+	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
+	"a_Chapter6Complete":							{"en": "Complete Chapter 6"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
@@ -1276,6 +1313,8 @@ _achievementDescriptions = {
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
+	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
+	"a_MoviePosters":								{"en": "View every possible movie poster during chapter 6"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
