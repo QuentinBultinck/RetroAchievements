@@ -1182,9 +1182,45 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
-	"a_MoviePosters": function MoviePosters() {	return // WIP save => F2
-			always_false()
-		},
+	"a_MoviePosters": function MoviePosters() { // WIP save => F2 & F3 --- 2 more movies posters to add => Thriller or Love story both end chapter
+		function measuredComparison() { return
+			tally(2, [
+				repeated(221, 					
+					currentCutsceneId(9) == 0xc90000f6 	&& priorCutsceneId(9) == 0x11ffe500 	&& // Block A +
+					currentCutsceneId(15) == 0x000019d5 && priorCutsceneId(15) == 0xa3d444de 	&& 
+					currentCutsceneId(22) == 0x4ae6e5ff && priorCutsceneId(22) == 0xf2516654	&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80),
+				deduct(repeated(220, 					
+					currentCutsceneId(9) == 0xc90000f6 	&& priorCutsceneId(9) == 0x11ffe500 	&& // Block A - 
+					currentCutsceneId(15) == 0x000019d5 && priorCutsceneId(15) == 0xa3d444de 	&& 
+					currentCutsceneId(22) == 0x4ae6e5ff && priorCutsceneId(22) == 0xf2516654	&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80)),
+				repeated(221, 
+					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e 	&& // Block B +
+					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 		&& 
+					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 		&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80),
+				deduct(repeated(220, 
+					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e 	&& // Block B -
+					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 		&& 
+					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 		&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80))
+			])}
+		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
+		return	
+			unless(
+				currentCutsceneId(9) != 0xc90000f6 	&& priorCutsceneId(9) != 0x11ffe500 	&& // Block A => Meditating Man poster
+				currentCutsceneId(15) != 0x000019d5 && priorCutsceneId(15) != 0xa3d444de 	&& 
+				currentCutsceneId(22) != 0x4ae6e5ff && priorCutsceneId(22) != 0xf2516654 	&&
+				onScreenTextID(0) != 0x32 && prior(onScreenTextID(0)) != 0x80				
+			) &&
+			unless(
+				currentCutsceneId(6) != 0xff530209 	&& priorCutsceneId(6) != 0xff5af64e 	&& // Block B => World Conquest poster
+				currentCutsceneId(16) != 0x10e00 && priorCutsceneId(16) != 0xc3000000 		&& 
+				currentCutsceneId(14) != 0x002de210 && priorCutsceneId(14) != 0xffa1 		&&
+				onScreenTextID(0) != 0x32 && prior(onScreenTextID(0)) != 0x80				
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning()				||
