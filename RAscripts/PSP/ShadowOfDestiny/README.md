@@ -22,7 +22,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     
 *(Achievements are divided by category)*
 
-## :gem: Story completion
+### :gem: Story completion
 
 | Title + <i>ID (dev info)</i> | Explanation & tips | Specific unlock criteria |
 |----|---|---|
@@ -41,7 +41,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-## :gem: Branching paths
+### :gem: Branching paths
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>A Performer's Clue</b><br><i>a_GetOrnamentalEgg</i> | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white | / |
@@ -50,7 +50,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>'Even I can do that'</b><br><i>a_BecomeThePerformer</i> | - In chapter 4, when you haven't gotten the ornamentel egg (see a_GetOrnamentalEgg), there's only 2 ways to complete the chpater. By using Franssen's Shop Sign or becoming the performer <br> 1. Go to 1908 and when you have the costume equipped you should be able to time travel back to chapter 1 <br> 2. Use your jugglery item at the Marktzplatz, just as you've seen in the chapter 1 ending cutscene <br> 3. Once you return back to the current present, you should have a frying pan in your inventory, use it to finish chapter 4 | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-## :gem: Endings
+### :gem: Endings
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>_title</b> <br> <i>a_EndingA</i> | _explanation_ | _unlockCriteria_ |
@@ -60,7 +60,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>_title</b> <br> <i>a_EndingD</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-## :gem: Side content & extra cutscenes
+### :gem: Side content & extra cutscenes
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>Cracking Open the Past #1</b><br><i>a_IntroduceEggCollecting</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
@@ -86,7 +86,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>'Picked up a baby the other day'</b><br><i>a_SnowyCrimeScene</i> | - In chapter 6, after speaking to Oleg, don't go back to the present yet. Walk around Hauptstreet. <br> There's 3 cutscenes to watch to unlock this achievement | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-## :gem: Hidden cutscenes that lead to death
+### :gem: Hidden cutscenes that lead to death
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
 | :trophy: <b>An Uncanny Familiarity</b><br><i>a_MetYouBefore</i> | Die 4 times to the tree killer while speaking to Dana in chapter 2 | / |
@@ -95,7 +95,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Time Ego Flop</b><br><i>a_TimeEgoFlop</i> | - In chapter 6, talk to Oleg in 1980 <br> 1. Pick time travel <br> 2. Pick world conquest <br> 3. Return to present | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
-### Footnotes
+## Footnotes
 #### Measured achievement<sup>1</sup>
 + Once the measured popups is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
 #### Triggered achievement<sup>2</sup> 
