@@ -176,9 +176,12 @@ _achievements = {
 		"a_Chapter5Complete": { // WORKING
 			"id": 311616, "points": 10, "hasTips": false,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6Complete": { // WIP
-			"id": 000000, "points": 5, "hasTips": false,
-			"devInfo": "Complete chapter 6"},
+		"a_Chapter6CompleteThriller": { // WORKING
+			"id": 000000, "points": 4, "hasTips": false,
+			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
+		"a_Chapter6CompleteLove": { // WORKING
+			"id": 000000, "points": 4, "hasTips": false,
+			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
 		// 	"devInfo": "Complete chapter 7"},
@@ -281,7 +284,7 @@ _achievements = {
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
-		"a_SnowyCrimeScene": {  // WIP
+		"a_SnowyCrimeScene": {  // WORKING
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
@@ -290,12 +293,15 @@ _achievements = {
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
-		// TODO "a_OlegMovieChoice": { 
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "2 choices => one choice ends in death?"}, 
-		// TODO "a_IntroduceEggCollecting2": { 
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Introduce the egg shaped pocket watch to the barman ancestor in 1900's"},	
+		"a_IntroduceEggCollecting2": { // WORKING // TEST if completable in chapters following chapter 6
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
+		"a_PocketWatch": { // WIP // TEST if completable in chapters following chapter 7
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
+		"a_PocketWatchReminiscing": { // WIP // TEST if completable in chapters following chapter 7
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -307,9 +313,9 @@ _achievements = {
 		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_MoviePosters": { // WIP 
-			"id": 0000, "points": 5, "hasTips": true,
-			"devInfo": "During chapter 6, view every possible movie outcome"},
+		"a_TimeEgoFlop": { // TEST 
+			"id": 0000, "points": 2, "hasTips": true,
+			"devInfo": "During chapter 6, co-direct Time Ego"},
 	},
 }
 
@@ -478,9 +484,62 @@ _achievementTriggers = {
 				isChapterFinished("Chapter5")
 			)
 		)},
-	"a_Chapter6Complete": function Chapter6Complete() {	return // WIP
-			always_false()
-		},
+	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
+		never(
+			!isGameRunning() ||
+			!isCurrentChapter("Chapter6")	
+		) &&
+		once(
+			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 && // Block => IDs thriller story choice
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff91 &&
+			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x40fffe &&
+			onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4fffe7 &&
+			currentCutsceneId(1) == 0x14b7ff2e && priorCutsceneId(1) == 0x82fe9c && 
+			currentCutsceneId(18) == 0xf8ef1a5d && priorCutsceneId(18) == 0xe6e531b2 && 
+			currentCutsceneId(21) == 0xfbb7024f && priorCutsceneId(21) == 0xe6e531b0
+		) && 
+		trigger_when(
+			tally(171, [
+				repeated(170, 
+					currentCutsceneId(16) == 0xd7070002 && priorCutsceneId(16) == 0x14003200 && // Block => IDs cutscene with love or thriller movie poster
+					currentCutsceneId(17) == 0xaffff73c && priorCutsceneId(17) == 0xe7151922 && 
+					currentCutsceneId(18) == 0x0001fa74 && priorCutsceneId(18) == 0x00390053 &&
+					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62),
+				once(
+					currentCutsceneId(2) == 0x58044579 && priorCutsceneId(2) == 0x2497b00 && // Block => IDs last cutscene of chapter 
+					currentCutsceneId(8) == 0x29970b5a && priorCutsceneId(8) == 0x44d6b180 && 
+					currentCutsceneId(11) == 0x0000f80b && priorCutsceneId(11) == 0xe6df1f01 &&
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x88)]
+			)
+		)},
+	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
+		never(
+			!isGameRunning() ||
+			!isCurrentChapter("Chapter6")	
+		) &&
+		once(
+			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 &&	// Block => IDs love story choice
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x3fff90 &&
+			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x3ffffd &&
+			onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50ffe8 &&
+			currentCutsceneId(1) == 0x14b7ff2e && priorCutsceneId(1) == 0x82fe9c && 
+			currentCutsceneId(18) == 0xf8ef1a5d && priorCutsceneId(18) == 0xe6e531b2 && 
+			currentCutsceneId(21) == 0xfbb7024f && priorCutsceneId(21) == 0xe6e531b0
+		) && 
+		trigger_when(
+			tally(171, [
+				repeated(170, 
+					currentCutsceneId(16) == 0xd7070002 && priorCutsceneId(16) == 0x14003200 && // Block => IDs cutscene with love or thriller movie poster
+					currentCutsceneId(17) == 0xaffff73c && priorCutsceneId(17) == 0xe7151922 && 
+					currentCutsceneId(18) == 0x0001fa74 && priorCutsceneId(18) == 0x00390053 &&
+					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62),
+				once(
+					currentCutsceneId(2) == 0x58044579 && priorCutsceneId(2) == 0x2497b00 && // Block => IDs last cutscene of chapter 
+					currentCutsceneId(8) == 0x29970b5a && priorCutsceneId(8) == 0x44d6b180 && 
+					currentCutsceneId(11) == 0x0000f80b && priorCutsceneId(11) == 0xe6df1f01 &&
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x88)]
+			)
+		)},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
@@ -556,6 +615,39 @@ _achievementTriggers = {
 		repeated(500, currentCutsceneId(17) == 0x0) 				&&
 
 		repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
+	"a_IntroduceEggCollecting2": function IntroduceEggCollecting2() { return 
+		never(
+			!isGameRunning() ||
+			!isCutsceneActive() ||			
+			!isCurrentChapter("Chapter6")
+		) &&
+		once(
+			currentCutsceneId(1) == 0x3169070e 	&& priorCutsceneId(1) == 0xffc1ffd9 	&& // All blocks => IDs cutscene where Eike gives the pocket watch to pay for his coffee
+			currentCutsceneId(4) == 0x02410000 	&& priorCutsceneId(4) == 0x016818e1 	&&
+			currentCutsceneId(22) == 0xad082100 && priorCutsceneId(22) == 0x19324308 	&&
+			onScreenTextID(0) == 0x51 && prior(onScreenTextID(0)) == 0x31 &&
+			onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80109
+		) &&
+		once(
+			currentCutsceneId(2) == 0xffd2cf32 	&& priorCutsceneId(2) == 0x11112110 &&
+			currentCutsceneId(8) == 0xe6df1184 	&& priorCutsceneId(8) == 0x1001f5d1 &&
+			currentCutsceneId(15) == 0x0000f855 && priorCutsceneId(15) == 0x127 	&&
+			onScreenTextID(0) == 0x64	&& prior(onScreenTextID(0)) == 0x91 		&&
+			onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x490000
+		) &&
+		once(
+			currentCutsceneId(6) == 0x00000019 	&& priorCutsceneId(6) == 0xcee1020a 	&&
+			currentCutsceneId(11) == 0x00af0023 && priorCutsceneId(11) == 0x740034 		&&
+			currentCutsceneId(20) == 0x211205d6 && priorCutsceneId(20) == 0xee9f1e15 	&&
+			onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x43 				&&
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff85
+		)},
+	"a_PocketWatch": function PocketWatch() { // WIP
+		return always_false()
+		},
+	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { // TODO
+		return always_false()
+		},
 	"a_EikeThePyromancer": function EikeThePyromancer() {
 		return 
 			disable_when( // Disable achievement when flowers is picked, instead of statue
@@ -1125,8 +1217,33 @@ _achievementTriggers = {
 			) &&
 			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_SnowyCrimeScene": function SnowyCrimeScene() { return // WIP
-			always_false()
+	"a_SnowyCrimeScene": function SnowyCrimeScene() {
+			function measuredComparison() { return 
+				tally(3, [
+					once(
+						currentCutsceneId(1) == 0x022c00b1 && priorCutsceneId(1) == 0x14b7ff2e && // Block => IDs gunshot cutscene
+						currentCutsceneId(3) == 0x00eb7e00 && priorCutsceneId(3) == 0x3acf2518 && 
+						currentCutsceneId(16) == 0x25fc4e17 && priorCutsceneId(16) == 0x11012a00 &&
+						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e &&
+						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffd6 &&
+						onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x4b0000),
+					once(
+						currentCutsceneId(5) == 0xfb960000 && priorCutsceneId(5) == 0xf470 && // Block => IDs Homonculus taking baby cutscene
+						currentCutsceneId(8) == 0xefab005e && priorCutsceneId(8) == 0xf880ebc7 && 
+						currentCutsceneId(20) == 0x14060000 && priorCutsceneId(20) == 0xf5411111 &&
+						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e &&
+						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48fff0),
+					once(						
+						currentCutsceneId(3) == 0x6f000000 &&
+						currentCutsceneId(9) == 0x00000011 && 						
+						currentCutsceneId(16) == 0x00029c00 &&
+						currentCutsceneId(19) == 0xc303ab0b &&
+						currentCutsceneId(20) == 0x0b60174a)]
+				)}
+			function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
+			return 
+				unless(!isCutsceneActive()) &&
+				measured(measuredComparison(), measuredIfComparison())
 		},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
@@ -1182,45 +1299,19 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
-	"a_MoviePosters": function MoviePosters() { // WIP save => F2 & F3 --- 2 more movies posters to add => Thriller or Love story both end chapter
-		function measuredComparison() { return
-			tally(2, [
-				repeated(221, 					
-					currentCutsceneId(9) == 0xc90000f6 	&& priorCutsceneId(9) == 0x11ffe500 	&& // Block A +
-					currentCutsceneId(15) == 0x000019d5 && priorCutsceneId(15) == 0xa3d444de 	&& 
-					currentCutsceneId(22) == 0x4ae6e5ff && priorCutsceneId(22) == 0xf2516654	&&
-					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80),
-				deduct(repeated(220, 					
-					currentCutsceneId(9) == 0xc90000f6 	&& priorCutsceneId(9) == 0x11ffe500 	&& // Block A - 
-					currentCutsceneId(15) == 0x000019d5 && priorCutsceneId(15) == 0xa3d444de 	&& 
-					currentCutsceneId(22) == 0x4ae6e5ff && priorCutsceneId(22) == 0xf2516654	&&
-					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80)),
-				repeated(221, 
-					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e 	&& // Block B +
-					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 		&& 
-					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 		&&
-					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80),
-				deduct(repeated(220, 
-					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e 	&& // Block B -
-					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 		&& 
-					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 		&&
-					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80))
-			])}
-		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
-		return	
-			unless(
-				currentCutsceneId(9) != 0xc90000f6 	&& priorCutsceneId(9) != 0x11ffe500 	&& // Block A => Meditating Man poster
-				currentCutsceneId(15) != 0x000019d5 && priorCutsceneId(15) != 0xa3d444de 	&& 
-				currentCutsceneId(22) != 0x4ae6e5ff && priorCutsceneId(22) != 0xf2516654 	&&
-				onScreenTextID(0) != 0x32 && prior(onScreenTextID(0)) != 0x80				
-			) &&
-			unless(
-				currentCutsceneId(6) != 0xff530209 	&& priorCutsceneId(6) != 0xff5af64e 	&& // Block B => World Conquest poster
-				currentCutsceneId(16) != 0x10e00 && priorCutsceneId(16) != 0xc3000000 		&& 
-				currentCutsceneId(14) != 0x002de210 && priorCutsceneId(14) != 0xffa1 		&&
-				onScreenTextID(0) != 0x32 && prior(onScreenTextID(0)) != 0x80				
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+	"a_TimeEgoFlop": function TimeEgoFlop() { return 
+		repeated(500, 
+			currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
+			currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 	&& 
+			currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 	&&
+			onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80
+		) && 
+		repeated(30, 
+			onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0xe1 &&
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffc2 &&
+			onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x410000 &&
+			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480029
+		)},
 	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning()				||
@@ -1272,10 +1363,10 @@ _achievementTriggers = {
 // ACHIEVEMENT TITLES & DESCRIPTIONS
 // ***********************************************************************************
 _achievementTitles = {
-	"a_PrologueComplete": { 						"en": "Defied Fate",															
+	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
 													"fr": "Défié le destine"},
-	"a_Chapter1Complete": {							"en": "Defied Fate... Again",															
+	"a_Chapter1Complete": 							{"en": "Defied Fate... Again",															
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
 	"a_Chapter2Complete": 							{"en": "Left in the Past: An Unintended Consequence"},
@@ -1283,12 +1374,16 @@ _achievementTitles = {
 	"a_Chapter4CompletePan": 						{"en": "Pan-tastic Resilience"},
 	"a_Chapter4CompleteSign": 						{"en": "Through the Lens of Survival"},	
 	"a_Chapter5Complete": 							{"en": "Remedy from the Past"}, 
-	"a_Chapter6Complete":							{"en": "Director's Cut"},
+	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
+	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
 	"a_EggCollection2": 							{"en": "A Mysterious Exchange #2"}, 
 	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past #1"},
+	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past #2"},
+	"a_PocketWatch": 								{"en": "A Hatchless Replica"},
+	"a_PocketWatchReminiscing": 					{"en": "The Eggcellent Director's Tale"},
 	"a_EikeThePyromancer":							{"en": "The Pyromancer's Legacy"},
 	"a_EikeTheMagician": 							{"en": "The Magician's Legacy"},
 	"a_EikeTheFlorist": 							{"en": "A Blossoming Plan"},
@@ -1305,7 +1400,7 @@ _achievementTitles = {
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
 	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
-	"a_MoviePosters":								{"en": "The Scripts of Time"},
+	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
 	"a_ExcuseMeMyMy":								{"en": "'My my, so eager to die'"},
@@ -1324,10 +1419,14 @@ _achievementDescriptions = {
 	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
 	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
 	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
-	"a_Chapter6Complete":							{"en": "Complete Chapter 6"},
+	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
+	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_IntroduceEggCollecting2": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
+	"a_PocketWatch": 								{"en": "Show off your egg collection to the barman from chapter 7 onward"},
+	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
@@ -1350,7 +1449,7 @@ _achievementDescriptions = {
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
-	"a_MoviePosters":								{"en": "View every possible movie poster during chapter 6"},
+	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
