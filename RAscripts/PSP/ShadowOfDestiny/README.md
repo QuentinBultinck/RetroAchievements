@@ -96,5 +96,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### Footnotes
-+ Measured achievement<sup>2</sup> => Once the measured popups is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
-+ Triggered achievement<sup>2</sup> => Once the triggered popup is shown, complete the achievement in the same session, otherwise you may have to restart the chapter. 
+#### Measured achievement<sup>1</sup>
++ Once the measured popups is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
+#### Triggered achievement<sup>2</sup> 
++ Once the triggered popup is shown, complete the achievement in the same session, otherwise you may have to restart the chapter. 
