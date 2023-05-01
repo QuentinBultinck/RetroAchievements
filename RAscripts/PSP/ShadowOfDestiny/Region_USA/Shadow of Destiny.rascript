@@ -177,10 +177,10 @@ _achievements = {
 			"id": 311616, "points": 10, "hasTips": false,
 			"devInfo": "Complete chapter 5"},
 		"a_Chapter6CompleteThriller": { // WORKING
-			"id": 000000, "points": 4, "hasTips": false,
+			"id": 313211, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
 		"a_Chapter6CompleteLove": { // WORKING
-			"id": 000000, "points": 4, "hasTips": false,
+			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		// TODO "a_Chapter7Complete": {
 		//	"id": 000000, "points": 5, "hasTips": false,
@@ -285,7 +285,7 @@ _achievements = {
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_SnowyCrimeScene": {  // WORKING
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 313209, "points": 5, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -294,7 +294,7 @@ _achievements = {
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
 		"a_IntroduceEggCollecting2": { // WORKING // TEST if completable in chapters following chapter 6
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_PocketWatch": { // WIP // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
@@ -313,8 +313,8 @@ _achievements = {
 		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_TimeEgoFlop": { // TEST 
-			"id": 0000, "points": 2, "hasTips": true,
+		"a_TimeEgoFlop": { // WORKING 
+			"id": 313212, "points": 2, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
 	},
 }
