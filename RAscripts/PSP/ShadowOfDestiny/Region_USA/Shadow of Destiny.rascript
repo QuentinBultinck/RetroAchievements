@@ -45,14 +45,14 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //	- Each unique cutscene seems to have different values
 //	- Some sequences consist of multiple cutscenes
-_cutsceneIDs = {		//  
+_cutsceneIDs = {
 	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID 
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
 	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
 	4: 0x1DF6724, 		// $1DF6724: [32-bit] Cutscene ID
 	5: 0x1DF6F60, 		// $1DF6F60: [32-bit] Cutscene ID
 	6: 0x1DF742A, 		// $1DF742A: [32-bit] Cutscene ID
-	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID // Unused
+	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID
 	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID
 	9: 0x1DF8229, 		// $1DF8229: [32-bit] Cutscene ID
 	10: 0x1DF8442,		// $1DF8442: [32-bit] Cutscene ID
@@ -136,7 +136,6 @@ function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units 
 function isCutsceneActive() => bit0(0xA9Eb2C) == 0	// $A9Eb2C: [bit-0] Flag -> is cutscene active
 													//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
 													//		- 1 = no cutscene active
-function isCutsceneFinished() => prior(bit0(0xA9Eb2C)) == 0
 function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running
 												//		- 0 = game is not running, it's in the title screen
 												//		- 1 = game is running
@@ -281,6 +280,9 @@ _achievements = {
 		"a_LostYoungCouple4": { // WORKING
 			"id": 310162, "points": 3, "hasTips": true,
 			"devInfo": "Interact with the lost man in 1584 during chapter 5"},
+		"a_LostYoungCouple5": { // WORKING
+			"id": 314753, "points": 5, "hasTips": true,
+			"devInfo": "Interact with the lost couple in 1584 during chapter 7"},
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
@@ -293,7 +295,7 @@ _achievements = {
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
-		"a_IntroduceEggCollecting2": { // WORKING // TEST if completable in chapters following chapter 6
+		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_PocketWatch": { // WIP // TEST if completable in chapters following chapter 7
@@ -301,7 +303,7 @@ _achievements = {
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 		"a_PocketWatchReminiscing": { // WIP // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
-			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
+			"devInfo": "Talk to Eckart with the pocket watch in your inventory dring chapter 8"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -310,6 +312,12 @@ _achievements = {
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
+		"a_ErasingEike2": { // WORKING
+			"id": 314763, "points": 2, "hasTips": true,
+			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
+		"a_RottenRope": { // WIP
+			"id": 0000, "points": 2, "hasTips": false,
+			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
@@ -619,7 +627,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() ||
 			!isCutsceneActive() ||			
-			!isCurrentChapter("Chapter6")
+			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8")  
 		) &&
 		once(
 			currentCutsceneId(1) == 0x3169070e 	&& priorCutsceneId(1) == 0xffc1ffd9 	&& // All blocks => IDs cutscene where Eike gives the pocket watch to pay for his coffee
@@ -835,7 +843,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple2": function LostYoungCouple2() {  
 		// Private functions
@@ -889,7 +896,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
 		// Private functions
@@ -943,7 +949,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
@@ -965,7 +970,38 @@ _achievementTriggers = {
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_LostYoungCouple5": function LostYoungCouple5() {
+		// Private functions
+		function measuredComparison() { return
+			tally(3, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a33398),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2() == 0x08a333d4),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a333e8)			// Add hit: +1		=> for talking to woman 2nd time
+			])}	
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter7")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
+			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+		// Trigger 
+		return 
+			unless(
+				interactionID_1() != 0x08a1bb44 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2() != 0x08a333d4 	&&
+				interactionID_3() != 0x197			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2() != 0x08a33398 	&&
+				interactionID_3() != 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() != 0x08a1bb44 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2() != 0x08a333e8 	&&
+				interactionID_3() != 0x197			&&
+				!isCutsceneActive()
+			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		// Private functions
@@ -1004,7 +1040,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x56			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
 		// Private functions
@@ -1042,7 +1077,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x56				&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		// Private functions
@@ -1080,7 +1114,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x56				&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
 		// Private functions
@@ -1170,7 +1203,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x16a			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_AntiquesEule": function AntiquesEule() {
 		// Private functions
@@ -1215,7 +1247,6 @@ _achievementTriggers = {
 				interactionID_3() != 0x8e			&&
 				!isCutsceneActive()
 			) &&
-			isCutsceneFinished() && 
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() {
 			function measuredComparison() { return 
@@ -1299,6 +1330,21 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(22) == 0x52036400) 			&&
 		repeated(1050, currentCutsceneId(3) == 0x47f45022) 			&&
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
+	"a_ErasingEike2": function ErasingEike2() { return
+		never(
+			!isGameRunning()				||
+			!isCurrentChapter("Chapter7") 	||
+			!isCutsceneActive()
+		) &&
+		repeated(550, 
+			currentCutsceneId(1) == 0x00b60000 	&& // Block => IDs cutscene where Eike runs into himself
+			currentCutsceneId(5) == 0x02af0000 	&&
+			currentCutsceneId(13) == 0x0000cfea &&
+			currentCutsceneId(15) == 0xfff90000 &&
+			currentCutsceneId(21) == 0x0053ffc7)},
+	"a_RottenRope": function RottenRope() { // WIP -- savestate->F9
+		return always_false()
+		},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return 
 		repeated(500, 
 			currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
@@ -1390,12 +1436,15 @@ _achievementTitles = {
 	"a_LostYoungCouple1": 							{"en": "Destined to Miss"},
 	"a_LostYoungCouple2": 							{"en": "The Place Where We Almost Met"},
 	"a_LostYoungCouple3": 							{"en": "Destiny's Promise Fulfilled"},
-	"a_LostYoungCouple4": 							{"en": "The Pain of Parting"},
+	"a_LostYoungCouple4": 							{"en": "The Pain of Parting #1"},
+	"a_LostYoungCouple5": 							{"en": "The Pain of Parting #2"},
 	"a_EnigmaticCouple1": 							{"en": "Memories of Past Love #1"},
 	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
 	"a_EnigmaticCouple4": 							{"en": "Memories of Past Love #4"},	
 	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
+	"a_ErasingEike2": 								{"en": "Bump... Erased"},
+	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
@@ -1436,11 +1485,14 @@ _achievementDescriptions = {
 	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
 	"a_LostYoungCouple3": 							{"en": "Reunite the lost couple during chapter 4"},
 	"a_LostYoungCouple4": 							{"en": "Consult the waiting man during chapter 5"},
+	"a_LostYoungCouple5": 							{"en": "Consult the couple during chapter 7"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
 	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman during chapter 5"},	
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
+	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
+	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplats tree during chapter 2"},
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during chapter 4, 5 or 6"},
 	"a_HugoMotherChild":							{"en": "Look for Hugo during chapter 5"}, 
