@@ -315,7 +315,7 @@ _achievements = {
 		"a_ErasingEike2": { // WORKING
 			"id": 314763, "points": 2, "hasTips": true,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_RottenRope": { // WIP
+		"a_RottenRope": { // WORKING
 			"id": 0000, "points": 2, "hasTips": false,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_ExcuseMeMyMy": { // WORKING 
@@ -1342,9 +1342,30 @@ _achievementTriggers = {
 			currentCutsceneId(13) == 0x0000cfea &&
 			currentCutsceneId(15) == 0xfff90000 &&
 			currentCutsceneId(21) == 0x0053ffc7)},
-	"a_RottenRope": function RottenRope() { // WIP -- savestate->F9
-		return always_false()
-		},
+	"a_RottenRope": function RottenRope() { return
+		never(
+			!isGameRunning() || 
+			!isCutsceneActive() || 
+			!isCurrentChapter("Chapter7")
+		) &&
+		tally(4, [
+			once(
+				currentCutsceneId(8)== 0xff8f301a && priorCutsceneId(8) == 0xd4b3e6df &&
+				currentCutsceneId(15)== 0x54f0006d && priorCutsceneId(15) == 0x7d80000 &&
+				currentCutsceneId(22)== 0x68ee2219 && priorCutsceneId(22) == 0x241932cd),
+			once(
+				currentCutsceneId(12)== 0x000b5eda && priorCutsceneId(12) == 0x2e500af &&
+				currentCutsceneId(16)== 0x00099806 && priorCutsceneId(16) == 0x88888888 &&
+				currentCutsceneId(19)== 0xf3fffa00 && priorCutsceneId(19) == 0x88898888),
+			once(
+				currentCutsceneId(14)== 0xfff6c7e0 && priorCutsceneId(14) == 0xababc504 &&
+				currentCutsceneId(15)== 0x07070019 && priorCutsceneId(15) == 0x6e60655 &&
+				currentCutsceneId(18)== 0x00880368 && priorCutsceneId(18) == 0x98889890),
+			once(
+				currentCutsceneId(14)== 0x023700b0 && priorCutsceneId(14) == 0xff1d1931 &&
+				currentCutsceneId(17)== 0x08f91635 && priorCutsceneId(17) == 0x1160fccc &&
+				currentCutsceneId(19)== 0x4306d244 && priorCutsceneId(19) == 0x19049404)
+		])},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return 
 		repeated(500, 
 			currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
