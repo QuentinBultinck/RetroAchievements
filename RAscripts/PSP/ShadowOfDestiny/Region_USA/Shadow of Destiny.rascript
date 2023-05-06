@@ -43,8 +43,8 @@ function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interactio
 // CUTSCENES
 // ***********
 //	- Everytime you view a different cutscene, memory values around these IDs/addresses change
-//	- Each unique cutscene seems to have different values
-//	- Some sequences consist of multiple cutscenes
+//	- Each unique cutscene seems to have different values => might correlate to animation, camera or model data
+//	- During cutscenes the values may change
 _cutsceneIDs = {
 	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID 
 	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
@@ -67,7 +67,10 @@ _cutsceneIDs = {
 	19: 0x1DFB22B, 		// $1DFB22B: [32-bit] Cutscene ID
 	20: 0x1DF5A0C, 		// $1DF5A0C: [32-bit] Cutscene ID
 	21: 0x1DF5950,		// $1DF5950: [32-bit] Cutscene ID
-	22: 0x1DF81E5		// $1DF81E5: [32-bit] Cutscene ID
+	22: 0x1DF81E5,		// $1DF81E5: [32-bit] Cutscene ID
+	23:	0x1DFB3D0,		// $1DFB3D0: [32-bit] Cutscene ID
+	24:	0x1DFCD78,		// $1DFCD78: [32-bit] Cutscene ID
+	25:	0x1DFEA54		// $1DFEA54: [32-bit] Cutscene ID
 }
 function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
 function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
@@ -231,7 +234,7 @@ _achievements = {
 		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 6)
+		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
 			"id": 310426, "points": 10, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},		
 		"a_DoctorateTimeTraveling": { // WORKING
@@ -249,7 +252,7 @@ _achievements = {
 		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // WORKING 		// TEST check if this cheevo is completable in other chapters
+		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		 "a_AntiquesEule": { // WORKING 		// TEST choices in chapter 4 => change relics in chapter 6
@@ -272,43 +275,50 @@ _achievements = {
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
+			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
 		"a_LostYoungCouple2": { // WORKING
 			"id": 310133, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the lost couple in 1580 during chapter 3"},
+			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
 		"a_LostYoungCouple3": { // WORKING
 			"id": 309393, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the lost couple in 1580 during chapter 4"},
+			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
 		"a_LostYoungCouple4": { // WORKING
 			"id": 310162, "points": 3, "hasTips": true,
-			"devInfo": "Interact with the lost man in 1584 during chapter 5"},
-		"a_LostYoungCouple5": { // WORKING
+			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
+		"a_LostYoungCouple5": { // WIP => When interacting with both the couple in present and past in every chapter => there's extra content here when talking to woman?? 
 			"id": 314753, "points": 5, "hasTips": true,
-			"devInfo": "Interact with the lost couple in 1584 during chapter 7"},
+			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
+		"a_LostYoungCouple6": { // WIP => When interacting with both the couple in present and past in every chapter => there's extra content here when talking to man?? 
+			"id": 00000, "points": 5, "hasTips": true,
+			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_SnowyCrimeScene": {  // WORKING
 			"id": 313209, "points": 5, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
+		"a_SaveMiriamBrum": {  // WIP	// CONCEPT Also talk to Miriam in present when she's saved??
+			"id": 313209, "points": 10, "hasTips": true,
+			"devInfo": "Save Miriam Brum in chapter 6 by seeing her die twice => third time you can save her, but baby is still gone"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs in a map"}, 
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
+		
 		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_PocketWatchCollection": { // WORKING // TEST if completable in chapters following chapter 7
+		"a_PocketWatchCollection": { // WORKING
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 		"a_PocketWatchReminiscing": { // WORKING
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
-		"a_BarmansChildren": { // TODO
+		"a_BarmansChildren": { // WORKING
 			"id": 000000, "points": 5, "hasTips": true,
-			"devInfo": "Uncover the truth about the barman's children during chapter 5"},
+			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -873,9 +883,29 @@ _achievementTriggers = {
 						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
 				)
 		)},
-	"a_BarmansChildren": function BarmansChildren() { // WIP
-		return always_false()
-		},
+	"a_BarmansChildren": function BarmansChildren() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter5")
+		) &&
+		tally(2, [
+			once(
+				currentCutsceneId(2) == 0x15f4fdd0	&& priorCutsceneId(2) == 0x312f0008 &&
+				currentCutsceneId(9) == 0x2917a2ff 	&& priorCutsceneId(9) == 0x45fc56fb &&
+				currentCutsceneId(14) == 0x01390152 && priorCutsceneId(14) == 0x5bb0000 &&
+				onScreenTextID(0) == 0x29		&& prior(onScreenTextID(0)) == 0x3d	&&
+				onScreenTextID(1) == 0x48ffae	&& prior(onScreenTextID(1)) == 0x0	&&
+				onScreenTextID(4) == 0x80005	&& prior(onScreenTextID(4)) == 0x0),
+			once(
+				currentCutsceneId(2) == 0x15f4fdd0	&& priorCutsceneId(2) == 0x312f0008 &&
+				currentCutsceneId(9) == 0x2917a2ff 	&& priorCutsceneId(9) == 0x45fc56fb &&
+				currentCutsceneId(14) == 0x01390152 && priorCutsceneId(14) == 0x5bb0000 &&
+				onScreenTextID(0) == 0x74		&& prior(onScreenTextID(0)) == 0x52	&&
+				onScreenTextID(1) == 0x40ff87	&& prior(onScreenTextID(1)) == 0x0	&&
+				onScreenTextID(5) == 0x50ffec	&& prior(onScreenTextID(5)) == 0x0)			
+		]) &&
+		onScreenTextID(0) == 0x0 && prev(onScreenTextID(0)) == 0x50},
 	"a_LostYoungCouple1": function LostYoungCouple1() { 
 		// Private functions
 		function measuredComparison() { return
@@ -1056,7 +1086,7 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_LostYoungCouple5": function LostYoungCouple5() {
+	"a_LostYoungCouple5": function LostYoungCouple5() { // WIP
 		// Private functions
 		function measuredComparison() { return
 			tally(3, [	// this hit count becomes the hit count for the final comparison in the array
@@ -1085,6 +1115,30 @@ _achievementTriggers = {
 				interactionID_1() != 0x08a1bb44 	&&		// Block => cutscene when talking to woman 2nd time
 				interactionID_2() != 0x08a333e8 	&&
 				interactionID_3() != 0x197			&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_LostYoungCouple6": function LostYoungCouple6() { // WIP
+		function measuredComparison() { return
+			tally(3, [									//			= 3
+				once(interactionID_2() == 0x08a33640),	// Add hit: +1  	=> for talking to man 1st time 
+				once(interactionID_2() == 0x08a33654),	// Add hit: +1  	=> for talking to man 2nd time 
+				// once(interactionID_2() == xxx)			// Add hit: +1		=> for talking to man 1st time after experiment
+			])}	
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter8")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
+			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+		return 
+			unless(
+				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man 1st time before experiment
+				interactionID_2() != 0x08a33640 	&&
+				interactionID_3() != 0x198			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man 2nd time before experiment
+				interactionID_2() != 0x08a33654 	&&
+				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1387,16 +1441,20 @@ _achievementTriggers = {
 						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e &&
 						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48fff0),
 					once(						
-						currentCutsceneId(3) == 0x6f000000 &&
-						currentCutsceneId(9) == 0x00000011 && 						
-						currentCutsceneId(16) == 0x00029c00 &&
-						currentCutsceneId(19) == 0xc303ab0b &&
-						currentCutsceneId(20) == 0x0b60174a)]
-				)}
+						currentCutsceneId(23) == 0x3a8b4139 && priorCutsceneId(23) == 0x46464952 && // Block => IDs Miriam dying cutscene
+						currentCutsceneId(24) == 0x6b12f1ad && priorCutsceneId(24) == 0x01010101 &&
+						currentCutsceneId(25) == 0xf9ad5340 && priorCutsceneId(25) == 0x32da6446 &&
+						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x4b 		&&
+						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff94 	&&
+						onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480008)
+				])}
 			function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
 			return 
 				unless(!isCutsceneActive()) &&
 				measured(measuredComparison(), measuredIfComparison())
+		},
+	"a_SaveMiriamBrum": function SaveMiriamBrum() {
+		return always_false()
 		},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
@@ -1423,10 +1481,11 @@ _achievementTriggers = {
 		) &&
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x26},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
-		// TODO acquire cat in chapter 4-5 after taking picture => talk to sibylla again => talk to eckart => give cat before chapter 7
 		never(
 			!isGameRunning() || !isCutsceneActive() || 
-			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && !isCurrentChapter("Chapter6")
+			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && 
+			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") &&
+			!isCurrentChapter("Chapter8")
 		) &&
 		tally(2, [
 			once(
@@ -1570,7 +1629,7 @@ _achievementTitles = {
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
 	"a_EggCollection2": 							{"en": "A Mysterious Exchange #2"}, 
-	"a_BarmansChildren":							{"en": "A Grandchild's Gambit"},
+	"a_BarmansChildren":							{"en": "The Barman's Grandchildren and The Mystery Child"},
 	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past #1"},
 	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past #2"},
 	"a_PocketWatchCollection": 						{"en": "A Hatchless Replica"},
@@ -1583,6 +1642,7 @@ _achievementTitles = {
 	"a_LostYoungCouple3": 							{"en": "Destiny's Promise Fulfilled"},
 	"a_LostYoungCouple4": 							{"en": "The Pain of Parting #1"},
 	"a_LostYoungCouple5": 							{"en": "The Pain of Parting #2"},
+	"a_LostYoungCouple6": 							{"en": "Never Destined to Meet"},
 	"a_EnigmaticCouple1": 							{"en": "Memories of Past Love #1"},
 	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
@@ -1594,6 +1654,7 @@ _achievementTitles = {
 	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
+	"a_SaveMiriamBrum":								{"en": "Temporal Guardian"},
 	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
@@ -1622,34 +1683,36 @@ _achievementDescriptions = {
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_IntroduceEggCollecting2": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
-	"a_PocketWatchCollection": 								{"en": "Show off your egg collection to the barman during chapter 7"},
+	"a_PocketWatchCollection": 						{"en": "Show off your egg collection to the barman during chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
-	"a_LostYoungCouple1": 							{"en": "Help a lost couple reunite during chapter 2"}, 
-	"a_LostYoungCouple2": 							{"en": "Help a lost couple reunite again during chapter 3"},
-	"a_LostYoungCouple3": 							{"en": "Reunite the lost couple during chapter 4"},
-	"a_LostYoungCouple4": 							{"en": "Consult the waiting man during chapter 5"},
-	"a_LostYoungCouple5": 							{"en": "Consult the couple during chapter 7"},
-	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman during the prologue or chapter 1"}, 
-	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
-	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
-	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman during chapter 5"},	
-	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman during chapter 7"},
+	"a_LostYoungCouple1": 							{"en": "Help a lost young couple reunite in The Middle Ages during chapter 2"}, 
+	"a_LostYoungCouple2": 							{"en": "Help a lost young couple reunite again in The Middle Ages during chapter 3"},
+	"a_LostYoungCouple3": 							{"en": "Reunite the lost young couple in The Middle Ages during chapter 4"},
+	"a_LostYoungCouple4": 							{"en": "Consult the young man in The Middle Ages during chapter 5"},
+	"a_LostYoungCouple5": 							{"en": "Consult the young couple in The Middle Ages during chapter 7"},
+	"a_LostYoungCouple6": 							{"en": "Advise the young man in The Middle Ages during chapter 8"},
+	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman in the present during the prologue or chapter 1"}, 
+	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman in the present during chapter 3"}, 
+	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman in the present during chapter 4"}, 
+	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman in the present during chapter 5"},	
+	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the present during chapter 7"},
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplats tree during chapter 2"},
-	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during chapter 4, 5 or 6"},
+	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_HugoMotherChild":							{"en": "Look for Hugo during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
+	"a_SaveMiriamBrum":								{"en": "Save someone else from a predestined death during chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
