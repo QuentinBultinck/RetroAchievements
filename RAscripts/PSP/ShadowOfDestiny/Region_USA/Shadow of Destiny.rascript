@@ -255,7 +255,7 @@ _achievements = {
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		 "a_AntiquesEule": { // WORKING 		// TODO choices in chapter 4 => change relics in chapter 6
 			"id": 310132, "points": 3, "hasTips": true,
-			"devInfo": "Visit 'Antique shop Eule' and interact with all original relics, Shop is open in chapter 3, 4 and 6 (1980)"},
+			"devInfo": "Visit 'Antique shop Eule' and interact with all original relics, Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
@@ -268,6 +268,9 @@ _achievements = {
 		"a_EnigmaticCouple4": { // WORKING
 			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
+		"a_EnigmaticCouple5": { // WIP
+			"id": 0000, "points": 5, "hasTips": true,
+			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in 1580 during chapter 2"},
@@ -298,7 +301,7 @@ _achievements = {
 		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_PocketWatch": { // WIP // TEST if completable in chapters following chapter 7
+		"a_PocketWatch": { // WORKING // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 		"a_PocketWatchReminiscing": { // WIP // TEST if completable in chapters following chapter 7
@@ -650,9 +653,29 @@ _achievementTriggers = {
 			onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x43 				&&
 			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff85
 		)},
-	"a_PocketWatch": function PocketWatch() { // WIP
-		return always_false()
-		},
+	"a_PocketWatch": function PocketWatch() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive() ||
+			!isCurrentChapter("Chapter7")
+		) &&
+		tally(2, [
+			once(
+				currentCutsceneId(1) == 0x434cc1c6 	&& priorCutsceneId(1) == 0x158140f3 	&&
+				currentCutsceneId(4) == 0xc1502119 	&& priorCutsceneId(4) == 0x1681214 		&&
+				currentCutsceneId(16) == 0x8e000000 && priorCutsceneId(16) == 0xdf18e5eb 	&&
+				onScreenTextID(0) == 0x3c 		&& prior(onScreenTextID(0)) == 0x0 &&
+				onScreenTextID(1) == 0x48ff8b	&& prior(onScreenTextID(1)) == 0x0 &&
+				onScreenTextID(4) == 0x8000b 	&& prior(onScreenTextID(4)) == 0x0),
+			once(
+				currentCutsceneId(3) == 0xaf001e00 	&& priorCutsceneId(3) == 0xa0ff3dfb 	&&
+				currentCutsceneId(10) == 0x59e60168 && priorCutsceneId(10) == 0x1db5f2bf 	&&
+				currentCutsceneId(20) == 0x0126ff41 && priorCutsceneId(20) == 0xe2db024c 	&&
+				onScreenTextID(0) == 0x3c 	&& prior(onScreenTextID(0)) == 0x8c 	&&
+				onScreenTextID(1) == 0x0	&& prior(onScreenTextID(1)) == 0x48ff7a &&
+				onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80004)
+		]) &&
+		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e},
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { // TODO
 		return always_false()
 		},
@@ -1145,6 +1168,36 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnigmaticCouple5": function EnigmaticCouple5() {
+		// Private functions
+		function measuredComparison() { return
+			tally(3, [											// 			= 3
+				once(interactionID_2() == 0x08a30b34),			// Add hit: +1	=> for talking to man
+				once(interactionID_2() == 0x08a30c4c),			// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2() == 0x08a30c60),			// Add hit: +1	=> for talking to woman 2nd time
+			])}
+		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter7"))
+		// Trigger
+		return  
+			unless(
+				interactionID_1() != 0x08b98db4 	&&
+				interactionID_2() != 0x08a30c4c 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3() != 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(
+				interactionID_1() != 0x08b98db4 	&&
+				interactionID_2() != 0x08a30c60 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3() != 0x57			&&
+				!isCutsceneActive()
+			) &&
+			unless(	
+				interactionID_1() != 0x08b98da8		&&
+				interactionID_2() != 0x08a30b34		&&		// Block => cutscene when talking to man
+				interactionID_3() != 0x56			&&
+				!isCutsceneActive()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
@@ -1219,7 +1272,8 @@ _achievementTriggers = {
 			(
 				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
-				repeated(100, isCurrentChapter("Chapter6"))	
+				repeated(100, isCurrentChapter("Chapter6"))	|| 
+				repeated(100, isCurrentChapter("Chapter7"))
 			)}
 		// Trigger 
 		return 
@@ -1463,6 +1517,7 @@ _achievementTitles = {
 	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
 	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
 	"a_EnigmaticCouple4": 							{"en": "Memories of Past Love #4"},	
+	"a_EnigmaticCouple5": 							{"en": "Memories of Past Love #5"},
 	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
@@ -1495,7 +1550,7 @@ _achievementDescriptions = {
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_IntroduceEggCollecting2": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
-	"a_PocketWatch": 								{"en": "Show off your egg collection to the barman from chapter 7 onward"},
+	"a_PocketWatch": 								{"en": "Show off your egg collection to the barman during chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
@@ -1511,6 +1566,7 @@ _achievementDescriptions = {
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman during chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman during chapter 4"}, 
 	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman during chapter 5"},	
+	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman during chapter 7"},
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
 	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
