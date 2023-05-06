@@ -181,9 +181,9 @@ _achievements = {
 		"a_Chapter6CompleteLove": { // WORKING
 			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
-		// TODO "a_Chapter7Complete": {
-		//	"id": 000000, "points": 5, "hasTips": false,
-		// 	"devInfo": "Complete chapter 7"},
+		"a_Chapter7Complete": { // WORKING
+			"id": 000000, "points": 5, "hasTips": false,
+			"devInfo": "Complete chapter 7"},
 		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Complete chapter 8"},
@@ -235,6 +235,7 @@ _achievements = {
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 6)
 			"id": 310426, "points": 10, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},
+		
 		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
@@ -250,10 +251,10 @@ _achievements = {
 		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // WORKING 		// TODO check if this cheevo is completable in other chapters
+		"a_ArtAppreciator": { // WORKING 		// TEST check if this cheevo is completable in other chapters
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		 "a_AntiquesEule": { // WORKING 		// TODO choices in chapter 4 => change relics in chapter 6
+		 "a_AntiquesEule": { // WORKING 		// TEST choices in chapter 4 => change relics in chapter 6
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Visit 'Antique shop Eule' and interact with all original relics, Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
@@ -268,7 +269,7 @@ _achievements = {
 		"a_EnigmaticCouple4": { // WORKING
 			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
-		"a_EnigmaticCouple5": { // WIP
+		"a_EnigmaticCouple5": { // WORKING
 			"id": 0000, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // WORKING
@@ -301,12 +302,15 @@ _achievements = {
 		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_PocketWatch": { // WORKING // TEST if completable in chapters following chapter 7
+		"a_PocketWatchCollection": { // WORKING // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 		"a_PocketWatchReminiscing": { // WIP // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
-			"devInfo": "Talk to Eckart with the pocket watch in your inventory dring chapter 8"},
+			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
+		"a_BarmansChildren": { // TODO
+			"id": 000000, "points": 5, "hasTips": true,
+			"devInfo": "Uncover the truth about the barman's children during chapter 5"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // WORKING
@@ -551,6 +555,38 @@ _achievementTriggers = {
 					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x88)]
 			)
 		)},
+	"a_Chapter7Complete": function Chapter7Complete() { return
+		never(
+			!isGameRunning() ||
+			!isCutsceneActive() 
+		) && (
+			(
+				tally(820, [
+					once(
+						currentCutsceneId(6) == 0x026d0f2e && priorCutsceneId(6) == 0xe6df2e37	 	&&
+						currentCutsceneId(12) == 0xe6df02b3 && priorCutsceneId(12) == 0x111 		&&
+						currentCutsceneId(16) == 0x7c00cc00 && priorCutsceneId(16) == 0x91ff6ffd 	&&
+						onScreenTextID(0) == 0x3d && prior(onScreenTextID(0)) == 0x5a), 
+					once(
+						currentCutsceneId(15) == 0x0b22008d && priorCutsceneId(15) == 0x58f0000 	&&
+						currentCutsceneId(18) == 0x0000ee23 && priorCutsceneId(18) == 0x1280050 	&&
+						currentCutsceneId(19) == 0x19000001 && priorCutsceneId(19) == 0x6f033301 	&&
+						onScreenTextID(0) == 0x46 && prior(onScreenTextID(0)) == 0x49), 
+					once(
+						currentCutsceneId(4) == 0x01671881 && priorCutsceneId(4) == 0xe6df2f0d 	&&
+						currentCutsceneId(11) == 0x042cefdf && priorCutsceneId(11) == 0x2a1 	&&
+						currentCutsceneId(18) == 0x013b06c5 && priorCutsceneId(18) == 0xee23 	&&
+						onScreenTextID(0) == 0x2a && prior(onScreenTextID(0)) == 0x89), 
+					repeated(817, 
+						currentCutsceneId(15) == 0xff86053f && priorCutsceneId(15) == 0xffe8ff65 	&&
+						currentCutsceneId(17) == 0xfd1aff98 && priorCutsceneId(17) == 0xff5afff1 	&&
+						currentCutsceneId(19) == 0xeecebe00 && priorCutsceneId(19) == 0x42000001	&&
+						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x2a)
+				])				
+			) || (
+				isChapterFinished("Chapter7")
+			)
+		)},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
@@ -653,7 +689,7 @@ _achievementTriggers = {
 			onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x43 				&&
 			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff85
 		)},
-	"a_PocketWatch": function PocketWatch() { return
+	"a_PocketWatchCollection": function PocketWatch() { return
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive() ||
@@ -676,9 +712,34 @@ _achievementTriggers = {
 				onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80004)
 		]) &&
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e},
-	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { // TODO
-		return always_false()
-		},
+	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return // WIP
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Chapter8")
+		) &&
+		tally(3, [
+			once(
+				currentCutsceneId(6) == 0xe8591922 	&& priorCutsceneId(6) == 0x7e007d 		&&
+				currentCutsceneId(12) == 0x0fea0239 && priorCutsceneId(12) == 0x22001dc 		&&
+				currentCutsceneId(20) == 0x0be3ff78 && priorCutsceneId(20) == 0xd25 		&&
+				onScreenTextID(0) == 0x36 && prior(onScreenTextID(0)) == 0x4a),
+			once(
+				currentCutsceneId(5) == 0xc399d0f8 	&& priorCutsceneId(5) == 0x65b0000 		&&
+				currentCutsceneId(14) == 0x134de6df && priorCutsceneId(14) == 0x1d00000 	&&
+				currentCutsceneId(22) == 0xd6009eff && priorCutsceneId(22) == 0xa00208e8 	&&
+				onScreenTextID(0) == 0x4b 		&& prior(onScreenTextID(0)) == 0x56 	&&
+				onScreenTextID(1) == 0x40ff9c 	&& prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x500023 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(9) == 0x01001400 	&& priorCutsceneId(9) == 0x85000000 	&&
+				currentCutsceneId(13) == 0x0726cdf0 && priorCutsceneId(13) == 0xa6ff36 		&&
+				currentCutsceneId(21) == 0x02aa06de && priorCutsceneId(21) == 0xfffdf7ca 	&&
+				onScreenTextID(0) == 0x65 		&& prior(onScreenTextID(0)) == 0x21 &&
+				onScreenTextID(1) == 0x48ffab 	&& prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(4) == 0x80004 	&& prior(onScreenTextID(4)) == 0x0),
+		]) &&
+		onScreenTextID(0) == 0x0 && prev(onScreenTextID(0)) == 0x96},
 	"a_EikeThePyromancer": function EikeThePyromancer() {
 		return 
 			disable_when( // Disable achievement when flowers is picked, instead of statue
@@ -814,6 +875,9 @@ _achievementTriggers = {
 						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
 				)
 		)},
+	"a_BarmansChildren": function BarmansChildren() { // WIP
+		return always_false()
+		},
 	"a_LostYoungCouple1": function LostYoungCouple1() { 
 		// Private functions
 		function measuredComparison() { return
@@ -1212,8 +1276,14 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting (upstairs)
 			])}
 		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter3")) && 		// Hit count 100 => when loading another save to another chapter, there's a few							 
-			isGameRunning()}									// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that	
+			repeated(100, 									// Hit count 100 => when loading another save to another chapter, there's a few
+				isCurrentChapter("Chapter3") || 			// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
+				isCurrentChapter("Chapter4") || 
+				isCurrentChapter("Chapter5") || 
+				isCurrentChapter("Chapter7") || 
+				isCurrentChapter("Chapter8")
+			) && 
+			isGameRunning()}
 		// Trigger 
 		return 
 			unless(
@@ -1497,13 +1567,15 @@ _achievementTitles = {
 	"a_Chapter5Complete": 							{"en": "Remedy from the Past"}, 
 	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
+	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
 	"a_EggCollection2": 							{"en": "A Mysterious Exchange #2"}, 
+	"a_BarmansChildren":							{"en": "A Grandchild's Gambit"},
 	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past #1"},
 	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past #2"},
-	"a_PocketWatch": 								{"en": "A Hatchless Replica"},
+	"a_PocketWatchCollection": 						{"en": "A Hatchless Replica"},
 	"a_PocketWatchReminiscing": 					{"en": "The Eggcellent Director's Tale"},
 	"a_EikeThePyromancer":							{"en": "The Pyromancer's Legacy"},
 	"a_EikeTheMagician": 							{"en": "The Magician's Legacy"},
@@ -1546,11 +1618,13 @@ _achievementDescriptions = {
 	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
 	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
 	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
+	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_IntroduceEggCollecting2": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
-	"a_PocketWatch": 								{"en": "Show off your egg collection to the barman during chapter 7"},
+	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
+	"a_PocketWatchCollection": 								{"en": "Show off your egg collection to the barman during chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
 	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
 	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
