@@ -6,9 +6,9 @@
 This guide explains how to unlock each achievement in the core set for the PSP version of Shadow of Destiny.
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
-+ https://shadowofmemories.fandom.com/wiki/Shadow_of_Memories_Wiki
-+ https://www.youtube.com/@shadowofmemorieswiki/videos
-+ https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs
++ [Fandom Wiki - Shadow of Memories/Shadow of Destiny](https://shadowofmemories.fandom.com/wiki/Shadow_of_Memories_Wiki "Shadow of Memories/Shadow of Destiny - Fandom Wiki")
++ [Youtube Guides - Shadow of Memories/Shadow of Destiny](https://www.youtube.com/@shadowofmemorieswiki/videos "Shadow of Memories/Shadow of Destiny - Wiki Youtube account")
++ [FAQS, guides & walkthroughs - Shadow of Memories/Shadow of Destiny](https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs "FAQS, guides & walkthroughs - Shadow of Memories/Shadow of Destiny")
 
 ***
 
