@@ -100,6 +100,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 ## Footnotes
 #### *Measured achievement<sup>1</sup>*
-+ Once the measured popup is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
++ Once the measured achievement popup is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
 #### *Triggered achievement<sup>2</sup>*
-+ Once the triggered popup is shown, complete the achievement in the same session, otherwise you may have to restart the chapter. 
++ Once the triggered achievement popup is shown, complete the achievement in the same session, otherwise you may have to restart the chapter. 
