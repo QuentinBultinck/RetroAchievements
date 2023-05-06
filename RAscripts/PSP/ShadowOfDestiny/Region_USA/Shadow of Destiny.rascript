@@ -98,7 +98,7 @@ function isChapterFinished(string_chapter) { return
 // INVENTORY LOGIC 
 // *****************
 _inventoryItemIds = { 
-	"D-pad": 0x0, // PSP version this is called Z-Pad
+	"D-pad": 0x0, // In PSP version this is called Z-Pad
 	"OrnamentalEgg": 0x2,
 	"Cellphone": 0x1,
 	"FryingPan": 0x4,
@@ -125,7 +125,6 @@ _onScreenTextID = {
 	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
 	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
 }
-currentCutsceneId(11)
 function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
 // OTHER LOGIC
@@ -234,8 +233,7 @@ _achievements = {
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 6)
 			"id": 310426, "points": 10, "hasTips": true,
-			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},
-		
+			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},		
 		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
@@ -305,7 +303,7 @@ _achievements = {
 		"a_PocketWatchCollection": { // WORKING // TEST if completable in chapters following chapter 7
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
-		"a_PocketWatchReminiscing": { // WIP // TEST if completable in chapters following chapter 7
+		"a_PocketWatchReminiscing": { // WORKING
 			"id": 000000, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_BarmansChildren": { // TODO
@@ -712,7 +710,7 @@ _achievementTriggers = {
 				onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80004)
 		]) &&
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e},
-	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return // WIP
+	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
