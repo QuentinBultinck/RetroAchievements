@@ -202,10 +202,10 @@ _achievements = {
 			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		"a_Chapter7Complete": { // WORKING
-			"id": 000000, "points": 5, "hasTips": false,
+			"id": 315565, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 7"},
 		"a_Chapter8Complete": { // WORKING 
-			"id": 000000, "points": 5, "hasTips": false,
+			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
 		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10, "hasTips": false,
@@ -232,14 +232,14 @@ _achievements = {
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
 	"c_Endings": { // Category - Achieving different endings
-		// TODO "a_EndingA": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		// TODO "a_EndingB1": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
+		"a_EndingA": { // WIP
+			"id": 315566, "points": 10, "hasTips": false,
+			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
+		"a_EndingB1": {	// WIP
+			"id": 315573, "points": 10, "hasTips": false,
+			"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
 		"a_EndingB2": {	// WORKING
-			"id": 000000, "points": 10, "hasTips": false,
+			"id": 315572, "points": 10, "hasTips": false,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		// TODO "a_EndingC": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
@@ -289,7 +289,7 @@ _achievements = {
 			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_EnigmaticCouple5": { // WORKING
-			"id": 0000, "points": 5, "hasTips": true,
+			"id": 315564, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
@@ -307,7 +307,7 @@ _achievements = {
 			"id": 314753, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // WIP => When interacting with both the couple in present and past in every chapter => there's extra content here when talking to man?? 
-			"id": 00000, "points": 5, "hasTips": true,
+			"id": 315568, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
@@ -316,10 +316,10 @@ _achievements = {
 			"id": 313209, "points": 10, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		"a_SaveMiriamBrum": {  // WORKING
-			"id": 0000, "points": 10, "hasTips": true,
+			"id": 315569, "points": 10, "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6"},
 		"a_MeetOldMiriam": { // WORKING
-			"id": 000000, "points": 10, "hasTips": true,
+			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -331,13 +331,13 @@ _achievements = {
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_PocketWatchCollection": { // WORKING
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 315561, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
 		"a_PocketWatchReminiscing": { // WORKING
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 315562, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_BarmansChildren": { // WORKING
-			"id": 000000, "points": 5, "hasTips": true,
+			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
@@ -351,7 +351,7 @@ _achievements = {
 			"id": 314763, "points": 2, "hasTips": true,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
 		"a_RottenRope": { // WORKING
-			"id": 0000, "points": 2, "hasTips": false,
+			"id": 315563, "points": 2, "hasTips": false,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
@@ -632,6 +632,12 @@ _achievementTriggers = {
 			!isCutsceneActive()					||
 			IsViewingCutsceneFromExtraMenu()
 		) && isChapterFinished("Chapter8")},
+	"a_EndingA": function EndingA() { // WIP
+		return always_false()
+		},
+	"a_EndingB1": function EndingB1() {	// WIP
+		return always_false()
+		},
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!isGameRunning() 	||
@@ -1517,7 +1523,7 @@ _achievementTriggers = {
 
 			])}
 		function measuredIfComparison() { return
-			isGameRunning() && !IsViewingCutsceneFromExtraMenu()
+			isGameRunning() && !IsViewingCutsceneFromExtraMenu() &&
 			(
 				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
@@ -1810,7 +1816,9 @@ _achievementTitles = {
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
-	"a_EndingB2":									{"en": "No Sense of Finality"},
+	"a_EndingA":									{"en": "__TITLE__"},
+	"a_EndingB1":									{"en": "No Sense of Finality #1"},
+	"a_EndingB2":									{"en": "No Sense of Finality #2"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1866,7 +1874,9 @@ _achievementDescriptions = {
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_MeetOldMiriam":								{"en": "Complete Chapter 7, whilst having saved a member of the Brum family in Chapter 6"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
-	"a_EndingB2":									{"en": "Achieve ending B2"},
+	"a_EndingA":									{"en": "Achieve Ending A"},
+	"a_EndingB1":									{"en": "Achieve Ending B1"},
+	"a_EndingB2":									{"en": "Achieve Ending B2"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
