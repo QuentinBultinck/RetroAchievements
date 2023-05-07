@@ -34,7 +34,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Director's Cut: The Time of Reckoning</b><br><i>a_Chapter6CompleteThriller</i> | Any walkthrough/gameplay guide | Don't skip the cutscenes when choosing what movie you'll make with Oleg |
 | :trophy: <b>Director's Cut: Trip for Two</b><br><i>a_Chapter6CompleteLove</i> | Any walkthrough/gameplay guide | Don't skip the cutscenes when choosing what movie you'll make with Oleg |
 | :trophy: <b>A Friend's Repentance</b><br><i>a_Chapter7Complete</i> | Any walkthrough/gameplay guide | / |
-| :trophy: <b>The Brum's Happily Ever After</b><br><i>a_Chapter7CompleteMiriamSaved</i> | Complete Chapter 7, whilst having saved Miriam Brum in chapter 6 (refer to a_SaveMiriamBrum & a_SnowyCrimeScene) <br> Achievement unlocks once Miriam Brum is done talking during the last cutscene of chapter 7| / |
 | :trophy: <b>The Whole Picture... Or is it?</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>Complete the Epilogue</b><br><i>a_EpilogueComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
@@ -54,7 +53,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 |----|---|---|
 | :trophy: <b>_title</b> <br> <i>a_EndingA</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title</b> <br> <i>a_EndingB1</i> | _explanation_ | _unlockCriteria_ |
-| :trophy: <b>_title</b> <br> <i>a_EndingB2</i> | _explanation_ | _unlockCriteria_ |
+| :trophy: <b>No Sense of Finality</b> <br> <i>a_EndingB2</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title</b> <br> <i>a_EndingC</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title</b> <br> <i>a_EndingD</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
@@ -88,6 +87,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>A Mother's child Forever</b><br><i>a_HugoMotherChild</i> | 1. In chapter 5, go to 1584 and find the key inside the alchemist's house <br> 2. time travel to 1580 and head to the Martkzplatz to view a secret cutscene <br> - [Youtube - Secret cutscene: Hugo bullied](https://www.youtube.com/watch?v=wvgHnCbaS6A "Shadow of Destiny - Secret cutscene: Hugo bullied") | / |
 | :trophy: <b>'Picked up a baby the other day'</b><br><i>a_SnowyCrimeScene</i> | - In chapter 6, after speaking to Oleg, head straight to Hauptstreet. <br> There's 3 cutscenes, each one activating the closer you get to Haupstreet | / |
 | :trophy: <b>Temporal Guardian of the Brums</b><br><i>a_SaveMiriamBrum</i> | - Make sure you have a few energy units stored to complete this achievement <br> 1. In chapter 6, while talking to Oleg pick the right choices which will result in a box office movie hit in the present (refer to a_Chapter6CompleteThriller or a_Chapter6CompleteLove). <br> 2. Go to Haupstreet (refer to a_SnowyCrimeScene) and view all 3 cutscenes. <br> 3. At the end of the cutscene where Miriam dies, time travel back to the same time period (1980, the snowy day), but this time you'll arrive just before the shooting takes place <br> 4. Pick any choice while talking to Miriam <br> 5. Walk around Haupstreet again, to view an altered cutscene of Miriam's death. <br> 6. Once the cutscene finishes, travel back to the present <br> 7. Once back in the present, immediately travel back to 1980, the snowy day <br> 8. After talking to Miriam again, chase her around Lebensbaum, if you're too slow to follow her you may have to restart this step <br> 9. After saving Miriam, talk to Brum couple twice to receive the achievement <br> - [Youtube Guide - Saving Miriam Brum](https://www.youtube.com/watch?v=dYZQhdKD_hY "Shadow of Memories/Destiny - Saving Miriam Brum") | / |
+| :trophy: <b>The Brum's Happily Ever After</b><br><i>a_MeetOldMiriam</i> | Complete Chapter 7, whilst having saved Miriam Brum in chapter 6 (refer to a_SaveMiriamBrum & a_SnowyCrimeScene) <br> Achievement unlocks once Miriam Brum is done talking during the last cutscene of chapter 7| / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### :gem: Hidden cutscenes that lead to death

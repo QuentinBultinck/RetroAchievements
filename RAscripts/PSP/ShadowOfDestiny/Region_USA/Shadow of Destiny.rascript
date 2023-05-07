@@ -130,6 +130,22 @@ _onScreenTextID = {
 }
 function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
+// EXTRA MENU 
+// *************
+//	=> Event viewer is unlocked after completing one ending
+// 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
+function IsViewingEndingFromExtraMenu() { return				// $AC3170: [32-bit] Pointer
+	 dword(dword(0xAC3170) + 0xF8000004) & 0x1FFFFFF == 0x1}	// 	+0xF8000004 = Selected menu item in Extra Menu
+																	// 		- 0x0 => Event viewer (replay unlocked cutscenes)
+																	// 		- 0x1 => Ending files (replay ending cutscenes)
+																	// 		- 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+																	// 		- 0x3 => Sound Mode (Play sound effects & music)
+																	// 		- 0x4 => Exit (back to Title Screen)
+function IsViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x1	// $1FFF15C: [32-bit] Flag => is viewing cutscene from event viewer
+																		// 	- 0x1 = event viewer is active
+																		// 	- other values = event viewer is inactive
+																		
+
 // OTHER LOGIC
 // *************
 function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
@@ -141,6 +157,8 @@ function isCutsceneActive() => bit0(0xA9Eb2C) == 0	// $A9Eb2C: [bit-0] Flag -> i
 function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running
 												//		- 0 = game is not running, it's in the title screen
 												//		- 1 = game is running
+
+
 
 
 //#########################################################################################################\\
@@ -186,9 +204,6 @@ _achievements = {
 		"a_Chapter7Complete": { // WORKING
 			"id": 000000, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 7"},
-		"a_Chapter7CompleteMiriamSaved": { // WORKING
-			"id": 000000, "points": 10, "hasTips": false,
-			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_Chapter8Complete": { // WORKING 
 			"id": 000000, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
@@ -223,9 +238,9 @@ _achievements = {
 		// TODO "a_EndingB1": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
-		// TODO "a_EndingB2": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
+		"a_EndingB2": {	// WORKING
+			"id": 000000, "points": 10, "hasTips": false,
+			"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		// TODO "a_EndingC": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
@@ -303,13 +318,15 @@ _achievements = {
 		"a_SaveMiriamBrum": {  // WORKING
 			"id": 0000, "points": 10, "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6"},
+		"a_MeetOldMiriam": { // WORKING
+			"id": 000000, "points": 10, "hasTips": true,
+			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs in a map"}, 
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 
-		
+		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 		
 		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
@@ -352,8 +369,9 @@ _achievements = {
 _achievementTriggers = {
 	"a_PrologueComplete": function PrologueComplete() { return
 		// Core group
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		(
 			( 		// Alt 1 => true when last prologue cutscene finishes (has been running for 2010+ frames)
 				unless(!isCurrentChapter("Prologue")) 					&&
@@ -369,8 +387,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter1Complete": function Chapter1Complete() { return
 		// Core group 
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		( 	
 			( 		// Alt 1 => true when last chapter cutscene finishes (has been running for 610+ frames)
 				unless(!isCurrentChapter("Chapter1")) 				&&
@@ -386,8 +405,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter2Complete": function Chapter2Complete() { return
 		// Core group 
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		(
 			( 		// Alt 1 => true when last chapter cutscene is active AND oneFrameTimerHasReset 3 times
 				unless(
@@ -405,8 +425,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		// Core group 
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		( 	
 			( 		// Alt 1 => true when last chapter cutscene finishes
 				unless(!isCurrentChapter("Chapter3")) &&
@@ -434,8 +455,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
 		// Core group 
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		isCurrentSelectedInventoryItem("FryingPan") && isChapterFinished("Chapter4")
 		// ( 	
 		// 	( 		// Alt 1 => IDs last chapter cutscene while using the frying pan WITHOUT taking the picture 
@@ -465,8 +487,9 @@ _achievementTriggers = {
 		},		
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		// Core group 
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		isCurrentSelectedInventoryItem("Sign") && isChapterFinished("Chapter4")
 		// ( 	
 		// 	( 		// Alt 1 => IDs last chapter cutscene while using the sign WITHOUT taking the picture 
@@ -495,8 +518,9 @@ _achievementTriggers = {
 		// )
 		},
 	"a_Chapter5Complete": function Chapter5Complete() { return
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		isCurrentSelectedInventoryItem("Antidote") && 
 		(
 			(
@@ -512,8 +536,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
 		never(
-			!isGameRunning() ||
-			!isCurrentChapter("Chapter6")	
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter6")	||
+			IsViewingCutsceneFromExtraMenu()
 		) &&
 		once(
 			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 && // Block => IDs thriller story choice
@@ -540,8 +565,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
 		never(
-			!isGameRunning() ||
-			!isCurrentChapter("Chapter6")	
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter6")	||
+			IsViewingCutsceneFromExtraMenu()
 		) &&
 		once(
 			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 &&	// Block => IDs love story choice
@@ -568,8 +594,9 @@ _achievementTriggers = {
 		)},
 	"a_Chapter7Complete": function Chapter7Complete() { return
 		never(
-			!isGameRunning() ||
-			!isCutsceneActive() 
+			!isGameRunning() 				||
+			!isCutsceneActive() 			||
+			IsViewingCutsceneFromExtraMenu()
 		) && (
 			(
 				tally(820, [
@@ -598,11 +625,73 @@ _achievementTriggers = {
 				isChapterFinished("Chapter7")
 			)
 		)},
-	"a_Chapter7CompleteMiriamSaved": function Chapter7CompleteMiriamSaved() { return 
+	
+	"a_Chapter8Complete": function Chapter8Complete() { return
 		never(
-			!isGameRunning()	||
+			!isGameRunning()					||
+			!isCutsceneActive()					||
+			IsViewingCutsceneFromExtraMenu()
+		) && isChapterFinished("Chapter8")},
+	"a_EndingB2": function EndingB2() { return
+		never(
+			!isGameRunning() 	||
 			!isCutsceneActive()	||
-			!isCurrentChapter("Chapter7")
+			!isCurrentChapter("Epilogue") ||
+			IsViewingEndingFromExtraMenu()
+		) &&
+		tally(3, [
+			once(
+				currentCutsceneId(1) == 0xffe3ff87 	&& priorCutsceneId(1) == 0x111000d3 	&&
+				currentCutsceneId(7) == 0x11111111 	&& priorCutsceneId(7) == 0x16f113f3 	&&
+				currentCutsceneId(22) == 0x00011111 && priorCutsceneId(22) == 0x94042e18 	&&
+				onScreenTextID(0) == 0x94 		&& prior(onScreenTextID(0)) == 0x127 	&&
+				onScreenTextID(1) == 0x0040ffb0 && prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x0050002b && prior(onScreenTextID(2)) == 0x0),
+			once(
+				currentCutsceneId(2) == 0xfb3de903 	&& priorCutsceneId(2) == 0xfe615 		&&
+				currentCutsceneId(8) == 0xd0c9fdec 	&& priorCutsceneId(8) == 0xfe7931e4 	&&
+				currentCutsceneId(20) == 0xcf25e707 && priorCutsceneId(20) == 0x464da317 	&&
+				onScreenTextID(0) == 0x82 		&& prior(onScreenTextID(0)) == 0x0 		&&
+				onScreenTextID(1) == 0x0040ffad && prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(4) == 0x00080007 && prior(onScreenTextID(4)) == 0x0),
+			once(
+				currentCutsceneId(3) == 0x8f00b200 	&& priorCutsceneId(3) == 0x44000 		&&
+				currentCutsceneId(9) == 0x50e597ff 	&& priorCutsceneId(9) == 0xcd33d946 	&&
+				currentCutsceneId(19) == 0x1 && priorCutsceneId(20) == 0xa173d146 			&&
+				onScreenTextID(0) == 0x0 		&& prior(onScreenTextID(0)) == 0x78 	&&
+				onScreenTextID(1) == 0x0 		&& prior(onScreenTextID(1)) == 0x40ffa0 &&
+				onScreenTextID(3) == 0x00080007 && prior(onScreenTextID(3)) == 0x400005)			
+		])},
+	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
+		never(!isGameRunning()) 				&&
+		never(!isCutsceneActive()) 				&&
+		never(IsViewingCutsceneFromExtraMenu()) &&
+		never(!isCurrentChapter("Chapter4")) 	&&
+		(
+			isCurrentSelectedInventoryItem("Sign") 	|| 
+			isCurrentSelectedInventoryItem("FryingPan")
+		) &&		
+		tally(8, [
+			once(
+				currentCutsceneId(19) == 0x00008000 && priorCutsceneId(19) == 0x77c45331 &&
+				currentCutsceneId(15) == 0x11111000 && priorCutsceneId(15) == 0x40),
+			once(
+				currentCutsceneId(17) == 0xff95ff72 && priorCutsceneId(17) == 0x37760000 &&
+				currentCutsceneId(14) == 0xf655fff3 && priorCutsceneId(14) == 0x500050),
+			once(onScreenTextID(0) == 0x1e && prior(onScreenTextID(0)) == 0x7d),
+			once(onScreenTextID(0) == 0x3c && prior(onScreenTextID(0)) == 0xa0),
+			once(onScreenTextID(0) == 0x33b && prior(onScreenTextID(0)) == 0x3cf),
+			once(onScreenTextID(0) == 0x20d && prior(onScreenTextID(0)) == 0x2c1),
+			once(onScreenTextID(0) == 0x4e && prior(onScreenTextID(0)) == 0xd3),
+			once(onScreenTextID(0) == 0x53 && prior(onScreenTextID(0)) == 0x82)
+		]) &&
+		onScreenTextID(0) == 0x00 && prior(onScreenTextID(0)) == 0x2d},
+	"a_MeetOldMiriam": function MeetOldMiriam() { return 
+		never(
+			!isGameRunning()					||
+			!isCutsceneActive()					||
+			!isCurrentChapter("Chapter7")		||
+			IsViewingCutsceneFromExtraMenu()
 		) &&
 		tally(3, [
 			once(
@@ -633,36 +722,12 @@ _achievementTriggers = {
 		onScreenTextID(0) == 0x0 	&& prior(onScreenTextID(0)) == 0x6b 	&&
 		onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x40ffa5 &&
 		onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x3f0000},
-	"a_Chapter8Complete": function Chapter8Complete() { return
-		never(
-			!isGameRunning()	||
-			!isCutsceneActive()
-		) && isChapterFinished("Chapter8")},
-	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
-		never(!isGameRunning()) 	&&
-		never(!isCutsceneActive()) 	&&
-		(isCurrentSelectedInventoryItem("Sign") || isCurrentSelectedInventoryItem("FryingPan")) && 
-		never(!isCurrentChapter("Chapter4")) &&
-		tally(8, [
-			once(
-				currentCutsceneId(19) == 0x00008000 && priorCutsceneId(19) == 0x77c45331 &&
-				currentCutsceneId(15) == 0x11111000 && priorCutsceneId(15) == 0x40),
-			once(
-				currentCutsceneId(17) == 0xff95ff72 && priorCutsceneId(17) == 0x37760000 &&
-				currentCutsceneId(14) == 0xf655fff3 && priorCutsceneId(14) == 0x500050),
-			once(onScreenTextID(0) == 0x1e && prior(onScreenTextID(0)) == 0x7d),
-			once(onScreenTextID(0) == 0x3c && prior(onScreenTextID(0)) == 0xa0),
-			once(onScreenTextID(0) == 0x33b && prior(onScreenTextID(0)) == 0x3cf),
-			once(onScreenTextID(0) == 0x20d && prior(onScreenTextID(0)) == 0x2c1),
-			once(onScreenTextID(0) == 0x4e && prior(onScreenTextID(0)) == 0xd3),
-			once(onScreenTextID(0) == 0x53 && prior(onScreenTextID(0)) == 0x82)
-		]) &&
-		onScreenTextID(0) == 0x00 && prior(onScreenTextID(0)) == 0x2d},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 			!isGameRunning() 				|| 
 			!isCutsceneActive() 			||
-			!isCurrentChapter("Chapter1")) 	&& 
+			!isCurrentChapter("Chapter1")	||
+			IsViewingCutsceneFromExtraMenu()) 	&& 
 		repeated(350, priorCutsceneId(10) == 0xfffe8366)		&& // this block => last cutscene has run for about 350 frames
 		repeated(350, priorCutsceneId(13) == 0x3cd31cf) 		&&
 		repeated(350, priorCutsceneId(15) == 0x11110597) 		&& 
@@ -673,6 +738,7 @@ _achievementTriggers = {
 		never(!isGameRunning()) 				&& // This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 				&&
 		never(!isCurrentChapter("Chapter1")) 	&&	
+		never(IsViewingCutsceneFromExtraMenu())	&&
 		repeated(420, priorCutsceneId(11) == 0x4d5fc40) 	&& // This block => last cutscene has run for about 420 frames
 		repeated(420, priorCutsceneId(14) == 0x55005ce) 	&&
 		repeated(420, priorCutsceneId(16) == 0x88065620) 	&& 
@@ -680,7 +746,7 @@ _achievementTriggers = {
 		repeated(420, currentCutsceneId(14) == 0x30ff26b) 	&&
 		repeated(420, currentCutsceneId(16) == 0x11d8fa)},
 	"a_EggCollection2": function EggCollection2() { return 
-		never(!isGameRunning() || !isCutsceneActive()) &&
+		never(!isGameRunning() || !isCutsceneActive() || IsViewingCutsceneFromExtraMenu()) &&
 		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
 		(	
 			(
@@ -703,6 +769,7 @@ _achievementTriggers = {
 		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive()) 						&&
 		never(!isCurrentChapter("Chapter2"))			&&
+		never(IsViewingCutsceneFromExtraMenu())			&&
 
 		isCurrentSelectedInventoryItem("OrnamentalEgg") && 	// Is currently selected item the 'OrnamentalEgg'
 		repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) 	&&	// this block => last cutscene has run for about 380 frames
@@ -715,8 +782,9 @@ _achievementTriggers = {
 		repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
 	"a_IntroduceEggCollecting2": function IntroduceEggCollecting2() { return 
 		never(
-			!isGameRunning() ||
-			!isCutsceneActive() ||			
+			!isGameRunning() 					||
+			!isCutsceneActive() 				||	
+			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8")  
 		) &&
 		once(
@@ -742,8 +810,9 @@ _achievementTriggers = {
 		)},
 	"a_PocketWatchCollection": function PocketWatch() { return
 		never(
-			!isGameRunning() 	||
-			!isCutsceneActive() ||
+			!isGameRunning() 					||
+			!isCutsceneActive() 				||
+			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter7")
 		) &&
 		tally(2, [
@@ -765,8 +834,9 @@ _achievementTriggers = {
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e},
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never(
-			!isGameRunning() 	||
-			!isCutsceneActive()	||
+			!isGameRunning() 					||
+			!isCutsceneActive()					||
+			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter8")
 		) &&
 		tally(3, [
@@ -806,7 +876,8 @@ _achievementTriggers = {
 				onScreenTextID(8) == 0
 			) &&
 			never(
-				!isGameRunning() || 
+				!isGameRunning() 					|| 
+				IsViewingCutsceneFromExtraMenu() 	||
 				!isCurrentChapter("Chapter2")
 			) &&
 			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the lighter
@@ -854,7 +925,8 @@ _achievementTriggers = {
 				onScreenTextID(8) == 0
 			) &&
 			never(
-				!isGameRunning() || 
+				!isGameRunning() 					|| 
+				IsViewingCutsceneFromExtraMenu() 	||
 				!isCurrentChapter("Chapter2")
 			) &&
 			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the cellphone
@@ -893,7 +965,8 @@ _achievementTriggers = {
 			)}, 	
 	"a_EikeTheFlorist": function EikeTheFlorist() { return
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
-			!isGameRunning() || 
+			!isGameRunning() 					|| 
+			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter2")
 		) && 
 		once(
@@ -928,8 +1001,9 @@ _achievementTriggers = {
 		)},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never(
-			!isGameRunning() 	||
-			!isCutsceneActive() ||
+			!isGameRunning() 					||
+			!isCutsceneActive() 				||
+			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter5")
 		) &&
 		tally(2, [
@@ -962,7 +1036,8 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
+			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
 			unless(
@@ -1015,7 +1090,8 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter3")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
+			!IsViewingCutsceneFromExtraMenu()}	
 		// Trigger 
 		return 
 			unless(
@@ -1068,7 +1144,8 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning()	&& 
+			!IsViewingCutsceneFromExtraMenu()}								// frames where both these comparisons are true. So this hit counts fixes that
 		// Trigger 
 		return 
 			unless(
@@ -1114,7 +1191,10 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a331cc),		// => cutscene when talking to man 1st time
 				once(interactionID_2() == 0x08a331e0)		// => cutscene when talking to man 2nd time
 			])}
-		function measuredIfComparison() => repeated(100, isCurrentChapter("Chapter5")) && isGameRunning()
+		function measuredIfComparison() { return
+			repeated(100, isCurrentChapter("Chapter5")) && 
+			isGameRunning() && 
+			!IsViewingCutsceneFromExtraMenu()} 
 		return
 			unless(
 				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
@@ -1139,7 +1219,8 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter7")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
-			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning() && 								// frames where both these comparisons are true. So this hit counts fixes that
+			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
 			unless(
@@ -1170,7 +1251,8 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter8")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
-			isGameRunning()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning() && 								// frames where both these comparisons are true. So this hit counts fixes that
+			!IsViewingCutsceneFromExtraMenu()}
 		return 
 			unless(
 				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man 1st time before experiment
@@ -1195,7 +1277,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() { return
-			isGameRunning() && 
+			isGameRunning() && !IsViewingCutsceneFromExtraMenu() &&
 			(
 				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter1"))		// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
@@ -1232,7 +1314,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter3"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter3"))
 		// Trigger
 		return  
 			unless(
@@ -1269,7 +1351,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter4"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter4"))
 		// Trigger
 		return  
 			unless(
@@ -1305,7 +1387,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30b70),					// Add hit: +1 	=> for talking to man 2nd time
 				once(interactionID_2() == 0x08a30c9c),					// Add hit: +1	=> for talking to woman 
 			])}
-		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter5"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter5"))
 		// Trigger
 		return  
 			unless(
@@ -1335,7 +1417,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c4c),			// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c60),			// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && repeated(100, isCurrentChapter("Chapter7"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter7"))
 		// Trigger
 		return  
 			unless(
@@ -1379,7 +1461,8 @@ _achievementTriggers = {
 				isCurrentChapter("Chapter7") || 
 				isCurrentChapter("Chapter8")
 			) && 
-			isGameRunning()}
+			isGameRunning() &&
+			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
 			unless(
@@ -1434,7 +1517,7 @@ _achievementTriggers = {
 
 			])}
 		function measuredIfComparison() { return
-			isGameRunning() && 
+			isGameRunning() && !IsViewingCutsceneFromExtraMenu()
 			(
 				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
@@ -1492,7 +1575,7 @@ _achievementTriggers = {
 						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff94 	&&
 						onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480008)
 				])}
-			function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
+			function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && isCurrentChapter("Chapter6")
 			return 
 				unless(!isCutsceneActive()) &&
 				measured(measuredComparison(), measuredIfComparison())
@@ -1529,15 +1612,16 @@ _achievementTriggers = {
 					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff93	&&
 					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50ffde),
 			])}
-		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && isCurrentChapter("Chapter6")
 		return 
 			unless(!isCutsceneActive()) &&
 			measured(measuredComparison(), measuredIfComparison())
 		},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
-			!isGameRunning() 	|| 
-			!isCutsceneActive() || 
+			!isGameRunning() 					|| 
+			!isCutsceneActive() 				|| 
+			IsViewingCutsceneFromExtraMenu() 	|| 
 			!isCurrentChapter("Chapter5")
 		) && 
 		tally (290, [
@@ -1560,7 +1644,7 @@ _achievementTriggers = {
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x26},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
-			!isGameRunning() || !isCutsceneActive() || 
+			!isGameRunning() || !isCutsceneActive() || IsViewingCutsceneFromExtraMenu() || 
 			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && 
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") &&
 			!isCurrentChapter("Chapter8")
@@ -1580,9 +1664,10 @@ _achievementTriggers = {
 		repeated(160, onScreenTextID(0) == 0x0)}, // trigger when last text in cutscene is finished
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
-			!isGameRunning()				||
-			!isCurrentChapter("Prologue") 	||
-			!isCutsceneActive())			&&
+			!isGameRunning()					||
+			!isCurrentChapter("Prologue") 		||
+			IsViewingCutsceneFromExtraMenu() 	|| 
+			!isCutsceneActive())				&&
 		repeated(1050, prior(currentCutsceneId(22)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
 		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
 		repeated(1050, prior(currentCutsceneId(9)) == 0xa0e6e5ff) 	&&
@@ -1591,8 +1676,9 @@ _achievementTriggers = {
 		repeated(1050, currentCutsceneId(9) == 0x5ffe5fe9)},	
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
-			!isGameRunning()				||
-			!isCurrentChapter("Chapter7") 	||
+			!isGameRunning()					||
+			IsViewingCutsceneFromExtraMenu() 	|| 
+			!isCurrentChapter("Chapter7") 		||
 			!isCutsceneActive()
 		) &&
 		repeated(550, 
@@ -1603,8 +1689,9 @@ _achievementTriggers = {
 			currentCutsceneId(21) == 0x0053ffc7)},
 	"a_RottenRope": function RottenRope() { return
 		never(
-			!isGameRunning() || 
-			!isCutsceneActive() || 
+			!isGameRunning() 					|| 
+			!isCutsceneActive() 				|| 
+			IsViewingCutsceneFromExtraMenu() 	|| 
 			!isCurrentChapter("Chapter7")
 		) &&
 		tally(4, [
@@ -1627,7 +1714,8 @@ _achievementTriggers = {
 		])},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return 
 		never(
-			!isGameRunning() ||
+			!isGameRunning() 					||
+			IsViewingCutsceneFromExtraMenu() 	|| 
 			!isCurrentChapter("Chapter6")
 		) &&
 		once(
@@ -1655,9 +1743,10 @@ _achievementTriggers = {
 		)},
 	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
-			!isGameRunning()				||
-			!isCurrentChapter("Chapter2") 	||
-			!isCutsceneActive())			&&
+			!isGameRunning()					||
+			!isCurrentChapter("Chapter2") 		||
+			IsViewingCutsceneFromExtraMenu() 	|| 
+			!isCutsceneActive())				&&
 		repeated(1400, onScreenTextID(0) == 0x4b) &&	// Block => identifies the cutscene (code might be too bloated but better safe than sorry)
 		once(prev(onScreenTextID(0)) == 0x4b && onScreenTextID(0) == 0x2d) &&	// Text sequence A
 		once(prev(onScreenTextID(0)) == 0x2d && onScreenTextID(0) == 0x1e) &&	// Text sequence B
@@ -1676,8 +1765,9 @@ _achievementTriggers = {
 		prev(onScreenTextID(0)) == 0x50},		// Last text
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return 
 		never(
-			!isGameRunning() 	||
-			!isCutsceneActive() ||
+			!isGameRunning() 					||
+			!isCutsceneActive() 				||
+			IsViewingCutsceneFromExtraMenu() 	|| 
 			!isCurrentChapter("Chapter3")
 		) &&
 		tally(2,
@@ -1718,8 +1808,9 @@ _achievementTitles = {
 	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
-	"a_Chapter7CompleteMiriamSaved":				{"en": "The Brums Happily Ever After"},
+	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
+	"a_EndingB2":									{"en": "No Sense of Finality"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1773,8 +1864,9 @@ _achievementDescriptions = {
 	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
 	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
-	"a_Chapter7CompleteMiriamSaved":				{"en": "Complete Chapter 7, whilst having saved a member of the Brum family in Chapter 6"},
+	"a_MeetOldMiriam":								{"en": "Complete Chapter 7, whilst having saved a member of the Brum family in Chapter 6"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
+	"a_EndingB2":									{"en": "Achieve ending B2"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
