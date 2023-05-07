@@ -87,7 +87,7 @@ _chapterIDs = {
 	"Chapter6": 0x7,
 	"Chapter7": 0x8,
 	"Chapter8": 0x9,
-	"Epilogue": 0xA,
+	"Epilogue": 0xa,
 	// TODO "Different endings": ???
 	// TODO "EX chapter": ??? 
 }
@@ -189,9 +189,9 @@ _achievements = {
 		"a_Chapter7CompleteMiriamSaved": { // WORKING
 			"id": 000000, "points": 10, "hasTips": false,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Complete chapter 8"},
+		"a_Chapter8Complete": { // WORKING 
+			"id": 000000, "points": 5, "hasTips": false,
+			"devInfo": "Complete chapter 8"},
 		// TODO "a_EpilogueComplete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Complete the epilogue"}, 
@@ -300,9 +300,9 @@ _achievements = {
 		"a_SnowyCrimeScene": {  // WORKING
 			"id": 313209, "points": 10, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
-		"a_SaveMiriamBrum": {  // WORKING	// CONCEPT Also talk to Miriam in present when she's saved??
+		"a_SaveMiriamBrum": {  // WORKING
 			"id": 0000, "points": 10, "hasTips": true,
-			"devInfo": "Save Miriam Brum in chapter 6 by seeing her die twice => third time you can save her, but baby is still gone"},
+			"devInfo": "Save Miriam Brum in chapter 6"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Find all energy orbs in a map"}, 
@@ -633,6 +633,11 @@ _achievementTriggers = {
 		onScreenTextID(0) == 0x0 	&& prior(onScreenTextID(0)) == 0x6b 	&&
 		onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x40ffa5 &&
 		onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x3f0000},
+	"a_Chapter8Complete": function Chapter8Complete() { return
+		never(
+			!isGameRunning()	||
+			!isCutsceneActive()
+		) && isChapterFinished("Chapter8")},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
@@ -1714,6 +1719,7 @@ _achievementTitles = {
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_Chapter7CompleteMiriamSaved":				{"en": "The Brums Happily Ever After"},
+	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1768,6 +1774,7 @@ _achievementDescriptions = {
 	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_Chapter7CompleteMiriamSaved":				{"en": "Complete Chapter 7, whilst having saved a member of the Brum family in Chapter 6"},
+	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},

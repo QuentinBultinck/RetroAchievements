@@ -35,7 +35,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Director's Cut: Trip for Two</b><br><i>a_Chapter6CompleteLove</i> | Any walkthrough/gameplay guide | Don't skip the cutscenes when choosing what movie you'll make with Oleg |
 | :trophy: <b>A Friend's Repentance</b><br><i>a_Chapter7Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>The Brum's Happily Ever After</b><br><i>a_Chapter7CompleteMiriamSaved</i> | Complete Chapter 7, whilst having saved Miriam Brum in chapter 6 (refer to a_SaveMiriamBrum & a_SnowyCrimeScene) <br> Achievement unlocks once Miriam Brum is done talking during the last cutscene of chapter 7| / |
-| :trophy: <b>Complete chapter 8</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>The Whole Picture... Or is it?</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>Complete the Epilogue</b><br><i>a_EpilogueComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
