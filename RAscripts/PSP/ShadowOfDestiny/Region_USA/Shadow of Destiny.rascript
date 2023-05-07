@@ -186,6 +186,9 @@ _achievements = {
 		"a_Chapter7Complete": { // WORKING
 			"id": 000000, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 7"},
+		"a_Chapter7CompleteMiriamSaved": { // WORKING
+			"id": 000000, "points": 10, "hasTips": false,
+			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		// TODO "a_Chapter8Complete": { // TODO check if this is double with endings
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Complete chapter 8"},
@@ -295,10 +298,10 @@ _achievements = {
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_SnowyCrimeScene": {  // WORKING
-			"id": 313209, "points": 5, "hasTips": true,
-			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
-		"a_SaveMiriamBrum": {  // WIP	// CONCEPT Also talk to Miriam in present when she's saved??
 			"id": 313209, "points": 10, "hasTips": true,
+			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
+		"a_SaveMiriamBrum": {  // WORKING	// CONCEPT Also talk to Miriam in present when she's saved??
+			"id": 0000, "points": 10, "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6 by seeing her die twice => third time you can save her, but baby is still gone"},
 		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
 		//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -595,6 +598,41 @@ _achievementTriggers = {
 				isChapterFinished("Chapter7")
 			)
 		)},
+	"a_Chapter7CompleteMiriamSaved": function Chapter7CompleteMiriamSaved() { return 
+		never(
+			!isGameRunning()	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Chapter7")
+		) &&
+		tally(3, [
+			once(
+				currentCutsceneId(2) == 0xe6de0168 	&& priorCutsceneId(2) == 0xe6e5ff4f 	&&
+				currentCutsceneId(6) == 0xe6dff9b8 	&& priorCutsceneId(6) == 0x3e5 			&&
+				currentCutsceneId(19) == 0x10600 	&& priorCutsceneId(19) == 0xb9f42303 	&&
+				onScreenTextID(0) == 0x4c 		&& prior(onScreenTextID(0)) == 0x1d &&
+				onScreenTextID(1) == 0x48ffb4 	&& prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(3) == 0x49002d 	&& prior(onScreenTextID(3)) == 0x0),
+			once(
+				currentCutsceneId(5) == 0x111 		&& priorCutsceneId(5) == 0xe32b0057	 	&&
+				currentCutsceneId(9) == 0x50050716 	&& priorCutsceneId(9) == 0x3e000000 	&&
+				currentCutsceneId(16) == 0x300ceae6 && priorCutsceneId(16) == 0xc50044f1 	&&
+				onScreenTextID(0) == 0x7e 		&& prior(onScreenTextID(0)) == 0xe4 &&
+				onScreenTextID(2) == 0x4c0000 	&& prior(onScreenTextID(2)) == 0x0 	&&
+				onScreenTextID(5) == 0x50000d 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(1) == 0x1196ed85 	&& priorCutsceneId(1) == 0x111	 		&&
+				currentCutsceneId(18) == 0x00f30000 && priorCutsceneId(18) == 0x780000 		&&
+				currentCutsceneId(24) == 0x54504ec1 && priorCutsceneId(24) == 0x7f39fd3e 	&&
+				onScreenTextID(0) == 0x1b 		&& prior(onScreenTextID(0)) == 0x81 &&
+				onScreenTextID(3) == 0x400027 	&& prior(onScreenTextID(3)) == 0x0 	&&
+				onScreenTextID(5) == 0x500025 	&& prior(onScreenTextID(5)) == 0x0)
+		]) &&
+		currentCutsceneId(4) == 0x01671881 	&& priorCutsceneId(4) == 0x0dc2ffb9	 	&&
+		currentCutsceneId(18) == 0x13b06c5 && priorCutsceneId(18) == 0x00f30000 	&&
+		currentCutsceneId(25) == 0x458d511a && priorCutsceneId(25) == 0x0a225902 	&&
+		onScreenTextID(0) == 0x0 	&& prior(onScreenTextID(0)) == 0x6b 	&&
+		onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x40ffa5 &&
+		onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x3f0000},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 	&&
 		never(!isCutsceneActive()) 	&&
@@ -1332,6 +1370,7 @@ _achievementTriggers = {
 				isCurrentChapter("Chapter3") || 			// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
 				isCurrentChapter("Chapter4") || 
 				isCurrentChapter("Chapter5") || 
+				isCurrentChapter("Chapter6") || 
 				isCurrentChapter("Chapter7") || 
 				isCurrentChapter("Chapter8")
 			) && 
@@ -1428,9 +1467,9 @@ _achievementTriggers = {
 			function measuredComparison() { return 
 				tally(3, [
 					once(
-						currentCutsceneId(1) == 0x022c00b1 && priorCutsceneId(1) == 0x14b7ff2e && // Block => IDs gunshot cutscene
-						currentCutsceneId(3) == 0x00eb7e00 && priorCutsceneId(3) == 0x3acf2518 && 
-						currentCutsceneId(16) == 0x25fc4e17 && priorCutsceneId(16) == 0x11012a00 &&
+						currentCutsceneId(1) == 0x022c00b1	&&  // Block => IDs gunshot cutscene
+						currentCutsceneId(3) == 0x00eb7e00 	&&
+						currentCutsceneId(16) == 0x25fc4e17 &&
 						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e &&
 						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffd6 &&
 						onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x4b0000),
@@ -1453,8 +1492,42 @@ _achievementTriggers = {
 				unless(!isCutsceneActive()) &&
 				measured(measuredComparison(), measuredIfComparison())
 		},
-	"a_SaveMiriamBrum": function SaveMiriamBrum() {
-		return always_false()
+	"a_SaveMiriamBrum": function SaveMiriamBrum() { 
+		function measuredComparison() { return
+			tally(4, [
+				once(
+					currentCutsceneId(23) == 0x46464952 && priorCutsceneId(23) == 0x1a1c5339	&&	// Block => IDs cutscene where Eike is accused by the bystanders for killing Miriam, after trying to save her the 1st time
+					currentCutsceneId(24) == 0x9fc50363 && priorCutsceneId(24) == 0x1192c330 	&&	
+					currentCutsceneId(25) == 0x6175bab4 && priorCutsceneId(25) == 0x4464c78f	&&
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x5a 		&&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ffd2	&&
+					onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x50ffb8),
+				once(
+					currentCutsceneId(23) == 0x6aee6439 && priorCutsceneId(23) == 0x90c46c39	&&	// Block => IDs cutscene where Eike save Miriam succesfully after chasing her around
+					currentCutsceneId(24) == 0x3ea588a9 && priorCutsceneId(24) == 0x5bca2a9c 	&&	
+					currentCutsceneId(25) == 0x74bd8160 && priorCutsceneId(25) == 0xf879a12a	&&
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x3c 		&&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ffec	&&
+					onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x50ffc5),
+				once(
+					currentCutsceneId(23) == 0x46464952 &&	// Block => IDs cutscene 1st time talking to Brum couple after saving Miriam 
+					currentCutsceneId(24) == 0x6390d3ae && 	
+					currentCutsceneId(25) == 0xfc1a045a && 
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x87 	&&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ffc7	&&
+					onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x8000a),
+				once(
+					currentCutsceneId(1) == 0x6b801111 &&	// Block => IDs cutscene 2nd time talking to Brum couple after saving Miriam 
+					currentCutsceneId(8) == 0x099bf650 && 	
+					currentCutsceneId(16) == 0x523f2331 && 
+					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0xbe 		&&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff93	&&
+					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50ffde),
+			])}
+		function measuredIfComparison() => isGameRunning() && isCurrentChapter("Chapter6")
+		return 
+			unless(!isCutsceneActive()) &&
+			measured(measuredComparison(), measuredIfComparison())
 		},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
@@ -1548,17 +1621,32 @@ _achievementTriggers = {
 				currentCutsceneId(19)== 0x4306d244 && priorCutsceneId(19) == 0x19049404)
 		])},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return 
-		repeated(500, 
-			currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
-			currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 	&& 
-			currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 	&&
-			onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80
+		never(
+			!isGameRunning() ||
+			!isCurrentChapter("Chapter6")
+		) &&
+		once(
+			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x4b && 		// Block => IDs Time Ego choice
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x0040ff68 &&
+			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x40ffe0 &&
+			onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4fffad &&
+			currentCutsceneId(18) == 0xe6e531b2 && priorCutsceneId(18) == 0xc901500 && 
+			currentCutsceneId(21) == 0xe6e531b0 && priorCutsceneId(21) == 0x6dc && 
+			currentCutsceneId(25) == 0x811229f0 && priorCutsceneId(25) == 0x25cae263
 		) && 
-		repeated(30, 
-			onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0xe1 &&
-			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffc2 &&
-			onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x410000 &&
-			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480029
+		trigger_when(
+			tally(171, [
+				repeated(500, 
+					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
+					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 	&& 
+					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 	&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80), 
+				repeated(30, 
+					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0xe1 &&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffc2 &&
+					onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x410000 &&
+					onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480029)
+			])
 		)},
 	"a_MetYouBefore": function MetYouBefore() { return  
 		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
@@ -1625,6 +1713,7 @@ _achievementTitles = {
 	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
+	"a_Chapter7CompleteMiriamSaved":				{"en": "The Brums Happily Ever After"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1654,7 +1743,7 @@ _achievementTitles = {
 	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
-	"a_SaveMiriamBrum":								{"en": "Temporal Guardian"},
+	"a_SaveMiriamBrum":								{"en": "Temporal Guardian of the Brums"},
 	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
@@ -1678,6 +1767,7 @@ _achievementDescriptions = {
 	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
 	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
+	"a_Chapter7CompleteMiriamSaved":				{"en": "Complete Chapter 7, whilst having saved a member of the Brum family in Chapter 6"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
@@ -1712,7 +1802,7 @@ _achievementDescriptions = {
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
-	"a_SaveMiriamBrum":								{"en": "Save someone else from a predestined death during chapter 6"}, 
+	"a_SaveMiriamBrum":								{"en": "Save a member of the Brum family from a predestined death during chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
 	// "a_Template": 			{"en": "xxxxx"},
 }
