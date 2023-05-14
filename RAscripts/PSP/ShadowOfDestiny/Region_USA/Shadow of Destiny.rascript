@@ -233,23 +233,23 @@ _achievements = {
 	},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
-			"id": 315566, "points": 10, "hasTips": false,
+			"id": 315566, "points": 10, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
 		"a_EndingB1": {	// WORKING
-			"id": 315573, "points": 10, "hasTips": false,
+			"id": 315573, "points": 10, "hasTips": true,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		"a_EndingB2": {	// WORKING
-			"id": 315572, "points": 10, "hasTips": false,
+			"id": 315572, "points": 10, "hasTips": true,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		// TODO "a_EndingC": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		// TODO "a_EndingD": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		// TODO "a_EndingE": {	
-		//	"id": 000000, "points": 10, "hasTips": false,
-		// 	"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
+		"a_EndingC": {	// WORKING
+			"id": 317118, "points": 10, "hasTips": true,
+			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
+		"a_EndingD": {	// WIP
+			"id": 000000, "points": 10, "hasTips": true,
+			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
+		"a_EndingE": {	// WIP
+			"id": 000000, "points": 10, "hasTips": true,
+			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
@@ -733,6 +733,43 @@ _achievementTriggers = {
 				onScreenTextID(1) == 0x0 		&& prior(onScreenTextID(1)) == 0x40ffa0 &&
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x400005)			
 		])},
+	"a_EndingC": function EndingC() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Epilogue") ||
+			IsViewingCutsceneFromExtraMenu() || // --> Some reason this comparison becomes true during this cutscene 
+			IsViewingEndingFromExtraMenu()		// 		=> resets count/tally during cutscene 
+		) &&									// 		Workaround => this achievement popups sooner than the cutscene actually finishes
+		tally(3, [
+			once(
+				currentCutsceneId(1) == 0x20008f 	&& priorCutsceneId(1) == 0x2ea0e6e5 	&&
+				currentCutsceneId(6) == 0xef63031c	&& priorCutsceneId(6) == 0x1400000 		&&
+				currentCutsceneId(19) == 0x00009200 && priorCutsceneId(19) == 0x60018f00 	&&
+				onScreenTextID(0) == 0x8c 		&& prior(onScreenTextID(0)) == 0x1e 	&&
+				onScreenTextID(1) == 0x40ffcd 	&& prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x50004a 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(2) == 0x00450264 	&& priorCutsceneId(2) == 0x1e20000 		&&
+				currentCutsceneId(9) == 0x3b000400	&& priorCutsceneId(9) == 0xcefdb601 	&&
+				currentCutsceneId(22) == 0x37116c44 && priorCutsceneId(22) == 0x9b44c815 	&&
+				onScreenTextID(0) == 0x6a 		&& prior(onScreenTextID(0)) == 0x49 	&&
+				onScreenTextID(1) == 0x40ffb1 	&& prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x500019 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(4) == 0xfd9eff50 	&& priorCutsceneId(4) == 0xff761cf8 		&&
+				currentCutsceneId(12) == 0xff9e321e 	&& priorCutsceneId(12) == 0x1787d1f2 	&&
+				currentCutsceneId(17) == 0x0026e59d && priorCutsceneId(17) == 0x31b08888		&&
+				onScreenTextID(0) == 0x66 		&& prior(onScreenTextID(0)) == 0x8e &&
+				onScreenTextID(1) == 0x40ff89 	&& prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(6) == 0xe00000 	&& prior(onScreenTextID(6)) == 0x0)			
+		])},
+	"a_EndingD": function EndingD() { return	// WIP
+		always_false()
+		},
+	"a_EndingE": function EndingE() { return	// WIP
+		always_false()
+		},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive()) 				&&
@@ -1884,6 +1921,9 @@ _achievementTitles = {
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality #1"},
 	"a_EndingB2":									{"en": "No Sense of Finality #2"},
+	"a_EndingC": 									{"en": "'If only... I had one more attempt'"},
+	"a_EndingD": 									{"en": "ENDING D => INSERT TITLE"},
+	"a_EndingE": 									{"en": "ENDING E => INSERT TITLE"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
@@ -1942,6 +1982,9 @@ _achievementDescriptions = {
 	"a_EndingA":									{"en": "Achieve Ending A"},
 	"a_EndingB1":									{"en": "Achieve Ending B1"},
 	"a_EndingB2":									{"en": "Achieve Ending B2"},
+	"a_EndingC": 									{"en": "Achieve Ending C"},
+	"a_EndingD": 									{"en": "Achieve Ending D"},
+	"a_EndingE": 									{"en": "Achieve Ending E"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
@@ -1985,7 +2028,7 @@ _achievementDescriptions = {
 //	- Creates achievements based on achievement dictionary
 // *************************************************************
 function initializeAchievements() {
-	// Generate achievement title (with developer tags if devmode == 1)
+	// Generates the achievement title (with developer tags, if devmode == 1)
 	function generateAchievementTitle(string_achievementName, string_achievementCategory, string_languageCode) {
 		function enterCategoryName(string_achievementCategory) {
 			let_string = ""
@@ -1999,7 +2042,7 @@ function initializeAchievements() {
 		}
 		return enterCategoryName(string_achievementCategory) + lookUpAchievementTitle(string_achievementName, string_languageCode)
 	}
-	// Generate achievement desciption (with extra develop information if devmode == 1)
+	// Generates the achievement description (with extra developer information, if devmode == 1)
 	function generateAchievementDescription(string_achievementName, boolean_hasTips, string_devInfo, string_languageCode) {	
 		function lookUpAchievementDescription(string_achievementName, string_languageCode) {
 			return _achievementDescriptions[string_achievementName][string_languageCode]
@@ -2013,12 +2056,12 @@ function initializeAchievements() {
 		}	
 		function enterTipsLink(boolean_hasTips) {
 			let_tipsLink = ""
-			if(boolean_hasTips == true) let_tipsLink = " - [Tips available: " + achievementGuideLink + "]"
+			if(boolean_hasTips == true) let_tipsLink = " - [Tips: " + achievementGuideLink + "]"
 			return let_tipsLink 
 		}
 		return lookUpAchievementDescription(string_achievementName, string_languageCode) + enterTipsLink(boolean_hasTips) + enterDevInfo(string_devInfo) 
 	}
-	// Return the achievement trigger 
+	// Returns the achievement trigger 
 	function lookUpAchievementTrigger(string_achievementName) {
 		return _achievementTriggers[string_achievementName]
 	}
