@@ -51,9 +51,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### :gem: Endings
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>_title</b> <br> <i>a_EndingA</i> | _explanation_ | _unlockCriteria_ |
-| :trophy: <b>_title</b> <br> <i>a_EndingB1</i> | _explanation_ | _unlockCriteria_ |
-| :trophy: <b>No Sense of Finality</b> <br> <i>a_EndingB2</i> | _explanation_ | _unlockCriteria_ |
+| :trophy: <b>_title</b> <br> <i>a_EndingA</i> | 1. In chapter 5, tell Margarette she's your ancestress <br> 2. In chapter 8, visit the fortune teller in the present AND find Homonculus in 1980's near Haupstreet, he's sitting next to a tree in a small park <br> 3. Head back to Hugo in the present <br> 4. In the Epilogue, chose for Margarette to stay in the present | / |
+| :trophy: <b>No Sense of Finality #1</b> <br> <i>a_EndingB1</i> | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, go to the fortune teller <br> 3. Head back to Hugo | / |
+| :trophy: <b>No Sense of Finality #2</b> <br> <i>a_EndingB2</i> | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, time travel 1980's and find Homonculus near Haupstreet, he's sitting next to a tree in a small park. <br> 3. Head back to Hugo in the present | / |
 | :trophy: <b>_title</b> <br> <i>a_EndingC</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title</b> <br> <i>a_EndingD</i> | _explanation_ | _unlockCriteria_ |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |

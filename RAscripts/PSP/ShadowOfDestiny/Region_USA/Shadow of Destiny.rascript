@@ -232,15 +232,15 @@ _achievements = {
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
 	"c_Endings": { // Category - Achieving different endings
-		"a_EndingA": { // WIP
+		"a_EndingA": { // WORKING
 			"id": 315566, "points": 10, "hasTips": false,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		"a_EndingB1": {	// WIP
+		"a_EndingB1": {	// WORKING
 			"id": 315573, "points": 10, "hasTips": false,
-			"devInfo": "Ending B1: Margarette (Ancestress) => Homunculus => Town Square"},
+			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		"a_EndingB2": {	// WORKING
 			"id": 315572, "points": 10, "hasTips": false,
-			"devInfo": "Ending B2: Margarette (Ancestress) => Fortuneteller => Town Square"},
+			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
 		// TODO "a_EndingC": {	
 		//	"id": 000000, "points": 10, "hasTips": false,
 		// 	"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
@@ -632,17 +632,51 @@ _achievementTriggers = {
 			!isCutsceneActive()					||
 			IsViewingCutsceneFromExtraMenu()
 		) && isChapterFinished("Chapter8")},
-	"a_EndingA": function EndingA() { // WIP
-		return always_false()
-		},
-	"a_EndingB1": function EndingB1() {	// WIP
-		return always_false()
-		},
-	"a_EndingB2": function EndingB2() { return
+	"a_EndingA": function EndingA() { return
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
 			!isCurrentChapter("Epilogue") ||
+			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingEndingFromExtraMenu()
+		) &&
+		tally(4, [
+			once(
+				currentCutsceneId(1) == 0xff4fffe8 	&& priorCutsceneId(1) == 0x417eeb1 		&&	// Block => IDs if player has chosen to have Margarette stay in present
+				currentCutsceneId(6) == 0xfea5feec 	&& priorCutsceneId(6) == 0xd242002c 	&&
+				currentCutsceneId(13) == 0x132a0000 && priorCutsceneId(13) == 0xe6e5ff4f 	&&
+				onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x8a 		&&
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x3fff95 	&&
+				onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 	&&
+				onScreenTextID(7) == 0x0 && prior(onScreenTextID(7)) == 0x500069),
+			once(
+				currentCutsceneId(2) == 0x0c750000 	&& priorCutsceneId(2) == 0xa0b7c40e 	&&
+				currentCutsceneId(8) == 0xa6a84607 	&& priorCutsceneId(8) == 0xf4d518e4 	&&
+				currentCutsceneId(20) == 0x0074040e && priorCutsceneId(20) == 0x11aef3b 	&&
+				onScreenTextID(0) == 0x1e 		&& prior(onScreenTextID(0)) == 0x32 	&&
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffe1 		&&
+				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x4f0000),
+			once(
+				currentCutsceneId(3) == 0x00fe16fd 	&& priorCutsceneId(3) == 0x21cf25e6 	&&
+				currentCutsceneId(6) == 0x08e4cf25 	&& priorCutsceneId(6) == 0x1111			&&
+				currentCutsceneId(14) == 0x0014fe20 && priorCutsceneId(14) == 0xe6e531b2 	&&
+				onScreenTextID(0) == 0x78 		&& prior(onScreenTextID(0)) == 0x0 	&&
+				onScreenTextID(1) == 0x40ff85 	&& prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(5) == 0x50ffe3 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(7) == 0x00911109 	&& priorCutsceneId(7) == 0x15e90194 	&&
+				currentCutsceneId(15) == 0x008cffa7 && priorCutsceneId(15) == 0xcf2518ed	&&
+				currentCutsceneId(21) == 0x274a 	&& priorCutsceneId(21) == 0x122f0c7 	&&
+				onScreenTextID(0) == 0x0 		&& prior(onScreenTextID(0)) == 0x1a 	&&
+				onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x48ffea 	&&
+				onScreenTextID(3) == 0x0 	&& prior(onScreenTextID(3)) == 0x50ffef)
+		])},
+	"a_EndingB1": function EndingB1() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Epilogue") ||
+			IsViewingCutsceneFromExtraMenu() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(3, [
@@ -663,10 +697,41 @@ _achievementTriggers = {
 			once(
 				currentCutsceneId(3) == 0x8f00b200 	&& priorCutsceneId(3) == 0x44000 		&&
 				currentCutsceneId(9) == 0x50e597ff 	&& priorCutsceneId(9) == 0xcd33d946 	&&
-				currentCutsceneId(19) == 0x1 && priorCutsceneId(20) == 0xa173d146 			&&
+				currentCutsceneId(19) == 0x1 && priorCutsceneId(19) == 0xa173d146 			&&
 				onScreenTextID(0) == 0x0 		&& prior(onScreenTextID(0)) == 0x78 	&&
 				onScreenTextID(1) == 0x0 		&& prior(onScreenTextID(1)) == 0x40ffa0 &&
-				onScreenTextID(3) == 0x00080007 && prior(onScreenTextID(3)) == 0x400005)			
+				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x400005)			
+		])},
+	"a_EndingB2": function EndingB2() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Epilogue") ||
+			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingEndingFromExtraMenu()
+		) &&
+		tally(3, [
+			once(
+				currentCutsceneId(1) == 0x0570cdee 	&& priorCutsceneId(1) == 0xf793 	&&
+				currentCutsceneId(6) == 0x01001519 	&& priorCutsceneId(6) == 0xff28d481 &&
+				currentCutsceneId(19) == 0x1e00c601 && priorCutsceneId(19) == 0x2c100 	&&
+				onScreenTextID(0) == 0x9a 		&& prior(onScreenTextID(0)) == 0x74 &&
+				onScreenTextID(1) == 0x0040ff85 && prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(5) == 0x0050ffb3 && prior(onScreenTextID(2)) == 0x0),
+			once(
+				currentCutsceneId(3) == 0x1afe51e3 	&& priorCutsceneId(3) == 0x48111111 	&&
+				currentCutsceneId(5) == 0xffc800da 	&& priorCutsceneId(5) == 0x22a0000 		&&
+				currentCutsceneId(17) == 0xcefc0011 && priorCutsceneId(17) == 0xffa5f6c0 	&&
+				onScreenTextID(0) == 0x69 		&& prior(onScreenTextID(0)) == 0x9b 	&&
+				onScreenTextID(1) == 0x0040ff6f && prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x0050fff3 && prior(onScreenTextID(4)) == 0x0),
+			once(
+				currentCutsceneId(3) == 0x8f00b200 	&& priorCutsceneId(3) == 0x2cfe0bfd 	&&
+				currentCutsceneId(9) == 0x50e597ff 	&& priorCutsceneId(9) == 0xf6999910 	&&
+				currentCutsceneId(22) == 0x01010006 && priorCutsceneId(22) == 0x82cf2518 	&&
+				onScreenTextID(0) == 0x0 		&& prior(onScreenTextID(0)) == 0x78 	&&
+				onScreenTextID(1) == 0x0 		&& prior(onScreenTextID(1)) == 0x40ffa0 &&
+				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x400005)			
 		])},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
@@ -1816,7 +1881,7 @@ _achievementTitles = {
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
-	"a_EndingA":									{"en": "__TITLE__"},
+	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality #1"},
 	"a_EndingB2":									{"en": "No Sense of Finality #2"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
