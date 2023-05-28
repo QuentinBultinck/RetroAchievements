@@ -86,16 +86,43 @@ _chapterIDs = {
 	"Chapter5": 0x6,
 	"Chapter6": 0x7,
 	"Chapter7": 0x8,
-	"Chapter8": 0x9,
-	"Epilogue": 0xa,
+	"Chapter8_Ancestress": 0x9,		// If in chapter 5, player told Margarette she's your ancestress
+	"Epilogue_Ancestress": 0xa,
+	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
+	"Epilogue_NoAncestress": 0xc,
 	// TODO "Different endings": ???
 	// TODO "EX chapter": ??? 
 }
 function chapterId() => byte(0xB95704)						// $B95704: [8-bit] Chapter ID
-function isCurrentChapter(string_chapter) => chapterId() == _chapterIDs[string_chapter]
-function isChapterFinished(string_chapter) { return 
-	prev(chapterId()) == _chapterIDs[string_chapter] &&
-	chapterId() == _chapterIDs[string_chapter] + 0x1}
+function isCurrentChapter(string_chapter) {	
+	if (string_chapter == "Chapter8") {
+		return
+			(chapterId() == _chapterIDs["Chapter8_Ancestress"] || chapterId() == _chapterIDs["Chapter8_NoAncestress"])
+	} else {
+		return 
+			chapterId() == _chapterIDs[string_chapter]
+	}} 
+function isChapterFinished(string_chapter) { 
+	if (string_chapter == "Chapter7") {
+		return 
+			prev(chapterId()) == _chapterIDs[string_chapter] &&
+			(
+				chapterId() == _chapterIDs["Chapter8_Ancestress"] 	|| 
+				chapterId() == _chapterIDs["Chapter8_NoAncestress"] 
+			)
+	} else if (string_chapter == "Chapter8_Ancestress"){
+		return
+			prev(chapterId()) == _chapterIDs[string_chapter] &&
+			chapterId() == _chapterIDs["Epilogue_Ancestress"]
+	} else if (string_chapter == "Chapter8_NoAncestress"){
+		return
+			prev(chapterId()) == _chapterIDs[string_chapter] &&
+			chapterId() == _chapterIDs["Epilogue_NoAncestress"]
+	} else {
+		return
+			prev(chapterId()) == _chapterIDs[string_chapter] &&
+			chapterId() == _chapterIDs[string_chapter] + 0x1
+	}}
 
 
 // INVENTORY LOGIC 
@@ -244,11 +271,11 @@ _achievements = {
 		"a_EndingC": {	// WORKING
 			"id": 317118, "points": 10, "hasTips": true,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		"a_EndingD": {	// WIP
-			"id": 000000, "points": 10, "hasTips": true,
+		"a_EndingD": {	// WORKING
+			"id": 322230, "points": 10, "hasTips": true,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		"a_EndingE": {	// WIP
-			"id": 000000, "points": 10, "hasTips": true,
+		"a_EndingE": {	// WORKING
+			"id": 322231, "points": 10, "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
@@ -624,19 +651,21 @@ _achievementTriggers = {
 			) || (
 				isChapterFinished("Chapter7")
 			)
-		)},
-	
+		)},	
 	"a_Chapter8Complete": function Chapter8Complete() { return
 		never(
 			!isGameRunning()					||
 			!isCutsceneActive()					||
 			IsViewingCutsceneFromExtraMenu()
-		) && isChapterFinished("Chapter8")},
+		) && (
+			isChapterFinished("Chapter8_Ancestress") ||
+			isChapterFinished("Chapter8_NoAncestress")
+		)},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
-			!isCurrentChapter("Epilogue") ||
+			!isCurrentChapter("Epilogue_Ancestress") ||
 			IsViewingCutsceneFromExtraMenu() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
@@ -675,7 +704,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
-			!isCurrentChapter("Epilogue") ||
+			!isCurrentChapter("Epilogue_Ancestress") ||
 			IsViewingCutsceneFromExtraMenu() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
@@ -706,7 +735,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
-			!isCurrentChapter("Epilogue") ||
+			!isCurrentChapter("Epilogue_Ancestress") ||
 			IsViewingCutsceneFromExtraMenu() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
@@ -737,7 +766,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 	||
 			!isCutsceneActive()	||
-			!isCurrentChapter("Epilogue") ||
+			!isCurrentChapter("Epilogue_Ancestress") ||
 			IsViewingCutsceneFromExtraMenu() || // --> Some reason this comparison becomes true during this cutscene 
 			IsViewingEndingFromExtraMenu()		// 		=> resets count/tally during cutscene 
 		) &&									// 		Workaround => this achievement popups sooner than the cutscene actually finishes
@@ -764,12 +793,75 @@ _achievementTriggers = {
 				onScreenTextID(1) == 0x40ff89 	&& prior(onScreenTextID(1)) == 0x0 	&&
 				onScreenTextID(6) == 0xe00000 	&& prior(onScreenTextID(6)) == 0x0)			
 		])},
-	"a_EndingD": function EndingD() { return	// WIP
-		always_false()
-		},
-	"a_EndingE": function EndingE() { return	// WIP
-		always_false()
-		},
+	"a_EndingD": function EndingD() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Epilogue_NoAncestress") ||
+			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingEndingFromExtraMenu()
+		) &&
+		tally(1403, [
+			once(
+				currentCutsceneId(1) == 0x10a215e3 	&& priorCutsceneId(1) == 0x71cfcf2 		&&
+				currentCutsceneId(7) == 0x9c6b458f	&& priorCutsceneId(7) == 0xe6e531b1 	&&
+				currentCutsceneId(17) == 0xfff8f954 && priorCutsceneId(17) == 0x31b18888 	&&
+				onScreenTextID(0) == 0x0 	&& prior(onScreenTextID(0)) == 0x38 	&&
+				onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x48ffc1 &&
+				onScreenTextID(3) == 0x0 	&& prior(onScreenTextID(3)) == 0x480016),
+			once(
+				currentCutsceneId(3) == 0x76205a00 	&& priorCutsceneId(3) == 0x3b03ba07 	&&
+				currentCutsceneId(8) == 0xfcc401bc	&& priorCutsceneId(8) == 0xfca0fb97 	&&
+				currentCutsceneId(15) == 0x7cfa451d && priorCutsceneId(15) == 0x167d0024 	&&
+				onScreenTextID(0) == 0xaa 		&& prior(onScreenTextID(0)) == 0x0 	&&
+				onScreenTextID(1) == 0x0040ff6f && prior(onScreenTextID(1)) == 0x0 	&&
+				onScreenTextID(6) == 0x00a80000 && prior(onScreenTextID(6)) == 0x0),
+			once(
+				currentCutsceneId(5) == 0x02e3ecc2 	&& priorCutsceneId(5) == 0xe3701500 	&&
+				currentCutsceneId(11) == 0x1b131921	&& priorCutsceneId(11) == 0x3f51452d 	&&
+				currentCutsceneId(18) == 0x02b02608 && priorCutsceneId(18) == 0xdb 			&&
+				onScreenTextID(0) == 0x85 		&& prior(onScreenTextID(0)) == 0x10e 	&&
+				onScreenTextID(1) == 0x0040ffbc && prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x00500044 && prior(onScreenTextID(5)) == 0x0),
+			repeated(1400,
+				currentCutsceneId(7) == 0xffea0000 	&& priorCutsceneId(7) == 0x99110081 	&&
+				currentCutsceneId(9) == 0x1fc43dae	&& priorCutsceneId(9) == 0xedff2f03 	&&
+				currentCutsceneId(21) == 0x36cb469f && priorCutsceneId(21) == 0xb1e9469e 	&&
+				onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x3f 		&&
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff9c 	&&
+				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x48000a)
+		])},
+	"a_EndingE": function EndingE() { return
+		never(
+			!isGameRunning() 	||
+			!isCutsceneActive()	||
+			!isCurrentChapter("Epilogue_NoAncestress") ||
+			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingEndingFromExtraMenu()
+		) &&
+		tally(3, [
+			once(
+				currentCutsceneId(3) == 0x8ffc5902 	&& priorCutsceneId(3) == 0x11f364f5 	&&
+				currentCutsceneId(7) == 0x00b10013	&& priorCutsceneId(7) == 0xd8771232 	&&
+				currentCutsceneId(17) == 0xf11a1921 && priorCutsceneId(17) == 0xe90e0230 	&&
+				onScreenTextID(0) == 0xd2 		&& prior(onScreenTextID(0)) == 0x126 	&&
+				onScreenTextID(1) == 0x40ffac 	&& prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x500028 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(5) == 0xdb54158e 	&& priorCutsceneId(5) == 0x29f0000 		&&
+				currentCutsceneId(12) == 0xdb0ffdfd	&& priorCutsceneId(12) == 0xdb7e8908 	&&
+				currentCutsceneId(22) == 0xba11cefe && priorCutsceneId(22) == 0x11ecf3fe 	&&
+				onScreenTextID(0) == 0x59 		&& prior(onScreenTextID(0)) == 0xc2 	&&
+				onScreenTextID(1) == 0x40ffa3 	&& prior(onScreenTextID(1)) == 0x0 		&&
+				onScreenTextID(5) == 0x500025 	&& prior(onScreenTextID(5)) == 0x0),
+			once(
+				currentCutsceneId(9) == 0x00fc1cff 	&& priorCutsceneId(9) == 0x4d000000 	&&
+				currentCutsceneId(17) == 0xe62b0d33	&& priorCutsceneId(17) == 0x00fa02cf 	&&
+				currentCutsceneId(19) == 0xfd049e01 && priorCutsceneId(19) == 0x4d033301 	&&
+				onScreenTextID(0) == 0x0 	&& prior(onScreenTextID(0)) == 0x2f 	&&
+				onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x49ff7b &&
+				onScreenTextID(3) == 0x0 	&& prior(onScreenTextID(3)) == 0x49ffea)
+		])},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive()) 				&&
@@ -794,7 +886,7 @@ _achievementTriggers = {
 			once(onScreenTextID(0) == 0x53 && prior(onScreenTextID(0)) == 0x82)
 		]) &&
 		onScreenTextID(0) == 0x00 && prior(onScreenTextID(0)) == 0x2d},
-	"a_MeetOldMiriam": function MeetOldMiriam() { return 
+	"a_MeetOldMiriam": function MeetOldMiriam() { return // WIP => test when told Margarette she's not your ancestress
 		never(
 			!isGameRunning()					||
 			!isCutsceneActive()					||
@@ -893,7 +985,7 @@ _achievementTriggers = {
 			!isGameRunning() 					||
 			!isCutsceneActive() 				||	
 			IsViewingCutsceneFromExtraMenu() 	||
-			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8")  
+			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
 		once(
 			currentCutsceneId(1) == 0x3169070e 	&& priorCutsceneId(1) == 0xffc1ffd9 	&& // All blocks => IDs cutscene where Eike gives the pocket watch to pay for his coffee
@@ -1358,8 +1450,11 @@ _achievementTriggers = {
 				// once(interactionID_2() == xxx)			// Add hit: +1		=> for talking to man 1st time after experiment
 			])}	
 		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter8")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
-			isGameRunning() && 								// frames where both these comparisons are true. So this hit counts fixes that
+			repeated(100, 									// Hit count 100 => when loading a savefile to another chapter, there's a few 
+				isCurrentChapter("Chapter8_Ancestress") || 	// frames where both these comparisons are true. So this hit counts fixes that
+				isCurrentChapter("Chapter8_NoAncestress")
+			) &&
+			isGameRunning() && 	
 			!IsViewingCutsceneFromExtraMenu()}
 		return 
 			unless(
@@ -1567,7 +1662,8 @@ _achievementTriggers = {
 				isCurrentChapter("Chapter5") || 
 				isCurrentChapter("Chapter6") || 
 				isCurrentChapter("Chapter7") || 
-				isCurrentChapter("Chapter8")
+				isCurrentChapter("Chapter8_Ancestress") ||
+				isCurrentChapter("Chapter8_NoAncestress")
 			) && 
 			isGameRunning() &&
 			!IsViewingCutsceneFromExtraMenu()}
@@ -1755,7 +1851,7 @@ _achievementTriggers = {
 			!isGameRunning() || !isCutsceneActive() || IsViewingCutsceneFromExtraMenu() || 
 			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && 
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") &&
-			!isCurrentChapter("Chapter8")
+			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
 		tally(2, [
 			once(
@@ -1922,8 +2018,8 @@ _achievementTitles = {
 	"a_EndingB1":									{"en": "No Sense of Finality #1"},
 	"a_EndingB2":									{"en": "No Sense of Finality #2"},
 	"a_EndingC": 									{"en": "'If only... I had one more attempt'"},
-	"a_EndingD": 									{"en": "ENDING D => INSERT TITLE"},
-	"a_EndingE": 									{"en": "ENDING E => INSERT TITLE"},
+	"a_EndingD": 									{"en": "Eike's Origins"},
+	"a_EndingE": 									{"en": "'The future is what we make it.'"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},

@@ -51,12 +51,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### :gem: Endings
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>_title</b> <br> <i>a_EndingA</i> | 1. In chapter 5, tell Margarette she's your ancestress <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, visit the fortune teller in the present AND find Homonculus in 1980's near Haupstreet, he's sitting next to a tree in a small park <br> 3. Head back to Hugo in the present <br> 4. In the Epilogue, chose for Margarette to stay in the present | / |
+| :trophy: <b>An End to a Strange Experience</b> <br> <i>a_EndingA</i> | 1. In chapter 5, tell Margarette she's your ancestress <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, visit the fortune teller in the present AND find Homonculus in 1980's near Haupstreet, he's sitting next to a tree in a small park <br> 3. Head back to Hugo in the present <br> 4. In the Epilogue, chose for Margarette to stay in the present | / |
 | :trophy: <b>No Sense of Finality #1</b> <br> <i>a_EndingB1</i> | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, go to the fortune teller <br> 3. Head back to Hugo | / |
 | :trophy: <b>No Sense of Finality #2</b> <br> <i>a_EndingB2</i> | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, time travel 1980's and find Homonculus near Haupstreet, he's sitting next to a tree in a small park. <br> 3. Head back to Hugo in the present | / |
 | :trophy: <b>'If only... I had one more attempt'</b> <br> <i>a_EndingC</i> | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, go to The Middle Ages and head back to the alchemist's laboratory <br> 3. Head back to the present | / |
-| :trophy: <b>_title</b> <br> <i>a_EndingD</i> | _explanation_ | _unlockCriteria_ |
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
+| :trophy: <b>Eike's Origins</b> <br> <i>a_EndingD</i> | 1. In chapter 5, tell Margarette she's NOT your ancestress <br> 2. In chapter 8, in The Middle Ages, leave Dana in the past <br> 3. Head back the Marktplatz in the present | / |
+| :trophy: <b>'The future is what we make it.'</b><br><i>a_EndingE</i> | 1. In chapter 5, tell Margarette she's NOT your ancestress <br> 2. In chapter 8, in The Middle Ages, ask Dana to return back to the present with you <br> 3. Before going any further in the chapter, head back to the present and find a note at the door of Cafe Sonne <br> 4. Go back to The Middle Ages, interact with Dana left of the town hall and head back to the present with her <br> 5. Complete the rest of the game | / |
 
 ### :gem: Side content & extra cutscenes
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
