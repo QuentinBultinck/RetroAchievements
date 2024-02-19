@@ -79,7 +79,15 @@ function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsce
 // *******************************
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
-	"ColdCity": 0x365
+	"PresentDayNightCity": 0x44,
+	"80sColdCity": 0x465,
+	"70sNightCity": 0x31d,
+	"1900sCity": 0x239,
+	"1900sBrumMansion": 0x603,
+	"MedievalCity": 0x3f3,
+	"MedievalNightCity": 0x33c,
+	"ExplodedAlchemistBasement": 0x217,
+	"MedievalChurch": 0x8e
 }
 function currentLoadedScene(string_mapId)	=> dword(0xA82E48)	// $A82E48: [32-bit] Current loaded scene/map/scenario
 function isCurrentLoadedScene(string_mapId)	=> currentLoadedScene(string_mapId) == _mapIDs[string_mapId]
@@ -359,17 +367,17 @@ _achievements = {
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_EnergyOrbLocatorPresentDay": { // WORKING
-			"id": 000000, "points": 10, "hasTips": true,
-			"devInfo": "Find all energy orbs, without loading into another area."}, 
-		// TODO "a_EnergyOrbLocatorMiddleAges": { // WIP 
-		//	"id": 000000, "points": 10, "hasTips": true,
-		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
-		// TODO "a_EnergyOrbLocatorColdDays": { // WIP 
-		//	"id": 000000, "points": 10, "hasTips": true,
-		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
-		// TODO "a_EnergyOrbLocator1900Days": { // WIP 
-		//	"id": 000000, "points": 10, "hasTips": true,
-		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
+			"id": 399816, "points": 10, "hasTips": true,
+			"devInfo": "Find all 5 energy orbs in present day"},
+		"a_EnergyOrbLocator70s80s": { // WORKING 
+			"id": 399817, "points": 10, "hasTips": true,
+			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
+		"a_EnergyOrbLocator1900Days": { // WORKING 
+			"id": 399818, "points": 10, "hasTips": true,
+			"devInfo": "Find all 5 energy orbs in 1900s"}, 
+		"a_EnergyOrbLocatorMiddleAges": { // WORKING 
+			"id": 399819, "points": 10, "hasTips": true,
+			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 		
@@ -881,7 +889,7 @@ _achievementTriggers = {
 				onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x49ff7b &&
 				onScreenTextID(3) == 0x0 	&& prior(onScreenTextID(3)) == 0x49ffea)
 		])},
-	"a_EnergyOrbLocatorPresentDay": function Template() {
+	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
 		function measuredComparison() { return 
 			tally(5, 
 				energyUnitsZPad() > prev(energyUnitsZPad()) &&
@@ -891,18 +899,76 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			)}
 		function measuredIfComparison() { return
-			// Only measure when in correct scene AND when in-game AND when picking up an orb
-			isCurrentLoadedScene("PresentDayCity") 	&& 	
+			// Only measure when in correct scene AND when in-game
+			(isCurrentLoadedScene("PresentDayCity") || isCurrentLoadedScene("PresentDayNightCity"))	&& 	
 			isGameRunning()}
 		return 
-			never(
+			never(	// Reset when chapter changes or when using digipad
 				energyUnitsZPad() < prev(energyUnitsZPad()) ||
 				hasChapterChanged()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	// "a_EnergyOrbLocatorMiddleAges": function Template() {},
-	// "a_EnergyOrbLocatorColdDays": function Template() {},
-	// "a_EnergyOrbLocator1900Days": function Template() {},
+	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
+		function measuredComparison() { return 
+			tally(5, 
+				energyUnitsZPad() > prev(energyUnitsZPad()) &&
+				prior(onScreenTextID(1)) == 0x48ffc2	&&
+				prior(onScreenTextID(2)) == 0x4b0000	&&
+				prior(onScreenTextID(3)) == 0x480032	&&
+				!isCutsceneActive()
+			)}
+		function measuredIfComparison() { return
+			// Only measure when in correct scene AND when in-game
+			(isCurrentLoadedScene("80sColdCity") || isCurrentLoadedScene("70sNightCity")) 	&& 	
+			isGameRunning()}
+		return 
+			never( 	// Reset when chapter changes or when using digipad
+				energyUnitsZPad() < prev(energyUnitsZPad()) ||
+				hasChapterChanged()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
+		function measuredComparison() { return 
+			tally(6, 
+				energyUnitsZPad() > prev(energyUnitsZPad()) &&
+				prior(onScreenTextID(1)) == 0x48ffc2	&&
+				prior(onScreenTextID(2)) == 0x4b0000	&&
+				prior(onScreenTextID(3)) == 0x480032	&&
+				!isCutsceneActive()
+			)}
+		function measuredIfComparison() { return
+			// Only measure when in correct scene AND when in-game
+			(
+				isCurrentLoadedScene("MedievalCity") 				|| 
+				isCurrentLoadedScene("MedievalNightCity")			||
+				isCurrentLoadedScene("ExplodedAlchemistBasement")	||
+				isCurrentLoadedScene("MedievalChurch")
+			) && isGameRunning()}
+		return 
+			never(	// Reset when chapter changes or when using digipad
+				energyUnitsZPad() < prev(energyUnitsZPad()) ||
+				hasChapterChanged()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
+		function measuredComparison() { return 
+			tally(5, 
+				energyUnitsZPad() > prev(energyUnitsZPad()) &&
+				prior(onScreenTextID(1)) == 0x48ffc2	&&
+				prior(onScreenTextID(2)) == 0x4b0000	&&
+				prior(onScreenTextID(3)) == 0x480032	&&
+				!isCutsceneActive()
+			)}
+		function measuredIfComparison() { return
+			// Only measure when in correct scene AND when in-game
+			(isCurrentLoadedScene("1900sCity") || isCurrentLoadedScene("1900sBrumMansion")) && 	
+			isGameRunning()}
+		return 
+			never(	// Reset when chapter changes or when using digipad
+				energyUnitsZPad() < prev(energyUnitsZPad()) ||
+				hasChapterChanged()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive()) 				&&
@@ -2096,10 +2162,10 @@ _achievementTitles = {
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
 	"a_ExcuseMeMyMy":								{"en": "'My my, so eager to die'"},
 	"a_BecomeThePerformer":							{"en": "'Even I can do that'"}, 
-	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Collector: Present Day"}, 
-	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Collector: Middle Ages"}, 
-	"a_EnergyOrbLocatorColdDays": 					{"en": "Energy Collector: Cold Days"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Collector: New Century"}, 
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Amasser: Middle Ages"}, 
+	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2163,8 +2229,8 @@ _achievementDescriptions = {
 	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
-	"a_EnergyOrbLocatorColdDays": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the cold days"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the dawn of a new century"}, 
+	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
