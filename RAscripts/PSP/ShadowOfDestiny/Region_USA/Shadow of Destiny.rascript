@@ -939,12 +939,12 @@ _achievementTriggers = {
 		never(!isCutsceneActive()) 				&&
 		never(!isCurrentChapter("Chapter1")) 	&&	
 		never(IsViewingCutsceneFromExtraMenu())	&&
-		repeated(420, priorCutsceneId(11) == 0x4d5fc40) 	&& // This block => last cutscene has run for about 420 frames
-		repeated(420, priorCutsceneId(14) == 0x55005ce) 	&&
-		repeated(420, priorCutsceneId(16) == 0x88065620) 	&& 
-		repeated(420, currentCutsceneId(11) == 0x11111112) 	&&
-		repeated(420, currentCutsceneId(14) == 0x30ff26b) 	&&
-		repeated(420, currentCutsceneId(16) == 0x11d8fa)},
+		repeated(320, priorCutsceneId(11) == 0x4d5fc40) 	&& // This block => last cutscene has run for about 420 frames
+		repeated(320, priorCutsceneId(14) == 0x55005ce) 	&&
+		repeated(320, priorCutsceneId(16) == 0x88065620) 	&& 
+		repeated(320, currentCutsceneId(11) == 0x11111112) 	&&
+		repeated(320, currentCutsceneId(14) == 0x30ff26b) 	&&
+		repeated(320, currentCutsceneId(16) == 0x11d8fa)},
 	"a_EggCollection2": function EggCollection2() { return 
 		never(!isGameRunning() || !isCutsceneActive() || IsViewingCutsceneFromExtraMenu()) &&
 		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
