@@ -1771,13 +1771,12 @@ _achievementTriggers = {
 						currentCutsceneId(20) == 0x14060000 && priorCutsceneId(20) == 0xf5411111 &&
 						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x1e &&
 						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48fff0),
-					once(						
-						currentCutsceneId(23) == 0x3a8b4139 && priorCutsceneId(23) == 0x46464952 && // Block => IDs Miriam dying cutscene
-						currentCutsceneId(24) == 0x6b12f1ad && priorCutsceneId(24) == 0x01010101 &&
-						currentCutsceneId(25) == 0xf9ad5340 && priorCutsceneId(25) == 0x32da6446 &&
-						onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x4b 		&&
-						onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff94 	&&
-						onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480008)
+					once(
+						onScreenTextID(0) == 0x2d && prior(onScreenTextID(0)) == 0x1e 		&& // Block => IDs Miriam dying cutscene
+						onScreenTextID(1) == 0x48ffbf && prior(onScreenTextID(1)) == 0x0 	&&
+						onScreenTextID(3) == 0x480033 && prior(onScreenTextID(3)) == 0x0	&&
+						onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80005 	&&
+						onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50003d)
 				])}
 			function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && isCurrentChapter("Chapter6")
 			return 
@@ -1966,7 +1965,7 @@ _achievementTriggers = {
 		once(prev(onScreenTextID(4)) == 0x0 && onScreenTextID(4) == 0x00080009) &&	// Text E
 		prior(onScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
 		prior(onScreenTextID(5)) == 0x00500045 							&&	// Last text
-		prev(onScreenTextID(0)) == 0x50},		// Last text
+		prev(onScreenTextID(0)) == 0x50},									// Last text
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return 
 		never(
 			!isGameRunning() 					||
