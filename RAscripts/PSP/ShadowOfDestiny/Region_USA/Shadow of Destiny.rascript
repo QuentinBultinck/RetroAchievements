@@ -80,7 +80,7 @@ function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsce
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
 	"PresentDayNightCity": 0x44,
-	"NightBefore": 0x3
+	"NightBefore": 0x3,
 	"80sColdCity": 0x465,
 	"70sNightCity": 0x31d,
 	"1900sCity": 0x239,
@@ -368,16 +368,16 @@ _achievements = {
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_EnergyOrbLocatorPresentDay": { // WORKING
-			"id": 399816, "points": 10, "hasTips": true,
+			"id": 399816, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
 		"a_EnergyOrbLocator70s80s": { // WORKING 
-			"id": 399817, "points": 10, "hasTips": true,
+			"id": 399817, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
 		"a_EnergyOrbLocator1900Days": { // WORKING 
-			"id": 399818, "points": 10, "hasTips": true,
+			"id": 399818, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
 		"a_EnergyOrbLocatorMiddleAges": { // WORKING 
-			"id": 399819, "points": 10, "hasTips": true,
+			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -915,13 +915,22 @@ _achievementTriggers = {
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
 		function measuredComparison() { return 
-			tally(5, 
-				energyUnitsZPad() > prev(energyUnitsZPad()) &&
-				prior(onScreenTextID(1)) == 0x48ffc2	&&
-				prior(onScreenTextID(2)) == 0x4b0000	&&
-				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive()
-			)}
+			tally(5, [
+				repeated(5, // Normal way counting energy collection
+					energyUnitsZPad() > prev(energyUnitsZPad()) &&
+					prior(onScreenTextID(1)) == 0x48ffc2	&&
+					prior(onScreenTextID(2)) == 0x4b0000	&&
+					prior(onScreenTextID(3)) == 0x480032	&&
+					!isCutsceneActive()
+				), 
+				once(	// One energy collection is different from rest: during chapter 3, after energy has been drained
+					energyUnitsZPad() == 0x1 && prior(energyUnitsZPad()) == 0x0 &&
+					isCurrentChapter("Chapter3")			&&
+					prior(onScreenTextID(1)) == 0x48ffb0	&&
+					prior(onScreenTextID(2)) == 0x590000	&&
+					prior(onScreenTextID(3)) == 0x480031	&&
+					!isCutsceneActive()
+				)])}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
 			(isCurrentLoadedScene("80sColdCity") || isCurrentLoadedScene("70sNightCity")) 	&& 	
