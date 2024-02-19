@@ -107,7 +107,7 @@ _chapterIDs = {
 	"Chapter8_Ancestress": 0x9,		// If in chapter 5, player told Margarette she's your ancestress
 	"Epilogue_Ancestress": 0xa,
 	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
-	"Epilogue_NoAncestress": 0xc,
+	"Epilogue_NoAncestress": 0xc
 	// TODO "Different endings": ???
 	// TODO "EX chapter": ??? 
 }
@@ -154,7 +154,7 @@ _inventoryItemIds = {
 	"Sign": 0x5,
 	"Lighter": 0x6,
 	"SquireCrest": 0xf,
-	"Antidote": 0x11,
+	"Antidote": 0x11
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -349,11 +349,11 @@ _achievements = {
 		"a_LostYoungCouple4": { // WORKING
 			"id": 310162, "points": 3, "hasTips": true,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // WIP => When interacting with both the couple in present and past in every chapter => there's extra content here when talking to woman?? 
+		"a_LostYoungCouple5": { // WORKING
 			"id": 314753, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // WIP => When interacting with both the couple in present and past in every chapter => there's extra content here when talking to man?? 
-			"id": 315568, "points": 5, "hasTips": true,
+		"a_LostYoungCouple6": { // WORKING
+			"id": 315568, "points": 10, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
 		"a_HugoMotherChild": {  // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
@@ -414,7 +414,7 @@ _achievements = {
 		"a_TimeEgoFlop": { // WORKING 
 			"id": 313212, "points": 2, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
-	},
+	}
 }
 
 
@@ -1361,6 +1361,9 @@ _achievementTriggers = {
 			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
+			never(
+				!isCurrentChapter("Chapter2")
+			) &&
 			unless(
 				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
 				interactionID_2() != 0x08a329fc 	&&
@@ -1415,6 +1418,9 @@ _achievementTriggers = {
 			!IsViewingCutsceneFromExtraMenu()}	
 		// Trigger 
 		return 
+			never(
+				!isCurrentChapter("Chapter3")
+			) &&
 			unless(
 				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
 				interactionID_2() != 0x08a32c68 	&&
@@ -1465,10 +1471,13 @@ _achievementTriggers = {
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isGameRunning()	&& 
-			!IsViewingCutsceneFromExtraMenu()}								// frames where both these comparisons are true. So this hit counts fixes that
+			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
+			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
+			never(
+				!isCurrentChapter("Chapter4")
+			) &&
 			unless(
 				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
 				interactionID_2() != 0x08a33050 	&&
@@ -1517,6 +1526,9 @@ _achievementTriggers = {
 			isGameRunning() && 
 			!IsViewingCutsceneFromExtraMenu()} 
 		return
+			never(
+				!isCurrentChapter("Chapter5")
+			) &&
 			unless(
 				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
 				interactionID_2() != 0x08a331cc 	&&
@@ -1530,13 +1542,17 @@ _achievementTriggers = {
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_LostYoungCouple5": function LostYoungCouple5() { // WIP
+	"a_LostYoungCouple5": function LostYoungCouple5() {
 		// Private functions
 		function measuredComparison() { return
-			tally(3, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a33398),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a333d4),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a333e8)			// Add hit: +1		=> for talking to woman 2nd time
+			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
+				once(interactionID_2() == 0x08a33398),			// Add hit: +1  	=> for talking to man 
+				once(											// Add hit: +1		=> when talking to woman and picking dialogue option: Tell the truth
+					interactionID_2() == 0x08a333fc && prior(interactionID_2()) == 0x8a333e8 &&
+					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff92		&&	
+					onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80007			&&	
+					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4ffff0	
+				)			
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter7")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
@@ -1544,50 +1560,52 @@ _achievementTriggers = {
 			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
-			unless(
-				interactionID_1() != 0x08a1bb44 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() != 0x08a333d4 	&&
-				interactionID_3() != 0x197			&&
-				!isCutsceneActive()
+			never(
+				!isCurrentChapter("Chapter7")
 			) &&
 			unless(
-				interactionID_1() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_1() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 
 				interactionID_2() != 0x08a33398 	&&
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1bb44 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() != 0x08a333e8 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1() != 0x08a1bb44 &&			// Block => cutscene when talking to woman and picking dialogue option: Tell the truth
+				interactionID_2() != 0x08a333fc && prior(interactionID_2()) != 0x8a333e8 &&
+				interactionID_3() != 0x197		&&
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_LostYoungCouple6": function LostYoungCouple6() { // WIP
+	"a_LostYoungCouple6": function LostYoungCouple6() { 
 		function measuredComparison() { return
-			tally(3, [									//			= 3
-				once(interactionID_2() == 0x08a33640),	// Add hit: +1  	=> for talking to man 1st time 
-				once(interactionID_2() == 0x08a33654),	// Add hit: +1  	=> for talking to man 2nd time 
-				// once(interactionID_2() == xxx)			// Add hit: +1		=> for talking to man 1st time after experiment
+			tally(2, [									//			= 2
+				once(interactionID_2() == 0x08a335f0),	// Add hit: +1  	=> for talking to man before experiment
+				once(interactionID_2() == 0x08a3367c)	// Add hit: +1		=> for talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet 
 			])}	
 		function measuredIfComparison() { return
-			repeated(100, 									// Hit count 100 => when loading a savefile to another chapter, there's a few 
-				isCurrentChapter("Chapter8_Ancestress") || 	// frames where both these comparisons are true. So this hit counts fixes that
-				isCurrentChapter("Chapter8_NoAncestress")
-			) &&
+			repeated(100, 								// Hit count 100 => when loading a savefile to another chapter, there's a few 
+				isCurrentChapter("Chapter8")			// frames where both these comparisons are true. So this hit counts fixes that	
+			) &&										// The no-ancestress route might not spawn the man in this chapter. Other route does, when having talked having told the woman and told her to tell the truth in chapter 7
 			isGameRunning() && 	
 			!IsViewingCutsceneFromExtraMenu()}
 		return 
+			never(
+				!isCurrentChapter("Chapter8")
+			) &&
 			unless(
-				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man 1st time before experiment
-				interactionID_2() != 0x08a33640 	&&
+				interactionID_1() != 0x08ba3264 	&&		// Block => cutscene when talking to man before experiment
+				interactionID_2() != 0x08a335f0 	&&
 				interactionID_3() != 0x198			&&
 				!isCutsceneActive()
 			) &&
 			unless(
-				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man 2nd time before experiment
-				interactionID_2() != 0x08a33654 	&&
+				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet  
+				interactionID_2() != 0x08a3367c 	&&
 				interactionID_3() != 0x198			&&
+				onScreenTextID(1) != 0x0048ff81		&&
+				onScreenTextID(2) != 0x00480000		&&
+				onScreenTextID(3) != 0x0048fffc		&&
+				onScreenTextID(4) != 0x00080009		&&
 				!isCutsceneActive()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1608,6 +1626,9 @@ _achievementTriggers = {
 			)}
 		// Trigger
 		return  
+			never(
+				!(isCurrentChapter("Prologue") || isCurrentChapter("Chapter1"))
+			) &&
 			unless(
 				interactionID_2() != 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
 				interactionID_3() != 0x57			&&
@@ -1641,6 +1662,9 @@ _achievementTriggers = {
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter3"))
 		// Trigger
 		return  
+			never(
+				!isCurrentChapter("Chapter3")
+			) &&
 			unless(
 				interactionID_1() != 0x08b994d0 	&&
 				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
@@ -1678,6 +1702,9 @@ _achievementTriggers = {
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter4"))
 		// Trigger
 		return  
+			never(
+				!isCurrentChapter("Chapter4")
+			) &&
 			unless(
 				interactionID_1() != 0x08b9dc8c 	&&
 				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
@@ -1714,6 +1741,9 @@ _achievementTriggers = {
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter5"))
 		// Trigger
 		return  
+			never (
+				!isCurrentChapter("Chapter5")
+			) &&
 			unless(
 				interactionID_1() != 0x08b9d400 	&&
 				interactionID_2() != 0x08a30c9c 	&&		// Block => cutscene when talking to woman
@@ -1744,6 +1774,9 @@ _achievementTriggers = {
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter7"))
 		// Trigger
 		return  
+			never (
+				!isCurrentChapter("Chapter7")
+			) &&
 			unless(
 				interactionID_1() != 0x08b98db4 	&&
 				interactionID_2() != 0x08a30c4c 	&&		// Block => cutscene when talking to woman 1st time
@@ -1790,6 +1823,9 @@ _achievementTriggers = {
 			!IsViewingCutsceneFromExtraMenu()}
 		// Trigger 
 		return 
+			never(	// Reset count on chapter change
+				hasChapterChanged()
+			) &&
 			unless(
 				interactionID_2() != 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
 				interactionID_3() != 0x163			&&	
@@ -1851,6 +1887,9 @@ _achievementTriggers = {
 			)}
 		// Trigger 
 		return 
+			never( // Reset count on chapter change
+				hasChapterChanged()
+			) &&
 			unless(
 				interactionID_1() != 0x08b99500		&&	// Block => Festival mask
 				interactionID_2() != 0x08a31610 	&&
@@ -1946,7 +1985,7 @@ _achievementTriggers = {
 			!isGameRunning() 					|| 
 			!isCutsceneActive() 				|| 
 			IsViewingCutsceneFromExtraMenu() 	|| 
-			!isCurrentChapter("Chapter5")
+			!isCurrentChapter("Chapter5")	
 		) && 
 		tally (290, [
 			repeated(70,
@@ -2110,7 +2149,7 @@ _achievementTriggers = {
 				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff89 	&& 
 				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x440000 	&&
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x41fff6)
-		)},
+		)}
 	// "a_Template": function Template() {},
 }
 
@@ -2135,42 +2174,42 @@ _achievementTitles = {
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
-	"a_EndingB1":									{"en": "No Sense of Finality #1"},
-	"a_EndingB2":									{"en": "No Sense of Finality #2"},
+	"a_EndingB1":									{"en": "No Sense of Finality I"},
+	"a_EndingB2":									{"en": "No Sense of Finality II"},
 	"a_EndingC": 									{"en": "'If only... I had one more attempt'"},
 	"a_EndingD": 									{"en": "Eike's Origins"},
 	"a_EndingE": 									{"en": "'The future is what we make it.'"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
-	"a_EggCollection1": 							{"en": "A Mysterious Exchange #1"},
-	"a_EggCollection2": 							{"en": "A Mysterious Exchange #2"}, 
+	"a_EggCollection1": 							{"en": "A Jovial Exchange I"},
+	"a_EggCollection2": 							{"en": "A Jovial Exchange II"}, 
 	"a_BarmansChildren":							{"en": "The Barman's Grandchildren and The Mystery Child"},
-	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past #1"},
-	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past #2"},
+	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past: Middle Ages"},
+	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past: The Old Century"},
 	"a_PocketWatchCollection": 						{"en": "A Hatchless Replica"},
 	"a_PocketWatchReminiscing": 					{"en": "The Eggcellent Director's Tale"},
 	"a_EikeThePyromancer":							{"en": "The Pyromancer's Legacy"},
 	"a_EikeTheMagician": 							{"en": "The Magician's Legacy"},
 	"a_EikeTheFlorist": 							{"en": "A Blossoming Plan"},
-	"a_LostYoungCouple1": 							{"en": "Destined to Miss"},
-	"a_LostYoungCouple2": 							{"en": "The Place Where We Almost Met"},
-	"a_LostYoungCouple3": 							{"en": "Destiny's Promise Fulfilled"},
-	"a_LostYoungCouple4": 							{"en": "The Pain of Parting #1"},
-	"a_LostYoungCouple5": 							{"en": "The Pain of Parting #2"},
-	"a_LostYoungCouple6": 							{"en": "Never Destined to Meet"},
-	"a_EnigmaticCouple1": 							{"en": "Memories of Past Love #1"},
-	"a_EnigmaticCouple2": 							{"en": "Memories of Past Love #2"}, 
-	"a_EnigmaticCouple3": 							{"en": "Memories of Past Love #3"}, 
-	"a_EnigmaticCouple4": 							{"en": "Memories of Past Love #4"},	
-	"a_EnigmaticCouple5": 							{"en": "Memories of Past Love #5"},
+	"a_LostYoungCouple1": 							{"en": "Yesteryears Couple I: Destined to Miss"},
+	"a_LostYoungCouple2": 							{"en": "Yesteryears Couple II: The Place Where We Nigh Met"},
+	"a_LostYoungCouple3": 							{"en": "Yesteryears Couple III: Destiny's Promise Fulfilled"},
+	"a_LostYoungCouple4": 							{"en": "Yesteryears Couple IV: Parting"},
+	"a_LostYoungCouple5": 							{"en": "Yesteryears Couple V: Man-in-waiting"},
+	"a_LostYoungCouple6": 							{"en": "Yesteryears Couple VI: Never Destined to Meet"},
+	"a_EnigmaticCouple1": 							{"en": "Enigmatic Couple I: Prelude"},
+	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Shadowing or Lost?"}, 
+	"a_EnigmaticCouple3": 							{"en": "Enigmatic Couple III: Wandering Once More"}, 
+	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},	
+	"a_EnigmaticCouple5": 							{"en": "Enigmatic Couple V: Epilogue"},
 	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
-	"a_SaveMiriamBrum":								{"en": "Temporal Guardian of the Brums"},
-	"a_HugoMotherChild":							{"en": "A Mother's child Forever"}, 
+	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
+	"a_HugoMotherChild":							{"en": "A Mother's Child Forever"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
@@ -2179,7 +2218,7 @@ _achievementTitles = {
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Amasser: Middle Ages"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"} 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2233,7 +2272,7 @@ _achievementDescriptions = {
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
-	"a_HugoMotherChild":							{"en": "Look for Hugo during chapter 5"}, 
+	"a_HugoMotherChild":							{"en": "Find Hugo during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
@@ -2244,7 +2283,7 @@ _achievementDescriptions = {
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"}
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
