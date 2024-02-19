@@ -80,6 +80,7 @@ function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsce
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
 	"PresentDayNightCity": 0x44,
+	"NightBefore": 0x3
 	"80sColdCity": 0x465,
 	"70sNightCity": 0x31d,
 	"1900sCity": 0x239,
@@ -900,7 +901,11 @@ _achievementTriggers = {
 			)}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
-			(isCurrentLoadedScene("PresentDayCity") || isCurrentLoadedScene("PresentDayNightCity"))	&& 	
+			(
+				isCurrentLoadedScene("PresentDayCity") 		|| 
+				isCurrentLoadedScene("PresentDayNightCity") ||
+				isCurrentLoadedScene("NightBefore") 
+			) && 
 			isGameRunning()}
 		return 
 			never(	// Reset when chapter changes or when using digipad
