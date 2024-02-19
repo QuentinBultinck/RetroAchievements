@@ -75,6 +75,15 @@ _cutsceneIDs = {
 function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
 function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
 
+// MAP/SCENE/SCENARIO IDENTIFIER
+// *******************************
+_mapIDs= {	// list not complete, adding as is necessary
+	"PresentDayCity": 0x375,
+	"ColdCity": 0x365
+}
+function currentLoadedScene(string_mapId)	=> dword(0xA82E48)	// $A82E48: [32-bit] Current loaded scene/map/scenario
+function isCurrentLoadedScene(string_mapId)	=> currentLoadedScene(string_mapId) == _mapIDs[string_mapId]
+
 // CHAPTER LOGIC
 // ***************
 _chapterIDs = {
@@ -123,6 +132,7 @@ function isChapterFinished(string_chapter) {
 			prev(chapterId()) == _chapterIDs[string_chapter] &&
 			chapterId() == _chapterIDs[string_chapter] + 0x1
 	}}
+function hasChapterChanged() => chapterId() != prev(chapterId())
 
 
 // INVENTORY LOGIC 
@@ -348,9 +358,18 @@ _achievements = {
 		"a_MeetOldMiriam": { // WORKING
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		// TODO "a_FindAllEnergyOrbsInaMap": { // CONCEPT Find all memory orbs in a map, EZ in Chapter 3 or past => this guide contains locations of each energy unit location: https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Find all energy orbs in a map"}, 
+		"a_EnergyOrbLocatorPresentDay": { // WORKING
+			"id": 000000, "points": 10, "hasTips": true,
+			"devInfo": "Find all energy orbs, without loading into another area."}, 
+		// TODO "a_EnergyOrbLocatorMiddleAges": { // WIP 
+		//	"id": 000000, "points": 10, "hasTips": true,
+		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
+		// TODO "a_EnergyOrbLocatorColdDays": { // WIP 
+		//	"id": 000000, "points": 10, "hasTips": true,
+		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
+		// TODO "a_EnergyOrbLocator1900Days": { // WIP 
+		//	"id": 000000, "points": 10, "hasTips": true,
+		// 	"devInfo": "Find all energy orbs, without loading into another area."}, 
 		// TODO "a_NewCakeInvention???": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Take the cake => give it to margarete => name of cake is now margarete"}, 		
@@ -862,6 +881,28 @@ _achievementTriggers = {
 				onScreenTextID(1) == 0x0 	&& prior(onScreenTextID(1)) == 0x49ff7b &&
 				onScreenTextID(3) == 0x0 	&& prior(onScreenTextID(3)) == 0x49ffea)
 		])},
+	"a_EnergyOrbLocatorPresentDay": function Template() {
+		function measuredComparison() { return 
+			tally(5, 
+				energyUnitsZPad() > prev(energyUnitsZPad()) &&
+				prior(onScreenTextID(1)) == 0x48ffc2	&&
+				prior(onScreenTextID(2)) == 0x4b0000	&&
+				prior(onScreenTextID(3)) == 0x480032	&&
+				!isCutsceneActive()
+			)}
+		function measuredIfComparison() { return
+			// Only measure when in correct scene AND when in-game AND when picking up an orb
+			isCurrentLoadedScene("PresentDayCity") 	&& 	
+			isGameRunning()}
+		return 
+			never(
+				energyUnitsZPad() < prev(energyUnitsZPad()) ||
+				hasChapterChanged()
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},
+	// "a_EnergyOrbLocatorMiddleAges": function Template() {},
+	// "a_EnergyOrbLocatorColdDays": function Template() {},
+	// "a_EnergyOrbLocator1900Days": function Template() {},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive()) 				&&
@@ -2055,6 +2096,10 @@ _achievementTitles = {
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
 	"a_ExcuseMeMyMy":								{"en": "'My my, so eager to die'"},
 	"a_BecomeThePerformer":							{"en": "'Even I can do that'"}, 
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Collector: Present Day"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Collector: Middle Ages"}, 
+	"a_EnergyOrbLocatorColdDays": 					{"en": "Energy Collector: Cold Days"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Collector: New Century"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2116,6 +2161,10 @@ _achievementDescriptions = {
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
 	"a_SaveMiriamBrum":								{"en": "Save a member of the Brum family from a predestined death during chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
+	"a_EnergyOrbLocatorColdDays": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the cold days"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the dawn of a new century"}, 
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
