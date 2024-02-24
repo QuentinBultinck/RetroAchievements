@@ -9,6 +9,7 @@
         "DONE",
         "WORKS",
         "WORKING",
+        "REWORKED",
 
         "TODO",
 
@@ -28,7 +29,8 @@
         "DONE": [
             "DONE",
             "WORKING",
-            "WORKS"
+            "WORKS",
+            "REWORKED"
         ],
         "FIXME": [
             "FIXME",
