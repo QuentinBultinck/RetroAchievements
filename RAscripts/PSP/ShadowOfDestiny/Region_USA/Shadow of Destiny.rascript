@@ -46,18 +46,21 @@ function isCutsceneActive_old() => bit0(0xA9Eb2C) == 0								// $A9Eb2C: [bit-0
 function isCutsceneDone_old() => prev(bit0(0xA9Eb2C)) == 1 && bit0(0xA9Eb2C) == 0	//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
 																					//		- 1 = no cutscene active
 
-function isCutsceneActive() => byte(0xA9ED26) == 0x5								// $A9ED26: Flag: Is cutscene active (preferred)
-function isCutsceneDone() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0	// 		- 0x00 => no cutscene active
-																					// 		- 0x01 => (un)loading cutscene(s)
-																					// 		- 0x05 => cutscene active
+function isCutsceneActive() => byte(0xA9ED26) == 0x5															// $A9ED26: Flag: Is cutscene active (preferred)
+function isCutsceneDone() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0								// 		- 0x00 => no cutscene active
+function isCutsceneSectionDone() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	// 		- 0x01 => (un)loading cutscene(s)
+																												// 		- 0x05 => cutscene active
 
 
 function isCurrentCutsceneMasterId_0(int_cutsceneId) => dword(0xA9ECBC) == int_cutsceneId		// $A9ECBC: [32-bit] Cutscene MASTER ID #0 (preferred)
-function isNewCutsceneLoaded() => prev(dword(0xA9ECBC)) != dword(0xA9ECBC)						// 		- Changes on each new cutscene, has no default value
+function isPriorCutsceneMasterId_0(int_cutsceneId) => prior(dword(0xA9ECBC)) == int_cutsceneId	// 		- Changes on each new cutscene, has no default value
+function isNewCutsceneLoaded() => prev(dword(0xA9ECBC)) != dword(0xA9ECBC)
+
 function isCurrentCutsceneMasterId_1(int_cutsceneId) => word(0xA9ECC0) == int_cutsceneId		// $A9ECC0: [16-bit] Cutscene MASTER ID #1
-																								// 		- Identifies a section from the current cutscene
+function isPriorCutsceneMasterId_1(int_cutsceneId) => prior(word(0xA9ECC0)) == int_cutsceneId	// 		- Identifies a section from the current cutscene
+
 function isCurrentCutsceneMasterId_2(int_cutsceneId) => word(0xA9ECC2) == int_cutsceneId		// $A9ECC2: [16-bit] Cutscene MASTER ID #2
-																								// 		- Identifies a section from the current cutscene
+function isPriorCutsceneMasterId_2(int_cutsceneId) => prior(word(0xA9ECC2)) == int_cutsceneId	// 		- Identifies a section from the current cutscene2
 
 // Below memory addresses likely correlate to animation, model... data during a specific cutscene (not preferred for cutscene identification)
 //		- Everytime you view a different cutscene, memory values around these IDs/addresses change
@@ -172,7 +175,9 @@ _inventoryItemIds = {
 	"Sign": 0x5,
 	"Lighter": 0x6,
 	"SquireCrest": 0xf,
-	"Antidote": 0x11
+	"Antidote": 0x11,
+	"Jugglery": 0xc,
+	"Cake": 0x13
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
 function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
@@ -219,6 +224,24 @@ function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is g
 												//		- 0 = game is not running, it's in the title screen
 												//		- 1 = game is running
 
+// CUTSCENE/EVENT FLAGS
+// *********************
+function isStatueChosen() => bit2(0xA9EDA0)	== 0				// $A9EDA0: [Current Playthrough Event Bit Flags]: Chapter 2
+function isTelephoneUsedToScareCrowd() => bit1(0xA9EDA0) == 1	// 		bit 0 => acquired ladder
+																// 		bit 1 = 0 => LIGHTER used to scare crowd
+																// 		bit 1 = 1 => TELEPHONE used 
+																// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers
+																// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
+function isWorldConquestPicked() => bit7(0xA9EDB7) == 1 && prev(bit7(0xA9EDB7)) == 0 	// $A9EDB7: [Current Playthrough Event Bit Flags]: Chapter 6
+																						// 		bit 5 => Movie choice 1: Meditating Man
+																						// 		bit 6 => Movie choice 1: Time Travel
+																						// 		bit 7 => Movie choice 2: Take over the world
+function isThrillerStoryPicked() => bit1(0xA9EDB8) == 1 && prev(bit1(0xA9EDB8)) == 0 	// $9EDB8: [Current Playthrough Event Bit Flags]: Chapter 6
+function isFindCauseDeathPicked() => bit0(0xA9EDB8)	== 1								// 		bit 0 => Movie Choice 2: Find cause of own death
+																						// 		bit 1 => Movie Choice 3: Thriller story
+																						// 		bit 2 => Movie Choice 3: Love story
+
+
 
 
 
@@ -244,22 +267,22 @@ _achievements = {
 		"a_Chapter2Complete": { // REWORKED
 			"id": 306922, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // WORKING
+		"a_Chapter3Complete": { // REWORKED
 			"id": 306921, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // WORKING
+		"a_Chapter4CompletePan": { // REWORKED
 			"id": 308964, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // WORKING
+		"a_Chapter4CompleteSign": { // REWORKED
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		"a_Chapter5Complete": { // WORKING
 			"id": 311616, "points": 10, "hasTips": false,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // WORKING
+		"a_Chapter6CompleteThriller": { // REWORKED
 			"id": 313211, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // WORKING
+		"a_Chapter6CompleteLove": { // REWORKED
 			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		"a_Chapter7Complete": { // WORKING
@@ -277,11 +300,11 @@ _achievements = {
 	},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // WORKING
-			"id": 306885, "points": 5, "hasTips": true,
+			"id": 306885, "points": 3, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
-		// CONCEPT "a_BecomeThePerformer": { // also finish chapter 4 when this is achieved => chapter 4 ending cutscene might have has extra stuff
-		// 	"id": 00000, "points": 5, "hasTips": true,
-		// 	"devInfo": "In chapter4, use the costume to give yourself a message"},
+		"a_BecomeThePerformer": {
+			"id": 402284, "points": 5, "hasTips": true,
+			"devInfo": "In chapter4, use the costume to give yourself a message"},
 		"a_EggCollection1": { // REWORKED CMID
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
@@ -312,20 +335,20 @@ _achievements = {
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
 			"id": 310426, "points": 10, "hasTips": true,
-			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart => give kitten before chapter 7"},		
+			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
 		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign OR frying pan AND taken the picture as the white dressed man"},
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // WORKING
+		"a_EikeThePyromancer": { // REWORKED
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING	
+		"a_EikeTheMagician": { // REWORKED	
 			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // WORKING 
+		"a_EikeTheFlorist": { // REWORKED 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING
@@ -391,16 +414,16 @@ _achievements = {
 		"a_EnergyOrbLocatorMiddleAges": { // WORKING 
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
-		// CONCEPT "a_NewCakeInvented": { 
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete )"}, 		
-		// CONCEPT "a_GiveMargaretteCake": { 
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Acquire cake from bakery => give to margarette"}, 		
+		"a_NewCakeInvented": { // WORKING
+			"id": 402297, "points": 5, "hasTips": true,
+			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
+		"a_GiveMargaretteCake": { // WORKING
+			"id": 402296, "points": 3, "hasTips": true,
+			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
 		// CONCEPT "a_ArtInspiration": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present"},
-		// CONCEPT "a_MaxInventory": { Fill the inventory with as much items as possible, check which chapters and items 
+		// CONCEPT "a_MaxInventory": { Fill the inventory with as much items as possible, check which chapters and items // Old Rope is removed when picking up new rope
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "????????"}, 
 		"a_IntroduceEggCollecting2": { // WORKING
@@ -417,7 +440,7 @@ _achievements = {
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
-		"a_MetYouBefore": {  // WORKING
+		"a_MetYouBefore": {  // REWORKED
 			"id": 306888, "points": 5, "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
@@ -429,10 +452,10 @@ _achievements = {
 		"a_RottenRope": { // WORKING
 			"id": 315563, "points": 2, "hasTips": false,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_ExcuseMeMyMy": { // WORKING 
+		"a_ExcuseMeMyMy": { // REWORKED 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_TimeEgoFlop": { // WORKING 
+		"a_TimeEgoFlop": { // REWORKED 
 			"id": 313212, "points": 2, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
 	}
@@ -512,97 +535,56 @@ _achievementTriggers = {
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		// Core group 
 		never(!isGameRunning()) 				&&
-		never(!isCutsceneActive_old()) 				&&
 		never(IsViewingCutsceneFromExtraMenu())	&&
 		( 	
 			( 		// Alt 1 => true when last chapter cutscene finishes
-				unless(!isCurrentChapter("Chapter3")) &&
 				tally(3, [
 					once(	// Block A => IDs 1st cutscene sequence 
+						isCurrentChapter("Chapter3") && isCutsceneActive() &&
+						isCurrentCutsceneMasterId_0(0x19d80)	&&
+						isCurrentCutsceneMasterId_1(0x1)		&&
+						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(1) == 0xd88c0086 	&& 
 						currentCutsceneId(6) == 0xfe4d2e91 	&&
 						currentCutsceneId(14) == 0x01bd0079),	
 					once(	// Block B => IDs 2nd cutscene sequence 
+						isCurrentChapter("Chapter3") && isCutsceneActive() &&
+						isCurrentCutsceneMasterId_0(0xcfb40)	&&	isPriorCutsceneMasterId_0(0x19d80)	&&
+						isCurrentCutsceneMasterId_1(0x1)		&&
+						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(3) == 0x11101119	&& 
 						currentCutsceneId(11) == 0x17f8e6df	&&
 						currentCutsceneId(18) == 0x011bfc57),
 					once(	// Block C => IDs 3rd cutscene sequence 
+						isCurrentChapter("Chapter3") && isCutsceneActive() &&
+						isCurrentCutsceneMasterId_0(0x39680)	&&	isPriorCutsceneMasterId_0(0xcfb40)	&&
+						isCurrentCutsceneMasterId_1(0x1)		&&
+						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(2) == 0x0098fe51 	&& 
 						currentCutsceneId(9) == 0xf2e68100 	&&
-						currentCutsceneId(19) == 0x00012000)]) 	&&
-				tally(2160, [
-					repeated(720, currentCutsceneId(12) == 0xffcd0467 && priorCutsceneId(12) == 0xfd08c001), 
-					repeated(720, currentCutsceneId(15) == 0xfcff142d && priorCutsceneId(15) == 0xe6c5), 
-					repeated(720, currentCutsceneId(18) == 0x19191920 && priorCutsceneId(18) == 0x44607539), 
-				])
+						currentCutsceneId(19) == 0x00012000)]
+				) &&
+				isCutsceneDone()
 			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
 				isChapterFinished("Chapter3")
 			)
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
-		// Core group 
-		never(!isGameRunning()) 				&&
-		never(!isCutsceneActive_old()) 				&&
-		never(IsViewingCutsceneFromExtraMenu())	&&
-		isCurrentSelectedInventoryItem("FryingPan") && isChapterFinished("Chapter4")
-		// ( 	
-		// 	( 		// Alt 1 => IDs last chapter cutscene while using the frying pan WITHOUT taking the picture 
-		// 		unless(!isCurrentChapter("Chapter4")) &&
-		// 		tally(3, [
-		// 			once(currentCutsceneId(2) == 0xf5e5191f),
-		// 			once(currentCutsceneId(6) == 0x08b20921),
-		// 			once(currentCutsceneId(11) == 0xec2328a8)
-		// 		]) && 
-		// 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x55 && 
-		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-		// 	) || (	// Alt 2 => IDs last chapter cutscene while using the frying pan AND taking the picture 
-		// 		unless(!isCurrentChapter("Chapter4")) &&
-		// 		tally(3, [
-		// 			once(currentCutsceneId(7) == 0x0c111863),
-		// 			once(currentCutsceneId(9) == 0x21999911),
-		// 			once(currentCutsceneId(10) == 0x000014c8)
-		// 		]) &&
-		// 		repeated(150, onScreenTextID(0) == 0x65) && 
-		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-		// 	) || ( 	// Alt 3 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-		// 		isChapterFinished("Chapter4")
-		// 	)
-		// )
-		},		
+		never(
+			!isGameRunning() 					||
+			isNewCutsceneLoaded()				||
+			IsViewingCutsceneFromExtraMenu()	||
+			!isCurrentCutsceneMasterId_0(0x54580)
+		) &&
+		isCurrentSelectedInventoryItem("FryingPan") && isCutsceneDone()},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
-		// Core group 
-		never(!isGameRunning()) 				&&
-		never(!isCutsceneActive_old()) 				&&
-		never(IsViewingCutsceneFromExtraMenu())	&&
-		isCurrentSelectedInventoryItem("Sign") && isChapterFinished("Chapter4")
-		// ( 	
-		// 	( 		// Alt 1 => IDs last chapter cutscene while using the sign WITHOUT taking the picture 
-		// 		unless(!isCurrentChapter("Chapter4")) &&
-		// 		tally(3, [
-		// 			once(currentCutsceneId(6) == 0x0bf71852),
-		// 			once(currentCutsceneId(21) == 0x3231f791),
-		// 			once(currentCutsceneId(18) == 0x01f51110)
-		// 		]) && 
-		// 		repeated(150, onScreenTextID(0) == 0x65) && 
-		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-		// 	) || (	// Alt 2 => IDs last chapter cutscene while using the sign AND taking the picture 
-		// 		unless(!isCurrentChapter("Chapter4")) &&
-		// 		tally(3, [
-		// 			once(currentCutsceneId(7) == 0x0c111863),
-		// 			once(currentCutsceneId(9) == 0x21999911),
-		// 			once(currentCutsceneId(10) == 0x000014c8)
-		// 		]) &&
-		// 		repeated(150, onScreenTextID(0) == 0x65) && 
-		// 		onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80008 && 
-		// 		onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x500003	
-		// 	) || ( 	// Alt 3 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
-		// 		isChapterFinished("Chapter4")
-		// 	)
-		// )
-		},
+		never(
+			!isGameRunning() 					||
+			isNewCutsceneLoaded()				||
+			IsViewingCutsceneFromExtraMenu()	||
+			!isCurrentCutsceneMasterId_0(0x547c0)
+		) &&
+		isCurrentSelectedInventoryItem("Sign") && isCutsceneDone()},
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive_old()) 				&&
@@ -627,6 +609,7 @@ _achievementTriggers = {
 			IsViewingCutsceneFromExtraMenu()
 		) &&
 		once(
+			isThrillerStoryPicked() && isFindCauseDeathPicked() &&
 			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 && // Block => IDs thriller story choice
 			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff91 &&
 			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x40fffe &&
@@ -636,18 +619,13 @@ _achievementTriggers = {
 			currentCutsceneId(21) == 0xfbb7024f && priorCutsceneId(21) == 0xe6e531b0
 		) && 
 		trigger_when(
-			tally(171, [
-				repeated(170, 
+			tally(100, 
 					currentCutsceneId(16) == 0xd7070002 && priorCutsceneId(16) == 0x14003200 && // Block => IDs cutscene with love or thriller movie poster
 					currentCutsceneId(17) == 0xaffff73c && priorCutsceneId(17) == 0xe7151922 && 
 					currentCutsceneId(18) == 0x0001fa74 && priorCutsceneId(18) == 0x00390053 &&
-					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62),
-				once(
-					currentCutsceneId(2) == 0x58044579 && priorCutsceneId(2) == 0x2497b00 && // Block => IDs last cutscene of chapter 
-					currentCutsceneId(8) == 0x29970b5a && priorCutsceneId(8) == 0x44d6b180 && 
-					currentCutsceneId(11) == 0x0000f80b && priorCutsceneId(11) == 0xe6df1f01 &&
-					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x88)]
-			)
+					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62
+			) &&
+			isCutsceneSectionDone()
 		)},
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
 		never(
@@ -656,6 +634,7 @@ _achievementTriggers = {
 			IsViewingCutsceneFromExtraMenu()
 		) &&
 		once(
+			!isThrillerStoryPicked() && isFindCauseDeathPicked() &&
 			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x82 &&	// Block => IDs love story choice
 			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x3fff90 &&
 			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x3ffffd &&
@@ -665,18 +644,13 @@ _achievementTriggers = {
 			currentCutsceneId(21) == 0xfbb7024f && priorCutsceneId(21) == 0xe6e531b0
 		) && 
 		trigger_when(
-			tally(171, [
-				repeated(170, 
+			tally(100, 
 					currentCutsceneId(16) == 0xd7070002 && priorCutsceneId(16) == 0x14003200 && // Block => IDs cutscene with love or thriller movie poster
 					currentCutsceneId(17) == 0xaffff73c && priorCutsceneId(17) == 0xe7151922 && 
 					currentCutsceneId(18) == 0x0001fa74 && priorCutsceneId(18) == 0x00390053 &&
-					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62),
-				once(
-					currentCutsceneId(2) == 0x58044579 && priorCutsceneId(2) == 0x2497b00 && // Block => IDs last cutscene of chapter 
-					currentCutsceneId(8) == 0x29970b5a && priorCutsceneId(8) == 0x44d6b180 && 
-					currentCutsceneId(11) == 0x0000f80b && priorCutsceneId(11) == 0xe6df1f01 &&
-					onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x88)]
-			)
+					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0x62
+			) &&
+			isCutsceneSectionDone()
 		)},
 	"a_Chapter7Complete": function Chapter7Complete() { return
 		never(
@@ -928,7 +902,7 @@ _achievementTriggers = {
 				prior(onScreenTextID(1)) == 0x48ffc2	&&
 				prior(onScreenTextID(2)) == 0x4b0000	&&
 				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive_old()
+				!isCutsceneActive()
 			)}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
@@ -946,22 +920,12 @@ _achievementTriggers = {
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
 		function measuredComparison() { return 
-			tally(5, [
-				repeated(5, // Normal way counting energy collection
-					energyUnitsZPad() > prev(energyUnitsZPad()) &&
-					prior(onScreenTextID(1)) == 0x48ffc2	&&
-					prior(onScreenTextID(2)) == 0x4b0000	&&
-					prior(onScreenTextID(3)) == 0x480032	&&
-					!isCutsceneActive_old()
-				), 
-				once(	// One energy collection is different from rest: during chapter 3, after energy has been drained
-					energyUnitsZPad() == 0x1 && prior(energyUnitsZPad()) == 0x0 &&
-					isCurrentChapter("Chapter3")			&&
-					prior(onScreenTextID(1)) == 0x48ffb0	&&
-					prior(onScreenTextID(2)) == 0x590000	&&
-					prior(onScreenTextID(3)) == 0x480031	&&
-					!isCutsceneActive_old()
-				)])}
+			tally(5, 				
+				energyUnitsZPad() > prev(energyUnitsZPad()) &&
+				prior(onScreenTextID(1)) == 0x48ffc2	&&
+				prior(onScreenTextID(2)) == 0x4b0000	&&
+				prior(onScreenTextID(3)) == 0x480032	&&
+				!isCutsceneActive())}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
 			(isCurrentLoadedScene("80sColdCity") || isCurrentLoadedScene("70sNightCity")) 	&& 	
@@ -979,7 +943,7 @@ _achievementTriggers = {
 				prior(onScreenTextID(1)) == 0x48ffc2	&&
 				prior(onScreenTextID(2)) == 0x4b0000	&&
 				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive_old()
+				!isCutsceneActive()
 			)}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
@@ -1002,7 +966,7 @@ _achievementTriggers = {
 				prior(onScreenTextID(1)) == 0x48ffc2	&&
 				prior(onScreenTextID(2)) == 0x4b0000	&&
 				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive_old()
+				!isCutsceneActive()
 			)}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
@@ -1163,7 +1127,7 @@ _achievementTriggers = {
 			onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x43 				&&
 			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff85
 		)},
-	"a_PocketWatchCollection": function PocketWatch() { return
+	"a_PocketWatchCollection": function PocketWatch() { return 
 		never(
 			!isGameRunning() 					||
 			!isCutsceneActive_old() 				||
@@ -1216,117 +1180,69 @@ _achievementTriggers = {
 				onScreenTextID(4) == 0x80004 	&& prior(onScreenTextID(4)) == 0x0),
 		]) &&
 		onScreenTextID(0) == 0x0 && prev(onScreenTextID(0)) == 0x96},
-	"a_EikeThePyromancer": function EikeThePyromancer() { // WIP
-		return 
-			disable_when( // Disable achievement when flowers is picked, instead of statue
-				isCurrentSelectedInventoryItem("SquireCrest") && 
-				currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
-				currentCutsceneId(15) == 0x431ab010	&&
-				currentCutsceneId(17) == 0x4f1f9ae	&&
-				prior(onScreenTextID(1)) == 0x003fff5f	&& // This block => check if flowers is chosen
-				prior(onScreenTextID(7)) == 0x0050ffea	&&
-				prior(onScreenTextID(8)) == 0x005000a3	&&
-				onScreenTextID(1) == 0					&&
-				onScreenTextID(7) == 0					&&
-				onScreenTextID(8) == 0
-			) &&
-			never(
-				!isGameRunning() 					|| 
-				IsViewingCutsceneFromExtraMenu() 	||
-				!isCurrentChapter("Chapter2")
-			) &&
-			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the lighter
-				repeated(270,
-					isCurrentSelectedInventoryItem("Lighter") 	&&
-					prior(currentCutsceneId(2)) == 0x2ff955 	&& 	currentCutsceneId(2) == 0x10111112 	&&
-					prior(currentCutsceneId(4)) == 0xe6de04a6 	&&	currentCutsceneId(4) == 0xde980748	&&
-					prior(currentCutsceneId(6)) == 0x1100040a 	&&	currentCutsceneId(6) == 0x12480620),
-				repeated(200,
-					isCurrentSelectedInventoryItem("Lighter") 	&& 
-					onScreenTextID(0) == 0x23 					&& 
-					prior(onScreenTextID(1)) == 0x48ffcb && onScreenTextID(1) == 0x0 &&
-					prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)
-			) &&
-			trigger_when(
-				tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
-					repeated(1900, 
-						isCurrentSelectedInventoryItem("D-pad") &&
-						currentCutsceneId(22) == 0x7c000000 	&&
-						currentCutsceneId(12) == 0xfd7c0000 	&&
-						currentCutsceneId(1) == 0xefff0000),
-					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
-					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
-					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
-					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
-					repeated(150,
-						isCurrentSelectedInventoryItem("D-pad") &&
-						onScreenTextID(0) == 0x50 	&&
-						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
-						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
-				)
-			)}, 
-	"a_EikeTheMagician": function EikeTheMagician() {
-		return 
-			disable_when( // Disable achievement when flowers is picked, instead of statue
-				isCurrentSelectedInventoryItem("SquireCrest") && 
-				currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
-				currentCutsceneId(15) == 0x431ab010	&&
-				currentCutsceneId(17) == 0x4f1f9ae	&&
-				prior(onScreenTextID(1)) == 0x003fff5f	&& // This block => check if flowers is chosen
-				prior(onScreenTextID(7)) == 0x0050ffea	&&
-				prior(onScreenTextID(8)) == 0x005000a3	&&
-				onScreenTextID(1) == 0					&&
-				onScreenTextID(7) == 0					&&
-				onScreenTextID(8) == 0
-			) &&
-			never(
-				!isGameRunning() 					|| 
-				IsViewingCutsceneFromExtraMenu() 	||
-				!isCurrentChapter("Chapter2")
-			) &&
-			tally(470, 	// Tally block => IDs cutscene where Eike scares crowd with the cellphone
-				repeated(200,  
-					isCutsceneActive_old() &&
-					isCurrentSelectedInventoryItem("Cellphone") && 
-					currentCutsceneId(11) == 0xc4612c05 && priorCutsceneId(11) == 0xff9c1670 &&
-					currentCutsceneId(15) == 0x0 		&& priorCutsceneId(15) == 0xc57c78c2 &&
-					currentCutsceneId(18) == 0x1276 	&& priorCutsceneId(18) == 0xfc240056),
-				repeated(270, 
-					isCutsceneActive_old() &&
-					isCurrentSelectedInventoryItem("Cellphone") && 
-					currentCutsceneId(3) == 0x50000000 && priorCutsceneId(3) == 0xfe51a2ff &&
-					currentCutsceneId(8) == 0x0481fede && priorCutsceneId(8) == 0xfbd101d3 &&
-					currentCutsceneId(11) == 0x2169fb15 && priorCutsceneId(11) == 0xc4612c05)
-			) &&
-			trigger_when(
-				tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
-					repeated(1900, 
-						isCutsceneActive_old() &&
-						isCurrentSelectedInventoryItem("D-pad") &&
-						currentCutsceneId(22) == 0x7c000000 	&&
-						currentCutsceneId(12) == 0xfd7c0000 	&&
-						currentCutsceneId(1) == 0xefff0000),
-					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
-					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
-					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
-					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
-					repeated(150,
-						isCutsceneActive_old() &&
-						isCurrentSelectedInventoryItem("D-pad") &&
-						onScreenTextID(0) == 0x50 	&&
-						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
-						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
-				)
-			)}, 	
-	"a_EikeTheFlorist": function EikeTheFlorist() { return
+	"a_EikeThePyromancer": function EikeThePyromancer() { return // 
+		never(
+			!isGameRunning() 					|| 
+			IsViewingCutsceneFromExtraMenu() 	||
+			!isCurrentChapter("Chapter2")		||
+			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when telephone is used
+			isTelephoneUsedToScareCrowd()
+		) &&
+		tally(200, 	// Tally block => IDs cutscene where Eike scares crowd with the lighter
+			repeated(100,
+				isCurrentSelectedInventoryItem("Lighter") 	&&
+				prior(currentCutsceneId(2)) == 0x2ff955 	&& 	currentCutsceneId(2) == 0x10111112 	&&
+				prior(currentCutsceneId(4)) == 0xe6de04a6 	&&	currentCutsceneId(4) == 0xde980748	&&
+				prior(currentCutsceneId(6)) == 0x1100040a 	&&	currentCutsceneId(6) == 0x12480620),
+			repeated(100,
+				isCurrentSelectedInventoryItem("Lighter") 	&& 
+				onScreenTextID(0) == 0x23 					&& 
+				prior(onScreenTextID(1)) == 0x48ffcb && onScreenTextID(1) == 0x0 &&
+				prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)
+		) &&
+		trigger_when(	// Trigger when the last cutscene in the chapter finishes
+			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId_1(0x3)		&&
+			isCurrentCutsceneMasterId_2(0x2)		&&
+			isCutsceneDone()
+		)},			
+	"a_EikeTheMagician": function EikeTheMagician() { return 
+		never(
+			!isGameRunning() 					|| 
+			IsViewingCutsceneFromExtraMenu() 	||
+			!isCurrentChapter("Chapter2")		||
+			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when lighter is used
+			!isTelephoneUsedToScareCrowd()
+		) &&
+		tally(200, 	// Tally block => IDs cutscene where Eike scares crowd with the cellphone
+			repeated(100,  
+				isCutsceneActive_old() &&
+				isCurrentSelectedInventoryItem("Cellphone") && 
+				currentCutsceneId(11) == 0xc4612c05 && priorCutsceneId(11) == 0xff9c1670 &&
+				currentCutsceneId(15) == 0x0 		&& priorCutsceneId(15) == 0xc57c78c2 &&
+				currentCutsceneId(18) == 0x1276 	&& priorCutsceneId(18) == 0xfc240056),
+			repeated(100, 
+				isCutsceneActive_old() &&
+				isCurrentSelectedInventoryItem("Cellphone") && 
+				currentCutsceneId(3) == 0x50000000 && priorCutsceneId(3) == 0xfe51a2ff &&
+				currentCutsceneId(8) == 0x0481fede && priorCutsceneId(8) == 0xfbd101d3 &&
+				currentCutsceneId(11) == 0x2169fb15 && priorCutsceneId(11) == 0xc4612c05)
+		) &&
+		trigger_when(	// Trigger when the last cutscene in the chapter finishes
+			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId_1(0x3)		&&
+			isCurrentCutsceneMasterId_2(0x2)		&&
+			isCutsceneDone()
+		)},	
+	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
 			!isGameRunning() 					|| 
 			IsViewingCutsceneFromExtraMenu() 	||
 			!isCurrentChapter("Chapter2")
-		) && 
-		once(
-			isCutsceneActive_old() 								&&
-			isCurrentSelectedInventoryItem("SquireCrest") 	&& 
+		) &&
+		once(	// True => when picked to plant flowers while talking to gardeneer
+			isCutsceneActive() && isCurrentSelectedInventoryItem("SquireCrest") &&
+			!isStatueChosen() &&
 			currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
 			currentCutsceneId(15) == 0x431ab010	&&
 			currentCutsceneId(17) == 0x4f1f9ae	&&
@@ -1334,25 +1250,11 @@ _achievementTriggers = {
 			prior(onScreenTextID(7)) == 0x0050ffea	&& onScreenTextID(7) == 0	&&
 			prior(onScreenTextID(8)) == 0x005000a3	&& onScreenTextID(8) == 0
 		) &&
-		trigger_when(
-			tally(2024, // Tally block => IDs last cutscene of chapter 2, when tree changes into statue or flowers 
-					repeated(1900, 
-						isCutsceneActive_old() &&
-						isCurrentSelectedInventoryItem("D-pad") &&
-						currentCutsceneId(22) == 0x7c000000 	&&
-						currentCutsceneId(12) == 0xfd7c0000 	&&
-						currentCutsceneId(1) == 0xefff0000),
-					once(onScreenTextID(0) == 0x102 && prior(onScreenTextID(0)) == 0x195),
-					once(onScreenTextID(0) == 0x7a 	&& prior(onScreenTextID(0)) == 0x102),
-					once(onScreenTextID(0) == 0x30 	&& prior(onScreenTextID(0)) == 0x7a),
-					once(onScreenTextID(0) == 0x50 	&& prior(onScreenTextID(0)) == 0x30),
-					repeated(150,
-						isCutsceneActive_old() &&
-						isCurrentSelectedInventoryItem("D-pad") &&
-						onScreenTextID(0) == 0x50 	&&
-						onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x4e0000 &&
-						onScreenTextID(4) == 0x0 	&& prior(onScreenTextID(4)) == 0x80005)
-				)
+		trigger_when(	// Trigger when the last cutscene in the chapter finishes
+			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId_1(0x3)		&&
+			isCurrentCutsceneMasterId_2(0x2)		&&
+			!isStatueChosen() && isCutsceneDone()
 		)},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never(
@@ -1830,6 +1732,46 @@ _achievementTriggers = {
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_BecomeThePerformer": function BecomeThePerformer() {	return
+		never(
+			!isGameRunning()						||
+			IsViewingCutsceneFromExtraMenu() 		||
+			!isCurrentCutsceneMasterId_0(0x1a300)	||
+			isNewCutsceneLoaded()
+		) &&
+		isCurrentSelectedInventoryItem("Jugglery")	&&
+		isCurrentCutsceneMasterId_1(0xd) && isCurrentCutsceneMasterId_2(0xc) &&
+		isCutsceneSectionDone()},
+	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
+		never(
+			!isGameRunning()						||
+			IsViewingCutsceneFromExtraMenu() 		||
+			!isCurrentCutsceneMasterId_0(0x10b000)	||
+			isNewCutsceneLoaded()
+		) &&
+		isCurrentSelectedInventoryItem("Cake")	&&
+		isCurrentCutsceneMasterId_1(0x1)	&& isCurrentCutsceneMasterId_2(0x0) &&
+		currentCutsceneId(6) == 0x1328e6df 		&& priorCutsceneId(6) == 0x190e1921		&&
+		currentCutsceneId(11) == 0x1c2f2ea0 	&& priorCutsceneId(11) == 0xe81c0000	&&
+		currentCutsceneId(16) == 0x793ea550 	&& priorCutsceneId(16) == 0xf7cd00		&&
+		isCutsceneDone()},
+	"a_NewCakeInvented": function NewCakeInvented() { return
+		never(
+			!isGameRunning()						||
+			IsViewingCutsceneFromExtraMenu() 		||
+			!isCurrentCutsceneMasterId_0(0x1fd80)	||
+			isNewCutsceneLoaded()
+		) &&
+		repeated(100, 	// IDs cutscene, where player gives Cake to Margarette 2nd time
+			isCutsceneActive()	&&
+			isCurrentSelectedInventoryItem("Cake")	&&
+			currentCutsceneId(1) == 0xa2ff43d2 	&& 
+			currentCutsceneId(6) == 0x013a1999 	&&
+			currentCutsceneId(15) == 0xc341e80a &&
+			currentCutsceneId(18) == 0xcedf00ed &&
+			currentCutsceneId(19) == 0xfdc96400
+		) &&
+		isCutsceneDone()},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
@@ -2116,74 +2058,77 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter6")
 		) &&
 		once(
-			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x4b && 		// Block => IDs Time Ego choice
-			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x0040ff68 &&
-			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x40ffe0 &&
-			onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4fffad &&
-			currentCutsceneId(18) == 0xe6e531b2 && priorCutsceneId(18) == 0xc901500 && 
-			currentCutsceneId(21) == 0xe6e531b0 && priorCutsceneId(21) == 0x6dc && 
-			currentCutsceneId(25) == 0x811229f0 && priorCutsceneId(25) == 0x25cae263
+			isWorldConquestPicked() &&
+			onScreenTextID(0) == 0x1 && prior(onScreenTextID(0)) == 0x4b 		&& 		// Block => IDs Time Ego choice
+			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x0040ff68 	&&
+			onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x40ffe0 	&&
+			onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4fffad
 		) && 
 		trigger_when(
-			tally(171, [
-				repeated(500, 
-					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e && // Block => IDs cutscene with 'World Conquest' movie poster
-					currentCutsceneId(16) == 0x10e00 && priorCutsceneId(16) == 0xc3000000 	&& 
-					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 	&&
-					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80), 
-				repeated(30, 
-					onScreenTextID(0) == 0x5a && prior(onScreenTextID(0)) == 0xe1 &&
-					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffc2 &&
-					onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x410000 &&
-					onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x480029)
-			])
+			tally(200, 
+					currentCutsceneId(6) == 0xff530209 	&& priorCutsceneId(6) == 0xff5af64e 	&& // Block => IDs cutscene with 'World Conquest' movie poster
+					currentCutsceneId(16) == 0x10e00 	&& priorCutsceneId(16) == 0xc3000000 	&& 
+					currentCutsceneId(14) == 0x002de210 && priorCutsceneId(14) == 0xffa1 		&&
+					onScreenTextID(0) == 0x32 && prior(onScreenTextID(0)) == 0x80
+			) &&
+			isCutsceneSectionDone()
 		)},
-	"a_MetYouBefore": function MetYouBefore() { return  
-		never(	 // Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
-			!isGameRunning()					||
-			!isCurrentChapter("Chapter2") 		||
-			IsViewingCutsceneFromExtraMenu() 	|| 
-			!isCutsceneActive_old())				&&
-		repeated(1400, onScreenTextID(0) == 0x4b) &&	// Block => identifies the cutscene (code might be too bloated but better safe than sorry)
-		once(prev(onScreenTextID(0)) == 0x4b && onScreenTextID(0) == 0x2d) &&	// Text sequence A
-		once(prev(onScreenTextID(0)) == 0x2d && onScreenTextID(0) == 0x1e) &&	// Text sequence B
-		once(prev(onScreenTextID(0)) == 0xf0 && onScreenTextID(0) == 0x78) &&	// Text sequence C
-		once(prev(onScreenTextID(0)) == 0x78 && onScreenTextID(0) == 0x4b) &&	// Text sequence E
-		once(prev(onScreenTextID(0)) == 0xb4 && onScreenTextID(0) == 0x4b) &&	// Text sequence D
-		once(prev(onScreenTextID(0)) == 0x78 && onScreenTextID(0) == 0x50) &&	// Text sequence F
-		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0040ff86) &&	// Text A
-		once(prev(onScreenTextID(5)) == 0x0 && onScreenTextID(5) == 0x0050ffd0) &&	// Text A
-		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0048ffc9) &&	// Text B
-		once(prev(onScreenTextID(3)) == 0x0 && onScreenTextID(3) == 0x00480029) &&	// Text B
-		once(prev(onScreenTextID(1)) == 0x0 && onScreenTextID(1) == 0x0040ff9e) &&	// Text E
-		once(prev(onScreenTextID(4)) == 0x0 && onScreenTextID(4) == 0x00080009) &&	// Text E
-		prior(onScreenTextID(1)) == 0x0040ffbb 							&&	// Last text
-		prior(onScreenTextID(5)) == 0x00500045 							&&	// Last text
-		prev(onScreenTextID(0)) == 0x50},									// Last text
-	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return 
+	"a_MetYouBefore": function MetYouBefore() { return
+		never(
+			!isGameRunning() 						||
+			!isCurrentChapter("Chapter2")			||
+			IsViewingCutsceneFromExtraMenu()		||
+			!isCurrentCutsceneMasterId_0(0x6e480)	||
+			isNewCutsceneLoaded()
+		) &&
+		isCurrentCutsceneMasterId_1(0x1) 				&&
+		isCurrentCutsceneMasterId_2(0x2)				&&
+		repeated(500, isCutsceneActive() 		&& onScreenTextID(0) == 0x4b)	&&
+		once(prev(onScreenTextID(0)) == 0x4b 	&& onScreenTextID(0) == 0x2d) 	&&	// Text sequence A
+		once(prev(onScreenTextID(0)) == 0x2d 	&& onScreenTextID(0) == 0x1e) 	&&	// Text sequence B
+		once(prev(onScreenTextID(0)) == 0xf0 	&& onScreenTextID(0) == 0x78) 	&&	// Text sequence C
+		once(prev(onScreenTextID(0)) == 0x78 	&& onScreenTextID(0) == 0x4b) 	&&	// Text sequence E
+		once(prev(onScreenTextID(0)) == 0xb4 	&& onScreenTextID(0) == 0x4b) 	&&	// Text sequence D
+		once(prev(onScreenTextID(0)) == 0x78 	&& onScreenTextID(0) == 0x50) 	&&	// Text sequence F
+		once(prev(onScreenTextID(1)) == 0x0 	&& onScreenTextID(1) == 0x0040ff86) &&	// Text A
+		once(prev(onScreenTextID(5)) == 0x0 	&& onScreenTextID(5) == 0x0050ffd0) &&	// Text A
+		once(prev(onScreenTextID(1)) == 0x0 	&& onScreenTextID(1) == 0x0048ffc9) &&	// Text B
+		once(prev(onScreenTextID(3)) == 0x0 	&& onScreenTextID(3) == 0x00480029) &&	// Text B
+		once(prev(onScreenTextID(1)) == 0x0 	&& onScreenTextID(1) == 0x0040ff9e) &&	// Text E
+		once(prev(onScreenTextID(4)) == 0x0 	&& onScreenTextID(4) == 0x00080009)	&&	// Text E
+		isCutsceneSectionDone()},
+	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!isGameRunning() 					||
-			!isCutsceneActive_old() 				||
 			IsViewingCutsceneFromExtraMenu() 	|| 
 			!isCurrentChapter("Chapter3")
 		) &&
 		tally(2,
 			once(	// +1 when "excuse me" option is chosen
-				currentCutsceneId(13) == 0xf6e80000 && priorCutsceneId(13) == 0xe8921922 && // Block => IDs cutscene after picking "excuse me"
-				currentCutsceneId(16) == 0x001111ea && priorCutsceneId(16) == 0x85000000 &&
-				currentCutsceneId(18) == 0xf1451010 && priorCutsceneId(18) == 0x680813 	&&
-				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x3fffb7 && // Block => true when picked "excuse me"
+				isCutsceneActive()	&&
+				isCurrentCutsceneMasterId_0(0xb140)	&&	// Block => IDs cutscene after picking "excuse me"
+				isCurrentCutsceneMasterId_1(0x5)	&&
+				isCurrentCutsceneMasterId_2(0x6)	&&
+				currentCutsceneId(14) == 0x1967e97c && priorCutsceneId(14) == 0x1547049b 	&& 
+				currentCutsceneId(19) == 0x1a192200 && priorCutsceneId(19) == 0xafd		 	&&
+				currentCutsceneId(22) == 0x29111111 && priorCutsceneId(22) == 0xd5007ed3 	&&
+				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ffe4 && // Block => true when picked "excuse me"
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x3f0017 &&
 				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x510025),
 			once(	// +1 when cutscene in limbo finishes
-				currentCutsceneId(5) == 0xd0161111 && priorCutsceneId(5) == 0x19dfd71f 	&& // Block => IDs cutscene in limbo after death
-				currentCutsceneId(8) == 0x3e82c254 && priorCutsceneId(8) == 0xfd5df960 	&&
+				isCutsceneActive()	&&
+				isCurrentCutsceneMasterId_0(0x1a440)	&&	// Block => IDs cutscene in limbo after death
+				isCurrentCutsceneMasterId_1(0x1)		&&
+				isCurrentCutsceneMasterId_2(0x0)		&&
+				currentCutsceneId(5) == 0xd0161111 	&& priorCutsceneId(5) == 0x19dfd71f && 
+				currentCutsceneId(8) == 0x3e82c254 	&& priorCutsceneId(8) == 0xfd5df960 &&
 				currentCutsceneId(11) == 0x02acfd43 && priorCutsceneId(11) == 0x6c6ffa5 &&
 				onScreenTextID(0) == 0x69 && prior(onScreenTextID(0)) == 0xaf 		&&	// Block => true when cutscene dialogue in limbo finishes 
 				onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff89 	&& 
 				onScreenTextID(2) == 0x0 && prior(onScreenTextID(2)) == 0x440000 	&&
 				onScreenTextID(3) == 0x0 && prior(onScreenTextID(3)) == 0x41fff6)
-		)}
+		) &&
+		isCutsceneSectionDone()}
 	// "a_Template": function Template() {},
 }
 
@@ -2197,11 +2142,11 @@ _achievementTitles = {
 	"a_Chapter1Complete": 							{"en": "Defied Fate... Again",															
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
-	"a_Chapter2Complete": 							{"en": "Left in the Past: A Serendipitous Consequence"},
+	"a_Chapter2Complete": 							{"en": "Left in the Past"},
 	"a_Chapter3Complete": 							{"en": "An Alchemist, a Jewel and a Homunculus"},
 	"a_Chapter4CompletePan": 						{"en": "Pan-tastic Resilience"},
 	"a_Chapter4CompleteSign": 						{"en": "Through the Lens of Survival"},	
-	"a_Chapter5Complete": 							{"en": "Ancient Elixer"}, 
+	"a_Chapter5Complete": 							{"en": "Ancient Elixir"}, 
 	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
@@ -2239,7 +2184,7 @@ _achievementTitles = {
 	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
-	"a_MetYouBefore": 								{"en": "An Uncanny Familiarity"},
+	"a_MetYouBefore": 								{"en": "Met me before"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
@@ -2252,7 +2197,9 @@ _achievementTitles = {
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Amasser: Middle Ages"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"} 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"},
+	"a_GiveMargaretteCake": 						{"en": "Time-Spun Sweets"}, 
+	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"} 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2317,7 +2264,9 @@ _achievementDescriptions = {
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"}
+	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
+	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
+	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"}
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
