@@ -167,20 +167,138 @@ function hasChapterChanged() => chapterId() != prev(chapterId())
 
 // INVENTORY LOGIC 
 // *****************
-_inventoryItemIds = { 
-	"D-pad": 0x0, // In PSP version this is called Z-Pad
-	"OrnamentalEgg": 0x2,
-	"Cellphone": 0x1,
-	"FryingPan": 0x4,
-	"Sign": 0x5,
-	"Lighter": 0x6,
-	"SquireCrest": 0xf,
-	"Antidote": 0x11,
-	"Jugglery": 0xc,
-	"Cake": 0x13
+//	- itemScrollBarId => Id of the item in the inventory scrollbar menu
+//	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
+//	- isDefaultItem => true, when player gets this item at start of game
+_inventoryItems = { 
+	"D-pad": {	// In PSP version this is called Z-Pad
+		"inventoryMemoryAddress": 0xA9F034,	// $A9F034: [Bit 0] Z-pad/D-pad
+		"itemScrollBarId": 0x0,
+		"isDefaultItem": true
+	}, 
+	"Cellphone": {
+		"inventoryMemoryAddress": 0xA9F035,	// $A9F035: [Bit 0] Cellphone
+		"itemScrollBarId": 0x1,
+		"isDefaultItem": true
+	},
+	"Map": {
+		"inventoryMemoryAddress": 0xA9F04C,	// $A9F04C: [Bit 0] City map
+		"itemScrollBarId": 0x18,
+		"isDefaultItem": true
+	},
+	"Notebook": {
+		"inventoryMemoryAddress": 0xA9F04F,	// $A9F04F: [Bit 0] Notebook
+		"itemScrollBarId": 0x1b,
+		"isDefaultItem": true
+	},	
+	"Postcard": {
+		"inventoryMemoryAddress": 0xA9F04A,	// $A9F04A: [Bit 0] Letter to dana
+		"isDefaultItem": true
+	},
+	"OldMap": {
+		"inventoryMemoryAddress": 0xA9F04E,	// $A9F04E: [Bit 0] Old City Map
+		"isDefaultItem": false
+	},
+	"OrnamentalEgg": {
+		"itemScrollBarId": 0x2,
+		"inventoryMemoryAddress": 0xA9F036,	// $A9F036: [Bit 0] Cake
+		"isDefaultItem": false
+	},
+	"FryingPan": {
+		"itemScrollBarId": 0x4,
+		"inventoryMemoryAddress": 0xA9F038,	// $A9F038: [Bit 0] Frying pan
+		"isDefaultItem": false
+	},
+	"Sign": {
+		"itemScrollBarId": 0x5,
+		"inventoryMemoryAddress": 0xA9F039,	// $A9F039: [Bit 0] Photo shop sign
+		"isDefaultItem": false
+	},
+	"Lighter": {
+		"itemScrollBarId": 0x6,
+		"inventoryMemoryAddress": 0xA9F03A,	// $A9F03A: [Bit 0] Lighter
+		"isDefaultItem": false
+	},
+	"SquireCrest": {
+		"itemScrollBarId": 0xf,
+		"inventoryMemoryAddress": 0xA9F043,	// $A9F043: [Bit 0] Squire's crest
+		"isDefaultItem": false
+	},
+	"Antidote": {
+		"itemScrollBarId": 0x11,
+		"inventoryMemoryAddress": 0xA9F045,	// $A9F045: [Bit 0] Antidote
+		"isDefaultItem": false
+	},
+	"Jugglery": {
+		"itemScrollBarId": 0xc,
+		"inventoryMemoryAddress": 0xA9F040,	// $A9F040: [Bit 0] Jugglery
+		"isDefaultItem": false
+	},
+	"Cake": {
+		"itemScrollBarId": 0x13,
+		"inventoryMemoryAddress": 0xA9F047,	// $A9F047: [Bit 0] Cake
+		"isDefaultItem": false
+	},
+	"PhilosopherStone": {
+		"inventoryMemoryAddress": 0xA9F03D,	// $A9F03D: [Bit 0] Philosopher's stone
+		"isDefaultItem": false
+	},
+	"BLackWhitePhoto": {	// This one switches with the other photo once the picture is taken
+		"inventoryMemoryAddress": 0xA9F03B,	// $A9F03B: [Bit 0] Black and white photo without performer
+		"isDefaultItem": false
+	},
+	"BLackWhitePhotoWithPerformer": {	
+		"inventoryMemoryAddress": 0xA9F03C,	// $A9F03C: [Bit 0] Black and white photo with performer
+		"isDefaultItem": false
+	},
+	"OldRope": {
+		"inventoryMemoryAddress": 0xA9F03F,	// $A9F03F: [Bit 0] Old Rope
+		"isDefaultItem": false
+	},
+	"NewRope": {
+		"inventoryMemoryAddress": 0xA9F03E,	// $A9F03E: [Bit 0] New Rope
+		"isDefaultItem": false
+	},
+	"Comb": {
+		"inventoryMemoryAddress": 0xA9F041,	// $A9F041: [Bit 0] Comb
+		"isDefaultItem": false
+	},
+	"AlchemyBook": {
+		"inventoryMemoryAddress": 0xA9F042,	// $A9F042: [Bit 0] Old alchemist book
+		"isDefaultItem": false
+	},
+	"EggPocketWatch": {
+		"inventoryMemoryAddress": 0xA9F044,	// $A9F044: [Bit 0] Egg shaped pocket watch
+		"isDefaultItem": false
+	},
+	"Meat": {
+		"inventoryMemoryAddress": 0xA9F046,	// $A9F046: [Bit 0] Scrap of meat
+		"isDefaultItem": false
+	},
+	"LabKey": {
+		"inventoryMemoryAddress": 0xA9F048,	// $A9F048: [Bit 0] Lab key
+		"isDefaultItem": false
+	},
+	"TowerKey": {
+		"inventoryMemoryAddress": 0xA9F049,	// $A9F049: [Bit 0] Tower key
+		"isDefaultItem": false
+	},
+	"Ladder": {
+		"inventoryMemoryAddress": 0xA9F04D,	// $A9F04D: [Bit 0] Ladder
+		"isDefaultItem": false
+	},
+	"LetterToDana": {
+		"inventoryMemoryAddress": 0xA9F050,	// $A9F050: [Bit 0] Postcard
+		"isDefaultItem": false
+	},
+	"Kitten": {
+		"inventoryMemoryAddress": 0xA9F04B,	// $A9F04B: [Bit 0] Kitten
+		"isDefaultItem": false
+	}
 }
 function currentSelectedItemID() => byte(0xA9F111)			// $A9F111: [8-bit] Currently selected item ID in inventory
-function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItemIds[string_item]
+function isCurrentSelectedInventoryItem(string_item) => currentSelectedItemID() == _inventoryItems[string_item]["itemScrollBarId"]
+function isItemInInventory(string_item) => bit0(_inventoryItems[string_item][inventoryMemoryAddress]) == 1
 
 // ON-SCREEN TEXT 
 // ****************
@@ -220,9 +338,12 @@ function IsViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x1	// $1FFF15C
 function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
 												//		- Used for the time travel machine (Z-Pad)
 												//		- Min => 0x0 		Max => 0x0a
-function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running
-												//		- 0 = game is not running, it's in the title screen
-												//		- 1 = game is running
+function isGameRunning() => low4(0xA9EDDC) != 0	// $A9EDDC: [Bit 1] Flag -> is in-game
+												// 		0 => at title screen
+												// 		1 => in-game
+// function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running (deprecated)
+// 												//		- 0 = game is not running, it's in the title screen
+// 												//		- 1 = game is running
 
 // CUTSCENE/EVENT FLAGS
 // *********************
@@ -423,16 +544,16 @@ _achievements = {
 		// CONCEPT "a_ArtInspiration": { 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present"},
-		// CONCEPT "a_MaxInventory": { Fill the inventory with as much items as possible, check which chapters and items // Old Rope is removed when picking up new rope
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "????????"}, 
+		"a_MaxInventory": { // WORKING // TEST
+			"id": 402404, "points": 10, "hasTips": true,
+			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
 		"a_IntroduceEggCollecting2": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_PocketWatchCollection": { // WORKING
 			"id": 315561, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
-		"a_PocketWatchReminiscing": { // WORKING
+		"a_PocketWatchReminiscing": { // BUG
 			"id": 315562, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_BarmansChildren": { // WORKING
@@ -1054,7 +1175,7 @@ _achievementTriggers = {
 		isGameRunning() 					&&		
 		isCurrentChapter("Chapter1")		&&
 		!IsViewingCutsceneFromExtraMenu()	&&
-		isCurrentCutsceneMasterId_0(0x2f9c0)	&&		
+		isCurrentCutsceneMasterId_0(0x2f9c0)	&&
 		isCurrentCutsceneMasterId_1(0x9) 		&&
 		isCurrentCutsceneMasterId_2(0xa)		&&
 		never(isNewCutsceneLoaded())	&&	// Reset below count on a new cutscene	
@@ -1065,23 +1186,30 @@ _achievementTriggers = {
 		) &&
 		isCutsceneDone()},
 	"a_EggCollection2": function EggCollection2() { return 
-		never(!isGameRunning() || !isCutsceneActive_old() || IsViewingCutsceneFromExtraMenu()) &&
+		never(!isGameRunning() || isNewCutsceneLoaded() || IsViewingCutsceneFromExtraMenu()) &&
 		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
+		isCutsceneDone() &&
 		(	
 			(
-				repeated(470, priorCutsceneId(22) == 0x68df3900) 	&& // Block => IDs cutscene in chapter 3 when giving egg to barman
-				repeated(470, priorCutsceneId(12) == 0x18e6) 		&&
-				repeated(470, priorCutsceneId(17) == 0x66319a2) 	&& 
-				repeated(470, currentCutsceneId(22) == 0xd4faa9fa) 	&&
-				repeated(470, currentCutsceneId(12) == 0x7bff8c) 	&&
-				repeated(470, currentCutsceneId(17) == 0xff2009cc)
+				repeated(200,	// Block => IDs cutscene in chapter 3 when giving egg to barman
+					isCutsceneActive() &&
+					isCurrentCutsceneMasterId_0(0x2f9c0)	&&
+					isCurrentCutsceneMasterId_1(0x9) 		&&
+					isCurrentCutsceneMasterId_2(0xa)		&&
+					priorCutsceneId(22) == 0x68df3900	&&	currentCutsceneId(22) == 0xd4faa9fa	&&
+					priorCutsceneId(12) == 0x18e6		&&	currentCutsceneId(12) == 0x7bff8c	&&
+					priorCutsceneId(17) == 0x66319a2	&&	currentCutsceneId(17) == 0xff2009cc	
+				)
 			) || (
-				repeated(470, priorCutsceneId(19) == 0x2000000) 	&& // Block => IDs cutscene in chapter 4 when giving egg to barman
-				repeated(470, priorCutsceneId(12) == 0xfe1506b8) 	&&
-				repeated(470, priorCutsceneId(17) == 0x2881cf5) 	&& 
-				repeated(470, currentCutsceneId(19) == 0x04006a00) 	&&
-				repeated(470, currentCutsceneId(12) == 0x00b20009) 	&&
-				repeated(470, currentCutsceneId(17) == 0x167014f2)
+				repeated(200,	// Block => IDs cutscene in chapter 4 when giving egg to barman
+					isCutsceneActive() &&
+					isCurrentCutsceneMasterId_0(0x2f9c0)	&&
+					isCurrentCutsceneMasterId_1(0x9) 		&&
+					isCurrentCutsceneMasterId_2(0xa)		&&
+					priorCutsceneId(19) == 0x2000000	&&	currentCutsceneId(19) == 0x04006a00	&&
+					priorCutsceneId(12) == 0xfe1506b8	&&	currentCutsceneId(12) == 0x00b20009	&&
+					priorCutsceneId(17) == 0x2881cf5	&&	currentCutsceneId(17) == 0x167014f2	
+				)
 			)
 		)},
 	"a_IntroduceEggCollecting": function IntroduceEggCollecting() { return 
@@ -1772,6 +1900,22 @@ _achievementTriggers = {
 			currentCutsceneId(19) == 0xfdc96400
 		) &&
 		isCutsceneDone()},
+	"a_MaxInventory": function MaxInventory(){
+		function measuredComparison() { // Biggest achievable inventory = 16 (+ 5 starter items)
+			let_comparisonsArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+				return prev(bit0(_inventoryItems[item]["inventoryMemoryAddress"])) < bit0(_inventoryItems[item]["inventoryMemoryAddress"])
+			})
+			let_deductComparisonArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+				return deduct(prev(bit0(_inventoryItems[item]["inventoryMemoryAddress"])) > bit0(_inventoryItems[item]["inventoryMemoryAddress"]))
+			})
+			for deductComparison in let_deductComparisonArray {
+				array_push(let_comparisonsArray, deductComparison)
+			}
+			return tally(21, let_comparisonsArray)}
+		// Trigger
+		return 
+			never(!isGameRunning()) &&
+			measured(measuredComparison(), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
@@ -2199,7 +2343,8 @@ _achievementTitles = {
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"},
 	"a_GiveMargaretteCake": 						{"en": "Time-Spun Sweets"}, 
-	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"} 
+	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"},
+	"a_MaxInventory": 								{"en": "Stockpiling Across Eras"}
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2266,7 +2411,8 @@ _achievementDescriptions = {
 	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
-	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"}
+	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"},
+	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"}
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
@@ -2281,7 +2427,8 @@ function initializeAchievements() {
 			if isDevModeActive() {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)
-				let_string = let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
+				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
+				// let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
 			}
 			return let_string
 		}	
