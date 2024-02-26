@@ -16,6 +16,8 @@ achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDesti
 //  //  //  //  //  //  //  //  //    CODE NOTES & MEMORY ADDRESS LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#########################################################################################################\\
 
+// PSP pointers usually start with 08 or 09 + 25-bit
+
 // TIMERS/COUNTERS
 // *****************
 //	- Resets at certain times or between cutscene transitions
@@ -321,16 +323,20 @@ function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 // *************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function IsViewingEndingFromExtraMenu() { return				// $AC3170: [32-bit] Pointer
-	 dword(dword(0xAC3170) + 0xF8000004) & 0x1FFFFFF == 0x1}	// 	+0xF8000004 = Selected menu item in Extra Menu
-																	// 		- 0x0 => Event viewer (replay unlocked cutscenes)
-																	// 		- 0x1 => Ending files (replay ending cutscenes)
-																	// 		- 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-																	// 		- 0x3 => Sound Mode (Play sound effects & music)
-																	// 		- 0x4 => Exit (back to Title Screen)
-function IsViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x1	// $1FFF15C: [32-bit] Flag => is viewing cutscene from event viewer
-																		// 	- 0x1 = event viewer is active
-																		// 	- other values = event viewer is inactive
+function IsViewingEndingFromExtraMenu() { return				// $AC3170: [25-bit] Pointer
+	 dword(dword(0xAC3170) & 0x1FFFFFF) + 0x4  == 0x1}			// 	+0x4 - Selected menu item in Extra Menu
+																// 		- 0x0 => Event viewer (replay unlocked cutscenes)
+																// 		- 0x1 => Ending files (replay ending cutscenes)
+																// 		- 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+																// 		- 0x3 => Sound Mode (Play sound effects & music)
+																// 		- 0x4 => Exit (back to Title Screen)
+
+function IsViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x21	// $1FFF15C: [32-bit] Flag -> Event viewer (preferred)
+																		// 0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
+																		// - other values => not in event viewer
+function IsViewingCutsceneFromExtraMenu_old() => dword(0x1FFF15C) == 0x1	// $1FFF15C: [32-bit] Flag => is viewing cutscene from event viewer (not preferred)
+																			// 	- 0x1 = event viewer is active
+																			// 	- other values = event viewer is inactive
 																		
 
 // OTHER LOGIC
@@ -341,9 +347,15 @@ function energyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units 
 function isGameRunning() => low4(0xA9EDDC) != 0	// $A9EDDC: [Bit 1] Flag -> is in-game
 												// 		0 => at title screen
 												// 		1 => in-game
-// function isGameRunning() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running (deprecated)
-// 												//		- 0 = game is not running, it's in the title screen
-// 												//		- 1 = game is running
+function isGameRunning_old() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running (deprecated)
+													//		- 0 = game is not running, it's in the title screen
+													//		- 1 = game is running
+function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
+	dword(0x1FFF5F8) == 0x11 &&							// 	0x11 => title screen			any other value => something else on screen
+	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	// $1FFF604: [8-bit] Selected submenu at title screen
+														// 	0x1 => Start		0x3 => Option
+														// 	0x2 => Continue		0x4 => Extra
+
 
 // CUTSCENE/EVENT FLAGS
 // *********************
@@ -591,7 +603,7 @@ _achievementTriggers = {
 		// Core group
 		never(
 			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu()	||
+			IsViewingCutsceneFromExtraMenu_old()	||
 			isNewCutsceneLoaded()				
 		) &&
 		(
@@ -613,7 +625,7 @@ _achievementTriggers = {
 		// Core group
 		never(
 			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu()	||
+			IsViewingCutsceneFromExtraMenu_old()	||
 			isNewCutsceneLoaded()				
 		) &&
 		(
@@ -635,7 +647,7 @@ _achievementTriggers = {
 		// Core group
 		never(
 			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu()	||
+			IsViewingCutsceneFromExtraMenu_old()	||
 			isNewCutsceneLoaded()				
 		) &&
 		(
@@ -656,7 +668,7 @@ _achievementTriggers = {
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		// Core group 
 		never(!isGameRunning()) 				&&
-		never(IsViewingCutsceneFromExtraMenu())	&&
+		never(IsViewingCutsceneFromExtraMenu_old())	&&
 		( 	
 			( 		// Alt 1 => true when last chapter cutscene finishes
 				tally(3, [
@@ -694,7 +706,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			isNewCutsceneLoaded()				||
-			IsViewingCutsceneFromExtraMenu()	||
+			IsViewingCutsceneFromExtraMenu_old()	||
 			!isCurrentCutsceneMasterId_0(0x54580)
 		) &&
 		isCurrentSelectedInventoryItem("FryingPan") && isCutsceneDone()},
@@ -702,14 +714,14 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			isNewCutsceneLoaded()				||
-			IsViewingCutsceneFromExtraMenu()	||
+			IsViewingCutsceneFromExtraMenu_old()	||
 			!isCurrentCutsceneMasterId_0(0x547c0)
 		) &&
 		isCurrentSelectedInventoryItem("Sign") && isCutsceneDone()},
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive_old()) 				&&
-		never(IsViewingCutsceneFromExtraMenu())	&&
+		never(IsViewingCutsceneFromExtraMenu_old())	&&
 		isCurrentSelectedInventoryItem("Antidote") && 
 		(
 			(
@@ -727,7 +739,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 				||
 			!isCurrentChapter("Chapter6")	||
-			IsViewingCutsceneFromExtraMenu()
+			IsViewingCutsceneFromExtraMenu_old()
 		) &&
 		once(
 			isThrillerStoryPicked() && isFindCauseDeathPicked() &&
@@ -752,7 +764,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 				||
 			!isCurrentChapter("Chapter6")	||
-			IsViewingCutsceneFromExtraMenu()
+			IsViewingCutsceneFromExtraMenu_old()
 		) &&
 		once(
 			!isThrillerStoryPicked() && isFindCauseDeathPicked() &&
@@ -777,7 +789,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 				||
 			!isCutsceneActive_old() 			||
-			IsViewingCutsceneFromExtraMenu()
+			IsViewingCutsceneFromExtraMenu_old()
 		) && (
 			(
 				tally(820, [
@@ -810,7 +822,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning()					||
 			!isCutsceneActive_old()					||
-			IsViewingCutsceneFromExtraMenu()
+			IsViewingCutsceneFromExtraMenu_old()
 		) && (
 			isChapterFinished("Chapter8_Ancestress") ||
 			isChapterFinished("Chapter8_NoAncestress")
@@ -820,7 +832,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_Ancestress") ||
-			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingCutsceneFromExtraMenu_old() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(4, [
@@ -859,7 +871,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_Ancestress") ||
-			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingCutsceneFromExtraMenu_old() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(3, [
@@ -890,7 +902,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_Ancestress") ||
-			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingCutsceneFromExtraMenu_old() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(3, [
@@ -921,7 +933,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_Ancestress") ||
-			IsViewingCutsceneFromExtraMenu() || // --> Some reason this comparison becomes true during this cutscene 
+			IsViewingCutsceneFromExtraMenu_old() || // --> Some reason this comparison becomes true during this cutscene 
 			IsViewingEndingFromExtraMenu()		// 		=> resets count/tally during cutscene 
 		) &&									// 		Workaround => this achievement popups sooner than the cutscene actually finishes
 		tally(3, [
@@ -952,7 +964,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_NoAncestress") ||
-			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingCutsceneFromExtraMenu_old() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(1403, [
@@ -990,7 +1002,7 @@ _achievementTriggers = {
 			!isGameRunning() 	||
 			!isCutsceneActive_old()	||
 			!isCurrentChapter("Epilogue_NoAncestress") ||
-			IsViewingCutsceneFromExtraMenu() ||
+			IsViewingCutsceneFromExtraMenu_old() ||
 			IsViewingEndingFromExtraMenu()
 		) &&
 		tally(3, [
@@ -1102,7 +1114,7 @@ _achievementTriggers = {
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive_old()) 				&&
-		never(IsViewingCutsceneFromExtraMenu()) &&
+		never(IsViewingCutsceneFromExtraMenu_old()) &&
 		never(!isCurrentChapter("Chapter4")) 	&&
 		(
 			isCurrentSelectedInventoryItem("Sign") 	|| 
@@ -1128,7 +1140,7 @@ _achievementTriggers = {
 			!isGameRunning()					||
 			!isCutsceneActive_old()					||
 			!isCurrentChapter("Chapter7")		||
-			IsViewingCutsceneFromExtraMenu()
+			IsViewingCutsceneFromExtraMenu_old()
 		) &&
 		tally(3, [
 			once(
@@ -1164,7 +1176,7 @@ _achievementTriggers = {
 			!isGameRunning() 				|| 
 			!isCutsceneActive_old() 			||
 			!isCurrentChapter("Chapter1")	||
-			IsViewingCutsceneFromExtraMenu()) 	&& 
+			IsViewingCutsceneFromExtraMenu_old()) 	&& 
 		repeated(350, priorCutsceneId(10) == 0xfffe8366)		&& // this block => last cutscene has run for about 350 frames
 		repeated(350, priorCutsceneId(13) == 0x3cd31cf) 		&&
 		repeated(350, priorCutsceneId(15) == 0x11110597) 		&& 
@@ -1174,7 +1186,7 @@ _achievementTriggers = {
 	"a_EggCollection1": function EggCollection1() { return 
 		isGameRunning() 					&&		
 		isCurrentChapter("Chapter1")		&&
-		!IsViewingCutsceneFromExtraMenu()	&&
+		!IsViewingCutsceneFromExtraMenu_old()	&&
 		isCurrentCutsceneMasterId_0(0x2f9c0)	&&
 		isCurrentCutsceneMasterId_1(0x9) 		&&
 		isCurrentCutsceneMasterId_2(0xa)		&&
@@ -1186,7 +1198,7 @@ _achievementTriggers = {
 		) &&
 		isCutsceneDone()},
 	"a_EggCollection2": function EggCollection2() { return 
-		never(!isGameRunning() || isNewCutsceneLoaded() || IsViewingCutsceneFromExtraMenu()) &&
+		never(!isGameRunning() || isNewCutsceneLoaded() || IsViewingCutsceneFromExtraMenu_old()) &&
 		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
 		isCutsceneDone() &&
 		(	
@@ -1216,7 +1228,7 @@ _achievementTriggers = {
 		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
 		never(!isCutsceneActive_old()) 						&&
 		never(!isCurrentChapter("Chapter2"))			&&
-		never(IsViewingCutsceneFromExtraMenu())			&&
+		never(IsViewingCutsceneFromExtraMenu_old())			&&
 
 		isCurrentSelectedInventoryItem("OrnamentalEgg") && 	// Is currently selected item the 'OrnamentalEgg'
 		repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) 	&&	// this block => last cutscene has run for about 380 frames
@@ -1231,7 +1243,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			!isCutsceneActive_old() 				||	
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
 		once(
@@ -1259,7 +1271,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			!isCutsceneActive_old() 				||
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter7")
 		) &&
 		tally(2, [
@@ -1283,7 +1295,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			!isCutsceneActive_old()					||
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter8")
 		) &&
 		tally(3, [
@@ -1311,7 +1323,7 @@ _achievementTriggers = {
 	"a_EikeThePyromancer": function EikeThePyromancer() { return // 
 		never(
 			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter2")		||
 			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when telephone is used
 			isTelephoneUsedToScareCrowd()
@@ -1337,7 +1349,7 @@ _achievementTriggers = {
 	"a_EikeTheMagician": function EikeTheMagician() { return 
 		never(
 			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter2")		||
 			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when lighter is used
 			!isTelephoneUsedToScareCrowd()
@@ -1365,7 +1377,7 @@ _achievementTriggers = {
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
 			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter2")
 		) &&
 		once(	// True => when picked to plant flowers while talking to gardeneer
@@ -1388,7 +1400,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					||
 			!isCutsceneActive_old() 				||
-			IsViewingCutsceneFromExtraMenu() 	||
+			IsViewingCutsceneFromExtraMenu_old() 	||
 			!isCurrentChapter("Chapter5")
 		) &&
 		tally(2, [
@@ -1422,7 +1434,7 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu()}
+			!IsViewingCutsceneFromExtraMenu_old()}
 		// Trigger 
 		return 
 			never(
@@ -1479,7 +1491,7 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter3")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu()}	
+			!IsViewingCutsceneFromExtraMenu_old()}	
 		// Trigger 
 		return 
 			never(
@@ -1536,7 +1548,7 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
 			isGameRunning()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu()}
+			!IsViewingCutsceneFromExtraMenu_old()}
 		// Trigger 
 		return 
 			never(
@@ -1588,7 +1600,7 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter5")) && 
 			isGameRunning() && 
-			!IsViewingCutsceneFromExtraMenu()} 
+			!IsViewingCutsceneFromExtraMenu_old()} 
 		return
 			never(
 				!isCurrentChapter("Chapter5")
@@ -1621,7 +1633,7 @@ _achievementTriggers = {
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter7")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
 			isGameRunning() && 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu()}
+			!IsViewingCutsceneFromExtraMenu_old()}
 		// Trigger 
 		return 
 			never(
@@ -1651,7 +1663,7 @@ _achievementTriggers = {
 				isCurrentChapter("Chapter8")			// frames where both these comparisons are true. So this hit counts fixes that	
 			) &&										// The no-ancestress route might not spawn the man in this chapter. Other route does, when having talked having told the woman and told her to tell the truth in chapter 7
 			isGameRunning() && 	
-			!IsViewingCutsceneFromExtraMenu()}
+			!IsViewingCutsceneFromExtraMenu_old()}
 		return 
 			never(
 				!isCurrentChapter("Chapter8")
@@ -1683,7 +1695,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() { return
-			isGameRunning() && !IsViewingCutsceneFromExtraMenu() &&
+			isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() &&
 			(
 				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter1"))		// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
@@ -1723,7 +1735,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter3"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter3"))
 		// Trigger
 		return  
 			never(
@@ -1763,7 +1775,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter4"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter4"))
 		// Trigger
 		return  
 			never(
@@ -1802,7 +1814,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30b70),					// Add hit: +1 	=> for talking to man 2nd time
 				once(interactionID_2() == 0x08a30c9c),					// Add hit: +1	=> for talking to woman 
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter5"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter5"))
 		// Trigger
 		return  
 			never (
@@ -1835,7 +1847,7 @@ _achievementTriggers = {
 				once(interactionID_2() == 0x08a30c4c),			// Add hit: +1	=> for talking to woman 1st time
 				once(interactionID_2() == 0x08a30c60),			// Add hit: +1	=> for talking to woman 2nd time
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && repeated(100, isCurrentChapter("Chapter7"))
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter7"))
 		// Trigger
 		return  
 			never (
@@ -1863,7 +1875,7 @@ _achievementTriggers = {
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!isGameRunning()						||
-			IsViewingCutsceneFromExtraMenu() 		||
+			IsViewingCutsceneFromExtraMenu_old() 		||
 			!isCurrentCutsceneMasterId_0(0x1a300)	||
 			isNewCutsceneLoaded()
 		) &&
@@ -1873,7 +1885,7 @@ _achievementTriggers = {
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
 			!isGameRunning()						||
-			IsViewingCutsceneFromExtraMenu() 		||
+			IsViewingCutsceneFromExtraMenu_old() 		||
 			!isCurrentCutsceneMasterId_0(0x10b000)	||
 			isNewCutsceneLoaded()
 		) &&
@@ -1886,7 +1898,7 @@ _achievementTriggers = {
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isGameRunning()						||
-			IsViewingCutsceneFromExtraMenu() 		||
+			IsViewingCutsceneFromExtraMenu_old() 		||
 			!isCurrentCutsceneMasterId_0(0x1fd80)	||
 			isNewCutsceneLoaded()
 		) &&
@@ -1901,20 +1913,37 @@ _achievementTriggers = {
 		) &&
 		isCutsceneDone()},
 	"a_MaxInventory": function MaxInventory(){
-		function measuredComparison() { // Biggest achievable inventory = 16 (+ 5 starter items)
-			let_comparisonsArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-				return prev(bit0(_inventoryItems[item]["inventoryMemoryAddress"])) < bit0(_inventoryItems[item]["inventoryMemoryAddress"])
-			})
-			let_deductComparisonArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-				return deduct(prev(bit0(_inventoryItems[item]["inventoryMemoryAddress"])) > bit0(_inventoryItems[item]["inventoryMemoryAddress"]))
-			})
-			for deductComparison in let_deductComparisonArray {
-				array_push(let_comparisonsArray, deductComparison)
+		function measuredComparison() { 
+
+			// CODE BLOCK A
+			// let_comparisonsArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+			// 	let_memAddress = _inventoryItems[item]["inventoryMemoryAddress"]
+			// 	return prev(bit0(let_memAddress)) < bit0(let_memAddress)
+			// })
+			// let_deductComparisonArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+			// 	let_memAddress = _inventoryItems[item]["inventoryMemoryAddress"]
+			// 	return deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))
+			// })
+			// for deductComparison in let_deductComparisonArray {
+			// 	array_push(let_comparisonsArray, deductComparison)
+			// }
+
+			// CODE BLOCK B
+			let_comparisonsArray = [always_false()]
+			for item in _inventoryItems {
+				let_memAddress = _inventoryItems[item]["inventoryMemoryAddress"]
+				array_push(let_comparisonsArray, deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))) 	// Sub hit comparison
+				array_push(let_comparisonsArray, prev(bit0(let_memAddress)) < bit0(let_memAddress)) 			// Add hit comparison
 			}
-			return tally(21, let_comparisonsArray)}
-		// Trigger
-		return 
-			never(!isGameRunning()) &&
+			return tally(21, let_comparisonsArray) // Biggest achievable inventory = 16 (+ 5 starter items)
+		}
+
+		return  // Trigger
+			never(
+				isAtTitleScreen()					||
+				// !isGameRunning()					||	// This comparison bugs this achievement => this flag gets turned on at same time delta comparisons become true, FIX = isAtTitleScreen()
+				IsViewingCutsceneFromExtraMenu()					
+			) &&
 			measured(measuredComparison(), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
@@ -1940,7 +1969,7 @@ _achievementTriggers = {
 				isCurrentChapter("Chapter8_NoAncestress")
 			) && 
 			isGameRunning() &&
-			!IsViewingCutsceneFromExtraMenu()}
+			!IsViewingCutsceneFromExtraMenu_old()}
 		// Trigger 
 		return 
 			never(	// Reset count on chapter change
@@ -1998,7 +2027,7 @@ _achievementTriggers = {
 
 			])}
 		function measuredIfComparison() { return
-			isGameRunning() && !IsViewingCutsceneFromExtraMenu() &&
+			isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() &&
 			(
 				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
 				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
@@ -2058,7 +2087,7 @@ _achievementTriggers = {
 						onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80005 	&&
 						onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50003d)
 				])}
-			function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && isCurrentChapter("Chapter6")
+			function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && isCurrentChapter("Chapter6")
 			return 
 				unless(!isCutsceneActive_old()) &&
 				measured(measuredComparison(), measuredIfComparison())
@@ -2095,7 +2124,7 @@ _achievementTriggers = {
 					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff93	&&
 					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x50ffde),
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu() && isCurrentChapter("Chapter6")
+		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && isCurrentChapter("Chapter6")
 		return 
 			unless(!isCutsceneActive_old()) &&
 			measured(measuredComparison(), measuredIfComparison())
@@ -2104,7 +2133,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					|| 
 			!isCutsceneActive_old() 				|| 
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCurrentChapter("Chapter5")	
 		) && 
 		tally (290, [
@@ -2127,7 +2156,7 @@ _achievementTriggers = {
 		onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x26},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
-			!isGameRunning() || !isCutsceneActive_old() || IsViewingCutsceneFromExtraMenu() || 
+			!isGameRunning() || !isCutsceneActive_old() || IsViewingCutsceneFromExtraMenu_old() || 
 			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && 
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") &&
 			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
@@ -2149,7 +2178,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning()					||
 			!isCurrentChapter("Prologue") 		||
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCutsceneActive_old())				&&
 		repeated(1050, prior(currentCutsceneId(22)) == 0x4b07ccd5) 	&&	// This block => last cutscene has run for about 1070 frames
 		repeated(1050, prior(currentCutsceneId(3)) == 0xe000b600) 	&&
@@ -2160,7 +2189,7 @@ _achievementTriggers = {
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
 			!isGameRunning()					||
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCurrentChapter("Chapter7") 		||
 			!isCutsceneActive_old()
 		) &&
@@ -2174,7 +2203,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 					|| 
 			!isCutsceneActive_old() 				|| 
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCurrentChapter("Chapter7")
 		) &&
 		tally(4, [
@@ -2198,7 +2227,7 @@ _achievementTriggers = {
 	"a_TimeEgoFlop": function TimeEgoFlop() { return 
 		never(
 			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCurrentChapter("Chapter6")
 		) &&
 		once(
@@ -2221,7 +2250,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning() 						||
 			!isCurrentChapter("Chapter2")			||
-			IsViewingCutsceneFromExtraMenu()		||
+			IsViewingCutsceneFromExtraMenu_old()		||
 			!isCurrentCutsceneMasterId_0(0x6e480)	||
 			isNewCutsceneLoaded()
 		) &&
@@ -2244,7 +2273,7 @@ _achievementTriggers = {
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu() 	|| 
+			IsViewingCutsceneFromExtraMenu_old() 	|| 
 			!isCurrentChapter("Chapter3")
 		) &&
 		tally(2,
