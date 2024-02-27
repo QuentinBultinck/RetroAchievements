@@ -375,9 +375,6 @@ function isFindCauseDeathPicked() => bit0(0xA9EDB8)	== 1								// 		bit 0 => Mo
 																						// 		bit 2 => Movie Choice 3: Love story
 
 
-
-
-
 //#########################################################################################################\\
 //  //  //  //  //  //  //  //  //  //  //    ACHIEVEMENT LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#########################################################################################################\\
@@ -487,9 +484,9 @@ _achievements = {
 		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		 "a_AntiquesEule": { // WORKING 		// TEST choices in chapter 4 => change relics in chapter 6
+		 "a_AntiquesEule": { // WORKING 
 			"id": 310132, "points": 3, "hasTips": true,
-			"devInfo": "Visit 'Antique shop Eule' and interact with all original relics, Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
+			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
@@ -553,7 +550,7 @@ _achievements = {
 		"a_GiveMargaretteCake": { // WORKING
 			"id": 402296, "points": 3, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		// CONCEPT "a_ArtInspiration": { 
+		// CONCEPT "a_ArtInspiration": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present"},
 		"a_MaxInventory": { // WORKING // TEST
@@ -571,6 +568,12 @@ _achievements = {
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
+		// CONCEPT "a_ScareApprenticeMiddleAges": { 
+		// 	"id": 00000, "points": 1, "hasTips": true,
+		// 	"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
+		// CONCEPT "a_PerformerGoingExtraMile": { 
+		// 	"id": 00000, "points": 5, "hasTips": true,
+		// 	"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
 		"a_MetYouBefore": {  // REWORKED
@@ -2429,7 +2432,7 @@ _achievementDescriptions = {
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_HugoMotherChild":							{"en": "Find Hugo during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
-	"a_AntiquesEule": 								{"en": "Visit Antique Shop Eule and glance at the original relics"},
+	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics at Antique Shop Eule"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
