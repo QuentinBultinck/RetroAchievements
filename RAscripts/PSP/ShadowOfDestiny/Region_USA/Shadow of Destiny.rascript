@@ -7,8 +7,7 @@
 //  //  //  // //  //  //  //  //  //  //  //  //   UTILITY    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#########################################################################################################\\
 
-devmode = 1											// if active => extra information may be displayed on achievement titles & descriptions
-function isDevModeActive() => devmode == 1
+function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions
 achievementLanguage = "en"							// ISO 639-1 language codes 		// TODO check if multi-language support is needed 
 achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
@@ -30,15 +29,16 @@ function oneFrameTimer() 				=> dword(0xB88AB0)								// $B88AB0: [32-bit] One 
 function hasOneFrameTimerReset() 		=> oneFrameTimer() < prev(oneFrameTimer()) 		//		- Timer increments by 1 each frame
 function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer())		// 		- Resets at certain times or between cutscene transitions
 
+
 // INTERACTION IDs WITH NPCs, ENVIRONMENT & ITEMS 
 // ************************************************
-function interactionID_1() 	=> dword(0xA9EFDC)			// $A9EFDC: [32-bit] Interaction ID 1
+function interactionID_1_old() 	=> dword(0xA9EFDC)			// $A9EFDC: [32-bit] Interaction ID 1
 														//		- Unique per interactable NPC or environment item
 														// 		- Doesn't reset back to a default value after interaction is done
-function interactionID_2() 	=> dword(0xA9EFE4)			// $A9EFE4: [32-bit] Interaction ID 2
+function interactionID_2_old() 	=> dword(0xA9EFE4)			// $A9EFE4: [32-bit] Interaction ID 2
 														// 		- Resets to 0x0 when interaction is done
 														//		- Unique per interaction 
-function interactionID_3() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interaction ID 3 
+function interactionID_3_old() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interaction ID 3 
 														//		- Unique per interactable NPC or environment item
 														// 		- Resets to 0x0 when interaction is done
 
@@ -49,21 +49,38 @@ function isCutsceneDone_old() => prev(bit0(0xA9Eb2C)) == 1 && bit0(0xA9Eb2C) == 
 																					//		- 1 = no cutscene active
 
 function isCutsceneActive() => byte(0xA9ED26) == 0x5															// $A9ED26: Flag: Is cutscene active (preferred)
-function isCutsceneDone() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0								// 		- 0x00 => no cutscene active
+function isCutsceneSequenceFullyDone() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0								// 		- 0x00 => no cutscene active
 function isCutsceneSectionDone() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	// 		- 0x01 => (un)loading cutscene(s)
 																												// 		- 0x05 => cutscene active
 
-
-function isCurrentCutsceneMasterId_0(int_cutsceneId) => dword(0xA9ECBC) == int_cutsceneId		// $A9ECBC: [32-bit] Cutscene MASTER ID #0 (preferred)
-function isPriorCutsceneMasterId_0(int_cutsceneId) => prior(dword(0xA9ECBC)) == int_cutsceneId	// 		- Changes on each new cutscene, has no default value
+function isCurrentCutsceneMasterId(int_Id) => dword(0xA9ECBC) == int_Id			// $A9ECBC: [32-bit] Cutscene MASTER ID (preferred)
+function isPriorCutsceneMasterId(int_Id) => prior(dword(0xA9ECBC)) == int_Id	// 		- Identifies a cutscene sequence
 function isNewCutsceneLoaded() => prev(dword(0xA9ECBC)) != dword(0xA9ECBC)
 
+function isCurrentCutsceneSectionId_1(int_Id) => dword(0xA9ECC0) == int_Id			// $A9ECC0: [16-bit] Cutscene Section ID_1
+function isPriorCutsceneSectionId_1(int_Id) => prior(dword(0xA9ECC0)) == int_Id		// 		- Identifies a section from the current cutscene
+function isCurrentCutsceneSectionId_2(int_Id) => dword(0xA9ECC2) == int_Id			// $A9ECC2: [16-bit] Cutscene Section ID_2
+function isPriorCutsceneSectionId_2(int_Id) => prior(dword(0xA9ECC2)) == int_Id
+
+function isCurrentCutsceneMasterDataId(int_Id) {
+	// & 0x1ffffff => masks 32-bit value to 25-bit; PSP uses 25-bit pointers
+	let_maskedPointer = dword(0xA9ECC8) & 0x1ffffff			// $A9ECC8: [25-bit] Pointer
+	return dword(let_maskedPointer + 0x8) == int_Id}		// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data below changes on new cutscene loaded in
+															// 		+0x8 - [32-bit] Cutscene Master Data ID
+function isCurrentCutsceneSectionDataId(int_Id) {
+	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff			// $A9ECCC: [25-bit] Pointer
+	return dword(let_maskedPointer + 0x8) == int_Id}		// 		+0x0 - Data lower then this point changes, when a next section in the cutscene starts
+															// 		+0x8 - [32-bit] Cutscene Section Data ID
+
+
+// TODO Refactor => Below 4 function are deprecated
 function isCurrentCutsceneMasterId_1(int_cutsceneId) => word(0xA9ECC0) == int_cutsceneId		// $A9ECC0: [16-bit] Cutscene MASTER ID #1
 function isPriorCutsceneMasterId_1(int_cutsceneId) => prior(word(0xA9ECC0)) == int_cutsceneId	// 		- Identifies a section from the current cutscene
 
 function isCurrentCutsceneMasterId_2(int_cutsceneId) => word(0xA9ECC2) == int_cutsceneId		// $A9ECC2: [16-bit] Cutscene MASTER ID #2
 function isPriorCutsceneMasterId_2(int_cutsceneId) => prior(word(0xA9ECC2)) == int_cutsceneId	// 		- Identifies a section from the current cutscene2
 
+// TODO refactor => _cutsceneIDs AND function currentCutsceneId
 // Below memory addresses likely correlate to animation, model... data during a specific cutscene (not preferred for cutscene identification)
 //		- Everytime you view a different cutscene, memory values around these IDs/addresses change
 //		- Each unique cutscene seems to have different values => might correlate to animation, camera or model data
@@ -140,7 +157,7 @@ function isCurrentChapter(string_chapter) {
 		return
 			(chapterId() == _chapterIDs["Chapter8_Ancestress"] || chapterId() == _chapterIDs["Chapter8_NoAncestress"])
 	} else {
-		return 
+		return
 			chapterId() == _chapterIDs[string_chapter]
 	}} 
 function isChapterFinished(string_chapter) { 
@@ -323,8 +340,10 @@ function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 // *************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function IsViewingEndingFromExtraMenu() { return				// $AC3170: [25-bit] Pointer
-	 dword(dword(0xAC3170) & 0x1FFFFFF) + 0x4  == 0x1}			// 	+0x4 - Selected menu item in Extra Menu
+function IsViewingEndingFromExtraMenu() { 		
+	// Underlying line lasks [32-bit] value to [25-bit]	as PSP uses 25-bit pointers
+	let_maskedPointer = dword(0xAC3170) & 0x1FFFFFF				// $AC3170: [25-bit] Pointer
+	return dword(let_maskedPointer + 0x4) == 0x1}				// 	+0x4 - Selected menu item in Extra Menu
 																// 		- 0x0 => Event viewer (replay unlocked cutscenes)
 																// 		- 0x1 => Ending files (replay ending cutscenes)
 																// 		- 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
@@ -388,31 +407,31 @@ _achievements = {
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // REWORKED 
+		"a_PrologueComplete": { // WORKING 
 			"id": 306884, "points": 5, "hasTips": false,
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // REWORKED
+		"a_Chapter1Complete": { // WORKING
 			"id": 306886, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 1"},
-		"a_Chapter2Complete": { // REWORKED
+		"a_Chapter2Complete": { // WORKING
 			"id": 306922, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // REWORKED
+		"a_Chapter3Complete": { // WORKING
 			"id": 306921, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // REWORKED
+		"a_Chapter4CompletePan": { // WORKING
 			"id": 308964, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // REWORKED
+		"a_Chapter4CompleteSign": { // WORKING
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		"a_Chapter5Complete": { // WORKING
 			"id": 311616, "points": 10, "hasTips": false,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // REWORKED
+		"a_Chapter6CompleteThriller": { // WORKING
 			"id": 313211, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // REWORKED
+		"a_Chapter6CompleteLove": { // WORKING
 			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		"a_Chapter7Complete": { // WORKING
@@ -472,13 +491,13 @@ _achievements = {
 		"a_IntroduceEggCollecting": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // REWORKED
+		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // REWORKED	
+		"a_EikeTheMagician": { // WORKING	
 			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // REWORKED 
+		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING
@@ -576,7 +595,7 @@ _achievements = {
 		// 	"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to PC dying or game over screen
-		"a_MetYouBefore": {  // REWORKED
+		"a_MetYouBefore": {  // WORKING
 			"id": 306888, "points": 5, "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
@@ -602,28 +621,63 @@ _achievements = {
 // 	- check if key (achievementname) => is unique with ctrl+F
 // ***********************************************************************************
 _achievementTriggers = {
-	"a_PrologueComplete": function PrologueComplete() { return
-		// Core group
-		never(
-			!isGameRunning() 					||
-			IsViewingCutsceneFromExtraMenu_old()	||
-			isNewCutsceneLoaded()				
-		) &&
+	"a_PrologueComplete": function PrologueComplete() { return // WIP
+		never (
+			!isGameRunning() ||
+			IsViewingCutsceneFromExtraMenu()	
+		) &&		
 		(
-			(		// Alt 1 => true when last prologue cutscene finishes (has been running for 500 frames)
-				repeated(700, 
-					isCutsceneActive() && isCurrentChapter("Prologue") &&
-					isCurrentCutsceneMasterId_0(0x90bc0) 	&& 
-					isCurrentCutsceneMasterId_1(0x1) 		&& 
-					isCurrentCutsceneMasterId_2(0x0) 		&&
-					priorCutsceneId(16) == 0x43c58c5a	&&	currentCutsceneId(16) == 0xd7e805ff	&&
-					priorCutsceneId(18) == 0xc58acc94	&&	currentCutsceneId(18) == 0xcedfff04	&&
-					priorCutsceneId(19) == 0x220000ec	&&	currentCutsceneId(19) == 0x4a007500
-				) && isCutsceneDone()
-			) || (	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+			(	// Alt 1 => Normal way of identifying cutscenes				
+				// once(
+				// 	isCutsceneActive() && isCurrentChapter("Prologue") &&
+				// 	isCurrentCutsceneMasterId(0x22480)		&&
+				// 	isCurrentCutsceneSectionId_1(0x1)		&&
+				// 	isCurrentCutsceneSectionId_2(0x0)		&&
+				// 	isCurrentCutsceneMasterDataId(0x1bcd0)	&&
+				// 	isCurrentCutsceneSectionDataId(0xe10)
+				// ) &&
+				// once(
+				// 	isCutsceneActive() && isCurrentChapter("Prologue") &&
+				// 	isCurrentCutsceneMasterId(0x90bc0)		&&
+				// 	isCurrentCutsceneSectionId_1(0x1)		&&
+				// 	isCurrentCutsceneSectionId_2(0x0)		&&
+				// 	isCurrentCutsceneMasterDataId(0x1ae70)	&&
+				// 	isCurrentCutsceneSectionDataId(0x75d10)
+				// ) &&
+				once(
+
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0x1ae70)	&&
+					isCurrentCutsceneSectionDataId(0x75d10)
+				) &&
+				isCutsceneSequenceFullyDone()
+			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinished("Prologue")
 			)
 		)},
+		
+		
+		// // Core group
+		// never(
+		// 	!isGameRunning() 					||
+		// 	IsViewingCutsceneFromExtraMenu()	||
+		// 	isNewCutsceneLoaded()
+		// ) &&
+		// (
+		// 	(		// Alt 1 => true when last prologue cutscene finishes (has been running for 500 frames)
+		// 		repeated(500, 
+		// 			isCutsceneActive() && isCurrentChapter("Prologue") &&
+		// 			isCurrentCutsceneMasterId(0x90bc0) 	&& 
+		// 			isCurrentCutsceneMasterId_1(0x1) 		&& 
+		// 			isCurrentCutsceneMasterId_2(0x0) 		&&
+		// 			priorCutsceneId(16) == 0x43c58c5a	&&	currentCutsceneId(16) == 0xd7e805ff	&&
+		// 			priorCutsceneId(18) == 0xc58acc94	&&	currentCutsceneId(18) == 0xcedfff04	&&
+		// 			priorCutsceneId(19) == 0x220000ec	&&	currentCutsceneId(19) == 0x4a007500
+		// 		) && isCutsceneSequenceFullyDone()
+		// 	) || (	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
+		// 		isChapterFinished("Prologue")
+		// 	)
+		// )},
 	"a_Chapter1Complete": function Chapter1Complete() { return
 		// Core group
 		never(
@@ -635,13 +689,13 @@ _achievementTriggers = {
 			(		// Alt 1 => true when last prologue cutscene finishes (has been running for 300 frames)
 				repeated(300, 
 					isCutsceneActive() && isCurrentChapter("Chapter1") &&
-					isCurrentCutsceneMasterId_0(0x11a40) 	&& 
+					isCurrentCutsceneMasterId(0x11a40) 	&& 
 					isCurrentCutsceneMasterId_1(0x1) 		&& 
 					isCurrentCutsceneMasterId_2(0x2) 		&&
 					priorCutsceneId(14) == 0x50ff199a	&&	currentCutsceneId(14) == 0xae99999	&&
 					priorCutsceneId(15) == 0x41354bf6	&&	currentCutsceneId(15) == 0x168e7af	&&
 					priorCutsceneId(17) == 0x5e0000		&&	currentCutsceneId(17) == 0x800108
-				) && isCutsceneDone()
+				) && isCutsceneSequenceFullyDone()
 			) || (	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
 				isChapterFinished("Chapter1")
 			)
@@ -657,13 +711,13 @@ _achievementTriggers = {
 			(		// Alt 1 => true when last prologue cutscene finishes (has been running for 300 frames)
 				repeated(200, 
 					isCutsceneActive() && isCurrentChapter("Chapter2") &&
-					isCurrentCutsceneMasterId_0(0x3b240) 	&& 
+					isCurrentCutsceneMasterId(0x3b240) 	&& 
 					isCurrentCutsceneMasterId_1(0x3) 		&& 
 					isCurrentCutsceneMasterId_2(0x2) 		&&
 					priorCutsceneId(20) == 0xeb3004d0	&&	currentCutsceneId(20) == 0xf372f766	&&
 					priorCutsceneId(14) == 0x4831736	&&	currentCutsceneId(14) == 0x002effa0	&&
 					priorCutsceneId(2) == 0xe9dbfa97	&&	currentCutsceneId(2) == 0x0479ff42
-				) && isCutsceneDone()
+				) && isCutsceneSequenceFullyDone()
 			) || (	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
 				isChapterFinished("Chapter2")
 			)
@@ -677,7 +731,7 @@ _achievementTriggers = {
 				tally(3, [
 					once(	// Block A => IDs 1st cutscene sequence 
 						isCurrentChapter("Chapter3") && isCutsceneActive() &&
-						isCurrentCutsceneMasterId_0(0x19d80)	&&
+						isCurrentCutsceneMasterId(0x19d80)	&&
 						isCurrentCutsceneMasterId_1(0x1)		&&
 						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(1) == 0xd88c0086 	&& 
@@ -685,7 +739,7 @@ _achievementTriggers = {
 						currentCutsceneId(14) == 0x01bd0079),	
 					once(	// Block B => IDs 2nd cutscene sequence 
 						isCurrentChapter("Chapter3") && isCutsceneActive() &&
-						isCurrentCutsceneMasterId_0(0xcfb40)	&&	isPriorCutsceneMasterId_0(0x19d80)	&&
+						isCurrentCutsceneMasterId(0xcfb40)	&&	isPriorCutsceneMasterId(0x19d80)	&&
 						isCurrentCutsceneMasterId_1(0x1)		&&
 						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(3) == 0x11101119	&& 
@@ -693,14 +747,14 @@ _achievementTriggers = {
 						currentCutsceneId(18) == 0x011bfc57),
 					once(	// Block C => IDs 3rd cutscene sequence 
 						isCurrentChapter("Chapter3") && isCutsceneActive() &&
-						isCurrentCutsceneMasterId_0(0x39680)	&&	isPriorCutsceneMasterId_0(0xcfb40)	&&
+						isCurrentCutsceneMasterId(0x39680)	&&	isPriorCutsceneMasterId(0xcfb40)	&&
 						isCurrentCutsceneMasterId_1(0x1)		&&
 						isCurrentCutsceneMasterId_2(0x0)		&&
 						currentCutsceneId(2) == 0x0098fe51 	&& 
 						currentCutsceneId(9) == 0xf2e68100 	&&
 						currentCutsceneId(19) == 0x00012000)]
 				) &&
-				isCutsceneDone()
+				isCutsceneSequenceFullyDone()
 			) || ( 	// Alt 2 => true when chapter changes to the next. Safety for when cutscene would be skipped, but first playthrough is never skippable
 				isChapterFinished("Chapter3")
 			)
@@ -710,17 +764,17 @@ _achievementTriggers = {
 			!isGameRunning() 					||
 			isNewCutsceneLoaded()				||
 			IsViewingCutsceneFromExtraMenu_old()	||
-			!isCurrentCutsceneMasterId_0(0x54580)
+			!isCurrentCutsceneMasterId(0x54580)
 		) &&
-		isCurrentSelectedInventoryItem("FryingPan") && isCutsceneDone()},
+		isCurrentSelectedInventoryItem("FryingPan") && isCutsceneSequenceFullyDone()},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		never(
 			!isGameRunning() 					||
 			isNewCutsceneLoaded()				||
 			IsViewingCutsceneFromExtraMenu_old()	||
-			!isCurrentCutsceneMasterId_0(0x547c0)
+			!isCurrentCutsceneMasterId(0x547c0)
 		) &&
-		isCurrentSelectedInventoryItem("Sign") && isCutsceneDone()},
+		isCurrentSelectedInventoryItem("Sign") && isCutsceneSequenceFullyDone()},
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(!isGameRunning()) 				&&
 		never(!isCutsceneActive_old()) 				&&
@@ -1190,7 +1244,7 @@ _achievementTriggers = {
 		isGameRunning() 					&&		
 		isCurrentChapter("Chapter1")		&&
 		!IsViewingCutsceneFromExtraMenu_old()	&&
-		isCurrentCutsceneMasterId_0(0x2f9c0)	&&
+		isCurrentCutsceneMasterId(0x2f9c0)	&&
 		isCurrentCutsceneMasterId_1(0x9) 		&&
 		isCurrentCutsceneMasterId_2(0xa)		&&
 		never(isNewCutsceneLoaded())	&&	// Reset below count on a new cutscene	
@@ -1199,16 +1253,16 @@ _achievementTriggers = {
 			priorCutsceneId(14) == 0x55005ce	&&	currentCutsceneId(14) == 0x30ff26b	&&
 			priorCutsceneId(16) == 0x88065620	&&	currentCutsceneId(16) == 0x11d8fa
 		) &&
-		isCutsceneDone()},
+		isCutsceneSequenceFullyDone()},
 	"a_EggCollection2": function EggCollection2() { return 
 		never(!isGameRunning() || isNewCutsceneLoaded() || IsViewingCutsceneFromExtraMenu_old()) &&
 		never(!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")) &&
-		isCutsceneDone() &&
+		isCutsceneSequenceFullyDone() &&
 		(	
 			(
 				repeated(200,	// Block => IDs cutscene in chapter 3 when giving egg to barman
 					isCutsceneActive() &&
-					isCurrentCutsceneMasterId_0(0x2f9c0)	&&
+					isCurrentCutsceneMasterId(0x2f9c0)	&&
 					isCurrentCutsceneMasterId_1(0x9) 		&&
 					isCurrentCutsceneMasterId_2(0xa)		&&
 					priorCutsceneId(22) == 0x68df3900	&&	currentCutsceneId(22) == 0xd4faa9fa	&&
@@ -1218,7 +1272,7 @@ _achievementTriggers = {
 			) || (
 				repeated(200,	// Block => IDs cutscene in chapter 4 when giving egg to barman
 					isCutsceneActive() &&
-					isCurrentCutsceneMasterId_0(0x2f9c0)	&&
+					isCurrentCutsceneMasterId(0x2f9c0)	&&
 					isCurrentCutsceneMasterId_1(0x9) 		&&
 					isCurrentCutsceneMasterId_2(0xa)		&&
 					priorCutsceneId(19) == 0x2000000	&&	currentCutsceneId(19) == 0x04006a00	&&
@@ -1344,10 +1398,10 @@ _achievementTriggers = {
 				prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)
 		) &&
 		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId(0x3b240) 	&&
 			isCurrentCutsceneMasterId_1(0x3)		&&
 			isCurrentCutsceneMasterId_2(0x2)		&&
-			isCutsceneDone()
+			isCutsceneSequenceFullyDone()
 		)},			
 	"a_EikeTheMagician": function EikeTheMagician() { return 
 		never(
@@ -1372,10 +1426,10 @@ _achievementTriggers = {
 				currentCutsceneId(11) == 0x2169fb15 && priorCutsceneId(11) == 0xc4612c05)
 		) &&
 		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId(0x3b240) 	&&
 			isCurrentCutsceneMasterId_1(0x3)		&&
 			isCurrentCutsceneMasterId_2(0x2)		&&
-			isCutsceneDone()
+			isCutsceneSequenceFullyDone()
 		)},	
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
@@ -1394,10 +1448,10 @@ _achievementTriggers = {
 			prior(onScreenTextID(8)) == 0x005000a3	&& onScreenTextID(8) == 0
 		) &&
 		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId_0(0x3b240) 	&&
+			isCurrentCutsceneMasterId(0x3b240) 	&&
 			isCurrentCutsceneMasterId_1(0x3)		&&
 			isCurrentCutsceneMasterId_2(0x2)		&&
-			!isStatueChosen() && isCutsceneDone()
+			!isStatueChosen() && isCutsceneSequenceFullyDone()
 		)},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never(
@@ -1427,12 +1481,12 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a329ac),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a329fc),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a329c0),			// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a32a10),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2() == 0x08a329d4),			// Add hit: +1  	=> for talking to man 3rd time
-				once(interactionID_2() == 0x08a32a24)			// Add hit: +1 = 6	=> for talking to woman 3rd time
+				once(interactionID_2_old() == 0x08a329ac),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a329fc),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a329c0),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a32a10),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a329d4),			// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2_old() == 0x08a32a24)			// Add hit: +1 = 6	=> for talking to woman 3rd time
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter2")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
@@ -1444,39 +1498,39 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter2")
 			) &&
 			unless(
-				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() != 0x08a329fc 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08b97810 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2_old() != 0x08a329fc 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() != 0x08a329ac 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08b97804 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2_old() != 0x08a329ac 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() != 0x08a32a10 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08b97810 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2_old() != 0x08a32a10 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() != 0x08a329c0 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08b97804 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2_old() != 0x08a329c0 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b97810 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() != 0x08a32a24 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08b97810 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2_old() != 0x08a32a24 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b97804 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() != 0x08a329d4 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08b97804 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2_old() != 0x08a329d4 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1484,12 +1538,12 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a32c18),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a32c68),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a32c2c),			// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a32c7c),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2() == 0x08a32c40),			// Add hit: +1  	=> for talking to man 3rd time
-				once(interactionID_2() == 0x08a32c90)			// Add hit: +1 = 6	=> for talking to woman 3rd time
+				once(interactionID_2_old() == 0x08a32c18),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a32c68),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a32c2c),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a32c7c),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a32c40),			// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2_old() == 0x08a32c90)			// Add hit: +1 = 6	=> for talking to woman 3rd time
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter3")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
@@ -1501,39 +1555,39 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter3")
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() != 0x08a32c68 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2_old() != 0x08a32c68 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() != 0x08a32c18 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2_old() != 0x08a32c18 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() != 0x08a32c7c 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2_old() != 0x08a32c7c 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() != 0x08a32c2c 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2_old() != 0x08a32c2c 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() != 0x08a32c90 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2_old() != 0x08a32c90 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() != 0x08a32c40 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2_old() != 0x08a32c40 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1541,12 +1595,12 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a33000),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a33050),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a33014),			// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a33064),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2() == 0x08a33028),			// Add hit: +1  	=> for talking to man 3rd time
-				once(interactionID_2() == 0x08a33078)			// Add hit: +1 = 6	=> for talking to woman 3rd time
+				once(interactionID_2_old() == 0x08a33000),			// Add hit: +1  	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a33050),			// Add hit: +1  	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a33014),			// Add hit: +1  	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a33064),			// Add hit: +1		=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a33028),			// Add hit: +1  	=> for talking to man 3rd time
+				once(interactionID_2_old() == 0x08a33078)			// Add hit: +1 = 6	=> for talking to woman 3rd time
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
@@ -1558,47 +1612,47 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter4")
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2() != 0x08a33050 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_2_old() != 0x08a33050 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() != 0x08a33000 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2_old() != 0x08a33000 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2() != 0x08a33064 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_2_old() != 0x08a33064 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() != 0x08a33014 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2_old() != 0x08a33014 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2() != 0x08a33078 	&&
-				interactionID_3() != 0x197			&&
+				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
+				interactionID_2_old() != 0x08a33078 	&&
+				interactionID_3_old() != 0x197			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2() != 0x08a33028 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
+				interactionID_2_old() != 0x08a33028 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
 			tally(2, [
-				once(interactionID_2() == 0x08a331cc),		// => cutscene when talking to man 1st time
-				once(interactionID_2() == 0x08a331e0)		// => cutscene when talking to man 2nd time
+				once(interactionID_2_old() == 0x08a331cc),		// => cutscene when talking to man 1st time
+				once(interactionID_2_old() == 0x08a331e0)		// => cutscene when talking to man 2nd time
 			])}
 		function measuredIfComparison() { return
 			repeated(100, isCurrentChapter("Chapter5")) && 
@@ -1609,15 +1663,15 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter5")
 			) &&
 			unless(
-				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2() != 0x08a331cc 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_2_old() != 0x08a331cc 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2() != 0x08a331e0 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_2_old() != 0x08a331e0 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1625,9 +1679,9 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2() == 0x08a33398),			// Add hit: +1  	=> for talking to man 
+				once(interactionID_2_old() == 0x08a33398),			// Add hit: +1  	=> for talking to man 
 				once(											// Add hit: +1		=> when talking to woman and picking dialogue option: Tell the truth
-					interactionID_2() == 0x08a333fc && prior(interactionID_2()) == 0x8a333e8 &&
+					interactionID_2_old() == 0x08a333fc && prior(interactionID_2_old()) == 0x8a333e8 &&
 					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff92		&&	
 					onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80007			&&	
 					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4ffff0	
@@ -1643,23 +1697,23 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter7")
 			) &&
 			unless(
-				interactionID_1() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 
-				interactionID_2() != 0x08a33398 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 
+				interactionID_2_old() != 0x08a33398 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08a1bb44 &&			// Block => cutscene when talking to woman and picking dialogue option: Tell the truth
-				interactionID_2() != 0x08a333fc && prior(interactionID_2()) != 0x8a333e8 &&
-				interactionID_3() != 0x197		&&
+				interactionID_1_old() != 0x08a1bb44 &&			// Block => cutscene when talking to woman and picking dialogue option: Tell the truth
+				interactionID_2_old() != 0x08a333fc && prior(interactionID_2_old()) != 0x8a333e8 &&
+				interactionID_3_old() != 0x197		&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple6": function LostYoungCouple6() { 
 		function measuredComparison() { return
 			tally(2, [									//			= 2
-				once(interactionID_2() == 0x08a335f0),	// Add hit: +1  	=> for talking to man before experiment
-				once(interactionID_2() == 0x08a3367c)	// Add hit: +1		=> for talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet 
+				once(interactionID_2_old() == 0x08a335f0),	// Add hit: +1  	=> for talking to man before experiment
+				once(interactionID_2_old() == 0x08a3367c)	// Add hit: +1		=> for talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet 
 			])}	
 		function measuredIfComparison() { return
 			repeated(100, 								// Hit count 100 => when loading a savefile to another chapter, there's a few 
@@ -1672,15 +1726,15 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter8")
 			) &&
 			unless(
-				interactionID_1() != 0x08ba3264 	&&		// Block => cutscene when talking to man before experiment
-				interactionID_2() != 0x08a335f0 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08ba3264 	&&		// Block => cutscene when talking to man before experiment
+				interactionID_2_old() != 0x08a335f0 	&&
+				interactionID_3_old() != 0x198			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08ba349c 	&&		// Block => cutscene when talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet  
-				interactionID_2() != 0x08a3367c 	&&
-				interactionID_3() != 0x198			&&
+				interactionID_1_old() != 0x08ba349c 	&&		// Block => cutscene when talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet  
+				interactionID_2_old() != 0x08a3367c 	&&
+				interactionID_3_old() != 0x198			&&
 				onScreenTextID(1) != 0x0048ff81		&&
 				onScreenTextID(2) != 0x00480000		&&
 				onScreenTextID(3) != 0x0048fffc		&&
@@ -1692,10 +1746,10 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [													// 			= 4
-				once(interactionID_2() == 0x08a30a94),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a30a80),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a30bd4),					// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a30a94),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a30a80),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a30bd4),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() { return
 			isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() &&
@@ -1709,23 +1763,23 @@ _achievementTriggers = {
 				!(isCurrentChapter("Prologue") || isCurrentChapter("Chapter1"))
 			) &&
 			unless(
-				interactionID_2() != 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() != 0x57			&&
+				interactionID_2_old() != 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_2() != 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() != 0x56			&&
+				interactionID_2_old() != 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() != 0x57			&&
+				interactionID_2_old() != 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_2() != 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() != 0x56			&&
+				interactionID_2_old() != 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1733,10 +1787,10 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [													// 			= 4
-				once(interactionID_2() == 0x08a30ad0),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a30abc),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a30ad0),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a30abc),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter3"))
 		// Trigger
@@ -1745,27 +1799,27 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter3")
 			) &&
 			unless(
-				interactionID_1() != 0x08b994d0 	&&
-				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() != 0x57			&&
+				interactionID_1_old() != 0x08b994d0 	&&
+				interactionID_2_old() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b994c4		&&
-				interactionID_2() != 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() != 0x56			&&
+				interactionID_1_old() != 0x08b994c4		&&
+				interactionID_2_old() != 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b994d0 		&&
-				interactionID_2() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() != 0x57				&&
+				interactionID_1_old() != 0x08b994d0 		&&
+				interactionID_2_old() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3_old() != 0x57				&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b994c4 		&&
-				interactionID_2() != 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() != 0x56				&&
+				interactionID_1_old() != 0x08b994c4 		&&
+				interactionID_2_old() != 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3_old() != 0x56				&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1773,10 +1827,10 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [													// 			= 4
-				once(interactionID_2() == 0x08a30b0c),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a30af8),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a30b0c),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a30af8),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter4"))
 		// Trigger
@@ -1785,27 +1839,27 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter4")
 			) &&
 			unless(
-				interactionID_1() != 0x08b9dc8c 	&&
-				interactionID_2() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() != 0x57			&&
+				interactionID_1_old() != 0x08b9dc8c 	&&
+				interactionID_2_old() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b9dc80		&&
-				interactionID_2() != 0x08a30af8		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() != 0x56			&&
+				interactionID_1_old() != 0x08b9dc80		&&
+				interactionID_2_old() != 0x08a30af8		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b9dc8c 		&&
-				interactionID_2() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() != 0x57				&&
+				interactionID_1_old() != 0x08b9dc8c 		&&
+				interactionID_2_old() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3_old() != 0x57				&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b9dc80 		&&
-				interactionID_2() != 0x08a30b0c 		&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() != 0x56				&&
+				interactionID_1_old() != 0x08b9dc80 		&&
+				interactionID_2_old() != 0x08a30b0c 		&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3_old() != 0x56				&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1813,9 +1867,9 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(3, [													// 			= 3
-				once(interactionID_2() == 0x08a30b5c),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2() == 0x08a30b70),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2() == 0x08a30c9c),					// Add hit: +1	=> for talking to woman 
+				once(interactionID_2_old() == 0x08a30b5c),					// Add hit: +1	=> for talking to man 1st time
+				once(interactionID_2_old() == 0x08a30b70),					// Add hit: +1 	=> for talking to man 2nd time
+				once(interactionID_2_old() == 0x08a30c9c),					// Add hit: +1	=> for talking to woman 
 			])}
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter5"))
 		// Trigger
@@ -1824,21 +1878,21 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter5")
 			) &&
 			unless(
-				interactionID_1() != 0x08b9d400 	&&
-				interactionID_2() != 0x08a30c9c 	&&		// Block => cutscene when talking to woman
-				interactionID_3() != 0x57			&&
+				interactionID_1_old() != 0x08b9d400 	&&
+				interactionID_2_old() != 0x08a30c9c 	&&		// Block => cutscene when talking to woman
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b9d3f4		&&
-				interactionID_2() != 0x08a30b5c		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3() != 0x56			&&
+				interactionID_1_old() != 0x08b9d3f4		&&
+				interactionID_2_old() != 0x08a30b5c		&&		// Block => cutscene when talking to man 1st time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b9d3f4 	&&
-				interactionID_2() != 0x08a30b70 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3() != 0x56			&&
+				interactionID_1_old() != 0x08b9d3f4 	&&
+				interactionID_2_old() != 0x08a30b70 	&&		// Block => cutscene when talking to man 2nd time
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1846,9 +1900,9 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(3, [											// 			= 3
-				once(interactionID_2() == 0x08a30b34),			// Add hit: +1	=> for talking to man
-				once(interactionID_2() == 0x08a30c4c),			// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2() == 0x08a30c60),			// Add hit: +1	=> for talking to woman 2nd time
+				once(interactionID_2_old() == 0x08a30b34),			// Add hit: +1	=> for talking to man
+				once(interactionID_2_old() == 0x08a30c4c),			// Add hit: +1	=> for talking to woman 1st time
+				once(interactionID_2_old() == 0x08a30c60),			// Add hit: +1	=> for talking to woman 2nd time
 			])}
 		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter7"))
 		// Trigger
@@ -1857,21 +1911,21 @@ _achievementTriggers = {
 				!isCurrentChapter("Chapter7")
 			) &&
 			unless(
-				interactionID_1() != 0x08b98db4 	&&
-				interactionID_2() != 0x08a30c4c 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3() != 0x57			&&
+				interactionID_1_old() != 0x08b98db4 	&&
+				interactionID_2_old() != 0x08a30c4c 	&&		// Block => cutscene when talking to woman 1st time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b98db4 	&&
-				interactionID_2() != 0x08a30c60 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3() != 0x57			&&
+				interactionID_1_old() != 0x08b98db4 	&&
+				interactionID_2_old() != 0x08a30c60 	&&		// Block => cutscene when talking to woman 2nd time
+				interactionID_3_old() != 0x57			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b98da8		&&
-				interactionID_2() != 0x08a30b34		&&		// Block => cutscene when talking to man
-				interactionID_3() != 0x56			&&
+				interactionID_1_old() != 0x08b98da8		&&
+				interactionID_2_old() != 0x08a30b34		&&		// Block => cutscene when talking to man
+				interactionID_3_old() != 0x56			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -1879,7 +1933,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning()						||
 			IsViewingCutsceneFromExtraMenu_old() 		||
-			!isCurrentCutsceneMasterId_0(0x1a300)	||
+			!isCurrentCutsceneMasterId(0x1a300)	||
 			isNewCutsceneLoaded()
 		) &&
 		isCurrentSelectedInventoryItem("Jugglery")	&&
@@ -1889,7 +1943,7 @@ _achievementTriggers = {
 		never(
 			!isGameRunning()						||
 			IsViewingCutsceneFromExtraMenu_old() 		||
-			!isCurrentCutsceneMasterId_0(0x10b000)	||
+			!isCurrentCutsceneMasterId(0x10b000)	||
 			isNewCutsceneLoaded()
 		) &&
 		isCurrentSelectedInventoryItem("Cake")	&&
@@ -1897,12 +1951,12 @@ _achievementTriggers = {
 		currentCutsceneId(6) == 0x1328e6df 		&& priorCutsceneId(6) == 0x190e1921		&&
 		currentCutsceneId(11) == 0x1c2f2ea0 	&& priorCutsceneId(11) == 0xe81c0000	&&
 		currentCutsceneId(16) == 0x793ea550 	&& priorCutsceneId(16) == 0xf7cd00		&&
-		isCutsceneDone()},
+		isCutsceneSequenceFullyDone()},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isGameRunning()						||
 			IsViewingCutsceneFromExtraMenu_old() 		||
-			!isCurrentCutsceneMasterId_0(0x1fd80)	||
+			!isCurrentCutsceneMasterId(0x1fd80)	||
 			isNewCutsceneLoaded()
 		) &&
 		repeated(100, 	// IDs cutscene, where player gives Cake to Margarette 2nd time
@@ -1914,7 +1968,7 @@ _achievementTriggers = {
 			currentCutsceneId(18) == 0xcedf00ed &&
 			currentCutsceneId(19) == 0xfdc96400
 		) &&
-		isCutsceneDone()},
+		isCutsceneSequenceFullyDone()},
 	"a_MaxInventory": function MaxInventory(){
 		function measuredComparison() { 
 
@@ -1952,14 +2006,14 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(8, [										//			= 8
-				once(interactionID_2() == 0x08a321c8),		// Add hit: +1 	=> Town Streets painting (downstairs)
-				once(interactionID_2() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting (upstairs)
-				once(interactionID_2() == 0x08a32240),		// Add hit: +1	=> Town planter painting (upstairs)
-				once(interactionID_2() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting (upstairs)
-				once(interactionID_2() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait (upstairs)
-				once(interactionID_2() == 0x08a322e0),		// Add hit: +1	=> Burning house painting (upstairs)
-				once(interactionID_2() == 0x08a3231c),		// Add hit: +1	=> Landscape painting (upstairs)
-				once(interactionID_2() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting (upstairs)
+				once(interactionID_2_old() == 0x08a321c8),		// Add hit: +1 	=> Town Streets painting (downstairs)
+				once(interactionID_2_old() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting (upstairs)
+				once(interactionID_2_old() == 0x08a32240),		// Add hit: +1	=> Town planter painting (upstairs)
+				once(interactionID_2_old() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting (upstairs)
+				once(interactionID_2_old() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait (upstairs)
+				once(interactionID_2_old() == 0x08a322e0),		// Add hit: +1	=> Burning house painting (upstairs)
+				once(interactionID_2_old() == 0x08a3231c),		// Add hit: +1	=> Landscape painting (upstairs)
+				once(interactionID_2_old() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting (upstairs)
 			])}
 		function measuredIfComparison() { return
 			repeated(100, 									// Hit count 100 => when loading another save to another chapter, there's a few
@@ -1979,43 +2033,43 @@ _achievementTriggers = {
 				hasChapterChanged()
 			) &&
 			unless(
-				interactionID_2() != 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
-				interactionID_3() != 0x163			&&	
+				interactionID_2_old() != 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
+				interactionID_3_old() != 0x163			&&	
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
-				interactionID_3() != 0x164			&&	
+				interactionID_2_old() != 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
+				interactionID_3_old() != 0x164			&&	
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_2() != 0x08a32240 	&&		// Block => Town planter painting (upstairs)
-				interactionID_3() != 0x165			&&
+				interactionID_2_old() != 0x08a32240 	&&		// Block => Town planter painting (upstairs)
+				interactionID_3_old() != 0x165			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
-				interactionID_3() != 0x166			&&
+				interactionID_2_old() != 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
+				interactionID_3_old() != 0x166			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_2() != 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
-				interactionID_3() != 0x167			&&
+				interactionID_2_old() != 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
+				interactionID_3_old() != 0x167			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
-				interactionID_3() != 0x168			&&
+				interactionID_2_old() != 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
+				interactionID_3_old() != 0x168			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
-				interactionID_3() != 0x169			&&
+				interactionID_2_old() != 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
+				interactionID_3_old() != 0x169			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_2() != 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
-				interactionID_3() != 0x16a			&&
+				interactionID_2_old() != 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
+				interactionID_3_old() != 0x16a			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -2023,10 +2077,10 @@ _achievementTriggers = {
 		// Private functions
 		function measuredComparison() { return
 			tally(4, [										//			= 4
-				once(interactionID_2() == 0x08a31610),		// Add hit: +1 	=> Festival mask
-				once(interactionID_2() == 0x08a315c0),		// Add hit: +1 	=> Old rope
-				once(interactionID_2() == 0x08a31638),		// Add hit: +1	=> Old antidote bottle
-				once(interactionID_2() == 0x08a315e8)		// Add hit: +1	=> Franssen Shop sign
+				once(interactionID_2_old() == 0x08a31610),		// Add hit: +1 	=> Festival mask
+				once(interactionID_2_old() == 0x08a315c0),		// Add hit: +1 	=> Old rope
+				once(interactionID_2_old() == 0x08a31638),		// Add hit: +1	=> Old antidote bottle
+				once(interactionID_2_old() == 0x08a315e8)		// Add hit: +1	=> Franssen Shop sign
 
 			])}
 		function measuredIfComparison() { return
@@ -2043,27 +2097,27 @@ _achievementTriggers = {
 				hasChapterChanged()
 			) &&
 			unless(
-				interactionID_1() != 0x08b99500		&&	// Block => Festival mask
-				interactionID_2() != 0x08a31610 	&&
-				interactionID_3() != 0xc6			&&	
+				interactionID_1_old() != 0x08b99500		&&	// Block => Festival mask
+				interactionID_2_old() != 0x08a31610 	&&
+				interactionID_3_old() != 0xc6			&&	
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b9950c		&&	// Block => Old rope
-				interactionID_2() != 0x08a315c0 	&&
-				interactionID_3() != 0x98			&&	
+				interactionID_1_old() != 0x08b9950c		&&	// Block => Old rope
+				interactionID_2_old() != 0x08a315c0 	&&
+				interactionID_3_old() != 0x98			&&	
 				!isCutsceneActive_old()
 			) &&
 			unless(	
-				interactionID_1() != 0x08b994f4		&&	// Block => Old antidote bottle
-				interactionID_2() != 0x08a31638 	&&
-				interactionID_3() != 0x79			&&
+				interactionID_1_old() != 0x08b994f4		&&	// Block => Old antidote bottle
+				interactionID_2_old() != 0x08a31638 	&&
+				interactionID_3_old() != 0x79			&&
 				!isCutsceneActive_old()
 			) &&
 			unless(
-				interactionID_1() != 0x08b994e8		&&	// Block => Franssen Shop sign
-				interactionID_2() != 0x08a315e8 	&&
-				interactionID_3() != 0x8e			&&
+				interactionID_1_old() != 0x08b994e8		&&	// Block => Franssen Shop sign
+				interactionID_2_old() != 0x08a315e8 	&&
+				interactionID_3_old() != 0x8e			&&
 				!isCutsceneActive_old()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -2254,7 +2308,7 @@ _achievementTriggers = {
 			!isGameRunning() 						||
 			!isCurrentChapter("Chapter2")			||
 			IsViewingCutsceneFromExtraMenu_old()		||
-			!isCurrentCutsceneMasterId_0(0x6e480)	||
+			!isCurrentCutsceneMasterId(0x6e480)	||
 			isNewCutsceneLoaded()
 		) &&
 		isCurrentCutsceneMasterId_1(0x1) 				&&
@@ -2282,7 +2336,7 @@ _achievementTriggers = {
 		tally(2,
 			once(	// +1 when "excuse me" option is chosen
 				isCutsceneActive()	&&
-				isCurrentCutsceneMasterId_0(0xb140)	&&	// Block => IDs cutscene after picking "excuse me"
+				isCurrentCutsceneMasterId(0xb140)	&&	// Block => IDs cutscene after picking "excuse me"
 				isCurrentCutsceneMasterId_1(0x5)	&&
 				isCurrentCutsceneMasterId_2(0x6)	&&
 				currentCutsceneId(14) == 0x1967e97c && priorCutsceneId(14) == 0x1547049b 	&& 
@@ -2293,7 +2347,7 @@ _achievementTriggers = {
 				onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x510025),
 			once(	// +1 when cutscene in limbo finishes
 				isCutsceneActive()	&&
-				isCurrentCutsceneMasterId_0(0x1a440)	&&	// Block => IDs cutscene in limbo after death
+				isCurrentCutsceneMasterId(0x1a440)	&&	// Block => IDs cutscene in limbo after death
 				isCurrentCutsceneMasterId_1(0x1)		&&
 				isCurrentCutsceneMasterId_2(0x0)		&&
 				currentCutsceneId(5) == 0xd0161111 	&& priorCutsceneId(5) == 0x19dfd71f && 
@@ -2456,7 +2510,7 @@ function initializeAchievements() {
 	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if isDevModeActive() {
+			if isDebugModeActive() {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)
 				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -2476,7 +2530,7 @@ function initializeAchievements() {
 		}
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if isDevModeActive() && string_devInfo != "" {
+			if isDebugModeActive() && string_devInfo != "" {
 				let_devInfoString = let_devInfoString + " - [DEV: " + string_devInfo + "]"
 			}
 			return let_devInfoString
