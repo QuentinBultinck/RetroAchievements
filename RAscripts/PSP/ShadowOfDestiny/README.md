@@ -61,8 +61,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### :gem: Side content & extra cutscenes
 | Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
 |----|---|---|
-| :trophy: <b>Cracking Open the Past: Middle Ages</b><br><i>a_IntroduceEggCollecting</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
-| :trophy: <b>Cracking Open the Past: The Old Century</b><br><i>a_IntroduceEggCollecting2</i> | 1. In chapter 6, acquire the pocket watch shaped like an egg by Oleg <br> 2. Go to 1902 and meet the barman's ancestor at his bar | / |
+| :trophy: <b>Cracking Open the Past: Middle Ages</b><br><i>a_ShowEggTownPlanter</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house | / |
+| :trophy: <b>Cracking Open the Past: The Old Century</b><br><i>a_EggPocketWatchForCoffee</i> | 1. In chapter 6, acquire the pocket watch shaped like an egg by Oleg <br> 2. Go to 1902 and meet the barman's ancestor at his bar | / |
 | :trophy: <b>The Barman's Grandchildren and The Mystery Child</b><br><i>a_BarmansChildren</i> | In chapter 5, after your initial death, head back into the bar and have 2 conversations with the barman | / |
 | :trophy: <b>A Hatchless Replica</b><br><i>a_PocketWatchCollection</i> | In chapter 7, after you have found the towerdoor key. Go back to the present (not 'night before') and go back to the bar whilst you have the egg shaped pocket watch still in your inventory | / |
 | :trophy: <b>The Eggcellent Director's Tale</b><br><i>a_PocketWatchReminiscing</i> | In chapter 8, go back to Eckart in his office, whilst you have the egg shaped pocket watch still in your inventory | / |

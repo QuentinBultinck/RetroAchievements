@@ -55,6 +55,13 @@ _NPCs = {
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
 }
+_Interactables = {
+	"Antique_FranssenShopSign": 0x8e,
+	"Antique_Rope": 0x98,
+	"Antique_Antidote": 0x79,
+	"Antique_Mask": 0xc6,
+	"Painting_SquireCrest": 0x000
+}
 
 function isNPCtalkCountMax(string_NPC, string_appearance) {
 	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
@@ -70,12 +77,19 @@ function isNPCtalkedWith(string_NPC, string_appearance) {
 	return 
 		let_talkCount > prev(let_talkCount)
 }
+
 function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == _NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 																							// - Resets to 0x0 when interaction is done
+function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == _Interactables[string_NPC]
+
 function isTalkingTo(string_NPC) {								// $A9EFDC: [25-bit] Pointer - Interactions
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff				// 		+0x0 - [32-bit] NPC ID															
 	return _NPCs[string_NPC]["ID"] == dword(let_maskedPointer) 	// 		| - Unique per interactable NPC or environment item
 } 																// 		| - This value is copied to 0xa9eff4 (refer to notes)
+function isInteractingWith(string_interactable) {
+	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
+	return _Interactables[string_interactable] == dword(let_maskedPointer)
+}
 
 function isInteractionID_1(int_interactionId) {
 	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff				// $A9EFE0: [25-bit] Pointer - Interactions
@@ -104,8 +118,8 @@ function isCutsceneDone_old() => prev(bit0(0xA9Eb2C)) == 1 && bit0(0xA9Eb2C) == 
 
 function isCutsceneActive() => byte(0xA9ED26) == 0x5															// $A9ED26: Flag: Is cutscene active (preferred)
 function isCutsceneSequenceFullyDone() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0					// 		- 0x00 => no cutscene active
-function isCutsceneSectionDone() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	// 		- 0x01 => (un)loading cutscene(s)
-																												// 		- 0x05 => cutscene active
+function isCutsceneSectionDone() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
+function isSmallCutsceneActive() => byte(0xA9ED26) == 0x1														// 		- 0x05 => cutscene active
 
 function isCurrentCutsceneMasterId(int_Id) => dword(0xA9ECBC) == int_Id			// $A9ECBC: [32-bit] Cutscene MASTER ID (preferred)
 function isPriorCutsceneMasterId(int_Id) => prior(dword(0xA9ECBC)) == int_Id	// 		- Identifies a cutscene sequence
@@ -125,7 +139,7 @@ function isCurrentCutsceneSectionDataId(int_Id) {
 	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff			// $A9ECCC: [25-bit] Pointer
 	return dword(let_maskedPointer + 0x8) == int_Id}		// 		+0x0 - Data lower then this point changes, when a next section in the cutscene starts
 															// 		+0x8 - [32-bit] Cutscene Section Data ID
-function isMinorCutsceneId(int_Id, int_offset) {
+function isCurrentMinorCutsceneId(int_Id, int_offset) {
 	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			// $A9ECD4: [25-bit] Pointer - when a cutscene is active
 	return dword(let_maskedPointer + int_offset) == int_Id}	// +0x0 - Data lower than this point can be used as Minor Cutscene IDs
 															// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
@@ -187,7 +201,9 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"MedievalNightCity": 0x33c,
 	"ExplodedAlchemistBasement": 0x217,
 	"MedievalChurch": 0x8e,
-	"PresentTownHall": 0x16
+	"PresentTownHall": 0x16,
+	"AntiqueShopEule80s": 0x7a,
+	"AntiqueShopEulePresent": 0x6f
 }
 function currentLoadedScene(string_mapId)	=> dword(0xA82E48)	// $A82E48: [32-bit] Current loaded scene/map/scenario
 function isCurrentLoadedScene(string_mapId)	=> currentLoadedScene(string_mapId) == _mapIDs[string_mapId]
@@ -607,9 +623,12 @@ _achievements = {
 		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
-		"a_IntroduceEggCollecting": { // WORKING
+		"a_ShowEggTownPlanter": { // REWORKED
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
+		"a_EggPocketWatchForCoffee": { // REWORKED
+			"id": 313213, "points": 5, "hasTips": true,
+			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
@@ -622,7 +641,7 @@ _achievements = {
 		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		 "a_AntiquesEule": { // WORKING 
+		"a_AntiquesEule": { // REWORKED 
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
@@ -682,10 +701,10 @@ _achievements = {
 		"a_EnergyOrbLocatorMiddleAges": { // REWORKED 
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
-		"a_NewCakeInvented": { // WORKING
+		"a_NewCakeInvented": { // REWORKED
 			"id": 402297, "points": 5, "hasTips": true,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
-		"a_GiveMargaretteCake": { // WORKING
+		"a_GiveMargaretteCake": { // REWORKED
 			"id": 402296, "points": 3, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
 		// CONCEPT "a_ArtInspiration": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
@@ -694,9 +713,6 @@ _achievements = {
 		"a_MaxInventory": { // BUG Usage of Save states might break this 
 			"id": 402404, "points": 10, "hasTips": true,
 			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
-		"a_IntroduceEggCollecting2": { // WORKING
-			"id": 313213, "points": 5, "hasTips": true,
-			"devInfo": "Introduce the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_PocketWatchCollection": { // WORKING
 			"id": 315561, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7"},
@@ -712,7 +728,7 @@ _achievements = {
 		// CONCEPT "a_ShortestChapter": { 
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
-		"a_PerformerGoingExtraMile": { 
+		"a_PerformerGoingExtraMile": { // REWORKED
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 	},
@@ -1472,32 +1488,29 @@ _achievementTriggers = {
 		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
 			measured(measuredComparison(), measuredIfComparison())},					// 		Now it will reset this count, when going back to get frying pan as performer
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
-		// TODO there's differences in cutscene data depending on choices made, frying pan/shop sign, acquired egg or not??? => rather use cutscene data that is same across these differences
-		
-		
-		never(!isGameRunning()) 				&&
-		never(!isCutsceneActive_old()) 				&&
-		never(IsViewingCutsceneFromExtraMenu_old()) &&
-		never(!isCurrentChapter("Chapter4")) 	&&
-		(
-			isCurrentSelectedInventoryItem("Sign") 	|| 
-			isCurrentSelectedInventoryItem("FryingPan")
-		) &&		
-		tally(8, [
-			once(
-				currentCutsceneId(19) == 0x00008000 && priorCutsceneId(19) == 0x77c45331 &&
-				currentCutsceneId(15) == 0x11111000 && priorCutsceneId(15) == 0x40),
-			once(
-				currentCutsceneId(17) == 0xff95ff72 && priorCutsceneId(17) == 0x37760000 &&
-				currentCutsceneId(14) == 0xf655fff3 && priorCutsceneId(14) == 0x500050),
-			once(onScreenTextID(0) == 0x1e && prior(onScreenTextID(0)) == 0x7d),
-			once(onScreenTextID(0) == 0x3c && prior(onScreenTextID(0)) == 0xa0),
-			once(onScreenTextID(0) == 0x33b && prior(onScreenTextID(0)) == 0x3cf),
-			once(onScreenTextID(0) == 0x20d && prior(onScreenTextID(0)) == 0x2c1),
-			once(onScreenTextID(0) == 0x4e && prior(onScreenTextID(0)) == 0xd3),
-			once(onScreenTextID(0) == 0x53 && prior(onScreenTextID(0)) == 0x82)
+		// TEST there's differences in cutscene data depending on choices made, frying pan/shop sign, acquired egg or not??? => rather use cutscene data that is same across these differences
+		never(
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter4")	||
+			isViewingCutsceneFromExtraMenu()
+		) &&
+		tally(1, [
+			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
+				isCutsceneActive() && isCurrentSelectedInventoryItem("FryingPan") &&
+				isCurrentCutsceneMasterId(0xb0100)		&&
+				isCurrentCutsceneSectionId_1(0xd)		&&
+				isCurrentCutsceneSectionId_2(0xe)		&&
+				isCurrentCutsceneMasterDataId(0x1efb0)	&&
+				isCurrentCutsceneSectionDataId(0xae70)),
+			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using photo shop sign
+				isCutsceneActive() && isCurrentSelectedInventoryItem("Sign") &&
+				isCurrentCutsceneMasterId(0xb0100)		&& 
+				isCurrentCutsceneSectionId_1(0xd)		&&
+				isCurrentCutsceneSectionId_2(0xe)		&&
+				isCurrentCutsceneMasterDataId(0x1efb0)	&&
+				isCurrentCutsceneSectionDataId(0xae70))
 		]) &&
-		onScreenTextID(0) == 0x00 && prior(onScreenTextID(0)) == 0x2d},
+		isCutsceneSequenceFullyDone()},
 	"a_MeetOldMiriam": function MeetOldMiriam() { return // WIP => test when told Margarette she's not your ancestress
 		never(
 			!isGameRunning()					||
@@ -1591,49 +1604,49 @@ _achievementTriggers = {
 				isCurrentCutsceneSectionDataId(0x249e0))]
 		) &&
 		isCutsceneSequenceFullyDone()},
-	"a_IntroduceEggCollecting": function IntroduceEggCollecting() { return 
-		never(!isGameRunning()) 						&& 	// This block => Reset counts if game isn't running, game isn't in the correct chapter or if no cutscene is active
-		never(!isCutsceneActive_old()) 						&&
-		never(!isCurrentChapter("Chapter2"))			&&
-		never(IsViewingCutsceneFromExtraMenu_old())			&&
-
-		isCurrentSelectedInventoryItem("OrnamentalEgg") && 	// Is currently selected item the 'OrnamentalEgg'
-		repeated(500, prior(currentCutsceneId(14)) == 0xe6df0168) 	&&	// this block => last cutscene has run for about 380 frames
-		repeated(500, prior(currentCutsceneId(15)) == 0x168ec1a) 	&&
-		repeated(500, prior(currentCutsceneId(17)) == 0x1ca92f3c) 	&&
-		repeated(500, currentCutsceneId(14) == 0xa90841) 			&&
-		repeated(500, currentCutsceneId(15) == 0x19) 				&&
-		repeated(500, currentCutsceneId(17) == 0x0) 				&&
-
-		repeated(3, (hasOneFrameTimerReset()))}, // Unlock achievement when cutscene is done = oneFrameTimerHasReset 3 times
-	"a_IntroduceEggCollecting2": function IntroduceEggCollecting2() { return 
-		never(
+	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
+		never (
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter2") 	||
+			isViewingCutsceneFromExtraMenu()
+		) &&
+		once(	// Identifies Cutscene => Show off egg to town planter
+			isCutsceneActive() && isCurrentSelectedInventoryItem("OrnamentalEgg") &&
+			isCurrentCutsceneMasterId(0xde00)		&& 
+			isCurrentCutsceneSectionId_1(0x3)		&&
+			isCurrentCutsceneSectionId_2(0x2)		&&
+			isCurrentCutsceneMasterDataId(0x29d0)	&&
+			isCurrentCutsceneSectionDataId(0xb400)
+		) &&
+		isCutsceneSequenceFullyDone()},
+	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return  
+		never (
 			!isGameRunning() 					||
-			!isCutsceneActive_old() 				||	
-			IsViewingCutsceneFromExtraMenu_old() 	||
-			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && !isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
+			isViewingCutsceneFromExtraMenu()	||
+			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && 
+			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
-		once(
-			currentCutsceneId(1) == 0x3169070e 	&& priorCutsceneId(1) == 0xffc1ffd9 	&& // All blocks => IDs cutscene where Eike gives the pocket watch to pay for his coffee
-			currentCutsceneId(4) == 0x02410000 	&& priorCutsceneId(4) == 0x016818e1 	&&
-			currentCutsceneId(22) == 0xad082100 && priorCutsceneId(22) == 0x19324308 	&&
-			onScreenTextID(0) == 0x51 && prior(onScreenTextID(0)) == 0x31 &&
-			onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80109
-		) &&
-		once(
-			currentCutsceneId(2) == 0xffd2cf32 	&& priorCutsceneId(2) == 0x11112110 &&
-			currentCutsceneId(8) == 0xe6df1184 	&& priorCutsceneId(8) == 0x1001f5d1 &&
-			currentCutsceneId(15) == 0x0000f855 && priorCutsceneId(15) == 0x127 	&&
-			onScreenTextID(0) == 0x64	&& prior(onScreenTextID(0)) == 0x91 		&&
-			onScreenTextID(2) == 0x0 	&& prior(onScreenTextID(2)) == 0x490000
-		) &&
-		once(
-			currentCutsceneId(6) == 0x00000019 	&& priorCutsceneId(6) == 0xcee1020a 	&&
-			currentCutsceneId(11) == 0x00af0023 && priorCutsceneId(11) == 0x740034 		&&
-			currentCutsceneId(20) == 0x211205d6 && priorCutsceneId(20) == 0xee9f1e15 	&&
-			onScreenTextID(0) == 0x0 && prior(onScreenTextID(0)) == 0x43 				&&
-			onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x48ff85
-		)},
+		tally(1, [
+			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
+				isCutsceneActive() && isCurrentLoadedScene("1900sCity") && 
+				isCurrentCutsceneMasterId(0x8b440) 		&&
+				isCurrentCutsceneSectionId_1(0x5)		&&
+				isCurrentCutsceneSectionId_2(0x6)		&&
+				isCurrentCutsceneMasterDataId(0x5ac20)	&&
+				isCurrentCutsceneSectionDataId(0x1de70)	&&
+				isCurrentMinorCutsceneId(0xdefe0, 0x8)			&&
+				isCurrentMinorCutsceneId(0x2c3d0, 0x2c)),
+			once(	// Identifies Cutscene => Drank coffee before eqcuiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
+				isCutsceneActive() && isCurrentLoadedScene("1900sCity") && 
+				isCurrentCutsceneMasterId(0xac4c0) 		&&
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x2)		&&
+				isCurrentCutsceneMasterDataId(0x5ac20)	&&
+				isCurrentCutsceneSectionDataId(0x1de70)	&&
+				isCurrentMinorCutsceneId(0x7ec30, 0x8)			&&
+				isCurrentMinorCutsceneId(0x2f730, 0x2c))
+		]) &&
+		isCutsceneSequenceFullyDone()},
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never(
 			!isGameRunning() 					||
@@ -2247,7 +2260,7 @@ _achievementTriggers = {
 			!isWearingPerformerOutfit()			||
 			!isCurrentSelectedInventoryItem("Jugglery")	
 		) &&
-		once(
+		once(	// Identifies Cutscene => Eike gives himself a message as performer
 			isCutsceneActive() && isCurrentChapter("Chapter4") &&
 			isCurrentCutsceneMasterId(0x1a300)		&&
 			isCurrentCutsceneSectionId_1(0xd)		&&
@@ -2258,46 +2271,54 @@ _achievementTriggers = {
 		isCutsceneSectionDone()},
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
-			!isGameRunning()						||
-			IsViewingCutsceneFromExtraMenu_old() 		||
-			!isCurrentCutsceneMasterId(0x10b000)	||
-			isNewCutsceneLoaded()
+			!isGameRunning()					||
+			isViewingCutsceneFromExtraMenu() 	||
+			!isCurrentSelectedInventoryItem("Cake")	
 		) &&
-		isCurrentSelectedInventoryItem("Cake")	&&
-		isCurrentCutsceneMasterId_1(0x1)	&& isCurrentCutsceneMasterId_2(0x0) &&
-		currentCutsceneId(6) == 0x1328e6df 		&& priorCutsceneId(6) == 0x190e1921		&&
-		currentCutsceneId(11) == 0x1c2f2ea0 	&& priorCutsceneId(11) == 0xe81c0000	&&
-		currentCutsceneId(16) == 0x793ea550 	&& priorCutsceneId(16) == 0xf7cd00		&&
+		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
+			isCutsceneActive() && 
+			isCurrentCutsceneMasterId(0x10b000)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0xadb40)	&&
+			isCurrentCutsceneSectionDataId(0x5d4a0)
+		) &&
 		isCutsceneSequenceFullyDone()},
 	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){ 
 		function measuredComparison() { return
 			tally(7, [
 				once(
+					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeYoungBoy_Present") &&
 					isNPCtalkCountMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
+					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteMother_Present") &&
 					isNPCtalkCountMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x336)),
 				once(
+					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteYoungGirl_Present") &&
 					isNPCtalkCountMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x323)),
 				once(
+					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeOldWomanOrangeSweater_Present") &&
 					isNPCtalkCountMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
+					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteAdultManGlasses_Present") &&
 					isCurrentLoadedScene("PresentTownHall") &&
 					isInteractionID_1(0x29) && isInteractionID_2(0x3c6)),
 				once(	// This appearance does not have a memory address for talk count
+					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeElderlyWoman_Present") &&
 					isCurrentLoadedScene("PresentTownHall") &&
 					isInteractionID_1(0x29) && isInteractionID_2(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
-					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isSmallCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
 					isCurrentCutsceneSectionId_1(0xd)		&&
 					isCurrentCutsceneSectionId_2(0xc)		&&
@@ -2314,19 +2335,19 @@ _achievementTriggers = {
 			trigger_when(isCutsceneSectionDone())},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
-			!isGameRunning()						||
-			IsViewingCutsceneFromExtraMenu_old() 		||
-			!isCurrentCutsceneMasterId(0x1fd80)	||
-			isNewCutsceneLoaded()
+			!isGameRunning()					||
+			isViewingCutsceneFromExtraMenu() 	||
+			!isCurrentSelectedInventoryItem("Cake")	
 		) &&
-		repeated(100, 	// IDs cutscene, where player gives Cake to Margarette 2nd time
-			isCutsceneActive()	&&
-			isCurrentSelectedInventoryItem("Cake")	&&
-			currentCutsceneId(1) == 0xa2ff43d2 	&& 
-			currentCutsceneId(6) == 0x013a1999 	&&
-			currentCutsceneId(15) == 0xc341e80a &&
-			currentCutsceneId(18) == 0xcedf00ed &&
-			currentCutsceneId(19) == 0xfdc96400
+		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
+			isCutsceneActive() && 
+			isCurrentCutsceneMasterId(0x1fd80)		&&
+			isCurrentCutsceneSectionId_1(0xffff)	&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x1fd50)	&&
+			isCurrentCutsceneSectionDataId(0x1fd50)	&&
+			isCurrentMinorCutsceneId(0x153d0, 0x8)	&&
+			isCurrentMinorCutsceneId(0x122b0, 0x2c)
 		) &&
 		isCutsceneSequenceFullyDone()},
 	"a_MaxInventory": function MaxInventory(){
@@ -2434,53 +2455,31 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_AntiquesEule": function AntiquesEule() {
-		// Private functions
-		function measuredComparison() { return
-			tally(4, [										//			= 4
-				once(interactionID_2_old() == 0x08a31610),		// Add hit: +1 	=> Festival mask
-				once(interactionID_2_old() == 0x08a315c0),		// Add hit: +1 	=> Old rope
-				once(interactionID_2_old() == 0x08a31638),		// Add hit: +1	=> Old antidote bottle
-				once(interactionID_2_old() == 0x08a315e8)		// Add hit: +1	=> Franssen Shop sign
-
+		function measuredComparison() {
+			tally(4, [
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Antique_FranssenShopSign") && 
+					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Antique_Rope") &&
+					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Antique_Antidote") &&
+					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Antique_Mask") &&
+					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff))
 			])}
-		function measuredIfComparison() { return
-			isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() &&
-			(
-				repeated(100, isCurrentChapter("Chapter3")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
-				repeated(100, isCurrentChapter("Chapter4"))	||	// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
-				repeated(100, isCurrentChapter("Chapter6"))	|| 
-				repeated(100, isCurrentChapter("Chapter7"))
-			)}
-		// Trigger 
-		return 
-			never( // Reset count on chapter change
-				hasChapterChanged()
+		return
+			never(
+				!isCurrentLoadedScene("AntiqueShopEule80s") && !isCurrentLoadedScene("AntiqueShopEulePresent")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08b99500		&&	// Block => Festival mask
-				interactionID_2_old() != 0x08a31610 	&&
-				interactionID_3_old() != 0xc6			&&	
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08b9950c		&&	// Block => Old rope
-				interactionID_2_old() != 0x08a315c0 	&&
-				interactionID_3_old() != 0x98			&&	
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_1_old() != 0x08b994f4		&&	// Block => Old antidote bottle
-				interactionID_2_old() != 0x08a31638 	&&
-				interactionID_3_old() != 0x79			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08b994e8		&&	// Block => Franssen Shop sign
-				interactionID_2_old() != 0x08a315e8 	&&
-				interactionID_3_old() != 0x8e			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			isCutsceneSequenceFullyDone() &&
+			measured(measuredComparison(), always_true())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() {
 			function measuredComparison() { return 
 				tally(3, [
@@ -2602,8 +2601,8 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterId(0x9c00)		&&
 			isCurrentCutsceneMasterDataId(0x9bf0)	&&
 			isCurrentCutsceneSectionDataId(0x9bf0)	&&
-			isMinorCutsceneId(0x9bf0, 0x28) &&
-			isMinorCutsceneId(0xea70, 0x8) 	
+			isCurrentMinorCutsceneId(0x9bf0, 0x28) &&
+			isCurrentMinorCutsceneId(0xea70, 0x8) 	
 		) && 
 		once(	// Identifies Cutscene => Eike wakes himself up
 			isCutsceneActive()	&&
@@ -2621,9 +2620,9 @@ _achievementTriggers = {
 			isViewingCutsceneFromExtraMenu()  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
-			isMinorCutsceneId(0x23ee0, 0x8) 	&&
-			isMinorCutsceneId(0x377e0, 0x28) 	&&
-			isMinorCutsceneId(0x23eb0, 0x2c)
+			isCurrentMinorCutsceneId(0x23ee0, 0x8) 	&&
+			isCurrentMinorCutsceneId(0x377e0, 0x28) 	&&
+			isCurrentMinorCutsceneId(0x23eb0, 0x2c)
 		) && 
 		isCutsceneSequenceFullyDone()},
 	"a_RottenRope": function RottenRope() { return
@@ -2755,8 +2754,8 @@ _achievementTitles = {
 	"a_EggCollection1": 							{"en": "A Jovial Exchange I"},
 	"a_EggCollection2": 							{"en": "A Jovial Exchange II"}, 
 	"a_BarmansChildren":							{"en": "The Barman's Grandchildren and The Mystery Child"},
-	"a_IntroduceEggCollecting": 					{"en": "Cracking Open the Past: Middle Ages"},
-	"a_IntroduceEggCollecting2": 					{"en": "Cracking Open the Past: The Old Century"},
+	"a_ShowEggTownPlanter": 						{"en": "Cracking Open the Past: Middle Ages"},
+	"a_EggPocketWatchForCoffee": 					{"en": "Cracking Open the Past: The Old Century"},
 	"a_PocketWatchCollection": 						{"en": "A Hatchless Replica"},
 	"a_PocketWatchReminiscing": 					{"en": "The Eggcellent Director's Tale"},
 	"a_EikeThePyromancer":							{"en": "The Pyromancer's Legacy"},
@@ -2821,8 +2820,8 @@ _achievementDescriptions = {
 	"a_EndingE": 									{"en": "Achieve Ending E"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
-	"a_IntroduceEggCollecting": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
-	"a_IntroduceEggCollecting2": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
+	"a_ShowEggTownPlanter": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
 	"a_PocketWatchCollection": 						{"en": "Show off your egg collection to the barman during chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
