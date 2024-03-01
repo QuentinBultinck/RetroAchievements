@@ -30,7 +30,7 @@ function hasOneFrameTimerReset() 		=> oneFrameTimer() < prev(oneFrameTimer()) 		
 function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer())		// 		- Resets at certain times or between cutscene transitions
 
 
-// INTERACTION IDs WITH NPCs, ENVIRONMENT & ITEMS 
+// INTERACTION IDs WITH NPCs & ITEMS 
 // ************************************************
 _NPCs = {
 	"BlondeYoungBoy_Present": { 
@@ -75,7 +75,20 @@ _Interactables = {
 	"Antique_Rope": 0x98,
 	"Antique_Antidote": 0x79,
 	"Antique_Mask": 0xc6,
-	"Painting_SquireCrest": 0x000
+	"Painting_SquireCrest": 0x164,
+	"Painting_TownSquare": 0x165,
+	"Painting_AlchemyLab": 0x16a,
+	"Painting_Performer": 0x166,
+	"Painting_CollapsedHouse": 0x168,
+	"Painting_TowerView": 0x163,
+	"Painting_LandscapeTown": 0x169,
+	"Painting_Alchemist": 0x167,
+	"Painting_Eiked_SquireCrest": 0x000000,
+	"Painting_Eiked_TownSquare": 0x000000,
+	"Painting_Eiked_Performer": 0x000000,
+	"Painting_Eiked_AlchemyLab": 0x000000,
+	"Painting_Eiked_CollapsedHouse": 0x000000,
+	"Painting_Eiked_TowerView": 0x000000
 }
 
 function maxTalkCountFor(string_NPC, string_appearance) => _NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
@@ -103,13 +116,12 @@ function isNPCtalkCountAtMax(string_NPC, string_appearance) {
 function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == _NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 																							// - Resets to 0x0 when interaction is done
 
-function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == _Interactables[string_NPC]
-
-
 function isTalkingTo(string_NPC) {								// $A9EFDC: [25-bit] Pointer - Interactions
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff				// 		+0x0 - [32-bit] NPC ID															
 	return _NPCs[string_NPC]["ID"] == dword(let_maskedPointer) 	// 		| - Unique per interactable NPC or environment item
 } 																// 		| - This value is copied to 0xa9eff4 (refer to notes)
+
+function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == _Interactables[string_NPC]
 
 function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
@@ -241,7 +253,11 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"MedievalChurch": 0x8e,
 	"PresentTownHall": 0x16,
 	"AntiqueShopEule80s": 0x7a,
-	"AntiqueShopEulePresent": 0x6f
+	"AntiqueShopEulePresent": 0x6f,
+	"BrumMuseumUpstairsRoom1": 0x159,
+	"BrumMuseumUpstairsRoom2": 0x224,
+	"BrumMuseumUpstairsRoom3": 0x140,
+	"BrumMuseumDownstairsRoom": 0x32
 }
 function currentLoadedScene(string_mapId)	=> dword(0xA82E48)	// $A82E48: [32-bit] Current loaded scene/map/scenario
 function isCurrentLoadedScene(string_mapId)	=> currentLoadedScene(string_mapId) == _mapIDs[string_mapId]
@@ -265,6 +281,7 @@ _chapterIDs = {
 	// TODO "EX chapter": ??? 
 }
 function chapterId() => byte(0xB95704)			// $B95704: [8-bit] Chapter ID
+
 function isCurrentChapter(string_chapter) {	
 	if (string_chapter == "Chapter8") {
 		return
@@ -273,6 +290,7 @@ function isCurrentChapter(string_chapter) {
 		return
 			chapterId() == _chapterIDs[string_chapter]
 	}} 
+
 function isChapterFinished(string_chapter) { 
 	if (string_chapter == "Chapter7") {
 		return 
@@ -294,7 +312,8 @@ function isChapterFinished(string_chapter) {
 			prev(chapterId()) == _chapterIDs[string_chapter] &&
 			chapterId() == _chapterIDs[string_chapter] + 0x1
 	}}
-function hasChapterChanged() => chapterId() != prev(chapterId())
+
+function isChapterChanged() => chapterId() != prev(chapterId())
 
 
 // INVENTORY LOGIC 
@@ -702,6 +721,12 @@ _achievements = {
 		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 4, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
+		// CONCEPT "a_ArtInspiration1": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
+		// CONCEPT "a_ArtInspirationAll": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
 		"a_AntiquesEule": { // REWORKED 
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
@@ -768,9 +793,6 @@ _achievements = {
 		"a_GiveMargaretteCake": { // REWORKED
 			"id": 402296, "points": 3, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		// CONCEPT "a_ArtInspiration": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present"},
 		"a_MaxInventory": { // REWORKED
 			"id": 402404, "points": 10, "hasTips": true,
 			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
@@ -786,6 +808,9 @@ _achievements = {
 		// CONCEPT "a_ScareApprenticeMiddleAges": { 
 		// 	"id": 00000, "points": 1, "hasTips": true,
 		// 	"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
+		// CONCEPT "a_MeetingEveryone": { 
+		// 	"id": 00000, "points": 3, "hasTips": true,
+		// 	"devInfo": "Talk to all NPCs"},
 		"a_ShortestChapter": { // REWORKED
 			"id": 000000, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
@@ -1454,7 +1479,7 @@ _achievementTriggers = {
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				energyUnitsZPad() < prev(energyUnitsZPad()) ||
-				hasChapterChanged()
+				isChapterChanged()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
@@ -1472,7 +1497,7 @@ _achievementTriggers = {
 		return 
 			never( 	// Reset when chapter changes or when using digipad
 				energyUnitsZPad() < prev(energyUnitsZPad()) ||
-				hasChapterChanged()
+				isChapterChanged()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
@@ -1495,7 +1520,7 @@ _achievementTriggers = {
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				energyUnitsZPad() < prev(energyUnitsZPad()) ||
-				hasChapterChanged()
+				isChapterChanged()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
@@ -1514,7 +1539,7 @@ _achievementTriggers = {
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				energyUnitsZPad() < prev(energyUnitsZPad()) ||
-				hasChapterChanged()	||
+				isChapterChanged()	||
 				isWearingPerformerOutfit() && isCurrentLoadedScene("PresentDayCity")	// --> Fix for bug, where player could pick up the energy orb in the 
 		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
 			measured(measuredComparison(), measuredIfComparison())},					// 		Now it will reset this count, when going back to get frying pan as performer
@@ -2525,77 +2550,63 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x3d500)	
 		) &&
 		isCutsceneSequenceFullyDone()},
+	"a_ArtInspiration1": function ArtInspiration1() { return
+		always_false()
+		},
+	"a_ArtInspirationAll": function ArtInspirationAll() { return
+		always_false()
+		},
 	"a_ArtAppreciator": function ArtAppreciator() {
-		// Private functions
-		function measuredComparison() { return
-			tally(8, [										//			= 8
-				once(interactionID_2_old() == 0x08a321c8),		// Add hit: +1 	=> Town Streets painting (downstairs)
-				once(interactionID_2_old() == 0x08a32204),		// Add hit: +1 	=> Squire's crest painting (upstairs)
-				once(interactionID_2_old() == 0x08a32240),		// Add hit: +1	=> Town planter painting (upstairs)
-				once(interactionID_2_old() == 0x08a3227c),		// Add hit: +1	=> Oddly dressed man painting (upstairs)
-				once(interactionID_2_old() == 0x08a322b8),		// Add hit: +1	=> Alchemist portrait (upstairs)
-				once(interactionID_2_old() == 0x08a322e0),		// Add hit: +1	=> Burning house painting (upstairs)
-				once(interactionID_2_old() == 0x08a3231c),		// Add hit: +1	=> Landscape painting (upstairs)
-				once(interactionID_2_old() == 0x08a32344)		// Add hit: +1	=> Alchemy lab painting (upstairs)
+		function measuredComparison() {
+			tally(8, [
+				once(
+					isSmallCutsceneActive() && 	
+					isInteractingWith("Painting_TowerView") && 
+					isCurrentLoadedScene("BrumMuseumDownstairsRoom") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+				once(
+					isSmallCutsceneActive() && 	
+					isInteractingWith("Painting_SquireCrest") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom1") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_TownSquare") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom1") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_AlchemyLab") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_Performer") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_CollapsedHouse") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x129)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_LandscapeTown") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom3") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff)),
+				once(
+					isSmallCutsceneActive() &&
+					isInteractingWith("Painting_Alchemist") && 
+					isCurrentLoadedScene("BrumMuseumUpstairsRoom3") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff))
 			])}
-		function measuredIfComparison() { return
-			repeated(100, 									// Hit count 100 => when loading another save to another chapter, there's a few
-				isCurrentChapter("Chapter3") || 			// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
-				isCurrentChapter("Chapter4") || 
-				isCurrentChapter("Chapter5") || 
-				isCurrentChapter("Chapter6") || 
-				isCurrentChapter("Chapter7") || 
-				isCurrentChapter("Chapter8_Ancestress") ||
-				isCurrentChapter("Chapter8_NoAncestress")
-			) && 
-			isGameRunning() &&
-			!IsViewingCutsceneFromExtraMenu_old()}
-		// Trigger 
-		return 
-			never(	// Reset count on chapter change
-				hasChapterChanged()
+		return
+			never(
+				!isGameRunning() ||
+				isChapterChanged()
 			) &&
-			unless(
-				interactionID_2_old() != 0x08a321c8 	&&		// Block => Town Streets painting (downstairs)
-				interactionID_3_old() != 0x163			&&	
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a32204 	&&		// Block => Squire's crest painting (upstairs)
-				interactionID_3_old() != 0x164			&&	
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_2_old() != 0x08a32240 	&&		// Block => Town planter painting (upstairs)
-				interactionID_3_old() != 0x165			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a3227c 	&&		// Block => Oddly dressed man painting (upstairs)
-				interactionID_3_old() != 0x166			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_2_old() != 0x08a322b8 	&&		// Block => Alchemist portrait (upstairs)
-				interactionID_3_old() != 0x167			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a322e0 	&&		// Block => Burning house painting (upstairs)
-				interactionID_3_old() != 0x168			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a3231c 	&&		// Block => Landscape painting (upstairs)
-				interactionID_3_old() != 0x169			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a32344 	&&		// Block => Alchemy lab painting (upstairs)
-				interactionID_3_old() != 0x16a			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			trigger_when(!isSmallCutsceneActive()) &&
+			measured(measuredComparison(), always_true())},
 	"a_AntiquesEule": function AntiquesEule() {
 		function measuredComparison() {
 			tally(4, [
@@ -2616,12 +2627,16 @@ _achievementTriggers = {
 					isInteractingWith("Antique_Mask") &&
 					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff))
 			])}
+		function measuredIfComparison() { return
+			isCurrentLoadedScene("AntiqueShopEule80s") ||
+			isCurrentLoadedScene("AntiqueShopEulePresent")}
 		return
 			never(
-				!isCurrentLoadedScene("AntiqueShopEule80s") && !isCurrentLoadedScene("AntiqueShopEulePresent")
+				!isGameRunning() ||
+				isChapterChanged()
 			) &&
-			isCutsceneSequenceFullyDone() &&
-			measured(measuredComparison(), always_true())},
+			trigger_when(!isSmallCutsceneActive()) &&
+			measured(measuredComparison(), measuredIfComparison())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!isGameRunning()				||
