@@ -51,6 +51,14 @@ _NPCs = {
 	"BlondeElderlyWoman_Present": { 
 		"ID": 0x183, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
+	"CoatedWoman_Present": { 
+		"ID": 0x57,	"Appearance": {
+			"Chap1Prologue_TownSquare": {"MemAddrTalkCount": 0xA9EE28, "MaxTalkCount": 2},
+			"Chap3_OutsideAntiqueShop": {"MemAddrTalkCount": 0xA9EE2C, "MaxTalkCount": 2}}},
+	"CoatedMan_Present": { 
+		"ID": 0x56, "Appearance": {
+			"Chap1Prologue_NearBar": {"MemAddrTalkCount": 0xA9EE1D, "MaxTalkCount": 2},
+			"Chap3_NearAntiqueShop": {"MemAddrTalkCount": 0xA9EE20, "MaxTalkCount": 2}}},
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
@@ -62,8 +70,8 @@ _Interactables = {
 	"Antique_Mask": 0xc6,
 	"Painting_SquireCrest": 0x000
 }
-
-function isNPCtalkCountMax(string_NPC, string_appearance) {
+function maxTalkCountFor(string_NPC, string_appearance) => _NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
+function isNPCtalkCountMaxed(string_NPC, string_appearance) {
 	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
 	let_maxTalkCount = let_NPCappearance["MaxTalkCount"]
@@ -71,7 +79,7 @@ function isNPCtalkCountMax(string_NPC, string_appearance) {
 		let_talkCount == let_maxTalkCount &&
 		prev(let_talkCount) == let_maxTalkCount - 1
 }
-function isNPCtalkedWith(string_NPC, string_appearance) {
+function isNPCtalkCountIncreased(string_NPC, string_appearance) {
 	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
 	return 
@@ -609,7 +617,7 @@ _achievements = {
 		"a_EggCollection1": { // REWORKED 
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
-		"a_EggCollection2": { // WORKING
+		"a_EggCollection2": { // REWORKED
 			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
@@ -890,7 +898,7 @@ _achievementTriggers = {
 				) &&
 				isCutsceneSequenceFullyDone()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinished("Chapter2")
+				isChapterFinished("Chapter3")
 			)
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
@@ -1992,86 +2000,47 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
-		// Private functions
 		function measuredComparison() { return
-			tally(4, [													// 			= 4
-				once(interactionID_2_old() == 0x08a30a94),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2_old() == 0x08a30a80),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2_old() == 0x08a30bd4),					// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2_old() == 0x08a30be8)					// Add hit: +1	=> for talking to woman 2nd time
+			tally(4, [
+				repeated(maxTalkCountFor("CoatedWoman_Present","Chap1Prologue_TownSquare"),
+					isSmallCutsceneActive() &&
+					isTalkingTo("CoatedWoman_Present") &&
+					isNPCtalkCountIncreased("CoatedWoman_Present", "Chap1Prologue_TownSquare") &&
+					isInteractionID_1(0x1e) && isInteractionID_2(0x2cc)),
+				repeated(maxTalkCountFor("CoatedMan_Present","Chap1Prologue_NearBar"), 
+					isSmallCutsceneActive() &&
+					isTalkingTo("CoatedMan_Present") &&
+					isNPCtalkCountIncreased("CoatedMan_Present", "Chap1Prologue_NearBar") &&
+					isInteractionID_1(0x1e) && isInteractionID_2(0x2c1))
 			])}
-		function measuredIfComparison() { return
-			isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() &&
-			(
-				repeated(100, isCurrentChapter("Prologue")) || 	// Hit count 100 => when loading another save to another chapter, there's a few 
-				repeated(100, isCurrentChapter("Chapter1"))		// frames where both this comparison && isGameRunning() is true. So this hit counts fixes that
-			)}
-		// Trigger
-		return  
-			never(
-				!(isCurrentChapter("Prologue") || isCurrentChapter("Chapter1"))
+		return 
+			never(	
+				!isGameRunning() ||
+				!isCurrentChapter("Prologue") && !isCurrentChapter("Chapter1")
 			) &&
-			unless(
-				interactionID_2_old() != 0x08a30bd4 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3_old() != 0x57			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_2_old() != 0x08a30a80 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_3_old() != 0x56			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_2_old() != 0x08a30be8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3_old() != 0x57			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_2_old() != 0x08a30a94 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3_old() != 0x56			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), always_true()) &&
+			trigger_when(!isSmallCutsceneActive())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
-		// Private functions
 		function measuredComparison() { return
-			tally(4, [													// 			= 4
-				once(interactionID_2_old() == 0x08a30ad0),					// Add hit: +1 	=> for talking to man 2nd time
-				once(interactionID_2_old() == 0x08a30abc),					// Add hit: +1	=> for talking to man 1st time
-				once(interactionID_2_old() == 0x08a30c10),					// Add hit: +1	=> for talking to woman 1st time
-				once(interactionID_2_old() == 0x08a30c24)					// Add hit: +1	=> for talking to woman 2nd time
+			tally(4, [
+				repeated(maxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop"),
+					isSmallCutsceneActive() &&
+					isTalkingTo("CoatedWoman_Present") &&
+					isNPCtalkCountIncreased("CoatedWoman_Present", "Chap3_OutsideAntiqueShop") &&
+					isInteractionID_1(0xb2) && isInteractionID_2(0x2d0)),
+				repeated(maxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
+					isSmallCutsceneActive() &&
+					isTalkingTo("CoatedMan_Present") &&
+					isNPCtalkCountIncreased("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
+					isInteractionID_1(0xb2) && isInteractionID_2(0x2c4))
 			])}
-		function measuredIfComparison() => isGameRunning() && !IsViewingCutsceneFromExtraMenu_old() && repeated(100, isCurrentChapter("Chapter3"))
-		// Trigger
-		return  
-			never(
+		return 
+			never(	
+				!isGameRunning() ||
 				!isCurrentChapter("Chapter3")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08b994d0 	&&
-				interactionID_2_old() != 0x08a30c10 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_3_old() != 0x57			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_1_old() != 0x08b994c4		&&
-				interactionID_2_old() != 0x08a30abc		&&		// Block => cutscene when talking to man 1st time
-				interactionID_3_old() != 0x56			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08b994d0 		&&
-				interactionID_2_old() != 0x08a30c24 		&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_3_old() != 0x57				&&
-				!isCutsceneActive_old()
-			) &&
-			unless(	
-				interactionID_1_old() != 0x08b994c4 		&&
-				interactionID_2_old() != 0x08a30ad0 		&&		// Block => cutscene when talking to man 2nd time
-				interactionID_3_old() != 0x56				&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), always_true()) &&
+			trigger_when(!isSmallCutsceneActive())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		// Private functions
 		function measuredComparison() { return
@@ -2216,22 +2185,22 @@ _achievementTriggers = {
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeYoungBoy_Present") &&
-					isNPCtalkCountMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
+					isNPCtalkCountMaxed("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteMother_Present") &&
-					isNPCtalkCountMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
+					isNPCtalkCountMaxed("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x336)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteYoungGirl_Present") &&
-					isNPCtalkCountMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
+					isNPCtalkCountMaxed("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x323)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeOldWomanOrangeSweater_Present") &&
-					isNPCtalkCountMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
+					isNPCtalkCountMaxed("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionID_1(0x44) && isInteractionID_2(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
@@ -2244,7 +2213,7 @@ _achievementTriggers = {
 					isCurrentLoadedScene("PresentTownHall") &&
 					isInteractionID_1(0x29) && isInteractionID_2(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
-					isSmallCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
 					isCurrentCutsceneSectionId_1(0xd)		&&
 					isCurrentCutsceneSectionId_2(0xc)		&&
@@ -2258,7 +2227,7 @@ _achievementTriggers = {
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset that count here 
-			trigger_when(isCutsceneSectionDone())},
+			trigger_when(!isSmallCutsceneActive() && !isCutsceneActive())},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isGameRunning()					||
@@ -2690,7 +2659,7 @@ _achievementTitles = {
 	"a_LostYoungCouple5": 							{"en": "Yesteryears Couple V: Man-in-waiting"},
 	"a_LostYoungCouple6": 							{"en": "Yesteryears Couple VI: Never Destined to Meet"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic Couple I: Prelude"},
-	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Shadowing or Lost?"}, 
+	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Tailing"}, 
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic Couple III: Wandering Once More"}, 
 	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},	
 	"a_EnigmaticCouple5": 							{"en": "Enigmatic Couple V: Epilogue"},
