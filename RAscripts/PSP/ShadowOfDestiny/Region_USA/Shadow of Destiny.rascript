@@ -725,9 +725,9 @@ _achievements = {
 		// CONCEPT "a_ScareApprenticeMiddleAges": { 
 		// 	"id": 00000, "points": 1, "hasTips": true,
 		// 	"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
-		// CONCEPT "a_ShortestChapter": { 
-		// 	"id": 00000, "points": 3, "hasTips": true,
-		// 	"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
+		"a_ShortestChapter": { // REWORKED
+			"id": 00000, "points": 3, "hasTips": true,
+			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
 		"a_PerformerGoingExtraMile": { // REWORKED
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
@@ -2383,6 +2383,28 @@ _achievementTriggers = {
 				isViewingCutsceneFromExtraMenu()					
 			) &&
 			measured(measuredComparison(), always_true())},
+	"a_ShortestChapter": function ShortestChapter(){ return
+		never(
+			!isGameRunning()						||
+			!isCurrentChapter("Chapter4")			||
+			isViewingCutsceneFromExtraMenu()		||
+			!isCurrentSelectedInventoryItem("FryingPan") ||
+			
+			// If preventing 1st death in chapter 4 by using the frying pan 
+			//	=> black and white picture is not found inside book after death in this chapter
+			//	=> Thus can be used as a flag for this achievement
+			isItemInInventory("BLackWhitePhoto") 	|| 
+			isItemInInventory("BLackWhitePhotoWithPerformer")			 
+		) &&
+		once(	// Identifies Cutscene => Using frying pan for defence
+			isCutsceneActive() && 
+			isCurrentCutsceneMasterId(0x4f200)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x11cd0)	&&
+			isCurrentCutsceneSectionDataId(0x3d500)	
+		) &&
+		isCutsceneSequenceFullyDone()},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		// Private functions
 		function measuredComparison() { return
@@ -2790,6 +2812,7 @@ _achievementTitles = {
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Energy Amasser: The Old Century"},
 	"a_GiveMargaretteCake": 						{"en": "Time-Spun Sweets"}, 
+	"a_ShortestChapter": 							{"en": "Pan in Advance"}, 
 	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"},
 	"a_MaxInventory": 								{"en": "Stockpiling Across Eras"},
 	"a_PerformerGoingExtraMile": 					{"en": "A Performance Going the Extra Mile"}, 
@@ -2820,7 +2843,7 @@ _achievementDescriptions = {
 	"a_EndingE": 									{"en": "Achieve Ending E"},
 	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
-	"a_ShowEggTownPlanter": 					{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
+	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
 	"a_PocketWatchCollection": 						{"en": "Show off your egg collection to the barman during chapter 7"},
@@ -2860,6 +2883,7 @@ _achievementDescriptions = {
 	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
 	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"},
+	"a_ShortestChapter": 							{"en": "Acquire an iron plate before finding a good usage for it"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including for yourself"}, 	
 	// "a_Template": 			{"en": "xxxxx"},
@@ -2874,9 +2898,9 @@ function initializeAchievements() {
 		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
 			if isDebugModeActive() {
-				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)
-				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)
-				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
+				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
+				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
+				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
 				// let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
 			}
 			return let_string
