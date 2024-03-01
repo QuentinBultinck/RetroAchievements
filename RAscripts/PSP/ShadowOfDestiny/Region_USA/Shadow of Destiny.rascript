@@ -428,9 +428,28 @@ function isViewingEndingFromExtraMenu() {
 																// 		- 0x3 => Sound Mode (Play sound effects & music)
 																// 		- 0x4 => Exit (back to Title Screen)
 
-function isViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x21	// $1FFF15C: [32-bit] Flag -> Event viewer (preferred)
-																		// 0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
-																		// - other values => not in event viewer
+
+function isViewingCutsceneFromExtraMenu() {				// $AC3170: [25-bit] Pointer - When in Extra menu
+	let_maskedPointer = dword(0xAC3170) & 0x1ffffff		// 		- Extra menu is only visible once at least one is ending is finished
+	return												// 		+0x4 - [32-bit] Extra Menu: Highlighted item
+		dword(let_maskedPointer + 0x4) == 0 &&			// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
+ 		dword(let_maskedPointer + 0x48) <= 0xb}			// 		| - 0x1 => Ending files (replay ending cutscenes)
+														// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+														// 		| - 0x3 => Sound Mode (Play sound effects & music)
+														// 		| - 0x4 => Exit (back to Title Screen)
+														// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
+														// 		| - 0x0 => ending A			| - 0x4 => ending E
+														// 		| - 0x1 => ending B			| - 0x3 => ending D
+														// 		| - 0x2 => ending C
+														// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
+														// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
+														// 		| - 0x1 => Chapter 1		| - 0xa => Total
+														// 		| - ...						| - 0xb => Exit
+														// 		| - 0x8 => Chapter 8
+
+// function isViewingCutsceneFromExtraMenu() => dword(0x1FFF15C) == 0x21	// $1FFF15C: [32-bit] Flag -> Event viewer (deprecated)
+// 																		// 0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
+// 																		// - other values => not in event viewer
 function IsViewingCutsceneFromExtraMenu_old() => dword(0x1FFF15C) == 0x1	// $1FFF15C: [32-bit] Flag => is viewing cutscene from event viewer (not preferred)
 																			// 	- 0x1 = event viewer is active
 																			// 	- other values = event viewer is inactive
@@ -456,12 +475,12 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 
 // CUTSCENE/EVENT FLAGS
 // *********************
-function isStatueChosen() => bit2(0xA9EDA0)	== 0	// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
-function isTelephoneUsedToScareCrowd() => bit1(0xA9EDA0) == 1	// 		bit 0 => acquired ladder
-													// 		bit 1 = 0 => LIGHTER used to scare crowd
-													// 		bit 1 = 1 => TELEPHONE used 
-													// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers
-													// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
+function isStatueChosen() => bit2(0xA9EDA0)	== 0				// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
+function isFlowersChosen() => bit2(0xA9EDA0) == 1				// 		bit 0 => acquired ladder
+function isTelephoneUsedToScareCrowd() => bit1(0xA9EDA0) == 1	// 		bit 1 = 0 => LIGHTER used to scare crowd
+function isLighterUsedToScareCrowd() => bit1(0xA9EDA0) == 0		// 		bit 1 = 1 => TELEPHONE used 
+																// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers
+																// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
 function isMovieWorldConquestPicked() => bit7(0xA9EDB7) == 1 && prev(bit7(0xA9EDB7)) == 0 	// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
 function isMovieTimeTravelPicked() => bit6(0xA9EDB7) == 1 && prev(bit6(0xA9EDB7)) == 0		// 		bit 5 => Movie choice 1: Meditating Man
 																							// 		bit 6 => Movie choice 1: Time Travel
@@ -620,7 +639,7 @@ _achievements = {
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
 			"id": 310426, "points": 10, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
-		"a_DoctorateTimeTraveling": { // WORKING
+		"a_DoctorateTimeTraveling": { // REWORKED
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
 		"a_ShowEggTownPlanter": { // REWORKED
@@ -629,13 +648,13 @@ _achievements = {
 		"a_EggPocketWatchForCoffee": { // REWORKED
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_EikeThePyromancer": { // WORKING
+		"a_EikeThePyromancer": { // REWORKED
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING	
+		"a_EikeTheMagician": { // REWORKED	
 			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // WORKING 
+		"a_EikeTheFlorist": { // REWORKED 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING
@@ -1568,7 +1587,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter1") 	||
 			isViewingCutsceneFromExtraMenu()
 		) &&
-		once(	// Identifies Cutscene => Exchangeing egg for frying pan
+		once(	// Identifies Cutscene => Exchanging egg for frying pan
 			isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 			isCurrentCutsceneMasterId(0x2f9c0)		&& 
 			isCurrentCutsceneSectionId_1(0x7)		&&
@@ -1586,7 +1605,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")
 		) &&
 		tally(1, [
-			once(	// Identifies Cutscene => Exchangeing egg for frying pan in chapter 3
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
 				isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 				isCurrentChapter("Chapter3") 			&&
 				isCurrentCutsceneMasterId(0x32200)		&& 
@@ -1594,7 +1613,7 @@ _achievementTriggers = {
 				isCurrentCutsceneSectionId_2(0x6)		&&
 				isCurrentCutsceneMasterDataId(0x5400)	&&
 				isCurrentCutsceneSectionDataId(0x249e0)),
-			once(	// Identifies Cutscene => Exchangeing egg for frying pan in chapter 4
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 4
 				isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 				isCurrentChapter("Chapter4") 			&&
 				isCurrentCutsceneMasterId(0x2f9c0)		&& 
@@ -1700,82 +1719,54 @@ _achievementTriggers = {
 				onScreenTextID(4) == 0x80004 	&& prior(onScreenTextID(4)) == 0x0),
 		]) &&
 		onScreenTextID(0) == 0x0 && prev(onScreenTextID(0)) == 0x96},
-	"a_EikeThePyromancer": function EikeThePyromancer() { return // 
-		never(
-			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu_old() 	||
-			!isCurrentChapter("Chapter2")		||
-			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when telephone is used
-			isTelephoneUsedToScareCrowd()
+	"a_EikeThePyromancer": function EikeThePyromancer() { return
+		never (
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter2")	||
+			isViewingCutsceneFromExtraMenu() 
 		) &&
-		tally(200, 	// Tally block => IDs cutscene where Eike scares crowd with the lighter
-			repeated(100,
-				isCurrentSelectedInventoryItem("Lighter") 	&&
-				prior(currentCutsceneId(2)) == 0x2ff955 	&& 	currentCutsceneId(2) == 0x10111112 	&&
-				prior(currentCutsceneId(4)) == 0xe6de04a6 	&&	currentCutsceneId(4) == 0xde980748	&&
-				prior(currentCutsceneId(6)) == 0x1100040a 	&&	currentCutsceneId(6) == 0x12480620),
-			repeated(100,
-				isCurrentSelectedInventoryItem("Lighter") 	&& 
-				onScreenTextID(0) == 0x23 					&& 
-				prior(onScreenTextID(1)) == 0x48ffcb && onScreenTextID(1) == 0x0 &&
-				prior(onScreenTextID(3)) == 0x490027 && onScreenTextID(3) == 0x0)
+		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
+			isStatueChosen() && isLighterUsedToScareCrowd() &&			
+			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isCurrentCutsceneMasterId(0x3b240)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x340e0)	&&
+			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId(0x3b240) 	&&
-			isCurrentCutsceneMasterId_1(0x3)		&&
-			isCurrentCutsceneMasterId_2(0x2)		&&
-			isCutsceneSequenceFullyDone()
-		)},			
-	"a_EikeTheMagician": function EikeTheMagician() { return 
-		never(
-			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu_old() 	||
-			!isCurrentChapter("Chapter2")		||
-			!isStatueChosen()					||	// Reset this cheevo when flowers is picked or when lighter is used
-			!isTelephoneUsedToScareCrowd()
+		isCutsceneSectionDone()},
+	"a_EikeTheMagician": function EikeTheMagician() { return
+		never (
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter2")	||
+			isViewingCutsceneFromExtraMenu() 
 		) &&
-		tally(200, 	// Tally block => IDs cutscene where Eike scares crowd with the cellphone
-			repeated(100,  
-				isCutsceneActive_old() &&
-				isCurrentSelectedInventoryItem("Cellphone") && 
-				currentCutsceneId(11) == 0xc4612c05 && priorCutsceneId(11) == 0xff9c1670 &&
-				currentCutsceneId(15) == 0x0 		&& priorCutsceneId(15) == 0xc57c78c2 &&
-				currentCutsceneId(18) == 0x1276 	&& priorCutsceneId(18) == 0xfc240056),
-			repeated(100, 
-				isCutsceneActive_old() &&
-				isCurrentSelectedInventoryItem("Cellphone") && 
-				currentCutsceneId(3) == 0x50000000 && priorCutsceneId(3) == 0xfe51a2ff &&
-				currentCutsceneId(8) == 0x0481fede && priorCutsceneId(8) == 0xfbd101d3 &&
-				currentCutsceneId(11) == 0x2169fb15 && priorCutsceneId(11) == 0xc4612c05)
+		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
+			isStatueChosen() && isTelephoneUsedToScareCrowd() &&			
+			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isCurrentCutsceneMasterId(0x3b240)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x340e0)	&&
+			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId(0x3b240) 	&&
-			isCurrentCutsceneMasterId_1(0x3)		&&
-			isCurrentCutsceneMasterId_2(0x2)		&&
-			isCutsceneSequenceFullyDone()
-		)},	
+		isCutsceneSectionDone()},
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
-		never(	// Reset counts if game isn't running, game isn't in the correct chapter 
-			!isGameRunning() 					|| 
-			IsViewingCutsceneFromExtraMenu_old() 	||
-			!isCurrentChapter("Chapter2")
+		never (
+			!isGameRunning() 				||
+			!isCurrentChapter("Chapter2")	||
+			isViewingCutsceneFromExtraMenu() 
 		) &&
-		once(	// True => when picked to plant flowers while talking to gardeneer
-			isCutsceneActive() && isCurrentSelectedInventoryItem("SquireCrest") &&
-			!isStatueChosen() &&
-			currentCutsceneId(14) == 0x4831736	&& // This block => check if cutscene after choice has started
-			currentCutsceneId(15) == 0x431ab010	&&
-			currentCutsceneId(17) == 0x4f1f9ae	&&
-			prior(onScreenTextID(1)) == 0x003fff5f	&& onScreenTextID(1) == 0	&&	// This block => check if flowers is chosen
-			prior(onScreenTextID(7)) == 0x0050ffea	&& onScreenTextID(7) == 0	&&
-			prior(onScreenTextID(8)) == 0x005000a3	&& onScreenTextID(8) == 0
+		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
+			isFlowersChosen() &&
+			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isCurrentCutsceneMasterId(0x3b240)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x340e0)	&&
+			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		trigger_when(	// Trigger when the last cutscene in the chapter finishes
-			isCurrentCutsceneMasterId(0x3b240) 	&&
-			isCurrentCutsceneMasterId_1(0x3)		&&
-			isCurrentCutsceneMasterId_2(0x2)		&&
-			!isStatueChosen() && isCutsceneSequenceFullyDone()
-		)},
+		isCutsceneSectionDone()},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never(
 			!isGameRunning() 					||
