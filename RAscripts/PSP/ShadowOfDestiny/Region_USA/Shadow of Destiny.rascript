@@ -252,49 +252,6 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {
 															// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 
-// TODO Refactor => Below 4 function are deprecated
-function isCurrentCutsceneMasterId_1(int_cutsceneId) => word(0xA9ECC0) == int_cutsceneId		// $A9ECC0: [16-bit] Cutscene MASTER ID #1
-function isPriorCutsceneMasterId_1(int_cutsceneId) => prior(word(0xA9ECC0)) == int_cutsceneId	// 		- Identifies a section from the current cutscene
-
-function isCurrentCutsceneMasterId_2(int_cutsceneId) => word(0xA9ECC2) == int_cutsceneId		// $A9ECC2: [16-bit] Cutscene MASTER ID #2
-function isPriorCutsceneMasterId_2(int_cutsceneId) => prior(word(0xA9ECC2)) == int_cutsceneId	// 		- Identifies a section from the current cutscene2
-
-// TODO refactor => _cutsceneIDs AND function currentCutsceneId
-// Below memory addresses likely correlate to animation, model... data during a specific cutscene (not preferred for cutscene identification)
-//		- Everytime you view a different cutscene, memory values around these IDs/addresses change
-//		- Each unique cutscene seems to have different values => might correlate to animation, camera or model data
-//		- During cutscenes the values may change
-_cutsceneIDs = {
-	1: 0x1DF4280, 		// $1DF4280: [32-bit] Cutscene ID 
-	2: 0x1DF59B0, 		// $1DF59B0: [32-bit] Cutscene ID
-	3: 0x1DF5F71, 		// $1DF5F71: [32-bit] Cutscene ID
-	4: 0x1DF6724, 		// $1DF6724: [32-bit] Cutscene ID
-	5: 0x1DF6F60, 		// $1DF6F60: [32-bit] Cutscene ID
-	6: 0x1DF742A, 		// $1DF742A: [32-bit] Cutscene ID
-	7: 0x1DF7FA2, 		// $1DF7FA2: [32-bit] Cutscene ID
-	8: 0x1DF81BA, 		// $1DF81BA: [32-bit] Cutscene ID
-	9: 0x1DF8229, 		// $1DF8229: [32-bit] Cutscene ID
-	10: 0x1DF8442,		// $1DF8442: [32-bit] Cutscene ID
-	11: 0x1DF8B14, 		// $1DF8B14: [32-bit] Cutscene ID
-	12: 0x1DF9362, 		// $1DF9362: [32-bit] Cutscene ID
-	13: 0x1DF9AA4, 		// $1DF9AA4: [32-bit] Cutscene ID
-	14: 0x1DFA0E6, 		// $1DFA0E6: [32-bit] Cutscene ID
-	15: 0x1DFA4F8,		// $1DFA4F8: [32-bit] Cutscene ID
-	16: 0x1DFAC91, 		// $1DFAC91: [32-bit] Cutscene ID
-	17: 0x1DFAD9A, 		// $1DFAD9A: [32-bit] Cutscene ID
-	18: 0x1DFB0F0, 		// $1DFB0F0: [32-bit] Cutscene ID
-	19: 0x1DFB22B, 		// $1DFB22B: [32-bit] Cutscene ID
-	20: 0x1DF5A0C, 		// $1DF5A0C: [32-bit] Cutscene ID
-	21: 0x1DF5950,		// $1DF5950: [32-bit] Cutscene ID
-	22: 0x1DF81E5,		// $1DF81E5: [32-bit] Cutscene ID
-	23:	0x1DFB3D0,		// $1DFB3D0: [32-bit] Cutscene ID
-	24:	0x1DFCD78,		// $1DFCD78: [32-bit] Cutscene ID
-	25:	0x1DFEA54		// $1DFEA54: [32-bit] Cutscene ID
-}
-function currentCutsceneId(int_cutsceneId) 	=> dword(_cutsceneIDs[int_cutsceneId])
-
-function priorCutsceneId(int_cutsceneId) 	=> prior(dword(_cutsceneIDs[int_cutsceneId]))
-
 // MAP/SCENE/SCENARIO IDENTIFIER
 // *******************************
 _mapIDs= {	// list not complete, adding as is necessary
@@ -2727,8 +2684,8 @@ _achievementTriggers = {
 		once(	// Identifies Cutscene => Eike wakes himself up
 			isCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x237c0)		&& isPriorCutsceneMasterId(0x9c00) &&
-			isCurrentCutsceneMasterId_1(0x1)		&&
-			isCurrentCutsceneMasterId_2(0x0)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
 			isCurrentCutsceneMasterDataId(0x18930)	&&
 			isCurrentCutsceneSectionDataId(0xae60)
 		) && 
@@ -2754,16 +2711,16 @@ _achievementTriggers = {
 		once(	// Identifies Cutscene => Holding on to rotten rope
 			isCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x15640) 		&&
-			isCurrentCutsceneMasterId_1(0x5)		&&
-			isCurrentCutsceneMasterId_2(0x6)		&&
+			isCurrentCutsceneSectionId_1(0x5)		&&
+			isCurrentCutsceneSectionId_2(0x6)		&&
 			isCurrentCutsceneMasterDataId(0x7830)	&&
 			isCurrentCutsceneSectionDataId(0x2220)
 		) &&
 		once(	// Identifies Cutscene => Waking up in Limbo after death
 			isCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x237c0) 		&& isPriorCutsceneMasterId(0x15640) &&
-			isCurrentCutsceneMasterId_1(0x1)		&&
-			isCurrentCutsceneMasterId_2(0x0)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
 			isCurrentCutsceneMasterDataId(0x18930)	&&
 			isCurrentCutsceneSectionDataId(0xae60)
 		) &&
