@@ -73,7 +73,10 @@ _NPCs = {
 			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1},
 			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF80, "MaxTalkCount": 1},
 			"Chap3_OutsideChurch_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF81, "MaxTalkCount": 1},
-			"Chap7_TownSquare": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},
+			"Chap4_OutsideChurch_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF82, "MaxTalkCount": 1},
+			"Chap4_OutsideChurch_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF83, "MaxTalkCount": 1},	
+			"Chap4_NearBakery_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},	//	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
+			"Chap7_TownSquare": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},						//	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
 			"Chap7_TownSquare_Choice": {"MemAddrTalkCount": 0xA9EF85, "MaxTalkCount": 2}}},
 	"YoungCoupleMan_MiddleAges": { 
 		"ID": 0x198, "Appearance": {
@@ -82,7 +85,10 @@ _NPCs = {
 			"Chap2_WestGate_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6B, "MaxTalkCount": 1},
 			"Chap3_NearWell_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6C, "MaxTalkCount": 1},
 			"Chap3_NearWell_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6D, "MaxTalkCount": 1},
-			"Chap3_TownSquare_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6F, "MaxTalkCount": 1},
+			"Chap3_TownSquare_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6E, "MaxTalkCount": 1},
+			"Chap4_TownSquare_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6F, "MaxTalkCount": 1},
+			"Chap4_TownSquare_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF70, "MaxTalkCount": 1},
+			"Chap4_NearBakery_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF71, "MaxTalkCount": 1},
 			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
 			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
@@ -166,6 +172,12 @@ function isLostYoungCoupleProgressChap3(int_flagValue) => 	//	$A9EF8A: [8-bit Cu
 	byte(0xA9EF8A) == int_flagValue							// 		0x1 => has talked with 0xa9ef6c AND 0xa9ef7f
 															// 		0x2 => has talked with 0xa9ef6d AND 0xa9ef80
 															// 		0x3 => Young couple - Middle Ages - Chapter 3 - have changed positions
+
+function isLostYoungCoupleProgressChap4(int_flagValue) => 		//	$A9EF8B: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 4
+	byte(0xA9EF8B) == int_flagValue								//		0x1 => has talked with 0xa9ef82 AND 0xa9ef6f
+																// 		0x2 => has talked with 0xa9ef83 AND 0xa9ef70
+																// 		0x3 => Young couple - Middle Ages - Chapter 4 - have changed positions/respawned
+	
 
 function isManToldLoversNeverDestinedMeet() => 		// $A9EF8F: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 8
 	bit0(0xA9EF8F) == 1 && bit1(0xA9EF8F) ==0  		// 		bit 0 => told the man about the lovers never destined to meet
@@ -660,37 +672,37 @@ _achievements = {
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // REWORKED 
+		"a_PrologueComplete": { // WORKING 
 			"id": 306884, "points": 5, "hasTips": false,
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // REWORKED
+		"a_Chapter1Complete": { // WORKING
 			"id": 306886, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 1"},
-		"a_Chapter2Complete": { // REWORKED
+		"a_Chapter2Complete": { // WORKING
 			"id": 306922, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // REWORKED
+		"a_Chapter3Complete": { // WORKING
 			"id": 306921, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // REWORKED
+		"a_Chapter4CompletePan": { // WORKING
 			"id": 308964, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // REWORKED
+		"a_Chapter4CompleteSign": { // WORKING
 			"id": 310149, "points": 5, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
-		"a_Chapter5Complete": { // REWORKED
+		"a_Chapter5Complete": { // WORKING
 			"id": 311616, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // REWORKED
+		"a_Chapter6CompleteThriller": { // WORKING
 			"id": 313211, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // REWORKED
+		"a_Chapter6CompleteLove": { // WORKING
 			"id": 313210, "points": 4, "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
-		"a_Chapter7Complete": { // REWORKED
+		"a_Chapter7Complete": { // WORKING
 			"id": 315565, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 7"},
-		"a_Chapter8Complete": { // REWORKED 
+		"a_Chapter8Complete": { // WORKING 
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
 		// TODO "a_EXChapterComplete": {
@@ -734,36 +746,36 @@ _achievements = {
 		// 	"devInfo": "Seen ALL important the cutscenes"},
 	},
 	"c_Branch": { // Category - Branching path
-		"a_GetOrnamentalEgg": { // REWORKED
+		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 3, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
-		"a_BecomeThePerformer": {	// REWORKED
+		"a_BecomeThePerformer": {	// WORKING
 			"id": 402284, "points": 5, "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
-		"a_EggCollection1": { // REWORKED 
+		"a_EggCollection1": { // WORKING 
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
-		"a_EggCollection2": { // REWORKED
+		"a_EggCollection2": { // WORKING
 			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
 	"c_Endings": { // Category - Achieving different endings
-		"a_EndingA": { // REWORKED
+		"a_EndingA": { // WORKING
 			"id": 315566, "points": 10, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		"a_EndingB1": {	// REWORKED
+		"a_EndingB1":{ // WORKING
 			"id": 315573, "points": 10, "hasTips": true,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
-		"a_EndingB2": {	// REWORKED
+		"a_EndingB2":{ // WORKING
 			"id": 315572, "points": 10, "hasTips": true,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		"a_EndingC": {	// REWORKED
+		"a_EndingC": { // WORKING
 			"id": 317118, "points": 10, "hasTips": true,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		"a_EndingD": {	// REWORKED
+		"a_EndingD": { // WORKING
 			"id": 322230, "points": 10, "hasTips": true,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		"a_EndingE": {	// REWORKED
+		"a_EndingE": { // WORKING
 			"id": 322231, "points": 10, "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
@@ -771,109 +783,109 @@ _achievements = {
 		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
 			"id": 310426, "points": 10, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
-		"a_DoctorateTimeTraveling": { // REWORKED
+		"a_DoctorateTimeTraveling": { // WORKING
 			"id": 310163, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
-		"a_ShowEggTownPlanter": { // REWORKED
+		"a_ShowEggTownPlanter": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EggPocketWatchForCoffee": { // REWORKED
+		"a_EggPocketWatchForCoffee": { // WORKING
 			"id": 313213, "points": 5, "hasTips": true,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_EikeThePyromancer": { // REWORKED
+		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // REWORKED	
+		"a_EikeTheMagician": { // WORKING	
 			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // REWORKED 
+		"a_EikeTheFlorist": { // WORKING 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // REWORKED
+		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 2, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		"a_ArtInspiration1": { // REWORKED
+		"a_ArtInspiration1": { // WORKING
 			"id": 403824, "points": 3, "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
-		"a_ArtInspirationAll": { // REWORKED
+		"a_ArtInspirationAll": { // WORKING
 			"id": 403825, "points": 10, "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
-		"a_AntiquesEule": { // REWORKED 
+		"a_AntiquesEule": { // WORKING 
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
-		"a_EnigmaticCouple1": { // REWORKED
+		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
-		"a_EnigmaticCouple2": { // REWORKED
+		"a_EnigmaticCouple2": { // WORKING
 			"id": 310131, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
-		"a_EnigmaticCouple3": { // REWORKED
+		"a_EnigmaticCouple3": { // WORKING
 			"id": 310134, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
-		"a_EnigmaticCouple4": { // REWORKED
+		"a_EnigmaticCouple4": { // WORKING
 			"id": 310135, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
-		"a_EnigmaticCouple5": { // REWORKED
+		"a_EnigmaticCouple5": { // WORKING
 			"id": 315564, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
-		"a_LostYoungCouple1": { // REWORKED
+		"a_LostYoungCouple1": { // WORKING
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
-		"a_LostYoungCouple2": { // TODO
+		"a_LostYoungCouple2": { // WORKING
 			"id": 310133, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
-		"a_LostYoungCouple3": { // TODO
+		"a_LostYoungCouple3": { // WORKING
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
-		"a_LostYoungCouple4": { // TODO
+		"a_LostYoungCouple4": { // WORKING
 			"id": 310162, "points": 3, "hasTips": true,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // TODO
+		"a_LostYoungCouple5": { // WORKING
 			"id": 314753, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // TODO
+		"a_LostYoungCouple6": { // WORKING
 			"id": 315568, "points": 10, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
-		"a_HugoMotherChild": {  // REWORKED
+		"a_HugoMotherChild": { // WORKING
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
-		"a_SnowyCrimeScene": {  // REWORKED
+		"a_SnowyCrimeScene": { // WORKING
 			"id": 313209, "points": 5, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
-		"a_SaveMiriamBrum": {  // REWORKED
+		"a_SaveMiriamBrum": { // WORKING
 			"id": 315569, "points": 10, "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6"},
-		"a_MeetOldMiriam": { // REWORKED
+		"a_MeetOldMiriam": { // WORKING
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		"a_EnergyOrbLocatorPresentDay": { // REWORKED
+		"a_EnergyOrbLocatorPresentDay": { // WORKING
 			"id": 399816, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // REWORKED 
+		"a_EnergyOrbLocator70s80s": { // WORKING 
 			"id": 399817, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // REWORKED 
+		"a_EnergyOrbLocator1900Days": { // WORKING 
 			"id": 399818, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // REWORKED 
+		"a_EnergyOrbLocatorMiddleAges": { // WORKING 
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
-		"a_NewCakeInvented": { // REWORKED
+		"a_NewCakeInvented": { // WORKING
 			"id": 402297, "points": 5, "hasTips": true,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
-		"a_GiveMargaretteCake": { // REWORKED
+		"a_GiveMargaretteCake": { // WORKING
 			"id": 402296, "points": 3, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		"a_MaxInventory": { // REWORKED
+		"a_MaxInventory": { // WORKING
 			"id": 402404, "points": 10, "hasTips": true,
 			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
-		"a_PocketWatchCollection": { // REWORKED
+		"a_PocketWatchCollection": { // WORKING
 			"id": 315561, "points": 5, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
-		"a_PocketWatchReminiscing": { // REWORKED
+		"a_PocketWatchReminiscing": { // WORKING
 			"id": 315562, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
-		"a_BarmansChildren": { // REWORKED
+		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 		// CONCEPT "a_ScareApprenticeMiddleAges": { 
@@ -885,30 +897,30 @@ _achievements = {
 		// CONCEPT "a_MeetingEveryone": { 
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Talk to all NPCs"},
-		"a_ShortestChapter": { // REWORKED
+		"a_ShortestChapter": { // WORKING
 			"id": 40382, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
-		"a_PerformerGoingExtraMile": { // REWORKED
+		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
-		"a_MetYouBefore": {  // REWORKED
+		"a_MetYouBefore": { // WORKING
 			"id": 306888, "points": 5, "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
-		"a_ErasingEike": { // REWORKED
+		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 5, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
-		"a_ErasingEike2": { // REWORKED
+		"a_ErasingEike2": { // WORKING
 			"id": 314763, "points": 1, "hasTips": true,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_RottenRope": { // REWORKED
+		"a_RottenRope": { // WORKING
 			"id": 315563, "points": 1, "hasTips": false,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_ExcuseMeMyMy": { // REWORKED 
+		"a_ExcuseMeMyMy": { // WORKING 
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_TimeEgoFlop": { // REWORKED 
+		"a_TimeEgoFlop": { // WORKING 
 			"id": 313212, "points": 1, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
 	}
@@ -1964,87 +1976,55 @@ _achievementTriggers = {
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
-		// function measuredComparison() { return
-		// 	tally(4, [
-		// 		repeated(getMaxTalkCountFor("CoatedWoman_Present","xxxxxxxxx"),
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedWoman_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionChapterId(xxxxxxxxx) && isInteractionId(xxxxxxxxx)),
-		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedMan_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionChapterId(xxxxxxxxx) && isInteractionId(xxxxxxxxx))
-		// 	])}
-		// return 
-		// 	never(	
-		// 		!isInGame() ||
-		// 		!isCurrentChapter("Chapter4")
-		// 	) &&
-		// 	measured(measuredComparison(), always_true()) &&
-		// 	trigger_when(!isSmallCutsceneActive())},
-		
-		
-		// Private functions
 		function measuredComparison() { return
-			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2_old() == 0x08a33000),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2_old() == 0x08a33050),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2_old() == 0x08a33014),			// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2_old() == 0x08a33064),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2_old() == 0x08a33028),			// Add hit: +1  	=> for talking to man 3rd time
-				once(interactionID_2_old() == 0x08a33078)			// Add hit: +1 = 6	=> for talking to woman 3rd time
-			])}	
-		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter4")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isInGame()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu_old()}
-		// Trigger 
+			tally(6, [
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x426)),
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_TownSquare_BeforeTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x413)),
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_OutsideChurch_AfterTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x427)),
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_TownSquare_AfterTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x414)),
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_NearBakery_AfterLocationSwitch") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x428)),
+				once(
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_NearBakery_AfterLocationSwitch") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x415))				
+			])}
 		return 
-			never(
+			never(	
+				!isInGame() ||
 				!isCurrentChapter("Chapter4")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2_old() != 0x08a33050 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2_old() != 0x08a33000 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2_old() != 0x08a33064 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2_old() != 0x08a33014 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9b8 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2_old() != 0x08a33078 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b9ac 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2_old() != 0x08a33028 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
-			tally(2, 
+			tally(getMaxTalkCountFor("YoungCoupleMan_MiddleAges", "Chap5_NearSouthEastGate"), 
 				repeated(1,
 					isSmallCutsceneActive() &&
 					isTalkingTo("YoungCoupleMan_MiddleAges") &&
@@ -2066,7 +2046,7 @@ _achievementTriggers = {
 					isMargaretteNoAncestor() &&
 					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
 					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x428)),
+					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
 				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("YoungCoupleMan_MiddleAges") &&
@@ -2075,17 +2055,17 @@ _achievementTriggers = {
 			])}
 		function measuredComparison_Ancestor() { return
 			tally(4, [
-				once(	// 1st talk with woman
+				// once(	// 1st talk with woman		// Commented block FIXfor --> "YoungCoupleWoman_MiddleAges"-"Chap7_TownSquare" and "YoungCoupleWoman_MiddleAges"-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
+				// 	isSmallCutsceneActive() &&
+				// 	isMargaretteAncestor() &&
+				// 	isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+				// 	isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
+				// 	isInteractionChapterId(0x3b) && isInteractionId(0x428)),
+				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
 					isSmallCutsceneActive() &&
 					isMargaretteAncestor() &&
 					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x428)),
-				once(	// 2nd talk with woman, with dialogue option
-					isSmallCutsceneActive() &&
-					isMargaretteAncestor() &&
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountIncreasingToMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare_Choice") &&
+					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare_Choice") &&
 					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
 				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
