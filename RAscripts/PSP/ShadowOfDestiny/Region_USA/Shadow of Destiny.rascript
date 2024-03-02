@@ -193,25 +193,8 @@ function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit 
 																// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
 
 
-// Function is used when different appearances of the same character use the same dialogue
-//	Pointer value changes on each dialogue/talk/interaction, but InteractionID_2 doesn't
-function isPointerInteractionID_2(int_value) => dword(0xA9EFE4) == int_value
-
-function interactionID_1_old() 	=> dword(0xA9EFDC)			// $A9EFDC: [32-bit] Interaction ID 1
-														//		- Unique per interactable NPC or environment item
-														// 		- Doesn't reset back to a default value after interaction is done
-function interactionID_2_old() 	=> dword(0xA9EFE4)			// $A9EFE4: [32-bit] Interaction ID 2
-														// 		- Resets to 0x0 when interaction is done
-														//		- Unique per interaction 
-function interactionID_3_old() 	=> dword(0xA9EFF4)			// $A9EFF4: [32-bit] Interaction ID 3 
-														//		- Unique per interactable NPC or environment item
-														// 		- Resets to 0x0 when interaction is done
-
 // CUTSCENE IDENTIFICATION
 // ************************
-function isCutsceneActive_old() => bit0(0xA9Eb2C) == 0								// $A9Eb2C: [bit-0] Flag -> is cutscene active (not preferred)
-function isCutsceneDone_old() => prev(bit0(0xA9Eb2C)) == 1 && bit0(0xA9Eb2C) == 0	//		- 0 = a cutscene is active, whenever PC movement is disabled (also 0 when in intro sequence)
-																					//		- 1 = no cutscene active
 function isCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
 																									// 		- 0x00 => no cutscene active
 function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
@@ -280,6 +263,7 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"BrumMuseumDownstairsRoomDay": 0x2ed
 }
 function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
+
 
 // CHAPTER LOGIC
 // ***************
@@ -524,10 +508,6 @@ function isEventViewerActive() {						// $AC3170: [25-bit] Pointer - When in Ext
 														// 		| - 0x1 => Chapter 1		| - 0xa => Total
 														// 		| - ...						| - 0xb => Exit
 														// 		| - 0x8 => Chapter 8
-
-function IsViewingCutsceneFromExtraMenu_old() => dword(0x1FFF15C) == 0x1	// $1FFF15C: [32-bit] Flag => is viewing cutscene from event viewer (not preferred)
-																			// 	- 0x1 = event viewer is active
-																			// 	- other values = event viewer is inactive
 																		
 
 // OTHER LOGIC
@@ -535,12 +515,11 @@ function IsViewingCutsceneFromExtraMenu_old() => dword(0x1FFF15C) == 0x1	// $1FF
 function getEnergyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
 												//		- Used for the time travel machine (Z-Pad)
 												//		- Min => 0x0 		Max => 0x0a
+
 function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Bit 1] Flag -> is in-game
 												// 		0 => at title screen
 												// 		1 => in-game
-function isGameRunning_old() => bit0(0xA9F034) == 1	// $A9F034: [bit-0] Flag -> is game running (deprecated)
-													//		- 0 = game is not running, it's in the title screen
-													//		- 1 = game is running
+
 function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 	dword(0x1FFF5F8) == 0x11 &&							// 	0x11 => title screen			any other value => something else on screen
 	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	// $1FFF604: [8-bit] Selected submenu at title screen
