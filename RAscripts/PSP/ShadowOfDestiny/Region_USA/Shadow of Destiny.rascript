@@ -69,12 +69,23 @@ _NPCs = {
 		"ID": 0x197, "Appearance": {
 			"Chap2_WestGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7C, "MaxTalkCount": 1},
 			"Chap2_WestGate_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7D, "MaxTalkCount": 1},
-			"Chap2_EastNearHay_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1}}},
+			"Chap2_EastNearHay_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1},
+			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1},
+			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF80, "MaxTalkCount": 1},
+			"Chap3_OutsideChurch_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF81, "MaxTalkCount": 1},
+			"Chap7_TownSquare": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},
+			"Chap7_TownSquare_Choice": {"MemAddrTalkCount": 0xA9EF85, "MaxTalkCount": 2}}},
 	"YoungCoupleMan_MiddleAges": { 
 		"ID": 0x198, "Appearance": {
 			"Chap2_EastNearHay_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF69, "MaxTalkCount": 1},
 			"Chap2_EastNearHay_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6A, "MaxTalkCount": 1},
-			"Chap2_WestGate_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6B, "MaxTalkCount": 1}}},
+			"Chap2_WestGate_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6B, "MaxTalkCount": 1},
+			"Chap3_NearWell_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6C, "MaxTalkCount": 1},
+			"Chap3_NearWell_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6D, "MaxTalkCount": 1},
+			"Chap3_TownSquare_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6F, "MaxTalkCount": 1},
+			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
+			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
+			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
@@ -137,19 +148,38 @@ function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
 	return _Interactables[string_interactable] == dword(let_maskedPointer)}
 
-function isInteractionID_1(int_interactionId) {					// $A9EFE0: [25-bit] Pointer - Interactions
-	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff				// 		+0x0 - [32-bit] Interaction ID_1
-	return dword(let_maskedPointer) == int_interactionId}		//		| - Might have same value for different interaction in same chapter
-																//		| - WARNING: each chapter has it's own value for the same interaction <-- becomes a bug when when not accounted for in achievement trigger
-function isInteractionID_2(int_interactionId) {
-	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff				// $A9EFE4: [25-bit] Pointer - Interactions
-	return dword(let_maskedPointer) == int_interactionId}		// 		- Pointer resets to 0x0 when interaction is done
-																// 		+0x0 - [32-bit] Interaction ID_2
+function isInteractionChapterId(int_Id) {			// $A9EFE0: [25-bit] Pointer - Interactions
+	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff	// 		+0x0 - [32-bit] Interaction Chapter ID
+	return dword(let_maskedPointer) == int_Id}		//		| - Each chapter has a different value
 
-function isLostYoungCoupleProgressChap2(int_flagValue) => byte(0xA9EF89) == int_flagValue	//	$A9EF89: [8-bit Flag] Progress of Young Couple sidequest: Chapter 2
-																							// 		0x1 => has talked with 0xa9ef69 AND 0xa9ef7c
-																							// 		0x2 => has talked with 0xa9ef6a AND 0xa9ef7d
-																							// 		0x3 => Young couple - Middle Ages - Chapter 2 - have switched positions
+function isInteractionId(int_Id) {
+	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit] Pointer - Interactions
+	return dword(let_maskedPointer) == int_Id}		// 		- Pointer resets to 0x0 when interaction is done
+													// 		+0x0 - [32-bit] Interaction ID
+
+function isLostYoungCoupleProgressChap2(int_flagValue) => 	//	$A9EF89: [8-bit Current Playthrough Flag]  Progress of Young Couple sidequest: Chapter 2
+	byte(0xA9EF89) == int_flagValue							// 		0x1 => has talked with 0xa9ef69 AND 0xa9ef7c
+															// 		0x2 => has talked with 0xa9ef6a AND 0xa9ef7d
+															// 		0x3 => Young couple - Middle Ages - Chapter 2 - have switched positions
+
+function isLostYoungCoupleProgressChap3(int_flagValue) => 	//	$A9EF8A: [8-bit Current Playthrough Flag]  Progress of Young Couple sidequest: Chapter 3
+	byte(0xA9EF8A) == int_flagValue							// 		0x1 => has talked with 0xa9ef6c AND 0xa9ef7f
+															// 		0x2 => has talked with 0xa9ef6d AND 0xa9ef80
+															// 		0x3 => Young couple - Middle Ages - Chapter 3 - have changed positions
+
+function isManToldLoversNeverDestinedMeet() => 		// $A9EF8F: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 8
+	bit0(0xA9EF8F) == 1 && bit1(0xA9EF8F) ==0  		// 		bit 0 => told the man about the lovers never destined to meet
+													// 		bit 1 => told the man to get over it
+
+function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 7
+																// 		>= 0x1 => advised woman to be truthful
+																// 		- Increases by 0x1 after telling woman to be truthful, to a max of 0x1
+																//	$SAME-MEMORY-ADDRESS-AS-ABOVE: [8-bit] NPC Talk Count - Young couple man - Middle Ages - Chapter 8 - Outside church - Before Experiment - Only available when this memory address was already >= 0x1
+																// 		- Dual purpose memory address
+																//		- Talk Counts add on top of above explained count
+																// 		- If count was 0 from start, refer to 0xa9ef77
+																// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
+
 
 // Function is used when different appearances of the same character use the same dialogue
 //	Pointer value changes on each dialogue/talk/interaction, but InteractionID_2 doesn't
@@ -172,7 +202,7 @@ function isCutsceneDone_old() => prev(bit0(0xA9Eb2C)) == 1 && bit0(0xA9Eb2C) == 
 																					//		- 1 = no cutscene active
 function isCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
 																									// 		- 0x00 => no cutscene active
-function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0	// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
+function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
 																									// 		- 0x05 => cutscene active
 function isCutsceneSectionEnding() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	
 
@@ -276,7 +306,8 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"BrumMuseumUpstairsRoom2Day": 0x1bd,
 	"BrumMuseumUpstairsRoom3Night": 0x140,
 	"BrumMuseumUpstairsRoom3Day": 0xcd,
-	"BrumMuseumDownstairsRoom": 0x32
+	"BrumMuseumDownstairsRoomNight": 0x32,
+	"BrumMuseumDownstairsRoomDay": 0x2ed
 }
 function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
 
@@ -557,7 +588,7 @@ function isCrowdScaredWithCellphone() => bit1(0xA9EDA0) == 1	// 		bit 2 = 0 => C
 																// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
 function isCrowdScaredWithLighter() => bit1(0xA9EDA0) == 0	
 
-																
+					
 function isMovieWorldConquestPicked() => bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1		// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
 																						// 		bit 5 => Movie choice 1: Meditating Man
 function isMovieTimeTravelPicked() => bit6(0xA9EDB7) == 1 && bit5(0xA9EDB7) == 0		// 		bit 6 => Movie choice 1: Time Travel
@@ -1841,128 +1872,97 @@ _achievementTriggers = {
 	"a_LostYoungCouple1": function LostYoungCouple1() {
 		function measuredComparison() { return
 			tally(6, [
-				once(
+				once(	// 1st talk with woman
 					isSmallCutsceneActive() && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time isNPCtalkCountIncreasingToMax() counts
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
 					isTalkingTo("YoungCoupleWoman_MiddleAges") && 
 					isNPCtalkCountIncreasingToMax("YoungCoupleWoman_MiddleAges", "Chap2_WestGate_BeforeTalkingToBoth") &&	
-					isInteractionID_1(0x163) && isInteractionID_2(0x420)),
-				once(
+					isInteractionChapterId(0x163) && isInteractionId(0x420)),
+				once(	// 1st talk with man
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
 					isTalkingTo("YoungCoupleMan_MiddleAges") &&
 					isNPCtalkCountIncreasingToMax("YoungCoupleMan_MiddleAges", "Chap2_EastNearHay_BeforeTalkingToBoth") &&
-					isInteractionID_1(0x163) && isInteractionID_2(0x40d)),
-				once(
+					isInteractionChapterId(0x163) && isInteractionId(0x40d)),
+				once( 	// 2nd talk with woman; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
 					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
 					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap2_WestGate_AfterTalkingToBoth") &&
-					isInteractionID_1(0x163) && isInteractionID_2(0x421)),
-				once(
+					isInteractionChapterId(0x163) && isInteractionId(0x421)),
+				once(	// 2nd talk with man; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
 					isTalkingTo("YoungCoupleMan_MiddleAges") &&
 					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap2_EastNearHay_AfterTalkingToBoth") &&
-					isInteractionID_1(0x163) && isInteractionID_2(0x40e)),
-				once(
+					isInteractionChapterId(0x163) && isInteractionId(0x40e)),
+				once(	// 3rd talk with woman
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
 					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
 					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap2_EastNearHay_AfterLocationSwitch") &&
-					isInteractionID_1(0x163) && isInteractionID_2(0x422)),
-				once(
+					isInteractionChapterId(0x163) && isInteractionId(0x422)),
+				once(	// 3rd talk with man
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
 					isTalkingTo("YoungCoupleMan_MiddleAges") &&
 					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap2_WestGate_AfterLocationSwitch") &&
-					isInteractionID_1(0x163) && isInteractionID_2(0x40f))
+					isInteractionChapterId(0x163) && isInteractionId(0x40f))
 			])}
 		return 
-			never(	
-				!isInGame() ||
-				!isCurrentChapter("Chapter2")
+			never(
+				!isInGame() || 
+				!isCurrentChapter("Chapter4")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
-			trigger_when(!isSmallCutsceneActive())},
+			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple2": function LostYoungCouple2() {  
-		// function measuredComparison() { return
-		// 	tally(4, [
-		// 		repeated(getMaxTalkCountFor("CoatedWoman_Present","xxxxxxxxx"),
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedWoman_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx)),
-		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedMan_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx))
-		// 	])}
-		// return 
-		// 	never(	
-		// 		!isInGame() ||
-		// 		!isCurrentChapter("Chapter4")
-		// 	) &&
-		// 	measured(measuredComparison(), always_true()) &&
-		// 	trigger_when(!isSmallCutsceneActive())},
-		
-		// Private functions
 		function measuredComparison() { return
-			tally(6, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2_old() == 0x08a32c18),			// Add hit: +1  	=> for talking to man 1st time
-				once(interactionID_2_old() == 0x08a32c68),			// Add hit: +1  	=> for talking to woman 1st time
-				once(interactionID_2_old() == 0x08a32c2c),			// Add hit: +1  	=> for talking to man 2nd time
-				once(interactionID_2_old() == 0x08a32c7c),			// Add hit: +1		=> for talking to woman 2nd time
-				once(interactionID_2_old() == 0x08a32c40),			// Add hit: +1  	=> for talking to man 3rd time
-				once(interactionID_2_old() == 0x08a32c90)			// Add hit: +1 = 6	=> for talking to woman 3rd time
-			])}	
-		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter3")) &&	// Hit count 100 => when loading another save to another chapter, there's a few 
-			isInGame()	&& 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu_old()}	
-		// Trigger 
+			tally(6, [
+				once(	// 1st talk with woman
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x423)),
+				once(	// 1st talk with man
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_NearWell_BeforeTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x410)),
+				once(	// 2nd talk with woman; only available when talking to both at least once
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&	
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x424)),
+				once(	// 2nd talk with man; only available when talking to both at least once
+					isSmallCutsceneActive() &&
+					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_NearWell_AfterTalkingToBoth") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x411)),
+				once(	// 3rd talk with woman
+					isSmallCutsceneActive() &&
+					isLostYoungCoupleProgressChap3(0x3) &&
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_OutsideChurch_AfterLocationSwitch") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x425)),
+				once(	// 3rd talk with man
+					isSmallCutsceneActive() &&
+					isLostYoungCoupleProgressChap3(0x3) &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_TownSquare_AfterLocationSwitch") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x412))
+			])}
 		return 
 			never(
-				!isCurrentChapter("Chapter3")
+				!isInGame() || 
+				!isCurrentChapter("Chapter4")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 1st time
-				interactionID_2_old() != 0x08a32c68 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2_old() != 0x08a32c18 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 2nd time
-				interactionID_2_old() != 0x08a32c7c 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2_old() != 0x08a32c2c 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b970 	&&		// Block => cutscene when talking to woman 3rd time
-				interactionID_2_old() != 0x08a32c90 	&&
-				interactionID_3_old() != 0x197			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08a1b964 	&&		// Block => cutscene when talking to man 3rd time
-				interactionID_2_old() != 0x08a32c40 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
 		// function measuredComparison() { return
 		// 	tally(4, [
@@ -1970,12 +1970,12 @@ _achievementTriggers = {
 		// 			isSmallCutsceneActive() &&
 		// 			isTalkingTo("CoatedWoman_Present") &&
 		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx)),
+		// 			isInteractionChapterId(xxxxxxxxx) && isInteractionId(xxxxxxxxx)),
 		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
 		// 			isSmallCutsceneActive() &&
 		// 			isTalkingTo("CoatedMan_Present") &&
 		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx))
+		// 			isInteractionChapterId(xxxxxxxxx) && isInteractionId(xxxxxxxxx))
 		// 	])}
 		// return 
 		// 	never(	
@@ -2043,165 +2043,90 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
-		// function measuredComparison() { return
-		// 	tally(4, [
-		// 		repeated(getMaxTalkCountFor("CoatedWoman_Present","xxxxxxxxx"),
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedWoman_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx)),
-		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedMan_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx))
-		// 	])}
-		// return 
-		// 	never(	
-		// 		!isInGame() ||
-		// 		!isCurrentChapter("Chapter4")
-		// 	) &&
-		// 	measured(measuredComparison(), always_true()) &&
-		// 	trigger_when(!isSmallCutsceneActive())},
-		
-		
 		function measuredComparison() { return
-			tally(2, [
-				once(interactionID_2_old() == 0x08a331cc),		// => cutscene when talking to man 1st time
-				once(interactionID_2_old() == 0x08a331e0)		// => cutscene when talking to man 2nd time
-			])}
-		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter5")) && 
-			isInGame() && 
-			!IsViewingCutsceneFromExtraMenu_old()} 
-		return
-			never(
+			tally(2, 
+				repeated(1,
+					isSmallCutsceneActive() &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap5_NearSouthEastGate") &&
+					isInteractionChapterId(0x4b) && isInteractionId(0x416))
+			)}
+		return 
+			never(	
+				!isInGame() ||
 				!isCurrentChapter("Chapter5")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 1st time
-				interactionID_2_old() != 0x08a331cc 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08b9d5ec 	&&		// Block => cutscene when talking to man 2nd time
-				interactionID_2_old() != 0x08a331e0 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), always_true()) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple5": function LostYoungCouple5() {
-		// function measuredComparison() { return
-		// 	tally(4, [
-		// 		repeated(getMaxTalkCountFor("CoatedWoman_Present","xxxxxxxxx"),
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedWoman_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx)),
-		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedMan_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx))
-		// 	])}
-		// return 
-		// 	never(	
-		// 		!isInGame() ||
-		// 		!isCurrentChapter("Chapter4")
-		// 	) &&
-		// 	measured(measuredComparison(), always_true()) &&
-		// 	trigger_when(!isSmallCutsceneActive())},
-		
-		
-		// Private functions
-		function measuredComparison() { return
-			tally(2, [	// this hit count becomes the hit count for the final comparison in the array
-				once(interactionID_2_old() == 0x08a33398),			// Add hit: +1  	=> for talking to man 
-				once(											// Add hit: +1		=> when talking to woman and picking dialogue option: Tell the truth
-					interactionID_2_old() == 0x08a333fc && prior(interactionID_2_old()) == 0x8a333e8 &&
-					onScreenTextID(1) == 0x0 && prior(onScreenTextID(1)) == 0x40ff92		&&	
-					onScreenTextID(4) == 0x0 && prior(onScreenTextID(4)) == 0x80007			&&	
-					onScreenTextID(5) == 0x0 && prior(onScreenTextID(5)) == 0x4ffff0	
-				)			
-			])}	
-		function measuredIfComparison() { return
-			repeated(100, isCurrentChapter("Chapter7")) &&	// Hit count 100 => when loading a savefile to another chapter, there's a few 
-			isInGame() && 								// frames where both these comparisons are true. So this hit counts fixes that
-			!IsViewingCutsceneFromExtraMenu_old()}
-		// Trigger 
+		function measuredComparison_NoAncestor() { return
+			tally(4, [
+				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
+					isSmallCutsceneActive() && 
+					isMargaretteNoAncestor() &&
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
+					isInteractionChapterId(0x3b) && isInteractionId(0x428)),
+				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
+					isSmallCutsceneActive() &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap7_OutsideChurch") &&
+					isInteractionChapterId(0x3b) && isInteractionId(0x418))
+			])}
+		function measuredComparison_Ancestor() { return
+			tally(4, [
+				once(	// 1st talk with woman
+					isSmallCutsceneActive() &&
+					isMargaretteAncestor() &&
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
+					isInteractionChapterId(0x3b) && isInteractionId(0x428)),
+				once(	// 2nd talk with woman, with dialogue option
+					isSmallCutsceneActive() &&
+					isMargaretteAncestor() &&
+					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
+					isNPCtalkCountIncreasingToMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare_Choice") &&
+					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
+				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
+					isSmallCutsceneActive() &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap7_OutsideChurch") &&
+					isInteractionChapterId(0x3b) && isInteractionId(0x418))
+			])}
 		return 
-			never(
+			never(	
+				!isInGame() ||
 				!isCurrentChapter("Chapter7")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08a1bb38 	&&		// Block => cutscene when talking to man 
-				interactionID_2_old() != 0x08a33398 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
+			(
+				measured(measuredComparison_NoAncestor(), isMargaretteNoAncestor()) || 
+				measured(measuredComparison_Ancestor(), isMargaretteAncestor())
 			) &&
-			unless(
-				interactionID_1_old() != 0x08a1bb44 &&			// Block => cutscene when talking to woman and picking dialogue option: Tell the truth
-				interactionID_2_old() != 0x08a333fc && prior(interactionID_2_old()) != 0x8a333e8 &&
-				interactionID_3_old() != 0x197		&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			trigger_when(isNoCutsceneActive())},
 	"a_LostYoungCouple6": function LostYoungCouple6() { 
-		// function measuredComparison() { return
-		// 	tally(4, [
-		// 		repeated(getMaxTalkCountFor("CoatedWoman_Present","xxxxxxxxx"),
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedWoman_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedWoman_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx)),
-		// 		repeated(getMaxTalkCountFor("CoatedMan_Present","xxxxxxxxx"), 
-		// 			isSmallCutsceneActive() &&
-		// 			isTalkingTo("CoatedMan_Present") &&
-		// 			isNPCtalkCountIncreasing("CoatedMan_Present", "xxxxxxxxx") &&
-		// 			isInteractionID_1(xxxxxxxxx) && isInteractionID_2(xxxxxxxxx))
-		// 	])}
-		// return 
-		// 	never(	
-		// 		!isInGame() ||
-		// 		!isCurrentChapter("Chapter4")
-		// 	) &&
-		// 	measured(measuredComparison(), always_true()) &&
-		// 	trigger_when(!isSmallCutsceneActive())},
-		
-		
 		function measuredComparison() { return
-			tally(2, [									//			= 2
-				once(interactionID_2_old() == 0x08a335f0),	// Add hit: +1  	=> for talking to man before experiment
-				once(interactionID_2_old() == 0x08a3367c)	// Add hit: +1		=> for talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet 
-			])}	
-		function measuredIfComparison() { return
-			repeated(100, 								// Hit count 100 => when loading a savefile to another chapter, there's a few 
-				isCurrentChapter("Chapter8")			// frames where both these comparisons are true. So this hit counts fixes that	
-			) &&										// The no-ancestress route might not spawn the man in this chapter. Other route does, when having talked having told the woman and told her to tell the truth in chapter 7
-			isInGame() && 	
-			!IsViewingCutsceneFromExtraMenu_old()}
+			tally(2, [
+				once(	// 1st talk with man, having a dialogue option
+					isSmallCutsceneActive() &&
+					isWomanAdvisedBeTruthful() &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&
+					isNPCtalkCountIncreasingToMax("YoungCoupleMan_MiddleAges", "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
+					isInteractionChapterId(0x13) && isInteractionId(0x41c)),
+				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
+						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
+					isSmallCutsceneActive() &&		
+					isWomanAdvisedBeTruthful() &&
+					isManToldLoversNeverDestinedMeet() &&
+					isTalkingTo("YoungCoupleMan_MiddleAges") &&					
+					isInteractionChapterId(0x13) && isInteractionId(0x433))
+			])}
 		return 
-			never(
+			never(	
+				!isInGame() ||
 				!isCurrentChapter("Chapter8")
 			) &&
-			unless(
-				interactionID_1_old() != 0x08ba3264 	&&		// Block => cutscene when talking to man before experiment
-				interactionID_2_old() != 0x08a335f0 	&&
-				interactionID_3_old() != 0x198			&&
-				!isCutsceneActive_old()
-			) &&
-			unless(
-				interactionID_1_old() != 0x08ba349c 	&&		// Block => cutscene when talking to man after experiment for 2nd time after picking the dialogue option: Lovers never destined to meet  
-				interactionID_2_old() != 0x08a3367c 	&&
-				interactionID_3_old() != 0x198			&&
-				onScreenTextID(1) != 0x0048ff81		&&
-				onScreenTextID(2) != 0x00480000		&&
-				onScreenTextID(3) != 0x0048fffc		&&
-				onScreenTextID(4) != 0x00080009		&&
-				!isCutsceneActive_old()
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), isCurrentMapScene("MedievalCity")) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		function measuredComparison() { return
 			tally(4, [
@@ -2209,12 +2134,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap1Prologue_TownSquare") &&
-					isInteractionID_2(0x2cc)),
+					isInteractionId(0x2cc)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap1Prologue_NearBar"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap1Prologue_NearBar") &&
-					isInteractionID_2(0x2c1))
+					isInteractionId(0x2c1))
 			])}
 		return 
 			never(	
@@ -2222,7 +2147,7 @@ _achievementTriggers = {
 				!isCurrentChapter("Prologue") && !isCurrentChapter("Chapter1")
 			) &&
 			measured(measuredComparison(), always_true()) &&
-			trigger_when(!isSmallCutsceneActive())},
+			trigger_when(isNoCutsceneActive())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
 		function measuredComparison_onIncrease() { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
@@ -2230,12 +2155,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_2(0x2d0)),
+					isInteractionId(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
-					isInteractionID_2(0x2c4))
+					isInteractionId(0x2c4))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2243,19 +2168,19 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_2(0x2d0)),
+					isInteractionId(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
-					isInteractionID_2(0x2c4))
+					isInteractionId(0x2c4))
 			])}
 		return 
 			never(	
 				!isInGame() ||
 				!isCurrentChapter("Chapter3")
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true()) &&
+			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(!isSmallCutsceneActive())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		function measuredComparison_onIncrease() { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
@@ -2264,12 +2189,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_2(0x2d0)),
+					isInteractionId(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
-					isInteractionID_2(0x2c5))
+					isInteractionId(0x2c5))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2277,20 +2202,20 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_2(0x2d0)),
+					isInteractionId(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
-					isInteractionID_2(0x2c5))
+					isInteractionId(0x2c5))
 			])}
 		return 
 			never(	
 				!isInGame() ||
 				!isCurrentChapter("Chapter4")
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true()) &&
-			trigger_when(!isSmallCutsceneActive())},
+			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
 		function measuredComparison_BrumLibrary_onIncrease() { return
 			tally(3, [
@@ -2298,12 +2223,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d5)),
+					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
 				repeated(2, // --> overwrite of '''getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumLibrary") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2c9))
+					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumLibrary_onMax() { return
 			tally(3, [
@@ -2311,12 +2236,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d5)),
+					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
 				repeated(2, // --> overwrite of 'getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumLibrary") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2c9))
+					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumMuseum_onIncrease() { return
 			tally(3, [
@@ -2324,12 +2249,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d5)),
+					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap5_NorthEastGate_BrumMuseum") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2ca))
+					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
 			])}
 		function measuredComparison_BrumMuseum_onMax() { return
 			tally(3, [
@@ -2337,21 +2262,21 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d5)),
+					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumMuseum") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2ca))
+					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
 			])}
 		return 
 			never(	
 				!isInGame() ||
 				!isCurrentChapter("Chapter5")
 			) &&
-			trigger_when(!isSmallCutsceneActive()) &&
-			measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
-			measured(measuredComparison_BrumLibrary_onIncrease()) || measured(measuredComparison_BrumLibrary_onMax())},
+			trigger_when(isNoCutsceneActive()) &&
+			(measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
+			measured(measuredComparison_BrumLibrary_onIncrease()) || measured(measuredComparison_BrumLibrary_onMax()))},
 	"a_EnigmaticCouple5": function EnigmaticCouple5() {
 		function measuredComparison_onIncrease() { return
 			tally(3, [
@@ -2359,12 +2284,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap7_SouthGate") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2d3)),
+					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap7_NorthWestGate") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2c8))
+					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
 			])}
 		function measuredComparison_onMax() { return
 			tally(3, [
@@ -2372,20 +2297,20 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap7_SouthGate") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2d3)),
+					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap7_NorthWestGate") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2c8))
+					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
 			])}
 		return 
 			never(	
 				!isInGame() ||
 				!isCurrentChapter("Chapter7")
 			) &&
-			measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true()) &&
-			trigger_when(!isSmallCutsceneActive())},
+			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!isInGame()					||
@@ -2425,32 +2350,32 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeYoungBoy_Present") &&
 					isNPCtalkCountIncreasingToMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
-					isInteractionID_1(0x44) && isInteractionID_2(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
+					isInteractionChapterId(0x44) && isInteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteMother_Present") &&
 					isNPCtalkCountIncreasingToMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
-					isInteractionID_1(0x44) && isInteractionID_2(0x336)),
+					isInteractionChapterId(0x44) && isInteractionId(0x336)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteYoungGirl_Present") &&
 					isNPCtalkCountIncreasingToMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
-					isInteractionID_1(0x44) && isInteractionID_2(0x323)),
+					isInteractionChapterId(0x44) && isInteractionId(0x323)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeOldWomanOrangeSweater_Present") &&
 					isNPCtalkCountIncreasingToMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
-					isInteractionID_1(0x44) && isInteractionID_2(0x32c)),
+					isInteractionChapterId(0x44) && isInteractionId(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteAdultManGlasses_Present") &&
 					isCurrentMapScene("PresentTownHall") &&
-					isInteractionID_1(0x29) && isInteractionID_2(0x3c6)),
+					isInteractionChapterId(0x29) && isInteractionId(0x3c6)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeElderlyWoman_Present") &&
 					isCurrentMapScene("PresentTownHall") &&
-					isInteractionID_1(0x29) && isInteractionID_2(0x3cc)),
+					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
 					isCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
@@ -2564,48 +2489,49 @@ _achievementTriggers = {
 		isFullCutsceneSequenceEnding()},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
-			!isInGame() ||
-			isChapterChanging()
+			!isInGame() 		||
+			isChapterChanging() ||
+			isBrumEstateLibrary()
 		) && 
-		trigger_when(!isSmallCutsceneActive()) &&	// Trigger when cutscene is over
+		trigger_when(isNoCutsceneActive()) &&	// Trigger when cutscene is over
 		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 			once(
 				isSmallCutsceneActive() && 
 				isPaintingTowerViewInspired() &&
 				isInteractingWith("Painting_TowerView") && 
-				isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-				isInteractionID_2(0x124)),
+				(isCurrentMapScene("BrumMuseumDownstairsRoomNight") || isCurrentMapScene("BrumMuseumDownstairsRoomDay")) &&
+				isInteractionId(0x124)),
 			
 			once(
 				isSmallCutsceneActive() && 	
 				isPaintingSquireCrestInspired() &&
 				isInteractingWith("Painting_SquireCrest") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-				isInteractionID_2(0x125)),
+				isInteractionId(0x125)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingMarktplatzInspired() &&
 				isInteractingWith("Painting_TownSquare") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-				isInteractionID_2(0x126)),
+				isInteractionId(0x126)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingAntidoteInspired() &&
 				isInteractingWith("Painting_AlchemyLab") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_2(0x127)),
+				isInteractionId(0x127)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingPerformerInspired() &&
 				isInteractingWith("Painting_Performer") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_2(0x128)),
+				isInteractionId(0x128)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingHouseCollapseInspired() &&
 				isInteractingWith("Painting_CollapsedHouse") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_2(0x129))
+				isInteractionId(0x129))
 			])},
 	"a_ArtInspirationAll": function ArtInspirationAll() {
 		function measuredComparison() {
@@ -2614,45 +2540,45 @@ _achievementTriggers = {
 					isSmallCutsceneActive() && 
 					isPaintingTowerViewInspired() &&
 					isInteractingWith("Painting_TowerView") && 
-					isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-					isInteractionID_2(0x124)),
+					(isCurrentMapScene("BrumMuseumDownstairsRoomNight") || isCurrentMapScene("BrumMuseumDownstairsRoomDay")) &&
+					isInteractionId(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
 					isPaintingSquireCrestInspired() &&
 					isInteractingWith("Painting_SquireCrest") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_2(0x125)),
+					isInteractionId(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingMarktplatzInspired() &&
 					isInteractingWith("Painting_TownSquare") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_2(0x126)),
+					isInteractionId(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingAntidoteInspired() &&
 					isInteractingWith("Painting_AlchemyLab") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x127)),
+					isInteractionId(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingPerformerInspired() &&
 					isInteractingWith("Painting_Performer") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x128)),
+					isInteractionId(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingHouseCollapseInspired() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x129))
+					isInteractionId(0x129))
 			])}
 		return
 			never(
 				!isInGame() ||
 				isChapterChanging()
 			) &&
-			trigger_when(!isSmallCutsceneActive()) &&
+			trigger_when(isNoCutsceneActive()) &&
 			measured(measuredComparison(), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		function measuredComparison() {
@@ -2660,50 +2586,50 @@ _achievementTriggers = {
 				once(
 					isSmallCutsceneActive() && 	
 					isInteractingWith("Painting_TowerView") && 
-					isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-					isInteractionID_2(0x124)),
+					(isCurrentMapScene("BrumMuseumDownstairsRoomNight") || isCurrentMapScene("BrumMuseumDownstairsRoomDay")) &&
+					isInteractionId(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
 					isInteractingWith("Painting_SquireCrest") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_2(0x125)),
+					isInteractionId(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_TownSquare") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_2(0x126)),
+					isInteractionId(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_AlchemyLab") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x127)),
+					isInteractionId(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Performer") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x128)),
+					isInteractionId(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_2(0x129)),
+					isInteractionId(0x129)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_LandscapeTown") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
-					isInteractionID_2(0xffffffff)),
+					isInteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Alchemist") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
-					isInteractionID_2(0xffffffff))
+					isInteractionId(0xffffffff))
 			])}
 		return
 			never(
 				!isInGame() ||
 				isChapterChanging()
 			) &&
-			trigger_when(!isSmallCutsceneActive()) &&
+			trigger_when(isNoCutsceneActive()) &&
 			measured(measuredComparison(), always_true())},
 	"a_AntiquesEule": function AntiquesEule() {
 		function measuredComparison() {
@@ -2711,19 +2637,19 @@ _achievementTriggers = {
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_FranssenShopSign") && 
-					isInteractionID_2(0xffffffff)),
+					isInteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Rope") &&
-					isInteractionID_2(0xffffffff)),
+					isInteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Antidote") &&
-					isInteractionID_2(0xffffffff)),
+					isInteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Mask") &&
-					isInteractionID_2(0xffffffff))
+					isInteractionId(0xffffffff))
 			])}
 		function measuredIfComparison() { return
 			isCurrentMapScene("AntiqueShopEule80s") ||
@@ -2970,8 +2896,8 @@ _achievementTitles = {
 	"a_LostYoungCouple1": 							{"en": "Yesteryears Couple I: Destined to Miss"},
 	"a_LostYoungCouple2": 							{"en": "Yesteryears Couple II: The Place Where We Nigh Met"},
 	"a_LostYoungCouple3": 							{"en": "Yesteryears Couple III: Destiny's Promise Fulfilled"},
-	"a_LostYoungCouple4": 							{"en": "Yesteryears Couple IV: Parting"},
-	"a_LostYoungCouple5": 							{"en": "Yesteryears Couple V: Man-in-waiting"},
+	"a_LostYoungCouple4": 							{"en": "Yesteryears Couple IV: Man-in-waiting"},
+	"a_LostYoungCouple5": 							{"en": "Yesteryears Couple V: Parting"},
 	"a_LostYoungCouple6": 							{"en": "Yesteryears Couple VI: Never Destined to Meet"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic Couple I: Prelude"},
 	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Tailing"}, 
