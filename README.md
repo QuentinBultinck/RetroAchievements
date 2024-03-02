@@ -2,4 +2,4 @@
 
 ---
 
-My repository for everything related to [Retro Achievements](https://retroachievements.org/ "Main Retro Achievements website") 
+A Solid Snack's repository for everything related to [Retro Achievements](https://retroachievements.org/ "Main Retro Achievements website") 
