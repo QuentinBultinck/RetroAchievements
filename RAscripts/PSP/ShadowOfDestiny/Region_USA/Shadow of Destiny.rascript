@@ -740,15 +740,15 @@ _achievements = {
 		"a_EikeTheFlorist": { // REWORKED 
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_ArtAppreciator": { // WORKING
-			"id": 307499, "points": 4, "hasTips": true,
+		"a_ArtAppreciator": { // REWORKED
+			"id": 307499, "points": 2, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		// CONCEPT "a_ArtInspiration1": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
-		// CONCEPT "a_ArtInspirationAll": { 	// Squire's crest - Statue at marketplatz - view from tower - performer - alchemist house collapse - alchemist antidote
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
+		"a_ArtInspiration1": { // REWORKED
+			"id": 403824, "points": 3, "hasTips": true,
+			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
+		"a_ArtInspirationAll": { // REWORKED
+			"id": 403825, "points": 10, "hasTips": true,
+			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
 		"a_AntiquesEule": { // REWORKED 
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
@@ -767,29 +767,29 @@ _achievements = {
 		"a_EnigmaticCouple5": { // REWORKED
 			"id": 315564, "points": 5, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
-		"a_LostYoungCouple1": { // WORKING
+		"a_LostYoungCouple1": { // TODO
 			"id": 306984, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
-		"a_LostYoungCouple2": { // WORKING
+		"a_LostYoungCouple2": { // TODO
 			"id": 310133, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
-		"a_LostYoungCouple3": { // WORKING
+		"a_LostYoungCouple3": { // TODO
 			"id": 309393, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
-		"a_LostYoungCouple4": { // WORKING
+		"a_LostYoungCouple4": { // TODO
 			"id": 310162, "points": 3, "hasTips": true,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // WORKING
+		"a_LostYoungCouple5": { // TODO
 			"id": 314753, "points": 5, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // WORKING
+		"a_LostYoungCouple6": { // TODO
 			"id": 315568, "points": 10, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
 		"a_HugoMotherChild": {  // REWORKED
 			"id": 311466, "points": 5, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_SnowyCrimeScene": {  // REWORKED
-			"id": 313209, "points": 10, "hasTips": true,
+			"id": 313209, "points": 5, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		"a_SaveMiriamBrum": {  // REWORKED
 			"id": 315569, "points": 10, "hasTips": true,
@@ -834,7 +834,7 @@ _achievements = {
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Talk to all NPCs"},
 		"a_ShortestChapter": { // REWORKED
-			"id": 000000, "points": 3, "hasTips": true,
+			"id": 40382, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
 		"a_PerformerGoingExtraMile": { // REWORKED
 			"id": 403575, "points": 5, "hasTips": true,
@@ -2574,41 +2574,96 @@ _achievementTriggers = {
 		isFullCutsceneSequenceEnding()},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
-			!isInGame()
-		) && (
-			isSmallCutsceneActive() && 
-			isInteractingWith("Painting_TowerView") && 
-			isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x124)
-		) || (
-			isSmallCutsceneActive() && 	
-			isInteractingWith("Painting_SquireCrest") && 
-			isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x125)
-		) || (
-			isSmallCutsceneActive() &&
-			isInteractingWith("Painting_TownSquare") && 
-			isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x126)
-		) || (
-			isSmallCutsceneActive() &&
-			isInteractingWith("Painting_AlchemyLab") && 
-			isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x127)
-		) || (
-			isSmallCutsceneActive() &&
-			isInteractingWith("Painting_Performer") && 
-			isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x128)
-		) || (
-			isSmallCutsceneActive() &&
-			isInteractingWith("Painting_CollapsedHouse") && 
-			isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
-			isInteractionID_1(0x13) && isInteractionID_2(0x129)
-		)},
-	"a_ArtInspirationAll": function ArtInspirationAll() { return
-		always_false()
-		},
+			!isInGame() ||
+			isChapterChanging()
+		) && 
+		trigger_when(!isSmallCutsceneActive()) &&	// Trigger when cutscene is over
+		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
+			once(
+				isSmallCutsceneActive() && 
+				isPaintingTowerViewInspired() &&
+				isInteractingWith("Painting_TowerView") && 
+				isCurrentMapScene("BrumMuseumDownstairsRoom") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+			
+			once(
+				isSmallCutsceneActive() && 	
+				isPaintingSquireCrestInspired() &&
+				isInteractingWith("Painting_SquireCrest") && 
+				isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+			once(
+				isSmallCutsceneActive() &&
+				isPaintingMarktplatzInspired() &&
+				isInteractingWith("Painting_TownSquare") && 
+				isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+			once(
+				isSmallCutsceneActive() &&
+				isPaintingAntidoteInspired() &&
+				isInteractingWith("Painting_AlchemyLab") && 
+				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+			once(
+				isSmallCutsceneActive() &&
+				isPaintingPerformerInspired() &&
+				isInteractingWith("Painting_Performer") && 
+				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+			once(
+				isSmallCutsceneActive() &&
+				isPaintingHouseCollapseInspired() &&
+				isInteractingWith("Painting_CollapsedHouse") && 
+				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				isInteractionID_1(0x13) && isInteractionID_2(0x129))
+			])},
+	"a_ArtInspirationAll": function ArtInspirationAll() {
+		function measuredComparison() {
+			tally(6, [
+				once(
+					isSmallCutsceneActive() && 
+					isPaintingTowerViewInspired() &&
+					isInteractingWith("Painting_TowerView") && 
+					isCurrentMapScene("BrumMuseumDownstairsRoom") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+				once(
+					isSmallCutsceneActive() && 	
+					isPaintingSquireCrestInspired() &&
+					isInteractingWith("Painting_SquireCrest") && 
+					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+				once(
+					isSmallCutsceneActive() &&
+					isPaintingAntidoteInspired() &&
+					isInteractingWith("Painting_AlchemyLab") && 
+					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+				once(
+					isSmallCutsceneActive() &&
+					isPaintingMarktplatzInspired() &&
+					isInteractingWith("Painting_TownSquare") && 
+					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+				once(
+					isSmallCutsceneActive() &&
+					isPaintingPerformerInspired() &&
+					isInteractingWith("Painting_Performer") && 
+					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+				once(
+					isSmallCutsceneActive() &&
+					isPaintingHouseCollapseInspired() &&
+					isInteractingWith("Painting_CollapsedHouse") && 
+					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					isInteractionID_1(0x13) && isInteractionID_2(0x129))
+			])}
+		return
+			never(
+				!isInGame() ||
+				isChapterChanging()
+			) &&
+			trigger_when(!isSmallCutsceneActive()) &&
+			measured(measuredComparison(), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		function measuredComparison() {
 			tally(8, [
@@ -2955,6 +3010,8 @@ _achievementTitles = {
 	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"},
 	"a_MaxInventory": 								{"en": "Stockpiling Across Eras"},
 	"a_PerformerGoingExtraMile": 					{"en": "A Performance Going the Extra Mile"}, 
+	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
+	"a_ArtInspirationAll": 							{"en": "Eike Franssen"}	
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -3025,6 +3082,8 @@ _achievementDescriptions = {
 	"a_ShortestChapter": 							{"en": "Acquire an iron plate before finding a good usage for it"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including for yourself"}, 	
+	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
+	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}	
 	// "a_Template": 			{"en": "xxxxx"},
 }
 

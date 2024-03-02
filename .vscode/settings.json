@@ -7,7 +7,7 @@
         "$",
 
         "DONE",
-        "WORKS",
+        "OK",
         "WORKING",
         "REWORKED",
 
@@ -29,7 +29,7 @@
         "DONE": [
             "DONE",
             "WORKING",
-            "WORKS",
+            "OK",
             "REWORKED"
         ],
         "FIXME": [
