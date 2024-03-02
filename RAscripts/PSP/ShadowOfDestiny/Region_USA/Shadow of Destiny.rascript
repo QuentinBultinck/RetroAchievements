@@ -310,6 +310,7 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"ExplodedAlchemistBasement": 0x217,
 	"MedievalChurch": 0x8e,
 	"PresentTownHall": 0x16,
+	"BrumEstateIndoors1900": 0x603,
 	"AntiqueShopEule80s": 0x7a,
 	"AntiqueShopEulePresent": 0x6f,
 	"BrumMuseumUpstairsRoom1Night": 0x159,
@@ -654,6 +655,9 @@ function isDanaNotSavedFromPast(){ return
 	bit3(0xA9EDC4) == 0 &&
 	bit4(0xA9EDC4) == 0}
 
+function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]: Misc
+	bit6(0xA9EDCB) == 1					// 		bit 7 => gave kitten to Sibylla
+
 
 function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
 															//		 bit 2 => is wearing performer outfit
@@ -749,10 +753,10 @@ _achievements = {
 		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 3, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
-		"a_BecomeThePerformer": {	// WORKING
+		"a_BecomeThePerformer": { // WORKING
 			"id": 402284, "points": 5, "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
-		"a_EggCollection1": { // WORKING 
+		"a_EggCollection1": { // WORKING
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_EggCollection2": { // WORKING
@@ -780,7 +784,7 @@ _achievements = {
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_TimeTravellingCat": {	// TEST => has been tested in chapter 5 (should work for 4 - 5 - 7 - 8)
+		"a_TimeTravellingCat": { // WORKING
 			"id": 310426, "points": 10, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
 		"a_DoctorateTimeTraveling": { // WORKING
@@ -795,10 +799,10 @@ _achievements = {
 		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING	
+		"a_EikeTheMagician": { // WORKING
 			"id": 306906, "points": 3, "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // WORKING 
+		"a_EikeTheFlorist": { // WORKING
 			"id": 306920, "points": 3, "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_ArtAppreciator": { // WORKING
@@ -810,7 +814,7 @@ _achievements = {
 		"a_ArtInspirationAll": { // WORKING
 			"id": 403825, "points": 10, "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
-		"a_AntiquesEule": { // WORKING 
+		"a_AntiquesEule": { // WORKING
 			"id": 310132, "points": 3, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
@@ -861,13 +865,13 @@ _achievements = {
 		"a_EnergyOrbLocatorPresentDay": { // WORKING
 			"id": 399816, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // WORKING 
+		"a_EnergyOrbLocator70s80s": { // WORKING
 			"id": 399817, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // WORKING 
+		"a_EnergyOrbLocator1900Days": { // WORKING
 			"id": 399818, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // WORKING 
+		"a_EnergyOrbLocatorMiddleAges": { // WORKING
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		"a_NewCakeInvented": { // WORKING
@@ -917,10 +921,10 @@ _achievements = {
 		"a_RottenRope": { // WORKING
 			"id": 315563, "points": 1, "hasTips": false,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_ExcuseMeMyMy": { // WORKING 
+		"a_ExcuseMeMyMy": { // WORKING
 			"id": 306919, "points": 1, "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_TimeEgoFlop": { // WORKING 
+		"a_TimeEgoFlop": { // WORKING
 			"id": 313212, "points": 1, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
 	}
@@ -1630,7 +1634,6 @@ _achievementTriggers = {
 		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
 			measured(measuredComparison(), measuredIfComparison())},					// 		Now it will reset this count, when going back to get frying pan as performer
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
-		// TEST there's differences in cutscene data depending on choices made, frying pan/shop sign, acquired egg or not??? => rather use cutscene data that is same across these differences
 		never(
 			!isInGame() 				||
 			!isCurrentChapter("Chapter4")	||
@@ -1649,7 +1652,7 @@ _achievementTriggers = {
 				isCurrentCutsceneMasterId(0xb0100)		&& 
 				isCurrentCutsceneSectionId_1(0xd)		&&
 				isCurrentCutsceneSectionId_2(0xe)		&&
-				isCurrentCutsceneMasterDataId(0x1efb0)	&&
+				isCurrentCutsceneMasterDataId(0x1eaa0)	&&
 				isCurrentCutsceneSectionDataId(0xae70))
 		]) &&
 		isFullCutsceneSequenceEnding()},
@@ -2662,7 +2665,7 @@ _achievementTriggers = {
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!isInGame()						||
-			!isCurrentChapter("Chapter6")			||
+			!isCurrentChapter("Chapter6")	||
 			isEventViewerActive()			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
@@ -2693,24 +2696,20 @@ _achievementTriggers = {
 		isFullCutsceneSequenceEnding()},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
-			!isInGame() || !isCutsceneActive_old() || IsViewingCutsceneFromExtraMenu_old() || 
-			!isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5") && 
-			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") &&
-			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
+			!isInGame() ||
+			isEventViewerActive()
 		) &&
-		tally(2, [
-			once(
-				currentCutsceneId(4) == 0xff4700a3 	&& priorCutsceneId(4) == 0x77 			&& // Blocks => IDs the cutscenes
-				currentCutsceneId(20) == 0x2622fab8 && priorCutsceneId(20) == 0xf9c20180	&&
-				currentCutsceneId(14) == 0xc4a7d2c5 && priorCutsceneId(14) == 0x5cb			&&
-				onScreenTextID(0) == 0x37			&& prior(onScreenTextID(0)) == 0x4c),
-			once(
-				currentCutsceneId(7) == 0x88880011 	&& priorCutsceneId(7) == 0x71 			&&
-				currentCutsceneId(17) == 0xf6e1fffe && priorCutsceneId(17) == 0x473d4f		&&
-				currentCutsceneId(11) == 0xff4fffec && priorCutsceneId(11) == 0xfd640278	&&
-				onScreenTextID(0) == 0x4c			&& prior(onScreenTextID(0)) == 0x73),		
-		]) && 
-		repeated(160, onScreenTextID(0) == 0x0)}, // trigger when last text in cutscene is finished
+		once(	// Identifies Cutscene => Giving kitten to Sibylla
+			isCutsceneActive() && isCurrentMapScene("BrumEstateIndoors1900") &&
+			isItemInInventory("Kitten") &&
+			isCurrentCutsceneMasterId(0x25200)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x2c00)	&&
+			isCurrentCutsceneSectionDataId(0x10930)
+		) &&
+		isKittenGivenToSibylla() &&
+		isFullCutsceneSequenceEnding()},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isInGame()				||
@@ -2857,9 +2856,9 @@ _achievementTitles = {
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
-	"a_EndingC": 									{"en": "'If only... I had one more attempt'"},
+	"a_EndingC": 									{"en": "If only... I had one more attempt"},
 	"a_EndingD": 									{"en": "Eike's Origins"},
-	"a_EndingE": 									{"en": "'The future is what we make it.'"},
+	"a_EndingE": 									{"en": "The future is what we make it."},
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
@@ -2884,19 +2883,19 @@ _achievementTitles = {
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic Couple III: Wandering Once More"}, 
 	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},	
 	"a_EnigmaticCouple5": 							{"en": "Enigmatic Couple V: Epilogue"},
-	"a_ErasingEike": 								{"en": "'That's a big no no'"}, 
+	"a_ErasingEike": 								{"en": "That's a big no no"}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "Met You before"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
-	"a_SnowyCrimeScene":							{"en": "'Picked up a baby the other day'"},
+	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day"},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
 	"a_HugoMotherChild":							{"en": "A Mother's Child Forever"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
-	"a_ExcuseMeMyMy":								{"en": "'My my, so eager to die'"},
-	"a_BecomeThePerformer":							{"en": "'Even I can do that'"}, 
+	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die"},
+	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Amasser: Middle Ages"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
@@ -2933,7 +2932,7 @@ _achievementDescriptions = {
 	"a_EndingC": 									{"en": "Achieve Ending C"},
 	"a_EndingD": 									{"en": "Achieve Ending D"},
 	"a_EndingE": 									{"en": "Achieve Ending E"},
-	"a_DoctorateTimeTraveling": 					{"en": "Take a picture in a costume during chapter 4 and finish the chapter"}, 
+	"a_DoctorateTimeTraveling": 					{"en": "Take a photo chapter 4"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
