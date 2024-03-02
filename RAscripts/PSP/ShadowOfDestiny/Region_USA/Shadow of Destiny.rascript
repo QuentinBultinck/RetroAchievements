@@ -178,6 +178,8 @@ function isCutsceneSectionEnding() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(
 
 function isSmallCutsceneActive() => byte(0xA9ED26) == 0x1
 
+function isNoCutsceneActive() => byte(0xA9ED26) == 0
+
 
 function isCurrentCutsceneMasterId(int_Id) => dword(0xA9ECBC) == int_Id			// $A9ECBC: [32-bit] Cutscene MASTER ID (preferred)
 																				// 		- Identifies a cutscene sequence
@@ -268,9 +270,12 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"PresentTownHall": 0x16,
 	"AntiqueShopEule80s": 0x7a,
 	"AntiqueShopEulePresent": 0x6f,
-	"BrumMuseumUpstairsRoom1": 0x159,
-	"BrumMuseumUpstairsRoom2": 0x224,
-	"BrumMuseumUpstairsRoom3": 0x140,
+	"BrumMuseumUpstairsRoom1Night": 0x159,
+	"BrumMuseumUpstairsRoom1Day": 0x38,
+	"BrumMuseumUpstairsRoom2Night": 0x224,
+	"BrumMuseumUpstairsRoom2Day": 0x1bd,
+	"BrumMuseumUpstairsRoom3Night": 0x140,
+	"BrumMuseumUpstairsRoom3Day": 0xcd,
 	"BrumMuseumDownstairsRoom": 0x32
 }
 function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
@@ -843,6 +848,9 @@ _achievements = {
 		// CONCEPT "a_ScareApprenticeMiddleAges": { 
 		// 	"id": 00000, "points": 1, "hasTips": true,
 		// 	"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
+		// CONCEPT "a_DrunkenGuys": { 
+		// 	"id": 00000, "points": 1, "hasTips": true,
+		// 	"devInfo": "Meet a bunch of drunked idiots in the present"},
 		// CONCEPT "a_MeetingEveryone": { 
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Talk to all NPCs"},
@@ -2476,7 +2484,7 @@ _achievementTriggers = {
 			isCurrentMinorCutsceneId(0x122b0, 0x2c)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_MaxInventory": function MaxInventory(){		
+	"a_MaxInventory": function MaxInventory(){
 		// function measuredComparison() { 
 		// 	// CODE BLOCK A; only use one CODE BLOCK
 		// 	// let_comparisonsArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
@@ -2531,7 +2539,7 @@ _achievementTriggers = {
 				})
 			) &&
 			measured(measuredComparison(), always_true()) &&
-			!isCutsceneActive()},		
+			trigger_when(isNoCutsceneActive())},		
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!isInGame()						||
@@ -2572,31 +2580,31 @@ _achievementTriggers = {
 				isSmallCutsceneActive() && 	
 				isPaintingSquireCrestInspired() &&
 				isInteractingWith("Painting_SquireCrest") && 
-				isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 				isInteractionID_1(0x13) && isInteractionID_2(0x125)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingMarktplatzInspired() &&
 				isInteractingWith("Painting_TownSquare") && 
-				isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 				isInteractionID_1(0x13) && isInteractionID_2(0x126)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingAntidoteInspired() &&
 				isInteractingWith("Painting_AlchemyLab") && 
-				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 				isInteractionID_1(0x13) && isInteractionID_2(0x127)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingPerformerInspired() &&
 				isInteractingWith("Painting_Performer") && 
-				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 				isInteractionID_1(0x13) && isInteractionID_2(0x128)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingHouseCollapseInspired() &&
 				isInteractingWith("Painting_CollapsedHouse") && 
-				isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 				isInteractionID_1(0x13) && isInteractionID_2(0x129))
 			])},
 	"a_ArtInspirationAll": function ArtInspirationAll() {
@@ -2612,31 +2620,31 @@ _achievementTriggers = {
 					isSmallCutsceneActive() && 	
 					isPaintingSquireCrestInspired() &&
 					isInteractingWith("Painting_SquireCrest") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
-				once(
-					isSmallCutsceneActive() &&
-					isPaintingAntidoteInspired() &&
-					isInteractingWith("Painting_AlchemyLab") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingMarktplatzInspired() &&
 					isInteractingWith("Painting_TownSquare") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+				once(
+					isSmallCutsceneActive() &&
+					isPaintingAntidoteInspired() &&
+					isInteractingWith("Painting_AlchemyLab") && 
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
+					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingPerformerInspired() &&
 					isInteractingWith("Painting_Performer") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingHouseCollapseInspired() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0x129))
 			])}
 		return
@@ -2657,37 +2665,37 @@ _achievementTriggers = {
 				once(
 					isSmallCutsceneActive() && 	
 					isInteractingWith("Painting_SquireCrest") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_TownSquare") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom1") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
 					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_AlchemyLab") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Performer") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom2") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0x129)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_LandscapeTown") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom3") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Alchemist") && 
-					isCurrentMapScene("BrumMuseumUpstairsRoom3") &&
+					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
 					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff))
 			])}
 		return
