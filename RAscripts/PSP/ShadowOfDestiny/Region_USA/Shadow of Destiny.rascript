@@ -137,10 +137,10 @@ function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
 	return _Interactables[string_interactable] == dword(let_maskedPointer)}
 
-function isInteractionID_1(int_interactionId) {
-	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff				// $A9EFE0: [25-bit] Pointer - Interactions
-	return dword(let_maskedPointer) == int_interactionId}		// 		+0x0 - [32-bit] Interaction ID_1
-
+function isInteractionID_1(int_interactionId) {					// $A9EFE0: [25-bit] Pointer - Interactions
+	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff				// 		+0x0 - [32-bit] Interaction ID_1
+	return dword(let_maskedPointer) == int_interactionId}		//		| - Might have same value for different interaction in same chapter
+																//		| - WARNING: each chapter has it's own value for the same interaction <-- becomes a bug when when not accounted for in achievement trigger
 function isInteractionID_2(int_interactionId) {
 	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff				// $A9EFE4: [25-bit] Pointer - Interactions
 	return dword(let_maskedPointer) == int_interactionId}		// 		- Pointer resets to 0x0 when interaction is done
@@ -2209,12 +2209,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap1Prologue_TownSquare") &&
-					isInteractionID_1(0x1e) && isInteractionID_2(0x2cc)),
+					isInteractionID_2(0x2cc)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap1Prologue_NearBar"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap1Prologue_NearBar") &&
-					isInteractionID_1(0x1e) && isInteractionID_2(0x2c1))
+					isInteractionID_2(0x2c1))
 			])}
 		return 
 			never(	
@@ -2230,12 +2230,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2d0)),
+					isInteractionID_2(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2c4))
+					isInteractionID_2(0x2c4))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2243,12 +2243,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2d0)),
+					isInteractionID_2(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0x2c4))
+					isInteractionID_2(0x2c4))
 			])}
 		return 
 			never(	
@@ -2264,12 +2264,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d0)),
+					isInteractionID_2(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2c5))
+					isInteractionID_2(0x2c5))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2277,12 +2277,12 @@ _achievementTriggers = {
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedWoman_Present") &&
 					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2d0)),
+					isInteractionID_2(0x2d0)),
 				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					isTalkingTo("CoatedMan_Present") &&
 					isNPCtalkCountAtMax("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
-					isInteractionID_1(0x4b) && isInteractionID_2(0x2c5))
+					isInteractionID_2(0x2c5))
 			])}
 		return 
 			never(	
@@ -2574,38 +2574,38 @@ _achievementTriggers = {
 				isPaintingTowerViewInspired() &&
 				isInteractingWith("Painting_TowerView") && 
 				isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-				isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+				isInteractionID_2(0x124)),
 			
 			once(
 				isSmallCutsceneActive() && 	
 				isPaintingSquireCrestInspired() &&
 				isInteractingWith("Painting_SquireCrest") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-				isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+				isInteractionID_2(0x125)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingMarktplatzInspired() &&
 				isInteractingWith("Painting_TownSquare") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-				isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+				isInteractionID_2(0x126)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingAntidoteInspired() &&
 				isInteractingWith("Painting_AlchemyLab") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+				isInteractionID_2(0x127)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingPerformerInspired() &&
 				isInteractingWith("Painting_Performer") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+				isInteractionID_2(0x128)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingHouseCollapseInspired() &&
 				isInteractingWith("Painting_CollapsedHouse") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-				isInteractionID_1(0x13) && isInteractionID_2(0x129))
+				isInteractionID_2(0x129))
 			])},
 	"a_ArtInspirationAll": function ArtInspirationAll() {
 		function measuredComparison() {
@@ -2615,37 +2615,37 @@ _achievementTriggers = {
 					isPaintingTowerViewInspired() &&
 					isInteractingWith("Painting_TowerView") && 
 					isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+					isInteractionID_2(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
 					isPaintingSquireCrestInspired() &&
 					isInteractingWith("Painting_SquireCrest") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+					isInteractionID_2(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingMarktplatzInspired() &&
 					isInteractingWith("Painting_TownSquare") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+					isInteractionID_2(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingAntidoteInspired() &&
 					isInteractingWith("Painting_AlchemyLab") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+					isInteractionID_2(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingPerformerInspired() &&
 					isInteractingWith("Painting_Performer") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+					isInteractionID_2(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingHouseCollapseInspired() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x129))
+					isInteractionID_2(0x129))
 			])}
 		return
 			never(
@@ -2661,42 +2661,42 @@ _achievementTriggers = {
 					isSmallCutsceneActive() && 	
 					isInteractingWith("Painting_TowerView") && 
 					isCurrentMapScene("BrumMuseumDownstairsRoom") &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x124)),
+					isInteractionID_2(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
 					isInteractingWith("Painting_SquireCrest") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x125)),
+					isInteractionID_2(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_TownSquare") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom1Night") || isCurrentMapScene("BrumMuseumUpstairsRoom1Day")) &&
-					isInteractionID_1(0x13) && isInteractionID_2(0x126)),
+					isInteractionID_2(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_AlchemyLab") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x127)),
+					isInteractionID_2(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Performer") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x128)),
+					isInteractionID_2(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_CollapsedHouse") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0x129)),
+					isInteractionID_2(0x129)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_LandscapeTown") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff)),
+					isInteractionID_2(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Painting_Alchemist") && 
 					(isCurrentMapScene("BrumMuseumUpstairsRoom3Night") || isCurrentMapScene("BrumMuseumUpstairsRoom3Day")) &&	
-					isInteractionID_1(0x13) && isInteractionID_2(0xffffffff))
+					isInteractionID_2(0xffffffff))
 			])}
 		return
 			never(
@@ -2711,19 +2711,19 @@ _achievementTriggers = {
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_FranssenShopSign") && 
-					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+					isInteractionID_2(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Rope") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+					isInteractionID_2(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Antidote") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff)),
+					isInteractionID_2(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
 					isInteractingWith("Antique_Mask") &&
-					isInteractionID_1(0xb2) && isInteractionID_2(0xffffffff))
+					isInteractionID_2(0xffffffff))
 			])}
 		function measuredIfComparison() { return
 			isCurrentMapScene("AntiqueShopEule80s") ||
