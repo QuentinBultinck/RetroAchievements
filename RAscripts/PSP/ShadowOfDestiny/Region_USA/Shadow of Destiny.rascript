@@ -51,6 +51,12 @@ _NPCs = {
 	"BlondeElderlyWoman_Present": { 
 		"ID": 0x183, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
+	"BroadDelinquent_Present": { 
+		"ID": 0x10, "Appearance": {
+			"Chap7_CarPark": {"MemAddrTalkCount": 0xA9EE4C, "MaxTalkCount": 1}}},
+	"SlimDelinquent_Present": { 
+		"ID": 0x13, "Appearance": {
+			"Chap7_CarPark": {"MemAddrTalkCount": 0xA9EE51, "MaxTalkCount": 1}}},
 	"CoatedWoman_Present": { 
 		"ID": 0x57,	"Appearance": {
 			"Chap1Prologue_TownSquare": {"MemAddrTalkCount": 0xA9EE28, "MaxTalkCount": 2},
@@ -92,9 +98,9 @@ _NPCs = {
 			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
 			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
-		"AspiringApprentice_MiddleAges": {
+	"AspiringApprentice_MiddleAges": {
 		"ID": 0x5d, "Appearance": {
-			"base": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
+			"Chap3_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
@@ -648,12 +654,12 @@ _achievements = {
 		"a_Chapter8Complete": { // WORKING 
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
-		// TODO "a_EXChapterComplete": {
-		//	"id": 000000, "points": 50, "hasTips": false,
-		// 	"devInfo": "Complete the EX chapter"},
+		"a_EXChapterComplete": {	//TODO
+			"id": 404045, "points": 50, "hasTips": false,
+			"devInfo": "Complete the EX chapter"},
 		// TODO "a_MaxAchievementPrologue": {
 		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in prologue"},
+		// 	"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
 		// TODO "a_MaxAchievementChapter1": {
 		//	"id": 000000, "points": 25, "hasTips": false,
 		// 	"devInfo": "Seen all the important cutscenes in chapter 1"},
@@ -681,9 +687,6 @@ _achievements = {
 		// TODO "a_MaxAchievementEpilogue": {	
 		//	"id": 000000, "points": 25, "hasTips": false,
 		// 	"devInfo": "Seen all the important cutscenes in epilogue"},
-		// CONCEPT "a_MaxAchievementEXChapter": {	// EX Chapter might count toward prologue percentage
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in EX chapter"},
 		// TODO "a_MaxAchievementTotal": {
 		//	"id": 000000, "points": 100, "hasTips": false,
 		// 	"devInfo": "Seen ALL important the cutscenes"},
@@ -831,17 +834,23 @@ _achievements = {
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		"a_ScareApprenticeMiddleAges": { 
-			"id": 00000, "points": 1, "hasTips": true,
+		"a_ScareApprenticeMiddleAges": { // TODO In Chapter 2 => scare not only apprentice but also, eccentric girl + spaghetti man in present in 1 session?
+			"id": 404046, "points": 1, "hasTips": true,
 			"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
-		// CONCEPT "a_DrunkenGuys": { 
+		// CONCEPT "a_scareSpaghettiManInPresent": { 
+		// 	"id": 404046, "points": 1, "hasTips": true,
+		// 	"devInfo": "Startle the hungry man with a lighter or cellphone"},
+		// CONCEPT "a_MeetFamousOleg": { 
 		// 	"id": 00000, "points": 1, "hasTips": true,
-		// 	"devInfo": "Meet a bunch of drunked idiots in the present"},
+		// 	"devInfo": "In chapter 4 start tab with bar owner => Give pocket watch egg to bar owner in 1900s?? => Meet Oleg in chapter 7 near movie post, after you have the tower key (not night before)"},
+		"a_DrunkenGuys": { // WORKING
+			"id": 404048, "points": 2, "hasTips": true,
+			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
 		// CONCEPT "a_MeetingEveryone": { 
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Talk to all NPCs"},
 		"a_ShortestChapter": { // WORKING
-			"id": 40382, "points": 3, "hasTips": true,
+			"id": 403823, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
@@ -1299,6 +1308,9 @@ _achievementTriggers = {
 			isChapterFinishing("Chapter8_Ancestress") ||
 			isChapterFinishing("Chapter8_NoAncestress")
 		)},
+	"a_EXChapterComplete": function EXChapterComplete() { return //WIP
+		always_false()
+		},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 					||
@@ -2387,6 +2399,26 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), always_true()) &&
 			trigger_when(isNoCutsceneActive())},		
+	"a_DrunkenGuys": function DrunkenGuys(){
+		function measuredComparison() { return
+			tally(2, [
+				once(	// Identifies Cutscene => talking to slim delinquent
+					isSmallCutsceneActive() && 
+					isTalkingTo("SlimDelinquent_Present") &&
+					isNPCtalkCountIncreasingToMax("SlimDelinquent_Present", "Chap7_CarPark") &&
+					isInteractionChapterId(0xb2) && isInteractionId(0x2f5)),
+				once(	// Identifies Cutscene => talking to broad delinquent
+					isSmallCutsceneActive() && 
+					isTalkingTo("BroadDelinquent_Present") &&
+					isNPCtalkCountIncreasingToMax("BroadDelinquent_Present", "Chap7_CarPark") &&
+					isInteractionChapterId(0xb2) && isInteractionId(0x2f0))
+			])}
+		return 
+			never(
+				!isInGame()
+			) &&
+			measured(measuredComparison(), isCurrentMapScene("PresentDayNightCity")) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!isInGame()						||
@@ -2412,11 +2444,12 @@ _achievementTriggers = {
 	"a_ScareApprenticeMiddleAges": function ScareApprenticeMiddleAges(){ return
 		never(
 			!isInGame()
+			// No chapter check => achievement might also be triggerable in other chapters other than 3 => allowed
 		) &&
 		once(	// Identifies Cutscene => Scaring wannabe apprentice with phone of lighter
 			isSmallCutsceneActive() && 
 			(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-			isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "base") &&
+			isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "Chap3_SouthEastGate") &&
 			isCurrentCutsceneMasterId(0x3f00)		&&
 			isCurrentCutsceneSectionId_1(0xffff)	&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2809,6 +2842,7 @@ _achievementTitles = {
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
+	"a_EXChapterComplete":							{"en": "xxxxxxxxxxxxx"},	// TODO set title
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
@@ -2843,6 +2877,7 @@ _achievementTitles = {
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "Met You before"},
+	"a_DrunkenGuys":								{"en": "A Pair of Delinquents"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day"},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
@@ -2883,6 +2918,7 @@ _achievementDescriptions = {
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
+	"a_EXChapterComplete":							{"en": "Complete EX Chapter"},
 	"a_EndingA":									{"en": "Achieve Ending A"},
 	"a_EndingB1":									{"en": "Achieve Ending B1"},
 	"a_EndingB2":									{"en": "Achieve Ending B2"},
@@ -2916,6 +2952,7 @@ _achievementDescriptions = {
 	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
+	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
 	"a_ScareApprenticeMiddleAges": 					{"en": "Frigten an aspiring apprentice with futuristic gadgets"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 

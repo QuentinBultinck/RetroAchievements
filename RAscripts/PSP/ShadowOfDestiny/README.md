@@ -35,8 +35,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Director's Cut: Trip for Two</b><br><i>a_Chapter6CompleteLove</i> | Any walkthrough/gameplay guide | Don't skip the cutscenes when choosing what movie you'll make with Oleg |
 | :trophy: <b>A Friend's Repentance</b><br><i>a_Chapter7Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>The Whole Picture... Or is it?</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
-| :trophy: <b>Complete the Epilogue</b><br><i>a_EpilogueComplete</i> | Any walkthrough/gameplay guide | / |
-| :trophy: <b>Complete the EX chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
+| :trophy: <b>Complete the EX Chapter</b><br><i>a_EXChapterComplete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### :gem: Branching paths
@@ -100,6 +99,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Art Muse</b><br><i>a_ArtInspiration1</i> | 1. In the Middle Ages, inspire Karl Franssen with idea's for paintings. His studio is open from chapter 5 onward. <br> 2. Visit the Brum museum in the present and inspect one of the adapted works | / |
 | :trophy: <b>Eike Franssen</b><br><i>a_ArtInspirationAll</i> | 1. In the Middle Ages, inspire Karl Franssen with idea's for paintings. His studio is open from chapter 5 onward. <br> 2. You might have to leave/enter his shop a few times to get all 6 unique dialogue options, as you can give him one that you've already inspired him with. <br> 3. Visit Brum Museum in the present and interact with all 6 paintings <br> - Brum Museum is open in chapters 3, 4, 5 and 8 <br> - You might have to change the library back to a museum <br> - There's 6 paintings that can be changed: The Squire's Crest, The Marktplatz, Alchemist Creates Antidote, The Oddly Dressed Man, House Collapse and View of Tower (downstairs) <br> - More idea's to inspire the painter with are unlocked as your progress through the game. <br> - To unlock the option to inspire the adaptation of 'The Oddly Dressed Man' painting, you must have become the performer yourself (refer to a_BecomeThePerformer) <br> - To unlock the option to inspire the adaptation of 'The Marktplatz', there's a high chance you must've chosen to replace the tree with a statue in chapter 2. | *Measured achievement<sup>1</sup>* |
 | :trophy: <b>Tech Terror</b><br><i>a_ScareApprenticeMiddleAges</i> | - In the Middle Ages, scare the young adult/teenage boy who wants to become an apprentice of Karl Franssen with a lighter or the cellphone. <br> - Should be possible in chapter 2, he's standing next to the south east gate | / |
+| :trophy: <b>A Pair of Delinquents</b><br><i>a_DrunkenGuys</i> | - Find these drunkards in chapter 7 in the present, not the night before <br> 1. In chapter 7, acquire the key to the tower in the 1900s <br> 2. Travel back to the present and exit the tower <br> 3. Find the boys in the car park to the northeast | *Measured achievement<sup>1</sup>* |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### :gem: Hidden cutscenes that lead to death
