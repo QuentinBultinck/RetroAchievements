@@ -92,6 +92,9 @@ _NPCs = {
 			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
 			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
+		"AspiringApprentice_MiddleAges": {
+		"ID": 0x5d, "Appearance": {
+			"base": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
@@ -828,9 +831,9 @@ _achievements = {
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		// CONCEPT "a_ScareApprenticeMiddleAges": { 
-		// 	"id": 00000, "points": 1, "hasTips": true,
-		// 	"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
+		"a_ScareApprenticeMiddleAges": { 
+			"id": 00000, "points": 1, "hasTips": true,
+			"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
 		// CONCEPT "a_DrunkenGuys": { 
 		// 	"id": 00000, "points": 1, "hasTips": true,
 		// 	"devInfo": "Meet a bunch of drunked idiots in the present"},
@@ -2406,6 +2409,23 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x3d500)	
 		) &&
 		isFullCutsceneSequenceEnding()},
+	"a_ScareApprenticeMiddleAges": function ScareApprenticeMiddleAges(){ return
+		never(
+			!isInGame()
+		) &&
+		once(	// Identifies Cutscene => Scaring wannabe apprentice with phone of lighter
+			isSmallCutsceneActive() && 
+			(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
+			isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "base") &&
+			isCurrentCutsceneMasterId(0x3f00)		&&
+			isCurrentCutsceneSectionId_1(0xffff)	&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x3ee0)	&&
+			isCurrentCutsceneSectionDataId(0x3ee0)	&&
+			isCurrentMinorCutsceneId(0x7330, 0x8)	&&
+			isCurrentMinorCutsceneId(0x3ee0, 0x28)
+		) &&
+		trigger_when(isNoCutsceneActive())},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!isInGame() 		||
@@ -2842,7 +2862,8 @@ _achievementTitles = {
 	"a_MaxInventory": 								{"en": "Stockpiling Across Eras"},
 	"a_PerformerGoingExtraMile": 					{"en": "A Performance Going the Extra Mile"}, 
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
-	"a_ArtInspirationAll": 							{"en": "Eike Franssen"}	
+	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
+	"a_ScareApprenticeMiddleAges": 					{"en": "Tech Terror"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2895,6 +2916,7 @@ _achievementDescriptions = {
 	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
+	"a_ScareApprenticeMiddleAges": 					{"en": "Frigten an aspiring apprentice with futuristic gadgets"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
