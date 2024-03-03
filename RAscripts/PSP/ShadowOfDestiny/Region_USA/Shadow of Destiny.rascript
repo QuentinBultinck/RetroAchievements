@@ -571,6 +571,9 @@ function isPaintingPerformerInspired() => bit0(0xA9EDB1) == 1		// $A9EDB1: [Curr
 function isPaintingHouseCollapseInspired() => bit1(0xA9EDB1) == 1	// 		bit 1 => Achemist house collapse painting
 
 
+function isCoffeePayed() => bit3(0xA9EDCC) == 1		// $A9EDCC: [Current Playthrough Bit Flags]: Misc
+													// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before)
+
 function isEndingUnlocked(string_EndingCharacter) {
 	let_endingBitFlagsMemoryAddresses = {
 		"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A unlocked
@@ -654,7 +657,7 @@ _achievements = {
 		"a_Chapter8Complete": { // WORKING 
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
-		"a_EXChapterComplete": {	//TODO
+		"a_EXChapterComplete": { //TODO
 			"id": 404045, "points": 50, "hasTips": false,
 			"devInfo": "Complete the EX chapter"},
 		// TODO "a_MaxAchievementPrologue": {
@@ -735,9 +738,6 @@ _achievements = {
 		"a_ShowEggTownPlanter": { // WORKING
 			"id": 307023, "points": 5, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EggPocketWatchForCoffee": { // WORKING
-			"id": 313213, "points": 5, "hasTips": true,
-			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
@@ -831,6 +831,9 @@ _achievements = {
 		"a_PocketWatchReminiscing": { // WORKING
 			"id": 315562, "points": 5, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
+		"a_EggPocketWatchForCoffee": { // WORKING
+			"id": 313213, "points": 5, "hasTips": true,
+			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
@@ -840,9 +843,9 @@ _achievements = {
 		// CONCEPT "a_scareSpaghettiManInPresent": { 
 		// 	"id": 404046, "points": 1, "hasTips": true,
 		// 	"devInfo": "Startle the hungry man with a lighter or cellphone"},
-		// CONCEPT "a_MeetFamousOleg": { 
-		// 	"id": 00000, "points": 1, "hasTips": true,
-		// 	"devInfo": "In chapter 4 start tab with bar owner => Give pocket watch egg to bar owner in 1900s?? => Meet Oleg in chapter 7 near movie post, after you have the tower key (not night before)"},
+		"a_MeetFamousOleg": { 
+			"id": 00000, "points": 5, "hasTips": true,
+			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
@@ -2459,6 +2462,23 @@ _achievementTriggers = {
 			isCurrentMinorCutsceneId(0x3ee0, 0x28)
 		) &&
 		trigger_when(isNoCutsceneActive())},
+	"a_MeetFamousOleg": function MeetFamousOleg(){ return //WIP
+		never(
+			!isInGame()				||
+			isEventViewerActive() 	||
+			!isCurrentChapter("Chapter7")
+		) &&
+		once(	// Identifies Cutscene => Talking to Oleg near movie poster
+			isCutsceneActive() && isCoffeePayed() &&
+			isCurrentCutsceneMasterId(0xa0f40)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x45370)	&&
+			isCurrentCutsceneSectionDataId(0x5bb90)	&&
+			isCurrentMinorCutsceneId(0x8f8e0, 0x8)	&&
+			isCurrentMinorCutsceneId(0x5bb90, 0x28)
+		) &&
+		isFullCutsceneSequenceEnding()},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!isInGame() 		||
@@ -2898,6 +2918,7 @@ _achievementTitles = {
 	"a_PerformerGoingExtraMile": 					{"en": "A Performance Going the Extra Mile"}, 
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
+	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
 	"a_ScareApprenticeMiddleAges": 					{"en": "Tech Terror"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
@@ -2953,8 +2974,9 @@ _achievementDescriptions = {
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
 	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
-	"a_ScareApprenticeMiddleAges": 					{"en": "Frigten an aspiring apprentice with futuristic gadgets"}, 
+	"a_ScareApprenticeMiddleAges": 					{"en": "Frighten an aspiring apprentice with futuristic gadgets"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
+	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics at Antique Shop Eule"},
