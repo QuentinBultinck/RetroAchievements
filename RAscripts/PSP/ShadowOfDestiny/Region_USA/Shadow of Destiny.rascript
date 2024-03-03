@@ -98,9 +98,12 @@ _NPCs = {
 			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
 			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
+	"EccentricGirl_MiddleAges": { 
+		"ID": 0x2e, "Appearance": {
+			"Chap2_TownSquare": {"MemAddrTalkCount": 0xA9EE70, "MaxTalkCount": 1}}},
 	"AspiringApprentice_MiddleAges": {
 		"ID": 0x5d, "Appearance": {
-			"Chap3_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
+			"Chap2_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
@@ -249,6 +252,7 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
 	"PresentDayNightCity": 0x44,
+	"CafeSonne": 0x10,
 	"NightBefore": 0x3,
 	"80sColdCity": 0x465,
 	"70sNightCity": 0x31d,
@@ -538,14 +542,13 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 
 // CUTSCENE/CHOICES BIT FLAGS
 // ****************************
-function isTreeReplacedByStatue() => bit2(0xA9EDA0)	== 0				// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
+function isTreeReplacedByStatue() => bit2(0xA9EDA0)	== 0		// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
 																// 		bit 0 => acquired ladder
-function isTreeReplacedByFlowers() => bit2(0xA9EDA0) == 1				// 		bit 1 = 0 => LIGHTER used to scare crowd
+function isTreeReplacedByFlowers() => bit2(0xA9EDA0) == 1		// 		bit 1 = 0 => LIGHTER used to scare crowd
 																// 		bit 1 = 1 => TELEPHONE used 
 function isCrowdScaredWithCellphone() => bit1(0xA9EDA0) == 1	// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers
 																// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
 function isCrowdScaredWithLighter() => bit1(0xA9EDA0) == 0	
-
 					
 function isMovieWorldConquestPicked() => bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1		// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
 																						// 		bit 5 => Movie choice 1: Meditating Man
@@ -658,7 +661,7 @@ _achievements = {
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
 		"a_EXChapterComplete": { //TODO
-			"id": 404045, "points": 50, "hasTips": false,
+			"id": 00000, "points": 50, "hasTips": false,
 			"devInfo": "Complete the EX chapter"},
 		// TODO "a_MaxAchievementPrologue": {
 		//	"id": 000000, "points": 25, "hasTips": false,
@@ -837,14 +840,11 @@ _achievements = {
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		"a_ScareApprenticeMiddleAges": { // TODO In Chapter 2 => scare not only apprentice but also, eccentric girl + spaghetti man in present in 1 session?
-			"id": 404046, "points": 1, "hasTips": true,
-			"devInfo": "Scare the wannabe apprentice with a lighter or cellphone"},
-		// CONCEPT "a_scareSpaghettiManInPresent": { 
-		// 	"id": 404046, "points": 1, "hasTips": true,
-		// 	"devInfo": "Startle the hungry man with a lighter or cellphone"},
-		"a_MeetFamousOleg": { 
-			"id": 00000, "points": 5, "hasTips": true,
+		"a_ScareEveryone": { // TODO In Chapter 2 => scare not only apprentice but also, eccentric girl + spaghetti man in present in 1 session?
+			"id": 404046, "points": 4, "hasTips": true,
+			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
+		"a_MeetFamousOleg": { // WORKING
+			"id": 404045, "points": 5, "hasTips": true,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "hasTips": true,
@@ -1311,7 +1311,7 @@ _achievementTriggers = {
 			isChapterFinishing("Chapter8_Ancestress") ||
 			isChapterFinishing("Chapter8_NoAncestress")
 		)},
-	"a_EXChapterComplete": function EXChapterComplete() { return //WIP
+	"a_EXChapterComplete": function EXChapterComplete() { return //WIP-a_EXChapterComplete
 		always_false()
 		},
 	"a_EndingA": function EndingA() { return
@@ -2328,7 +2328,55 @@ _achievementTriggers = {
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset that count here 
-			trigger_when(!isSmallCutsceneActive() && !isCutsceneActive())},
+			trigger_when(isNoCutsceneActive())},
+	"a_ScareEveryone": function ScareEveryone() {
+		function measuredComparison() { return
+			tally(7, [	
+				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
+					isCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
+					isCurrentCutsceneMasterId(0x9000)		&&
+					isCurrentCutsceneSectionId_1(0xffff)	&&
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0x9000)	&&
+					isCurrentCutsceneSectionDataId(0x9000)	&&
+					isCurrentMinorCutsceneId(0x5f80, 0x8)	&&
+					isCurrentMinorCutsceneId(0x9000, 0x28)),
+				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4, instead of below cutscene
+					isCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
+					isCurrentCutsceneMasterId(0xc6e00)		&&
+					isCurrentCutsceneSectionId_1(0x1)		&&
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0x5ad0)	&&
+					isCurrentCutsceneSectionDataId(0x55b0)	&&
+					isCurrentMinorCutsceneId(0x2451a0, 0x8)	&&
+					isCurrentMinorCutsceneId(0x55b0, 0x28)),
+				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4, instead of above cutscene
+					isCutsceneActive() && isCurrentSelectedInventoryItem("Lighter") &&
+					isCurrentCutsceneMasterId(0xa84c0)		&&
+					isCurrentCutsceneSectionId_1(0x1)		&&
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0x2e40)	&&
+					isCurrentCutsceneSectionDataId(0xb220)	&&
+					isCurrentMinorCutsceneId(0x2354f0, 0x8)	&&
+					isCurrentMinorCutsceneId(0xb220, 0x28)),
+				once(	// Identifies cutscene => scaring eccentric girl
+					isSmallCutsceneActive() &&
+					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
+					isNPCtalkCountAtMax("EccentricGirl_MiddleAges", "Chap2_TownSquare") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x314)),
+				once(	// Identifies cutscene => scaring aspiring apprentice
+					isSmallCutsceneActive() &&
+					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
+					isNPCtalkCountIncreasingToMax("AspiringApprentice_MiddleAges", "Chap2_SouthEastGate") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x2e3))
+			])}
+		return 
+			never(	
+				!isInGame() 	||
+				!isCurrentChapter("Chapter2")
+			) &&
+			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity") || isCurrentMapScene("CafeSonne") ) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isInGame()					||
@@ -2425,8 +2473,8 @@ _achievementTriggers = {
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!isInGame()						||
-			!isCurrentChapter("Chapter4")			||
-			isEventViewerActive()		||
+			!isCurrentChapter("Chapter4")	||
+			isEventViewerActive()			||
 			!isCurrentSelectedInventoryItem("FryingPan") ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
@@ -2444,25 +2492,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x3d500)	
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_ScareApprenticeMiddleAges": function ScareApprenticeMiddleAges(){ return
-		never(
-			!isInGame()
-			// No chapter check => achievement might also be triggerable in other chapters other than 3 => allowed
-		) &&
-		once(	// Identifies Cutscene => Scaring wannabe apprentice with phone of lighter
-			isSmallCutsceneActive() && 
-			(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-			isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "Chap3_SouthEastGate") &&
-			isCurrentCutsceneMasterId(0x3f00)		&&
-			isCurrentCutsceneSectionId_1(0xffff)	&&
-			isCurrentCutsceneSectionId_2(0x0)		&&
-			isCurrentCutsceneMasterDataId(0x3ee0)	&&
-			isCurrentCutsceneSectionDataId(0x3ee0)	&&
-			isCurrentMinorCutsceneId(0x7330, 0x8)	&&
-			isCurrentMinorCutsceneId(0x3ee0, 0x28)
-		) &&
-		trigger_when(isNoCutsceneActive())},
-	"a_MeetFamousOleg": function MeetFamousOleg(){ return //WIP
+	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!isInGame()				||
 			isEventViewerActive() 	||
@@ -2919,7 +2949,7 @@ _achievementTitles = {
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
-	"a_ScareApprenticeMiddleAges": 					{"en": "Tech Terror"}, 
+	"a_ScareEveryone": 								{"en": "Terror of Destinies"}, 
 	// "a_Template": 			{"en": "xxxxx"}, 
 }
 _achievementDescriptions = {
@@ -2974,7 +3004,7 @@ _achievementDescriptions = {
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
 	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
-	"a_ScareApprenticeMiddleAges": 					{"en": "Frighten an aspiring apprentice with futuristic gadgets"}, 
+	"a_ScareEveryone": 								{"en": "Frighten everyone in the past and a person indulging in spaghetti during chapter 2"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
