@@ -6,6 +6,7 @@
 // #ID = 3945
 // md5: 887bb53eb92a56235aa40a80ce5c8eeb - USA
 
+// DART - 
  
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -17,7 +18,8 @@ achievementLanguage = "en"							// ISO 639-1 language codes
 
 achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
-
+function addToDictionary(dict, key, value) {
+	dict[key] = value}
 
 //   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗
 //   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
@@ -175,8 +177,8 @@ function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == _NPCs[string_NP
 
 function isTalkingTo(string_NPC) {								// $A9EFDC: [25-bit] Pointer - Interactions
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff				// 		+0x0 - [32-bit] NPC ID															
-	return _NPCs[string_NPC]["ID"] == dword(let_maskedPointer) 	// 		| - Unique per interactable NPC or environment item
-} 																// 		| - This value is copied to 0xa9eff4 (refer to notes)
+	return _NPCs[string_NPC]["ID"] == dword(let_maskedPointer)} // 		| - Unique per interactable NPC or environment item
+																// 		| - This value is copied to 0xa9eff4 (refer to notes)
 
 function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == _Interactables[string_NPC]
 
@@ -292,8 +294,7 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"BrumMuseumUpstairsRoom3Night": 0x140,
 	"BrumMuseumUpstairsRoom3Day": 0xcd,
 	"BrumMuseumDownstairsRoomNight": 0x32,
-	"BrumMuseumDownstairsRoomDay": 0x2ed
-}
+	"BrumMuseumDownstairsRoomDay": 0x2ed}
 function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
 
 
@@ -311,14 +312,16 @@ _chapterIDs = {
 	"Chapter8_Ancestress": 0x9,		// If in chapter 5, player told Margarette she's your ancestress
 	"Epilogue_Ancestress": 0xa,
 	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
-	"Epilogue_NoAncestress": 0xc
-}
+	"Epilogue_NoAncestress": 0xc}
 function getChapterId() => byte(0xB95704)			// $B95704: [8-bit] Chapter ID
 
 function isCurrentChapter(string_chapter) {	
 	if (string_chapter == "Chapter8") {
 		return
 			(getChapterId() == _chapterIDs["Chapter8_Ancestress"] || getChapterId() == _chapterIDs["Chapter8_NoAncestress"])
+	} else if (string_chapter == "Epilogue") {
+		return
+			(getChapterId() == _chapterIDs["Epilogue_Ancestress"] || getChapterId() == _chapterIDs["Epilogue_NoAncestress"])
 	} else {
 		return
 			getChapterId() == _chapterIDs[string_chapter]
@@ -348,9 +351,16 @@ function isChapterFinishing(string_chapter) {
 
 function isChapterChanging() => getChapterId() != prev(getChapterId())
 
-function isChapterChangingTo(string_chapter) => 
-	prev(getChapterId()) != _chapterIDs[string_chapter] &&
-	getChapterId() == _chapterIDs[string_chapter]
+function isChapterChangingTo(string_chapter) {
+	let_chapterId = 0
+	if (string_chapter == "Chapter8") {
+		let_chapterId = getChapterId()
+	} else if (string_chapter == "Epilogue") {
+		let_chapterId = getChapterId()
+	}
+	return 
+		prev(getChapterId()) != let_chapterId &&
+		getChapterId() == let_chapterId}
 
 // ÷ INVENTORY LOGIC ÷
 // *************************
@@ -361,127 +371,99 @@ _inventoryItems = {
 	"D-pad": {	// In PSP version this is called Z-Pad
 		"memAddress_Flag_isInInventory": 0xA9F034,	// $A9F034: [Bit 0] Z-pad/D-pad
 		"itemScrollBarId": 0x0,
-		"isDefaultItem": true
-	}, 
+		"isDefaultItem": true}, 
 	"Cellphone": {
 		"memAddress_Flag_isInInventory": 0xA9F035,	// $A9F035: [Bit 0] Cellphone
 		"itemScrollBarId": 0x1,
-		"isDefaultItem": true
-	},
+		"isDefaultItem": true},
 	"Map": {
 		"memAddress_Flag_isInInventory": 0xA9F04C,	// $A9F04C: [Bit 0] City map
 		"itemScrollBarId": 0x18,
-		"isDefaultItem": true
-	},
+		"isDefaultItem": true},
 	"Notebook": {
 		"memAddress_Flag_isInInventory": 0xA9F04F,	// $A9F04F: [Bit 0] Notebook
 		"itemScrollBarId": 0x1b,
-		"isDefaultItem": true
-	},	
+		"isDefaultItem": true},	
 	"Postcard": {
 		"memAddress_Flag_isInInventory": 0xA9F04A,	// $A9F04A: [Bit 0] Letter to dana
-		"isDefaultItem": true
-	},
+		"isDefaultItem": true},
 	"OldMap": {
 		"memAddress_Flag_isInInventory": 0xA9F04E,	// $A9F04E: [Bit 0] Old City Map
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"OrnamentalEgg": {
 		"itemScrollBarId": 0x2,
 		"memAddress_Flag_isInInventory": 0xA9F036,	// $A9F036: [Bit 0] Cake
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"FryingPan": {
 		"itemScrollBarId": 0x4,
 		"memAddress_Flag_isInInventory": 0xA9F038,	// $A9F038: [Bit 0] Frying pan
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Sign": {
 		"itemScrollBarId": 0x5,
 		"memAddress_Flag_isInInventory": 0xA9F039,	// $A9F039: [Bit 0] Photo shop sign
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Lighter": {
 		"itemScrollBarId": 0x6,
 		"memAddress_Flag_isInInventory": 0xA9F03A,	// $A9F03A: [Bit 0] Lighter
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"SquireCrest": {
 		"itemScrollBarId": 0xf,
 		"memAddress_Flag_isInInventory": 0xA9F043,	// $A9F043: [Bit 0] Squire's crest
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Antidote": {
 		"itemScrollBarId": 0x11,
 		"memAddress_Flag_isInInventory": 0xA9F045,	// $A9F045: [Bit 0] Antidote
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Jugglery": {
 		"itemScrollBarId": 0xc,
 		"memAddress_Flag_isInInventory": 0xA9F040,	// $A9F040: [Bit 0] Jugglery
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Cake": {
 		"itemScrollBarId": 0x13,
 		"memAddress_Flag_isInInventory": 0xA9F047,	// $A9F047: [Bit 0] Cake
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"PhilosopherStone": {
 		"memAddress_Flag_isInInventory": 0xA9F03D,	// $A9F03D: [Bit 0] Philosopher's stone
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"BLackWhitePhoto": {	// This one switches with the other photo once the picture is taken
 		"memAddress_Flag_isInInventory": 0xA9F03B,	// $A9F03B: [Bit 0] Black and white photo without performer
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"BLackWhitePhotoWithPerformer": {	
 		"memAddress_Flag_isInInventory": 0xA9F03C,	// $A9F03C: [Bit 0] Black and white photo with performer
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"OldRope": {
 		"memAddress_Flag_isInInventory": 0xA9F03F,	// $A9F03F: [Bit 0] Old Rope
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"NewRope": {
 		"memAddress_Flag_isInInventory": 0xA9F03E,	// $A9F03E: [Bit 0] New Rope
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Comb": {
 		"memAddress_Flag_isInInventory": 0xA9F041,	// $A9F041: [Bit 0] Comb
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"AlchemyBook": {
 		"memAddress_Flag_isInInventory": 0xA9F042,	// $A9F042: [Bit 0] Old alchemist book
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"EggPocketWatch": {
 		"memAddress_Flag_isInInventory": 0xA9F044,	// $A9F044: [Bit 0] Egg shaped pocket watch
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Meat": {
 		"memAddress_Flag_isInInventory": 0xA9F046,	// $A9F046: [Bit 0] Scrap of meat
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"LabKey": {
 		"memAddress_Flag_isInInventory": 0xA9F048,	// $A9F048: [Bit 0] Lab key
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"TowerKey": {
 		"memAddress_Flag_isInInventory": 0xA9F049,	// $A9F049: [Bit 0] Tower key
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Ladder": {
 		"memAddress_Flag_isInInventory": 0xA9F04D,	// $A9F04D: [Bit 0] Ladder
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"LetterToDana": {
 		"memAddress_Flag_isInInventory": 0xA9F050,	// $A9F050: [Bit 0] Postcard
-		"isDefaultItem": false
-	},
+		"isDefaultItem": false},
 	"Kitten": {
 		"memAddress_Flag_isInInventory": 0xA9F04B,	// $A9F04B: [Bit 0] Kitten
-		"isDefaultItem": false
-	}
+		"isDefaultItem": false}
 }
 
 function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == _inventoryItems[string_item]["itemScrollBarId"] // $A9F111: [8-bit] Currently selected item ID in inventory
@@ -549,20 +531,20 @@ function isInResultsMenu() {							// 		| - 0x4 => Exit (back to Title Screen)
 
 function isResultsMenuHighlightedChapter(string_chapter) {
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
-	let_resultsMenuHighlightedChapterId = _chapterIDs[string_chapter] - 1
+	let_resultsMenuHighlightedChapterId = 0 
 	if (string_chapter == "Chapter8") {
 		let_resultsMenuHighlightedChapterId = 0x8
 	} else if (string_chapter == "Epilogue") {
 		let_resultsMenuHighlightedChapterId = 0x9
-	}	else if (string_chapter == "Total") {
+	} else if (string_chapter == "Total") {
 		let_resultsMenuHighlightedChapterId = 0xa
+	} else {
+		let_resultsMenuHighlightedChapterId = _chapterIDs[string_chapter] - 1
 	}
-	return
-		dword(0xAC49F4) == 0x16					&&
-		dword(let_maskedPointer + 0x4) == 0x2 	&&
-		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId
-}
-																		
+	return			
+		isInResultsMenu() &&
+		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
+
 
 // ÷ OTHER LOGIC ÷
 // *********************
@@ -575,8 +557,7 @@ function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-ga
 											// 		> 0 => in-game
 
 function isGoingToTitleSCreen() { return
-	low4(0xA9EDDC) == 0 && prev(low4(0xA9EDDC)) > 0
-}
+	low4(0xA9EDDC) == 0 && prev(low4(0xA9EDDC)) > 0}
 
 function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 	dword(0x1FFF5F8) == 0x11 &&							// 	0x11 => title screen			any other value => something else on screen
@@ -630,7 +611,7 @@ function isEndingUnlocked(string_EndingCharacter) {
 	return bit0(let_endingBitFlagsMemoryAddresses[string_EndingCharacter]) == 1}
 
 
-function isBrumEstateMuseum() => bit5(0xA9EDAA) == 0		// [Current Playthrough Bit Flags]: Brum Estate Choice
+function isBrumEstateMuseum() => bit5(0xA9EDAA) == 0		//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
 															//		bit 5 = 0 => Brum Estate is museum
 function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1		//		bit 5 = 1 => Brum Estate is library
 
@@ -664,6 +645,78 @@ function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]
 function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
 															//		 bit 2 => is wearing performer outfit
 
+// ÷ PERMANENT CUTSCENE PERCENTAGE BITFLAGS ÷
+// **********************************************
+// 	- Each flag corresponds to at least 1 cutscene and counts toward the achievement percentage 
+// 	- These flags are set when heading into any save menu OR when finishing a chapter OR when booting up the game
+// 	- Each flag accounts for a float percentage. These numbers are rounded up or down in the extra menu
+// 	- To test => change memory values => from title screen go back into extra menu
+const_percentageBitsFlags = {
+	"Prologue": {
+		0xAA115B: [1,7],
+		0xAA115C: [0,7],
+		0xAA115D: [0,7],
+		0xAA115E: [0,7],
+		0xAA115F: [0,7],
+		0xAA1160: [0,7],
+		0xAA1161: [0,5]},
+	"Chapter1": {
+		0xAA1162: [6,7],
+		0xAA1163: [0,7],
+		0xAA1164: [0,7],
+		0xAA1165: [0,5]},
+	"Chapter2": {
+		0xAA1166: [3,7],
+		0xAA1167: [0,7],
+		0xAA1168: [0,7],
+		0xAA1169: [0,7],
+		0xAA116A: [0,6],},
+	"Chapter3": {
+		0xAA1177: [2,7],
+		0xAA1178: [0,7],
+		0xAA1179: [0,7]},
+	"Chapter4": {
+		0xAA116C: [1,7],
+		0xAA116D: [0,7],
+		0xAA116E: [0,7],
+		0xAA116F: [0,7],
+		0xAA1170: [0,4]},
+	"Chapter5": {
+		0xAA1171: [1,7],
+		0xAA1172: [0,7],
+		0xAA1173: [0,7],
+		0xAA1174: [0,7],
+		0xAA1175: [0,7],
+		0xAA1176: [0,6]},
+	"Chapter6": {
+		0xAA117A: [2,7],
+		0xAA117B: [0,7],
+		0xAA117C: [0,7],
+		0xAA117D: [0,7],
+		0xAA117E: [0,4]},
+	"Chapter7": {
+		0xAA117F: [2,7],
+		0xAA1180: [0,7],
+		0xAA1181: [0,7],
+		0xAA1182: [0,7],
+		0xAA1183: [0,3]},
+	"Chapter8": {
+		0xAA1184: [5,7],
+		0xAA1185: [0,7],
+		0xAA1186: [0,7],
+		0xAA1187: [0,7],
+		0xAA1188: [0,7],
+		0xAA1189: [0,7],
+		0xAA118A: [0,7],
+		0xAA118B: [0,7],
+		0xAA118C: [0,7],
+		0xAA118D: [0,3]},
+	"Epilogue": {
+		0xAA1190: [2,7],
+		0xAA1191: [0,7],
+		0xAA1192: [0,7],
+		0xAA1193: [0]},
+}
 
 //    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗
 //   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
@@ -679,7 +732,6 @@ function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current 
 // *************************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
-
 _achievements = {
 	// TODO "a_Template": { 
 	//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -727,33 +779,33 @@ _achievements = {
 		"a_MaxAchievementChapter1": {
 			"id": 000000, "points": 25, "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 1"},
-		// TODO "a_MaxAchievementChapter2": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 2"},
-		// TODO "a_MaxAchievementChapter3": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 3"},
-		// TODO "a_MaxAchievementChapter4": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 4"},
-		// TODO "a_MaxAchievementChapter5": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 5"},
-		// TODO "a_MaxAchievementChapter6": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 6"},
-		// TODO "a_MaxAchievementChapter7": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 7"},
-		// TODO "a_MaxAchievementChapter8": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 8"},
-		// TODO "a_MaxAchievementEpilogue": {	
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in epilogue"},
-		// TODO "a_MaxAchievementTotal": {
-		//	"id": 000000, "points": 50, "hasTips": false,
-		// 	"devInfo": "Seen ALL important the cutscenes"},
+		"a_MaxAchievementChapter2": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 2"},
+		"a_MaxAchievementChapter3": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 3"},
+		"a_MaxAchievementChapter4": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 4"},
+		"a_MaxAchievementChapter5": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 5"},
+		"a_MaxAchievementChapter6": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 6"},
+		"a_MaxAchievementChapter7": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 7"},
+		"a_MaxAchievementChapter8": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 8"},
+		"a_MaxAchievementEpilogue": {	
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in epilogue"},
+		"a_MaxAchievementTotal": {
+			"id": 000000, "points": 50, "hasTips": false,
+			"devInfo": "Seen ALL important the cutscenes"},
 	},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // WORKING
@@ -779,7 +831,7 @@ _achievements = {
 		"a_EndingB2":{ // WORKING
 			"id": 315572, "points": 5, "hasTips": true,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		"a_EndingC": { // WORKING
+			"a_EndingC": { // WORKING
 			"id": 317118, "points": 5, "hasTips": true,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
 		"a_EndingD": { // WORKING
@@ -943,22 +995,21 @@ _achievements = {
 // ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
 // ***************************************************
 //	- For achievement logic that's reoccuring across multiple triggers
-
 function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlagsToCheck){ 
-	function generateTally_MaxAchievementRate(dict_BitFlagsToCheck) {	
+	function generateTallyComparison_MaxAchievementRate(dict_BitFlagsToCheck) {	
 		function amountOfBitFlagsToCheck(dict_BitFlagsToCheck) {
 			let_bitFlagCount = 0
 			for memAddrWithBitFlags in dict_BitFlagsToCheck {
 				let_arrayOfBitBlagsToCheck = dict_BitFlagsToCheck[memAddrWithBitFlags]
-				let_bitFlagCount = let_bitFlagCount + 1	// Always minimum 1 bit flag at the address
-				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
-					let_bitFlagCount = let_bitFlagCount + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
+				if (length(let_arrayOfBitBlagsToCheck) == 1) {
+					let_bitFlagCount = let_bitFlagCount + 1	
+				} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
+					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
 				} else {
-					let_bitFlagCount = let_bitFlagCount + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
-				}					
+					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
+				}
 			}
-			return let_bitFlagCount
-		}
+			return let_bitFlagCount}
 		return tally_of(dict_BitFlagsToCheck, amountOfBitFlagsToCheck(dict_BitFlagsToCheck), (memAddrWithBitFlags) {				
 			let_comparisonsArray = []
 			let_arrayOfBitBlagsToCheck = dict_BitFlagsToCheck[memAddrWithBitFlags]
@@ -976,19 +1027,55 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlagsToCheck
 			return tally_of(let_comparisonsArray, 1, (comparison) => comparison)
 		})
 	}
-	return
-		unless(	// Pause if => not in game
-			!isInGame()
-		) &&
-		never(	// Reset/recalculate tally count
-			isChapterChangingTo(string_chapter) ||
-			isGoingToTitleSCreen()
-		) && (
-			measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isCurrentChapter(string_chapter), "percent")
-		) || (
-			measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isResultsMenuHighlightedChapter(string_chapter), "percent")
-		)
-}
+	function generateTrigger_TotalMaxAchievementRate(comparison_tally) {
+		return			
+			never(	// Reset/recalculate tally count
+				isChapterChanging()
+			) && 
+			(
+				(
+					unless(	// Pause if => not in game; still shows popup from measure-if statement
+						!isInGame()
+					) &&
+					measured(comparison_tally, always_true(), "percent")
+				) || (
+					// unless(	// Pause if => not in results menu
+					// 	!isInGame()
+					// ) &&
+					measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
+				)
+			)
+	}
+	function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) {
+		return
+			
+			never(	// Reset/recalculate tally count
+				isChapterChangingTo(string_chapter)
+			) && 
+			(
+				(
+					unless(	// Pause if => not in game
+						!isInGame()						
+					) &&			
+					measured(comparison_tally, isCurrentChapter(string_chapter), "percent")
+				) || (
+					// unless(	// Pause if => not in results menu
+					// 	!isInGame()	
+					// ) &&
+					measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
+				)
+			)
+	}
+
+ 
+	let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_BitFlagsToCheck)
+	if (string_chapter == "Total") {
+		return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
+	} else {
+		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
+	}}
+
+	
 
 // ÷ ACHIEVEMENT TRIGGERS ÷
 // ***************************************************************
@@ -1421,23 +1508,47 @@ _achievementTriggers = {
 	"a_EXChapterComplete": function EXChapterComplete() { return //WIP-a_EXChapterComplete
 		always_false()
 		},
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
-		let_PrologueEXChapPercentageBitFlags = {
-			0xAA115b: [1,7],
-			0xAA115c: [0,7],
-			0xAA115d: [0,7],
-			0xAA115e: [0,7],
-			0xAA115f: [0,7],
-			0xAA1160: [0,7],
-			0xAA1161: [0,5]}
-		return generateTrigger_MaxAchievementRate("Prologue", let_PrologueEXChapPercentageBitFlags)},
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() { 		
+		let_PercentageBitFlags = const_percentageBitsFlags["Prologue"]
+		return generateTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
-		let_Chap1PercentageBitFlags = {
-			0xAA1162: [6,7],
-			0xAA1163: [0,7],
-			0xAA1164: [0,7],
-			0xAA1165: [0,5]}
-		return generateTrigger_MaxAchievementRate("Chapter1", let_Chap1PercentageBitFlags)},
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter1"]
+		return generateTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter2"]
+		return generateTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter3"]
+		return generateTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter4"]
+		return generateTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter5"]
+		return generateTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter6"]
+		return generateTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter7"]
+		return generateTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
+	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Chapter8"]
+		return generateTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
+	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
+		let_PercentageBitFlags = const_percentageBitsFlags["Epilogue"]
+		return generateTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
+	"a_MaxAchievementTotal": function MaxAchievementTotal() {
+		function compileAllPercentageBitFlagsInOneDict() {
+			let_PercentageBitFlags = {}
+			for chapter in const_percentageBitsFlags {
+				for memAddr in const_percentageBitsFlags[chapter] {
+					addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitsFlags[chapter][memAddr])
+				}
+			}
+			return let_PercentageBitFlags
+		}			
+		return generateTrigger_MaxAchievementRate("Total", compileAllPercentageBitFlagsInOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 					||
@@ -3107,8 +3218,8 @@ _achievementTitles = {
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
-	"a_ScareEveryone": 								{"en": "Terror of Destinies"}, 
-	// "a_Template": 			{"en": "xxxxx"}, 
+	"a_ScareEveryone": 								{"en": "Terror of Destinies"}
+	// "a_Template": 			{"en": "xxxxx"},}
 }
 _achievementDescriptions = {
 	"a_PrologueComplete": {							"en": "Complete the Prologue",
@@ -3128,17 +3239,17 @@ _achievementDescriptions = {
 	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
 	"a_EXChapterComplete":							{"en": "Complete the EX Chapter"},
-	"a_MaxAchievementPrologue":						{"en": "Attain 100% achievement rate for the prologue and EX chapter"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 1"},
-	"a_MaxAchievementChapter2":						{"en": "Attain 100% achievement rate for chapter 2"},
-	"a_MaxAchievementChapter3":						{"en": "Attain 100% achievement rate for chapter 3"},
-	"a_MaxAchievementChapter4":						{"en": "Attain 100% achievement rate for chapter 4"},
-	"a_MaxAchievementChapter5":						{"en": "Attain 100% achievement rate for chapter 5"},
-	"a_MaxAchievementChapter6":						{"en": "Attain 100% achievement rate for chapter 6"},
-	"a_MaxAchievementChapter7":						{"en": "Attain 100% achievement rate for chapter 7"},
-	"a_MaxAchievementChapter8":						{"en": "Attain 100% achievement rate for chapter 8"},
-	"a_MaxAchievementEpilogue":						{"en": "Attain 100% achievement rate for the epilogue"},
-	"a_MaxAchievementTotal":						{"en": "Attain 100% total achievement rate"},
+	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue and EX chapter"},
+	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for chapter 1"},
+	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for chapter 2"},
+	"a_MaxAchievementChapter3":						{"en": "Reach 100% achievement rate for chapter 3"},
+	"a_MaxAchievementChapter4":						{"en": "Reach 100% achievement rate for chapter 4"},
+	"a_MaxAchievementChapter5":						{"en": "Reach 100% achievement rate for chapter 5"},
+	"a_MaxAchievementChapter6":						{"en": "Reach 100% achievement rate for chapter 6"},
+	"a_MaxAchievementChapter7":						{"en": "Reach 100% achievement rate for chapter 7"},
+	"a_MaxAchievementChapter8":						{"en": "Reach 100% achievement rate for chapter 8"},
+	"a_MaxAchievementEpilogue":						{"en": "Reach 100% achievement rate for the epilogue"},
+	"a_MaxAchievementTotal":						{"en": "Reach 100% total achievement rate"},
 	"a_EndingA":									{"en": "Achieve Ending A"},
 	"a_EndingB1":									{"en": "Achieve Ending B1"},
 	"a_EndingB2":									{"en": "Achieve Ending B2"},
@@ -3195,9 +3306,10 @@ _achievementDescriptions = {
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
-	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}	
+	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}
 	// "a_Template": 			{"en": "xxxxx"},
 }
+
 
 // ÷ ACHIEVEMENT INITIALIZER ÷
 // **********************************************************
@@ -3256,8 +3368,7 @@ function initializeAchievements() {
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
 		}
-	}
-}
+	}}
 
 
 //   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗
@@ -3275,6 +3386,6 @@ function initializeAchievements() {
  //
  // **********************************************************************
 function initializeRAscript() {
-	initializeAchievements()
-}
+	initializeAchievements()}
+
 initializeRAscript()

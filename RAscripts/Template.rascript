@@ -8,7 +8,7 @@
 
 // Info regarding usage of this RAScript
 // ---------------------------------------------
-//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like C#
+//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go
 //	- For unified tab/spaces => set line space to tab size 4
 //	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
 //	- Use RATools to update achievement logic written here to RALibrertro
@@ -217,8 +217,7 @@ function initializeAchievements() {
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
 		}
-	}
-}
+	}}
 
 
 
@@ -240,6 +239,5 @@ function initializeAchievements() {
  // ***********************************************************************
 
 function initializeRAscript() {
-	initializeAchievements()
-}
+	initializeAchievements()}
 initializeRAscript()
