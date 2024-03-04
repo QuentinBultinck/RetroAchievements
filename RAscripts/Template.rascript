@@ -105,6 +105,10 @@ _achievements = {
 
 
 
+// ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
+// ***************************************************
+//	- For achievement logic that's reoccuring across multiple triggers
+
 
 // ÷ ACHIEVEMENT TRIGGERS ÷
 // ***************************************************************

@@ -300,7 +300,7 @@ function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_ma
 // ÷ CHAPTER LOGIC ÷
 // ********************
 _chapterIDs = {
-	"Prologue": 0x1,
+	"Prologue": 0x1,	// Also counts for EX chapter
 	"Chapter1": 0x2,
 	"Chapter2": 0x3,
 	"Chapter3": 0x4,
@@ -312,8 +312,6 @@ _chapterIDs = {
 	"Epilogue_Ancestress": 0xa,
 	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
 	"Epilogue_NoAncestress": 0xc
-	// TODO "Different endings": ???
-	// TODO "EX chapter": ??? 
 }
 function getChapterId() => byte(0xB95704)			// $B95704: [8-bit] Chapter ID
 
@@ -350,6 +348,9 @@ function isChapterFinishing(string_chapter) {
 
 function isChapterChanging() => getChapterId() != prev(getChapterId())
 
+function isChapterChangingTo(string_chapter) => 
+	prev(getChapterId()) != _chapterIDs[string_chapter] &&
+	getChapterId() == _chapterIDs[string_chapter]
 
 // ÷ INVENTORY LOGIC ÷
 // *************************
@@ -548,15 +549,20 @@ function getEnergyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy uni
 												//		- Used for the time travel machine (Z-Pad)
 												//		- Min => 0x0 		Max => 0x0a
 
-function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Bit 1] Flag -> is in-game
-												// 		0 => at title screen
-												// 		1 => in-game
+function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-game
+											// 		= 0 => at title screen
+											// 		> 0 => in-game
+
+function isGoingToTitleSCreen() { return
+	low4(0xA9EDDC) == 0 && prev(low4(0xA9EDDC)) > 0
+}
 
 function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 	dword(0x1FFF5F8) == 0x11 &&							// 	0x11 => title screen			any other value => something else on screen
 	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	// $1FFF604: [8-bit] Selected submenu at title screen
 														// 	0x1 => Start		0x3 => Option
 														// 	0x2 => Continue		0x4 => Extra
+
 
 
 // ÷ CUTSCENE/CHOICES BIT FLAGS ÷
@@ -647,6 +653,7 @@ function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current 
 //
 // *****************************************************************************************************************************************************************
 
+
 // ÷ ACHIEVEMENT DICTIONARY ÷
 // *************************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
@@ -670,10 +677,10 @@ _achievements = {
 			"id": 306921, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 3"},
 		"a_Chapter4CompletePan": { // WORKING
-			"id": 308964, "points": 5, "hasTips": true,
+			"id": 308964, "points": 4, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
 		"a_Chapter4CompleteSign": { // WORKING
-			"id": 310149, "points": 5, "hasTips": true,
+			"id": 310149, "points": 4, "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
 		"a_Chapter5Complete": { // WORKING
 			"id": 311616, "points": 5, "hasTips": false,
@@ -691,14 +698,14 @@ _achievements = {
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
 		"a_EXChapterComplete": { //TODO
-			"id": 00000, "points": 50, "hasTips": false,
-			"devInfo": "Complete the EX chapter"},
-		// TODO "a_MaxAchievementPrologue": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
-		// TODO "a_MaxAchievementChapter1": {
-		//	"id": 000000, "points": 25, "hasTips": false,
-		// 	"devInfo": "Seen all the important cutscenes in chapter 1"},
+			"id": 00000, "points": 10, "hasTips": false,
+			"devInfo": "Complete the EX chapter, only available after getting all 5 endings"},
+		"a_MaxAchievementPrologue": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
+		"a_MaxAchievementChapter1": {
+			"id": 000000, "points": 25, "hasTips": false,
+			"devInfo": "Seen all the important cutscenes in chapter 1"},
 		// TODO "a_MaxAchievementChapter2": {
 		//	"id": 000000, "points": 25, "hasTips": false,
 		// 	"devInfo": "Seen all the important cutscenes in chapter 2"},
@@ -724,52 +731,52 @@ _achievements = {
 		//	"id": 000000, "points": 25, "hasTips": false,
 		// 	"devInfo": "Seen all the important cutscenes in epilogue"},
 		// TODO "a_MaxAchievementTotal": {
-		//	"id": 000000, "points": 100, "hasTips": false,
+		//	"id": 000000, "points": 50, "hasTips": false,
 		// 	"devInfo": "Seen ALL important the cutscenes"},
 	},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // WORKING
-			"id": 306885, "points": 3, "hasTips": true,
+			"id": 306885, "points": 1, "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
 		"a_BecomeThePerformer": { // WORKING
-			"id": 402284, "points": 5, "hasTips": true,
+			"id": 402284, "points": 4, "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
 		"a_EggCollection": { // WORKING
-			"id": 306977, "points": 5, "hasTips": true,
+			"id": 306977, "points": 4, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_AlertBarmanOfFire": { // WORKING
-			"id": 306976, "points": 5, "hasTips": true,
+			"id": 306976, "points": 4, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
-			"id": 315566, "points": 10, "hasTips": true,
+			"id": 315566, "points": 5, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
 		"a_EndingB1":{ // WORKING
-			"id": 315573, "points": 10, "hasTips": true,
+			"id": 315573, "points": 5, "hasTips": true,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		"a_EndingB2":{ // WORKING
-			"id": 315572, "points": 10, "hasTips": true,
+			"id": 315572, "points": 5, "hasTips": true,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
 		"a_EndingC": { // WORKING
-			"id": 317118, "points": 10, "hasTips": true,
+			"id": 317118, "points": 5, "hasTips": true,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
 		"a_EndingD": { // WORKING
-			"id": 322230, "points": 10, "hasTips": true,
+			"id": 322230, "points": 5, "hasTips": true,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		"a_EndingE": { // WORKING
-			"id": 322231, "points": 10, "hasTips": true,
+			"id": 322231, "points": 5, "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
 	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": { // WORKING
-			"id": 310426, "points": 10, "hasTips": true,
+			"id": 310426, "points": 4, "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
 		"a_DoctorateTimeTraveling": { // WORKING
-			"id": 310163, "points": 10, "hasTips": true,
+			"id": 310163, "points": 4, "hasTips": true,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
 		"a_ShowEggTownPlanter": { // WORKING
-			"id": 307023, "points": 5, "hasTips": true,
+			"id": 307023, "points": 4, "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
 		"a_EikeThePyromancer": { // WORKING
 			"id": 306911, "points": 3, "hasTips": true,
@@ -784,103 +791,103 @@ _achievements = {
 			"id": 307499, "points": 2, "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		"a_ArtInspiration1": { // WORKING
-			"id": 403824, "points": 3, "hasTips": true,
+			"id": 403824, "points": 4, "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
 		"a_ArtInspirationAll": { // WORKING
 			"id": 403825, "points": 10, "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
 		"a_AntiquesEule": { // WORKING
-			"id": 310132, "points": 3, "hasTips": true,
+			"id": 310132, "points": 2, "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_EnigmaticCouple1": { // WORKING
-			"id": 307495, "points": 5, "hasTips": true,
+			"id": 307495, "points": 3, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
 		"a_EnigmaticCouple2": { // WORKING
-			"id": 310131, "points": 5, "hasTips": true,
+			"id": 310131, "points": 3, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
 		"a_EnigmaticCouple3": { // WORKING
-			"id": 310134, "points": 5, "hasTips": true,
+			"id": 310134, "points": 3, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
 		"a_EnigmaticCouple4": { // WORKING
-			"id": 310135, "points": 5, "hasTips": true,
+			"id": 310135, "points": 3, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_EnigmaticCouple5": { // WORKING
-			"id": 315564, "points": 5, "hasTips": true,
+			"id": 315564, "points": 3, "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // WORKING
-			"id": 306984, "points": 5, "hasTips": true,
+			"id": 306984, "points": 4, "hasTips": true,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
 		"a_LostYoungCouple2": { // WORKING
-			"id": 310133, "points": 5, "hasTips": true,
+			"id": 310133, "points": 4, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
 		"a_LostYoungCouple3": { // WORKING
-			"id": 309393, "points": 5, "hasTips": true,
+			"id": 309393, "points": 4, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
 		"a_LostYoungCouple4": { // WORKING
-			"id": 310162, "points": 3, "hasTips": true,
+			"id": 310162, "points": 1, "hasTips": true,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
 		"a_LostYoungCouple5": { // WORKING
-			"id": 314753, "points": 5, "hasTips": true,
+			"id": 314753, "points": 4, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // WORKING
 			"id": 315568, "points": 10, "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
 		"a_HugoMotherChild": { // WORKING
-			"id": 311466, "points": 5, "hasTips": true,
+			"id": 311466, "points": 4, "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_SnowyCrimeScene": { // WORKING
-			"id": 313209, "points": 5, "hasTips": true,
+			"id": 313209, "points": 4, "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		"a_SaveMiriamBrum": { // WORKING
-			"id": 315569, "points": 10, "hasTips": true,
+			"id": 315569, "points": 4, "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6"},
 		"a_MeetOldMiriam": { // WORKING
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_EnergyOrbLocatorPresentDay": { // WORKING
-			"id": 399816, "points": 5, "hasTips": true,
+			"id": 399816, "points": 4, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
 		"a_EnergyOrbLocator70s80s": { // WORKING
-			"id": 399817, "points": 5, "hasTips": true,
+			"id": 399817, "points": 4, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
 		"a_EnergyOrbLocator1900Days": { // WORKING
-			"id": 399818, "points": 5, "hasTips": true,
+			"id": 399818, "points": 4, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
 		"a_EnergyOrbLocatorMiddleAges": { // WORKING
-			"id": 399819, "points": 5, "hasTips": true,
+			"id": 399819, "points": 4, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		"a_NewCakeInvented": { // WORKING
-			"id": 402297, "points": 5, "hasTips": true,
+			"id": 402297, "points": 4, "hasTips": true,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
 		"a_GiveMargaretteCake": { // WORKING
-			"id": 402296, "points": 3, "hasTips": true,
+			"id": 402296, "points": 4, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
 		"a_MaxInventory": { // WORKING
 			"id": 402404, "points": 10, "hasTips": true,
 			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
 		"a_PocketWatchCollection": { // WORKING
-			"id": 315561, "points": 5, "hasTips": true,
+			"id": 315561, "points": 4, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
 		"a_PocketWatchReminiscing": { // WORKING
-			"id": 315562, "points": 5, "hasTips": true,
+			"id": 315562, "points": 4, "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_EggPocketWatchForCoffee": { // WORKING
-			"id": 313213, "points": 5, "hasTips": true,
+			"id": 313213, "points": 4, "hasTips": true,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_BarmansChildren": { // WORKING
-			"id": 315567, "points": 5, "hasTips": true,
+			"id": 315567, "points": 4, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 		"a_ScareEveryone": { // WORKING
 			"id": 404046, "points": 4, "hasTips": true,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
 		"a_MeetFamousOleg": { // WORKING
-			"id": 404045, "points": 5, "hasTips": true,
+			"id": 404045, "points": 4, "hasTips": true,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
 		"a_RunningAcrossThe90s": { // WORKING
-			"id": 00000, "points": 1, "hasTips": true,
+			"id": 00000, "points": 2, "hasTips": true,
 			"devInfo": "Talk to jogging man in present and past (70s)"},
 		"a_ShortestChapter": { // WORKING
 			"id": 403823, "points": 3, "hasTips": true,
@@ -891,10 +898,10 @@ _achievements = {
 	},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
 		"a_MetYouBefore": { // WORKING
-			"id": 306888, "points": 5, "hasTips": true,
+			"id": 306888, "points": 2, "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
-			"id": 306883, "points": 5, "hasTips": true,
+			"id": 306883, "points": 2, "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
 		"a_ErasingEike2": { // WORKING
 			"id": 314763, "points": 1, "hasTips": true,
@@ -909,6 +916,51 @@ _achievements = {
 			"id": 313212, "points": 1, "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"},
 	}
+}
+
+
+// ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
+// ***************************************************
+//	- For achievement logic that's reoccuring across multiple triggers
+
+function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlagsToCheck){ 
+	function generateTally_MaxAchievementRate(dict_BitFlagsToCheck) {	
+		function amountOfBitFlagsToCheck(dict_BitFlagsToCheck) {
+			let_bitFlagCount = 0
+			for memAddrWithBitFlags in dict_BitFlagsToCheck {
+				let_arrayOfBitBlagsToCheck = dict_BitFlagsToCheck[memAddrWithBitFlags]
+				let_bitFlagCount = let_bitFlagCount + 1	// Always minimum 1 bit flag at the address
+				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
+					let_bitFlagCount = let_bitFlagCount + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
+				} else {
+					let_bitFlagCount = let_bitFlagCount + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
+				}					
+			}
+			return let_bitFlagCount
+		}
+		return tally_of(dict_BitFlagsToCheck, amountOfBitFlagsToCheck(dict_BitFlagsToCheck), (memAddrWithBitFlags) {				
+			let_comparisonsArray = []
+			let_arrayOfBitBlagsToCheck = dict_BitFlagsToCheck[memAddrWithBitFlags]
+			// return comparison on each index + difference unless length == 1
+			if (length(let_arrayOfBitBlagsToCheck) == 1) {
+				let_index = let_arrayOfBitBlagsToCheck[0]
+				array_push(let_comparisonsArray, once(bit(let_index, memAddrWithBitFlags) == 1))
+			} else {
+				let_step = 1
+				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) { let_step = -1 }
+				for let_index in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {
+					array_push(let_comparisonsArray, once(bit(let_index, memAddrWithBitFlags) == 1))
+				}
+			}
+			return tally_of(let_comparisonsArray, 1, (comparison) => comparison)
+		})
+	}
+	return
+		never(	// Reset/recalculate tally count when any of these is true
+			isChapterChangingTo(string_chapter) ||
+			isGoingToTitleSCreen()
+		) &&
+		measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isInGame() && isCurrentChapter(string_chapter))
 }
 
 // ÷ ACHIEVEMENT TRIGGERS ÷
@@ -1342,6 +1394,23 @@ _achievementTriggers = {
 	"a_EXChapterComplete": function EXChapterComplete() { return //WIP-a_EXChapterComplete
 		always_false()
 		},
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
+		let_PrologueEXChapPercentageBitFlags = {
+			0xAA115b: [1,7],
+			0xAA115c: [0,7],
+			0xAA115d: [0,7],
+			0xAA115e: [0,7],
+			0xAA115f: [0,7],
+			0xAA1160: [0,7],
+			0xAA1161: [0,5]}
+		return generateTrigger_MaxAchievementRate("Prologue", let_PrologueEXChapPercentageBitFlags)},
+	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
+		let_Chap1PercentageBitFlags = {
+			0xAA1162: [6,7],
+			0xAA1163: [0,7],
+			0xAA1164: [0,7],
+			0xAA1165: [0,5]}
+		return generateTrigger_MaxAchievementRate("Chapter1", let_Chap1PercentageBitFlags)},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 					||
@@ -2489,7 +2558,7 @@ _achievementTriggers = {
 		}
 		return 
 			never(	
-				isAtTitleScreen()					||
+				isAtTitleScreen()		||
 				isEventViewerActive()	||
 
 				// Reset if any item is gained or removed
@@ -2741,15 +2810,14 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
-				// TEST => IDs here work with NoAncstor_path => work also with Ancestor_path??
-				isCutsceneActive() && isCurrentMapScene("80sColdCity") &&
-				isCurrentCutsceneMasterId(0x756c0)		&& 
-				isCurrentCutsceneSectionId_1(0x1)		&&
-				isCurrentCutsceneSectionId_2(0x0)		&&
-				isCurrentCutsceneMasterDataId(0x4660)	&&
-				isCurrentCutsceneSectionDataId(0x4f210) &&
-				isCurrentMinorCutsceneId(0xb8b90, 0x8)	&&
-				isCurrentMinorCutsceneId(0x4f210, 0x28)
+			isCutsceneActive() && isCurrentMapScene("80sColdCity") &&
+			isCurrentCutsceneMasterId(0x756c0)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x4660)	&&
+			isCurrentCutsceneSectionDataId(0x4f210) &&
+			isCurrentMinorCutsceneId(0xb8b90, 0x8)	&&
+			isCurrentMinorCutsceneId(0x4f210, 0x28)
 		) &&
 		isFullCutsceneSequenceEnding()},
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
@@ -2944,6 +3012,16 @@ _achievementTitles = {
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
 	"a_EXChapterComplete":							{"en": "xxxxxxxxxxxxx"},	// TODO set title
+	"a_MaxAchievementPrologue":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter1":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter2":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter3":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter4":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter5":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter6":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter7":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementChapter8":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementEpilogue":						{"en": "xxxxxxxxxxxxx"},
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
@@ -3021,7 +3099,17 @@ _achievementDescriptions = {
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
-	"a_EXChapterComplete":							{"en": "Complete EX Chapter"},
+	"a_EXChapterComplete":							{"en": "Complete the EX Chapter"},
+	"a_MaxAchievementPrologue":						{"en": "Attain 100% achievement rate for the prologue and EX chapter"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 1"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 2"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 3"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 4"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 5"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 6"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 7"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 8"},
+	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for the epilogue"},
 	"a_EndingA":									{"en": "Achieve Ending A"},
 	"a_EndingB1":									{"en": "Achieve Ending B1"},
 	"a_EndingB2":									{"en": "Achieve Ending B2"},
@@ -3150,7 +3238,7 @@ function initializeAchievements() {
 //   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗
 //   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
 //
-// ***************************************************************************************************************************************************************************
+// **********************************************************************************************************************
 
                                                                
  //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
