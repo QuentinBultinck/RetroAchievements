@@ -511,7 +511,7 @@ function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 // *********************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function isViewingEndingFromExtraMenu() { 		
+function isViewingEndingFromExtraMenu() {
 	// Underlying line lasks [32-bit] value to [25-bit]	as PSP uses 25-bit pointers
 	let_maskedPointer = dword(0xAC3170) & 0x1FFFFFF				// $AC3170: [25-bit] Pointer
 	return dword(let_maskedPointer + 0x4) == 0x1}				// 	+0x4 - Selected menu item in Extra Menu
@@ -521,9 +521,14 @@ function isViewingEndingFromExtraMenu() {
 																// 		- 0x3 => Sound Mode (Play sound effects & music)
 																// 		- 0x4 => Exit (back to Title Screen)
 
+
 // $1FFF130: [32-bit] Flag -> Event viewer (preferred)
-// 0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
-// - other values => not in event viewer
+// 		0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
+// 		- other values => not in event viewer
+// $AC49F4: [32-bit] Menu ID
+// 		0xe => at title screen					0x16 => at results menu
+// 		0x4 => at extra menu					0x1a => In sound mode menu
+// 		0x12 => at event viewer menu			...
 function isEventViewerActive() {						// $AC3170: [25-bit] Pointer - When in Extra menu
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff		// 		- Extra menu is only visible once at least one is ending is finished
 	return												// 		+0x4 - [32-bit] Extra Menu: Highlighted item
@@ -531,16 +536,32 @@ function isEventViewerActive() {						// $AC3170: [25-bit] Pointer - When in Ext
 		dword(let_maskedPointer + 0x4) == 0 &&			// 		| - 0x1 => Ending files (replay ending cutscenes)
  		dword(let_maskedPointer + 0x48) <= 0xb}			// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
 														// 		| - 0x3 => Sound Mode (Play sound effects & music)
-														// 		| - 0x4 => Exit (back to Title Screen)
-														// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
-														// 		| - 0x0 => ending A			| - 0x4 => ending E
-														// 		| - 0x1 => ending B			| - 0x3 => ending D
-														// 		| - 0x2 => ending C
-														// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
+function isInResultsMenu() {							// 		| - 0x4 => Exit (back to Title Screen)
+	let_maskedPointer = dword(0xAC3170) & 0x1ffffff		// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
+	return												// 		| - 0x0 => ending A			| - 0x4 => ending E	
+		dword(0xAC49F4) == 0x16					&&		// 		| - 0x1 => ending B			| - 0x3 => ending D
+		dword(let_maskedPointer + 0x4) == 0x2 	&&		// 		| - 0x2 => ending C
+ 		dword(let_maskedPointer + 0x48) <= 0xb}			// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
 														// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
 														// 		| - 0x1 => Chapter 1		| - 0xa => Total
 														// 		| - ...						| - 0xb => Exit
 														// 		| - 0x8 => Chapter 8
+
+function isResultsMenuHighlightedChapter(string_chapter) {
+	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
+	let_resultsMenuHighlightedChapterId = _chapterIDs[string_chapter] - 1
+	if (string_chapter == "Chapter8") {
+		let_resultsMenuHighlightedChapterId = 0x8
+	} else if (string_chapter == "Epilogue") {
+		let_resultsMenuHighlightedChapterId = 0x9
+	}	else if (string_chapter == "Total") {
+		let_resultsMenuHighlightedChapterId = 0xa
+	}
+	return
+		dword(0xAC49F4) == 0x16					&&
+		dword(let_maskedPointer + 0x4) == 0x2 	&&
+		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId
+}
 																		
 
 // ÷ OTHER LOGIC ÷
@@ -956,11 +977,17 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlagsToCheck
 		})
 	}
 	return
-		never(	// Reset/recalculate tally count when any of these is true
+		unless(	// Pause if => not in game
+			!isInGame()
+		) &&
+		never(	// Reset/recalculate tally count
 			isChapterChangingTo(string_chapter) ||
 			isGoingToTitleSCreen()
-		) &&
-		measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isInGame() && isCurrentChapter(string_chapter))
+		) && (
+			measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isCurrentChapter(string_chapter), "percent")
+		) || (
+			measured(generateTally_MaxAchievementRate(dict_BitFlagsToCheck), isResultsMenuHighlightedChapter(string_chapter), "percent")
+		)
 }
 
 // ÷ ACHIEVEMENT TRIGGERS ÷
@@ -3022,6 +3049,7 @@ _achievementTitles = {
 	"a_MaxAchievementChapter7":						{"en": "xxxxxxxxxxxxx"},
 	"a_MaxAchievementChapter8":						{"en": "xxxxxxxxxxxxx"},
 	"a_MaxAchievementEpilogue":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementTotal":						{"en": "xxxxxxxxxxxxx"},
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
@@ -3102,14 +3130,15 @@ _achievementDescriptions = {
 	"a_EXChapterComplete":							{"en": "Complete the EX Chapter"},
 	"a_MaxAchievementPrologue":						{"en": "Attain 100% achievement rate for the prologue and EX chapter"},
 	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 1"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 2"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 3"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 4"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 5"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 6"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 7"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for chapter 8"},
-	"a_MaxAchievementChapter1":						{"en": "Attain 100% achievement rate for the epilogue"},
+	"a_MaxAchievementChapter2":						{"en": "Attain 100% achievement rate for chapter 2"},
+	"a_MaxAchievementChapter3":						{"en": "Attain 100% achievement rate for chapter 3"},
+	"a_MaxAchievementChapter4":						{"en": "Attain 100% achievement rate for chapter 4"},
+	"a_MaxAchievementChapter5":						{"en": "Attain 100% achievement rate for chapter 5"},
+	"a_MaxAchievementChapter6":						{"en": "Attain 100% achievement rate for chapter 6"},
+	"a_MaxAchievementChapter7":						{"en": "Attain 100% achievement rate for chapter 7"},
+	"a_MaxAchievementChapter8":						{"en": "Attain 100% achievement rate for chapter 8"},
+	"a_MaxAchievementEpilogue":						{"en": "Attain 100% achievement rate for the epilogue"},
+	"a_MaxAchievementTotal":						{"en": "Attain 100% total achievement rate"},
 	"a_EndingA":									{"en": "Achieve Ending A"},
 	"a_EndingB1":									{"en": "Achieve Ending B1"},
 	"a_EndingB2":									{"en": "Achieve Ending B2"},
