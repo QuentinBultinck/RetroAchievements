@@ -724,10 +724,10 @@ _achievements = {
 		"a_BecomeThePerformer": { // WORKING
 			"id": 402284, "points": 5, "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
-		"a_EggCollection1": { // WORKING
+		"a_EggCollection": { // WORKING
 			"id": 306977, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
-		"a_EggCollection2": { // WORKING
+		"a_AlertBarmanOfFire": { // WORKING
 			"id": 306976, "points": 5, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
@@ -1674,7 +1674,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x134f0)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_EggCollection1": function EggCollection1() { return 
+	"a_EggCollection": function EggCollection1() { return 
 		never (
 			!isInGame() 				||
 			!isCurrentChapter("Chapter1") 	||
@@ -1689,7 +1689,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x249e0)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_EggCollection2": function EggCollection2() { return 
+	"a_AlertBarmanOfFire": function EggCollection2() { return 
 		never (
 			!isInGame() ||
 			isEventViewerActive()
@@ -2898,7 +2898,7 @@ _achievementTitles = {
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
 													"fr": "Défié le destine"},
-	"a_Chapter1Complete": 							{"en": "Defied Fate... Again",															
+	"a_Chapter1Complete": 							{"en": "Defied Fate... Again",
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
 	"a_Chapter2Complete": 							{"en": "Left in the Past"},
@@ -2920,8 +2920,8 @@ _achievementTitles = {
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities of the Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
-	"a_EggCollection1": 							{"en": "A Jovial Exchange I"},
-	"a_EggCollection2": 							{"en": "A Jovial Exchange II"}, 
+	"a_EggCollection": 								{"en": "A Jovial Exchange"},
+	"a_AlertBarmanOfFire": 							{"en": "There's a fire!"}, 
 	"a_BarmansChildren":							{"en": "The Barman's Grandchildren and The Mystery Child"},
 	"a_ShowEggTownPlanter": 						{"en": "Cracking Open the Past: Middle Ages"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Cracking Open the Past: The Old Century"},
@@ -2994,15 +2994,15 @@ _achievementDescriptions = {
 	"a_EndingC": 									{"en": "Achieve Ending C"},
 	"a_EndingD": 									{"en": "Achieve Ending D"},
 	"a_EndingE": 									{"en": "Achieve Ending E"},
-	"a_DoctorateTimeTraveling": 					{"en": "Take a photo chapter 4"}, 
+	"a_DoctorateTimeTraveling": 					{"en": "Get lectured in time-travelling physics during chapter 4"}, 
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
 	"a_PocketWatchCollection": 						{"en": "Show off your egg collection to the barman during chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
-	"a_EggCollection1": 							{"en": "Give an ornamental egg to a barman during chapter 1"},
-	"a_EggCollection2": 							{"en": "Give an ornamental egg to a barman during chapter 3 or 4"},
+	"a_EggCollection": 								{"en": "Exchange an egg for a pan during chapter 1, 3 or 4"},
+	"a_AlertBarmanOfFire": 							{"en": "Alert the young boy's grandpa of imminent disaster during chapter 1"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
@@ -3041,7 +3041,7 @@ _achievementDescriptions = {
 	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"},
 	"a_ShortestChapter": 							{"en": "Acquire an iron plate before finding a good usage for it"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
-	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including for yourself"}, 	
+	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
 	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}	
 	// "a_Template": 			{"en": "xxxxx"},

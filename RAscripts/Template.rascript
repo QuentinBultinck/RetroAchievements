@@ -6,9 +6,10 @@
 // md5: [hash here] - [region here]
 
 
-// Info regarding usage with Visual Studio Code
+// Info regarding usage of this RAScript
 // ---------------------------------------------
-//	- For colored text/code => select a language mode other than 'plain text', like C#
+//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like C#
+//	- For unified tab/spaces => set line space to tab size 4
 //	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
@@ -24,7 +25,7 @@ function isDebugModeActive() => true				// if active => extra information may be
 
 achievementLanguage = "en"							// ISO 639-1 language codes 
 
-achievementGuideLink = [link to achievement guide readme] 	
+achievementGuideLink = [link to achievement guide readme] 
 
 
 
@@ -41,9 +42,9 @@ achievementGuideLink = [link to achievement guide readme]
 
 // ÷ SUB HEADER 1 ÷
 // ***************************
-// 	- Some explanation...       //	$AC0130: [8-bit] Example memory address code note
-// 	- Some explanation...       //		- Code note...
-                                //		- Code note...
+// 	- Some explanation...		//	$AC0130: [8-bit] Example memory address code note
+// 	- Some explanation...		//		- Code note...
+								//		- Code note...
 
 
 
@@ -125,8 +126,8 @@ _achievementTriggers = : {
 // **************************
 
 _achievementTitles = {
-    // "a_Template": 						{"en": "xxxxx"}, 
-    "a_AchievementF":                       {"en": "EnglishTitle"},
+    // "a_Template":						{"en": "xxxxx"}, 
+    "a_AchievementF":						{"en": "EnglishTitle"},
     "a_AchievementE":						{"en": "EnglishTitle"},
     "a_AchievementD":						{"en": "EnglishTitle"},
     "a_AchievementC":						{"en": "EnglishTitle"},
@@ -139,8 +140,8 @@ _achievementTitles = {
 }
 
 _achievementDescriptions = {
-    // "a_Template": 			{"en": "xxxxx"}, 
-    "a_AchievementF":                       {"en": "EnglishDescription"},
+    // "a_Template": 						{"en": "xxxxx"}, 
+    "a_AchievementF":						{"en": "EnglishDescription"},
     "a_AchievementE":						{"en": "EnglishDescription"},
     "a_AchievementD":						{"en": "EnglishDescription"},
     "a_AchievementC":						{"en": "EnglishDescription"},
