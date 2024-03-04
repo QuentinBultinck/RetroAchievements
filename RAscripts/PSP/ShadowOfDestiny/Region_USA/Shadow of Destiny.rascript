@@ -6,7 +6,16 @@
 // #ID = 3945
 // md5: 887bb53eb92a56235aa40a80ce5c8eeb - USA
 
-// DART - 
+// Info regarding usage of this RAScript
+// ---------------------------------------------
+//	- For the best reading experience => set indent mode to 'Tabs'; with an indent size '4'
+//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
+
+//	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
+//	- Use RATools to update achievement logic written here to RALibrertro
+//	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
+//	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
+//	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
  
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
