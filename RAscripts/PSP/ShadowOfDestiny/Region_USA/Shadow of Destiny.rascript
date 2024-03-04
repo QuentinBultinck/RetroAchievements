@@ -1,24 +1,38 @@
-// Shadow of Destiny
+                                                           
+//    █▀ █░█ ▄▀█ █▀▄ █▀█ █░█░█    █▀█ █▀▀    █▀▄ █▀▀ █▀ ▀█▀ █ █▄░█ █▄█
+//    ▄█ █▀█ █▀█ █▄▀ █▄█ ▀▄▀▄▀    █▄█ █▀░    █▄▀ ██▄ ▄█ ░█░ █ █░▀█ ░█░
+//
+// ******************************************************************************
 // #ID = 3945
 // md5: 887bb53eb92a56235aa40a80ce5c8eeb - USA
-// *********************************************
+
  
-//#########################################################################################################\\
-//  //  //  // //  //  //  //  //  //  //  //  //   UTILITY    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
-//#########################################################################################################\\
+//#####################################################################################################\\
+//  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
+//#####################################################################################################\\
 
 function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions
-achievementLanguage = "en"							// ISO 639-1 language codes 		// TODO check if multi-language support is needed 
+
+achievementLanguage = "en"							// ISO 639-1 language codes 
+
 achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
-//#########################################################################################################\\
-//  //  //  //  //  //  //  //  //    CODE NOTES & MEMORY ADDRESS LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\ 
-//#########################################################################################################\\
+
+
+//   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗
+//   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
+//   ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝     ███████║██║  ██║██║  ██║██████╔╝█████╗  ███████╗███████╗    ██║     ██║   ██║██║  ███╗██║██║     
+//   ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║  ██║██║  ██║██╔══██╗██╔══╝  ╚════██║╚════██║    ██║     ██║   ██║██║   ██║██║██║     
+//   ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║       ██║  ██║██████╔╝██████╔╝██║  ██║███████╗███████║███████║    ███████╗╚██████╔╝╚██████╔╝██║╚██████╗
+//   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝
+//
+// ***************************************************************************************************************************************************************************
 
 // PSP pointers usually start with 08 or 09 + 25-bit
 
-// TIMERS/COUNTERS
-// *****************
+
+// ÷ TIMERS/COUNTERS ÷
+// ***************************
 //	- Resets at certain times or between cutscene transitions
 //	- Different timers reset at different moments
 function twoFrameTimer() 				=> dword(0xA82880) 								// $A82880: [32-bit] Two frame timer
@@ -30,8 +44,8 @@ function hasOneFrameTimerReset() 		=> oneFrameTimer() < prev(oneFrameTimer()) 		
 function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer())		// 		- Resets at certain times or between cutscene transitions
 
 
-// INTERACTION IDs WITH NPCs & ITEMS 
-// ************************************************
+// ÷ INTERACTION IDs WITH NPCs & ITEMS ÷
+// *******************************************
 _NPCs = {
 	"BlondeYoungBoy_Present": { 
 		"ID": 0x187, "Appearance": {
@@ -205,8 +219,8 @@ function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit 
 																// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
 
 
-// CUTSCENE IDENTIFICATION
-// ************************
+// ÷ CUTSCENE IDENTIFICATION ÷
+// *********************************
 function isCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
 																									// 		- 0x00 => no cutscene active
 function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
@@ -247,8 +261,8 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {
 															// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 
-// MAP/SCENE/SCENARIO IDENTIFIER
-// *******************************
+// ÷ MAP/SCENE/SCENARIO IDENTIFIER ÷
+// *****************************************
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
 	"PresentDayNightCity": 0x44,
@@ -278,8 +292,8 @@ _mapIDs= {	// list not complete, adding as is necessary
 function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
 
 
-// CHAPTER LOGIC
-// ***************
+// ÷ CHAPTER LOGIC ÷
+// ********************
 _chapterIDs = {
 	"Prologue": 0x1,
 	"Chapter1": 0x2,
@@ -332,8 +346,8 @@ function isChapterFinishing(string_chapter) {
 function isChapterChanging() => getChapterId() != prev(getChapterId())
 
 
-// INVENTORY LOGIC 
-// *****************
+// ÷ INVENTORY LOGIC ÷
+// *************************
 //	- itemScrollBarId => Id of the item in the inventory scrollbar menu
 //	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
 //	- isDefaultItem => true, when player gets this item at start of game
@@ -469,8 +483,8 @@ function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == _inven
 function isItemInInventory(string_item) => bit0(_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
 
 
-// ON-SCREEN TEXT 
-// ****************
+// ÷ ON-SCREEN TEXT ÷
+// ***********************
 //	- Master ID	=> Identifies a series of subtitles, can stay the same over multiple text changes
 //	- Other IDs => Changes on each text/subtitle change 
 _onScreenTextID = {
@@ -487,8 +501,8 @@ _onScreenTextID = {
 function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
 
 
-// EXTRA MENU 
-// *************
+// ÷ EXTRA MENU ÷
+// *********************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
 function isViewingEndingFromExtraMenu() { 		
@@ -523,8 +537,8 @@ function isEventViewerActive() {						// $AC3170: [25-bit] Pointer - When in Ext
 														// 		| - 0x8 => Chapter 8
 																		
 
-// OTHER LOGIC
-// *************
+// ÷ OTHER LOGIC ÷
+// *********************
 function getEnergyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
 												//		- Used for the time travel machine (Z-Pad)
 												//		- Min => 0x0 		Max => 0x0a
@@ -540,8 +554,8 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 														// 	0x2 => Continue		0x4 => Extra
 
 
-// CUTSCENE/CHOICES BIT FLAGS
-// ****************************
+// ÷ CUTSCENE/CHOICES BIT FLAGS ÷
+// ***********************************
 function isTreeReplacedByStatue() => bit2(0xA9EDA0)	== 0		// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
 																// 		bit 0 => acquired ladder
 function isTreeReplacedByFlowers() => bit2(0xA9EDA0) == 1		// 		bit 1 = 0 => LIGHTER used to scare crowd
@@ -593,8 +607,8 @@ function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1		//		bit 5 = 1 => Brum Est
 
 
 function isMargaretteAncestor() => bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0		// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
-																				// 		bit 6 => Margarette is ancestor
-function isMargaretteNoAncestor() => bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		// 		bit 7 => Margarette is NOT an ancestor
+																					// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
+function isMargaretteNoAncestor() => bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
 																				
 function isDanaSavedFromPast(){	return	// $a9edc4: [Current Playthrough Bit Flags]: Saved Dana from Past
 	bit1(0xA9EDC4) == 1 && 				// 		bit 1 => Gave letter to Dana
@@ -612,16 +626,22 @@ function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]
 
 function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
 															//		 bit 2 => is wearing performer outfit
-														
 
-//#########################################################################################################\\
-//  //  //  //  //  //  //  //  //  //  //    ACHIEVEMENT LOGIC    \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
-//#########################################################################################################\\
 
-// ACHIEVEMENT DICTIONARY
-//	- Divided by category => when in debug mode, category tags are added to achievement titles
-// 	- check if key (achievementname) => is unique with ctrl+F
-// ************************************************************
+//    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗
+//   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
+//   ███████║██║     ███████║██║█████╗  ██║   ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║          ██║     ██║   ██║██║  ███╗██║██║     
+//   ██╔══██║██║     ██╔══██║██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║          ██║     ██║   ██║██║   ██║██║██║     
+//   ██║  ██║╚██████╗██║  ██║██║███████╗ ╚████╔╝ ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗ 
+//   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝ 
+//
+// *****************************************************************************************************************************************************************
+
+// ÷ ACHIEVEMENT DICTIONARY ÷
+// *************************************
+// - Divided by category => when in debug mode, category tags are added to achievement titles
+// - check if key (achievementname) => is unique with ctrl+F
+
 _achievements = {
 	// TODO "a_Template": { 
 	//	"id": 000000, "points": 0000000, "hasTips": false,
@@ -840,7 +860,7 @@ _achievements = {
 		"a_BarmansChildren": { // WORKING
 			"id": 315567, "points": 5, "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		"a_ScareEveryone": { // TODO In Chapter 2 => scare not only apprentice but also, eccentric girl + spaghetti man in present in 1 session?
+		"a_ScareEveryone": { // WORKING
 			"id": 404046, "points": 4, "hasTips": true,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
 		"a_MeetFamousOleg": { // WORKING
@@ -849,7 +869,7 @@ _achievements = {
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
-		// CONCEPT "a_MeetingEveryone": { 
+		// CONCEPT "a_MeetingEveryone": { // Chap3_70s - Chap3_present - Chap4Onward_1900s - MiddlesAges???
 		// 	"id": 00000, "points": 3, "hasTips": true,
 		// 	"devInfo": "Talk to all NPCs"},
 		"a_ShortestChapter": { // WORKING
@@ -881,10 +901,8 @@ _achievements = {
 	}
 }
 
-
-// ACHIEVEMENT TRIGGERS
-// 	- check if key (achievementname) => is unique with ctrl+F
-// ***********************************************************************************
+// ÷ ACHIEVEMENT TRIGGERS ÷
+// ***************************************************************
 _achievementTriggers = {
 	"a_PrologueComplete": function PrologueComplete() { return
 		never (	// Core group
@@ -2874,8 +2892,8 @@ _achievementTriggers = {
 }
 
 
-// ACHIEVEMENT TITLES & DESCRIPTIONS
-// ***********************************************************************************
+// ÷ ACHIEVEMENT TEXT ÷
+// **************************
 _achievementTitles = {
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
@@ -3029,9 +3047,9 @@ _achievementDescriptions = {
 	// "a_Template": 			{"en": "xxxxx"},
 }
 
-// ACHIEVEMENT INITIALIZER
-//	- Creates achievements based on achievement dictionary
-// *************************************************************
+// ÷ ACHIEVEMENT INITIALIZER ÷
+// **********************************************************
+//	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
 function initializeAchievements() {
 	// Generates the achievement title (with developer tags, if devmode == 1)
 	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
@@ -3090,14 +3108,20 @@ function initializeAchievements() {
 }
 
 
-//#########################################################################################################\\
-//  //  //  //  //  //  //  //  //  //  //  //  RICH PRESENCE  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
-//#########################################################################################################\\
+//   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗
+//   ██╔══██╗██║██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝
+//   ██████╔╝██║██║     ███████║    ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗  
+//   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝  
+//   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗
+//   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
+//
+// ***************************************************************************************************************************************************************************
 
-
-//#########################################################################################################\\
-//  //  //  //  //  //  //  //  //  //  //   INITIALIZATION CODE   \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
-//#########################################################################################################\\
+                                                               
+ //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
+ //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄
+ //
+ // **********************************************************************
 function initializeRAscript() {
 	initializeAchievements()
 }

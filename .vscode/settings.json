@@ -6,6 +6,8 @@
     "todo-tree.general.tags": [
         "$",
 
+        "÷",
+
         "DONE",
         "OK",
         "WORKING",
@@ -59,6 +61,16 @@
             "background": "#6a7c05",
             "opacity": 12,
             "icon": "bookmark",
+            "type": "text-and-comment",
+            "rulerLane": "right",
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true
+        },
+        "÷": {
+            "foreground": "#02a80a",
+            "background": "#6a7c05",
+            "opacity": 12,
+            "icon": "link",
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,
