@@ -6,6 +6,15 @@
 // md5: [hash here] - [region here]
 
 
+// Info regarding usage with Visual Studio Code
+// ---------------------------------------------
+//	- For colored text/code => select a language mode other than 'plain text', like C#
+//	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
+//	- Use RATools to update achievement logic written here to RALibrertro
+//	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
+//	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
+//	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
+
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
