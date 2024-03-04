@@ -85,6 +85,10 @@ _NPCs = {
 			"Chap5_NorthEastGate_BrumLibrary": {"MemAddrTalkCount": 0xA9EE25, "MaxTalkCount": 1},
 			"Chap5_NorthEastGate_BrumMuseum": {"MemAddrTalkCount": 0xA9EE26, "MaxTalkCount": 2},
 			"Chap7_NorthWestGate": {"MemAddrTalkCount": 0xA9EE24, "MaxTalkCount": 1}}},
+	"JoggingMan_Present": {
+		"ID": 0x58},
+	"JoggingMan_80s": {
+		"ID": 0x59},
 	"YoungCoupleWoman_MiddleAges": { 
 		"ID": 0x197, "Appearance": {
 			"Chap2_WestGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7C, "MaxTalkCount": 1},
@@ -265,7 +269,8 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {
 // *****************************************
 _mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
-	"PresentDayNightCity": 0x44,
+	"PresentNightCityPM": 0x44,
+	"PresentNightCityAM": 0x3,
 	"CafeSonne": 0x10,
 	"NightBefore": 0x3,
 	"80sColdCity": 0x465,
@@ -588,9 +593,6 @@ function isPaintingPerformerInspired() => bit0(0xA9EDB1) == 1		// $A9EDB1: [Curr
 function isPaintingHouseCollapseInspired() => bit1(0xA9EDB1) == 1	// 		bit 1 => Achemist house collapse painting
 
 
-function isCoffeePayed() => bit3(0xA9EDCC) == 1		// $A9EDCC: [Current Playthrough Bit Flags]: Misc
-													// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before)
-
 function isEndingUnlocked(string_EndingCharacter) {
 	let_endingBitFlagsMemoryAddresses = {
 		"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A unlocked
@@ -609,7 +611,7 @@ function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1		//		bit 5 = 1 => Brum Est
 function isMargaretteAncestor() => bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0		// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
 																					// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
 function isMargaretteNoAncestor() => bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
-																				
+																		
 function isDanaSavedFromPast(){	return	// $a9edc4: [Current Playthrough Bit Flags]: Saved Dana from Past
 	bit1(0xA9EDC4) == 1 && 				// 		bit 1 => Gave letter to Dana
 	bit3(0xA9EDC4) == 1 && 				// 		bit 3-4 => Took Dana back to present
@@ -620,8 +622,16 @@ function isDanaNotSavedFromPast(){ return
 	bit3(0xA9EDC4) == 0 &&
 	bit4(0xA9EDC4) == 0}
 
-function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]: Misc
-	bit6(0xA9EDCB) == 1					// 		bit 7 => gave kitten to Sibylla
+function isCoffeePayed() => bit3(0xA9EDCC) == 1		// $A9EDCC: [Current Playthrough Bit Flags]: Multi-chapter
+													// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
+
+function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]: Multi-chapter
+	bit6(0xA9EDCB) == 1					// 		bit 2 => talked with Oleg 1st time in Chapter 3
+										// 		bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ xa9edcc == 1
+										// 		bit 6 => gave kitten to Sibylla
+	
+
+	
 
 
 function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
@@ -869,9 +879,9 @@ _achievements = {
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
-		// CONCEPT "a_MeetingEveryone": { // Chap3_70s - Chap3_present - Chap4Onward_1900s - MiddlesAges???
-		// 	"id": 00000, "points": 3, "hasTips": true,
-		// 	"devInfo": "Talk to all NPCs"},
+		"a_RunningAcrossThe90s": { // WORKING
+			"id": 00000, "points": 1, "hasTips": true,
+			"devInfo": "Talk to jogging man in present and past (70s)"},
 		"a_ShortestChapter": { // WORKING
 			"id": 403823, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
@@ -1534,7 +1544,7 @@ _achievementTriggers = {
 			(
 				!isWearingPerformerOutfit()	&&
 				isCurrentMapScene("PresentDayCity") 		|| 
-				isCurrentMapScene("PresentDayNightCity") ||
+				isCurrentMapScene("PresentNightCityPM") ||
 				isCurrentMapScene("NightBefore") 
 			) && 
 			isInGame()}
@@ -1674,7 +1684,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x134f0)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_EggCollection": function EggCollection1() { return 
+	"a_EggCollection": function EggCollection() { return 
 		never (
 			!isInGame() 				||
 			!isCurrentChapter("Chapter1") 	||
@@ -1689,7 +1699,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x249e0)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_AlertBarmanOfFire": function EggCollection2() { return 
+	"a_AlertBarmanOfFire": function AlertBarmanOfFire() { return 
 		never (
 			!isInGame() ||
 			isEventViewerActive()
@@ -1716,6 +1726,29 @@ _achievementTriggers = {
 				isCurrentCutsceneSectionDataId(0x249e0))]
 		) &&
 		isFullCutsceneSequenceEnding()},
+	"a_RunningAcrossThe90s": function RunningAcrossThe90s() {
+		function measuredComparison() { return
+			tally(2, [
+				once(
+					isSmallCutsceneActive() &&
+					(
+						isCurrentMapScene("PresentDayCity") 	|| 
+						isCurrentMapScene("PresentNightCityPM") ||
+						isCurrentMapScene("PresentNightCityAM")
+					) &&
+					isTalkingTo("JoggingMan_Present")),
+				once(
+					isSmallCutsceneActive() &&
+					isCurrentMapScene("70sNightCity") &&
+					isTalkingTo("JoggingMan_80s")),
+			])}
+		return 
+			never(	
+				!isInGame() 		||
+				!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5")
+			) &&
+			measured(measuredComparison()) &&
+			trigger_when(isNoCutsceneActive())},
 	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
 		never (
 			!isInGame() 				||
@@ -2486,7 +2519,7 @@ _achievementTriggers = {
 			never(
 				!isInGame()
 			) &&
-			measured(measuredComparison(), isCurrentMapScene("PresentDayNightCity")) &&
+			measured(measuredComparison(), isCurrentMapScene("PresentNightCityPM")) &&
 			trigger_when(isNoCutsceneActive())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
@@ -2953,6 +2986,7 @@ _achievementTitles = {
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
+	"a_RunningAcrossThe90s":						{"en": "Running Beyond the 90's... and 80's"},
 	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die"},
 	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
@@ -2995,6 +3029,7 @@ _achievementDescriptions = {
 	"a_EndingD": 									{"en": "Achieve Ending D"},
 	"a_EndingE": 									{"en": "Achieve Ending E"},
 	"a_DoctorateTimeTraveling": 					{"en": "Get lectured in time-travelling physics during chapter 4"}, 
+	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man in the past as well as his present self during chapter 3, 4 or 5"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
