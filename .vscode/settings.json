@@ -63,8 +63,9 @@
             "icon": "bookmark",
             "type": "text-and-comment",
             "rulerLane": "right",
-            "hideFromStatusBar": true,
-            "hideFromActivityBar": true
+            "hideFromStatusBar": true,  // StatusBar is bottomleft
+            "hideFromActivityBar": true, // ActivityBar is count in the side menu panel
+            "hideFromTree": true // Hide from side menu panel, only show in-editor window
         },
         "÷": {
             "foreground": "#02a80a",
@@ -94,7 +95,10 @@
             "icon": "unverified"
         },
         "DONE": {   
-            "icon": "verified"            
+            "icon": "verified",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
+            "hideFromTree": true
         },
         "FIXME": {
             "foreground": "#fc5353",
@@ -127,5 +131,9 @@
     ],
     "todo-tree.general.showIconsInsteadOfTagsInStatusBar": true,
     "todo-tree.general.statusBar": "current file",
-    "todo-tree.general.showActivityBarBadge": true
+    "todo-tree.general.showActivityBarBadge": true,
+    "todo-tree.tree.showBadges": true,
+    "todo-tree.tree.scanMode": "open files",
+    "todo-tree.tree.disableCompactFolders": false,
+    "todo-tree.tree.showCountsInTree": true
 }

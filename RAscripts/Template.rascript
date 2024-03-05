@@ -11,7 +11,7 @@
 //	- For the best reading experience => set indent mode to 'Tabs'; with an indent size '4'
 //	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
 
-//	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
+//	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
@@ -75,7 +75,7 @@ achievementGuideLink = [link to achievement guide readme]
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 
 _achievements = {
-	// "a_Template": { // CONCEPT
+	// "a_Template": { // CONCEPT_template
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
     "c_ExampleCategeroy1": {

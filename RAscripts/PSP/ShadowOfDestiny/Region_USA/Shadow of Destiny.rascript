@@ -11,7 +11,7 @@
 //	- For the best reading experience => set indent mode to 'Tabs'; with an indent size '4'
 //	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
 
-//	- Usage of Todo Tree tags => install Todo Tree extension by Gruntfuggly; settings.json file has some settings to edit the tags
+//	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
@@ -454,6 +454,7 @@ _inventoryItems = {
 		"isDefaultItem": false},
 	"EggPocketWatch": {
 		"memAddress_Flag_isInInventory": 0xA9F044,	// $A9F044: [Bit 0] Egg shaped pocket watch
+		"itemScrollBarId": 0x10,
 		"isDefaultItem": false},
 	"Meat": {
 		"memAddress_Flag_isInInventory": 0xA9F046,	// $A9F046: [Bit 0] Scrap of meat
@@ -750,7 +751,7 @@ const_percentageBitsFlags = {
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
 _achievements = {
-	// "a_Template": { // CONCEPT
+	// "a_Template": { // CONCEPT_template
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
@@ -844,7 +845,7 @@ _achievements = {
 			"id": 306976, "points": 4, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
-	"c_Endings": { // Category - Achieving different endings
+	"c_Endings": { // Category - Achieving different endings // TODO - Implement 0x1879E20 credits timer in endings??
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
@@ -991,6 +992,12 @@ _achievements = {
 		// "a_Template": { // CONCEPT => more extra cheevos under "Extra Scenes" => https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs/13683
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "xxxxxxx"},
+		"a_ShowPocketWatchToPhotographer": { // WORKING 
+			"id": 000000, "points": 2, "hasTips": true,
+			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
+		// "a_FreeMeal": { // CONCEPT 
+		//	"id": 000000, "points": 4, "hasTips": false,
+		//	"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
@@ -1904,6 +1911,28 @@ _achievementTriggers = {
 				isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity")	// --> Fix for bug, where player could pick up the energy orb in the 
 		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
 			measured(measuredComparison(), measuredIfComparison())},					// 		Now it will reset this count, when going back to get frying pan as performer
+	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
+		never (
+			!isInGame() ||
+			isEventViewerActive()
+		) &&
+		never (
+			!isCurrentChapter("Chapter6") && 
+			!isCurrentChapter("Chapter7") &&
+			!isCurrentChapter("Chapter8_Ancestress") &&
+			!isCurrentChapter("Chapter8_NoAncestress")
+		) &&
+		once(	// Identifies Cutscene => Showing Franssen in 1902 the pocket watch
+			isCutsceneActive() && isCurrentSelectedInventoryItem("EggPocketWatch") &&
+			isCurrentCutsceneMasterId(0x114c0)		&& 
+			isCurrentCutsceneSectionId_1(0xffff)	&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x114a0)	&&
+			isCurrentCutsceneSectionDataId(0x114a0)	&&
+			isCurrentMinorCutsceneId(0xad50, 0x8)	&&
+			isCurrentMinorCutsceneId(0x114a0, 0x28)
+		) &&
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(
 			!isInGame() 				||
@@ -3300,6 +3329,7 @@ _achievementTitles = {
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "Met You before"},
 	"a_DrunkenGuys":								{"en": "A Pair of Delinquents"},
+	"a_ShowPocketWatchToPhotographer":			{"en": "Horologic Heritage"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day"},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
@@ -3370,7 +3400,8 @@ _achievementDescriptions = {
 	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
 	"a_EggCollection": 								{"en": "Exchange an egg for a pan during chapter 1, 3 or 4"},
 	"a_AlertBarmanOfFire": 							{"en": "Alert the young boy's grandpa of imminent disaster during chapter 1"},
-	"a_GetExChapterOrnamentalEgg" :					{"en": "Acquire one last message during the EX chapter"},
+	"a_GetExChapterOrnamentalEgg" :					{"en": "Acquire one last message during the EX chapter"},	
+	"a_ShowPocketWatchToPhotographer":			{"en": "Kindle the joy of watchmaking to an ancestor of the Franssen's"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
@@ -3486,6 +3517,7 @@ function initializeAchievements() {
 //
 // **********************************************************************************************************************
 
+// TODO Rich Presence
                                                                
  //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
  //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄
