@@ -75,7 +75,7 @@ achievementGuideLink = [link to achievement guide readme]
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 
 _achievements = {
-    // CONCEPT "a_Template": { 
+	// "a_Template": { // CONCEPT
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
     "c_ExampleCategeroy1": {
