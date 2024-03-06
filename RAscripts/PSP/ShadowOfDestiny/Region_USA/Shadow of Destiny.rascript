@@ -188,11 +188,11 @@ function isNPCtalkCountAtMax(string_NPC, string_appearance) {
 function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 																							// - Resets to 0x0 when interaction is done
 
-function isTalkingTo(string_NPC) {								// $A9EFDC: [25-bit] Pointer - Interactions
-	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff				// 		+0x0 - [32-bit] NPC ID															
-	return const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer)} // 		| - Unique per interactable NPC or environment item
-																// 		| - This value is copied to 0xa9eff4 (refer to notes)
-
+function isTalkingTo(string_NPC) {														// $A9EFDC: [25-bit] Pointer - Interactions
+	// Underlying line lasks [32-bit] value to [25-bit]	as PSP uses 25-bit pointers		// 		+0x0 - [32-bit] NPC ID		
+	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff										// 		| - Unique per interactable NPC or environment item
+	return const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer) 					// 		| - This value is copied to 0xa9eff4 (refer to notes)
+}
 function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == const_interactables[string_NPC]
 
 function isInteractingWith(string_interactable) {
@@ -515,41 +515,31 @@ function onScreenTextID(int_id) => dword(const_onScreenTextID[int_id])
 // *******************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function isViewingEndingFromExtraMenu() {
-	// Underlying line lasks [32-bit] value to [25-bit]	as PSP uses 25-bit pointers
-	let_maskedPointer = dword(0xAC3170) & 0x1FFFFFF				// $AC3170: [25-bit] Pointer
-	return dword(let_maskedPointer + 0x4) == 0x1}				// 	+0x4 - Selected menu item in Extra Menu
-																// 		- 0x0 => Event viewer (replay unlocked cutscenes)
-																// 		- 0x1 => Ending files (replay ending cutscenes)
-																// 		- 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-																// 		- 0x3 => Sound Mode (Play sound effects & music)
-																// 		- 0x4 => Exit (back to Title Screen)
 
-
-// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
-// 		0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
-// 		- other values => not in event viewer
-// $AC49F4: [32-bit] Menu ID
-// 		0xe => at title screen					0x16 => at results menu
-// 		0x4 => at extra menu					0x1a => In sound mode menu
-// 		0x12 => at event viewer menu			...
-function isEventViewerActive() {						// $AC3170: [25-bit] Pointer - When in Extra menu
-	let_maskedPointer = dword(0xAC3170) & 0x1ffffff		// 		- Extra menu is only visible once at least one is ending is finished
-	return												// 		+0x4 - [32-bit] Extra Menu: Highlighted item
-		dword(0x1FFF130) == 0x21			&&			// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
-		dword(let_maskedPointer + 0x4) == 0 &&			// 		| - 0x1 => Ending files (replay ending cutscenes)
- 		dword(let_maskedPointer + 0x48) <= 0xb}			// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-														// 		| - 0x3 => Sound Mode (Play sound effects & music)
-function isInResultsMenu() {							// 		| - 0x4 => Exit (back to Title Screen)
-	let_maskedPointer = dword(0xAC3170) & 0x1ffffff		// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
-	return												// 		| - 0x0 => ending A			| - 0x4 => ending E	
-		dword(0xAC49F4) == 0x16					&&		// 		| - 0x1 => ending B			| - 0x3 => ending D
-		dword(let_maskedPointer + 0x4) == 0x2 	&&		// 		| - 0x2 => ending C
- 		dword(let_maskedPointer + 0x48) <= 0xb}			// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
-														// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
-														// 		| - 0x1 => Chapter 1		| - 0xa => Total
-														// 		| - ...						| - 0xb => Exit
-														// 		| - 0x8 => Chapter 8
+function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra menu
+	let_maskedPointer = dword(0xAC3170) & 0x1ffffff	// 		- Extra menu is only visible once at least one is ending is finished
+	return											// 		+0x4 - [32-bit] Extra Menu: Highlighted item
+		dword(let_maskedPointer + 0x4) == 0 &&		// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
+		dword(let_maskedPointer + 0x48) <= 0xb		// 		| - 0x1 => Ending files (replay ending cutscenes)
+}													// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+													// 		| - 0x3 => Sound Mode (Play sound effects & music)
+													// 		| - 0x4 => Exit (back to Title Screen)
+													// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
+													// 		| - 0x0 => ending A			| - 0x4 => ending E	
+													// 		| - 0x1 => ending B			| - 0x3 => ending D
+													// 		| - 0x2 => ending C
+													// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
+													// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
+													// 		| - 0x1 => Chapter 1		| - 0xa => Total
+													// 		| - ...						| - 0xb => Exit
+													// 		| - 0x8 => Chapter 8
+function isEventViewerActive() =>				// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
+	dword(0x1FFF130) == 0x21 && isInExtraMenu()	// 		0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
+												// 		- other values => not in event viewer
+function isInResultsMenu() => 					// $AC49F4: [32-bit] Menu ID
+	dword(0xAC49F4) == 0x16	&& isInExtraMenu()	// 		0xe => at title screen					0x16 => at results menu
+												// 		0x4 => at extra menu					0x1a => In sound mode menu
+												// 		0x12 => at event viewer menu			...
 
 function isResultsMenuHighlightedChapter(string_chapter) {
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
@@ -565,7 +555,27 @@ function isResultsMenuHighlightedChapter(string_chapter) {
 	}
 	return			
 		isInResultsMenu() &&
-		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
+		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId
+}
+
+const_endingFileIDs = {
+	"A": 0x0,
+	"B": 0x1,
+	"C": 0x2,
+	"D": 0x3,
+	"E": 0x4,
+	"EX": 0x5
+}
+function isViewingEndingFileInExtraMenu(string_endingChar) {				// $AC3178: [25-bit] Pointer - Ending File
+	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//-		 Resets to 0x0, when no ending file is on screen
+	let_endingFileID = const_endingFileIDs[string_endingChar]	// 		+0x10 - [8-bit] Ending File ID
+	return														// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
+		isInExtraMenu() &&										// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
+		byte(let_maskedPointer + 0x10) == let_endingFileID		// 		| - ...		
+}																// 		+0x8 - [32-bit] Ending file timer
+																// 		+0xc - [16-bit] Ending file text ID
+
+
 
 
 
@@ -631,7 +641,8 @@ const_endingBitFlagsMemoryAddresses = {
 	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B unlocked
 	"C": 0xAA1156,	// $AA1156: [Bit Flag] bit 0 => Ending C unlocked
 	"D": 0xAA1157,	// $AA1157: [Bit Flag] bit 0 => Ending D unlocked
-	"E": 0xAA1158}	// $AA1158: [Bit Flag] bit 0 => Ending E unlocked
+	"E": 0xAA1158,	// $AA1158: [Bit Flag] bit 0 => Ending E unlocked
+	"EX": 0xAA1159}	// $AA1159: [Bit Flag] bit 0 => Ending EX unlocked
 
 function isEndingUnlocked(string_EndingCharacter) =>
 	bit0(const_endingBitFlagsMemoryAddresses[string_EndingCharacter]) == 1
@@ -643,10 +654,16 @@ function isPrologueInExMode() => bit7(0xA9ED98) == 1 	// $A9ED98: [Current Playt
 														//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
 
 
-function isBrumEstateMuseum() => bit5(0xA9EDAA) == 0		//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
-															//		bit 5 = 0 => Brum Estate is museum
-function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1		//		bit 5 = 1 => Brum Estate is library
+function isBrumEstateMuseum() => bit5(0xA9EDAA) == 0	//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
+														//		bit 5 = 0 => Brum Estate is museum
+function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1	//		bit 5 = 1 => Brum Estate is library
 
+function isVideoActive() {								// $8FFEF0: [25-bit] Pointer - Video data (intro and credits)
+	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF		// 		+0x18 - [32-bit Flag] 0x101 => video is active
+	return 												// 		+0x2c - [32-bit Flag] 0x41 => video is active
+		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
+		dword(let_maskedPointer + 0x2c) == 0x41
+}
 
 function isMargaretteAncestor() => bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0		// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
 																					// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
@@ -815,12 +832,6 @@ _achievements = {
 		"a_Chapter8Complete": { // WORKING 
 			"id": 315571, "points": 5, "hasTips": false,
 			"devInfo": "Complete chapter 8"},
-		"a_EXChapterCompleteKillHomunculus": { // WORKING
-			"id": 405113, "points": 3, "hasTips": false,
-			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
-		"a_EXChapterCompleteCureHelena": { // WORKING
-			"id": 405114, "points": 3, "hasTips": false,
-			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},
 		"a_MaxAchievementPrologue": { // WORKING
 			"id": 405087, "points": 10, "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
@@ -872,7 +883,7 @@ _achievements = {
 			"id": 306976, "points": 4, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
-	"c_Endings": { // Category - Achieving different endings // TODO - Implement 0x1879E20 credits timer in endings??
+	"c_Endings": { // Category - Achieving different endings // TODO - Implement 0x1879E20 credits timer in endings => so cheevo pops when ending art shows up
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
@@ -891,7 +902,13 @@ _achievements = {
 		"a_EndingE": { // WORKING
 			"id": 322231, "points": 5, "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
-	},
+		"a_EndingEXKillHomunculus": { // WORKING
+			"id": 405113, "points": 3, "hasTips": false,
+			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
+		"a_EndingEXCureHelena": { // WORKING
+			"id": 405114, "points": 3, "hasTips": false,
+			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},
+		},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": { // WORKING
 			"id": 310426, "points": 4, "hasTips": true,
@@ -1017,10 +1034,10 @@ _achievements = {
 			"id": 403823, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
 		"a_ShowPocketWatchToPhotographer": { // WORKING 
-			"id": 000000, "points": 2, "hasTips": true,
+			"id": 405460, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
 		"a_FreeMeal": { // WORKING 
-			"id": 000000, "points": 3, "hasTips": true,
+			"id": 405461, "points": 3, "hasTips": true,
 			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
@@ -1579,48 +1596,6 @@ _achievementTriggers = {
 			isChapterFinishing("Chapter8_Ancestress") ||
 			isChapterFinishing("Chapter8_NoAncestress")
 		)},
-	"a_EXChapterCompleteKillHomunculus": function KillHomunculus() { return
-		never(
-			!isInGame() ||
-			isEventViewerActive()
-		) &&
-		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
-			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isExChapterUnlocked() && isPrologueInExMode() &&
-			isCurrentChapter("Prologue") 			&&
-			isCurrentCutsceneMasterId(0xa7a80)		&& 
-			isCurrentCutsceneSectionId_1(0x1)		&&
-			isCurrentCutsceneSectionId_2(0x0)		&&
-			isCurrentCutsceneMasterDataId(0x394f0)	&&
-			isCurrentCutsceneSectionDataId(0x41b0)	&&
-			isCurrentMinorCutsceneId(0x1413a0,0x8)	&&			
-			isCurrentMinorCutsceneId(0x41b0,0x28)
-		) &&
-		trigger_when(isCutsceneSectionEnding())},
-	"a_EXChapterCompleteCureHelena": function CureHelena() { return
-		never(
-			!isInGame() ||
-			isEventViewerActive()
-		) &&
-		once(	// Identifies Cutscene => Helena Wagner is cured
-			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isExChapterUnlocked() && isPrologueInExMode() &&
-			isCurrentChapter("Prologue") 			&&
-			isCurrentCutsceneMasterId(0x58c00)		&& 
-			isCurrentCutsceneSectionId_1(0x1)		&&
-			isCurrentCutsceneSectionId_2(0x0)		&&
-			isCurrentCutsceneMasterDataId(0x268f0)	&&
-			isCurrentCutsceneSectionDataId(0x11bc0)	&&
-			isCurrentMinorCutsceneId(0x721f0,0x8)	&&			
-			isCurrentMinorCutsceneId(0x11bc0,0x28)
-		) &&
-		trigger_when(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents
-			isCurrentChapter("Prologue") 			&&
-			isCurrentCutsceneMasterId(0x67940)		&& 
-			isCurrentCutsceneSectionId_1(0x1)		&&
-			isCurrentCutsceneSectionId_2(0x0)		&&
-			isCurrentCutsceneMasterDataId(0xd220)	&&
-			isCurrentCutsceneSectionDataId(0x5a6f0))},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() { 		
 		let_PercentageBitFlags = const_percentageBitsFlags["Prologue"]
 		return generateTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
@@ -1664,9 +1639,9 @@ _achievementTriggers = {
 		return generateTrigger_MaxAchievementRate("Total", compileAllPercentageBitFlagsInOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("A")
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
 			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
@@ -1684,13 +1659,16 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x25c50)	&&
 			isCurrentCutsceneSectionDataId(0x1ac90)
 		) &&
-		isMargaretteAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("A")},
+		isMargaretteAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("A"))},
 	"a_EndingB1": function EndingB1() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("B")
 		) &&
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
@@ -1728,13 +1706,16 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x400d0)	&&
 			isCurrentCutsceneSectionDataId(0x16130)
 		) &&
-		isMargaretteAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("B")},
+		isMargaretteAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("B"))},
 	"a_EndingB2": function EndingB2() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("B")
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
 			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
@@ -1760,13 +1741,16 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x400d0)	&&
 			isCurrentCutsceneSectionDataId(0x16130)
 		) &&
-		isMargaretteAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("B")},
+		isMargaretteAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("B"))},
 	"a_EndingC": function EndingC() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("C")
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
 			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
@@ -1792,13 +1776,16 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x1980)	&&
 			isCurrentCutsceneSectionDataId(0x1e8d0)
 		) &&
-		isMargaretteAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("C")},		
+		isMargaretteAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("B"))},
 	"a_EndingD": function EndingD() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("D")
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
 			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
@@ -1816,13 +1803,16 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x69b40)	&&
 			isCurrentCutsceneSectionDataId(0x21b40)
 		) &&
-		isDanaNotSavedFromPast() && isMargaretteNoAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("D")},
+		isDanaNotSavedFromPast() && isMargaretteNoAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("D"))},
 	"a_EndingE": function EndingE() { return
 		never(
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
-			isViewingEndingFromExtraMenu()
+			isViewingEndingFileInExtraMenu("E")
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
 			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
@@ -1848,8 +1838,71 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0x33230)	&&
 			isCurrentCutsceneSectionDataId(0x21780)
 		) &&
-		isDanaSavedFromPast() && isMargaretteNoAncestor() && // Trigger when cutscene is done
-		!isCutsceneActive() && isEndingUnlocked("E")},
+		isDanaSavedFromPast() && isMargaretteNoAncestor() &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("E"))},
+	"a_EndingEXKillHomunculus": function KillHomunculus() { return
+		never(
+			!isInGame() 			||
+			isEventViewerActive()	||
+			isViewingEndingFileInExtraMenu("EX")
+		) &&
+		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
+			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
+			isExChapterUnlocked() && isPrologueInExMode() &&
+			isCurrentChapter("Prologue") 			&&
+			isCurrentCutsceneMasterId(0xa7a80)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x394f0)	&&
+			isCurrentCutsceneSectionDataId(0x41b0)	&&
+			isCurrentMinorCutsceneId(0x1413a0,0x8)	&&			
+			isCurrentMinorCutsceneId(0x41b0,0x28)
+		) && 
+		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
+			isCurrentChapter("Prologue") 			&&
+			isCurrentCutsceneMasterId(0x67940)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0xd220)	&&
+			isCurrentCutsceneSectionDataId(0x5a6f0)
+		) &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("EX"))},
+	"a_EndingEXCureHelena": function CureHelena() { return
+		never(
+			!isInGame() 			||
+			isEventViewerActive()	||
+			isViewingEndingFileInExtraMenu("EX")
+		) &&
+		once(	// Identifies Cutscene => Helena Wagner is cured
+			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
+			isExChapterUnlocked() && isPrologueInExMode() &&
+			isCurrentChapter("Prologue") 			&&
+			isCurrentCutsceneMasterId(0x58c00)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x268f0)	&&
+			isCurrentCutsceneSectionDataId(0x11bc0)	&&
+			isCurrentMinorCutsceneId(0x721f0,0x8)	&&			
+			isCurrentMinorCutsceneId(0x11bc0,0x28)
+		) &&
+		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
+			isCurrentChapter("Prologue") 			&&
+			isCurrentCutsceneMasterId(0x67940)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0xd220)	&&
+			isCurrentCutsceneSectionDataId(0x5a6f0)
+		) &&
+		once(isVideoActive()) &&	// Credits video
+		trigger_when(
+			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isEndingUnlocked("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
 		function measuredComparison() { return 
 			tally(5, 
@@ -3334,8 +3387,8 @@ _achievementTitles = {
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
 	"a_Chapter8Complete":							{"en": "The whole picture... Or is it?"},
-	"a_EXChapterCompleteKillHomunculus":			{"en": "The Philosopher's Destiny"},
-	"a_EXChapterCompleteCureHelena":				{"en": "The Philosopher's Legacy"},
+	"a_EndingEXKillHomunculus":						{"en": "The Philosopher's Destiny"},
+	"a_EndingEXCureHelena":							{"en": "The Philosopher's Legacy"},
 	"a_MaxAchievementPrologue":						{"en": "Homing Instinct"},	
 	"a_MaxAchievementChapter1":						{"en": "In the Heat of Time"},	
 	"a_MaxAchievementChapter2":						{"en": "Dana Kusch"},		
@@ -3426,8 +3479,6 @@ _achievementDescriptions = {
 	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
-	"a_EXChapterCompleteKillHomunculus":			{"en": "Complete the EX chapter, by destroying the jewel"},
-	"a_EXChapterCompleteCureHelena":				{"en": "Complete the EX chapter, by creating a miracle cure"},
 	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue and EX chapter"},
 	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for chapter 1"},
 	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for chapter 2"},
@@ -3445,6 +3496,8 @@ _achievementDescriptions = {
 	"a_EndingC": 									{"en": "Achieve Ending C"},
 	"a_EndingD": 									{"en": "Achieve Ending D"},
 	"a_EndingE": 									{"en": "Achieve Ending E"},
+	"a_EndingEXKillHomunculus":						{"en": "Achieve Ending EX, by destroying the jewel"},
+	"a_EndingEXCureHelena":							{"en": "Achieve Ending EX, by creating a miracle cure"},
 	"a_DoctorateTimeTraveling": 					{"en": "Get lectured in time-travelling physics during chapter 4"}, 
 	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man in the past as well as his present self during chapter 3, 4 or 5"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
