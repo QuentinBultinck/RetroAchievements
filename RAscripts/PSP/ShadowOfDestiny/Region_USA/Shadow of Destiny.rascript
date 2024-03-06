@@ -965,9 +965,9 @@ _achievements = {
 		"a_GiveMargaretteCake": { // WORKING
 			"id": 402296, "points": 4, "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		"a_MaxInventory": { // WORKING // TODO Check viability
+		"a_MaxInventory": { // WORKING 
 			"id": 402404, "points": 10, "hasTips": true,
-			"devInfo": "Acquire an old map, the ornamental egg, cake, photo shop sign, kitten, scrap of meat, red stone, letter to Dana + other key items"}, 
+			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
 		"a_PocketWatchCollection": { // WORKING
 			"id": 315561, "points": 4, "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
@@ -998,15 +998,9 @@ _achievements = {
 		"a_ShowPocketWatchToPhotographer": { // WORKING 
 			"id": 000000, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
-		"a_FreeMeal": { // CONCEPT 
+		"a_FreeMeal": { // WORKING 
 			"id": 000000, "points": 3, "hasTips": true,
 			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
-		// "a_xxxxxxxx": { // CONCEPT 
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "Showing Hugo Digipad in Middle Ages in chapter 8?"},
-		// "a_xxxxxxxx": { // CONCEPT 
-		//	"id": 000000, "points": 000000, "hasTips": false,
-		//	"devInfo": "Talk to Margarette after Hugo goes to the future with Dana?? Chap8"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
@@ -1038,7 +1032,6 @@ _achievements = {
 // ***************************************************
 //	- For achievement logic that's reoccuring across multiple triggers
 
-// TODO lower overal bit comparison by using bitcount() when all bits in 8-bit counts as a bitflag
 function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){ 
 	function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {	
 		function totalAmountOfBitFlags(dict_BitFlags) {
@@ -2776,7 +2769,7 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity") || isCurrentMapScene("CafeSonne") ) &&
 			trigger_when(isNoCutsceneActive())},
-	"a_FreeMeal": function FreeMeal() { return // WIP
+	"a_FreeMeal": function FreeMeal() { return
 		never(
 			!isInGame()						||
 			isEventViewerActive() 			||
@@ -3317,24 +3310,24 @@ _achievementTitles = {
 	"a_Chapter6CompleteThriller":					{"en": "Director's Cut: The Time of Reckoning"},
 	"a_Chapter6CompleteLove":						{"en": "Director's Cut: Trip for Two"},
 	"a_Chapter7Complete":							{"en": "A Friend's Repentance"},
-	"a_Chapter8Complete":							{"en": "The Whole Picture... Or is it?"},
+	"a_Chapter8Complete":							{"en": "The whole picture... Or is it?"},
 	"a_EXChapterCompleteKillHomunculus":			{"en": "The Philosopher's Destiny"},
 	"a_EXChapterCompleteCureHelena":				{"en": "The Philosopher's Legacy"},
-	"a_MaxAchievementPrologue":						{"en": "xxxxxxxxxxxxx"},	// TODO set titles
-	"a_MaxAchievementChapter1":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter2":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter3":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter4":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter5":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter6":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter7":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementChapter8":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementEpilogue":						{"en": "xxxxxxxxxxxxx"},
-	"a_MaxAchievementTotal":						{"en": "xxxxxxxxxxxxx"},
+	"a_MaxAchievementPrologue":						{"en": "Homing Instinct"},	
+	"a_MaxAchievementChapter1":						{"en": "In the Heat of Time"},	
+	"a_MaxAchievementChapter2":						{"en": "Dana Kusch"},		
+	"a_MaxAchievementChapter3":						{"en": "The Root of the Problem"},	
+	"a_MaxAchievementChapter4":						{"en": "The Monochrome Era"},	
+	"a_MaxAchievementChapter5":						{"en": "Meddling with Destiny"},
+	"a_MaxAchievementChapter6":						{"en": "The Good Samaritan"},
+	"a_MaxAchievementChapter7":						{"en": "Vintage Knots"},
+	"a_MaxAchievementChapter8":						{"en": "The Power of Fate"},
+	"a_MaxAchievementEpilogue":						{"en": "Eternal Youth"},
+	"a_MaxAchievementTotal":						{"en": "The future is what - what all of us - make it."},
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
-	"a_EndingC": 									{"en": "If only... I had one more attempt"},
+	"a_EndingC": 									{"en": "If only... I had one more attempt."},
 	"a_EndingD": 									{"en": "Eike's Origins"},
 	"a_EndingE": 									{"en": "The future is what we make it."},
 	"a_MeetOldMiriam":								{"en": "The Brums Happily Ever After"},
@@ -3343,7 +3336,7 @@ _achievementTitles = {
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection": 								{"en": "A Jovial Exchange"},
 	"a_AlertBarmanOfFire": 							{"en": "There's a fire!"}, 
-	"a_BarmansChildren":							{"en": "The Barman's Grandchildren and The Mystery Child"},
+	"a_BarmansChildren":							{"en": "The Barman's Mystery Child"},
 	"a_ShowEggTownPlanter": 						{"en": "Cracking Open the Past: Middle Ages"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Cracking Open the Past: The Old Century"},
 	"a_PocketWatchCollection": 						{"en": "A Hatchless Replica"},
@@ -3362,23 +3355,23 @@ _achievementTitles = {
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic Couple III: Wandering Once More"}, 
 	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},	
 	"a_EnigmaticCouple5": 							{"en": "Enigmatic Couple V: Epilogue"},
-	"a_ErasingEike": 								{"en": "That's a big no no"}, 
+	"a_ErasingEike": 								{"en": "That's a big no no."}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "Met You before"},
 	"a_DrunkenGuys":								{"en": "A Pair of Delinquents"},
 	"a_ShowPocketWatchToPhotographer":				{"en": "Horologic Heritage"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
-	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day"},
+	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day."},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
-	"a_HugoMotherChild":							{"en": "A Mother's Child Forever"}, 
+	"a_HugoMotherChild":							{"en": "A Mother's Child"}, 
 	"a_FreeMeal":									{"en": "A Complimentary Dinner"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
 	"a_RunningAcrossThe90s":						{"en": "Running Beyond the 90's... and 80's"},
-	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die"},
-	"a_BecomeThePerformer":							{"en": "Even I can do that"}, 
+	"a_ExcuseMeMyMy":								{"en": "My my, so eager to die."},
+	"a_BecomeThePerformer":							{"en": "Even I can do that."}, 
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Energy Amasser: Present Day"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Energy Amasser: Middle Ages"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Energy Amasser: 70's - 80's"}, 
@@ -3387,7 +3380,7 @@ _achievementTitles = {
 	"a_ShortestChapter": 							{"en": "Pan in Advance"}, 
 	"a_NewCakeInvented": 							{"en": "Legacy of Sweetness"},
 	"a_MaxInventory": 								{"en": "Stockpiling Across Eras"},
-	"a_PerformerGoingExtraMile": 					{"en": "A Performance Going the Extra Mile"}, 
+	"a_PerformerGoingExtraMile": 					{"en": "A Performance Gone the Extra Mile"}, 
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
@@ -3557,6 +3550,9 @@ function initializeAchievements() {
 //
 // **********************************************************************************************************************
 
+// Chapter => Fated hour: xxxxx
+
+
 // TODO Rich Presence
                                                                
  //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
@@ -3565,5 +3561,4 @@ function initializeAchievements() {
  // **********************************************************************
 function initializeRAscript() {
 	initializeAchievements()}
-
 initializeRAscript()
