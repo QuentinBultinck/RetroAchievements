@@ -989,15 +989,18 @@ _achievements = {
 		"a_ShortestChapter": { // WORKING
 			"id": 403823, "points": 3, "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
-		// "a_Template": { // CONCEPT => more extra cheevos under "Extra Scenes" => https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs/13683
-		//	"id": 000000, "points": 0000000, "hasTips": false,
-		//	"devInfo": "xxxxxxx"},
 		"a_ShowPocketWatchToPhotographer": { // WORKING 
 			"id": 000000, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
 		// "a_FreeMeal": { // CONCEPT 
 		//	"id": 000000, "points": 4, "hasTips": false,
 		//	"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
+		// "a_xxxxxxxx": { // CONCEPT 
+		//	"id": 000000, "points": 0000000, "hasTips": false,
+		//	"devInfo": "Showing Hugo Digipad in Middle Ages in chapter 8?"},
+		// "a_xxxxxxxx": { // CONCEPT 
+		//	"id": 000000, "points": 000000, "hasTips": false,
+		//	"devInfo": "Talk to Margarette after Hugo goes to the future with Dana?? Chap8"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
@@ -2270,7 +2273,7 @@ _achievementTriggers = {
 		return 
 			never(
 				!isInGame() || 
-				!isCurrentChapter("Chapter4")
+				!isCurrentChapter("Chapter2")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isNoCutsceneActive())},
@@ -2317,7 +2320,7 @@ _achievementTriggers = {
 		return 
 			never(
 				!isInGame() || 
-				!isCurrentChapter("Chapter4")
+				!isCurrentChapter("Chapter3")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isNoCutsceneActive())},
