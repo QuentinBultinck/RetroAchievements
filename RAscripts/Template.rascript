@@ -1,14 +1,14 @@
-//   █▀▀ ▄▀█ █▀▄▀█ █▀▀    ▀█▀ █ ▀█▀ █░░ █▀▀
-//   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄
-//
-// ***********************************************************************
-// #ID = [game ID here]
+// ****************************************** \\
+//   █▀▀ ▄▀█ █▀▄▀█ █▀▀    ▀█▀ █ ▀█▀ █░░ █▀▀   \\
+//   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
+// ****************************************** \\
+// #ID = [game ID here]	// TODO Set header info
 // md5: [hash here] - [region here]
 
 
 // Info regarding usage of this RAScript
 // ---------------------------------------------
-//	- For the best reading experience => set indent mode to 'Tabs'; with an indent size '4'
+//	- Set indent mode => Tabs			Set indent size => 4
 //	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
 
 //	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
@@ -22,56 +22,65 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions
+function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions	// TODO deactivate debug mode
 
 achievementLanguage = "en"							// ISO 639-1 language codes 
 
-achievementGuideLink = [link to achievement guide readme] 
+achievementGuideLink = [link to achievement guide readme] // TODO Set link
 
 
 
+// ***************************************************************************************************************************************************************** \\
+//																																									 \\
+//   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
+//   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝   \\
+//   ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝     ███████║██║  ██║██║  ██║██████╔╝█████╗  ███████╗███████╗    ██║     ██║   ██║██║  ███╗██║██║        \\
+//   ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║  ██║██║  ██║██╔══██╗██╔══╝  ╚════██║╚════██║    ██║     ██║   ██║██║   ██║██║██║        \\
+//   ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║       ██║  ██║██████╔╝██████╔╝██║  ██║███████╗███████║███████║    ███████╗╚██████╔╝╚██████╔╝██║╚██████╗   \\
+//   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
+//																																									 \\
+// ***************************************************************************************************************************************************************** \\
 
-//   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗
-//   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
-//   ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝     ███████║██║  ██║██║  ██║██████╔╝█████╗  ███████╗███████╗    ██║     ██║   ██║██║  ███╗██║██║     
-//   ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║  ██║██║  ██║██╔══██╗██╔══╝  ╚════██║╚════██║    ██║     ██║   ██║██║   ██║██║██║     
-//   ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║       ██║  ██║██████╔╝██████╔╝██║  ██║███████╗███████║███████║    ███████╗╚██████╔╝╚██████╔╝██║╚██████╗
-//   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝
-//
-// *****************************************************************************************************************************************************************
 
-
+// ******************
 // ÷ SUB HEADER 1 ÷
-// ***************************
+// ******************
 // 	- Some explanation...		//	$AC0130: [8-bit] Example memory address code note
 // 	- Some explanation...		//		- Code note...
 								//		- Code note...
 
 
 
+// ******************
 // ÷ SUB HEADER 2 ÷
-// ***************************
+// ******************
 // 	- Some explanation...
 // 	- Some explanation...
+const_globalVariable = {
+	"ID_1": 0x0,
+	"ID_2": 0x0,
+	"ID_3": 0x0
+}
+function getId(int_id) => const_globalVariable[int_id]
+
+
+// ****************************************************************************************************************************************** \\
+//																																			  \\
+//    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
+//   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝   \\
+//   ███████║██║     ███████║██║█████╗  ██║   ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║          ██║     ██║   ██║██║  ███╗██║██║        \\
+//   ██╔══██║██║     ██╔══██║██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║          ██║     ██║   ██║██║   ██║██║██║        \\
+//   ██║  ██║╚██████╗██║  ██║██║███████╗ ╚████╔╝ ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗   \\
+//   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
+//																																			  \\
+// ****************************************************************************************************************************************** \\
 
 
 
 
-
-//    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗
-//   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
-//   ███████║██║     ███████║██║█████╗  ██║   ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║          ██║     ██║   ██║██║  ███╗██║██║     
-//   ██╔══██║██║     ██╔══██║██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║          ██║     ██║   ██║██║   ██║██║██║     
-//   ██║  ██║╚██████╗██║  ██║██║███████╗ ╚████╔╝ ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗ 
-//   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝ 
-//
-// *****************************************************************************************************************************************************************
-
-
-
-
+// ****************************
 // ÷ ACHIEVEMENT DICTIONARY ÷
-// *************************************
+// ****************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 
 _achievements = {
@@ -106,13 +115,15 @@ _achievements = {
 
 
 
+// ************************************
 // ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
-// ***************************************************
+// ************************************
 //	- For achievement logic that's reoccuring across multiple triggers
 
 
+// ***************************
 // ÷ ACHIEVEMENT TRIGGERS ÷
-// ***************************************************************
+// ***************************
 
 _achievementTriggers = : {
     // "a_Template": function Template() { return always_false()},
@@ -127,8 +138,9 @@ _achievementTriggers = : {
 
 
 
+// **********************
 // ÷ ACHIEVEMENT TEXT ÷
-// **************************
+// **********************
 
 _achievementTitles = {
     // "a_Template":						{"en": "xxxxx"}, 
@@ -160,8 +172,9 @@ _achievementDescriptions = {
 
 
 
+// *****************************
 // ÷ ACHIEVEMENT INITIALIZER ÷
-// **********************************************************
+// *****************************
 //	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
 
 function initializeAchievements() {
@@ -221,23 +234,80 @@ function initializeAchievements() {
 	}}
 
 
+	// Generates the achievement title (with developer tags, if devmode == 1)
+	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
+		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
+			let_string = ""
+			if isDebugModeActive() {
+				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
+				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
+				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
+				// let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
+			}
+			return let_string
+		}	
+		function lookUpAchievementTitle(string_achievementDevName, string_languageCode) {
+			return _achievementTitles[string_achievementDevName][string_languageCode]
+		}
+		return enterCategoryName(string_achievementCategory, string_achievementDevName) + lookUpAchievementTitle(string_achievementDevName, string_languageCode)
+	}
+	// Generates the achievement description (with extra developer information, if devmode == 1)
+	function generateAchievementDescription(string_achievementDevName, boolean_hasTips, string_devInfo, string_languageCode) {	
+		function lookUpAchievementDescription(string_achievementDevName, string_languageCode) {
+			return _achievementDescriptions[string_achievementDevName][string_languageCode]
+		}
+		function enterDevInfo(string_devInfo) {
+			let_devInfoString = ""
+			if isDebugModeActive() && string_devInfo != "" {
+				let_devInfoString = let_devInfoString + " - [DEV: " + string_devInfo + "]"
+			}
+			return let_devInfoString
+		}	
+		function enterTipsLink(boolean_hasTips) {
+			let_tipsLink = ""
+			if(boolean_hasTips == true) let_tipsLink = " - [Tips: " + achievementGuideLink + "]"
+			return let_tipsLink 
+		}
+		return lookUpAchievementDescription(string_achievementDevName, string_languageCode) + enterTipsLink(boolean_hasTips) + enterDevInfo(string_devInfo) 
+	}
+	// Returns the achievement trigger 
+	function lookUpAchievementTrigger(string_achievementDevName) {
+		return _achievementTriggers[string_achievementDevName]
+	}
 
-//   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗
-//   ██╔══██╗██║██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝
-//   ██████╔╝██║██║     ███████║    ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗  
-//   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝  
-//   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗
-//   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
-//
-// ************************************************************************************************************************
+	// This loop generates the achievements
+	for categoryName in _achievements {
+		for cheevmentName in _achievements[categoryName] {
+			let_cheevment = _achievements[categoryName][cheevmentName]
+			achievement(
+				id = let_cheevment["id"],
+				title = generateAchievementTitle(cheevmentName, categoryName, achievementLanguage), 
+				description = generateAchievementDescription(cheevmentName, let_cheevment["hasTips"], let_cheevment["devInfo"], achievementLanguage),
+				points = let_cheevment["points"],
+				trigger = lookUpAchievementTrigger(cheevmentName)
+			)
+		}
+	}}
 
 
 
-                                                               
- //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
- //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄
- //
- // ***********************************************************************
+// ***************************************************************************************************** \\
+//																										 \\
+//   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗   \\
+//   ██╔══██╗██║██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝   \\
+//   ██████╔╝██║██║     ███████║    ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗     \\
+//   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝     \\
+//   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗   \\
+//   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
+//																										 \\
+// ***************************************************************************************************** \\
+
+// TODO Rich presence
+
+// ********************************************************************** \\
+//   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
+//   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
+// ********************************************************************** \\
 
 function initializeRAscript() {
 	initializeAchievements()}

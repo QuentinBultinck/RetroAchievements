@@ -1,14 +1,13 @@
-                                                           
-//    █▀ █░█ ▄▀█ █▀▄ █▀█ █░█░█    █▀█ █▀▀    █▀▄ █▀▀ █▀ ▀█▀ █ █▄░█ █▄█
-//    ▄█ █▀█ █▀█ █▄▀ █▄█ ▀▄▀▄▀    █▄█ █▀░    █▄▀ ██▄ ▄█ ░█░ █ █░▀█ ░█░
-//
-// ******************************************************************************
+// ********************************************************************* \\
+//    █▀ █░█ ▄▀█ █▀▄ █▀█ █░█░█    █▀█ █▀▀    █▀▄ █▀▀ █▀ ▀█▀ █ █▄░█ █▄█   \\
+//    ▄█ █▀█ █▀█ █▄▀ █▄█ ▀▄▀▄▀    █▄█ █▀░    █▄▀ ██▄ ▄█ ░█░ █ █░▀█ ░█░   \\
+// ********************************************************************* \\
 // #ID = 3945
 // md5: 887bb53eb92a56235aa40a80ce5c8eeb - USA
 
 // Info regarding usage of this RAScript
 // ---------------------------------------------
-//	- For the best reading experience => set indent mode to 'Tabs'; with an indent size '4'
+//	- Set indent mode => Tabs			Set indent size => 4
 //	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
 
 //	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
@@ -21,7 +20,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions
+function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions	// TODO set debug mode off
 
 achievementLanguage = "en"							// ISO 639-1 language codes 
 
@@ -30,20 +29,24 @@ achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDesti
 function addToDictionary(dict, key, value) {
 	dict[key] = value}
 
-//   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗
-//   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
-//   ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝     ███████║██║  ██║██║  ██║██████╔╝█████╗  ███████╗███████╗    ██║     ██║   ██║██║  ███╗██║██║     
-//   ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║  ██║██║  ██║██╔══██╗██╔══╝  ╚════██║╚════██║    ██║     ██║   ██║██║   ██║██║██║     
-//   ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║       ██║  ██║██████╔╝██████╔╝██║  ██║███████╗███████║███████║    ███████╗╚██████╔╝╚██████╔╝██║╚██████╗
-//   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝
-//
-// ***************************************************************************************************************************************************************************
+// ***************************************************************************************************************************************************************** \\
+//																																									 \\
+//   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
+//   ████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔══██╗╚██╗ ██╔╝    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║     ██╔═══██╗██╔════╝ ██║██╔════╝   \\
+//   ██╔████╔██║█████╗  ██╔████╔██║██║   ██║██████╔╝ ╚████╔╝     ███████║██║  ██║██║  ██║██████╔╝█████╗  ███████╗███████╗    ██║     ██║   ██║██║  ███╗██║██║        \\
+//   ██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║  ██║██║  ██║██╔══██╗██╔══╝  ╚════██║╚════██║    ██║     ██║   ██║██║   ██║██║██║        \\
+//   ██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝██║  ██║   ██║       ██║  ██║██████╔╝██████╔╝██║  ██║███████╗███████║███████║    ███████╗╚██████╔╝╚██████╔╝██║╚██████╗   \\
+//   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
+//																																									 \\
+// ***************************************************************************************************************************************************************** \\
 
-// PSP pointers usually start with 08 or 09 + 25-bit
+// PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
+// TODO remove unusd code notes
 
 
+// ***********************
 // ÷ TIMERS/COUNTERS ÷
-// ***************************
+// ***********************
 //	- Resets at certain times or between cutscene transitions
 //	- Different timers reset at different moments
 function twoFrameTimer() 				=> dword(0xA82880) 								// $A82880: [32-bit] Two frame timer
@@ -55,9 +58,10 @@ function hasOneFrameTimerReset() 		=> oneFrameTimer() < prev(oneFrameTimer()) 		
 function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer())		// 		- Resets at certain times or between cutscene transitions
 
 
+// *******************************************
 // ÷ INTERACTION IDs WITH NPCs & ITEMS ÷
 // *******************************************
-_NPCs = {
+const_NPCs = {
 	"BlondeYoungBoy_Present": { 
 		"ID": 0x187, "Appearance": {
 			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EEF8, "MaxTalkCount": 2}}},
@@ -138,7 +142,7 @@ _NPCs = {
 	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
 }
 
-_Interactables = {
+const_interactables = {
 	"Antique_FranssenShopSign": 0x8e,
 	"Antique_Rope": 0x98,
 	"Antique_Antidote": 0x79,
@@ -159,10 +163,10 @@ _Interactables = {
 	"Painting_Eiked_TowerView": 0x000000
 }
 
-function getMaxTalkCountFor(string_NPC, string_appearance) => _NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
+function getMaxTalkCountFor(string_NPC, string_appearance) => const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
 
 function isNPCtalkCountIncreasingToMax(string_NPC, string_appearance) {
-	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
+	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
 	let_maxTalkCount = let_NPCappearance["MaxTalkCount"]
 	return 
@@ -170,30 +174,30 @@ function isNPCtalkCountIncreasingToMax(string_NPC, string_appearance) {
 		prev(let_talkCount) == let_maxTalkCount - 1}
 
 function isNPCtalkCountIncreasing(string_NPC, string_appearance) {
-	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
+	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
 	return 
 		let_talkCount > prev(let_talkCount)}
 
 function isNPCtalkCountAtMax(string_NPC, string_appearance) {
-	let_NPCappearance = _NPCs[string_NPC]["Appearance"][string_appearance]
+	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
 	return 
-		let_talkCount == _NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]}
+		let_talkCount == const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]}
 
-function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == _NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
+function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 																							// - Resets to 0x0 when interaction is done
 
 function isTalkingTo(string_NPC) {								// $A9EFDC: [25-bit] Pointer - Interactions
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff				// 		+0x0 - [32-bit] NPC ID															
-	return _NPCs[string_NPC]["ID"] == dword(let_maskedPointer)} // 		| - Unique per interactable NPC or environment item
+	return const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer)} // 		| - Unique per interactable NPC or environment item
 																// 		| - This value is copied to 0xa9eff4 (refer to notes)
 
-function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == _Interactables[string_NPC]
+function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == const_interactables[string_NPC]
 
 function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
-	return _Interactables[string_interactable] == dword(let_maskedPointer)}
+	return const_interactables[string_interactable] == dword(let_maskedPointer)}
 
 function isInteractionChapterId(int_Id) {			// $A9EFE0: [25-bit] Pointer - Interactions
 	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff	// 		+0x0 - [32-bit] Interaction Chapter ID
@@ -234,8 +238,9 @@ function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit 
 																// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
 
 
+// ****************************
 // ÷ CUTSCENE IDENTIFICATION ÷
-// *********************************
+// ****************************
 function isCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
 																									// 		- 0x00 => no cutscene active
 function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
@@ -276,9 +281,11 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {
 															// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 
+
+// ************************************
 // ÷ MAP/SCENE/SCENARIO IDENTIFIER ÷
-// *****************************************
-_mapIDs= {	// list not complete, adding as is necessary
+// ************************************
+const_mapIDs= {	// list not complete, adding as is necessary
 	"PresentDayCity": 0x375,
 	"PresentNightCityPM": 0x44,
 	"PresentNightCityAM": 0x3,
@@ -304,12 +311,13 @@ _mapIDs= {	// list not complete, adding as is necessary
 	"BrumMuseumUpstairsRoom3Day": 0xcd,
 	"BrumMuseumDownstairsRoomNight": 0x32,
 	"BrumMuseumDownstairsRoomDay": 0x2ed}
-function isCurrentMapScene(string_mapId) => dword(0xA82E48) == _mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
+function isCurrentMapScene(string_mapId) => dword(0xA82E48) == const_mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
 
 
+// ********************
 // ÷ CHAPTER LOGIC ÷
 // ********************
-_chapterIDs = {
+const_chapterIDs = {
 	"Prologue": 0x1,	// Also counts for EX chapter
 	"Chapter1": 0x2,
 	"Chapter2": 0x3,
@@ -327,35 +335,35 @@ function getChapterId() => byte(0xB95704)			// $B95704: [8-bit] Chapter ID
 function isCurrentChapter(string_chapter) {	
 	if (string_chapter == "Chapter8") {
 		return
-			(getChapterId() == _chapterIDs["Chapter8_Ancestress"] || getChapterId() == _chapterIDs["Chapter8_NoAncestress"])
+			(getChapterId() == const_chapterIDs["Chapter8_Ancestress"] || getChapterId() == const_chapterIDs["Chapter8_NoAncestress"])
 	} else if (string_chapter == "Epilogue") {
 		return
-			(getChapterId() == _chapterIDs["Epilogue_Ancestress"] || getChapterId() == _chapterIDs["Epilogue_NoAncestress"])
+			(getChapterId() == const_chapterIDs["Epilogue_Ancestress"] || getChapterId() == const_chapterIDs["Epilogue_NoAncestress"])
 	} else {
 		return
-			getChapterId() == _chapterIDs[string_chapter]
+			getChapterId() == const_chapterIDs[string_chapter]
 	}} 
 
 function isChapterFinishing(string_chapter) { 
 	if (string_chapter == "Chapter7") {
 		return 
-			prev(getChapterId()) == _chapterIDs[string_chapter] &&
+			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
 			(
-				getChapterId() == _chapterIDs["Chapter8_Ancestress"] 	|| 
-				getChapterId() == _chapterIDs["Chapter8_NoAncestress"] 
+				getChapterId() == const_chapterIDs["Chapter8_Ancestress"] 	|| 
+				getChapterId() == const_chapterIDs["Chapter8_NoAncestress"] 
 			)
 	} else if (string_chapter == "Chapter8_Ancestress"){
 		return
-			prev(getChapterId()) == _chapterIDs[string_chapter] &&
-			getChapterId() == _chapterIDs["Epilogue_Ancestress"]
+			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
+			getChapterId() == const_chapterIDs["Epilogue_Ancestress"]
 	} else if (string_chapter == "Chapter8_NoAncestress"){
 		return
-			prev(getChapterId()) == _chapterIDs[string_chapter] &&
-			getChapterId() == _chapterIDs["Epilogue_NoAncestress"]
+			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
+			getChapterId() == const_chapterIDs["Epilogue_NoAncestress"]
 	} else {
 		return
-			prev(getChapterId()) == _chapterIDs[string_chapter] &&
-			getChapterId() == _chapterIDs[string_chapter] + 0x1
+			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
+			getChapterId() == const_chapterIDs[string_chapter] + 0x1
 	}}
 
 function isChapterChanging() => getChapterId() != prev(getChapterId())
@@ -371,12 +379,14 @@ function isChapterChangingTo(string_chapter) {
 		prev(getChapterId()) != let_chapterId &&
 		getChapterId() == let_chapterId}
 
+
+// ***********************
 // ÷ INVENTORY LOGIC ÷
-// *************************
+// ***********************
 //	- itemScrollBarId => Id of the item in the inventory scrollbar menu
 //	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
 //	- isDefaultItem => true, when player gets this item at start of game
-_inventoryItems = { 
+const_inventoryItems = { 
 	"D-pad": {	// In PSP version this is called Z-Pad
 		"memAddress_Flag_isInInventory": 0xA9F034,	// $A9F034: [Bit 0] Z-pad/D-pad
 		"itemScrollBarId": 0x0,
@@ -476,16 +486,17 @@ _inventoryItems = {
 		"isDefaultItem": false}
 }
 
-function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == _inventoryItems[string_item]["itemScrollBarId"] // $A9F111: [8-bit] Currently selected item ID in inventory
+function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == const_inventoryItems[string_item]["itemScrollBarId"] // $A9F111: [8-bit] Currently selected item ID in inventory
 
-function isItemInInventory(string_item) => bit0(_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
+function isItemInInventory(string_item) => bit0(const_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
 
 
+// *********************
 // ÷ ON-SCREEN TEXT ÷
-// ***********************
+// *********************
 //	- Master ID	=> Identifies a series of subtitles, can stay the same over multiple text changes
 //	- Other IDs => Changes on each text/subtitle change 
-_onScreenTextID = {
+const_onScreenTextID = {
 	0: 0xAC31E4,	// $AC31E4: [32-bit] On-screen text ID_master
 	1: 0xAC31E8,	// $AC31E8: [32-bit] On-screen text ID
 	2: 0xAC326C,	// $AC326C: [32-bit] On-screen text ID
@@ -496,11 +507,12 @@ _onScreenTextID = {
 	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
 	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
 }
-function onScreenTextID(int_id) => dword(_onScreenTextID[int_id])
+function onScreenTextID(int_id) => dword(const_onScreenTextID[int_id])
 
 
+// *******************
 // ÷ EXTRA MENU ÷
-// *********************
+// *******************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
 function isViewingEndingFromExtraMenu() {
@@ -549,15 +561,17 @@ function isResultsMenuHighlightedChapter(string_chapter) {
 	} else if (string_chapter == "Total") {
 		let_resultsMenuHighlightedChapterId = 0xa
 	} else {
-		let_resultsMenuHighlightedChapterId = _chapterIDs[string_chapter] - 1
+		let_resultsMenuHighlightedChapterId = const_chapterIDs[string_chapter] - 1
 	}
 	return			
 		isInResultsMenu() &&
 		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
 
 
+
+// *****************
 // ÷ OTHER LOGIC ÷
-// *********************
+// *****************
 function getEnergyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
 												//		- Used for the time travel machine (Z-Pad)
 												//		- Min => 0x0 		Max => 0x0a
@@ -577,6 +591,8 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 
 
 
+
+// ***********************************
 // ÷ CUTSCENE/CHOICES BIT FLAGS ÷
 // ***********************************
 function isTreeReplacedByStatue() => bit2(0xA9EDA0)	== 0		// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
@@ -669,6 +685,8 @@ function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]
 function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
 															//		 bit 2 => is wearing performer outfit
 
+
+// **********************************************
 // ÷ PERMANENT CUTSCENE PERCENTAGE BITFLAGS ÷
 // **********************************************
 // 	- Each flag corresponds to at least 1 cutscene and counts toward the achievement percentage 
@@ -742,18 +760,21 @@ const_percentageBitsFlags = {
 		0xAA1193: [0]},
 }
 
-//    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗
-//   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝
-//   ███████║██║     ███████║██║█████╗  ██║   ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║          ██║     ██║   ██║██║  ███╗██║██║     
-//   ██╔══██║██║     ██╔══██║██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║          ██║     ██║   ██║██║   ██║██║██║     
-//   ██║  ██║╚██████╗██║  ██║██║███████╗ ╚████╔╝ ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗ 
-//   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝ 
-//
-// *****************************************************************************************************************************************************************
+// ****************************************************************************************************************************************** \\
+//																																			  \\
+//    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
+//   ██╔══██╗██╔════╝██║  ██║██║██╔════╝██║   ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝       ██║     ██╔═══██╗██╔════╝ ██║██╔════╝   \\
+//   ███████║██║     ███████║██║█████╗  ██║   ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║          ██║     ██║   ██║██║  ███╗██║██║        \\
+//   ██╔══██║██║     ██╔══██║██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║          ██║     ██║   ██║██║   ██║██║██║        \\
+//   ██║  ██║╚██████╗██║  ██║██║███████╗ ╚████╔╝ ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║          ███████╗╚██████╔╝╚██████╔╝██║╚██████╗   \\
+//   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
+//																																			  \\
+// ****************************************************************************************************************************************** \\
 
 
+// ***************************
 // ÷ ACHIEVEMENT DICTIONARY ÷
-// *************************************
+// ***************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
 _achievements = {
@@ -1028,8 +1049,9 @@ _achievements = {
 }
 
 
+// *************************************
 // ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
-// ***************************************************
+// *************************************
 //	- For achievement logic that's reoccuring across multiple triggers
 
 function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){ 
@@ -1125,12 +1147,12 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 		return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
 	} else {
 		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
-	}}
+	}
+}
 
-	
-
+// **************************
 // ÷ ACHIEVEMENT TRIGGERS ÷
-// ***************************************************************
+// **************************
 _achievementTriggers = {
 	"a_PrologueComplete": function PrologueComplete() { return
 		never (	// Core group
@@ -2817,12 +2839,12 @@ _achievementTriggers = {
 	"a_MaxInventory": function MaxInventory(){
 		// function measuredComparison() { 
 		// 	// CODE BLOCK A; only use one CODE BLOCK
-		// 	// let_comparisonsArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-		// 	// 	let_memAddress = _inventoryItems[item]["memAddress_Flag_isInInventory"]
+		// 	// let_comparisonsArray = array_map(const_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+		// 	// 	let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 		// 	// 	return prev(bit0(let_memAddress)) < bit0(let_memAddress)
 		// 	// })
-		// 	// let_deductComparisonArray = array_map(_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-		// 	// 	let_memAddress = _inventoryItems[item]["memAddress_Flag_isInInventory"]
+		// 	// let_deductComparisonArray = array_map(const_inventoryItems, (item) {	// array_map returns a new array with the comparisons
+		// 	// 	let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 		// 	// 	return deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))
 		// 	// })
 		// 	// for deductComparison in let_deductComparisonArray {
@@ -2830,8 +2852,8 @@ _achievementTriggers = {
 		// 	// }
 		// 	// CODE BLOCK B
 		// 	let_comparisonsArray = [always_false()]
-		// 	for item in _inventoryItems {
-		// 		let_memAddress = _inventoryItems[item]["memAddress_Flag_isInInventory"]
+		// 	for item in const_inventoryItems {
+		// 		let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 		// 		array_push(let_comparisonsArray, deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))) 	// Sub hit comparison
 		// 		array_push(let_comparisonsArray, prev(bit0(let_memAddress)) < bit0(let_memAddress)) 			// Add hit comparison
 		// 	}
@@ -2851,8 +2873,8 @@ _achievementTriggers = {
 			let_biggestPossibleInventory = 20
 			// Checks all item_in_inventory_flags => if in inventory 	+1 Add hit
 			return 
-				tally_of(_inventoryItems, let_biggestPossibleInventory, (item) {
-					let_memAddress = _inventoryItems[item]["memAddress_Flag_isInInventory"]
+				tally_of(const_inventoryItems, let_biggestPossibleInventory, (item) {
+					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 					return once(bit0(let_memAddress) == 1)
 				})
 		}
@@ -2863,8 +2885,8 @@ _achievementTriggers = {
 
 				// Reset if any item is gained or removed
 				// 	Checks if any item_in_inventory_flags has changed
-				any_of(_inventoryItems, (item) {
-					let_memAddress = _inventoryItems[item]["memAddress_Flag_isInInventory"]
+				any_of(const_inventoryItems, (item) {
+					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 					return bit0(let_memAddress) != prev(bit0(let_memAddress))
 				})
 			) &&
@@ -3293,6 +3315,7 @@ _achievementTriggers = {
 }
 
 
+// **************************
 // ÷ ACHIEVEMENT TEXT ÷
 // **************************
 _achievementTitles = {
@@ -3481,8 +3504,9 @@ _achievementDescriptions = {
 }
 
 
+// ******************************
 // ÷ ACHIEVEMENT INITIALIZER ÷
-// **********************************************************
+// ******************************
 //	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
 function initializeAchievements() {
 	// Generates the achievement title (with developer tags, if devmode == 1)
@@ -3538,27 +3562,29 @@ function initializeAchievements() {
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
 		}
-	}}
+	}
+}
 
-
-//   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗
-//   ██╔══██╗██║██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝
-//   ██████╔╝██║██║     ███████║    ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗  
-//   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝  
-//   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗
-//   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
-//
-// **********************************************************************************************************************
+// ***************************************************************************************************** \\
+//																										 \\
+//   ██████╗ ██╗ ██████╗██╗  ██╗    ██████╗ ██████╗ ███████╗███████╗███████╗███╗   ██╗ ██████╗███████╗   \\
+//   ██╔══██╗██║██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝██╔════╝   \\
+//   ██████╔╝██║██║     ███████║    ██████╔╝██████╔╝█████╗  ███████╗█████╗  ██╔██╗ ██║██║     █████╗     \\
+//   ██╔══██╗██║██║     ██╔══██║    ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║██╔══╝  ██║╚██╗██║██║     ██╔══╝     \\
+//   ██║  ██║██║╚██████╗██║  ██║    ██║     ██║  ██║███████╗███████║███████╗██║ ╚████║╚██████╗███████╗   \\
+//   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
+//																										 \\
+// ***************************************************************************************************** \\
 
 // Chapter => Fated hour: xxxxx
 
 
 // TODO Rich Presence
-                                                               
- //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀
- //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄
- //
- // **********************************************************************
+
+// ********************************************************************** \\
+//   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
+//   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
+// ********************************************************************** \\
 function initializeRAscript() {
 	initializeAchievements()}
 initializeRAscript()
