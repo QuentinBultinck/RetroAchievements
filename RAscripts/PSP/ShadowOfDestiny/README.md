@@ -37,6 +37,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>The Whole Picture... Or is it?</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide | / |
 | :trophy: <b>The Philosopher's Destiny</b><br><i>a_EXChapterCompleteKillHomunculus</i> | - In the EX chapter, use the Philosopher's stone to kill Homunculus <br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Don't go to the alchemist's house, but time travel back to the present | / |
 | :trophy: <b>The Philosopher's Legacy</b><br><i>a_EXChapterCompleteCureHelena</i> | - In the EX chapter, gift the Philosopher's stone to Dr. Wagner <br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Scare the crowd and head to the alchemist's house | / |
+| :trophy: <b>A Complimentary Dinner</b><br><i>a_FreeMeal</i> | 1. In chapter 1, save the bar from fire, by warning the barman in the past. Not by extinguishing the flames yourself. <br> 2. In chapter 5, head to the bar. The barman will remember you and gift you a free meal | / |
 | :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
 
 ### :gem: Branching paths

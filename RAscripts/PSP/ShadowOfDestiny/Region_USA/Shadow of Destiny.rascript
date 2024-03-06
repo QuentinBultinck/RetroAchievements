@@ -636,9 +636,15 @@ function isMargaretteAncestor() => bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0		/
 																					// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
 function isMargaretteNoAncestor() => bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
 
+function isFirePutOutByWarningBarman() => 	// $A9ED9D: [Current Playthrough Bit Flags]: Chapter 1
+	bit5(0xA9ED9D) == 0 &&					//		bit 5 => put out fire yourself
+	bit7(0xA9ED9D) == 1						//		bit 7 => Saved bar from fire by warning barman
 
+function isFirePutOutByEike() => 
+	bit5(0xA9ED9D) == 1 &&
+	bit7(0xA9ED9D) == 0	
 
-function isDanaSavedFromPast(){	return	// $a9edc4: [Current Playthrough Bit Flags]: Saved Dana from Past
+function isDanaSavedFromPast(){	return	// $A9EDC4: [Current Playthrough Bit Flags]: Saved Dana from Past
 	bit1(0xA9EDC4) == 1 && 				// 		bit 1 => Gave letter to Dana
 	bit3(0xA9EDC4) == 1 && 				// 		bit 3-4 => Took Dana back to present
 	bit4(0xA9EDC4) == 1}
@@ -992,9 +998,9 @@ _achievements = {
 		"a_ShowPocketWatchToPhotographer": { // WORKING 
 			"id": 000000, "points": 2, "hasTips": true,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
-		// "a_FreeMeal": { // CONCEPT 
-		//	"id": 000000, "points": 4, "hasTips": false,
-		//	"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
+		"a_FreeMeal": { // CONCEPT 
+			"id": 000000, "points": 3, "hasTips": true,
+			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
 		// "a_xxxxxxxx": { // CONCEPT 
 		//	"id": 000000, "points": 0000000, "hasTips": false,
 		//	"devInfo": "Showing Hugo Digipad in Middle Ages in chapter 8?"},
@@ -2643,7 +2649,7 @@ _achievementTriggers = {
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!isInGame()					||
-			isEventViewerActive() 	||
+			isEventViewerActive() 		||
 			isNewCutsceneLoading()				||
 			!isWearingPerformerOutfit()			||
 			!isCurrentSelectedInventoryItem("Jugglery")	
@@ -2651,12 +2657,12 @@ _achievementTriggers = {
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
 			isCutsceneActive() && isCurrentChapter("Chapter4") &&
 			isCurrentCutsceneMasterId(0x1a300)		&&
-			isCurrentCutsceneSectionId_1(0xd)		&&
-			isCurrentCutsceneSectionId_2(0xc)		&&
-			isCurrentCutsceneMasterDataId(0x7d40)	&&
-			isCurrentCutsceneSectionDataId(0x460)
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0xd440)	&&
+			isCurrentCutsceneSectionDataId(0x3a00)
 		) &&
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
 			!isInGame()					||
@@ -2672,7 +2678,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x5d4a0)
 		) &&
 		isFullCutsceneSequenceEnding()},
-	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){ 
+	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){
 		function measuredComparison() { return
 			tally(7, [
 				once(
@@ -2707,11 +2713,12 @@ _achievementTriggers = {
 					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
 					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isCurrentSelectedInventoryItem("Jugglery") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
-					isCurrentCutsceneSectionId_1(0xd)		&&
-					isCurrentCutsceneSectionId_2(0xc)		&&
-					isCurrentCutsceneMasterDataId(0x7d40)	&&
-					isCurrentCutsceneSectionDataId(0x460))
+					isCurrentCutsceneSectionId_1(0x1)		&&
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0xd440)	&&
+					isCurrentCutsceneSectionDataId(0x3a00))
 			])}
 		return 
 			never(	
@@ -2720,7 +2727,7 @@ _achievementTriggers = {
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset that count here 
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneSectionEnding())},
 	"a_ScareEveryone": function ScareEveryone() {
 		function measuredComparison() { return
 			tally(7, [	
@@ -2769,6 +2776,34 @@ _achievementTriggers = {
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity") || isCurrentMapScene("CafeSonne") ) &&
 			trigger_when(isNoCutsceneActive())},
+	"a_FreeMeal": function FreeMeal() { return // WIP
+		never(
+			!isInGame()						||
+			isEventViewerActive() 			||
+			!isCurrentChapter("Chapter5")	||
+			isFirePutOutByEike()
+		) &&
+		once(	// Identifies Cutscene => Barman gives us free meal
+			isCutsceneActive() && 
+			isCurrentCutsceneMasterId(0x62840)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x261a0)	&&
+			isCurrentCutsceneSectionDataId(0x6cc0)	&&
+			isCurrentMinorCutsceneId(0x9bd60, 0x8)	&&
+			isCurrentMinorCutsceneId(0x6cc0, 0x28)
+		) &&
+		once(	// Identifies Cutscene => Reading book whilst barman get Eike his meal + poison
+			isCutsceneActive() && 
+			isCurrentCutsceneMasterId(0xf9cc0)		&&
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x5eb0)	&&
+			isCurrentCutsceneSectionDataId(0xf3df0)	&&
+			isCurrentMinorCutsceneId(0x2aea60, 0x8)	&&
+			isCurrentMinorCutsceneId(0xf3df0, 0x28)
+		) &&
+		trigger_when(isCutsceneSectionEnding())},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isInGame()					||
@@ -3332,11 +3367,12 @@ _achievementTitles = {
 	"a_RottenRope": 								{"en": "Fated to Plunge"},
 	"a_MetYouBefore": 								{"en": "Met You before"},
 	"a_DrunkenGuys":								{"en": "A Pair of Delinquents"},
-	"a_ShowPocketWatchToPhotographer":			{"en": "Horologic Heritage"},
+	"a_ShowPocketWatchToPhotographer":				{"en": "Horologic Heritage"},
 	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
 	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day"},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
 	"a_HugoMotherChild":							{"en": "A Mother's Child Forever"}, 
+	"a_FreeMeal":									{"en": "A Complimentary Dinner"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
 	"a_AntiquesEule": 								{"en": "Timeless Antiques"},
@@ -3404,7 +3440,7 @@ _achievementDescriptions = {
 	"a_EggCollection": 								{"en": "Exchange an egg for a pan during chapter 1, 3 or 4"},
 	"a_AlertBarmanOfFire": 							{"en": "Alert the young boy's grandpa of imminent disaster during chapter 1"},
 	"a_GetExChapterOrnamentalEgg" :					{"en": "Acquire one last message during the EX chapter"},	
-	"a_ShowPocketWatchToPhotographer":			{"en": "Kindle the joy of watchmaking to an ancestor of the Franssen's"},
+	"a_ShowPocketWatchToPhotographer":				{"en": "Kindle the joy of watchmaking to an ancestor of the Franssen's"},
 	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
@@ -3424,6 +3460,7 @@ _achievementDescriptions = {
 	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
 	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
+	"a_FreeMeal":									{"en": "Enjoy a free supper at Bar Zum Ei during chapter 5"}, 
 	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
 	"a_ScareEveryone": 								{"en": "Frighten everyone in the past and a person indulging in spaghetti during chapter 2"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
@@ -3441,7 +3478,7 @@ _achievementDescriptions = {
 	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
-	"a_NewCakeInvented": 							{"en": "Establish a new type of pastry"},
+	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
 	"a_ShortestChapter": 							{"en": "Acquire an iron plate before finding a good usage for it"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
