@@ -42,6 +42,7 @@ function addToDictionary(dict, key, value) {
 
 // PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
 // TODO remove unusd code notes
+// TODO check where to implement pause if 
 
 
 // ***********************
@@ -241,7 +242,7 @@ function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit 
 // ****************************
 // ÷ CUTSCENE IDENTIFICATION ÷
 // ****************************
-function isCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
+function isFullCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
 																									// 		- 0x00 => no cutscene active
 function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
 																									// 		- 0x05 => cutscene active
@@ -501,20 +502,11 @@ function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
 											//		- This ID does not change on each new text change, but it does change often between text changes
 
-function isAmountOfCharactersOnBottomScreen(int_characterCount) {	// Count starts at 1
+function isPriorMinimumAmountOfCharactersOnBottomScreen(int_characterCount) { // Count starts at 1
 	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
 	return 
-		dword(0xAC31E4 + let_offsetOfLastCharacterPrint) != 0x0 &&			// --> Checks Printer control data for last character != 0
-		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa) != 0x0 &&	// --> Checks Image offset & mask settings for last character != 0
-		dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10) == 0x0		// --> Checks if no character after this last one was printed
-}
-
-function isPrevAmountOfCharactersOnBottomScreen(int_characterCount) {
-	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
-	return 
-		prev(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
-		prev(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0 &&
-		prev(dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10)) == 0x0
+		prior(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
+		prior(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0
 }
 
 function isNoCharactersOnBottomScreen() {
@@ -547,7 +539,8 @@ function isCharacterPrinted(objDict_characterPrintData) {
 		byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6) == objDict_characterPrintData["printXaxis"] &&
 		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == let_charPrintDataToDwordBE(objDict_characterPrintData)
 }
-function isPrevCharacterPrinted(objDict_characterPrintData) {	
+
+function isPriorCharacterPrinted(objDict_characterPrintData) {	
 	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
 		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
@@ -557,22 +550,9 @@ function isPrevCharacterPrinted(objDict_characterPrintData) {
 	}
 	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
 	return 
-		prev(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
-		prev(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)
-}	
-
-const_onScreenTextID = {
-	0: 0xAC31E4,	// $AC31E4: [32-bit] On-screen text ID_master
-	1: 0xAC31E8,	// $AC31E8: [32-bit] On-screen text ID
-	2: 0xAC326C,	// $AC326C: [32-bit] On-screen text ID
-	3: 0xAC32A8,	// $AC32A8: [32-bit] On-screen text ID
-	4: 0xAC3314,	// $AC3314: [32-bit] On-screen text ID
-	5: 0xAC33E8,	// $AC33E8: [32-bit] On-screen text ID
-	6: 0xAC350C,	// $AC350C: [32-bit] On-screen text ID
-	7: 0xAC3538,	// $AC3538: [32-bit] On-screen text ID
-	8: 0xAC3658		// $AC3658: [32-bit] On-screen text ID
+		prior(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
+		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)
 }
-function onScreenTextID(int_id) => dword(const_onScreenTextID[int_id])
 
 
 // *******************
@@ -1241,7 +1221,7 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 	}
 }
 
-function generateComparison_PickUpEnergyOrbTextOnScreen() {
+function generateTally_PickUpEnergyOrbs(int_tallyCount) {
 	let_charactersToCheck = {	
 		"G": { // Got
 			"index": 0,	
@@ -1273,12 +1253,15 @@ function generateComparison_PickUpEnergyOrbTextOnScreen() {
 			"printYaxis": 0x0},
 	}
 	return
-		isNoCharactersOnBottomScreen() &&
-		isPrevAmountOfCharactersOnBottomScreen(14) &&		
-		isPrevCharacterPrinted(let_charactersToCheck["G"]) &&
-		isPrevCharacterPrinted(let_charactersToCheck["E"]) &&
-		isPrevCharacterPrinted(let_charactersToCheck["Y"]) &&
-		isPrevCharacterPrinted(let_charactersToCheck["I"])
+		tally(int_tallyCount, 
+			isEnergyUnitsIncreasing() &&
+			isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
+			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
+			!isFullCutsceneActive()	// Don't switch with isNoCutsceneActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+		)	
 }
 
 // **************************
@@ -1293,7 +1276,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => watching performer
-					isCutsceneActive() && isCurrentChapter("Prologue") &&
+					isFullCutsceneActive() && isCurrentChapter("Prologue") &&
 					isCurrentCutsceneMasterId(0x22480)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1301,7 +1284,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0xe10)
 				) &&
 				once(	// Identifies cutscene => shadow/killer walking behind Eike
-					isCutsceneActive() && isCurrentChapter("Prologue") &&
+					isFullCutsceneActive() && isCurrentChapter("Prologue") &&
 					isCurrentCutsceneMasterId(0x90bc0)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1321,7 +1304,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => burning bar changes into non-burning
-					isCutsceneActive() && isCurrentChapter("Chapter1") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter1") &&
 					isCurrentCutsceneMasterId(0x11a40)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1341,7 +1324,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => reminiscing about Dana: left in the past
-					isCutsceneActive() && isCurrentChapter("Chapter2") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter2") &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x3b240)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1350,7 +1333,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x7130)
 				) &&
 				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-					isCutsceneActive() && isCurrentChapter("Chapter2") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter2") &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x3b240)		&&
 					isCurrentCutsceneSectionId_1(0x3)		&&
@@ -1371,7 +1354,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					isCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x19d80)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1380,7 +1363,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x11ac0)
 				) &&
 				once(	// Identifies Cutscene => Back to Eckart and breaking vase
-					isCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0xcfb40)		&& isPriorCutsceneMasterId(0x19d80) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1389,7 +1372,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x387a0)
 				) &&
 				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					isCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x39680)		&& isPriorCutsceneMasterId(0xcfb40) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1412,7 +1395,7 @@ _achievementTriggers = {
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with pan 
-					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x4f200)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1422,7 +1405,7 @@ _achievementTriggers = {
 				isFullCutsceneSequenceEnding()
 			) || ( // Alt 2 
 				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x54580)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1444,7 +1427,7 @@ _achievementTriggers = {
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentCutsceneMasterId(0x54580)		&&
 					isCurrentCutsceneSectionId_1(0xd)		&&
 					isCurrentCutsceneSectionId_2(0xe)		&&
@@ -1464,7 +1447,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				once(	// Identifies Cutscene => drinking antidote
-					isCutsceneActive() && isCurrentChapter("Chapter5") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter5") &&
 					isCurrentSelectedInventoryItem("Antidote")	&&
 					isCurrentCutsceneMasterId(0x3f980)			&&
 					isCurrentCutsceneSectionId_1(0xffff)		&&
@@ -1488,7 +1471,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 
 				once( // Identifies Cutscene => Saved by love story movie
-					isCutsceneActive() && 
+					isFullCutsceneActive() && 
 					isCurrentCutsceneMasterId(0x9db40)		&&
 					isCurrentCutsceneSectionId_1(0x7)		&&
 					isCurrentCutsceneSectionId_2(0x8)		&&
@@ -1511,7 +1494,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 
 				once( // Identifies Cutscene => Saved by love story movie
-					isCutsceneActive() && 				
+					isFullCutsceneActive() && 				
 					isCurrentCutsceneMasterId(0x9db40)		&&
 					isCurrentCutsceneSectionId_1(0x7)		&&
 					isCurrentCutsceneSectionId_2(0x8)		&&
@@ -1531,7 +1514,7 @@ _achievementTriggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
 				once(	// Identifies Cutscene => Holding onto rope 
-					isCutsceneActive() && isCurrentChapter("Chapter7") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
 					isCurrentCutsceneMasterId(0x43040)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1540,7 +1523,7 @@ _achievementTriggers = {
 				) &&
 				tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
 					once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
-						isCutsceneActive() && isCurrentChapter("Chapter7") &&
+						isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
 						isMargaretteAncestor() &&
 						isCurrentCutsceneMasterId(0xc6800)		&&
 						isCurrentCutsceneSectionId_1(0x5)		&&
@@ -1548,7 +1531,7 @@ _achievementTriggers = {
 						isCurrentCutsceneMasterDataId(0x45720)	&&
 						isCurrentCutsceneSectionDataId(0x6ccd0)),
 					once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
-						isCutsceneActive() && isCurrentChapter("Chapter7") &&
+						isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
 						isMargaretteNoAncestor() &&
 						isCurrentCutsceneMasterId(0xd1bc0)		&&
 						isCurrentCutsceneSectionId_1(0x3)		&&
@@ -1557,7 +1540,7 @@ _achievementTriggers = {
 						isCurrentCutsceneSectionDataId(0x5b190))]
 				) &&
 				once(	// Identifies Cutscene => Looking at painting of Dana
-					isCutsceneActive() && isCurrentChapter("Chapter7") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
 					isCurrentCutsceneMasterId(0x12040)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1577,7 +1560,7 @@ _achievementTriggers = {
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0x8b640)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1585,7 +1568,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x42750)
 				) &&
 				once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0x10ef00)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0x8)		&&
@@ -1593,7 +1576,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0xf4d0)
 				) &&
 				once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0xe4800)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0xa)		&&
@@ -1605,7 +1588,7 @@ _achievementTriggers = {
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0xd5440)		&&
 					isCurrentCutsceneSectionId_1(0x7)		&&
 					isCurrentCutsceneSectionId_2(0x6)		&&
@@ -1613,7 +1596,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x2b420)
 				) &&
 				once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0x716c0)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0xa)		&&
@@ -1621,7 +1604,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x19ef0)
 				) &&
 				once(	// Identifies Cutscene => Eike consoling Margarette
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0xf3c80)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1632,7 +1615,7 @@ _achievementTriggers = {
 				isFullCutsceneSequenceEnding()
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0xfbd00)		&&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1640,7 +1623,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x26f30)
 				) &&
 				once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0xc4e40)		&& isPriorCutsceneMasterId(0xfbd00) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1651,7 +1634,7 @@ _achievementTriggers = {
 				isFullCutsceneSequenceEnding()
 			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
-					isCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
 					isCurrentCutsceneMasterId(0x1cbc0)		&&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1662,7 +1645,7 @@ _achievementTriggers = {
 				isFullCutsceneSequenceEnding()
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
-					isCutsceneActive()  && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive()  && isCurrentChapter("Chapter8_NoAncestress") &&
 					isCurrentCutsceneMasterId(0x77a40)		&& isPriorCutsceneMasterId(0x29700) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1670,7 +1653,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x45a10)
 				) &&
 				once(	// Identifies Cutscene => Eike confronts Hugo at square
-					isCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
 					isCurrentCutsceneMasterId(0x4b140)		&& isPriorCutsceneMasterId(0x77a40) &&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1678,7 +1661,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x189f0)
 				) &&
 				once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
-					isCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
 					isCurrentCutsceneMasterId(0xc9440)		&& isPriorCutsceneMasterId(0xa00c0) &&
 					isCurrentCutsceneSectionId_1(0x3)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1689,7 +1672,7 @@ _achievementTriggers = {
 				isFullCutsceneSequenceEnding()				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Brought Margarette to present
-					isCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
 					isCurrentCutsceneMasterId(0x101bc0)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1697,7 +1680,7 @@ _achievementTriggers = {
 					isCurrentCutsceneSectionDataId(0x725d0)
 				) &&
 				once(	// Identifies Cutscene => Margarette confronts Hugo in square
-					isCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
 					isCurrentCutsceneMasterId(0x137500)		&& isPriorCutsceneMasterId(0x101bc0) &&
 					isCurrentCutsceneSectionId_1(0xc)		&&
 					isCurrentCutsceneSectionId_2(0xd)		&&
@@ -1758,7 +1741,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("A")
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0xdb780)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1766,7 +1749,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x32ce0)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x77f80)		&& isPriorCutsceneMasterId(0xdb780) &&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1787,7 +1770,7 @@ _achievementTriggers = {
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus
-		// 	isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+		// 	isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 		// 	isCurrentCutsceneMasterId(0x3dd40)		&&
 		// 	isCurrentCutsceneSectionId_1(0x3)		&&
 		// 	isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1795,7 +1778,7 @@ _achievementTriggers = {
 		// 	isCurrentCutsceneSectionDataId(0x1ed10)
 		// ) &&
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus part2
-		// 	isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+		// 	isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 		// 	isCurrentCutsceneMasterId(0x81b00)		&& isPriorCutsceneMasterId(0x3dd40) &&
 		// 	isCurrentCutsceneSectionId_1(0x1)		&&
 		// 	isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1805,7 +1788,7 @@ _achievementTriggers = {
 
 		// Below 2 cutscenes run up to ending credits
 		once(	// Identifies Cutscene => Eike returns from sending Margarette back to past
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x613c0)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1813,7 +1796,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x1d5d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x56240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1832,7 +1815,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("B")
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x91240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1840,7 +1823,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x5d2c0)		&& isPriorCutsceneMasterId(0x91240) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1848,7 +1831,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x56240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1867,7 +1850,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("C")
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x8cf00)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1875,7 +1858,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0x7b140)		&& isPriorCutsceneMasterId(0x8cf00) &&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1883,7 +1866,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
-			isCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
 			isCurrentCutsceneMasterId(0xcb700)		&& isPriorCutsceneMasterId(0x7b140) &&
 			isCurrentCutsceneSectionId_1(0x5)		&&
 			isCurrentCutsceneSectionId_2(0x6)		&&
@@ -1902,7 +1885,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("D")
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
-			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
 			isCurrentCutsceneMasterId(0x709c0)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1910,7 +1893,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x11790)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
 			isCurrentCutsceneMasterId(0xc5b40)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1929,7 +1912,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("E")
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
-			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
 			isCurrentCutsceneMasterId(0x88dc0)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1937,7 +1920,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x5ca00)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and Dr. Wagner is killed
-			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
 			isCurrentCutsceneMasterId(0xbef80)		&&
 			isCurrentCutsceneSectionId_1(0x9)		&&
 			isCurrentCutsceneSectionId_2(0x8)		&&
@@ -1945,7 +1928,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x155e0)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
-			isCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
 			isCurrentCutsceneMasterId(0xcdcc0)		&& isPriorCutsceneMasterId(0xbef80) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1964,7 +1947,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("EX")
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
-			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
+			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
 			isExChapterUnlocked() && isPrologueInExMode() &&
 			isCurrentChapter("Prologue") 			&&
 			isCurrentCutsceneMasterId(0xa7a80)		&& 
@@ -1994,7 +1977,7 @@ _achievementTriggers = {
 			isViewingEndingFileInExtraMenu("EX")
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
-			isCutsceneActive() && isItemInInventory("PhilosopherStone") &&
+			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
 			isExChapterUnlocked() && isPrologueInExMode() &&
 			isCurrentChapter("Prologue") 			&&
 			isCurrentCutsceneMasterId(0x58c00)		&& 
@@ -2018,68 +2001,63 @@ _achievementTriggers = {
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
 			isEndingUnlocked("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
-		function measuredComparison() { return 	
-			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
-		function measuredIfComparison() { return
-			// Only measure when in correct scene AND when in-game
-			(
-				!isWearingPerformerOutfit()	&&
-				isCurrentMapScene("PresentDayCity") 	|| 
-				isCurrentMapScene("PresentNightCityPM") ||
-				isCurrentMapScene("PresentNightCityAM")	||
-				isCurrentMapScene("NightBefore") 
-			) && 
-			isInGame()}
+		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredIfComparison() => isInGame()
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
+			) && 
+			unless(
+				isWearingPerformerOutfit()	||
+				(
+					!isCurrentMapScene("PresentDayCity") 		&& 
+					!isCurrentMapScene("PresentNightCityPM") 	&&
+					!isCurrentMapScene("PresentNightCityAM")	&&
+					!isCurrentMapScene("NightBefore")
+				) 
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
-		function measuredComparison() { return 	
-			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
-		function measuredIfComparison() { return
-			// Only measure when in correct scene AND when in-game
-			(isCurrentMapScene("80sColdCity") || isCurrentMapScene("70sNightCity")) && 	
-			isInGame()}
+		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredIfComparison() => isInGame()
 		return 
 			never( 	// Reset when chapter changes or when using digipad
 				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
 			) &&
+			unless(
+				!isCurrentMapScene("80sColdCity") && !isCurrentMapScene("70sNightCity")
+			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
-		function measuredComparison() { return 	
-			tally(6, generateComparison_PickUpEnergyOrbTextOnScreen())}
-		function measuredIfComparison() { return
-			// Only measure when in correct scene AND when in-game
-			(
-				isCurrentMapScene("MedievalCity") 				|| 
-				isCurrentMapScene("MedievalNightCity")			||
-				isCurrentMapScene("ExplodedAlchemistBasement")	||
-				isCurrentMapScene("MedievalChurch")
-			) && isInGame()}
+		function measuredComparison() => generateTally_PickUpEnergyOrbs(6)
+		function measuredIfComparison() => isInGame()
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
 			) &&
+			unless(
+				!isCurrentMapScene("MedievalCity") 				&& 
+				!isCurrentMapScene("MedievalNightCity")			&&
+				!isCurrentMapScene("ExplodedAlchemistBasement")	&&
+				!isCurrentMapScene("MedievalChurch")
+			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
-		function measuredComparison() { return 	
-			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
-		function measuredIfComparison() { return
-			// Only measure when in correct scene AND when in-game
-			(isCurrentMapScene("1900sCity") || isCurrentMapScene("1900sBrumMansion")) && 	
-			isInGame()}
+		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredIfComparison() => isInGame()
 		return 
 			never(	// Reset when chapter changes or when using digipad
 				isEnergyUnitsDecreasing() ||
 				isChapterChanging()	||
-				isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity")	// --> Fix for bug, where player could pick up the energy orb in the 
-		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
-			measured(measuredComparison(), measuredIfComparison())},					// 		Now it will reset this count, when going back to get frying pan as performer
+				isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity")	// TODO check if I accidentely overwritten this fix --> Fix for bug, where player could pick up the energy orb in the 
+			) &&																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
+			unless( 																// 		Now it will reset this count, when going back to get frying pan as performer
+				!isCurrentMapScene("1900sCity") && !isCurrentMapScene("1900sBrumMansion")
+			) &&
+			measured(measuredComparison(), measuredIfComparison())},					
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!isInGame() ||
@@ -2092,7 +2070,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter8_NoAncestress")
 		) &&
 		once(	// Identifies Cutscene => Showing Franssen in 1902 the pocket watch
-			isCutsceneActive() && isCurrentSelectedInventoryItem("EggPocketWatch") &&
+			isFullCutsceneActive() && isCurrentSelectedInventoryItem("EggPocketWatch") &&
 			isCurrentCutsceneMasterId(0x114c0)		&& 
 			isCurrentCutsceneSectionId_1(0xffff)	&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2110,14 +2088,14 @@ _achievementTriggers = {
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
-				isCutsceneActive() && isCurrentSelectedInventoryItem("FryingPan") &&
+				isFullCutsceneActive() && isCurrentSelectedInventoryItem("FryingPan") &&
 				isCurrentCutsceneMasterId(0xb0100)		&&
 				isCurrentCutsceneSectionId_1(0xd)		&&
 				isCurrentCutsceneSectionId_2(0xe)		&&
 				isCurrentCutsceneMasterDataId(0x1efb0)	&&
 				isCurrentCutsceneSectionDataId(0xae70)),
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using photo shop sign
-				isCutsceneActive() && isCurrentSelectedInventoryItem("Sign") &&
+				isFullCutsceneActive() && isCurrentSelectedInventoryItem("Sign") &&
 				isCurrentCutsceneMasterId(0xb0100)		&& 
 				isCurrentCutsceneSectionId_1(0xd)		&&
 				isCurrentCutsceneSectionId_2(0xe)		&&
@@ -2132,7 +2110,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x43040)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2141,14 +2119,14 @@ _achievementTriggers = {
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Ancestor path => Old Miriam walks into conversation with Eckart and Eike
-				isCutsceneActive() && isMargaretteAncestor() && 
+				isFullCutsceneActive() && isMargaretteAncestor() && 
 				isCurrentCutsceneMasterId(0xc7940)		&&
 				isCurrentCutsceneSectionId_1(0x1)		&&
 				isCurrentCutsceneSectionId_2(0x0)		&&
 				isCurrentCutsceneMasterDataId(0x95c0)	&&
 				isCurrentCutsceneSectionDataId(0x7410)),
 			once(	// Identifies Cutscene => No Ancestor path => Old Miriam walks into conversation with Eckart and Eike
-				isCutsceneActive() && isMargaretteNoAncestor() && 
+				isFullCutsceneActive() && isMargaretteNoAncestor() && 
 				isCurrentCutsceneMasterId(0xb2540)		&&
 				isCurrentCutsceneSectionId_1(0x1)		&&
 				isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2163,7 +2141,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x19380)		&& 
 			isCurrentCutsceneSectionId_1(0x7)		&&
 			isCurrentCutsceneSectionId_2(0x8)		&&
@@ -2177,7 +2155,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
-			isCutsceneActive() &&
+			isFullCutsceneActive() &&
 			isExChapterUnlocked() && isPrologueInExMode() &&
 			isCurrentChapter("Prologue") 			&&
 			isCurrentCutsceneMasterId(0x30780)		&& 
@@ -2198,7 +2176,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Exchanging egg for frying pan
-			isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
+			isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 			isCurrentCutsceneMasterId(0x2f9c0)		&& 
 			isCurrentCutsceneSectionId_1(0x7)		&&
 			isCurrentCutsceneSectionId_2(0x6)		&&
@@ -2216,7 +2194,7 @@ _achievementTriggers = {
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
-				isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
+				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 				isCurrentChapter("Chapter3") 			&&
 				isCurrentCutsceneMasterId(0x32200)		&& 
 				isCurrentCutsceneSectionId_1(0x7)		&&
@@ -2224,7 +2202,7 @@ _achievementTriggers = {
 				isCurrentCutsceneMasterDataId(0x5400)	&&
 				isCurrentCutsceneSectionDataId(0x249e0)),
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 4
-				isCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
+				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
 				isCurrentChapter("Chapter4") 			&&
 				isCurrentCutsceneMasterId(0x2f9c0)		&& 
 				isCurrentCutsceneSectionId_1(0x7)		&&
@@ -2263,7 +2241,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
-			isCutsceneActive() && isCurrentSelectedInventoryItem("OrnamentalEgg") &&
+			isFullCutsceneActive() && isCurrentSelectedInventoryItem("OrnamentalEgg") &&
 			isCurrentCutsceneMasterId(0xde00)		&& 
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2280,7 +2258,7 @@ _achievementTriggers = {
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
-				isCutsceneActive() && isCurrentMapScene("1900sCity") && 
+				isFullCutsceneActive() && isCurrentMapScene("1900sCity") && 
 				isCurrentCutsceneMasterId(0x8b440) 		&&
 				isCurrentCutsceneSectionId_1(0x5)		&&
 				isCurrentCutsceneSectionId_2(0x6)		&&
@@ -2289,7 +2267,7 @@ _achievementTriggers = {
 				isCurrentMinorCutsceneId(0xdefe0, 0x8)			&&
 				isCurrentMinorCutsceneId(0x2c3d0, 0x2c)),
 			once(	// Identifies Cutscene => Drank coffee before eqcuiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
-				isCutsceneActive() && isCurrentMapScene("1900sCity") && 
+				isFullCutsceneActive() && isCurrentMapScene("1900sCity") && 
 				isCurrentCutsceneMasterId(0xac4c0) 		&&
 				isCurrentCutsceneSectionId_1(0x1)		&&
 				isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2306,7 +2284,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter7")
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman
-			isCutsceneActive() && isItemInInventory("EggPocketWatch") &&
+			isFullCutsceneActive() && isItemInInventory("EggPocketWatch") &&
 			isCurrentCutsceneMasterId(0x8ce80) 		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2323,7 +2301,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
-			isCutsceneActive() && isItemInInventory("EggPocketWatch") &&
+			isFullCutsceneActive() && isItemInInventory("EggPocketWatch") &&
 			isCurrentCutsceneMasterId(0x8dcc0) 		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2341,7 +2319,7 @@ _achievementTriggers = {
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
 			isTreeReplacedByStatue() && isCrowdScaredWithLighter() &&			
-			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isFullCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
 			isCurrentCutsceneMasterId(0x3b240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2357,7 +2335,7 @@ _achievementTriggers = {
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
 			isTreeReplacedByStatue() && isCrowdScaredWithCellphone() &&			
-			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isFullCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
 			isCurrentCutsceneMasterId(0x3b240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2373,7 +2351,7 @@ _achievementTriggers = {
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
 			isTreeReplacedByFlowers() &&
-			isCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
+			isFullCutsceneActive() && isCurrentSelectedInventoryItem("D-pad") &&
 			isCurrentCutsceneMasterId(0x3b240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2388,7 +2366,7 @@ _achievementTriggers = {
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0xd0200)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2815,7 +2793,7 @@ _achievementTriggers = {
 			!isCurrentSelectedInventoryItem("Jugglery")	
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
-			isCutsceneActive() && isCurrentChapter("Chapter4") &&
+			isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 			isCurrentCutsceneMasterId(0x1a300)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2830,7 +2808,7 @@ _achievementTriggers = {
 			!isCurrentSelectedInventoryItem("Cake")	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x10b000)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2872,7 +2850,7 @@ _achievementTriggers = {
 					isCurrentMapScene("PresentTownHall") &&
 					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
-					isCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 					isCurrentSelectedInventoryItem("Jugglery") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -2892,7 +2870,7 @@ _achievementTriggers = {
 		function measuredComparison() { return
 			tally(7, [	
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
-					isCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
+					isFullCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
 					isCurrentCutsceneMasterId(0x9000)		&&
 					isCurrentCutsceneSectionId_1(0xffff)	&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2901,7 +2879,7 @@ _achievementTriggers = {
 					isCurrentMinorCutsceneId(0x5f80, 0x8)	&&
 					isCurrentMinorCutsceneId(0x9000, 0x28)),
 				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4, instead of below cutscene
-					isCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
+					isFullCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
 					isCurrentCutsceneMasterId(0xc6e00)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2910,7 +2888,7 @@ _achievementTriggers = {
 					isCurrentMinorCutsceneId(0x2451a0, 0x8)	&&
 					isCurrentMinorCutsceneId(0x55b0, 0x28)),
 				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4, instead of above cutscene
-					isCutsceneActive() && isCurrentSelectedInventoryItem("Lighter") &&
+					isFullCutsceneActive() && isCurrentSelectedInventoryItem("Lighter") &&
 					isCurrentCutsceneMasterId(0xa84c0)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2944,7 +2922,7 @@ _achievementTriggers = {
 			isFirePutOutByEike()
 		) &&
 		once(	// Identifies Cutscene => Barman gives us free meal
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x62840)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2954,7 +2932,7 @@ _achievementTriggers = {
 			isCurrentMinorCutsceneId(0x6cc0, 0x28)
 		) &&
 		once(	// Identifies Cutscene => Reading book whilst barman get Eike his meal + poison
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0xf9cc0)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2971,7 +2949,7 @@ _achievementTriggers = {
 			!isCurrentSelectedInventoryItem("Cake")	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x1fd80)		&&
 			isCurrentCutsceneSectionId_1(0xffff)	&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3071,7 +3049,7 @@ _achievementTriggers = {
 			isItemInInventory("BLackWhitePhotoWithPerformer")			 
 		) &&
 		once(	// Identifies Cutscene => Using frying pan for defence
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x4f200)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3086,7 +3064,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter7")
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
-			isCutsceneActive() && isCoffeePayed() &&
+			isFullCutsceneActive() && isCoffeePayed() &&
 			isCurrentCutsceneMasterId(0xa0f40)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3277,7 +3255,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
-			isCutsceneActive() && isCurrentMapScene("80sColdCity") &&
+			isFullCutsceneActive() && isCurrentMapScene("80sColdCity") &&
 			isCurrentCutsceneMasterId(0x756c0)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3294,7 +3272,7 @@ _achievementTriggers = {
 			isEventViewerActive()			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
-			isCutsceneActive() && isCurrentMapScene("80sColdCity") &&
+			isFullCutsceneActive() && isCurrentMapScene("80sColdCity") &&
 			isCurrentCutsceneMasterId(0xebac0)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3309,7 +3287,7 @@ _achievementTriggers = {
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
-			isCutsceneActive() && 
+			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x3ed00)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3325,7 +3303,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
-			isCutsceneActive() && isCurrentMapScene("BrumEstateIndoors1900") &&
+			isFullCutsceneActive() && isCurrentMapScene("BrumEstateIndoors1900") &&
 			isItemInInventory("Kitten") &&
 			isCurrentCutsceneMasterId(0x25200)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -3342,7 +3320,7 @@ _achievementTriggers = {
 			isEventViewerActive()  
 		) &&
 		once(	// Identifies Cutscene => Eike wakes himself up
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x9c00)		&&
 			isCurrentCutsceneMasterDataId(0x9bf0)	&&
 			isCurrentCutsceneSectionDataId(0x9bf0)	&&
@@ -3350,7 +3328,7 @@ _achievementTriggers = {
 			isCurrentMinorCutsceneId(0xea70, 0x8) 	
 		) && 
 		once(	// Identifies Cutscene => Eike wakes himself up
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x237c0)		&& isPriorCutsceneMasterId(0x9c00) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3377,7 +3355,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x15640) 		&&
 			isCurrentCutsceneSectionId_1(0x5)		&&
 			isCurrentCutsceneSectionId_2(0x6)		&&
@@ -3385,7 +3363,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x2220)
 		) &&
 		once(	// Identifies Cutscene => Waking up in Limbo after death
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x237c0) 		&& isPriorCutsceneMasterId(0x15640) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3400,7 +3378,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter6")
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
-				isCutsceneActive() && 
+				isFullCutsceneActive() && 
 				isMovieTimeTravelPicked()		&&
 				isMovieWorldConquestPicked() 	&&				
 				isCurrentCutsceneMasterId(0x77980)		&&
@@ -3417,7 +3395,7 @@ _achievementTriggers = {
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
-			isCutsceneActive()	&&	
+			isFullCutsceneActive()	&&	
 			isCurrentCutsceneMasterId(0x6e480) 		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -3425,7 +3403,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x143f0)	
 		) && 
 		once(	// Identifies Cutscene => Getting stabbed from behind
-			isCutsceneActive()	&&	
+			isFullCutsceneActive()	&&	
 			isCurrentCutsceneMasterId(0x1b740) 		&& isPriorCutsceneMasterId(0x6e480) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -3440,7 +3418,7 @@ _achievementTriggers = {
 			!isCurrentChapter("Chapter3")
 		) &&
 		once(
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0xb140) && isPriorCutsceneMasterId(0x5aa80) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -3448,7 +3426,7 @@ _achievementTriggers = {
 			isCurrentCutsceneSectionDataId(0x38b0)	
 		) && 
 		once(
-			isCutsceneActive()	&&
+			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x1a440) && isPriorCutsceneMasterId(0xb140) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
