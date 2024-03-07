@@ -42,7 +42,6 @@ function addToDictionary(dict, key, value) {
 
 // PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
 // TODO remove unusd code notes
-// TODO check where to implement pause if 
 
 
 // ***********************
@@ -564,15 +563,15 @@ function isPriorCharacterPrinted(objDict_characterPrintData) {
 function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra menu
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff	// 		- Extra menu is only visible once at least one is ending is finished
 	return											// 		+0x4 - [32-bit] Extra Menu: Highlighted item
-		dword(let_maskedPointer + 0x4) == 0 &&		// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
-		dword(let_maskedPointer + 0x48) <= 0xb		// 		| - 0x1 => Ending files (replay ending cutscenes)
-}													// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-													// 		| - 0x3 => Sound Mode (Play sound effects & music)
+		dword(let_maskedPointer + 0x4) <= 0x4 &&	// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
+		dword(let_maskedPointer + 0x14) <= 0x5 &&	// 		| - 0x1 => Ending files (replay ending cutscenes)
+		dword(let_maskedPointer + 0x48) <= 0xb		// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+}													// 		| - 0x3 => Sound Mode (Play sound effects & music)
 													// 		| - 0x4 => Exit (back to Title Screen)
 													// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
-													// 		| - 0x0 => ending A			| - 0x4 => ending E	
-													// 		| - 0x1 => ending B			| - 0x3 => ending D
-													// 		| - 0x2 => ending C
+													// 		| - 0x0 => ending A			| - 0x3 => ending D
+													// 		| - 0x1 => ending B			| - 0x4 => ending E	
+													// 		| - 0x2 => ending C			| - 0x5 => ending EX
 													// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
 													// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
 													// 		| - 0x1 => Chapter 1		| - 0xa => Total
@@ -1180,15 +1179,9 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 			isChapterChanging()
 		) && 
 		(
-			(
-				unless(	// Pause if => not in game; still shows popup from measure-if statement
-					!isInGame()
-				) &&
-				measured(comparison_tally, always_true(), "percent")
-			) || (
-				// unless(	// Pause if => not in results menu
-				// 	!isInGame()
-				// ) &&
+			(	// Alt 1 => In game rate measurement
+				measured(comparison_tally, isInGame(), "percent")
+			) || ( // Alt 2 => measurement at results screen
 				measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
 			)
 		)
@@ -1198,15 +1191,12 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 			isChapterChangingTo(string_chapter)
 		) && 
 		(
-			(
-				unless(	// Pause if => not in game	// TODO recheck pause if and measured if => https://docs.retroachievements.org/Measured-Flag/
-					!isInGame()	
+			(	// Alt 1 => In game rate measurement
+				unless(	// Pause if => not in correct chapter, but still show progress on achievement
+					!isCurrentChapter(string_chapter)
 				) &&
-				measured(comparison_tally, isCurrentChapter(string_chapter), "percent")
-			) || (
-				// unless(	// Pause if => not in results menu
-				// 	!isInGame()	
-				// ) &&
+				measured(comparison_tally, isInGame(), "percent")
+			) || ( // Alt 2 => measurement at results screen				
 				measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
 			)
 		)
@@ -2808,16 +2798,16 @@ _achievementTriggers = {
 			) &&
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(isNoCutsceneActive())},
-	"a_BecomeThePerformer": function BecomeThePerformer() {	return	// BUG - not unlocking?
+	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
-			!isInGame()					||
-			isEventViewerActive() 		||
-			isNewCutsceneLoading()		||
-			!isWearingPerformerOutfit()			
+			!isInGame()				||
+			isEventViewerActive() 	||
+			isNewCutsceneLoading()
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
 			isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
 			isCurrentSelectedInventoryItem("Jugglery") &&
+			isWearingPerformerOutfit()				&&
 			isCurrentCutsceneMasterId(0x1a300)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2884,7 +2874,7 @@ _achievementTriggers = {
 			])}
 		return 
 			never(	
-				!isInGame() 				||
+				!isInGame() 					||
 				!isCurrentChapter("Chapter4")	||
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
@@ -2936,8 +2926,17 @@ _achievementTriggers = {
 				!isInGame() 	||
 				!isCurrentChapter("Chapter2")
 			) &&
-			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity") || isCurrentMapScene("CafeSonne") ) &&
-			trigger_when(isNoCutsceneActive())},
+			(
+				(
+					unless(
+						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonne")			
+					) &&
+					measured(measuredComparison(), isInGame() && isCurrentChapter("Chapter2")) &&
+					trigger_when(isNoCutsceneActive())
+				) || (
+					always_false()
+				)
+			)},
 	"a_FreeMeal": function FreeMeal() { return
 		never(
 			!isInGame()						||
@@ -3030,7 +3029,7 @@ _achievementTriggers = {
 				isAtTitleScreen()		||
 				isEventViewerActive()	||
 
-				// Reset if any item is gained or removed
+				// Reset tally count if any item is gained or removed => will recalculate the amount of items in inventory
 				// 	Checks if any item_in_inventory_flags has changed
 				any_of(const_inventoryItems, (item) {
 					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
@@ -3055,9 +3054,9 @@ _achievementTriggers = {
 			])}
 		return 
 			never(
-				!isInGame()
+				!isCurrentMapScene("PresentNightCityPM")
 			) &&
-			measured(measuredComparison(), isCurrentMapScene("PresentNightCityPM")) &&
+			measured(measuredComparison(), isInGame()) &&
 			trigger_when(isNoCutsceneActive())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
