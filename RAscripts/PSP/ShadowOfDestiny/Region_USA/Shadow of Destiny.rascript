@@ -246,7 +246,7 @@ function isFullCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: 
 																									// 		- 0x00 => no cutscene active
 function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
 																									// 		- 0x05 => cutscene active
-function isCutsceneSectionEnding() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26)	&& byte(0xA9ED26) > 0x0	
+function isCutsceneSectionEnding() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26) && byte(0xA9ED26) > 0x0	
 
 function isSmallCutsceneActive() => byte(0xA9ED26) == 0x1
 
@@ -1039,16 +1039,16 @@ _achievements = {
 		"a_MeetOldMiriam": { // WORKING
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		"a_EnergyOrbLocatorPresentDay": { // WIP
+		"a_EnergyOrbLocatorPresentDay": { // WORKING
 			"id": 399816, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // WIP
+		"a_EnergyOrbLocator70s80s": { // WORKING
 			"id": 399817, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // WIP
+		"a_EnergyOrbLocator1900Days": { // WORKING
 			"id": 399818, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // WIP
+		"a_EnergyOrbLocatorMiddleAges": { // WORKING
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		"a_NewCakeInvented": { // WORKING
@@ -2003,11 +2003,7 @@ _achievementTriggers = {
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
 		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
-		return 
-			never(	// Reset when chapter changes or when using digipad
-				isEnergyUnitsDecreasing() ||
-				isChapterChanging()
-			) && 
+		return // Core group		
 			unless(
 				isWearingPerformerOutfit()	||
 				(
@@ -2017,47 +2013,75 @@ _achievementTriggers = {
 					!isCurrentMapScene("NightBefore")
 				) 
 			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), measuredIfComparison()) &&
+			(
+				(	// Alt 1: otherwise pause will lock reset
+					never(	// Reset when chapter changes or when using digipad
+						isEnergyUnitsDecreasing() ||
+						isChapterChanging()) 
+				) || ( // Alt 2: always_false to create 1 funcional alt group
+					always_false()
+				)
+			)
+		},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
 		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
-		return 
-			never( 	// Reset when chapter changes or when using digipad
-				isEnergyUnitsDecreasing() ||
-				isChapterChanging()
-			) &&
+		return // Core group
 			unless(
 				!isCurrentMapScene("80sColdCity") && !isCurrentMapScene("70sNightCity")
 			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			measured(measuredComparison(), measuredIfComparison()) &&
+			(
+				(	// Alt 1: otherwise pause will lock reset
+					never( 	// Reset when chapter changes or when using digipad
+						isEnergyUnitsDecreasing() ||
+						isChapterChanging()) 
+				) || ( // Alt 2: always_false to create 1 funcional alt group
+					always_false()
+				)
+			)
+		},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
 		function measuredComparison() => generateTally_PickUpEnergyOrbs(6)
 		function measuredIfComparison() => isInGame()
-		return 
+		return // Core group
 			never(	// Reset when chapter changes or when using digipad
 				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
-			) &&
-			unless(
-				!isCurrentMapScene("MedievalCity") 				&& 
-				!isCurrentMapScene("MedievalNightCity")			&&
-				!isCurrentMapScene("ExplodedAlchemistBasement")	&&
-				!isCurrentMapScene("MedievalChurch")
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			) && (
+				(	// Alt 1: otherwise pause will lock reset
+					unless(
+						!isCurrentMapScene("MedievalCity") 				&& 
+						!isCurrentMapScene("MedievalNightCity")			&&
+						!isCurrentMapScene("ExplodedAlchemistBasement")	&&
+						!isCurrentMapScene("MedievalChurch")
+					) &&
+					measured(measuredComparison(), measuredIfComparison())
+				) || ( // Alt 2: always_false to create 1 funcional alt group
+					always_false()
+				)
+			)
+		},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
 		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
-		return 
+		return // Core group
 			never(	// Reset when chapter changes or when using digipad
-				isEnergyUnitsDecreasing() ||
-				isChapterChanging()	||
-				isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity")	// TODO check if I accidentely overwritten this fix --> Fix for bug, where player could pick up the energy orb in the 
-			) &&																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
-			unless( 																// 		Now it will reset this count, when going back to get frying pan as performer
-				!isCurrentMapScene("1900sCity") && !isCurrentMapScene("1900sBrumMansion")
-			) &&
-			measured(measuredComparison(), measuredIfComparison())},					
+				isEnergyUnitsDecreasing() 	||
+				isChapterChanging()			||
+				(isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity"))	// --> Fix for bug, where player could pick up the energy orb in the 
+			) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
+				(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
+					unless(	
+						!isCurrentMapScene("1900sCity") && !isCurrentMapScene("1900sBrumMansion")
+					) &&
+					measured(measuredComparison(), measuredIfComparison())
+				) || ( // Alt 2: always_false to create 1 funcional alt group
+					always_false()
+				)
+			)
+		},
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!isInGame() ||
@@ -2784,16 +2808,16 @@ _achievementTriggers = {
 			) &&
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(isNoCutsceneActive())},
-	"a_BecomeThePerformer": function BecomeThePerformer() {	return
+	"a_BecomeThePerformer": function BecomeThePerformer() {	return	// BUG - not unlocking?
 		never(
 			!isInGame()					||
 			isEventViewerActive() 		||
-			isNewCutsceneLoading()				||
-			!isWearingPerformerOutfit()			||
-			!isCurrentSelectedInventoryItem("Jugglery")	
+			isNewCutsceneLoading()		||
+			!isWearingPerformerOutfit()			
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
 			isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+			isCurrentSelectedInventoryItem("Jugglery") &&
 			isCurrentCutsceneMasterId(0x1a300)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
