@@ -491,11 +491,76 @@ function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == const_
 function isItemInInventory(string_item) => bit0(const_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
 
 
-// *********************
-// ÷ ON-SCREEN TEXT ÷
-// *********************
-//	- Master ID	=> Identifies a series of subtitles, can stay the same over multiple text changes
-//	- Other IDs => Changes on each text/subtitle change 
+// ***********************
+// ÷ BOTTOM SCREEN TEXT ÷
+// ***********************
+// - Memory higher than this address (visually lower in the memory inspector) correlates to a character print system 
+// => It works via a transparant character set image, that is masked to show only 1 character at a time. 
+// 		Functional with offset and different character sets (ex. latin, chinese)
+function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
+	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
+											//		- This ID does not change on each new text change, but it does change often between text changes
+
+function isAmountOfCharactersOnBottomScreen(int_characterCount) {	// Count starts at 1
+	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
+	return 
+		dword(0xAC31E4 + let_offsetOfLastCharacterPrint) != 0x0 &&			// --> Checks Printer control data for last character != 0
+		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa) != 0x0 &&	// --> Checks Image offset & mask settings for last character != 0
+		dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10) == 0x0		// --> Checks if no character after this last one was printed
+}
+
+function isPrevAmountOfCharactersOnBottomScreen(int_characterCount) {
+	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
+	return 
+		prev(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
+		prev(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0 &&
+		prev(dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10)) == 0x0
+}
+
+function isNoCharactersOnBottomScreen() {
+	return 
+		dword(0xAC31E4 + 0x4) == 0x0 &&
+		dword_be(0xAC31E4 + 0xa) == 0x0 &&	
+		dword(0xAC31E4 + 0x10) == 0x0
+}
+
+// Use below dictionary as an object definition to pass params to function isCharacterPrinted()
+// ----------------------------
+// objDict_characterPrintData = {
+// 	"index": 0000,	// First printed character starts at 0
+// 	"printXaxis": 0x0,
+// 	"imageOffsetXaxis": 0x0,
+// 	"imageOffsetYaxis": 0x0,
+// 	"imageUnmaskWidth": 0x0,
+// 	"printYaxis": 0x0
+// }
+function isCharacterPrinted(objDict_characterPrintData) {	
+	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
+		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
+		return let_dwordBE
+	}
+	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
+	return 
+		byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6) == objDict_characterPrintData["printXaxis"] &&
+		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == let_charPrintDataToDwordBE(objDict_characterPrintData)
+}
+function isPrevCharacterPrinted(objDict_characterPrintData) {	
+	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
+		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
+		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
+		return let_dwordBE
+	}
+	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
+	return 
+		prev(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
+		prev(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)
+}	
+
 const_onScreenTextID = {
 	0: 0xAC31E4,	// $AC31E4: [32-bit] On-screen text ID_master
 	1: 0xAC31E8,	// $AC31E8: [32-bit] On-screen text ID
@@ -581,10 +646,19 @@ function isViewingEndingFileInExtraMenu(string_endingChar) {				// $AC3178: [25-
 
 // *****************
 // ÷ OTHER LOGIC ÷
-// *****************
-function getEnergyUnitsZPad() => byte(0xA9DAA8)	// $A9DAA8: Number of energy units in possession 
-												//		- Used for the time travel machine (Z-Pad)
-												//		- Min => 0x0 		Max => 0x0a
+// *****************												
+function isEnergyUnitsIncreasing() => 		// $A9DAA8: Number of energy units in possession 
+	byte(0xA9DAA8) > prev(byte(0xA9DAA8))	//		- Used for the time travel machine (Z-Pad)
+											//		- Min => 0x0 		Max => 0x0a
+
+function isEnergyUnitsIncreased() => 
+	byte(0xA9DAA8) > prior(byte(0xA9DAA8))
+
+function isEnergyUnitsDecreasing() => 
+	byte(0xA9DAA8) < prev(byte(0xA9DAA8))
+
+function isEnergyUnitsChanging() => 
+	byte(0xA9DAA8) != prev(byte(0xA9DAA8))
 
 function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-game
 											// 		= 0 => at title screen
@@ -883,7 +957,7 @@ _achievements = {
 			"id": 306976, "points": 4, "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
 	},
-	"c_Endings": { // Category - Achieving different endings // TODO - Implement 0x1879E20 credits timer in endings => so cheevo pops when ending art shows up
+	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
@@ -908,7 +982,7 @@ _achievements = {
 		"a_EndingEXCureHelena": { // WORKING
 			"id": 405114, "points": 3, "hasTips": false,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},
-		},
+	},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": { // WORKING
 			"id": 310426, "points": 4, "hasTips": true,
@@ -985,16 +1059,16 @@ _achievements = {
 		"a_MeetOldMiriam": { // WORKING
 			"id": 315570, "points": 10, "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		"a_EnergyOrbLocatorPresentDay": { // WORKING
+		"a_EnergyOrbLocatorPresentDay": { // WIP
 			"id": 399816, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // WORKING
+		"a_EnergyOrbLocator70s80s": { // WIP
 			"id": 399817, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // WORKING
+		"a_EnergyOrbLocator1900Days": { // WIP
 			"id": 399818, "points": 5, "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // WORKING
+		"a_EnergyOrbLocatorMiddleAges": { // WIP
 			"id": 399819, "points": 5, "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
 		"a_NewCakeInvented": { // WORKING
@@ -1145,9 +1219,9 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 		) && 
 		(
 			(
-				unless(	// Pause if => not in game
-					!isInGame()						
-				) &&			
+				unless(	// Pause if => not in game	// TODO recheck pause if and measured if => https://docs.retroachievements.org/Measured-Flag/
+					!isInGame()	
+				) &&
 				measured(comparison_tally, isCurrentChapter(string_chapter), "percent")
 			) || (
 				// unless(	// Pause if => not in results menu
@@ -1165,6 +1239,46 @@ function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){
 	} else {
 		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
 	}
+}
+
+function generateComparison_PickUpEnergyOrbTextOnScreen() {
+	let_charactersToCheck = {	
+		"G": { // Got
+			"index": 0,	
+			"printXaxis": 0x0,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x0,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x0},
+		"E": { // Energy
+			"index": 3,	
+			"printXaxis": 0x1f,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x38,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x0},
+		"Y": { // energY
+			"index": 8,	
+			"printXaxis": 0x4b,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x54,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x1},		
+		"I": { // unIt
+			"index": 11,	
+			"printXaxis": 0x6c,
+			"imageOffsetXaxis": 0x0,
+			"imageOffsetYaxis": 0x46,
+			"imageUnmaskWidth": 0x4,
+			"printYaxis": 0x0},
+	}
+	return
+		isNoCharactersOnBottomScreen() &&
+		isPrevAmountOfCharactersOnBottomScreen(14) &&		
+		isPrevCharacterPrinted(let_charactersToCheck["G"]) &&
+		isPrevCharacterPrinted(let_charactersToCheck["E"]) &&
+		isPrevCharacterPrinted(let_charactersToCheck["Y"]) &&
+		isPrevCharacterPrinted(let_charactersToCheck["I"])
 }
 
 // **************************
@@ -1904,56 +2018,40 @@ _achievementTriggers = {
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
 			isEndingUnlocked("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
-		function measuredComparison() { return 
-			tally(5, 
-				getEnergyUnitsZPad() > prev(getEnergyUnitsZPad()) &&
-				prior(onScreenTextID(1)) == 0x48ffc2	&&
-				prior(onScreenTextID(2)) == 0x4b0000	&&
-				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive()
-			)}
+		function measuredComparison() { return 	
+			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
 			(
 				!isWearingPerformerOutfit()	&&
-				isCurrentMapScene("PresentDayCity") 		|| 
+				isCurrentMapScene("PresentDayCity") 	|| 
 				isCurrentMapScene("PresentNightCityPM") ||
+				isCurrentMapScene("PresentNightCityAM")	||
 				isCurrentMapScene("NightBefore") 
 			) && 
 			isInGame()}
 		return 
 			never(	// Reset when chapter changes or when using digipad
-				getEnergyUnitsZPad() < prev(getEnergyUnitsZPad()) ||
+				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
-		function measuredComparison() { return 
-			tally(5, 				
-				getEnergyUnitsZPad() > prev(getEnergyUnitsZPad()) &&
-				prior(onScreenTextID(1)) == 0x48ffc2	&&
-				prior(onScreenTextID(2)) == 0x4b0000	&&
-				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive())}
+		function measuredComparison() { return 	
+			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
-			(isCurrentMapScene("80sColdCity") || isCurrentMapScene("70sNightCity")) 	&& 	
+			(isCurrentMapScene("80sColdCity") || isCurrentMapScene("70sNightCity")) && 	
 			isInGame()}
 		return 
 			never( 	// Reset when chapter changes or when using digipad
-				getEnergyUnitsZPad() < prev(getEnergyUnitsZPad()) ||
+				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
-		function measuredComparison() { return 
-			tally(6, 
-				getEnergyUnitsZPad() > prev(getEnergyUnitsZPad()) &&
-				prior(onScreenTextID(1)) == 0x48ffc2	&&
-				prior(onScreenTextID(2)) == 0x4b0000	&&
-				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive()
-			)}
+		function measuredComparison() { return 	
+			tally(6, generateComparison_PickUpEnergyOrbTextOnScreen())}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
 			(
@@ -1964,26 +2062,20 @@ _achievementTriggers = {
 			) && isInGame()}
 		return 
 			never(	// Reset when chapter changes or when using digipad
-				getEnergyUnitsZPad() < prev(getEnergyUnitsZPad()) ||
+				isEnergyUnitsDecreasing() ||
 				isChapterChanging()
 			) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
-		function measuredComparison() { return 
-			tally(5, 
-				getEnergyUnitsZPad() > prev(getEnergyUnitsZPad()) &&
-				prior(onScreenTextID(1)) == 0x48ffc2	&&
-				prior(onScreenTextID(2)) == 0x4b0000	&&
-				prior(onScreenTextID(3)) == 0x480032	&&
-				!isCutsceneActive()
-			)}
+		function measuredComparison() { return 	
+			tally(5, generateComparison_PickUpEnergyOrbTextOnScreen())}
 		function measuredIfComparison() { return
 			// Only measure when in correct scene AND when in-game
 			(isCurrentMapScene("1900sCity") || isCurrentMapScene("1900sBrumMansion")) && 	
 			isInGame()}
 		return 
 			never(	// Reset when chapter changes or when using digipad
-				getEnergyUnitsZPad() < prev(getEnergyUnitsZPad()) ||
+				isEnergyUnitsDecreasing() ||
 				isChapterChanging()	||
 				isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity")	// --> Fix for bug, where player could pick up the energy orb in the 
 		) &&																			// 		Brum Estate twice (once before being performer to get frying pan and once after)
@@ -3366,7 +3458,6 @@ _achievementTriggers = {
 		isCutsceneSectionEnding()},
 	// "a_Template": function Template() {},
 }
-
 
 // **************************
 // ÷ ACHIEVEMENT TEXT ÷
