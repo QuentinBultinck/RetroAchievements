@@ -5,26 +5,34 @@
 // #ID = 3945
 // md5: 887bb53eb92a56235aa40a80ce5c8eeb - USA
 
-// Info regarding usage of this RAScript
+//#####################################################################################################\\
+//  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
+//#####################################################################################################\\
+
+// Info regarding usage/reading of this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			Set indent size => 4
-//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text', like Go or C#
+//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text' => Go, C#, Rust, CUDA C++, C++ 
 
 //	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
+
+// General info regarding PSP structures
+// ---------------------------------------------
+// 	- PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
  
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-function isDebugModeActive() => true				// if active => extra information may be displayed on achievement titles & descriptions	// TODO set debug mode off
+function isDebugModeActive() => true			// if active => extra information may be displayed on achievement titles & descriptions	// TODO set debug mode off
 
-achievementLanguage = "en"							// ISO 639-1 language codes 
+achievementLanguage = "en"						// ISO 639-1 language codes 
 
-achievementGuideLink = "bit.ly/ShadowOfDestiny" 	// https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
+achievementGuideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
 function addToDictionary(dict, key, value) {
 	dict[key] = value}
@@ -40,28 +48,13 @@ function addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
-// PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
-// TODO remove unusd code notes
-
-
-// ***********************
-// ÷ TIMERS/COUNTERS ÷
-// ***********************
-//	- Resets at certain times or between cutscene transitions
-//	- Different timers reset at different moments
-function twoFrameTimer() 				=> dword(0xA82880) 								// $A82880: [32-bit] Two frame timer
-function hasTwoFrameTimerReset() 		=> twoFrameTimer() < prev(twoFrameTimer()) 		//		- Timer increments by 0x400 each 2 frames
-function hasTwoFrameTimerIncremented() 	=> twoFrameTimer() > prev(twoFrameTimer())		// 		- Reset less than other timer
-
-function oneFrameTimer() 				=> dword(0xB88AB0)								// $B88AB0: [32-bit] One frame timer
-function hasOneFrameTimerReset() 		=> oneFrameTimer() < prev(oneFrameTimer()) 		//		- Timer increments by 1 each frame
-function hasOneFrameTimerIncremented() 	=> oneFrameTimer() > prev(oneFrameTimer())		// 		- Resets at certain times or between cutscene transitions
-
-
-// *******************************************
+// **************************************
 // ÷ INTERACTION IDs WITH NPCs & ITEMS ÷
-// *******************************************
+// **************************************
 const_NPCs = {
+	// "xxxtemplatexxxx": { 
+	// 	"ID": 0x00000, "Appearance": {
+	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
 	"BlondeYoungBoy_Present": { 
 		"ID": 0x187, "Appearance": {
 			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EEF8, "MaxTalkCount": 2}}},
@@ -136,12 +129,7 @@ const_NPCs = {
 			"Chap2_TownSquare": {"MemAddrTalkCount": 0xA9EE70, "MaxTalkCount": 1}}},
 	"AspiringApprentice_MiddleAges": {
 		"ID": 0x5d, "Appearance": {
-			"Chap2_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}},
-	// "xxxtemplatexxxx": { 
-	// 	"ID": 0x00000, "Appearance": {
-	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
-}
-
+			"Chap2_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}}}
 const_interactables = {
 	"Antique_FranssenShopSign": 0x8e,
 	"Antique_Rope": 0x98,
@@ -155,13 +143,12 @@ const_interactables = {
 	"Painting_TowerView": 0x163,
 	"Painting_LandscapeTown": 0x169,
 	"Painting_Alchemist": 0x167,
-	"Painting_Eiked_SquireCrest": 0x000000,
+	"Painting_Eiked_SquireCrest": 0x000000,	// TODO do we need these IDs?
 	"Painting_Eiked_TownSquare": 0x000000,
 	"Painting_Eiked_Performer": 0x000000,
 	"Painting_Eiked_AlchemyLab": 0x000000,
 	"Painting_Eiked_CollapsedHouse": 0x000000,
-	"Painting_Eiked_TowerView": 0x000000
-}
+	"Painting_Eiked_TowerView": 0x000000}
 
 function getMaxTalkCountFor(string_NPC, string_appearance) => const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
 
@@ -185,15 +172,18 @@ function isNPCtalkCountAtMax(string_NPC, string_appearance) {
 	return 
 		let_talkCount == const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]}
 
-function isTalkingTo_shortHand(string_NPC) => dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
-																							// - Resets to 0x0 when interaction is done
+function isTalkingTo_shortHand(string_NPC) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
+	dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// - Resets to 0x0 when interaction is done
 
-function isTalkingTo(string_NPC) {														// $A9EFDC: [25-bit] Pointer - Interactions
-	// Underlying line lasks [32-bit] value to [25-bit]	as PSP uses 25-bit pointers		// 		+0x0 - [32-bit] NPC ID		
-	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff										// 		| - Unique per interactable NPC or environment item
-	return const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer) 					// 		| - This value is copied to 0xa9eff4 (refer to notes)
-}
-function isInteractingWith_shortHand(string_interactable) => dword(0xA9EFF4) == const_interactables[string_NPC]
+function isTalkingTo(string_NPC) {						// $A9EFDC: [25-bit] Pointer - Interactions
+	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - [32-bit] NPC ID	
+	//		PSP uses 25-bit pointers					// 		| - Unique per interactable NPC or environment item
+	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff		// 		| - This value is copied to 0xa9eff4 (refer to notes)
+	return 
+		const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer)}
+
+function isInteractingWith_shortHand(string_interactable) => 
+	dword(0xA9EFF4) == const_interactables[string_NPC]
 
 function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
@@ -207,7 +197,7 @@ function isInteractionId(int_Id) {
 	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit] Pointer - Interactions
 	return dword(let_maskedPointer) == int_Id}		// 		- Pointer resets to 0x0 when interaction is done
 													// 		+0x0 - [32-bit] Interaction ID
-
+// -------------------------------------
 function isLostYoungCoupleProgressChap2(int_flagValue) => 	//	$A9EF89: [8-bit Current Playthrough Flag]  Progress of Young Couple sidequest: Chapter 2
 	byte(0xA9EF89) == int_flagValue							// 		0x1 => has talked with 0xa9ef69 AND 0xa9ef7c
 															// 		0x2 => has talked with 0xa9ef6a AND 0xa9ef7d
@@ -218,74 +208,85 @@ function isLostYoungCoupleProgressChap3(int_flagValue) => 	//	$A9EF8A: [8-bit Cu
 															// 		0x2 => has talked with 0xa9ef6d AND 0xa9ef80
 															// 		0x3 => Young couple - Middle Ages - Chapter 3 - have changed positions
 
-function isLostYoungCoupleProgressChap4(int_flagValue) => 		//	$A9EF8B: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 4
-	byte(0xA9EF8B) == int_flagValue								//		0x1 => has talked with 0xa9ef82 AND 0xa9ef6f
-																// 		0x2 => has talked with 0xa9ef83 AND 0xa9ef70
-																// 		0x3 => Young couple - Middle Ages - Chapter 4 - have changed positions/respawned
-	
+function isLostYoungCoupleProgressChap4(int_flagValue) => 	//	$A9EF8B: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 4
+	byte(0xA9EF8B) == int_flagValue							//		0x1 => has talked with 0xa9ef82 AND 0xa9ef6f
+															// 		0x2 => has talked with 0xa9ef83 AND 0xa9ef70
+															// 		0x3 => Young couple - Middle Ages - Chapter 4 - have changed positions/respawned
 
 function isManToldLoversNeverDestinedMeet() => 		// $A9EF8F: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 8
 	bit0(0xA9EF8F) == 1 && bit1(0xA9EF8F) ==0  		// 		bit 0 => told the man about the lovers never destined to meet
 													// 		bit 1 => told the man to get over it
 
-function isWomanAdvisedBeTruthful() => byte(0xA9EF8E) >= 0x1	//	$A9EF8E: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 7
-																// 		>= 0x1 => advised woman to be truthful
-																// 		- Increases by 0x1 after telling woman to be truthful, to a max of 0x1
-																//	$SAME-MEMORY-ADDRESS-AS-ABOVE: [8-bit] NPC Talk Count - Young couple man - Middle Ages - Chapter 8 - Outside church - Before Experiment - Only available when this memory address was already >= 0x1
-																// 		- Dual purpose memory address
-																//		- Talk Counts add on top of above explained count
-																// 		- If count was 0 from start, refer to 0xa9ef77
-																// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
+function isWomanAdvisedBeTruthful() => 	//	$A9EF8E: [8-bit Current Playthrough Flag] Progress of Young Couple sidequest: Chapter 7
+	byte(0xA9EF8E) >= 0x1				// 		>= 0x1 => advised woman to be truthful
+										// 		- Increases by 0x1 after telling woman to be truthful, to a max of 0x1
+										//	$SAME-MEMORY-ADDRESS-AS-ABOVE: [8-bit] NPC Talk Count - Young couple man - Middle Ages - Chapter 8 - Outside church - Before Experiment - Only available when this memory address was already >= 0x1
+										// 		- Dual purpose memory address
+										//		- Talk Counts add on top of above explained count
+										// 		- If count was 0 from start, refer to 0xa9ef77
+										// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
 
 
 // ****************************
 // ÷ CUTSCENE IDENTIFICATION ÷
 // ****************************
-function isFullCutsceneActive() => byte(0xA9ED26) == 0x5												// $A9ED26: Flag: Is cutscene active (preferred)
-																									// 		- 0x00 => no cutscene active
-function isFullCutsceneSequenceEnding() => prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
-																									// 		- 0x05 => cutscene active
-function isCutsceneSectionEnding() => prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26) && byte(0xA9ED26) > 0x0	
+function isFullCutsceneActive() => 					// $A9ED26: Flag: Is cutscene active (preferred)
+	byte(0xA9ED26) == 0x5							// 		- 0x00 => no cutscene active
+													// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
+function isFullCutsceneSequenceEnding() => 			// 		- 0x05 => cutscene active
+	prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		
 
-function isSmallCutsceneActive() => byte(0xA9ED26) == 0x1
+function isCutsceneSectionEnding() => 
+	prev(byte(0xA9ED26)) > 0x3 && 0x3 >= byte(0xA9ED26) && byte(0xA9ED26) > 0x0	
 
-function isNoCutsceneActive() => byte(0xA9ED26) == 0
+function isSmallCutsceneActive() => 
+	byte(0xA9ED26) == 0x1
 
+function isNoCutsceneActive() => 
+	byte(0xA9ED26) == 0
+// -------------------------------------
+function isCurrentCutsceneMasterId(int_Id) => 	// $A9ECBC: [32-bit] Cutscene MASTER ID (preferred)
+	dword(0xA9ECBC) == int_Id					// 		- Identifies a cutscene sequence
 
-function isCurrentCutsceneMasterId(int_Id) => dword(0xA9ECBC) == int_Id			// $A9ECBC: [32-bit] Cutscene MASTER ID (preferred)
-																				// 		- Identifies a cutscene sequence
-function isPriorCutsceneMasterId(int_Id) => prior(dword(0xA9ECBC)) == int_Id
+function isPriorCutsceneMasterId(int_Id) => 
+	prior(dword(0xA9ECBC)) == int_Id
 
-function isNewCutsceneLoading() => prev(dword(0xA9ECBC)) != dword(0xA9ECBC)
-
-function isCurrentCutsceneSectionId_1(int_Id) => word(0xA9ECC0) == int_Id		// $A9ECC0: [16-bit] Cutscene Section ID_1
-																				// 		- Identifies a section from the current cutscene
-function isPriorCutsceneSectionId_1(int_Id) => prior(word(0xA9ECC0)) == int_Id		
-
-function isCurrentCutsceneSectionId_2(int_Id) => word(0xA9ECC2) == int_Id		// $A9ECC2: [16-bit] Cutscene Section ID_2
-
-function isPriorCutsceneSectionId_2(int_Id) => prior(word(0xA9ECC2)) == int_Id
-
-function isCurrentCutsceneMasterDataId(int_Id) {
-	// & 0x1ffffff => masks 32-bit value to 25-bit; PSP uses 25-bit pointers
-	let_maskedPointer = dword(0xA9ECC8) & 0x1ffffff			// $A9ECC8: [25-bit] Pointer
-	return dword(let_maskedPointer + 0x8) == int_Id}		// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data below changes on new cutscene loaded in
-															// 		+0x8 - [32-bit] Cutscene Master Data ID
-function isCurrentCutsceneSectionDataId(int_Id) {
-	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff			// $A9ECCC: [25-bit] Pointer
-	return dword(let_maskedPointer + 0x8) == int_Id}		// 		+0x0 - Data lower then this point changes, when a next section in the cutscene starts
-															// 		+0x8 - [32-bit] Cutscene Section Data ID
-function isCurrentMinorCutsceneId(int_Id, int_offset) {
-	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			// $A9ECD4: [25-bit] Pointer - when a cutscene is active
-	return dword(let_maskedPointer + int_offset) == int_Id}	// +0x0 - Data lower than this point can be used as Minor Cutscene IDs
-															// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
+function isNewCutsceneLoading() => 
+	prev(dword(0xA9ECBC)) != dword(0xA9ECBC)
 
 
+function isCurrentCutsceneSectionId_1(int_Id) => 	// $A9ECC0: [16-bit] Cutscene Section ID_1
+	word(0xA9ECC0) == int_id						// 		- Identifies a section from the current cutscene
+function isPriorCutsceneSectionId_1(int_Id) => 
+	prior(word(0xA9ECC0)) == int_Id		
 
-// ************************************
+
+function isCurrentCutsceneSectionId_2(int_Id) => 	// $A9ECC2: [16-bit] Cutscene Section ID_2
+	word(0xA9ECC2) == int_Id
+
+function isPriorCutsceneSectionId_2(int_Id) => 
+	prior(word(0xA9ECC2)) == int_Id
+
+function isCurrentCutsceneMasterDataId(int_Id) {		// $A9ECC8: [25-bit] Pointer
+	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data below changes on new cutscene loaded in
+	//		PSP uses 25-bit pointers			 		// 		+0x8 - [32-bit] Cutscene Master Data ID
+	let_maskedPointer = dword(0xA9ECC8) & 0x1ffffff	
+	return dword(let_maskedPointer + 0x8) == int_Id}
+
+function isCurrentCutsceneSectionDataId(int_Id) {		// $A9ECCC: [25-bit] Pointer
+	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff		// 		+0x0 - Data lower then this point changes, when a next section in the cutscene starts
+	return dword(let_maskedPointer + 0x8) == int_Id}	// 		+0x8 - [32-bit] Cutscene Section Data ID
+
+function isCurrentMinorCutsceneId(int_Id, int_offset) {		// $A9ECD4: [25-bit] Pointer - when a cutscene is active
+	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			// +0x0 - Data lower than this point can be used as Minor Cutscene IDs
+	return dword(let_maskedPointer + int_offset) == int_Id}	// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
+
+
+
+// **********************************
 // ÷ MAP/SCENE/SCENARIO IDENTIFIER ÷
-// ************************************
-const_mapIDs= {	// list not complete, adding as is necessary
+// **********************************
+const_mapIDs= {	// list not complete, add as is necessary
 	"PresentDayCity": 0x375,
 	"PresentNightCityPM": 0x44,
 	"PresentNightCityAM": 0x3,
@@ -311,12 +312,13 @@ const_mapIDs= {	// list not complete, adding as is necessary
 	"BrumMuseumUpstairsRoom3Day": 0xcd,
 	"BrumMuseumDownstairsRoomNight": 0x32,
 	"BrumMuseumDownstairsRoomDay": 0x2ed}
-function isCurrentMapScene(string_mapId) => dword(0xA82E48) == const_mapIDs[string_mapId]	// $A82E48: [32-bit] Current loaded scene/map/scenario
+function isCurrentMapScene(string_mapId) => 	// $A82E48: [32-bit] Current loaded scene/map/scenario
+	dword(0xA82E48) == const_mapIDs[string_mapId]	
 
 
-// ********************
+// ******************
 // ÷ CHAPTER LOGIC ÷
-// ********************
+// ******************
 const_chapterIDs = {
 	"Prologue": 0x1,	// Also counts for EX chapter
 	"Chapter1": 0x2,
@@ -330,7 +332,8 @@ const_chapterIDs = {
 	"Epilogue_Ancestress": 0xa,
 	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
 	"Epilogue_NoAncestress": 0xc}
-function getChapterId() => byte(0xB95704)			// $B95704: [8-bit] Chapter ID
+function getChapterId() => 	// $B95704: [8-bit] Chapter ID
+	byte(0xB95704)			
 
 function isCurrentChapter(string_chapter) {	
 	if (string_chapter == "Chapter8") {
@@ -366,7 +369,8 @@ function isChapterFinishing(string_chapter) {
 			getChapterId() == const_chapterIDs[string_chapter] + 0x1
 	}}
 
-function isChapterChanging() => getChapterId() != prev(getChapterId())
+function isChapterChanging() => 
+	getChapterId() != prev(getChapterId())
 
 function isChapterChangingTo(string_chapter) {
 	let_chapterId = 0
@@ -380,13 +384,17 @@ function isChapterChangingTo(string_chapter) {
 		getChapterId() == let_chapterId}
 
 
-// ***********************
+// ********************
 // ÷ INVENTORY LOGIC ÷
-// ***********************
+// ********************
 //	- itemScrollBarId => Id of the item in the inventory scrollbar menu
 //	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
 //	- isDefaultItem => true, when player gets this item at start of game
 const_inventoryItems = { 
+	// "___Template___": {
+	// 	"memAddress_Flag_isInInventory": 0x000000,	// $AAAAAA: [Bit 0] ___Template___
+	// 	"itemScrollBarId": 0x00000,
+	// 	"isDefaultItem": false}, 
 	"D-pad": {	// In PSP version this is called Z-Pad
 		"memAddress_Flag_isInInventory": 0xA9F034,	// $A9F034: [Bit 0] Z-pad/D-pad
 		"itemScrollBarId": 0x0,
@@ -483,12 +491,13 @@ const_inventoryItems = {
 		"isDefaultItem": false},
 	"Kitten": {
 		"memAddress_Flag_isInInventory": 0xA9F04B,	// $A9F04B: [Bit 0] Kitten
-		"isDefaultItem": false}
-}
+		"isDefaultItem": false}}
 
-function isCurrentSelectedInventoryItem(string_item) => byte(0xA9F111) == const_inventoryItems[string_item]["itemScrollBarId"] // $A9F111: [8-bit] Currently selected item ID in inventory
+function isCurrentSelectedInventoryItem(string_item) => 					// $A9F111: [8-bit] Currently selected item ID in inventory
+	byte(0xA9F111) == const_inventoryItems[string_item]["itemScrollBarId"] 
 
-function isItemInInventory(string_item) => bit0(const_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
+function isItemInInventory(string_item) => 
+	bit0(const_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
 
 
 // ***********************
@@ -505,39 +514,33 @@ function isPriorMinimumAmountOfCharactersOnBottomScreen(int_characterCount) { //
 	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
 	return 
 		prior(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
-		prior(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0
-}
+		prior(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0}
 
 function isNoCharactersOnBottomScreen() {
 	return 
 		dword(0xAC31E4 + 0x4) == 0x0 &&
 		dword_be(0xAC31E4 + 0xa) == 0x0 &&	
-		dword(0xAC31E4 + 0x10) == 0x0
-}
-
+		dword(0xAC31E4 + 0x10) == 0x0}
+// -------------------------------------
 // Use below dictionary as an object definition to pass params to function isCharacterPrinted()
-// ----------------------------
-// objDict_characterPrintData = {
-// 	"index": 0000,	// First printed character starts at 0
-// 	"printXaxis": 0x0,
-// 	"imageOffsetXaxis": 0x0,
-// 	"imageOffsetYaxis": 0x0,
-// 	"imageUnmaskWidth": 0x0,
-// 	"printYaxis": 0x0
-// }
+// 		objDict_characterPrintData = {
+// 			"index": 0000,	// First printed character starts at 0
+// 			"printXaxis": 0x0,
+// 			"imageOffsetXaxis": 0x0,
+// 			"imageOffsetYaxis": 0x0,
+// 			"imageUnmaskWidth": 0x0,
+// 			"printYaxis": 0x0}
 function isCharacterPrinted(objDict_characterPrintData) {	
 	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
 		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
-		return let_dwordBE
-	}
+		return let_dwordBE}
 	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
 	return 
 		byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6) == objDict_characterPrintData["printXaxis"] &&
-		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == let_charPrintDataToDwordBE(objDict_characterPrintData)
-}
+		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == let_charPrintDataToDwordBE(objDict_characterPrintData)}
 
 function isPriorCharacterPrinted(objDict_characterPrintData) {	
 	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
@@ -545,28 +548,25 @@ function isPriorCharacterPrinted(objDict_characterPrintData) {
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
 		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
-		return let_dwordBE
-	}
+		return let_dwordBE	}
 	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
 	return 
 		prior(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
-		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)
-}
+		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)}
 
 
-// *******************
+// ***************
 // ÷ EXTRA MENU ÷
-// *******************
+// ***************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-
 function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra menu
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff	// 		- Extra menu is only visible once at least one is ending is finished
 	return											// 		+0x4 - [32-bit] Extra Menu: Highlighted item
 		dword(let_maskedPointer + 0x4) <= 0x4 &&	// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
 		dword(let_maskedPointer + 0x14) <= 0x5 &&	// 		| - 0x1 => Ending files (replay ending cutscenes)
-		dword(let_maskedPointer + 0x48) <= 0xb		// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-}													// 		| - 0x3 => Sound Mode (Play sound effects & music)
+		dword(let_maskedPointer + 0x48) <= 0xb}		// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+													// 		| - 0x3 => Sound Mode (Play sound effects & music)
 													// 		| - 0x4 => Exit (back to Title Screen)
 													// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
 													// 		| - 0x0 => ending A			| - 0x3 => ending D
@@ -599,33 +599,29 @@ function isResultsMenuHighlightedChapter(string_chapter) {
 	}
 	return			
 		isInResultsMenu() &&
-		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId
-}
-
+		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
+// -------------------------------------
 const_endingFileIDs = {
 	"A": 0x0,
 	"B": 0x1,
 	"C": 0x2,
 	"D": 0x3,
 	"E": 0x4,
-	"EX": 0x5
-}
-function isViewingEndingFileInExtraMenu(string_endingChar) {				// $AC3178: [25-bit] Pointer - Ending File
-	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//-		 Resets to 0x0, when no ending file is on screen
+	"EX": 0x5}
+
+function isViewingEndingFileInExtraMenu(string_endingChar) {	// $AC3178: [25-bit] Pointer - Ending File
+	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//		- Resets to 0x0, when no ending file is on screen
 	let_endingFileID = const_endingFileIDs[string_endingChar]	// 		+0x10 - [8-bit] Ending File ID
 	return														// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
 		isInExtraMenu() &&										// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
-		byte(let_maskedPointer + 0x10) == let_endingFileID		// 		| - ...		
-}																// 		+0x8 - [32-bit] Ending file timer
+		byte(let_maskedPointer + 0x10) == let_endingFileID}		// 		| - ...		
+																// 		+0x8 - [32-bit] Ending file timer
 																// 		+0xc - [16-bit] Ending file text ID
 
 
-
-
-
-// *****************
+// ****************
 // ÷ OTHER LOGIC ÷
-// *****************												
+// ****************												
 function isEnergyUnitsIncreasing() => 		// $A9DAA8: Number of energy units in possession 
 	byte(0xA9DAA8) > prev(byte(0xA9DAA8))	//		- Used for the time travel machine (Z-Pad)
 											//		- Min => 0x0 		Max => 0x0a
@@ -639,6 +635,7 @@ function isEnergyUnitsDecreasing() =>
 function isEnergyUnitsChanging() => 
 	byte(0xA9DAA8) != prev(byte(0xA9DAA8))
 
+// -------------------------------------
 function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-game
 											// 		= 0 => at title screen
 											// 		> 0 => in-game
@@ -652,43 +649,17 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 														// 	0x1 => Start		0x3 => Option
 														// 	0x2 => Continue		0x4 => Extra
 
+function isVideoActive() {								// $8FFEF0: [25-bit] Pointer - Video data (intro and credits)
+	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF		// 		+0x18 - [32-bit Flag] 0x101 => video is active
+	return 												// 		+0x2c - [32-bit Flag] 0x41 => video is active
+		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
+		dword(let_maskedPointer + 0x2c) == 0x41}
 
 
 
-// ***********************************
+// *******************************
 // ÷ CUTSCENE/CHOICES BIT FLAGS ÷
-// ***********************************
-function isTreeReplacedByStatue() => bit2(0xA9EDA0)	== 0		// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
-																// 		bit 0 => acquired ladder
-function isTreeReplacedByFlowers() => bit2(0xA9EDA0) == 1		// 		bit 1 = 0 => LIGHTER used to scare crowd
-																// 		bit 1 = 1 => TELEPHONE used 
-function isCrowdScaredWithCellphone() => bit1(0xA9EDA0) == 1	// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers
-																// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
-function isCrowdScaredWithLighter() => bit1(0xA9EDA0) == 0	
-					
-function isMovieWorldConquestPicked() => bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1		// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
-																						// 		bit 5 => Movie choice 1: Meditating Man
-function isMovieTimeTravelPicked() => bit6(0xA9EDB7) == 1 && bit5(0xA9EDB7) == 0		// 		bit 6 => Movie choice 1: Time Travel
-																						// 		bit 7 => Movie choice 2: Take over the world
-function isMovieFindCauseDeathPicked() => bit0(0xA9EDB8) == 1 && bit7(0xA9EDB7) == 0	// $A9EDB8: [Current Playthrough Bit Flags]: Chapter 6
-																						// 		bit 0 => Movie Choice 2: Find cause of own death
-function isMovieThrillerStoryPicked() => bit1(0xA9EDB8) == 1 && bit2(0xA9EDB8) == 0		// 		bit 1 => Movie Choice 3: Thriller story
-																						// 		bit 2 => Movie Choice 3: Love story
-function isMovieLoveStoryPicked() => bit2(0xA9EDB8) == 1 && bit1(0xA9EDB8) == 0	
-
-
-function isPaintingAntidoteInspired() => bit7(0xA9EDB0) == 1	// $A9EDB0: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
-																//  - 8 paintings viewable at Brum museum, 6 can altered by inspiring Karl Franssen
-function isPaintingMarktplatzInspired() => bit6(0xA9EDB0) == 1	// 		bit 7 => Antidote painting
-																// 		bit 6 => Marktplatz painting (insinuating removing the tree)
-function isPaintingSquireCrestInspired() => bit5(0xA9EDB0) == 1	// 		bit 5 => Squire's crest painting
-																// 		bit 4 => Tower view painting (downstairs)
-function isPaintingTowerViewInspired() => bit4(0xA9EDB0) == 1
-
-function isPaintingPerformerInspired() => bit0(0xA9EDB1) == 1		// $A9EDB1: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
-																	// 		bit 0 => Performer painting (only possible when player became performer in chapter 4)
-function isPaintingHouseCollapseInspired() => bit1(0xA9EDB1) == 1	// 		bit 1 => Achemist house collapse painting
-
+// *******************************
 const_endingBitFlagsMemoryAddresses = {
 	"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A unlocked
 	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B unlocked
@@ -703,25 +674,66 @@ function isEndingUnlocked(string_EndingCharacter) =>
 function isExChapterUnlocked() => 
 	all_of(const_endingBitFlagsMemoryAddresses, (endingChar) => bit0(const_endingBitFlagsMemoryAddresses[endingChar]) == 1)
 
-function isPrologueInExMode() => bit7(0xA9ED98) == 1 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
-														//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
+function isPrologueInExMode() => 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
+	bit7(0xA9ED98) == 1 			//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
+// -------------------------------------
+function isTreeReplacedByStatue() => 		// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
+	bit2(0xA9EDA0)	== 0					// 		bit 0 => acquired ladder
+											// 		bit 1 = 0 => LIGHTER used to scare crowd
+function isTreeReplacedByFlowers() => 		// 		bit 1 = 1 => TELEPHONE used 
+	bit2(0xA9EDA0) == 1						// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers	
+											// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
+function isCrowdScaredWithCellphone() => 	
+	bit1(0xA9EDA0) == 1	
+	
+function isCrowdScaredWithLighter() => 
+	bit1(0xA9EDA0) == 0	
+// -------------------------------------
+function isMovieWorldConquestPicked() => 
+	bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1		// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
+													// 		bit 5 => Movie choice 1: Meditating Man
+function isMovieTimeTravelPicked() => 				// 		bit 6 => Movie choice 1: Time Travel
+	bit6(0xA9EDB7) == 1 && bit5(0xA9EDB7) == 0		// 		bit 7 => Movie choice 2: Take over the world
+																						
+function isMovieFindCauseDeathPicked() => 			// $A9EDB8: [Current Playthrough Bit Flags]: Chapter 6
+	bit0(0xA9EDB8) == 1 && bit7(0xA9EDB7) == 0		// 		bit 0 => Movie Choice 2: Find cause of own death
+													// 		bit 1 => Movie Choice 3: Thriller story	
+function isMovieThrillerStoryPicked() => 			// 		bit 2 => Movie Choice 3: Love story
+	bit1(0xA9EDB8) == 1 && bit2(0xA9EDB8) == 0		
 
+function isMovieLoveStoryPicked() => 
+	bit2(0xA9EDB8) == 1 && bit1(0xA9EDB8) == 0	
+// -------------------------------------
+function isPaintingAntidoteInspired() => 	// $A9EDB0: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
+	bit7(0xA9EDB0) == 1						//  - 8 paintings viewable at Brum museum, 6 can altered by inspiring Karl Franssen	
+											// 		bit 7 => Antidote painting
+function isPaintingMarktplatzInspired() => 	// 		bit 6 => Marktplatz painting (insinuating removing the tree)
+	bit6(0xA9EDB0) == 1						// 		bit 5 => Squire's crest painting
+											// 		bit 4 => Tower view painting (downstairs)
+function isPaintingSquireCrestInspired() => 
+	bit5(0xA9EDB0) == 1	
+					
+function isPaintingTowerViewInspired() => 
+	bit4(0xA9EDB0) == 1
 
-function isBrumEstateMuseum() => bit5(0xA9EDAA) == 0	//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
-														//		bit 5 = 0 => Brum Estate is museum
-function isBrumEstateLibrary() => bit5(0xA9EDAA) == 1	//		bit 5 = 1 => Brum Estate is library
-
-function isVideoActive() {								// $8FFEF0: [25-bit] Pointer - Video data (intro and credits)
-	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF		// 		+0x18 - [32-bit Flag] 0x101 => video is active
-	return 												// 		+0x2c - [32-bit Flag] 0x41 => video is active
-		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
-		dword(let_maskedPointer + 0x2c) == 0x41
-}
-
-function isMargaretteAncestor() => bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0		// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
-																					// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
-function isMargaretteNoAncestor() => bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
-
+function isPaintingPerformerInspired() => 	// $A9EDB1: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
+	bit0(0xA9EDB1) == 1						// 		bit 0 => Performer painting (only possible when player became performer in chapter 4)
+											// 		bit 1 => Achemist house collapse painting
+function isPaintingHouseCollapseInspired() => 
+	bit1(0xA9EDB1) == 1	
+// -------------------------------------
+function isBrumEstateMuseum() => 	//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
+	bit5(0xA9EDAA) == 0				//		bit 5 = 0 => Brum Estate is museum
+									//		bit 5 = 1 => Brum Estate is library
+function isBrumEstateLibrary() => 
+	bit5(0xA9EDAA) == 1
+// -------------------------------------
+function isMargaretteAncestor() => 				// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
+	bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0	// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
+												// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
+function isMargaretteNoAncestor() => 
+	bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		
+// -------------------------------------
 function isFirePutOutByWarningBarman() => 	// $A9ED9D: [Current Playthrough Bit Flags]: Chapter 1
 	bit5(0xA9ED9D) == 0 &&					//		bit 5 => put out fire yourself
 	bit7(0xA9ED9D) == 1						//		bit 7 => Saved bar from fire by warning barman
@@ -729,7 +741,7 @@ function isFirePutOutByWarningBarman() => 	// $A9ED9D: [Current Playthrough Bit 
 function isFirePutOutByEike() => 
 	bit5(0xA9ED9D) == 1 &&
 	bit7(0xA9ED9D) == 0	
-
+// -------------------------------------
 function isDanaSavedFromPast(){	return	// $A9EDC4: [Current Playthrough Bit Flags]: Saved Dana from Past
 	bit1(0xA9EDC4) == 1 && 				// 		bit 1 => Gave letter to Dana
 	bit3(0xA9EDC4) == 1 && 				// 		bit 3-4 => Took Dana back to present
@@ -739,26 +751,22 @@ function isDanaNotSavedFromPast(){ return
 	bit1(0xA9EDC4) == 0 &&
 	bit3(0xA9EDC4) == 0 &&
 	bit4(0xA9EDC4) == 0}
-
-function isCoffeePayed() => bit3(0xA9EDCC) == 1		// $A9EDCC: [Current Playthrough Bit Flags]: Multi-chapter
-													// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
+// -------------------------------------
+function isCoffeePayed() => 	// $A9EDCC: [Current Playthrough Bit Flags]: Multi-chapter
+	bit3(0xA9EDCC) == 1			// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
 
 function isKittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]: Multi-chapter
 	bit6(0xA9EDCB) == 1					// 		bit 2 => talked with Oleg 1st time in Chapter 3
 										// 		bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ xa9edcc == 1
 										// 		bit 6 => gave kitten to Sibylla
-	
 
-	
-
-
-function isWearingPerformerOutfit() => bit2(0xA9EDA5) == 1	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
-															//		 bit 2 => is wearing performer outfit
+function isWearingPerformerOutfit() => 	// $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
+	bit2(0xA9EDA5) == 1					//		 bit 2 => is wearing performer outfit
 
 
-// **********************************************
+// *******************************************
 // ÷ PERMANENT CUTSCENE PERCENTAGE BITFLAGS ÷
-// **********************************************
+// *******************************************
 // 	- Each flag corresponds to at least 1 cutscene and counts toward the achievement percentage 
 // 	- These flags are set when heading into any save menu OR when finishing a chapter OR when booting up the game
 // 	- Each flag accounts for a float percentage. These numbers are rounded up or down in the extra menu
@@ -827,8 +835,7 @@ const_percentageBitsFlags = {
 		0xAA1190: [2,7],
 		0xAA1191: [0,7],
 		0xAA1192: [0,7],
-		0xAA1193: [0]},
-}
+		0xAA1193: [0]}}
 
 // ****************************************************************************************************************************************** \\
 //																																			  \\
@@ -841,13 +848,12 @@ const_percentageBitsFlags = {
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-
 // ***************************
 // ÷ ACHIEVEMENT DICTIONARY ÷
 // ***************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
-_achievements = {
+const_achievementsMetaData = {
 	// "a_Template": { // CONCEPT_template
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
@@ -917,8 +923,7 @@ _achievements = {
 			"devInfo": "Seen all the important cutscenes in epilogue"},
 		"a_MaxAchievementTotal": { // WORKING
 			"id": 405097, "points": 50, "hasTips": false,
-			"devInfo": "Seen ALL important the cutscenes"},
-	},
+			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
 		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 1, "hasTips": true,
@@ -934,8 +939,7 @@ _achievements = {
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_AlertBarmanOfFire": { // WORKING
 			"id": 306976, "points": 4, "hasTips": true,
-			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
-	},
+			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "hasTips": true,
@@ -960,8 +964,7 @@ _achievements = {
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
 		"a_EndingEXCureHelena": { // WORKING
 			"id": 405114, "points": 3, "hasTips": false,
-			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},
-	},
+			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": { // WORKING
 			"id": 310426, "points": 4, "hasTips": true,
@@ -1094,8 +1097,7 @@ _achievements = {
 			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
 		"a_PerformerGoingExtraMile": { // WORKING
 			"id": 403575, "points": 5, "hasTips": true,
-			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
-	},
+			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"}},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
 		"a_MetYouBefore": { // WORKING
 			"id": 306888, "points": 2, "hasTips": true,
@@ -1114,150 +1116,146 @@ _achievements = {
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
 		"a_TimeEgoFlop": { // WORKING
 			"id": 313212, "points": 1, "hasTips": true,
-			"devInfo": "During chapter 6, co-direct Time Ego"},
+			"devInfo": "During chapter 6, co-direct Time Ego"}}
 	}
-}
 
 
-// *************************************
+// ***********************************
 // ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
-// *************************************
+// ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-
-function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){ 
-	function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {	
-		function totalAmountOfBitFlags(dict_BitFlags) {
-			let_bitFlagCount = 0
-			for memAddrWithBitFlags in dict_BitFlags {
-				let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
-				if (length(let_arrayOfBitBlagsToCheck) == 1) {
-					let_bitFlagCount = let_bitFlagCount + 1	
-				} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
-					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
-				} else {
-					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
+const_triggerHelpers = {
+	"FullTrigger_MaxAchievementRate": function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){ 
+		function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {	
+			function totalAmountOfBitFlags(dict_BitFlags) {
+				let_bitFlagCount = 0
+				for memAddrWithBitFlags in dict_BitFlags {
+					let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
+					if (length(let_arrayOfBitBlagsToCheck) == 1) {
+						let_bitFlagCount = let_bitFlagCount + 1	
+					} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
+						let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
+					} else {
+						let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
+					}
 				}
-			}
-			return let_bitFlagCount
-		}
-
-		// EXAMPLE A = B
-		// - tally_of inside predicate of tally_of
-		// tally_of([
-		// 	[once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3)],
-		// 	[once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2)],
-		// 	[once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)]], 20, (arrayWithComparisons) {
-		// 		return tally_of(arrayWithComparisons, 1, (comparison) => comparison)		// the count on this tally_of doesn't matter, but must be != 0 => because runtime error
-		// 	})
-		// EXAMPLE B = A
-		// - tally_of inside predicate of tally_of == this tally
-		// tally(20, [
-		// 	once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3),
-		// 	once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2),
-		// 	once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)])
-
-		return tally_of(dict_BitFlags, totalAmountOfBitFlags(dict_BitFlags), (memAddr) {	// This tally_of chains ALL of the comparisons generated
-			let_comparisonsArray = []
-			let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddr]
-			if (length(let_arrayOfBitBlagsToCheck) == 1) {
-				let_bitIndex = let_arrayOfBitBlagsToCheck[0]
-				array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
-			} else {
-				let_step = 1
-				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) let_step = -1
-				for let_bitIndex in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {	// Example let_arrayOfBitBlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-					array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
-				}
-			}
-			return tally_of(let_comparisonsArray, 1, (comparison) => comparison) // count on this tally_of doesn't matter; this line chains all the comparisons together created the bitflags on ONE memory address
-		})
-	}
-
+				return let_bitFlagCount}
 	
-	function generateTrigger_TotalMaxAchievementRate(comparison_tally) { return		
-		never(	// Reset/recalculate tally count
-			isChapterChanging()
-		) && 
-		(
-			(	// Alt 1 => In game rate measurement
-				measured(comparison_tally, isInGame(), "percent")
-			) || ( // Alt 2 => measurement at results screen
-				measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
+			// DEV EXAMPLE: Tally inside a tally
+			// ---------------------------------
+			// EXAMPLE A == B; different way of getting same result
+			//		- tally_of inside predicate of tally_of
+			//		tally_of([
+			//			[once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3)],
+			//			[once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2)],
+			//			[once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)]], 20, (arrayWithComparisons) {
+			//				return tally_of(arrayWithComparisons, 1, (comparison) => comparison)		// the count on this tally_of doesn't matter, but must be != 0 => because runtime error
+			//			})			
+			// EXAMPLE B == A; different way of getting same result
+			//		- tally_of inside predicate of tally_of == this tally
+			//		tally(20, [
+			//			once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3),
+			//			once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2),
+			//			once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)])
+	
+			return tally_of(dict_BitFlags, totalAmountOfBitFlags(dict_BitFlags), (memAddr) {	// This tally_of chains ALL of the comparisons generated
+				let_comparisonsArray = []
+				let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddr]
+				if (length(let_arrayOfBitBlagsToCheck) == 1) {
+					let_bitIndex = let_arrayOfBitBlagsToCheck[0]
+					array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+				} else {
+					let_step = 1
+					if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) let_step = -1
+					for let_bitIndex in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {	// Example let_arrayOfBitBlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+						array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+					}
+				}
+				return tally_of(let_comparisonsArray, 1, (comparison) => comparison) // count on this tally_of doesn't matter; this line chains all the comparisons together created the bitflags on ONE memory address
+			})
+		}		
+		function generateTrigger_TotalMaxAchievementRate(comparison_tally) { return		
+			never(	// Reset/recalculate tally count
+				isChapterChanging()
+			) && 
+			(
+				(	// Alt 1 => In game rate measurement
+					measured(comparison_tally, isInGame(), "percent")
+				) || ( // Alt 2 => measurement at results screen
+					measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
+				)
 			)
-		)
-	}
-	function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) { return		
-		never(	// Reset/recalculate tally count
-			isChapterChangingTo(string_chapter)
-		) && 
-		(
-			(	// Alt 1 => In game rate measurement
-				unless(	// Pause if => not in correct chapter, but still show progress on achievement
-					!isCurrentChapter(string_chapter)
-				) &&
-				measured(comparison_tally, isInGame(), "percent")
-			) || ( // Alt 2 => measurement at results screen				
-				measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
+		}
+		function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) { return		
+			never(	// Reset/recalculate tally count
+				isChapterChangingTo(string_chapter)
+			) && 
+			(
+				(	// Alt 1 => In game rate measurement
+					unless(	// Pause if => not in correct chapter, but still show progress on achievement
+						!isCurrentChapter(string_chapter)
+					) &&
+					measured(comparison_tally, isInGame(), "percent")
+				) || ( // Alt 2 => measurement at results screen				
+					measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
+				)
 			)
-		)
-	}
+		} 
+		let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_BitFlags)
+		if (string_chapter == "Total") {
+			return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
+		} else {
+			return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
+		}},
+	"Tally_PickUpEnergyOrbs": function generateTally_PickUpEnergyOrbs(int_tallyCount) {
+		let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
+			"G": {
+				"index": 0,	
+				"printXaxis": 0x0,
+				"imageOffsetXaxis": 0x48,
+				"imageOffsetYaxis": 0x0,
+				"imageUnmaskWidth": 0x9,
+				"printYaxis": 0x0},
+			"E": {
+				"index": 3,	
+				"printXaxis": 0x1f,
+				"imageOffsetXaxis": 0x48,
+				"imageOffsetYaxis": 0x38,
+				"imageUnmaskWidth": 0x9,
+				"printYaxis": 0x0},
+			"Y": {
+				"index": 8,	
+				"printXaxis": 0x4b,
+				"imageOffsetXaxis": 0x48,
+				"imageOffsetYaxis": 0x54,
+				"imageUnmaskWidth": 0x9,
+				"printYaxis": 0x1},		
+			"I": {
+				"index": 11,	
+				"printXaxis": 0x6c,
+				"imageOffsetXaxis": 0x0,
+				"imageOffsetYaxis": 0x46,
+				"imageUnmaskWidth": 0x4,
+				"printYaxis": 0x0}}
+		return
+			tally(int_tallyCount, 
+				isEnergyUnitsIncreasing() &&
+				isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
+				isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
+				isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
+				isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
+				isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
+				!isFullCutsceneActive()	// Don't switch with isNoCutsceneActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+			)	
+	}}
 
- 
-	let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_BitFlags)
-	if (string_chapter == "Total") {
-		return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
-	} else {
-		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
-	}
-}
-
-function generateTally_PickUpEnergyOrbs(int_tallyCount) {
-	let_charactersToCheck = {	
-		"G": { // Got
-			"index": 0,	
-			"printXaxis": 0x0,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x0,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x0},
-		"E": { // Energy
-			"index": 3,	
-			"printXaxis": 0x1f,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x38,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x0},
-		"Y": { // energY
-			"index": 8,	
-			"printXaxis": 0x4b,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x54,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x1},		
-		"I": { // unIt
-			"index": 11,	
-			"printXaxis": 0x6c,
-			"imageOffsetXaxis": 0x0,
-			"imageOffsetYaxis": 0x46,
-			"imageUnmaskWidth": 0x4,
-			"printYaxis": 0x0},
-	}
-	return
-		tally(int_tallyCount, 
-			isEnergyUnitsIncreasing() &&
-			isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
-			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
-			isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
-			isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
-			isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
-			!isFullCutsceneActive()	// Don't switch with isNoCutsceneActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
-		)	
-}
-
-// **************************
+// *************************
 // ÷ ACHIEVEMENT TRIGGERS ÷
-// **************************
-_achievementTriggers = {
+// *************************
+const_achievementTriggers = {
+	// "a_Template": function Template() {	// WIP_template
+	// 	return always_false()
+	// },
 	"a_PrologueComplete": function PrologueComplete() { return
 		never (	// Core group
 			!isInGame() ||
@@ -3456,14 +3454,13 @@ _achievementTriggers = {
 			isCurrentCutsceneMasterDataId(0xd9a0)	&&
 			isCurrentCutsceneSectionDataId(0xca50)	
 		) &&
-		isCutsceneSectionEnding()},
-	// "a_Template": function Template() {},
-}
+		isCutsceneSectionEnding()}}
 
-// **************************
+// *********************
 // ÷ ACHIEVEMENT TEXT ÷
-// **************************
+// *********************
 _achievementTitles = {
+	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
 													"fr": "Défié le destine"},
@@ -3552,10 +3549,9 @@ _achievementTitles = {
 	"a_ArtInspiration1": 							{"en": "Art Muse"}, 
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
-	"a_ScareEveryone": 								{"en": "Terror of Destinies"}
-	// "a_Template": 			{"en": "xxxxx"},
-}
+	"a_ScareEveryone": 								{"en": "Terror of Destinies"}}
 _achievementDescriptions = {
+	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_PrologueComplete": {							"en": "Complete the Prologue",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
@@ -3644,14 +3640,12 @@ _achievementDescriptions = {
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
-	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}
-	// "a_Template": 			{"en": "xxxxx"},
-}
+	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}}
 
 
-// ******************************
+// ****************************
 // ÷ ACHIEVEMENT INITIALIZER ÷
-// ******************************
+// ****************************
 //	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
 function initializeAchievements() {
 	// Generates the achievement title (with developer tags, if devmode == 1)
@@ -3692,13 +3686,13 @@ function initializeAchievements() {
 	}
 	// Returns the achievement trigger 
 	function lookUpAchievementTrigger(string_achievementDevName) {
-		return _achievementTriggers[string_achievementDevName]
+		return const_achievementTriggers[string_achievementDevName]
 	}
 
 	// This loop generates the achievements
-	for categoryName in _achievements {
-		for cheevmentName in _achievements[categoryName] {
-			let_cheevment = _achievements[categoryName][cheevmentName]
+	for categoryName in const_achievementsMetaData {
+		for cheevmentName in const_achievementsMetaData[categoryName] {
+			let_cheevment = const_achievementsMetaData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
 				title = generateAchievementTitle(cheevmentName, categoryName, achievementLanguage), 
@@ -3707,8 +3701,7 @@ function initializeAchievements() {
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
 		}
-	}
-}
+	}}
 
 // ***************************************************************************************************** \\
 //																										 \\
