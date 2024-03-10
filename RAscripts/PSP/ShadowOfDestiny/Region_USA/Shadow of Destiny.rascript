@@ -17,6 +17,10 @@
 //	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
+//	- Documentation for achievement development => https://docs.retroachievements.org/Developer-Docs/
+//		-- Rich Presence documentation => https://docs.retroachievements.org/Rich-Presence/ AND https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
+//			--- Rich Presence Macro's => https://docs.retroachievements.org/Rich-Presence/#macros
+//			--- To Test RP via RATools, same as updating achievement logic, but afteran  RP update => restart RALibretro OR keep the following file op in an editor: ..\RALibretro\RACache\Data\XXX-Rich.txt 
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
@@ -34,6 +38,10 @@ achievementLanguage = "en"						// ISO 639-1 language codes
 
 achievementGuideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 
+function throwError(string_errMsg) {	// This function will throw an error in RAscript because the key doesn't exist
+	let_dict = {}
+	return let_dict[format("ERROR: {0}", string_errMsg)]}
+
 function addToDictionary(dict, key, value) {
 	dict[key] = value}
 
@@ -48,9 +56,41 @@ function addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
-// **************************************
-// ÷ INTERACTION IDs WITH NPCs & ITEMS ÷
-// **************************************
+// ******************
+// ÷ TIME AND DATE ÷
+// ******************
+//	$AA1268: Time Period
+// 		0x80 => Middle ages 1500s
+// 		0x81 => Old century 1900s
+// 		0x82 => Close past 1970s-1980s
+// 		0x83 => Present 2000s
+const_timePeriod = {
+	"Present":	0x83,
+	"ClosePast": 0x82,
+	"OldCentury": 0x81,
+	"MiddleAges": 0x80}
+
+function getCurrentTimePeriod() =>	// $AA1268: [32-bit] Time Period
+	dword(0xAA1268)					//		0x80 => Middle ages 1500s
+									//		0x81 => Old century 1900s
+									//		0x82 => Close past 1970s-1980s
+									//		0x83 => Present 2000s	
+
+function isInTimePeriod(stringKey_timePeriod) => 
+	getCurrentTimePeriod() == const_timePeriod[stringKey_timePeriod]
+
+function getCurrentPresentTimeHours() =>	// $AA12B0: [32-bit] Time in present: hours
+	dword(0xAA12B0)
+
+function getCurrentPresentTimeMinutes() =>	// $AA12B4: [32-bit] Time in present: minutes
+	dword(0xAA12B4)
+
+function getCurrentPresentTimeSeconds() =>	// $AA12B8: [32-bit] Time in present: seconds
+	dword(0xAA12B8)
+
+// *********************
+// ÷ INTERACTIONS IDs ÷
+// *********************
 const_NPCs = {
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
@@ -256,7 +296,7 @@ function isNewCutsceneLoading() =>
 
 
 function isCurrentCutsceneSectionId_1(int_Id) => 	// $A9ECC0: [16-bit] Cutscene Section ID_1
-	word(0xA9ECC0) == int_id						// 		- Identifies a section from the current cutscene
+	word(0xA9ECC0) == int_Id						// 		- Identifies a section from the current cutscene
 function isPriorCutsceneSectionId_1(int_Id) => 
 	prior(word(0xA9ECC0)) == int_Id		
 
@@ -333,8 +373,7 @@ const_chapterIDs = {
 	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
 	"Epilogue_NoAncestress": 0xc}
 function getChapterId() => 	// $B95704: [8-bit] Chapter ID
-	byte(0xB95704)			
-
+	byte(0xB95704)
 function isCurrentChapter(string_chapter) {	
 	if (string_chapter == "Chapter8") {
 		return
@@ -621,19 +660,21 @@ function isViewingEndingFileInExtraMenu(string_endingChar) {	// $AC3178: [25-bit
 
 // ****************
 // ÷ OTHER LOGIC ÷
-// ****************												
-function isEnergyUnitsIncreasing() => 		// $A9DAA8: Number of energy units in possession 
-	byte(0xA9DAA8) > prev(byte(0xA9DAA8))	//		- Used for the time travel machine (Z-Pad)
-											//		- Min => 0x0 		Max => 0x0a
+// ****************
+function getCurrentEnergyUnits() =>		// $A9DAA8: Number of energy units in possession 
+	byte(0xA9DAA8)						//		- Used for the time travel machine (Z-Pad)
+										//		- Min => 0x0 		Max => 0x0a
+function isEnergyUnitsIncreasing() => 		
+	getCurrentEnergyUnits() > prev(getCurrentEnergyUnits())	
 
 function isEnergyUnitsIncreased() => 
-	byte(0xA9DAA8) > prior(byte(0xA9DAA8))
+	getCurrentEnergyUnits() > prior(getCurrentEnergyUnits())
 
 function isEnergyUnitsDecreasing() => 
-	byte(0xA9DAA8) < prev(byte(0xA9DAA8))
+	getCurrentEnergyUnits() < prev(getCurrentEnergyUnits())
 
 function isEnergyUnitsChanging() => 
-	byte(0xA9DAA8) != prev(byte(0xA9DAA8))
+	getCurrentEnergyUnits() != prev(getCurrentEnergyUnits())
 
 // -------------------------------------
 function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-game
@@ -648,6 +689,11 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	// $1FFF604: [8-bit] Selected submenu at title screen
 														// 	0x1 => Start		0x3 => Option
 														// 	0x2 => Continue		0x4 => Extra
+
+function isMainSaveLoaded() {						// $AA2998: [25-bit] Pointer - is main save file loaded (at first startup of game)
+	let_maskedPointer = dword(0xAA2998)	& 0x1ffffff	//		+0x4 - [Bit 0] => main save is loaded
+	return 											//		| - Data around this memory address is set on startup or reset
+		bit0(let_maskedPointer + 0x4) == 1}
 
 function isVideoActive() {								// $8FFEF0: [25-bit] Pointer - Video data (intro and credits)
 	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF		// 		+0x18 - [32-bit Flag] 0x101 => video is active
@@ -837,6 +883,9 @@ const_percentageBitsFlags = {
 		0xAA1192: [0,7],
 		0xAA1193: [0]}}
 
+function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage: Total
+	byte(0xAA1152)
+
 // ****************************************************************************************************************************************** \\
 //																																			  \\
 //    █████╗  ██████╗██╗  ██╗██╗███████╗██╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗       ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
@@ -848,13 +897,14 @@ const_percentageBitsFlags = {
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-// ***************************
-// ÷ ACHIEVEMENT DICTIONARY ÷
-// ***************************
+// **************************
+// ÷ Achievement CORE DATA ÷
+// **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
-const_achievementsMetaData = {
-	// "a_Template": { // CONCEPT_template
+// TODO add badges and type (missable, progression, win_condition)
+const_achievements_coreData = {
+	// "a_Template": { // CONCEPT a_template
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
@@ -1121,138 +1171,137 @@ const_achievementsMetaData = {
 
 
 // ***********************************
-// ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
+// ÷ Achievement TRIGGER GENERATORS ÷
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-const_triggerHelpers = {
-	"FullTrigger_MaxAchievementRate": function generateTrigger_MaxAchievementRate(string_chapter, dict_BitFlags){ 
-		function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {	
-			function totalAmountOfBitFlags(dict_BitFlags) {
-				let_bitFlagCount = 0
-				for memAddrWithBitFlags in dict_BitFlags {
-					let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
-					if (length(let_arrayOfBitBlagsToCheck) == 1) {
-						let_bitFlagCount = let_bitFlagCount + 1	
-					} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
-						let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
-					} else {
-						let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
-					}
-				}
-				return let_bitFlagCount}
-	
-			// DEV EXAMPLE: Tally inside a tally
-			// ---------------------------------
-			// EXAMPLE A == B; different way of getting same result
-			//		- tally_of inside predicate of tally_of
-			//		tally_of([
-			//			[once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3)],
-			//			[once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2)],
-			//			[once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)]], 20, (arrayWithComparisons) {
-			//				return tally_of(arrayWithComparisons, 1, (comparison) => comparison)		// the count on this tally_of doesn't matter, but must be != 0 => because runtime error
-			//			})			
-			// EXAMPLE B == A; different way of getting same result
-			//		- tally_of inside predicate of tally_of == this tally
-			//		tally(20, [
-			//			once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3),
-			//			once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2),
-			//			once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)])
-	
-			return tally_of(dict_BitFlags, totalAmountOfBitFlags(dict_BitFlags), (memAddr) {	// This tally_of chains ALL of the comparisons generated
-				let_comparisonsArray = []
-				let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddr]
+function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_PercentageBitFlags){ 
+	function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {
+		function totalAmountOfBitFlags(dict_BitFlags) {
+			let_bitFlagCount = 0
+			for memAddrWithBitFlags in dict_BitFlags {
+				let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
 				if (length(let_arrayOfBitBlagsToCheck) == 1) {
-					let_bitIndex = let_arrayOfBitBlagsToCheck[0]
-					array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+					let_bitFlagCount = let_bitFlagCount + 1	
+				} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
+					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
 				} else {
-					let_step = 1
-					if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) let_step = -1
-					for let_bitIndex in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {	// Example let_arrayOfBitBlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-						array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
-					}
+					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
 				}
-				return tally_of(let_comparisonsArray, 1, (comparison) => comparison) // count on this tally_of doesn't matter; this line chains all the comparisons together created the bitflags on ONE memory address
-			})
-		}		
-		function generateTrigger_TotalMaxAchievementRate(comparison_tally) { return		
-			never(	// Reset/recalculate tally count
-				isChapterChanging()
-			) && 
-			(
-				(	// Alt 1 => In game rate measurement
-					measured(comparison_tally, isInGame(), "percent")
-				) || ( // Alt 2 => measurement at results screen
-					measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
-				)
+			}
+			return let_bitFlagCount}
+
+		// DEV EXAMPLE: Tally inside a tally
+		// ---------------------------------
+		// EXAMPLE A == B; different way of getting same result
+		//		- tally_of inside predicate of tally_of
+		//		tally_of([
+		//			[once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3)],
+		//			[once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2)],
+		//			[once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)]], 20, (arrayWithComparisons) {
+		//				return tally_of(arrayWithComparisons, 1, (comparison) => comparison)		// the count on this tally_of doesn't matter, but must be != 0 => because runtime error
+		//			})			
+		// EXAMPLE B == A; different way of getting same result
+		//		- tally_of inside predicate of tally_of == this tally
+		//		tally(20, [
+		//			once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3),
+		//			once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2),
+		//			once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)])
+
+		return tally_of(dict_BitFlags, totalAmountOfBitFlags(dict_BitFlags), (memAddr) {	// This tally_of chains ALL of the comparisons generated
+			let_comparisonsArray = []
+			let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddr]
+			if (length(let_arrayOfBitBlagsToCheck) == 1) {
+				let_bitIndex = let_arrayOfBitBlagsToCheck[0]
+				array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+			} else {
+				let_step = 1
+				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) let_step = -1
+				for let_bitIndex in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {	// Example let_arrayOfBitBlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+					array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+				}
+			}
+			return tally_of(let_comparisonsArray, 1, (comparison) => comparison) // count on this tally_of doesn't matter; this line chains all the comparisons together created the bitflags on ONE memory address
+		})
+	}		
+	function generateTrigger_TotalMaxAchievementRate(comparison_tally) { return		
+		never(	// Reset/recalculate tally count
+			isChapterChanging()
+		) && 
+		(
+			(	// Alt 1 => In game rate measurement
+				measured(comparison_tally, isInGame(), "percent")
+			) || ( // Alt 2 => show measurement at results screen
+				measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
 			)
-		}
-		function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) { return		
-			never(	// Reset/recalculate tally count
-				isChapterChangingTo(string_chapter)
-			) && 
-			(
-				(	// Alt 1 => In game rate measurement
-					unless(	// Pause if => not in correct chapter, but still show progress on achievement
-						!isCurrentChapter(string_chapter)
-					) &&
-					measured(comparison_tally, isInGame(), "percent")
-				) || ( // Alt 2 => measurement at results screen				
-					measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
-				)
+		)
+	}
+	function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) { return		
+		never(	// Reset/recalculate tally count
+			isChapterChangingTo(string_chapter)
+		) && 
+		(
+			(	// Alt 1 => In game rate measurement
+				unless(	// Pause if => not in correct chapter, but still show progress on achievement
+					!isCurrentChapter(string_chapter)
+				) &&
+				measured(comparison_tally, isInGame(), "percent")
+			) || ( // Alt 2 => show measurement at results screen				
+				measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
 			)
-		} 
-		let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_BitFlags)
-		if (string_chapter == "Total") {
-			return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
-		} else {
-			return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
-		}},
-	"Tally_PickUpEnergyOrbs": function generateTally_PickUpEnergyOrbs(int_tallyCount) {
-		let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
-			"G": {
-				"index": 0,	
-				"printXaxis": 0x0,
-				"imageOffsetXaxis": 0x48,
-				"imageOffsetYaxis": 0x0,
-				"imageUnmaskWidth": 0x9,
-				"printYaxis": 0x0},
-			"E": {
-				"index": 3,	
-				"printXaxis": 0x1f,
-				"imageOffsetXaxis": 0x48,
-				"imageOffsetYaxis": 0x38,
-				"imageUnmaskWidth": 0x9,
-				"printYaxis": 0x0},
-			"Y": {
-				"index": 8,	
-				"printXaxis": 0x4b,
-				"imageOffsetXaxis": 0x48,
-				"imageOffsetYaxis": 0x54,
-				"imageUnmaskWidth": 0x9,
-				"printYaxis": 0x1},		
-			"I": {
-				"index": 11,	
-				"printXaxis": 0x6c,
-				"imageOffsetXaxis": 0x0,
-				"imageOffsetYaxis": 0x46,
-				"imageUnmaskWidth": 0x4,
-				"printYaxis": 0x0}}
-		return
-			tally(int_tallyCount, 
-				isEnergyUnitsIncreasing() &&
-				isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
-				isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
-				isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
-				isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
-				isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
-				!isFullCutsceneActive()	// Don't switch with isNoCutsceneActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
-			)	
+		)
+	} 
+	let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_PercentageBitFlags)
+	if (string_chapter == "Total") {
+		return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
+	} else {
+		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
 	}}
 
+function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
+	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
+		"G": {
+			"index": 0,	
+			"printXaxis": 0x0,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x0,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x0},
+		"E": {
+			"index": 3,	
+			"printXaxis": 0x1f,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x38,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x0},
+		"Y": {
+			"index": 8,	
+			"printXaxis": 0x4b,
+			"imageOffsetXaxis": 0x48,
+			"imageOffsetYaxis": 0x54,
+			"imageUnmaskWidth": 0x9,
+			"printYaxis": 0x1},		
+		"I": {
+			"index": 11,	
+			"printXaxis": 0x6c,
+			"imageOffsetXaxis": 0x0,
+			"imageOffsetYaxis": 0x46,
+			"imageUnmaskWidth": 0x4,
+			"printYaxis": 0x0}}
+	return
+		tally(int_tallyCount, 
+			isEnergyUnitsIncreasing() &&
+			isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
+			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
+			!isFullCutsceneActive()	// Don't switch with isNoCutsceneActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+		)}
+
 // *************************
-// ÷ ACHIEVEMENT TRIGGERS ÷
+// ÷ Achievement TRIGGERS ÷
 // *************************
-const_achievementTriggers = {
+const_achievement_triggers = {
 	// "a_Template": function Template() {	// WIP_template
 	// 	return always_false()
 	// },
@@ -1683,45 +1732,44 @@ const_achievementTriggers = {
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() { 		
 		let_PercentageBitFlags = const_percentageBitsFlags["Prologue"]
-		return generateTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter1"]
-		return generateTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter2"]
-		return generateTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter3"]
-		return generateTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter4"]
-		return generateTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter5"]
-		return generateTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter6"]
-		return generateTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter7"]
-		return generateTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Chapter8"]
-		return generateTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
 	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Epilogue"]
-		return generateTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
+		return generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
-		function compileAllPercentageBitFlagsInOneDict() {
+		function mapAllPercentageBitFlagsToOneDict() {
 			let_PercentageBitFlags = {}
 			for chapter in const_percentageBitsFlags {
 				for memAddr in const_percentageBitsFlags[chapter] {
 					addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitsFlags[chapter][memAddr])
 				}
 			}
-			return let_PercentageBitFlags
-		}			
-		return generateTrigger_MaxAchievementRate("Total", compileAllPercentageBitFlagsInOneDict())},
+			return let_PercentageBitFlags}
+		return generate_FullTrigger_MaxAchievementRate("Total", mapAllPercentageBitFlagsToOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 			||
@@ -1989,7 +2037,7 @@ const_achievementTriggers = {
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
 			isEndingUnlocked("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
-		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group		
 			unless(
@@ -2013,7 +2061,7 @@ const_achievementTriggers = {
 			)
 		},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
-		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			unless(
@@ -2031,7 +2079,7 @@ const_achievementTriggers = {
 			)
 		},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
-		function measuredComparison() => generateTally_PickUpEnergyOrbs(6)
+		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(6)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			never(	// Reset when chapter changes or when using digipad
@@ -2052,7 +2100,7 @@ const_achievementTriggers = {
 			)
 		},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
-		function measuredComparison() => generateTally_PickUpEnergyOrbs(5)
+		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			never(	// Reset when chapter changes or when using digipad
@@ -3457,9 +3505,9 @@ const_achievementTriggers = {
 		isCutsceneSectionEnding()}}
 
 // *********************
-// ÷ ACHIEVEMENT TEXT ÷
+// ÷ Achievement TEXT ÷
 // *********************
-_achievementTitles = {
+const_achievement_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
@@ -3550,7 +3598,8 @@ _achievementTitles = {
 	"a_ArtInspirationAll": 							{"en": "Eike Franssen"},
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
 	"a_ScareEveryone": 								{"en": "Terror of Destinies"}}
-_achievementDescriptions = {
+// -------------------------------------
+const_achievement_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_PrologueComplete": {							"en": "Complete the Prologue",
 													"nl": "Proloog voltooid",
@@ -3644,7 +3693,7 @@ _achievementDescriptions = {
 
 
 // ****************************
-// ÷ ACHIEVEMENT INITIALIZER ÷
+// ÷ Achievement INITIALIZER ÷
 // ****************************
 //	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
 function initializeAchievements() {
@@ -3661,14 +3710,14 @@ function initializeAchievements() {
 			return let_string
 		}	
 		function lookUpAchievementTitle(string_achievementDevName, string_languageCode) {
-			return _achievementTitles[string_achievementDevName][string_languageCode]
+			return const_achievement_titles[string_achievementDevName][string_languageCode]
 		}
 		return enterCategoryName(string_achievementCategory, string_achievementDevName) + lookUpAchievementTitle(string_achievementDevName, string_languageCode)
 	}
 	// Generates the achievement description (with extra developer information, if devmode == 1)
 	function generateAchievementDescription(string_achievementDevName, boolean_hasTips, string_devInfo, string_languageCode) {	
 		function lookUpAchievementDescription(string_achievementDevName, string_languageCode) {
-			return _achievementDescriptions[string_achievementDevName][string_languageCode]
+			return const_achievement_descriptions[string_achievementDevName][string_languageCode]
 		}
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
@@ -3686,13 +3735,13 @@ function initializeAchievements() {
 	}
 	// Returns the achievement trigger 
 	function lookUpAchievementTrigger(string_achievementDevName) {
-		return const_achievementTriggers[string_achievementDevName]
+		return const_achievement_triggers[string_achievementDevName]
 	}
 
 	// This loop generates the achievements
-	for categoryName in const_achievementsMetaData {
-		for cheevmentName in const_achievementsMetaData[categoryName] {
-			let_cheevment = const_achievementsMetaData[categoryName][cheevmentName]
+	for categoryName in const_achievements_coreData {
+		for cheevmentName in const_achievements_coreData[categoryName] {
+			let_cheevment = const_achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
 				title = generateAchievementTitle(cheevmentName, categoryName, achievementLanguage), 
@@ -3714,15 +3763,378 @@ function initializeAchievements() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// Chapter => Fated hour: xxxxx
+
+// ****************************
+// ÷ Rich_Presence FUNCTIONS ÷
+// ****************************
+//	- Functions handling memory address logic that should only be used by the rich presence script
+function isCurrentChapterIdInRangeOfRecordedIds() {
+	return
+		0 < getChapterId() && 	// Prologue starts at 0x1
+		getChapterId() <= 0xb} 	// Epilogue ends at 0xb
+function isCurrentChapterOneOf(array_chapterIds) {
+	any_of(array_chapterIds, (chapterId) => isCurrentChapter(chapterId))
+}
+// ***********************
+// ÷ Rich_Presence TEXT ÷
+// ***********************
+//	- Contains text for all the rich presence scripts 
+const_richPresence_text = {
+	// "rp_Template": 										{"en": "xxxxxxxx"},
+	
+
+	"rpp_FatedHour_Lookup_Prologue": 					{"en": "14:30"},
+	"rpp_FatedHour_Lookup_Chapter1": 					{"en": "15:00"},
+	"rpp_FatedHour_Lookup_Chapter2": 					{"en": "15:30"},
+	"rpp_FatedHour_Lookup_Chapter3": 					{"en": "17:50"},
+	"rpp_FatedHour_Lookup_Chapter4": 					{"en": "20:30"},
+	"rpp_FatedHour_Lookup_Chapter5": 					{"en": "22:30"},
+	"rpp_FatedHour_Lookup_Chapter6": 					{"en": "23:55"},
+	"rpp_FatedHour_Lookup_Chapter7": 					{"en": "01:30"},
+	"rpp_FatedHour_Lookup_Chapter8": 					{"en": "04:30"},
+	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
+
+	"rpp_Chapter_Lookup_Prologue":						{"en": "Defying fate"},
+	"rpp_Chapter_Lookup_Chapter1":						{"en": "Extinguishing the heat"},
+	"rpp_Chapter_Lookup_Chapter2":						{"en": "Exploring Lebensbaum"},
+	"rpp_Chapter_Lookup_Chapter3":						{"en": "Visiting the art museum"},
+	"rpp_Chapter_Lookup_Chapter4":						{"en": "Searching for an iron plate"},
+	"rpp_Chapter_Lookup_Chapter5":						{"en": "Amalgamating an antidote"},
+	"rpp_Chapter_Lookup_Chapter6":						{"en": "Producing a film"},
+	"rpp_Chapter_Lookup_Chapter7":						{"en": "Examining a tower"},
+	"rpp_Chapter_Lookup_Chapter8":						{"en": "Seeking the red stone"},
+	"rpp_Chapter_Lookup_Epilogue":						{"en": "Cheating death"},
+	"rpp_Chapter_LookupFallback":						{"en": "Roaming Lebensbaum"},
+
+	"rpp_TimePeriod_Lookup_MiddleAges":					{"en": "in the Middle Ages"},
+	"rpp_TimePeriod_Lookup_Late20Century":				{"en": "in the late 20th century"},
+	"rpp_TimePeriod_Lookup_Early20Century":				{"en": "in the early 20th century"},
+	"rpp_TimePeriod_Lookup_Present":					{"en": "in the present"},
+	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"},
+
+	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | 🕑 {0}:{1}:{2} | The Fated ⏳️ {3} | Completion: {4}%"},
+	"rp_InGameChapterOnly":								{"en": "{0} | 🕑 {1}:{2}:{3} | The Fated ⏳️ {4} | Completion: {5}%"},	// TODO rp_InGameEXchapter
+	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | 🕑 {2}:{3}:{4} | The Fated ⏳️ {5} | Completion: {6}%"},
+	"rp_AtTitleScreen":									{"en": "Title Screen"},
+	"rp_Default":										{"en": "Wandering Lebensbaum"}}
+const_richPresence_IdLookupTables = {
+	"rpp_FatedHour": {
+		0x1: "rpp_FatedHour_Lookup_Prologue", 
+		0x2: "rpp_FatedHour_Lookup_Chapter1",
+		0x3: "rpp_FatedHour_Lookup_Chapter2",
+		0x4: "rpp_FatedHour_Lookup_Chapter3",
+		0x5: "rpp_FatedHour_Lookup_Chapter4",
+		0x6: "rpp_FatedHour_Lookup_Chapter5",
+		0x7: "rpp_FatedHour_Lookup_Chapter6",
+		0x8: "rpp_FatedHour_Lookup_Chapter7",
+		0x9: "rpp_FatedHour_Lookup_Chapter8",
+		0xb: "rpp_FatedHour_Lookup_Chapter8",
+		0xa: "rpp_FatedHour_Lookup_Chapter8",
+		0xc: "rpp_FatedHour_Lookup_Chapter8"},
+	"rpp_TimePeriod": {	// Refer to const_timePeriod
+		0x80: "rpp_TimePeriod_Lookup_MiddleAges",
+		0x82: "rpp_TimePeriod_Lookup_Early20Century",
+		0x81: "rpp_TimePeriod_Lookup_Late20Century",
+		0x83: "rpp_TimePeriod_Lookup_Present"},
+	"rpp_Chapter": {	// Refer to const_chapterIDs
+		0x1: "rpp_Chapter_Lookup_Prologue", // TODO EX chapter in rich presence with is isPrologueInExMode() && isExChapterUnlocked()
+		0x2: "rpp_Chapter_Lookup_Chapter1",
+		0x3: "rpp_Chapter_Lookup_Chapter2",
+		0x4: "rpp_Chapter_Lookup_Chapter3",
+		0x5: "rpp_Chapter_Lookup_Chapter4",
+		0x6: "rpp_Chapter_Lookup_Chapter5",
+		0x7: "rpp_Chapter_Lookup_Chapter6",
+		0x8: "rpp_Chapter_Lookup_Chapter7",
+		0x9: "rpp_Chapter_Lookup_Chapter8",
+		0xb: "rpp_Chapter_Lookup_Chapter8",
+		0xa: "rpp_Chapter_Lookup_Epilogue",
+		0xc: "rpp_Chapter_Lookup_Epilogue"}}
+function getRichPresenceText(string_textKey, string_languageCode) =>
+	const_richPresence_text[string_textKey][string_languageCode]
+function getRichPresenceLookupTable(string_lookupParameterKey, string_languageCode) =>
+	const_richPresence_IdLookupTables[string_lookupParameterKey]
+// ****************************
+// ÷ Rich_Presence CORE DATA ÷
+// ****************************
+//	- Contains logic data for all the rich presence scripts
+enum_RPtype = {
+	"DISPLAY_NORMAL": 0,		// rich_presence_display(format_string, parameters...)
+	"DISPLAY_CONDITIONAL": 1, 	// rich_presence_conditional_display(condition, format_string, parameters...)
+	"VALUE": 100,				// rich_presence_value(name, expression, [format])
+	"LOOKUP": 101,				// rich_presence_lookup(name, expression, dictionary, [fallback])
+	"MACRO": 103}				// rich_presence_macro(macro, expression)
+// -------------------------------------
+const_richPresence_coreData = {
+	// 	- Expression examples => byte(0x000) OR getCurrentLevel() + 1
+	// 	- Available macro's => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
+	// 	- Available formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
+	//	- Amount of parameters == amount of placeholders in the display_string
+	// "rp_Template": { // CONCEPT rp_template
+	// 	"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+	// 	"Condition": () { return 
+	// 		always_false()},
+	// 	"Parameters": {	
+	// 		"rpp_ValueTemplate": {
+	// 			"RPtype": enum_RPtype["VALUE"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,	
+	// 			"Format": "xxxxxxxxxxx"},
+	// 		"rpp_LookUpTemplate": {
+	// 			"RPtype": enum_RPtype["LOOKUP"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,
+	//			"LookupFallback": getRichPresenceText("xxxxxxxxxxxxxx", achievementLanguage)},
+	// 		"rpp_MacroTemplate": {			
+	// 			"RPtype": enum_RPtype["MACRO"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,
+	// 			"Macro": "xxxxxxxxxxx"}				
+	// 	}},
+	
+	// "rp_isPaused": { // CONCEPT rp_isPaused
+	// 	"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+	// 	"Condition": () { return 
+	// 		always_false()},
+	// 	"Parameters": {
+	// 		"rpp_ValueTemplate": {
+	// 			"RPtype": enum_RPtype["VALUE"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,	
+	// 			"Format": "xxxxxxxxxxx"},
+	// 		"rpp_LookUpTemplate": {
+	// 			"RPtype": enum_RPtype["LOOKUP"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,
+	//			"LookupFallback": getRichPresenceText("xxxxxxxxxxxxxx", achievementLanguage)},
+	// 		"rpp_MacroTemplate": {			
+	// 			"RPtype": enum_RPtype["MACRO"],
+	//			"PlaceholderNr": 00000,
+	// 			"Expression": __expressionHere__,
+	// 			"Macro": "xxxxxxxxxxx"}
+	// 	}},
+	"rp_InGameEXChapterOnly": {
+		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+		"Condition": () =>
+			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+			isPrologueInExMode() && isExChapterUnlocked() && 
+			isCurrentChapter("Prologue"),
+		"Parameters": {
+			"rpp_PresentTimeHours": {	// TODO Add Date???
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 0,
+				"Expression": getCurrentPresentTimeHours(),
+				"Macro": "Number"},
+			"rpp_PresentTimeMinutes": {	
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 1,
+				"Expression": getCurrentPresentTimeMinutes(),
+				"Macro": "Number"},
+			"rpp_PresentTimeSeconds": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 2,
+				"Expression": getCurrentPresentTimeSeconds(),
+				"Macro": "Number"},
+			"rpp_FatedHour": {
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 3,
+				"Expression": getChapterId(),
+				"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback" , achievementLanguage)},
+			"rpp_TotalCompletionRate": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 4,
+				"Expression": getTotalAchievementRate(),
+				"Macro": "Number"},
+		}},
+	"rp_InGameChapterOnly": {
+		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+		"Condition": () { return
+			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+			!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"])},
+		"Parameters": {
+			"rpp_Chapter": {
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 0,
+				"Expression": getChapterId(),
+				"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback", achievementLanguage)},				
+			"rpp_PresentTimeHours": {	// TODO Add Date???
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 1,
+				"Expression": getCurrentPresentTimeHours(),
+				"Macro": "Number"},
+			"rpp_PresentTimeMinutes": {	
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 2,
+				"Expression": getCurrentPresentTimeMinutes(),
+				"Macro": "Number"},
+			"rpp_PresentTimeSeconds": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 3,
+				"Expression": getCurrentPresentTimeSeconds(),
+				"Macro": "Number"},
+			"rpp_FatedHour": {
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 4,
+				"Expression": getChapterId(),
+				"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback" , achievementLanguage)},
+			"rpp_TotalCompletionRate": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 5,
+				"Expression": getTotalAchievementRate(),
+				"Macro": "Number"},
+		}},
+	"rp_InGameChapterWithTimePeriod": {
+		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+		"Condition": () => 
+			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() &&
+			isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"]),
+		"Parameters": {
+			"rpp_Chapter": {
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 0,
+				"Expression": getChapterId(),
+				"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback", achievementLanguage)},			
+			"rpp_TimePeriod": {	// TODO Time period not functional 100ù
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 1,
+				"Expression": getCurrentTimePeriod(),
+				"LookupFallback": ""},
+			"rpp_PresentTimeHours": {	// TODO Add Date???
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 2,
+				"Expression": getCurrentPresentTimeHours(),
+				"Macro": "Number"},
+			"rpp_PresentTimeMinutes": {	
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 3,
+				"Expression": getCurrentPresentTimeMinutes(),
+				"Macro": "Number"},
+			"rpp_PresentTimeSeconds": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 4,
+				"Expression": getCurrentPresentTimeSeconds(),
+				"Macro": "Number"},
+			"rpp_FatedHour": {
+				"RPtype": enum_RPtype["LOOKUP"],
+				"PlaceholderNr": 5,
+				"Expression": getChapterId(),
+				"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback", achievementLanguage)},
+			"rpp_TotalCompletionRate": {
+				"RPtype": enum_RPtype["MACRO"],
+				"PlaceholderNr": 6,
+				"Expression": getTotalAchievementRate(),
+				"Macro": "Number"},
+		}},
+	"rp_AtTitleScreen": {	// "Title Screen"
+		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+		"Condition": () { return
+			isMainSaveLoaded() && 
+			(isAtTitleScreen() || !isInGame())},
+			"Parameters": {}},
+	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
+		"RPtype": enum_RPtype["DISPLAY_NORMAL"],
+		"Parameters": {}}
+}
+// ******************************
+// ÷ Rich_Presence INITIALIZER ÷
+// ******************************
+function createNameFromParameterkey(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function populateRPlookupTablesWithText(string_languageCode) {	// Changes the const_richPresence_IdLookupTables IDs to the corresponding text in const_richPresence_text
+	for let_lookupTable in const_richPresence_IdLookupTables {
+		for let_valueKey in const_richPresence_IdLookupTables[let_lookupTable] {
+			let_lookupID = const_richPresence_IdLookupTables[let_lookupTable][let_valueKey]
+			const_richPresence_IdLookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID, string_languageCode)
+		}
+	}}
+function createRPparameter(string_parameterScriptKey, dict_parameterData) {		// Used in initilalizeRPdisplay()
+	function createRPparameter_Value(string_parameterKey, dict_paramValueData) {
+		let_name = createNameFromParameterkey(string_parameterKey)
+		let_expression = dict_paramValueData["Expression"]
+		let_format = dict_paramValueData["Format"] 	
+		return rich_presence_value(let_name, let_expression, let_format)}
+	
+	function createRPparameter_Lookup(string_parameterKey, dict_paramLookupData) {
+		let_name = createNameFromParameterkey(string_parameterKey)
+		let_expression = dict_paramLookupData["Expression"]
+		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey, achievementLanguage)
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+	
+	function createRPparameter_Macro(dict_paramMacroData, dict_paramMacroData) {
+		let_macro = dict_paramMacroData["Macro"] 
+		let_expression = dict_paramMacroData["Expression"]
+		return rich_presence_macro(let_macro, let_expression)}
+	
+	let_RPtype = dict_parameterData["RPtype"]
+	if (let_RPtype == enum_RPtype["VALUE"]) {
+		createRPparameter_Value(string_parameterScriptKey, dict_parameterData)
+	} else if (let_RPtype == enum_RPtype["LOOKUP"]) {
+		createRPparameter_Lookup(string_parameterScriptKey, dict_parameterData)
+	} else if (let_RPtype == enum_RPtype["MACRO"]) {
+		createRPparameter_Macro(string_parameterScriptKey, dict_parameterData)
+	} else {
+		throwError(format("The rich presence parameter script: {0} did not evaluate correctly", string_parameterScriptKey))
+	}}
+function orderRPparameters(dict_parameterData){ // Place RPparameters in correct order for the format function placeholder
+	let_unOrderedRPparameters = {}
+	for parameterKey in dict_parameterData {
+		let_RPparam = createRPparameter(parameterKey, dict_parameterData[parameterKey])
+		let_unOrderedRPparameters[dict_parameterData[parameterKey]["PlaceholderNr"]] = let_RPparam
+	}
+	let_orderedRPparameters = []
+	for let_placeholderNr in range(0, length(let_unOrderedRPparameters) - 1) { 
+		array_push(let_orderedRPparameters, let_unOrderedRPparameters[let_placeholderNr])
+	}
+	return let_orderedRPparameters}
+function initilalizeRPdisplay(string_displayScriptKey, dict_richPresenceScripts) {	// Initializes rich presence display scripts
+	function initializeRPdisplay_Normal(string_displayScriptKey, dict_displayNormalData) {
+		let_formatString = getRichPresenceText(string_displayScriptKey, achievementLanguage)		
+		if (length(dict_displayNormalData["Parameters"]) > 0) {			
+			rich_presence_display(let_formatString, orderRPparameters(dict_displayNormalData["Parameters"]))
+		} else {
+			rich_presence_display(let_formatString)
+		}}
+	function initializeRPdisplay_Conditional(string_displayScriptKey, dict_displayConditionalData) {
+		let_formatString = getRichPresenceText(string_displayScriptKey, achievementLanguage)
+		let_condition = dict_displayConditionalData["Condition"]
+		if (length(dict_displayConditionalData["Parameters"]) > 0) {
+			rich_presence_conditional_display(let_condition, let_formatString, orderRPparameters(dict_displayConditionalData["Parameters"]))
+		} else {
+			rich_presence_conditional_display(let_condition, let_formatString)
+		}}
+	let_countDisplayNormalScripts = 0
+	let_RPtype = dict_richPresenceScripts[string_displayScriptKey]["RPtype"]
+	if (let_RPtype == enum_RPtype["DISPLAY_NORMAL"]) {
+		initializeRPdisplay_Normal(string_displayScriptKey, dict_richPresenceScripts[string_displayScriptKey])
+		let_countDisplayNormalScripts = let_countDisplayNormalScripts + 1
+		if (let_countDisplayNormalScripts > 1) throwError("More than one DISPLAY_NORMAL script was defined; The last one will overwrite all the previous ones")
+	} else if (let_RPtype == enum_RPtype["DISPLAY_CONDITIONAL"]) {
+		initializeRPdisplay_Conditional(string_displayScriptKey, dict_richPresenceScripts[string_displayScriptKey])
+	} else {
+		throwError(format("The rich presence display script: {0} did not evaluate correctly", string_displayScriptKey))
+	}}
+function initializeRichPresence() {
+	// DEV NOTE: rich_presence_macro(macro, expression)
+	//	- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
+	// ------------------------------------------------------	
+	// EXAMPLE:
+	// 		rich_presence_conditional_display(is_title_screen(), "Title Screen")
+	// 		rich_presence_display("Playing Battle {0} in {1} | Score: {2}", 
+	// 			rich_presence_value("Battle", getCurrentLevel()),
+	// 			rich_presence_lookup("Area", getCurrentArea(), areaDictionary),
+	// 			rich_presence_macro("Score", getCurrentScore())
+	// 		)
+	populateRPlookupTablesWithText(achievementLanguage)
+	for rpDisplayScriptKey in const_richPresence_coreData {
+		initilalizeRPdisplay(rpDisplayScriptKey, const_richPresence_coreData)}
+	}
 
 
-// TODO Rich Presence
 
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
-	initializeAchievements()}
+	initializeAchievements()
+	initializeRichPresence()}
 initializeRAscript()
