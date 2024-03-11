@@ -31,12 +31,12 @@
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
+// TODO set debug mode off
+const_utilitySettings_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
+const_utilitySettings_language = "en"	// ISO 639-1 language codes 
 
-function isDebugModeActive() => true			// if active => extra information may be displayed on achievement titles & descriptions	// TODO set debug mode off
-
-achievementLanguage = "en"						// ISO 639-1 language codes 
-
-achievementGuideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
+const_utilitySettings_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
+const_utilitySettings_isGuideLinkEnabled = false			// if false => above link will not be placed into the achievement description, even when the achievement has tips in the guide 
 
 function throwError(string_errMsg) {	// This function will throw an error in RAscript because the key doesn't exist
 	let_dict = {}
@@ -906,14 +906,15 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 // - check if key (achievementname) => is unique with ctrl+F
-// TODO add badges and type (missable, progression, win_condition)
+// TODO badges  
+// TODO type (missable, progression, win_condition)
 const_achievements_coreData = {
 	// "a_Template": { // CONCEPT a_template
 	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 	"c_Completion": { // Category - Completing chapters
 		"a_PrologueComplete": { // WORKING 
-			"id": 306884, "points": 5, "hasTips": false,
+			"id": 306884, "points": 5, "hasTips": false, "badgeId": 00000000, "type": "missable"
 			"devInfo": "Complete the prologue"},
 		"a_Chapter1Complete": { // WORKING
 			"id": 306886, "points": 5, "hasTips": false,
@@ -3705,7 +3706,7 @@ function initializeAchievements() {
 	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if isDebugModeActive() {
+			if (const_utilitySettings_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -3725,14 +3726,14 @@ function initializeAchievements() {
 		}
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if isDebugModeActive() && string_devInfo != "" {
+			if (const_utilitySettings_debugMode && string_devInfo != "") {
 				let_devInfoString = let_devInfoString + " - [DEV: " + string_devInfo + "]"
 			}
 			return let_devInfoString
 		}	
 		function enterTipsLink(boolean_hasTips) {
 			let_tipsLink = ""
-			if(boolean_hasTips == true) let_tipsLink = " - [Tips: " + achievementGuideLink + "]"
+			if (const_utilitySettings_isGuideLinkEnabled && boolean_hasTips == true) let_tipsLink = " - [Tips: " + const_utilitySettings_guideLink + "]"
 			return let_tipsLink 
 		}
 		return lookUpAchievementDescription(string_achievementDevName, string_languageCode) + enterTipsLink(boolean_hasTips) + enterDevInfo(string_devInfo) 
@@ -3748,8 +3749,8 @@ function initializeAchievements() {
 			let_cheevment = const_achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
-				title = generateAchievementTitle(cheevmentName, categoryName, achievementLanguage), 
-				description = generateAchievementDescription(cheevmentName, let_cheevment["hasTips"], let_cheevment["devInfo"], achievementLanguage),
+				title = generateAchievementTitle(cheevmentName, categoryName, const_utilitySettings_language), 
+				description = generateAchievementDescription(cheevmentName, let_cheevment["hasTips"], let_cheevment["devInfo"], const_utilitySettings_language),
 				points = let_cheevment["points"],
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
@@ -3854,9 +3855,9 @@ const_richPresence_lookupTables = {
 		0xb: "rpp_Chapter_Lookup_Chapter8",
 		0xa: "rpp_Chapter_Lookup_Epilogue",
 		0xc: "rpp_Chapter_Lookup_Epilogue"}}
-function getRichPresenceText(string_textKey, string_languageCode) =>
-	const_richPresence_text[string_textKey][string_languageCode]
-function getRichPresenceLookupTable(string_lookupParameterKey, string_languageCode) =>
+function getRichPresenceText(string_textKey) =>
+	const_richPresence_text[string_textKey][const_utilitySettings_language]
+function getRichPresenceLookupTable(string_lookupParameterKey) =>
 	const_richPresence_lookupTables[string_lookupParameterKey]
 // ****************************
 // ÷ Rich_Presence CORE DATA ÷
@@ -3944,11 +3945,11 @@ const_richPresence_placeHolderParameterData = {
 	"rpp_Chapter": {
 		"RPtype": enum_RPtype["LOOKUP"],
 		"Expression": getChapterId(),
-		"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback", achievementLanguage)},
+		"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback")},
 	"rpp_TimePeriod": {	
 		"RPtype": enum_RPtype["LOOKUP"],
 		"Expression": getCurrentTimePeriod(),
-		"LookupFallback": getRichPresenceText("rpp_TimePeriod_LookupFallback", achievementLanguage)},
+		"LookupFallback": getRichPresenceText("rpp_TimePeriod_LookupFallback")},
 	"rpp_TotalCompletionRate": {
 		"RPtype": enum_RPtype["MACRO"],
 		"Expression": getTotalAchievementRate(),
@@ -3980,16 +3981,16 @@ const_richPresence_placeHolderParameterData = {
 	"rpp_FatedHour": {
 		"RPtype": enum_RPtype["LOOKUP"],
 		"Expression": getChapterId(),
-		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback", achievementLanguage)}}
+		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback")}}
 // ******************************
 // ÷ Rich_Presence INITIALIZER ÷
 // ******************************
 function createNameFromPlaceholderParameterkey(string_placeholderParameterKey) => substring(string_placeholderParameterKey, 4)	// Removes rpp_ 
-function populateRPlookupTablesWithText(string_languageCode) {	// Changes the const_richPresence_lookupTables IDs to the corresponding text in const_richPresence_text
+function populateRPlookupTablesWithText() {	// Changes the const_richPresence_lookupTables IDs to the corresponding text in const_richPresence_text
 	for let_lookupTable in const_richPresence_lookupTables {
 		for let_valueKey in const_richPresence_lookupTables[let_lookupTable] {
 			let_lookupID = const_richPresence_lookupTables[let_lookupTable][let_valueKey]
-			const_richPresence_lookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID, string_languageCode)
+			const_richPresence_lookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID)
 		}
 	}}
 function createCorrespondingRPparameterFunction(string_placeholderParameterKey) {
@@ -4002,7 +4003,7 @@ function createCorrespondingRPparameterFunction(string_placeholderParameterKey) 
 	function createRPparameterFunction_Lookup(string_parameterKey, dict_paramLookupData) {
 		let_name = createNameFromPlaceholderParameterkey(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"]
-		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey, achievementLanguage)
+		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey)
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
@@ -4035,14 +4036,14 @@ function createRPparameters(dict_placeholderParameterData){ // Place RPplacehold
 	return let_orderedRPparameters}
 function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// Initializes rich presence display scripts
 	function initializeRPdisplay_Normal(string_displayScriptKey, dict_displayNormalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey, achievementLanguage)		
+		let_formatString = getRichPresenceText(string_displayScriptKey)		
 		if (length(dict_displayNormalData["PlaceholderParameters"]) > 0) {			
 			rich_presence_display(let_formatString, createRPparameters(dict_displayNormalData["PlaceholderParameters"]))
 		} else {
 			rich_presence_display(let_formatString)
 		}}
 	function initializeRPdisplay_Conditional(string_displayScriptKey, dict_displayConditionalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey, achievementLanguage)
+		let_formatString = getRichPresenceText(string_displayScriptKey)
 		let_condition = dict_displayConditionalData["Condition"]
 		if (length(dict_displayConditionalData["PlaceholderParameters"]) > 0) {
 			rich_presence_conditional_display(let_condition, let_formatString, createRPparameters(dict_displayConditionalData["PlaceholderParameters"]))
@@ -4071,7 +4072,7 @@ function initializeRichPresence() {
 	// 			rich_presence_lookup("Area", getCurrentArea(), areaDictionary),
 	// 			rich_presence_macro("Score", getCurrentScore())
 	// 		)
-	populateRPlookupTablesWithText(achievementLanguage)
+	populateRPlookupTablesWithText()
 	for rpDisplayScriptKey in const_richPresence_coreData {
 		initilalizeRPdisplay(rpDisplayScriptKey, const_richPresence_coreData[rpDisplayScriptKey])}
 	}
