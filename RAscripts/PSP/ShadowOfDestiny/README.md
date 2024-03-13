@@ -57,7 +57,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Vintage Knots</b><br><i>a_MaxAchievementChapter7</i> | - Refer to a_MaxAchievementPrologue |
 | :trophy: <b>The Power of Fate</b><br><i>a_MaxAchievementChapter8</i> | - Refer to a_MaxAchievementPrologue |
 | :trophy: <b>Eternal Youth</b><br><i>a_MaxAchievementEpilogue</i> | - Refer to a_MaxAchievementPrologue |
-| :trophy: <b>The future is what - what all of us - make it.</b><br><i>a_MaxAchievementTotal</i> | - Refer to a_MaxAchievementPrologue |
+| :trophy: <b>The Day of Walpurgis</b><br><i>a_MaxAchievementTotal</i> | - Refer to a_MaxAchievementPrologue |
 
 ### :gem: Endings
 | Title + ID (dev info) | Explanation & tips |
