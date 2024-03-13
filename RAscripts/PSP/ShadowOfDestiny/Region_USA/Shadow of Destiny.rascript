@@ -59,25 +59,19 @@ function addToDictionary(dict, key, value) {
 // ******************
 // ÷ TIME AND DATE ÷
 // ******************
-//	$AA1268: Time Period
-// 		0x80 => Middle ages 1500s
-// 		0x81 => Old century 1900s
-// 		0x82 => Close past 1970s-1980s
-// 		0x83 => Present 2000s
 const_timePeriod = {
 	"Present":	0x83,
-	"ClosePast": 0x82,
-	"OldCentury": 0x81,
+	"Late20ThCentury": 0x82,	// When in 1980
+	"Late20ThCentury": 0x88,	// When in 1979
+	"Early20ThCentury": 0x81,
 	"MiddleAges": 0x80}
 
 function getCurrentTimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
-									//		0x81 => Old century 1900s
-									//		0x82 => Close past 1970s-1980s
-									//		0x83 => Present 2000s	
-
-function isInTimePeriod(stringKey_timePeriod) => 
-	getCurrentTimePeriod() == const_timePeriod[stringKey_timePeriod]
+									// 		0x81 => Late 20th Century 1900s
+									// 		0x82 => Early 20th Century 1980
+									// 		0x88 => Early 20th Century 1979
+									// 		0x83 => Present 2000s
 
 function getCurrentPresentTimeHours() =>	// $AA12B0: [32-bit] Time in present: hours
 	dword(0xAA12B0)
@@ -330,15 +324,14 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {		// $A9ECD4: [25-bit] Po
 
 
 
-// **********************************
-// ÷ MAP/SCENE/SCENARIO IDENTIFIER ÷
-// **********************************
+// ******************************
+// ÷ MAP/SCENE/AREA IDENTIFIER ÷
+// ******************************
 const_mapIDs= {	// list not complete, add as is necessary
 	"PresentDayCity": 0x375,
 	"PresentNightCityPM": 0x44,
 	"PresentNightCityAM": 0x3,
 	"CafeSonnePresent": 0x10,
-	"NightBefore": 0x3,
 	"80sColdCity": 0x465,
 	"70sNightCity": 0x31d,
 	"1900sCity": 0x239,
@@ -2078,10 +2071,9 @@ const_achievement_triggers = {
 			unless(
 				isWearingPerformerOutfit()	||
 				(
-					!isCurrentMapScene("PresentDayCity") 		&& 
-					!isCurrentMapScene("PresentNightCityPM") 	&&
-					!isCurrentMapScene("PresentNightCityAM")	&&
-					!isCurrentMapScene("NightBefore")
+					!isCurrentMapScene("PresentDayCity") 	 && 
+					!isCurrentMapScene("PresentNightCityPM") &&
+					!isCurrentMapScene("PresentNightCityAM")
 				) 
 			) &&
 			measured(measuredComparison(), measuredIfComparison()) &&
@@ -3666,21 +3658,21 @@ const_achievement_titles = {
 // -------------------------------------
 const_achievement_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_PrologueComplete": {							"en": "Complete the Prologue",
+	"a_PrologueComplete": {							"en": "Complete the prologue",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Complete Chapter 1",
+	"a_Chapter1Complete": {							"en": "Complete chapter 1",
 													"nl": "Hoofdstuk 1 voltooid",
 													"fr": "Chapitre 1 terminé"},													
-	"a_Chapter2Complete": 							{"en": "Complete Chapter 2"},
-	"a_Chapter3Complete": 							{"en": "Complete Chapter 3"},
-	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
-	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
-	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
-	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
-	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
-	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
-	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
+	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
+	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
+	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
+	"a_Chapter4CompleteSign": 						{"en": "Complete chapter 4, using a sign"},	
+	"a_Chapter5Complete": 							{"en": "Complete chapter 5"}, 
+	"a_Chapter6CompleteThriller":					{"en": "Complete chapter 6, by co-directing a thriller picture"},
+	"a_Chapter6CompleteLove":						{"en": "Complete chapter 6, by co-directing a love picture"},
+	"a_Chapter7Complete":							{"en": "Complete chapter 7"},
+	"a_Chapter8Complete":							{"en": "Complete chapter 8"},
 	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue and EX chapter"},
 	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for chapter 1"},
 	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for chapter 2"},
@@ -3692,16 +3684,16 @@ const_achievement_descriptions = {
 	"a_MaxAchievementChapter8":						{"en": "Reach 100% achievement rate for chapter 8"},
 	"a_MaxAchievementEpilogue":						{"en": "Reach 100% achievement rate for the epilogue"},
 	"a_MaxAchievementTotal":						{"en": "Reach 100% total achievement rate"},
-	"a_EndingA":									{"en": "Achieve Ending A"},
-	"a_EndingB1":									{"en": "Achieve Ending B1"},
-	"a_EndingB2":									{"en": "Achieve Ending B2"},
-	"a_EndingC": 									{"en": "Achieve Ending C"},
-	"a_EndingD": 									{"en": "Achieve Ending D"},
-	"a_EndingE": 									{"en": "Achieve Ending E"},
-	"a_EndingEXKillHomunculus":						{"en": "Achieve Ending EX, by destroying the jewel"},
-	"a_EndingEXCureHelena":							{"en": "Achieve Ending EX, by creating a miracle cure"},
+	"a_EndingA":									{"en": "Achieve ending A"},
+	"a_EndingB1":									{"en": "Achieve ending B1"},
+	"a_EndingB2":									{"en": "Achieve ending B2"},
+	"a_EndingC": 									{"en": "Achieve ending C"},
+	"a_EndingD": 									{"en": "Achieve ending D"},
+	"a_EndingE": 									{"en": "Achieve ending E"},
+	"a_EndingEXKillHomunculus":						{"en": "Achieve ending EX, by destroying the jewel"},
+	"a_EndingEXCureHelena":							{"en": "Achieve ending EX, by creating a miracle cure"},
 	"a_DoctorateTimeTraveling": 					{"en": "Get lectured in time-travelling physics during chapter 4"}, 
-	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man in the past as well as his present self during chapter 3, 4 or 5"},
+	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man in the past, as well as his present self during chapter 3, 4 or 5"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Show off your egg collection to the barman's ancestor from chapter 6 onward"},
@@ -3733,13 +3725,13 @@ const_achievement_descriptions = {
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
 	"a_FreeMeal":									{"en": "Enjoy a free supper at Bar Zum Ei during chapter 5"}, 
 	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
-	"a_ScareEveryone": 								{"en": "Frighten everyone in the past and a person indulging in spaghetti during chapter 2"}, 
-	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
+	"a_ScareEveryone": 								{"en": "Frighten everyone in the past, as well as a person in the present who is indulging some spaghetti, during chapter 2"}, 
+	"a_TimeTravellingCat":							{"en": "Gift a feline friend to a girl during or after chapter 4"},
 	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
 	"a_SeenOlegAsWell": 							{"en": "Find someone who has also met the meditating man in chapter 6"},
 	"a_PocketWatchTo80sBarman": 					{"en": "Pique someone's interest with an oval shape of your own in the 1980's"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
-	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
+	"a_ArtAppreciator": 							{"en": "Admire all original paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics at Antique Shop Eule"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
@@ -3885,7 +3877,7 @@ const_richPresence_text = {
 	"rp_AtTitleScreen":									{"en": "Title Screen"},
 	"rp_Default":										{"en": "Wandering Lebensbaum"}}
 const_richPresence_lookupTables = {
-	"rpp_FatedHour": {
+	"rpp_FatedHour": {	// Corresponds to current chapter
 		0x1: "rpp_FatedHour_Lookup_Prologue", 
 		0x2: "rpp_FatedHour_Lookup_Chapter1",
 		0x3: "rpp_FatedHour_Lookup_Chapter2",
