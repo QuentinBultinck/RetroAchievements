@@ -19,32 +19,21 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     
 *(Achievements are divided by category)*
 
-### :gem: Story completion
+### :gem: Progression
 
-| Title + <i>ID (dev info)</i> | Explanation & tips | Specific unlock criteria |
-|----|---|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
+| Title + <i>ID (dev info)</i> | Explanation & tips |
+|----|---|
+| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
 
-### :gem: Branching paths
-| Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
-|----|---|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
+### :gem: Win Condition
+| Title + ID (dev info) | Explanation & tips |
+|----|---|
+| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
 
-
-### :gem: Endings
-| Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
-|----|---|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
-
-### :gem: Side content & extra cutscenes
-| Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
-|----|---|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
-
-### :gem: Hidden cutscenes that lead to death
-| Title + ID (dev info) | Explanation & tips | Specific unlock criteria |
-|----|---|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ | _unlockCriteria_ |
+### :gem: Missable/extra content
+| Title + ID (dev info) | Explanation & tips |
+|----|---|
+| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
 
 ## Footnotes
 #### *Measured achievement<sup>1</sup>*
