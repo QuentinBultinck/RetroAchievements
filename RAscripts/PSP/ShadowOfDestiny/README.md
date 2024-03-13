@@ -35,7 +35,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>Director's Cut: Trip for Two</b><br><i>a_Chapter6CompleteLove</i> | Any walkthrough/gameplay guide | Don't skip the cutscenes when choosing what movie you'll make with Oleg |
 | :trophy: <b>A Friend's Repentance</b><br><i>a_Chapter7Complete</i> | Any walkthrough/gameplay guide |
 | :trophy: <b>The whole picture... Or is it?</b><br><i>a_Chapter8Complete</i> | Any walkthrough/gameplay guide |
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
 
 ### :gem: Branching paths :gem:
 | Title + ID (dev info) | Explanation & tips |
@@ -44,6 +43,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>A Jovial Exchange</b><br><i>a_EggCollection</i> | - Prerequisite achievement => a_GetOrnamentalEgg <br> - In chapter 1, 3 or 4 you can exchange the ornamental egg to the barman for a frying pan. He's downstairs in the basement. <br> Refer to a_AlertBarmanOfFire if you wanna give it to him in chapter 1. After alerting him, go back downstairs once more with the egg in your inventory |
 | :trophy: <b>There's a fire!</b><br><i>a_AlertBarmanOfFire</i> | - In chapter 1 warn the young boy's grandpa who's in the basement of the bar during the fire <br> 1. Head into find the grandpa <br> 2. After dying, interact with the stairs and the door <br> 2. Head back to the present <br> 3. Once in the present go back the to past without going to the back of the bar (don't extinguishing the fire yourself) <br> 4. Back in the past, you should now arrive INSIDE the bar, if you spawn back outside then repeat from step 2 a few times in the same playthrough until you spawn inside when time travelling from the present to the past <br> 5. Head downstairs and warn the barman |
 | :trophy: <b>Even I can do that</b><br><i>a_BecomeThePerformer</i> | - In chapter 4, when you haven't gotten the ornamental egg before this chapter starts (see a_GetOrnamentalEgg), there's only 2 ways to complete the chapter. By using Franssen's Shop Sign or becoming the performer <br> 1. Go to 1908 and when you have the costume you can travel back to chapter 1 by interacting with the jugglery or ornamental egg on one of the chairs next to Sibylla <br> 2. Use your jugglery item at the Marktzplatz, just as you've seen in the chapter 1 ending cutscene |
+
+### :gem: Achievement Percentage :gem:
+| Title + ID (dev info) | Explanation & tips |
+|----|---|
 | :trophy: <b>Homing Instinct</b><br><i>a_MaxAchievementPrologue</i> | - Current achievement rate is viewable in the extra menu once at least one ending is achieved. <br> - You can also view/update the achievement rate of the current chapter in the save menu or when entering/starting/loading a chapter. Doing so makes the achievement measure popup show for a few seconds <br> - A third option is to view the percentage rate in the RA overlay (only shows current chapter and total). [Shadow of Destiny, PSP - Walkthrough with percentage guide](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/60376 "Shadow of Destiny, PSP - Walkthrough with percentage guide") |
 | :trophy: <b>In the Heat of Time</b><br><i>a_MaxAchievementChapter1</i> | - Refer to a_MaxAchievementPrologue |
 | :trophy: <b>Dana Kusch</b><br><i>a_MaxAchievementChapter2</i> | - Refer to a_MaxAchievementPrologue |
@@ -55,7 +58,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>The Power of Fate</b><br><i>a_MaxAchievementChapter8</i> | - Refer to a_MaxAchievementPrologue |
 | :trophy: <b>Eternal Youth</b><br><i>a_MaxAchievementEpilogue</i> | - Refer to a_MaxAchievementPrologue |
 | :trophy: <b>The future is what - what all of us - make it.</b><br><i>a_MaxAchievementTotal</i> | - Refer to a_MaxAchievementPrologue |
-
 
 ### :gem: Endings
 | Title + ID (dev info) | Explanation & tips |
@@ -116,6 +118,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | :trophy: <b>The Next Big Thing</b><br><i>a_MeetFamousOleg</i> | - Talk with Oleg the movie director chapter 7 <br> 1. Receive the egg-shaped pocket watch from young Oleg in chapter 6 <br> 2. Pay for coffee/tab at the bar in the 1900's, thus getting rid of the watch (do this is chapter 6 or 7) <br> 3. In chapter 7, acquire the tower key <br> 4. Head back to the present (not the night before) <br> 5. Head outside. Old Oleg should be next to the movie post. <br> - He only spawns if you got rid of the pocket watch by paying for the coffee |
 | :trophy: <b>Running Beyond the 90's... and 80's</b><br><i>a_RunningAcrossThe90s</i> | - From chapter 3 onward, you can encounter a jogging man running around the outskirts/the wall of Lebensbaum. Talk to him in the present as well as in the late 70's. <br> - This achievement must be unlocked before chapter 6, as in this chapter the younger version of the old man doesn't spawn anymore. <br> - *Measured achievement<sup>1</sup>* |
 | :trophy: <b>A Complimentary Dinner</b><br><i>a_FreeMeal</i> | 1. In chapter 1, save the bar from fire, by warning the barman in the past. Not by extinguishing the flames yourself. <br> 2. In chapter 5, head to the bar. The barman will remember you and gift you a free meal |
+| :trophy: <b>The Meditating Man</b><br><i>a_SeenOlegAsWell</i> | - Locate someone who has also met the movie director in chapter 6 <br> 1. After talking with Oleg, the movie director in chapter 6, go to Cafe Sonné in the same time period (1980) <br> 2. Talk once to the man in front of the ordering display |
+| :trophy: <b>That's nice!</b><br><i>a_PocketWatchTo80sBarman</i> | - Use the ornamental egg or pocket watch next to the barman in 1980 (the snowing day). He's inside the bar. |
 | :trophy: <b>The Philosopher's Wisdom</b><br><i>a_GetExChapterOrnamentalEgg</i> | - In the EX chapter, acquire the ornamental egg <br> 1. At start of chapter, head to the fortune teller <br> 2. head to Hugo outside burning bar once and pick to not help <br> 3. Go back to the performer to receive one last message |
 | :trophy: <b>Horologic Heritage</b><br><i>a_ShowPocketWatchToPhotographer</i> | - Show off your egg-shaped pocket watch to Oleg Franssens ancestor in 1902 <br> 1. In chapter 6, acquire the pocket watch, by co-directing a succesful movie <br> 2. Once you have the watch, head to 1902 <br> 3. Take the picture with the white dress at the Brum Estate <br> 4. Head back outside and use the pocket watch next to Oleg Franssen's ancestor <br> - Steps 2-4 can also be completed in chapters 7 and 8 |
 

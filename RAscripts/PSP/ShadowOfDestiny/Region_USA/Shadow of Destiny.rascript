@@ -144,6 +144,12 @@ const_NPCs = {
 		"ID": 0x58},
 	"JoggingMan_80s": {
 		"ID": 0x59},
+	"Barman_80s": { 
+		"ID": 0xc, "Appearance": {
+			"InsideBar_UsePocketWatchOrEgg": {"MemAddrTalkCount": 0xA9EE49, "MaxTalkCount": 1}}},	// Counts for chap 6-7-8
+	"OlderMan_80s": { 
+		"ID": 0x18d, "Appearance": {
+			"Chap6_CafeSonne": {"MemAddrTalkCount": 0xA9EF43, "MaxTalkCount": 2}}},
 	"YoungCoupleWoman_MiddleAges": { 
 		"ID": 0x197, "Appearance": {
 			"Chap2_WestGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7C, "MaxTalkCount": 1},
@@ -331,12 +337,14 @@ const_mapIDs= {	// list not complete, add as is necessary
 	"PresentDayCity": 0x375,
 	"PresentNightCityPM": 0x44,
 	"PresentNightCityAM": 0x3,
-	"CafeSonne": 0x10,
+	"CafeSonnePresent": 0x10,
 	"NightBefore": 0x3,
 	"80sColdCity": 0x465,
 	"70sNightCity": 0x31d,
 	"1900sCity": 0x239,
 	"1900sBrumMansion": 0x603,
+	"ColdCityBar": 0xf,
+	"CafeSonne80s": 0x15,
 	"MedievalCity": 0x3f3,
 	"MedievalNightCity": 0x33c,
 	"ExplodedAlchemistBasement": 0x217,
@@ -906,8 +914,6 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 
-// TODO badges  
-
 const_achievements_coreData = {
 	// DEV NOTE: Achievement property 'badgeId'
 	// 	=> needs to be a string, not integer
@@ -1144,6 +1150,12 @@ const_achievements_coreData = {
 		"a_DrunkenGuys": { // WORKING
 			"id": 404048, "points": 2, "badgeId": "00000000", "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
+		"a_SeenOlegAsWell": { // WORKING
+			"id": 405098, "points": 1, "badgeId": "00000000", "hasTips": true,
+			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
+		"a_PocketWatchTo80sBarman": { // WORKING
+			"id": 407681, "points": 1, "badgeId": "00000000", "hasTips": true,
+			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
 		"a_RunningAcrossThe90s": { // WORKING
 			"id": 405086, "points": 2, "badgeId": "00000000", "hasTips": true,
 			"devInfo": "Talk to jogging man in present and past (70s)"},
@@ -2998,7 +3010,7 @@ const_achievement_triggers = {
 			(
 				(
 					unless(
-						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonne")			
+						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonnePresent")			
 					) &&
 					measured(measuredComparison(), isInGame() && isCurrentChapter("Chapter2")) &&
 					trigger_when(isNoCutsceneActive())
@@ -3340,6 +3352,34 @@ const_achievement_triggers = {
 			) &&
 			trigger_when(!isSmallCutsceneActive()) &&
 			measured(measuredComparison(), measuredIfComparison())},
+	"a_SeenOlegAsWell": function SeenOlegAsWell() { return
+		never(
+			!isInGame()				||
+			isEventViewerActive() 	||
+			!isCurrentChapter("Chapter6") 
+		) &&
+		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
+			isSmallCutsceneActive() && isCurrentMapScene("CafeSonne80s") &&
+			isTalkingTo("OlderMan_80s") && 
+			isInteractionChapterId(0xb2) && isInteractionId(0x3e7) && 
+			isNPCtalkCountIncreasing("OlderMan_80s", "Chap6_CafeSonne")
+		) &&
+		trigger_when(isFullCutsceneSequenceEnding())},
+	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
+		never(
+			!isInGame()			||
+			isEventViewerActive()
+		) &&
+		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
+			isSmallCutsceneActive() && isCurrentMapScene("ColdCityBar") &&
+			(
+				isCurrentSelectedInventoryItem("EggPocketWatch") ||
+				isCurrentSelectedInventoryItem("OrnamentalEgg")
+			) &&
+			isTalkingTo("Barman_80s") && isInteractionId(0x2ed) &&
+			isNPCtalkCountAtMax("Barman_80s", "InsideBar_UsePocketWatchOrEgg")
+		) &&
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!isInGame()				||
@@ -3587,9 +3627,9 @@ const_achievement_titles = {
 	"a_LostYoungCouple5": 							{"en": "Yesteryears Couple V: Parting"},
 	"a_LostYoungCouple6": 							{"en": "Yesteryears Couple VI: Never Destined to Meet"},
 	"a_EnigmaticCouple1": 							{"en": "Enigmatic Couple I: Prelude"},
-	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Tailing"}, 
+	"a_EnigmaticCouple2": 							{"en": "Enigmatic Couple II: Tailing"},
 	"a_EnigmaticCouple3": 							{"en": "Enigmatic Couple III: Wandering Once More"}, 
-	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},	
+	"a_EnigmaticCouple4": 							{"en": "Enigmatic Couple IV: Origins"},
 	"a_EnigmaticCouple5": 							{"en": "Enigmatic Couple V: Epilogue"},
 	"a_ErasingEike": 								{"en": "That's a big no no."}, 
 	"a_ErasingEike2": 								{"en": "Bump... Erased"},
@@ -3601,6 +3641,8 @@ const_achievement_titles = {
 	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day."},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
 	"a_HugoMotherChild":							{"en": "A Mother's Child"}, 
+	"a_SeenOlegAsWell": 							{"en": "The Meditating Man"}, 
+	"a_PocketWatchTo80sBarman": 					{"en": "That's nice!"},
 	"a_FreeMeal":									{"en": "A Complimentary Dinner"}, 
 	"a_TimeEgoFlop":								{"en": "Time Ego Flop"},
 	"a_ArtAppreciator": 							{"en": "Strokes of Destiny"}, 
@@ -3694,6 +3736,8 @@ const_achievement_descriptions = {
 	"a_ScareEveryone": 								{"en": "Frighten everyone in the past and a person indulging in spaghetti during chapter 2"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline to a girl during or after chapter 4"},
 	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
+	"a_SeenOlegAsWell": 							{"en": "Find someone who has also met the meditating man in chapter 6"},
+	"a_PocketWatchTo80sBarman": 					{"en": "Pique someone's interest with an oval shape of your own in the 1980's"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all the paintings in the Brum Museum"},
 	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics at Antique Shop Eule"},
