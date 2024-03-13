@@ -31,14 +31,14 @@
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
-// TODO set debug mode off
+
 const_utilitySettings_debugMode = false	// if true => extra information may be displayed on achievement titles & descriptions
 const_utilitySettings_language = "en"	// ISO 639-1 language codes 
 
 const_utilitySettings_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
 const_utilitySettings_isGuideLinkEnabled = false			// if false => above link will not be placed into the achievement description, even when the achievement has tips in the guide 
 
-function throwError(string_errMsg) {	// This function will throw an error in RAscript because the key doesn't exist
+function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
@@ -59,13 +59,6 @@ function addToDictionary(dict, key, value) {
 // ******************
 // ÷ TIME AND DATE ÷
 // ******************
-const_timePeriod = {
-	"Present":	0x83,
-	"Late20ThCentury": 0x82,	// When in 1980
-	"Late20ThCentury": 0x88,	// When in 1979
-	"Early20ThCentury": 0x81,
-	"MiddleAges": 0x80}
-
 function getCurrentTimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
 									// 		0x81 => Late 20th Century 1900s
@@ -668,9 +661,6 @@ function getCurrentEnergyUnits() =>		// $A9DAA8: Number of energy units in posse
 										//		- Min => 0x0 		Max => 0x0a
 function isEnergyUnitsIncreasing() => 		
 	getCurrentEnergyUnits() > prev(getCurrentEnergyUnits())	
-
-function isEnergyUnitsIncreased() => 
-	getCurrentEnergyUnits() > prior(getCurrentEnergyUnits())
 
 function isEnergyUnitsDecreasing() => 
 	getCurrentEnergyUnits() < prev(getCurrentEnergyUnits())
@@ -3673,7 +3663,7 @@ const_achievement_descriptions = {
 	"a_Chapter6CompleteLove":						{"en": "Complete chapter 6, by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete chapter 8"},
-	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue and EX chapter"},
+	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue, including the EX chapter"},
 	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for chapter 1"},
 	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for chapter 2"},
 	"a_MaxAchievementChapter3":						{"en": "Reach 100% achievement rate for chapter 3"},
@@ -3732,19 +3722,19 @@ const_achievement_descriptions = {
 	"a_PocketWatchTo80sBarman": 					{"en": "Pique someone's interest with an oval shape of your own in the 1980's"},
 	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
 	"a_ArtAppreciator": 							{"en": "Admire all original paintings in the Brum Museum"},
-	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics at Antique Shop Eule"},
+	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics in Antique Shop Eule"},
 	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
 	"a_SaveMiriamBrum":								{"en": "Save a member of the Brum family from a predestined death during chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "Co-direct 'Time Ego Trip World Conquest' during chapter 6"},
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
-	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
-	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 6 energy orbs in Medieval Lebensbaum"}, 
+	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the late 20th century"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
-	"a_ShortestChapter": 							{"en": "Acquire an iron plate before chapter 4 and use it once becomes necessary"}, 
+	"a_ShortestChapter": 							{"en": "Acquire an iron plate before chapter 4 and use it once is necessary"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
@@ -3890,7 +3880,7 @@ const_richPresence_lookupTables = {
 		0xb: "rpp_FatedHour_Lookup_Chapter8",
 		0xa: "rpp_FatedHour_Lookup_Chapter8",
 		0xc: "rpp_FatedHour_Lookup_Chapter8"},
-	"rpp_TimePeriod": {	// Refer to const_timePeriod
+	"rpp_TimePeriod": {	// Refer to 0xAA1268
 		0x80: "rpp_TimePeriod_Lookup_MiddleAges",
 		0x82: "rpp_TimePeriod_Lookup_Early20Century",
 		0x81: "rpp_TimePeriod_Lookup_Late20Century",
@@ -3995,7 +3985,7 @@ const_richPresence_coreData = {
 	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
 		"RPtype": enum_RPtype["DISPLAY_NORMAL"],
 		"PlaceholderParameters": {}}}
-const_richPresence_placeHolderParameterData = {
+const_richPresence_placeholderParameterData = {
 	"rpp_Chapter": {
 		"RPtype": enum_RPtype["LOOKUP"],
 		"Expression": getChapterId(),
@@ -4066,7 +4056,7 @@ function createCorrespondingRPparameterFunction(string_placeholderParameterKey) 
 		let_expression = dict_paramMacroData["Expression"]
 		return rich_presence_macro(let_macro, let_expression)}
 	
-	let_placeholderParameterData = const_richPresence_placeHolderParameterData[string_placeholderParameterKey]
+	let_placeholderParameterData = const_richPresence_placeholderParameterData[string_placeholderParameterKey]
 	let_RPtype = let_placeholderParameterData["RPtype"]
 	if (let_RPtype == enum_RPtype["VALUE"]) {
 		createRPparameterFunction_Value(string_placeholderParameterKey, let_placeholderParameterData)
