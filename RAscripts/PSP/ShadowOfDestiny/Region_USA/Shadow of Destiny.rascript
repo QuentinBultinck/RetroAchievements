@@ -909,11 +909,11 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 
 const_achievements_coreData = {
 	// DEV NOTE: Achievement property 'badgeId'
-	// 	=> needs to be a string, not integer
+	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro and overwrite when necessary via the RA website
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "badgeId": "00000000", "hasTips": false,
+	//	"id": 000000, "points": 0000000, "hasTips": false,
 	//	"devInfo": "xxxxxxx"},
 
 	"c_Completion": { // Category - Completing chapters
@@ -1186,8 +1186,8 @@ const_achievements_coreData = {
 
 const_achievement_typeByCategory = {
 	//	DEV NOTE: Achievement type property
-	//	- Possible type keys: "missable" - "progression" - "win_condition"
-	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
+	//		- Possible type keys: "missable" - "progression" - "win_condition"
+	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
 	// "c_template": "xxxxxx",
@@ -3737,14 +3737,14 @@ const_achievement_descriptions = {
 	"a_BecomeThePerformer":							{"en": "Become a performer during chapter 4"}, 
 	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
 	"a_SaveMiriamBrum":								{"en": "Save a member of the Brum family from a predestined death during chapter 6"}, 
-	"a_TimeEgoFlop":								{"en": "View every possible movie poster during chapter 6"},
+	"a_TimeEgoFlop":								{"en": "Co-direct 'Time Ego Trip World Conquest' during chapter 6"},
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 5 energy orbs in medieval Lebensbaum"}, 
 	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the 70's or 80's"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
-	"a_ShortestChapter": 							{"en": "Acquire an iron plate before finding a good usage for it"}, 
+	"a_ShortestChapter": 							{"en": "Acquire an iron plate before chapter 4 and use it once becomes necessary"}, 
 	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
