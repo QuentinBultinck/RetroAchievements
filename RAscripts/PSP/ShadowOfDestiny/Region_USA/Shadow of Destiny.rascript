@@ -3599,7 +3599,7 @@ const_achievement_titles = {
 	"a_MaxAchievementChapter7":						{"en": "Vintage Knots"},
 	"a_MaxAchievementChapter8":						{"en": "The Power of Fate"},
 	"a_MaxAchievementEpilogue":						{"en": "Eternal Youth"},
-	"a_MaxAchievementTotal":						{"en": "The future is what - what all of us - make it."},
+	"a_MaxAchievementTotal":						{"en": "The Day of Walpurgis"},
 	"a_EndingA":									{"en": "An End to a Strange Experience"},
 	"a_EndingB1":									{"en": "No Sense of Finality I"},
 	"a_EndingB2":									{"en": "No Sense of Finality II"},
