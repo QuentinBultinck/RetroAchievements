@@ -991,13 +991,7 @@ const_achievements_coreData = {
 			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
 		"a_AlertBarmanOfFire": { // WORKING
 			"id": 306976, "points": 4, "badgeId": "461648", "hasTips": true,
-			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"},
-		"a_EndingEXKillHomunculus": { // WORKING
-			"id": 405113, "points": 3, "badgeId": "461652", "hasTips": true,
-			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
-		"a_EndingEXCureHelena": { // WORKING
-			"id": 405114, "points": 3, "badgeId": "461651", "hasTips": true,
-			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"}},
+			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "badgeId": "461668", "hasTips": true,
@@ -1016,7 +1010,13 @@ const_achievements_coreData = {
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		"a_EndingE": { // WORKING
 			"id": 322231, "points": 5, "badgeId": "461673", "hasTips": true,
-			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"}},
+			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
+		"a_EndingEXKillHomunculus": { // WORKING
+			"id": 405113, "points": 3, "badgeId": "461652", "hasTips": true,
+			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
+		"a_EndingEXCureHelena": { // WORKING
+			"id": 405114, "points": 3, "badgeId": "461651", "hasTips": true,
+			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_TimeTravellingCat": { // WORKING
 			"id": 310426, "points": 4, "badgeId": "461728", "hasTips": true,
