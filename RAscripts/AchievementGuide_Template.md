@@ -23,7 +23,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title + <i>ID (dev info)</i> | Explanation & tips |
 |----|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
+| :trophy: **_title_**<br><i>_a_templateID_</i> | _explanation_ |
 
 ### :gem: Win Condition
 | Title + ID (dev info) | Explanation & tips |
