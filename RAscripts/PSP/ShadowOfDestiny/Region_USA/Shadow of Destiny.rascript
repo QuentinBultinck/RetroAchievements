@@ -4,6 +4,7 @@
 // ********************************************************************* \\
 // #ID = 3945
 // md5: 2991ecdb4d9a22dc40511b241bfb59a4 - USA
+// Platform: PlayStation Portable
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Shadow-of-Destiny-(PlayStation-Portable)
 
 //#####################################################################################################\\
