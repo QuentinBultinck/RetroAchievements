@@ -4,6 +4,7 @@
 
 This guide explains how to unlock each achievement in the core set of the PSP version of Shadow of Destiny.
 
+
 #### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
@@ -29,7 +30,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 - [Extra & side content](#ExtraContent)
 - [Secret cutscenes that lead to game over](#ExtraDeathContent)
 
-### :gem: Story Progression :gem: {#StoryProgression}
+<h3 id=StoryProgression>
+    :gem: Story Progression :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **Defied Fate**<br><sub><i>a_PrologueComplete</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461667.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
@@ -44,8 +48,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **A Friend's Repentance**<br><sub><i>a_Chapter7Complete</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461662.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
 | **The whole picture... Or is it?**<br><sub><i>a_Chapter8Complete</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461666.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
 
+---
 
-### :gem: Endings :gem: {#Endings}
+<h3 id=Endings>
+    :gem: Endings :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **An End to a Strange Experience**<br><sub><i>a_EndingA</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461668.png "Achievement badge icon") | 1. In chapter 5, tell Margarette she's your ancestress <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, visit the fortune teller in the present AND find Homonculus in 1980's near Haupstreet, he's sitting next to a tree in a small park <br> 3. Head back to Hugo in the present <br> 4. In the Epilogue, chose for Margarette to stay in the present |
@@ -57,8 +65,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **The Philosopher's Destiny**<br><sub><i>a_EndingEXKillHomunculus</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461652.png "Achievement badge icon") | - In the EX chapter, use the Philosopher's stone to kill Homunculus <br><br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Don't go to the alchemist's house, but time travel back to the present <br> 6. Finish the rest of this chapter |
 | **The Philosopher's Legacy**<br><sub><i>a_EndingEXCureHelena</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461651.png "Achievement badge icon") | - In the EX chapter, gift the Philosopher's stone to Dr. Wagner <br><br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Scare the crowd and head to the alchemist's house <br> 6. Finish the rest of this chapter  |
 
+---
 
-### :gem: Achievement Percentage :gem: {#AchievementPercentage}
+<h3 id=AchievementPercentage>
+    :gem: Achievement Percentage :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **Homing Instinct**<br><sub id="a_MaxAchievementPrologue"><i>a_MaxAchievementPrologue</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461646.png "Achievement badge icon") | - Current achievement rate is viewable in the extra menu once at least one ending is achieved. <br> - You can also view/update the achievement rate of the current chapter in the save menu or when entering/starting/loading a chapter. Doing so makes the achievement measure popup show for a few seconds <br> - A third option is to view the percentage rate in the RA overlay (only shows current chapter and total). [Shadow of Destiny, PSP - Walkthrough with percentage guide](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/60376 "Shadow of Destiny, PSP - Walkthrough with percentage guide") |
@@ -74,7 +86,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **The Day of Walpurgis**<br><sub><i>a_MaxAchievementTotal</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461647.png "Achievement badge icon") | - Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue) |
 
 
-### :gem: Branching paths :gem: {#BranchingPaths}
+---
+
+<h3 id=BranchingPaths>
+    :gem: Branching paths :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **A Performer's Clue**<br><sub id=a_GetOrnamentalEgg><i>a_GetOrnamentalEgg</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461653.png "Achievement badge icon") | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white |
@@ -84,7 +101,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **The Philosopher's Wisdom**<br><sub><i>a_GetExChapterOrnamentalEgg</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461653.png "Achievement badge icon") | - In the EX chapter, acquire the ornamental egg <br><br> 1. At start of chapter, head to the fortune teller <br> 2. head to Hugo outside burning bar once and pick to not help <br> 3. Go back to the performer to receive one last message |
 
 
-### :gem: Side content & extra cutscenes :gem: {#ExtraContent}
+---
+
+<h3 id=ExtraContent>
+    :gem: Side content & extra cutscenes :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **Cracking Open the Past: Middle Ages**<br><sub><i>a_ShowEggTownPlanter</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461725.png "Achievement badge icon") | - Prerequisite achievement: [a_GetOrnamentalEgg](#a_GetOrnamentalEgg) <br><br> - Stand near the town planter and use the ornamental egg on him during chapter 2 <br> - You can find him in 1580 in the Marktplatz after you visit Margarette's house |
@@ -134,7 +156,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **That's nice!**<br><sub><i>a_PocketWatchTo80sBarman</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461719.png "Achievement badge icon") | - Use the ornamental egg or pocket watch next to the barman in 1980 (the snowing day). He's inside the bar. |
 | **Horologic Heritage**<br><sub><i>a_ShowPocketWatchToPhotographer</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461726.png "Achievement badge icon") | - Show off your egg-shaped pocket watch to Oleg Franssens ancestor in 1902 <br><br> 1. In chapter 6, acquire the pocket watch, by co-directing a succesful movie <br> 2. Once you have the watch, head to 1902 <br> 3. Take the picture with the white dress at the Brum Estate <br> 4. Head back outside and use the pocket watch next to Oleg Franssen's ancestor <br><br> - Steps 2-4 can also be completed in chapters 7 and 8 |
 
-### :gem: Hidden/extra cutscenes that lead to death :gem: {#ExtraDeathContent}
+---
+
+<h3 id=ExtraDeathContent>
+    :gem: Hidden/extra cutscenes that lead to death :gem:
+</h3>
+
 | :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
 |:---:|---|
 | **Met You Before**<br><sub><i>a_MetYouBefore</i></sub><br> <br>![Mastery badge icon](https://i.retroachievements.org/Badge/461701.png "Achievement badge icon") | Die 4 times to the tree killer while speaking to Dana in chapter 2 |
@@ -147,4 +174,5 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 [^measured]: **Measured achievement**: This achievement has a measured flag. It will show the measurement popup on screen (e.g. 7/12). It will unlock the achievement once the measurement is maxed (e.g. 12/12). {#footnotes}
+
 [^triggered]: **Triggered achievement**: This achievement has a triggered flag. It will show the triggered popup on screen, when all logic/comparisons are met. It will unlock the achievement once the criteria are met for the trigger.
