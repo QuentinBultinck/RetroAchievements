@@ -4,6 +4,7 @@
 // ********************************************************************* \\
 // #ID = 3945
 // md5: 2991ecdb4d9a22dc40511b241bfb59a4 - USA
+// Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Shadow-of-Destiny-(PlayStation-Portable)
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -12,7 +13,7 @@
 // Info regarding usage/reading of this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			Set indent size => 4
-//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text' => Go, C#, Rust, CUDA C++, C++ 
+//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text' => Go
 
 //	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
@@ -1173,20 +1174,21 @@ const_achievements_coreData = {
 		"a_TimeEgoFlop": { // WORKING
 			"id": 313212, "points": 1, "badgeId": "461703", "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
-
+// -------------------------------------
 const_achievement_typeByCategory = {
 	//	DEV NOTE: Achievement type property
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
+	//		- 14 march 2024: this doesn't work via RATools (wont set type on RA back-end) => update type per achievement this on the game page on RA website
 	// ------------------------------------------------------
 	
 	// "c_template": "xxxxxx",
-	"c_Endings": "win_condition",
-	"c_Completion": "progression",
-	"c_Extra_GameOver": "missable",
-	"c_AchievementPercentage": "missable",
-	"c_Branch": "missable",
-	"c_Extra": "missable"}
+	"c_Endings": 							"win_condition",
+	"c_Completion": 						"progression",
+	"c_Extra_GameOver": 					"missable",
+	"c_AchievementPercentage": 				"missable",
+	"c_Branch": 							"missable",
+	"c_Extra":				 				"missable"}
 
 // ***********************************
 // ÷ Achievement TRIGGER GENERATORS ÷
@@ -1323,7 +1325,7 @@ const_achievement_triggers = {
 	// "a_Template": function Template() {	// WIP_template
 	// 	return always_false()
 	// },
-	"a_PrologueComplete": function PrologueComplete() { return
+	"a_PrologueComplete": () { return
 		never (	// Core group
 			!isInGame() ||
 			isEventViewerActive()	
@@ -3744,7 +3746,7 @@ const_achievement_descriptions = {
 // ****************************
 // ÷ Achievement INITIALIZER ÷
 // ****************************
-//	- Creates achievement objects (accepted by RAscript) based on the achievement dictionary
+//	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
 function initializeAchievements() {
 	// Generates the achievement title (with developer tags, if devmode == 1)
 	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
@@ -3915,9 +3917,11 @@ enum_RPtype = {
 	"MACRO": 103}				// rich_presence_macro(macro, expression)
 // -------------------------------------
 const_richPresence_coreData = {
-	// 	- Expression examples => byte(0x000) OR getCurrentLevel() + 1
-	// 	- Available macro's => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
-	// 	- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
+	//	DEV NOTE: rich presence
+	// 		- Expression examples => byte(0x000) OR getCurrentLevel() + 1
+	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
+	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
+	// ------------------------------------------------------
 
 	// "rp_Template": { // CONCEPT rp_template
 	// 	"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
@@ -3984,7 +3988,8 @@ const_richPresence_coreData = {
 		"PlaceholderParameters": {}},
 	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
 		"RPtype": enum_RPtype["DISPLAY_NORMAL"],
-		"PlaceholderParameters": {}}}
+		"PlaceholderParameters": {}}
+	}
 const_richPresence_placeholderParameterData = {
 	"rpp_Chapter": {
 		"RPtype": enum_RPtype["LOOKUP"],
@@ -4025,7 +4030,8 @@ const_richPresence_placeholderParameterData = {
 	"rpp_FatedHour": {
 		"RPtype": enum_RPtype["LOOKUP"],
 		"Expression": getChapterId(),
-		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback")}}
+		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback")}
+	}
 // ******************************
 // ÷ Rich_Presence INITIALIZER ÷
 // ******************************
@@ -4107,7 +4113,7 @@ function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// 
 	}}
 function initializeRichPresence() {
 	// DEV NOTE: rich_presence_macro(macro, expression)
-	//	- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
+	//		- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
 	// ------------------------------------------------------	
 	// EXAMPLE:
 	// 		rich_presence_conditional_display(is_title_screen(), "Title Screen")
