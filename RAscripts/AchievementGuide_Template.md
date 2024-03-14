@@ -8,6 +8,7 @@ This guide explains how to unlock each achievement for this game
 #### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
++ [GAME_TITLE_HERE - game page on Retro Achievements](https://retroachievements.org/game/0000 "Retro Achievements game page - GAME_TITLE_HERE") 
 + Resource_1
 + Resource_2
 + Resource_3

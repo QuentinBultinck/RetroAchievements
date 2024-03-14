@@ -1,6 +1,6 @@
 # Achievement Guide ♦️ Shadow of Destiny (PSP)
 
-![Achievement badge icon](https://i.retroachievements.org/Images/092240.png "Mastery badge icon")
+[![Achievement badge icon](https://i.retroachievements.org/Images/092240.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 
 This guide explains how to unlock each achievement in the core set of the PSP version of Shadow of Destiny.
 
@@ -8,6 +8,7 @@ This guide explains how to unlock each achievement in the core set of the PSP ve
 #### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
++ [Shadow of Destiny (PSP) - game page on Retro Achievements](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 + [Fandom Wiki - Shadow of Memories/Shadow of Destiny](https://shadowofmemories.fandom.com/wiki/Shadow_of_Memories_Wiki "Shadow of Memories/Shadow of Destiny - Fandom Wiki")
 + [Youtube Guides - Shadow of Memories/Shadow of Destiny](https://www.youtube.com/@shadowofmemorieswiki/videos "Shadow of Memories/Shadow of Destiny - Wiki Youtube account")
 + [FAQS, guides & walkthroughs - Shadow of Memories/Shadow of Destiny](https://gamefaqs.gamespot.com/pc/553882-shadow-of-destiny/faqs "FAQS, guides & walkthroughs - Shadow of Memories/Shadow of Destiny")
