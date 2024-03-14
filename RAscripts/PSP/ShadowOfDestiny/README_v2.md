@@ -3,6 +3,7 @@
 </h1>
 
 ![Mastery badge icon](https://i.retroachievements.org/Images/092240.png "Mastery badge icon")
+
 This guide explains how to unlock each achievement in the core set of the PSP version of Shadow of Destiny.
 
 #### Walkthroughs & Resources {#link_walkthroughs}
@@ -23,6 +24,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title | Explanation |
 |:---|---:|
+|***Title_Placeholder*** <br> *a_placeholderID*||
 
 ![badge icon](https://i.retroachievements.org/Badge/00000.png) 
 ***Title_Placeholder***  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  *a_placeholderID*
