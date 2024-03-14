@@ -1,42 +1,62 @@
-**TEMPLATE: Achievement Guide**
-=======================================
-[Insert small image header of game here]
+# Achievement Guide ♦️ Template
 
-This guide explains how to unlock each achievement [ADD explanation]
+![Mastery badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")
+
+This guide explains how to unlock each achievement for this game
+
+
+#### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
 + Resource_1
 + Resource_2
 + Resource_3
 
-***
 
-### General tips for unlocking the achievements in this set
+#### General tips for unlocking the achievements in this set
 + General_tip_1
 + General_tip_2
 
-# Achievement guide :heavy_exclamation_mark: <b><u>SPOILERS AHEAD</u></b> :heavy_exclamation_mark:
+# Guide Below &nbsp;&nbsp;&nbsp; :heavy_exclamation_mark: SPOILERS AHEAD :heavy_exclamation_mark:
     
-*(Achievements are divided by category)*
+##### Categories
 
-### :gem: Progression
+- [Progression](#Progression)
+- [Win Condition](#WinCondition)
+- [Missable/extra content](#ExtraContent)
 
-| Title + <i>ID (dev info)</i> | Explanation & tips |
-|----|---|
-| :trophy: **_title_**<br><i>_a_templateID_</i> | _explanation_ |
+<h3 id=Progression>
+    :gem: Progression :gem:
+</h3>
 
-### :gem: Win Condition
-| Title + ID (dev info) | Explanation & tips |
-|----|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
+| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+|:---:|---|
+| **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
-### :gem: Missable/extra content
-| Title + ID (dev info) | Explanation & tips |
-|----|---|
-| :trophy: <b>_title_</b><br><i>_a_templateID_</i> | _explanation_ |
+---
 
-## Footnotes
-#### *Measured achievement<sup>1</sup>*
-+ Once the measured achievement popup is shown, complete the rest of the achievement in the same session, otherwise you may have to restart the chapter. 
-#### *Triggered achievement<sup>2</sup>*
-+ Once the triggered achievement popup is shown, complete the achievement in the same session, otherwise you may have to restart the chapter. 
+<h3 id=WinCondition>
+    :gem: Win Condition :gem:
+</h3>
+
+| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+|:---:|---|
+| **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+
+---
+
+<h3 id=ExtraContent>
+    :gem: Missable/extra content :gem:
+</h3>
+
+| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+|:---:|---|
+| **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+
+
+
+
+
+[^measured]: **Measured achievement**: This achievement has a measured flag. It will show the measurement popup on screen (e.g. 7/12). It will unlock the achievement once the measurement target has been hit (e.g. 12/12).
+
+[^triggered]: **Triggered achievement**: This achievement has a triggered flag. It will show the triggered popup on screen, when all logic/comparisons are met. It will unlock the achievement once the criteria are met for the trigger.
