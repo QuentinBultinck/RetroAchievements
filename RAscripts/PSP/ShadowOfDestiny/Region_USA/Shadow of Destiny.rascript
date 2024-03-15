@@ -11,12 +11,11 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// Info regarding usage/reading of this RAScript
+// Info regarding usage/reading this RAScript
 // ---------------------------------------------
-//	- Set indent mode => Tabs			Set indent size => 4
-//	- For colored text/code (in Visual Studio Code) => select a language mode (bottom right of vscode window) other than 'plain text' => Go
+//	- Set indent mode => Tabs			
+//	- Set indent size => 4
 
-//	- Usage of Todo Tree tags => install 'Todo Tree extension' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 //	- Use RATools to update achievement logic written here to RALibrertro
 //	- Use RALibretro/RATools to publish/push the achievement logic to RetroAchievements servers
 //	- Documentation for achievement development => https://docs.retroachievements.org/Developer-Docs/
@@ -25,6 +24,13 @@
 //			--- To Test RP via RATools, same as updating achievement logic, but afteran  RP update => restart RALibretro OR keep the following file op in an editor: ..\RALibretro\RACache\Data\XXX-Rich.txt 
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
+
+//	Visual Studio Code: specific info
+// ---------------------------------------------
+//	- Enable: Colored code => select language mode (bottom right of vscode window) => Go (not "plain text")
+//	- Enable: Todo Tree tags => install extension: 'Todo Tree' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
+// 	- Markdown editing
+//		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 
 // General info regarding PSP structures
 // ---------------------------------------------
@@ -1111,7 +1117,7 @@ const_achievements_coreData = {
 		"a_GiveMargaretteCake": { // WORKING
 			"id": 402296, "points": 4, "badgeId": "461704", "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		"a_MaxInventory": { // WORKING 
+		"a_MaxInventory": { // WORKING
 			"id": 402404, "points": 10, "badgeId": "461712", "hasTips": true,
 			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
 		"a_PocketWatchCollection": { // WORKING
