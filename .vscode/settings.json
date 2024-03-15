@@ -25,7 +25,9 @@
         "TESTING",
 
         "IDEA",
-        "CONCEPT"
+        "CONCEPT",
+
+        "DEV_NOTE"
     ],
     "todo-tree.general.tagGroups": {
         "DONE": [
@@ -119,6 +121,12 @@
             "opacity" : 42,
             "type": "text-and-comment", 
             "icon": "light-bulb"
+        },
+        "DEV_NOTE": {
+            "icon": "info",
+            "hideFromStatusBar": false, 
+            "hideFromActivityBar": true,
+            "hideFromTree": false
         }
     },
     "todo-tree.highlights.enabled": true,
