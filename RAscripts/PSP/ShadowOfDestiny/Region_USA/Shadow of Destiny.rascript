@@ -415,15 +415,30 @@ function isChapterChanging() =>
 	getChapterId() != prev(getChapterId())
 
 function isChapterChangingTo(string_chapter) {
-	let_chapterId = 0
+	let_currentChapterId = getChapterId()
 	if (string_chapter == "Chapter8") {
-		let_chapterId = getChapterId()
+		return 
+			prev(let_currentChapterId) != const_chapterIDs["Chapter8_Ancestress"]	&&
+			prev(let_currentChapterId) != const_chapterIDs["Chapter8_NoAncestress"] &&
+			(
+				let_currentChapterId == const_chapterIDs["Chapter8_Ancestress"] || 
+				let_currentChapterId == const_chapterIDs["Chapter8_NoAncestress"]
+			)
 	} else if (string_chapter == "Epilogue") {
-		let_chapterId = getChapterId()
-	}
-	return 
-		prev(getChapterId()) != let_chapterId &&
-		getChapterId() == let_chapterId}
+		return 
+			prev(let_currentChapterId) != const_chapterIDs["Epilogue_Ancestress"]	&&
+			prev(let_currentChapterId) != const_chapterIDs["Epilogue_NoAncestress"] &&
+			(
+				let_currentChapterId == const_chapterIDs["Epilogue_Ancestress"] || 
+				let_currentChapterId == const_chapterIDs["Epilogue_NoAncestress"]
+			)
+	} else {
+		let_chapterId = const_chapterIDs[string_chapter]
+		return 
+			prev(let_currentChapterId) != let_chapterId &&
+			let_currentChapterId == let_chapterId
+	}}
+
 
 
 // ********************
@@ -906,7 +921,7 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 
 const_achievements_coreData = {
-	// DEV NOTE: Achievement property 'badgeId'
+	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro and overwrite when necessary via the RA website
 	// ------------------------------------------------
 
@@ -1183,7 +1198,7 @@ const_achievements_coreData = {
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
 const_achievement_typeByCategory = {
-	//	DEV NOTE: Achievement type property
+	// DEV_NOTE: Achievement type property
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	//		- 14 march 2024: this doesn't work via RATools (wont set type on RA back-end) => update type per achievement this on the game page on RA website
@@ -1201,87 +1216,82 @@ const_achievement_typeByCategory = {
 // ÷ Achievement TRIGGER GENERATORS ÷
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_PercentageBitFlags){ 
-	function generateTallyComparison_MaxAchievementRate(dict_BitFlags) {
-		function totalAmountOfBitFlags(dict_BitFlags) {
-			let_bitFlagCount = 0
-			for memAddrWithBitFlags in dict_BitFlags {
-				let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
-				if (length(let_arrayOfBitBlagsToCheck) == 1) {
-					let_bitFlagCount = let_bitFlagCount + 1	
-				} else if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) {
-					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[0] - let_arrayOfBitBlagsToCheck[1])
-				} else {
-					let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitBlagsToCheck[1] - let_arrayOfBitBlagsToCheck[0])
-				}
-			}
-			return let_bitFlagCount}
+function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) {
+	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
+	// ----------------------------------
+	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
+	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
+	//		-- In this case each bit would count for 20% or 1/5th
 
-		// DEV EXAMPLE: Tally inside a tally
-		// ---------------------------------
-		// EXAMPLE A == B; different way of getting same result
-		//		- tally_of inside predicate of tally_of
-		//		tally_of([
-		//			[once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3)],
-		//			[once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2)],
-		//			[once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)]], 20, (arrayWithComparisons) {
-		//				return tally_of(arrayWithComparisons, 1, (comparison) => comparison)		// the count on this tally_of doesn't matter, but must be != 0 => because runtime error
-		//			})			
-		// EXAMPLE B == A; different way of getting same result
-		//		- tally_of inside predicate of tally_of == this tally
-		//		tally(20, [
-		//			once(getChapterId() == 0x3),once(getChapterId() == 0x3),once(getChapterId() == 0x3),
-		//			once(getChapterId() == 0x2),once(getChapterId() == 0x2),once(getChapterId() == 0x2),
-		//			once(getChapterId() == 0x1),once(getChapterId() == 0x1),once(getChapterId() == 0x1)])
-
-		return tally_of(dict_BitFlags, totalAmountOfBitFlags(dict_BitFlags), (memAddr) {	// This tally_of chains ALL of the comparisons generated
-			let_comparisonsArray = []
-			let_arrayOfBitBlagsToCheck = dict_BitFlags[memAddr]
-			if (length(let_arrayOfBitBlagsToCheck) == 1) {
-				let_bitIndex = let_arrayOfBitBlagsToCheck[0]
-				array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
+	function countTotalAmountOfBitFlags(dict_BitFlags) {
+		let_bitFlagCount = 0
+		for memAddrWithBitFlags in dict_BitFlags {
+			let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
+			if (length(let_arrayOfBitFlagsToCheck) == 1) {
+				let_bitFlagCount = let_bitFlagCount + 1	
+			} else if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) {
+				let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[0] - let_arrayOfBitFlagsToCheck[1])
 			} else {
-				let_step = 1
-				if (let_arrayOfBitBlagsToCheck[0] > let_arrayOfBitBlagsToCheck[1]) let_step = -1
-				for let_bitIndex in range(let_arrayOfBitBlagsToCheck[0], let_arrayOfBitBlagsToCheck[1], let_step) {	// Example let_arrayOfBitBlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-					array_push(let_comparisonsArray, once(bit(let_bitIndex, memAddr) == 1))
-				}
+				let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[1] - let_arrayOfBitFlagsToCheck[0])
 			}
-			return tally_of(let_comparisonsArray, 1, (comparison) => comparison) // count on this tally_of doesn't matter; this line chains all the comparisons together created the bitflags on ONE memory address
-		})
-	}		
-	function generateTrigger_TotalMaxAchievementRate(comparison_tally) { return		
-		never(	// Reset/recalculate tally count
-			isChapterChanging()
-		) && 
-		(
-			(	// Alt 1 => In game rate measurement
-				measured(comparison_tally, isInGame(), "percent")
-			) || ( // Alt 2 => show measurement at results screen
-				measured(comparison_tally, isResultsMenuHighlightedChapter("Total"), "percent")
-			)
-		)
+		}
+		return let_bitFlagCount
+	}	
+	
+	function generateTrigger_TotalMaxAchievementRate(measuredComparison, let_deltaComparison) { return
+		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
+		// -----------------------------------------
+		// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
+		// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and can count
+		//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
+		//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0
+
+		unless( // Pause counting if not in-game or not in correct chapter, but still show progress on the achievement
+			!isInGame()
+		) &&
+		let_deltaComparison &&
+		measured(measuredComparison, format = "percent") 
 	}
-	function generateTrigger_ChapterMaxAchievementRate(string_chapter, comparison_tally) { return		
-		never(	// Reset/recalculate tally count
-			isChapterChangingTo(string_chapter)
-		) && 
-		(
-			(	// Alt 1 => In game rate measurement
-				unless(	// Pause if => not in correct chapter, but still show progress on achievement
-					!isCurrentChapter(string_chapter)
-				) &&
-				measured(comparison_tally, isInGame(), "percent")
-			) || ( // Alt 2 => show measurement at results screen				
-				measured(comparison_tally, isResultsMenuHighlightedChapter(string_chapter), "percent")
-			)
-		)
-	} 
-	let_tallyComparison = generateTallyComparison_MaxAchievementRate(dict_PercentageBitFlags)
+
+	function generateTrigger_ChapterMaxAchievementRate(string_chapter, measuredComparison, let_deltaComparison) { return		
+		unless(	// Pause counting if not in-game or not in correct chapter, but still show progress on the achievement
+			!isCurrentChapter(string_chapter) ||			
+			!isInGame()
+		) &&
+		let_deltaComparison && 
+		measured(measuredComparison, format = "percent")
+	}
+
+	let_bitFlagMemoryAccessors = []	// Array will become this => [bit0(0x00), bit1(0x00), bitcount(0x01)]		
+	for memAddr in dict_BitFlags {
+		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddr]
+		if (length(let_arrayOfBitFlagsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
+			let_bitIndex = let_arrayOfBitFlagsToCheck[0]
+			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+		} else if ( // If all bits => add "bitcount" memory accessor
+			(let_arrayOfBitFlagsToCheck[0] == 0 && let_arrayOfBitFlagsToCheck[1] == 7) || 
+			(let_arrayOfBitFlagsToCheck[0] == 7 && let_arrayOfBitFlagsToCheck[1] == 0)) { 
+				array_push(let_bitFlagMemoryAccessors, bitcount(memAddr))
+		} else { // If not all bits, but more than 1 => memory accessor per bit flag
+			let_step = 1
+			if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) let_step = -1
+			for let_bitIndex in range(let_arrayOfBitFlagsToCheck[0], let_arrayOfBitFlagsToCheck[1], let_step) {	// Example let_arrayOfBitFlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+			}
+		}
+	}
+
+	let_totalAmountOfBitFlags = countTotalAmountOfBitFlags(dict_BitFlags)
+	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_measuredComparison = let_arithmeticSumOfExpression == let_totalAmountOfBitFlags // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+
+	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+	let_deltaComparison = let_arithmeticSumOfExpression < let_totalAmountOfBitFlags 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+
 	if (string_chapter == "Total") {
-		return generateTrigger_TotalMaxAchievementRate(let_tallyComparison)
+		return generateTrigger_TotalMaxAchievementRate(let_measuredComparison, let_deltaComparison)
 	} else {
-		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_tallyComparison)
+		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_measuredComparison, let_deltaComparison)
 	}}
 
 function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
@@ -1757,7 +1767,7 @@ const_achievement_triggers = {
 			isChapterFinishing("Chapter8_Ancestress") ||
 			isChapterFinishing("Chapter8_NoAncestress")
 		)},
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() { 		
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
 		let_PercentageBitFlags = const_percentageBitsFlags["Prologue"]
 		return generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
@@ -3924,7 +3934,7 @@ enum_RPtype = {
 	"MACRO": 103}				// rich_presence_macro(macro, expression)
 // -------------------------------------
 const_richPresence_coreData = {
-	//	DEV NOTE: rich presence
+	// DEV_NOTE: rich presence
 	// 		- Expression examples => byte(0x000) OR getCurrentLevel() + 1
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
@@ -4119,7 +4129,7 @@ function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// 
 		throwError(format("The rich presence display script: {0} did not evaluate correctly", string_displayScriptKey))
 	}}
 function initializeRichPresence() {
-	// DEV NOTE: rich_presence_macro(macro, expression)
+	// DEV_NOTE: rich_presence_macro(macro, expression)
 	//		- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
 	// ------------------------------------------------------	
 	// EXAMPLE:
