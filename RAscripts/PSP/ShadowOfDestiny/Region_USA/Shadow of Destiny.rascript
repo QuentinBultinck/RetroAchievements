@@ -14,6 +14,7 @@
 // TODO Leaderboards for clear time?
 // TODO Chapter 2 choice with cellphone/statte and all that => add trigger_when()
 // TODO Chapter 7 => yestersyears couple => hit counts are kinda weird
+// TODO Sync code notes on RAwebsite with here
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -43,8 +44,8 @@
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
-
-const_utilitySettings_debugMode = false	// if true => extra information may be displayed on achievement titles & descriptions
+// TODO debug off
+const_utilitySettings_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
 const_utilitySettings_language = "en"	// ISO 639-1 language codes 
 
 const_utilitySettings_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
@@ -832,14 +833,81 @@ function isWearingPerformerOutfit() => 	// $A9EDA5: [Current Playthrough Bit Fla
 	bit2(0xA9EDA5) == 1					//		 bit 2 => is wearing performer outfit
 
 
-// *******************************************
-// ÷ PERMANENT CUTSCENE PERCENTAGE BITFLAGS ÷
-// *******************************************
-// 	- Each flag corresponds to at least 1 cutscene and counts toward the achievement percentage 
-// 	- These flags are set when heading into any save menu OR when finishing a chapter OR when booting up the game
-// 	- Each flag accounts for a float percentage. These numbers are rounded up or down in the extra menu
-// 	- To test => change memory values => from title screen go back into extra menu
-const_percentageBitsFlags = {
+// ************************************
+// ÷ ACHIEVEMENT PERCENTAGE BITFLAGS ÷
+// ************************************
+// - Each flag corresponds to 1 cutscene and counts toward the achievement percentage
+// - At end of a cutscene one of these flags will become true
+// - Flags are grouped per chapter
+// - These flags are loaded when loading a save OR when starting a new game whilst having played the game before
+const_percentageBitflags_new = {
+	"Prologue": {
+		0xA9ED3C: [1,7],
+		0xA9ED3D: [0,7],
+		0xA9ED3E: [0,7],
+		0xA9ED3F: [0,7],
+		0xA9ED40: [0,7],
+		0xA9ED41: [0,7],
+		0xA9ED42: [0,5]},
+	"Chapter1": {
+		0xA9ED43: [6,7],
+		0xA9ED44: [0,7],
+		0xA9ED45: [0,7],
+		0xA9ED46: [0,5]},
+	"Chapter2": {
+		0xA9ED47: [3,7],
+		0xA9ED48: [0,7],
+		0xA9ED49: [0,7],
+		0xA9ED4A: [0,7],
+		0xA9ED4B: [0,6]},
+	"Chapter3": {
+		0xA9ED58: [2,7],
+		0xA9ED59: [0,7],
+		0xA9ED5A: [0,7]},
+	"Chapter4": {
+		0xA9ED4D: [1,7],
+		0xA9ED4E: [0,7],
+		0xA9ED4F: [0,7],
+		0xA9ED50: [0,7],
+		0xA9ED51: [0,4]},
+	"Chapter5": {
+		0xA9ED52: [1,7],
+		0xA9ED53: [0,7],
+		0xA9ED54: [0,7],
+		0xA9ED55: [0,7],
+		0xA9ED56: [0,7],
+		0xA9ED57: [0,6]},
+	"Chapter6": {
+		0xA9ED5B: [2,7],
+		0xA9ED5C: [0,7],
+		0xA9ED5D: [0,7],
+		0xA9ED5E: [0,7],
+		0xA9ED5F: [0,4]},
+	"Chapter7": {
+		0xA9ED60: [2,7],
+		0xA9ED61: [0,7],
+		0xA9ED62: [0,7],
+		0xA9ED63: [0,7],
+		0xA9ED64: [0,3]},
+	"Chapter8": {
+		0xA9ED65: [5,7],
+		0xA9ED66: [0,7],
+		0xA9ED67: [0,7],
+		0xA9ED68: [0,7],
+		0xA9ED69: [0,7],
+		0xA9ED6A: [0,7],
+		0xA9ED6B: [0,7],
+		0xA9ED6C: [0,7],
+		0xA9ED6D: [0,7],
+		0xA9ED6E: [0,3]},
+	"Epilogue": {
+		0xA9ED71: [2,7],
+		0xA9ED72: [0,7],
+		0xA9ED73: [0,7],
+		0xA9ED74: [0]}}
+
+// -------------------------------------
+const_percentageBitsFlags_old = {
 	"Prologue": {
 		0xAA115B: [1,7],
 		0xAA115C: [0,7],
@@ -1227,6 +1295,13 @@ function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) 
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
 
+	// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
+	// -----------------------------------------
+	// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
+	// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and can count
+	//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
+	//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0
+
 	function countTotalAmountOfBitFlags(dict_BitFlags) {
 		let_bitFlagCount = 0
 		for memAddrWithBitFlags in dict_BitFlags {
@@ -1240,30 +1315,6 @@ function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) 
 			}
 		}
 		return let_bitFlagCount
-	}	
-	
-	function generateTrigger_TotalMaxAchievementRate(measuredComparison, let_deltaComparison) { return
-		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
-		// -----------------------------------------
-		// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
-		// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and can count
-		//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
-		//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0
-
-		unless( // Pause counting if not in-game or not in correct chapter, but still show progress on the achievement
-			!isInGame()
-		) &&
-		let_deltaComparison &&
-		measured(measuredComparison, format = "percent") 
-	}
-
-	function generateTrigger_ChapterMaxAchievementRate(string_chapter, measuredComparison, let_deltaComparison) { return		
-		unless(	// Pause counting if not in-game or not in correct chapter, but still show progress on the achievement
-			!isCurrentChapter(string_chapter) ||			
-			!isInGame()
-		) &&
-		let_deltaComparison && 
-		measured(measuredComparison, format = "percent")
 	}
 
 	let_bitFlagMemoryAccessors = []	// Array will become this => [bit0(0x00), bit1(0x00), bitcount(0x01)]		
@@ -1293,9 +1344,13 @@ function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) 
 	let_deltaComparison = let_arithmeticSumOfExpression < let_totalAmountOfBitFlags 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
 
 	if (string_chapter == "Total") {
-		return generateTrigger_TotalMaxAchievementRate(let_measuredComparison, let_deltaComparison)
+		return 
+			let_deltaComparison && 
+			measured(let_measuredComparison, when = isInGame(), format = "percent")
 	} else {
-		return generateTrigger_ChapterMaxAchievementRate(string_chapter, let_measuredComparison, let_deltaComparison)
+		return 
+			let_deltaComparison && 
+			measured(let_measuredComparison, when = isCurrentChapter(string_chapter) && isInGame(), format = "percent")
 	}}
 
 function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
@@ -1772,41 +1827,41 @@ const_achievement_triggers = {
 			isChapterFinishing("Chapter8_NoAncestress")
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Prologue"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Prologue"]
 		return generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter1"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter1"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter2"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter2"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter3"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter3"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter4"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter4"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter5"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter5"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter6"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter6"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter7"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter7"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Chapter8"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Chapter8"]
 		return generate_FullTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
 	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
-		let_PercentageBitFlags = const_percentageBitsFlags["Epilogue"]
+		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
 		return generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
 		function mapAllPercentageBitFlagsToOneDict() {
 			let_PercentageBitFlags = {}
-			for chapter in const_percentageBitsFlags {
-				for memAddr in const_percentageBitsFlags[chapter] {
-					addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitsFlags[chapter][memAddr])
+			for chapter in const_percentageBitflags_new {
+				for memAddr in const_percentageBitflags_new[chapter] {
+					addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitflags_new[chapter][memAddr])
 				}
 			}
 			return let_PercentageBitFlags}
