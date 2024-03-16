@@ -38,8 +38,8 @@
 //#####################################################################################################\\
 
 // TODO Turn off debug mode
-const_utilitySettings_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
-const_utilitySettings_language = "en"	// ISO 639-1 language codes 
+const_utility_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
+const_utility_language = "en"	// ISO 639-1 language codes 
 
 function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -62,9 +62,25 @@ function addToDictionary(dict, key, value) {
 // *****************
 // ÷ SUB HEADER 1 ÷
 // *****************
-// 	- Some explanation...		//	$AC0130: [8-bit] Example memory address code note
-// 	- Some explanation...		//		- Code note...
+// 	- Some explanation...		
+// 	- Some explanation...		
+enum_TEMPLATE_AREA_A = 0x1
+enum_TEMPLATE_AREA_B = 0x2
+enum_TEMPLATE_AREA_C = 0x3
+enum_TEMPLATE_AREA_D = 0x4
+enum_TEMPLATE_AREA_E = 0x5
+function current_AreaID() => 	//	$AC0130: [8-bit] Example memory address code note
+	byte(AC0130)				//		- Code note...
 								//		- Code note...
+function prev_AreaID() =>
+	prev(current_AreaID())
+function prior_AreaID() =>
+	prior(current_AreaID())
+function is_CurrentArea(enum_TEMPLATE_AREA) =>	// Example usage => is_CurrentArea(enum_TEMPLATE_AREA_A)
+	current_AreaID() == enum_TEMPLATE_AREA
+function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" signifies that this function returns a comparison that's checking delta values
+	current_AreaID() != enum_TEMPLATE_AREA && 
+	prev_AreaID() == enum_TEMPLATE_AREA
 // -------------------------------------
 // 	- Some explanation...
 // 	- Some explanation...
@@ -75,16 +91,15 @@ function addToDictionary(dict, key, value) {
 // *****************
 // 	- Some explanation...
 // 	- Some explanation...
-const_globalVariable = {
-	"ID_1": 0x0,
-	"ID_2": 0x0,
-	"ID_3": 0x0
-}
-function getId(int_id) => const_globalVariable[int_id]
-// -------------------------------------
-function getAnotherId1(int_id) => const_globalVariable[int_id]
-function getAnotherId2(int_id) => const_globalVariable[int_id]
-function getAnotherId3(int_id) => const_globalVariable[int_id]
+enum_TEMPLATE_ID_1 = 0x0
+enum_TEMPLATE_ID_2 = 0x2
+enum_TEMPLATE_ID_3 = 0x5
+function is_TemplateID1(int_id) => 
+	int_id == enum_TEMPLATE_ID_1
+function is_TemplateID2(int_id) => 
+	int_id == enum_TEMPLATE_ID_2
+function is_TemplateID3(int_id) => 
+	int_id == enum_TEMPLATE_ID_3
 // -------------------------------------
 function doThisA() => always_false()
 function doThisB() => always_false()
@@ -102,7 +117,7 @@ function doThisC() => always_false()
 // ****************************************************************************************************************************************** \\
 
 // ***************************
-// ÷ ACHIEVEMENT DICTIONARY ÷
+// ÷ Achievement DICTIONARY ÷
 // ***************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 const_achievements_coreData = {
@@ -152,16 +167,16 @@ const_achievement_typeByCategory = {
 	"c_ExampleCategeroy3":				"missable"}
 
 // ***********************************
-// ÷ ACHIEVEMENT TRIGGER GENERATORS ÷
+// ÷ Achievement TRIGGER GENERATORS ÷
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function generate_Tally_PickUpEnergyOrbsA() {
+function generate_Tally_TemplateA() {
 	return always_false()}
-function generate_Tally_PickUpEnergyOrbsB() {
+function generate_Tally_TemplateB() {
 	return always_false()}
 
 // *************************
-// ÷ ACHIEVEMENT TRIGGERS ÷
+// ÷ Achievement TRIGGERS ÷
 // *************************
 const_achievement_triggers = {
     // "a_Template": () { return // WIP_template
@@ -180,7 +195,7 @@ const_achievement_triggers = {
 		always_false()}}
 
 // **********************
-// ÷ ACHIEVEMENT TEXT ÷
+// ÷ Achievement TEXT ÷
 // **********************
 const_achievement_titles = {
     // "a_Template":						{"en": "xxxxx"}, 
@@ -209,7 +224,7 @@ const_achievement_descriptions = {
 											"nl": "DutchDescription"}}
 
 // ****************************
-// ÷ ACHIEVEMENT INITIALIZER ÷
+// ÷ Achievement INITIALIZER ÷
 // ****************************
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
 function initializeAchievements() {
@@ -217,7 +232,7 @@ function initializeAchievements() {
 	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (const_utilitySettings_debugMode) {
+			if (const_utility_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -237,7 +252,7 @@ function initializeAchievements() {
 		}
 		function enterDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (const_utilitySettings_debugMode && string_devInfo != "") {
+			if (const_utility_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString
@@ -255,9 +270,9 @@ function initializeAchievements() {
 			let_cheevment = const_achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
-				title = generateAchievementTitle(cheevmentName, categoryName, const_utilitySettings_language),
+				title = generateAchievementTitle(cheevmentName, categoryName, const_utility_language),
 				type = const_achievement_typeByCategory[categoryName],
-				description = generateAchievementDescription(cheevmentName, let_cheevment["devInfo"], const_utilitySettings_language),
+				description = generateAchievementDescription(cheevmentName, let_cheevment["devInfo"], const_utility_language),
 				points = let_cheevment["points"],
 				trigger = lookUpAchievementTrigger(cheevmentName)
 			)
@@ -284,7 +299,7 @@ function initializeAchievements() {
 // ***********************
 // ÷ Rich_Presence TEXT ÷
 // ***********************
-//	- Contains text for all the rich presence scripts 
+//	- Contains text for the rich presence script
 const_richPresence_text = {
 	// "rp_Template": 							{"en": "xxxxxxxx"},	
 
@@ -300,19 +315,18 @@ const_richPresence_lookupTables = {
 		0x1: "rpp_LookupTemplate_Lookup_B",
 		0x2: "rpp_LookupTemplate_Lookup_C"}}
 function getRichPresenceText(string_textKey) =>
-	const_richPresence_text[string_textKey][const_utilitySettings_language]
+	const_richPresence_text[string_textKey][const_utility_language]
 function getRichPresenceLookupTable(string_lookupParameterKey) =>
 	const_richPresence_lookupTables[string_lookupParameterKey]
 // ****************************
 // ÷ Rich_Presence CORE DATA ÷
 // ****************************
-//	- Contains logic data for all the rich presence scripts
-enum_RPtype = {
-	"DISPLAY_NORMAL": 0,		// rich_presence_display(format_string, parameters...)
-	"DISPLAY_CONDITIONAL": 1, 	// rich_presence_conditional_display(condition, format_string, parameters...)
-	"VALUE": 100,				// rich_presence_value(name, expression, [format])
-	"LOOKUP": 101,				// rich_presence_lookup(name, expression, dictionary, [fallback])
-	"MACRO": 103}				// rich_presence_macro(macro, expression)
+//	- Contains logic data for the rich presence script
+enum_RPtype_DISPLAY_NORMAL = 10			// rich_presence_display(format_string, parameters...)
+enum_RPtype_DISPLAY_CONDITIONAL = 11	// rich_presence_conditional_display(condition, format_string, parameters...)
+enum_RPtype_PARAMETER_VALUE = 100		// rich_presence_value(name, expression, [format])
+enum_RPtype_PARAMETER_LOOKUP = 101		// rich_presence_lookup(name, expression, dictionary, [fallback])
+enum_RPtype_PARAMETER_MACRO = 102		// rich_presence_macro(macro, expression)
 // -------------------------------------
 const_richPresence_coreData = {
 	//	DEV NOTE: rich presence
@@ -322,7 +336,7 @@ const_richPresence_coreData = {
 	// ------------------------------------------------------
 
 	// "rp_Template": { // CONCEPT rp_template
-	// 	"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
+	// 	"RPtype": enum_RPtype_DISPLAY_CONDITIONAL,
 	// 	"Condition": () =>  
 	// 		always_false(),
 	// 	"PlaceholderParameters": {
@@ -331,16 +345,16 @@ const_richPresence_coreData = {
 	// 		2: "rpp_Param3"}},
 
 	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
-		"RPtype": enum_RPtype["DISPLAY_NORMAL"],
+		"RPtype": enum_RPtype_DISPLAY_NORMAL,
 		"PlaceholderParameters": {}}
 	}
 const_richPresence_placeholderParameterData = {
 	"rpp_ValueTemplate": {
-		"RPtype": enum_RPtype["VALUE"],
+		"RPtype": enum_RPtype_PARAMETER_VALUE,
 		"Expression": byte(0x0000),
 		"ValueFormat": "VALUE"},
 	"rpp_LookupTemplate": {
-		"RPtype": enum_RPtype["LOOKUP"],
+		"RPtype": enum_RPtype_PARAMETER_LOOKUP,
 		"Expression": byte(0x0000),
 		"LookupFallback": getRichPresenceText("rpp_LookupTemplate_LookupFallback")},
 	"rpp_MacroTemplate": {
@@ -380,11 +394,11 @@ function createCorrespondingRPparameterFunction(string_placeholderParameterKey) 
 	
 	let_placeholderParameterData = const_richPresence_placeholderParameterData[string_placeholderParameterKey]
 	let_RPtype = let_placeholderParameterData["RPtype"]
-	if (let_RPtype == enum_RPtype["VALUE"]) {
+	if (let_RPtype == enum_RPtype_PARAMETER_VALUE) {
 		createRPparameterFunction_Value(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype["LOOKUP"]) {
+	} else if (let_RPtype == enum_RPtype_PARAMETER_LOOKUP) {
 		createRPparameterFunction_Lookup(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype["MACRO"]) {
+	} else if (let_RPtype == enum_RPtype_PARAMETER_MACRO) {
 		createRPparameterFunction_Macro(let_placeholderParameterData)
 	} else {
 		throwError(format("The rich presence parameter script: {0} did not evaluate correctly", int_placeholderParameterIndex))
@@ -400,7 +414,7 @@ function createRPparameters(dict_placeholderParameterData){ // Place RPplacehold
 		array_push(let_orderedRPparameters, let_unOrderedRPparameters[let_placeholderIndex])
 	}
 	return let_orderedRPparameters}
-function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// Initializes rich presence display scripts
+function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// generates rich presence display functions
 	function initializeRPdisplay_Normal(string_displayScriptKey, dict_displayNormalData) {
 		let_formatString = getRichPresenceText(string_displayScriptKey)		
 		if (length(dict_displayNormalData["PlaceholderParameters"]) > 0) {			
@@ -418,11 +432,11 @@ function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// 
 		}}
 	let_countDisplayNormalScripts = 0
 	let_RPtype = dict_rpDisplayData["RPtype"]
-	if (let_RPtype == enum_RPtype["DISPLAY_NORMAL"]) {
+	if (let_RPtype == enum_RPtype_DISPLAY_NORMAL) {
 		initializeRPdisplay_Normal(string_displayScriptKey, dict_rpDisplayData)
 		let_countDisplayNormalScripts = let_countDisplayNormalScripts + 1
 		if (let_countDisplayNormalScripts > 1) throwError("More than one DISPLAY_NORMAL script was defined; The last one will overwrite all the previous ones")
-	} else if (let_RPtype == enum_RPtype["DISPLAY_CONDITIONAL"]) {
+	} else if (let_RPtype == enum_RPtype_DISPLAY_CONDITIONAL) {
 		initializeRPdisplay_Conditional(string_displayScriptKey, dict_rpDisplayData)
 	} else {
 		throwError(format("The rich presence display script: {0} did not evaluate correctly", string_displayScriptKey))
