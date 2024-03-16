@@ -11,6 +11,10 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
+// TODO Leaderboards for clear time?
+// TODO Chapter 2 choice with cellphone/statte and all that => add trigger_when()
+// TODO Chapter 7 => yestersyears couple => hit counts are kinda weird
+
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -3638,7 +3642,7 @@ const_achievement_titles = {
 	"a_MetYouBefore": 								{"en": "Met You Before"},
 	"a_DrunkenGuys":								{"en": "A Pair of Delinquents"},
 	"a_ShowPocketWatchToPhotographer":				{"en": "Horologic Heritage"},
-	"a_TimeTravellingCat":							{"en": "Nine Lives across Generations"},
+	"a_TimeTravellingCat":							{"en": "Nine Lives Across Generations"},
 	"a_SnowyCrimeScene":							{"en": "Picked up a baby the other day."},
 	"a_SaveMiriamBrum":								{"en": "Illusive Guardian of the Brums"},
 	"a_HugoMotherChild":							{"en": "A Mother's Child"}, 
@@ -3717,12 +3721,12 @@ const_achievement_descriptions = {
 	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
 	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7"},
-	"a_LostYoungCouple1": 							{"en": "Help a lost young couple reunite in The Middle Ages during chapter 2"}, 
-	"a_LostYoungCouple2": 							{"en": "Help a lost young couple reunite again in The Middle Ages during chapter 3"},
-	"a_LostYoungCouple3": 							{"en": "Reunite the lost young couple in The Middle Ages during chapter 4"},
-	"a_LostYoungCouple4": 							{"en": "Consult the young man in The Middle Ages during chapter 5"},
-	"a_LostYoungCouple5": 							{"en": "Consult the young couple in The Middle Ages during chapter 7"},
-	"a_LostYoungCouple6": 							{"en": "Advise the young man in The Middle Ages during chapter 8"},
+	"a_LostYoungCouple1": 							{"en": "Help a lost young couple reunite in the Middle Ages during chapter 2"}, 
+	"a_LostYoungCouple2": 							{"en": "Help a lost young couple reunite again in the Middle Ages during chapter 3"},
+	"a_LostYoungCouple3": 							{"en": "Reunite the lost young couple in the Middle Ages during chapter 4"},
+	"a_LostYoungCouple4": 							{"en": "Consult the young man in the Middle Ages during chapter 5"},
+	"a_LostYoungCouple5": 							{"en": "Consult the young couple in the Middle Ages during chapter 7"},
+	"a_LostYoungCouple6": 							{"en": "Advise the young man in the Middle Ages during chapter 8"},
 	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman in the present during the prologue or chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman in the present during chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman in the present during chapter 4"}, 
@@ -3885,8 +3889,11 @@ const_richPresence_text = {
 	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen"},
 	"rp_Default":										{"en": "Wandering Lebensbaum"}}
+function getRichPresenceText(string_textKey) =>
+	const_richPresence_text[string_textKey][const_utilitySettings_language]
+// -------------------------------------
 const_richPresence_lookupTables = {
-	"rpp_FatedHour": {	// Corresponds to current chapter
+	"rpp_FatedHour": {	// Corresponds to chapter
 		0x1: "rpp_FatedHour_Lookup_Prologue", 
 		0x2: "rpp_FatedHour_Lookup_Chapter1",
 		0x3: "rpp_FatedHour_Lookup_Chapter2",
@@ -3918,141 +3925,88 @@ const_richPresence_lookupTables = {
 		0xb: "rpp_Chapter_Lookup_Chapter8",
 		0xa: "rpp_Chapter_Lookup_Epilogue",
 		0xc: "rpp_Chapter_Lookup_Epilogue"}}
-function getRichPresenceText(string_textKey) =>
-	const_richPresence_text[string_textKey][const_utilitySettings_language]
 function getRichPresenceLookupTable(string_lookupParameterKey) =>
 	const_richPresence_lookupTables[string_lookupParameterKey]
 // ****************************
 // ÷ Rich_Presence CORE DATA ÷
 // ****************************
 //	- Contains logic data for all the rich presence scripts
-enum_RPtype = {
-	"DISPLAY_NORMAL": 0,		// rich_presence_display(format_string, parameters...)
-	"DISPLAY_CONDITIONAL": 1, 	// rich_presence_conditional_display(condition, format_string, parameters...)
-	"VALUE": 100,				// rich_presence_value(name, expression, [format])
-	"LOOKUP": 101,				// rich_presence_lookup(name, expression, dictionary, [fallback])
-	"MACRO": 103}				// rich_presence_macro(macro, expression)
+enum_RPPARAMETER_VALUE = 1		// rich_presence_value(name, expression, [format])
+enum_RPPARAMETER_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
+enum_RPPARAMETER_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
-const_richPresence_coreData = {
+const_richPresence_conditions = {
+	"rp_isPaused": () => isInGame() && isInGamePauseMenuActive(),
+	"rp_InGameEXChapterOnly": () =>
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		isPrologueInExMode() && isExChapterUnlocked() && 
+		!isInGamePauseMenuActive() &&
+		isCurrentChapter("Prologue"),
+	"rp_InGameChapterOnly": () =>
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		!isInGamePauseMenuActive() &&
+		!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"]),
+	"rp_InGameChapterWithTimePeriod": () { return
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && !isInGamePauseMenuActive() &&
+		isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"])},
+	"rp_AtTitleScreen": () =>
+		isMainSaveLoaded() && 
+		(isAtTitleScreen() || !isInGame())
+	}
+function getRichPresenceCondition(string_displayKey) =>
+	const_richPresence_conditions[string_displayKey]
+// -------------------------------------
+const_richPresence_parameterData = {
 	// DEV_NOTE: rich presence
 	// 		- Expression examples => byte(0x000) OR getCurrentLevel() + 1
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	// "rp_Template": { // CONCEPT rp_template
-	// 	"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-	// 	"Condition": () =>  
-	// 		always_false(),
-	// 	"PlaceholderParameters": {
-	// 		0: "rpp_Param1",
-	// 		1: "rpp_Param2"}},
-	
-	"rp_isPaused": {
-		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-		"Condition": () { return 
-			isInGame() && isInGamePauseMenuActive()},
-		"PlaceholderParameters": {
-			0: "rpp_FatedHour",
-			1: "rpp_PresentTimeDays",
-			2: "rpp_PresentTimeYears",
-			3: "rpp_PresentTimeHourMinutes",
-			4: "rpp_TotalCompletionRate"}},
-	"rp_InGameEXChapterOnly": {
-		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-		"Condition": () =>
-			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-			isPrologueInExMode() && isExChapterUnlocked() && 
-			!isInGamePauseMenuActive() &&
-			isCurrentChapter("Prologue"),
-		"PlaceholderParameters": {
-			0: "rpp_FatedHour",
-			1: "rpp_PresentTimeDays",
-			2: "rpp_PresentTimeYears",
-			3: "rpp_PresentTimeHourMinutes",
-			4: "rpp_TotalCompletionRate"}},
-	"rp_InGameChapterOnly": {
-		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-		"Condition": () { return
-			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-			!isInGamePauseMenuActive() &&
-			!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"])},
-		"PlaceholderParameters": {
-			0: "rpp_Chapter",
-			1: "rpp_FatedHour",
-			2: "rpp_PresentTimeDays",
-			3: "rpp_PresentTimeYears",
-			4: "rpp_PresentTimeHourMinutes",
-			5: "rpp_TotalCompletionRate"}},
-	"rp_InGameChapterWithTimePeriod": {
-		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-		"Condition": () => 
-			isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && !isInGamePauseMenuActive() &&
-			isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"]),
-		"PlaceholderParameters": {
-			0: "rpp_Chapter",		
-			1: "rpp_TimePeriod",
-			2: "rpp_FatedHour",
-			3: "rpp_PresentTimeDays",
-			4: "rpp_PresentTimeYears",
-			5: "rpp_PresentTimeHourMinutes",
-			6: "rpp_TotalCompletionRate"}},
-	"rp_AtTitleScreen": {	// "Title Screen"
-		"RPtype": enum_RPtype["DISPLAY_CONDITIONAL"],
-		"Condition": () { return
-			isMainSaveLoaded() && 
-			(isAtTitleScreen() || !isInGame())},
-		"PlaceholderParameters": {}},
-	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
-		"RPtype": enum_RPtype["DISPLAY_NORMAL"],
-		"PlaceholderParameters": {}}
-	}
-const_richPresence_placeholderParameterData = {
 	"rpp_Chapter": {
-		"RPtype": enum_RPtype["LOOKUP"],
+		"RPtype": enum_RPPARAMETER_LOOKUP,
 		"Expression": getChapterId(),
 		"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback")},
 	"rpp_TimePeriod": {	
-		"RPtype": enum_RPtype["LOOKUP"],
+		"RPtype": enum_RPPARAMETER_LOOKUP,
 		"Expression": getCurrentTimePeriod(),
 		"LookupFallback": getRichPresenceText("rpp_TimePeriod_LookupFallback")},
 	"rpp_TotalCompletionRate": {
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getTotalAchievementRate(),
-		"Macro": "Number"},
+		"MacroFormat": "Number"},
 	"rpp_PresentTimeSeconds": {
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getCurrentPresentTimeSeconds(),
-		"Macro": "Number"},
+		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getCurrentPresentTimeMinutes(),
-		"Macro": "Number"},	
+		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": (getCurrentPresentTimeMinutes() + getCurrentPresentTimeHours() * 60),
-		"Macro": "Minutes"},
+		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getCurrentPresentTimeHours(),
-		"Macro": "Number"},
+		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getCurrentPresentTimeYears(),
-		"Macro": "Number"},
+		"MacroFormat": "Number"},
 	"rpp_PresentTimeDays": {
-		"RPtype": enum_RPtype["MACRO"],
+		"RPtype": enum_RPPARAMETER_MACRO,
 		"Expression": getCurrentPresentTimeDays(),
-		"Macro": "Number"},
+		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
-		"RPtype": enum_RPtype["LOOKUP"],
+		"RPtype": enum_RPPARAMETER_LOOKUP,
 		"Expression": getChapterId(),
 		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback")}
-	}
+	}	
 // ******************************
 // ÷ Rich_Presence INITIALIZER ÷
 // ******************************
-function createNameFromPlaceholderParameterkey(string_placeholderParameterKey) => substring(string_placeholderParameterKey, 4)	// Removes rpp_ 
 function populateRPlookupTablesWithText() {	// Changes the const_richPresence_lookupTables IDs to the corresponding text in const_richPresence_text
 	for let_lookupTable in const_richPresence_lookupTables {
 		for let_valueKey in const_richPresence_lookupTables[let_lookupTable] {
@@ -4060,91 +4014,83 @@ function populateRPlookupTablesWithText() {	// Changes the const_richPresence_lo
 			const_richPresence_lookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID)
 		}
 	}}
-function createCorrespondingRPparameterFunction(string_placeholderParameterKey) {
-	function createRPparameterFunction_Value(string_parameterKey, dict_paramValueData) {
-		let_name = createNameFromPlaceholderParameterkey(string_parameterKey)
+function createNameFromParameterkey(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function callRichPresenceParameterFunction(string_parameterKey) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in const_richPresence_parameterData
+	function callRichPresenceValue(string_parameterKey, dict_paramValueData) {
+		let_name = createNameFromParameterkey(string_parameterKey)
 		let_expression = dict_paramValueData["Expression"]
-		let_format = dict_paramValueData["Format"] 	
+		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function createRPparameterFunction_Lookup(string_parameterKey, dict_paramLookupData) {
-		let_name = createNameFromPlaceholderParameterkey(string_parameterKey)
+	function callRichPresenceLookup(string_parameterKey, dict_paramLookupData) {
+		let_name = createNameFromParameterkey(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"]
 		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey)
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
-	function createRPparameterFunction_Macro(dict_paramMacroData) {
-		let_macro = dict_paramMacroData["Macro"] 
+	function callRichPresenceMacro(dict_paramMacroData) {
+		let_macro = dict_paramMacroData["MacroFormat"] 
 		let_expression = dict_paramMacroData["Expression"]
 		return rich_presence_macro(let_macro, let_expression)}
-	
-	let_placeholderParameterData = const_richPresence_placeholderParameterData[string_placeholderParameterKey]
-	let_RPtype = let_placeholderParameterData["RPtype"]
-	if (let_RPtype == enum_RPtype["VALUE"]) {
-		createRPparameterFunction_Value(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype["LOOKUP"]) {
-		createRPparameterFunction_Lookup(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype["MACRO"]) {
-		createRPparameterFunction_Macro(let_placeholderParameterData)
-	} else {
-		throwError(format("The rich presence parameter script: {0} did not evaluate correctly", int_placeholderParameterIndex))
-	}}
-function createRPparameters(dict_placeholderParameterData){ // Place RPplaceholderParameters in correct order for the format function placeholders
-	let_unOrderedRPparameters = {}
-	for placeholderParameterIndex in dict_placeholderParameterData {
-		let_RPparam = createCorrespondingRPparameterFunction(dict_placeholderParameterData[placeholderParameterIndex])
-		let_unOrderedRPparameters[placeholderParameterIndex] = let_RPparam
+
+	let_parameterData = const_richPresence_parameterData[string_parameterKey]
+	let_RPtype = let_parameterData["RPtype"]
+	if (let_RPtype == enum_RPPARAMETER_VALUE) callRichPresenceValue(string_parameterKey, let_parameterData)
+	else if (let_RPtype == enum_RPPARAMETER_LOOKUP) callRichPresenceLookup(string_parameterKey, let_parameterData)
+	else if (let_RPtype == enum_RPPARAMETER_MACRO) callRichPresenceMacro(let_parameterData)
+	else throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
-	let_orderedRPparameters = []
-	for let_placeholderIndex in range(0, length(let_unOrderedRPparameters) - 1) { 
-		array_push(let_orderedRPparameters, let_unOrderedRPparameters[let_placeholderIndex])
-	}
-	return let_orderedRPparameters}
-function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// Initializes rich presence display scripts
-	function initializeRPdisplay_Normal(string_displayScriptKey, dict_displayNormalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey)		
-		if (length(dict_displayNormalData["PlaceholderParameters"]) > 0) {			
-			rich_presence_display(let_formatString, createRPparameters(dict_displayNormalData["PlaceholderParameters"]))
-		} else {
-			rich_presence_display(let_formatString)
-		}}
-	function initializeRPdisplay_Conditional(string_displayScriptKey, dict_displayConditionalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey)
-		let_condition = dict_displayConditionalData["Condition"]
-		if (length(dict_displayConditionalData["PlaceholderParameters"]) > 0) {
-			rich_presence_conditional_display(let_condition, let_formatString, createRPparameters(dict_displayConditionalData["PlaceholderParameters"]))
-		} else {
-			rich_presence_conditional_display(let_condition, let_formatString)
-		}}
-	let_countDisplayNormalScripts = 0
-	let_RPtype = dict_rpDisplayData["RPtype"]
-	if (let_RPtype == enum_RPtype["DISPLAY_NORMAL"]) {
-		initializeRPdisplay_Normal(string_displayScriptKey, dict_rpDisplayData)
-		let_countDisplayNormalScripts = let_countDisplayNormalScripts + 1
-		if (let_countDisplayNormalScripts > 1) throwError("More than one DISPLAY_NORMAL script was defined; The last one will overwrite all the previous ones")
-	} else if (let_RPtype == enum_RPtype["DISPLAY_CONDITIONAL"]) {
-		initializeRPdisplay_Conditional(string_displayScriptKey, dict_rpDisplayData)
-	} else {
-		throwError(format("The rich presence display script: {0} did not evaluate correctly", string_displayScriptKey))
-	}}
+
 function initializeRichPresence() {
-	// DEV_NOTE: rich_presence_macro(macro, expression)
-	//		- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
-	// ------------------------------------------------------	
-	// EXAMPLE:
-	// 		rich_presence_conditional_display(is_title_screen(), "Title Screen")
-	// 		rich_presence_display("Playing Battle {0} in {1} | Score: {2}", 
-	// 			rich_presence_value("Battle", getCurrentLevel()),
-	// 			rich_presence_lookup("Area", getCurrentArea(), areaDictionary),
-	// 			rich_presence_macro("Score", getCurrentScore())
-	// 		)
 	populateRPlookupTablesWithText()
-	for rpDisplayScriptKey in const_richPresence_coreData {
-		initilalizeRPdisplay(rpDisplayScriptKey, const_richPresence_coreData[rpDisplayScriptKey])}
+	
+	rich_presence_conditional_display(	// rp_isPaused
+		getRichPresenceCondition("rp_isPaused"),
+		getRichPresenceText("rp_isPaused"),
+		callRichPresenceParameterFunction("rpp_FatedHour"),
+		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
+		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
+		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
+		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameEXChapterOnly
+		getRichPresenceCondition("rp_InGameEXChapterOnly"),
+		getRichPresenceText("rp_InGameEXChapterOnly"),
+		callRichPresenceParameterFunction("rpp_FatedHour"),
+		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
+		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
+		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
+		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameChapterOnly
+		getRichPresenceCondition("rp_InGameChapterOnly"),
+		getRichPresenceText("rp_InGameChapterOnly"),
+		callRichPresenceParameterFunction("rpp_Chapter"),
+		callRichPresenceParameterFunction("rpp_FatedHour"),
+		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
+		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
+		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
+		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod
+		getRichPresenceCondition("rp_InGameChapterWithTimePeriod"),
+		getRichPresenceText("rp_InGameChapterWithTimePeriod"),
+		callRichPresenceParameterFunction("rpp_Chapter"),
+		callRichPresenceParameterFunction("rpp_TimePeriod"),
+		callRichPresenceParameterFunction("rpp_FatedHour"),
+		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
+		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
+		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
+		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_AtTitleScreen
+		getRichPresenceCondition("rp_AtTitleScreen"),
+		getRichPresenceText("rp_AtTitleScreen"))
+
+	rich_presence_display(	// rp_Default
+		getRichPresenceText("rp_Default"))
 	}
-
-
 
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
