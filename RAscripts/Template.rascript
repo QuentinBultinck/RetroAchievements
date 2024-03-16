@@ -91,15 +91,29 @@ function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" s
 // *****************
 // 	- Some explanation...
 // 	- Some explanation...
-enum_TEMPLATE_ID_1 = 0x0
-enum_TEMPLATE_ID_2 = 0x2
-enum_TEMPLATE_ID_3 = 0x5
-function is_TemplateID1(int_id) => 
-	int_id == enum_TEMPLATE_ID_1
-function is_TemplateID2(int_id) => 
-	int_id == enum_TEMPLATE_ID_2
-function is_TemplateID3(int_id) => 
-	int_id == enum_TEMPLATE_ID_3
+enum_TEMPLATE_WEAPON_A = 100
+enum_TEMPLATE_WEAPON_B = 101
+enum_TEMPLATE_WEAPON_C = 102
+const_template_weapons_data = {
+	enum_TEMPLATE_WEAPON_A: {
+		"equip_ID": 0x21,
+		"memAddr_CurrentWeaponAffinity": 0xAB1C,
+		"maxWeaponAffinity": 99
+	},
+	enum_TEMPLATE_WEAPON_B: {
+		"equip_ID": 0x22,
+		"memAddr_CurrentWeaponAffinity": 0xAB1D,
+		"maxWeaponAffinity": 99
+	},
+	enum_TEMPLATE_WEAPON_C: {
+		"equip_ID": 0x23,
+		"memAddr_CurrentWeaponAffinity": 0xAB1E,
+		"maxWeaponAffinity": 99
+	}}
+function is_EquippedWeapon(enum_TEMPLATE_WEAPON) =>
+	byte(0xAC12) == const_template_weapons_data[enum_TEMPLATE_WEAPON]["equip_ID"]
+function on_WeaponAffinityMaxed(enum_TEMPLATE_WEAPON) { return
+	always_false()}
 // -------------------------------------
 function doThisA() => always_false()
 function doThisB() => always_false()
