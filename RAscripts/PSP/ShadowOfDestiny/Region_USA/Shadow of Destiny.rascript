@@ -12,7 +12,6 @@
 //#####################################################################################################\\
 
 // TODO Leaderboards for clear time?
-// TODO Chapter 2 choice with cellphone/statte and all that => add trigger_when()
 // TODO Chapter 7 => yestersyears couple => hit counts are kinda weird
 // TODO Sync code notes on RAwebsite with here
 
@@ -1082,10 +1081,10 @@ const_achievements_coreData = {
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
 		"a_EggCollection": { // WORKING
 			"id": 306977, "points": 4, "badgeId": "461650", "hasTips": true,
-			"devInfo": "Give the ornamental egg to the barman before the fire happens during chapter 1. First go inside the bar then go back and forth in time + interact with the stairs and door inside the building on fire, then go back in time, you'll be transported to the past inside the bar this time"},
+			"devInfo": "Give the ornamental egg to the barman during chapter 1. Or in chapter 3 or 4"},
 		"a_AlertBarmanOfFire": { // WORKING
 			"id": 306976, "points": 4, "badgeId": "461648", "hasTips": true,
-			"devInfo": "Give the ornamental egg to the barman at his bar during chapter 3 or chapter 4"}},
+			"devInfo": "Alert the barman of fire in chapter 1"}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "badgeId": "461668", "hasTips": true,
@@ -2258,7 +2257,7 @@ const_achievement_triggers = {
 				isCurrentCutsceneMasterDataId(0x1eaa0)	&&
 				isCurrentCutsceneSectionDataId(0xae70))
 		]) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_MeetOldMiriam": function MeetOldMiriam() { return 
 		never(
 			!isInGame() 				||
@@ -2325,48 +2324,51 @@ const_achievement_triggers = {
 		trigger_when(
 			isItemInInventory("OrnamentalEgg") && 
 			isFullCutsceneSequenceEnding())},
-	"a_EggCollection": function EggCollection() { return 
+	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
-			!isInGame() 				||
+			!isInGame() 					||
 			!isCurrentChapter("Chapter1") 	||
 			isEventViewerActive()
 		) &&
-		once(	// Identifies Cutscene => Exchanging egg for frying pan
+		once(	// Identifies Cutscene => Warning barman of fire 
 			isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
-			isCurrentCutsceneMasterId(0x2f9c0)		&& 
-			isCurrentCutsceneSectionId_1(0x7)		&&
-			isCurrentCutsceneSectionId_2(0x6)		&&
-			isCurrentCutsceneMasterDataId(0x5400)	&&
-			isCurrentCutsceneSectionDataId(0x249e0)
+			isCurrentCutsceneMasterId(0x32200)		&& 
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0x70e0)	&&
+			isCurrentCutsceneSectionDataId(0x24cb0)
 		) &&
-		isFullCutsceneSequenceEnding()},
-	"a_AlertBarmanOfFire": function AlertBarmanOfFire() { return 
+		trigger_when(isFullCutsceneSequenceEnding())},
+	"a_EggCollection": function AlertBarmanOfFire() { return
 		never (
 			!isInGame() ||
 			isEventViewerActive()
 		) &&
 		never (
-			!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4")
+			!isCurrentChapter("Chapter1") && 
+			!isCurrentChapter("Chapter3") && 
+			!isCurrentChapter("Chapter4") 
 		) &&
 		tally(1, [
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4
+				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg")	&&
+				(isCurrentChapter("Chapter1") || isCurrentChapter("Chapter4"))	&&
+				isCurrentCutsceneMasterId(0x2f9c0)		&& 
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x0)		&&
+				isCurrentCutsceneMasterDataId(0x59c0)	&&
+				isCurrentCutsceneSectionDataId(0x5c20)),
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
 				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
-				isCurrentChapter("Chapter3") 			&&
+				isCurrentChapter("Chapter3")			&&
 				isCurrentCutsceneMasterId(0x32200)		&& 
-				isCurrentCutsceneSectionId_1(0x7)		&&
-				isCurrentCutsceneSectionId_2(0x6)		&&
-				isCurrentCutsceneMasterDataId(0x5400)	&&
-				isCurrentCutsceneSectionDataId(0x249e0)),
-			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 4
-				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
-				isCurrentChapter("Chapter4") 			&&
-				isCurrentCutsceneMasterId(0x2f9c0)		&& 
-				isCurrentCutsceneSectionId_1(0x7)		&&
-				isCurrentCutsceneSectionId_2(0x6)		&&
-				isCurrentCutsceneMasterDataId(0x5400)	&&
-				isCurrentCutsceneSectionDataId(0x249e0))]
-		) &&
-		isFullCutsceneSequenceEnding()},
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x0)		&&
+				isCurrentCutsceneMasterDataId(0x59c0)	&&
+				isCurrentCutsceneSectionDataId(0x5c20))
+		])
+		 &&
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_RunningAcrossThe90s": function RunningAcrossThe90s() {
 		function measuredComparison() { return
 			tally(2, [
@@ -3505,7 +3507,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneSectionDataId(0x10930)
 		) &&
 		isKittenGivenToSibylla() &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isInGame()				||
@@ -3528,7 +3530,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x18930)	&&
 			isCurrentCutsceneSectionDataId(0xae60)
 		) && 
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
 			!isInGame()				||
@@ -3540,7 +3542,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0x377e0, 0x28) 	&&
 			isCurrentMinorCutsceneId(0x23eb0, 0x2c)
 		) && 
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_RottenRope": function RottenRope() { return
 		never (
 			!isInGame() 				||
@@ -3563,7 +3565,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x18930)	&&
 			isCurrentCutsceneSectionDataId(0xae60)
 		) &&
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return
 		never(
 			!isInGame() 					||
@@ -3580,7 +3582,7 @@ const_achievement_triggers = {
 				isCurrentCutsceneMasterDataId(0x2090)	&&
 				isCurrentCutsceneSectionDataId(0x15d50)
 			) && 
-			isCutsceneSectionEnding()},
+			trigger_when(isCutsceneSectionEnding())},
 	"a_MetYouBefore": function MetYouBefore() { return
 		never(
 			!isInGame()				||
@@ -3603,14 +3605,14 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x1d00)	&&
 			isCurrentCutsceneSectionDataId(0x19a20)	
 		) && 
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!isInGame()					||
 			isEventViewerActive()	||
 			!isCurrentChapter("Chapter3")
 		) &&
-		once(
+		once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'
 			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0xb140) && isPriorCutsceneMasterId(0x5aa80) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -3618,7 +3620,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x5ac0)	&&
 			isCurrentCutsceneSectionDataId(0x38b0)	
 		) && 
-		once(
+		once(	// Identifies Cutscene => Waking up in limbo after dying to vase
 			isFullCutsceneActive()	&&
 			isCurrentCutsceneMasterId(0x1a440) && isPriorCutsceneMasterId(0xb140) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -3626,7 +3628,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0xd9a0)	&&
 			isCurrentCutsceneSectionDataId(0xca50)	
 		) &&
-		isCutsceneSectionEnding()}}
+		trigger_when(isCutsceneSectionEnding())}}
 
 // *********************
 // ÷ Achievement TEXT ÷
