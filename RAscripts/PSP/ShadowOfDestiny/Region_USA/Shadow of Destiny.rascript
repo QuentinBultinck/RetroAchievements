@@ -2412,10 +2412,11 @@ const_achievement_triggers = {
 			isCurrentCutsceneSectionDataId(0xb400)
 		) &&
 		trigger_when(isFullCutsceneSequenceEnding())},
-	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return  // TODO Section ID
+	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
 		never (
-			!isInGame() 					||
+			!isInGame() 			||
 			isEventViewerActive()	||
+			!isItemInInventory("EggPocketWatch") ||
 			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && 
 			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
 		) &&
@@ -2423,20 +2424,20 @@ const_achievement_triggers = {
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
 				isFullCutsceneActive() && isCurrentMapScene("1900sCity") && 
 				isCurrentCutsceneMasterId(0x8b440) 		&&
-				isCurrentCutsceneSectionId_1(0x5)		&&
-				isCurrentCutsceneSectionId_2(0x6)		&&
-				isCurrentCutsceneMasterDataId(0x5ac20)	&&
-				isCurrentCutsceneSectionDataId(0x1de70)	&&
-				isCurrentMinorCutsceneId(0xdefe0, 0x8)			&&
-				isCurrentMinorCutsceneId(0x2c3d0, 0x2c)),
-			once(	// Identifies Cutscene => Drank coffee before eqcuiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x0)		&&
+				isCurrentCutsceneMasterDataId(0x3b3a0)	&&
+				isCurrentCutsceneSectionDataId(0x50080)	&&
+				isCurrentMinorCutsceneId(0xdefe0, 0x8)	&&
+				isCurrentMinorCutsceneId(0x50080, 0x28)),
+			once(	// Identifies Cutscene => Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
 				isFullCutsceneActive() && isCurrentMapScene("1900sCity") && 
 				isCurrentCutsceneMasterId(0xac4c0) 		&&
 				isCurrentCutsceneSectionId_1(0x1)		&&
-				isCurrentCutsceneSectionId_2(0x2)		&&
+				isCurrentCutsceneSectionId_2(0x0)		&&
 				isCurrentCutsceneMasterDataId(0x5ac20)	&&
-				isCurrentCutsceneSectionDataId(0x1de70)	&&
-				isCurrentMinorCutsceneId(0x7ec30, 0x8)			&&
+				isCurrentCutsceneSectionDataId(0x51870)	&&
+				isCurrentMinorCutsceneId(0x7ec30, 0x8)	&&
 				isCurrentMinorCutsceneId(0x2f730, 0x2c))
 		]) &&
 		trigger_when(isFullCutsceneSequenceEnding())},
