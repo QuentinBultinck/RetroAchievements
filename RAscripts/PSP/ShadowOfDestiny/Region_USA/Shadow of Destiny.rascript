@@ -2288,8 +2288,8 @@ const_achievement_triggers = {
 				isCurrentCutsceneMasterDataId(0x95c0)	&&
 				isCurrentCutsceneSectionDataId(0x6cf0))
 		]) &&
-		isFullCutsceneSequenceEnding()},
-	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
+		trigger_when(isFullCutsceneSequenceEnding())},
+	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return // TODO section ID 
 		never (
 			!isInGame() 				||
 			!isCurrentChapter("Chapter1") 	||
@@ -2303,7 +2303,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x5e60)	&&
 			isCurrentCutsceneSectionDataId(0x134f0)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!isInGame() ||
@@ -2406,8 +2406,8 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x29d0)	&&
 			isCurrentCutsceneSectionDataId(0xb400)
 		) &&
-		isFullCutsceneSequenceEnding()},
-	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return  
+		trigger_when(isFullCutsceneSequenceEnding())},
+	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return  // TODO Section ID
 		never (
 			!isInGame() 					||
 			isEventViewerActive()	||
@@ -2434,14 +2434,14 @@ const_achievement_triggers = {
 				isCurrentMinorCutsceneId(0x7ec30, 0x8)			&&
 				isCurrentMinorCutsceneId(0x2f730, 0x2c))
 		]) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
 			!isInGame() 					||
 			isEventViewerActive()	||
 			!isCurrentChapter("Chapter7")
 		) &&
-		once(	// Identifies Cutscene => Show off egg pocket watch to barman
+		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
 			isFullCutsceneActive() && isItemInInventory("EggPocketWatch") &&
 			isCurrentCutsceneMasterId(0x8ce80) 		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -2451,7 +2451,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0x70640, 0x8)	&&
 			isCurrentMinorCutsceneId(0x236a0, 0x28)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never (
 			!isInGame() 					||
@@ -2468,7 +2468,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0xdfbc0, 0x8)	&&
 			isCurrentMinorCutsceneId(0xa420, 0x28)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
 			!isInGame() 				||
@@ -2973,7 +2973,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0xadb40)	&&
 			isCurrentCutsceneSectionDataId(0x5d4a0)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){
 		function measuredComparison() { return
 			tally(7, [
@@ -3125,7 +3125,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0x153d0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x122b0, 0x2c)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_MaxInventory": function MaxInventory(){
 		// function measuredComparison() { 
 		// 	// CODE BLOCK A; only use one CODE BLOCK
@@ -3160,10 +3160,10 @@ const_achievement_triggers = {
 		// FIX for above code => if item is gained or removed => recalculate all 
 		
 		function measuredComparison(){ 
-			let_biggestPossibleInventory = 20
-			// Checks all item_in_inventory_flags => if in inventory 	+1 Add hit
+			let_biggestPossibleInventoryCount = 20
+			// Checks all item_in_inventory_flags => if in inventory => +1 Add hit
 			return 
-				tally_of(const_inventoryItems, let_biggestPossibleInventory, (item) {
+				tally_of(const_inventoryItems, let_biggestPossibleInventoryCount, (item) {
 					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
 					return once(bit0(let_memAddress) == 1)
 				})
@@ -3173,11 +3173,11 @@ const_achievement_triggers = {
 				isAtTitleScreen()		||
 				isEventViewerActive()	||
 
-				// Reset tally count if any item is gained or removed => will recalculate the amount of items in inventory
+				// Reset tally count if any item is removed => will recalculate the amount of items in inventory
 				// 	Checks if any item_in_inventory_flags has changed
 				any_of(const_inventoryItems, (item) {
 					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
-					return bit0(let_memAddress) != prev(bit0(let_memAddress))
+					return bit0(let_memAddress) < prev(bit0(let_memAddress))
 				})
 			) &&
 			measured(measuredComparison(), always_true()) &&
@@ -3223,7 +3223,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x11cd0)	&&
 			isCurrentCutsceneSectionDataId(0x3d500)	
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!isInGame()				||
@@ -3240,7 +3240,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0x8f8e0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x5bb90, 0x28)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!isInGame() 		||
@@ -3415,7 +3415,7 @@ const_achievement_triggers = {
 			) &&
 			trigger_when(!isSmallCutsceneActive()) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_SeenOlegAsWell": function SeenOlegAsWell() { return
+	"a_SeenOlegAsWell": function SeenOlegAsWell() { return // BUG triggers also when talking for second time, should only trigger on first talk
 		never(
 			!isInGame()				||
 			isEventViewerActive() 	||
@@ -3459,7 +3459,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0xb8b90, 0x8)	&&
 			isCurrentMinorCutsceneId(0x4f210, 0x28)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!isInGame()						||
@@ -3474,7 +3474,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x546f0)	&&
 			isCurrentCutsceneSectionDataId(0x50b0)	
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!isInGame()					||
@@ -3491,7 +3491,7 @@ const_achievement_triggers = {
 			isCurrentMinorCutsceneId(0x282ae0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x3bbc0, 0x28)
 		) &&
-		isFullCutsceneSequenceEnding()},
+		trigger_when(isFullCutsceneSequenceEnding())},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
 			!isInGame() ||
