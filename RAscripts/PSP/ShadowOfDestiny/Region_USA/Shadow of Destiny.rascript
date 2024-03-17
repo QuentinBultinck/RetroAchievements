@@ -12,8 +12,8 @@
 //#####################################################################################################\\
 
 // TODO Leaderboards for clear time?
-// TODO Chapter 7 => yestersyears couple => hit counts are kinda weird
 // TODO Sync code notes on RAwebsite with here
+// TODO re-check points distribution 
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -734,18 +734,21 @@ function isInGamePauseMenuActive() =>	// $B91514 + $B91518: [Bit Flag] bit 0 => 
 // ÷ CUTSCENE/CHOICES BIT FLAGS ÷
 // *******************************
 const_endingBitFlagsMemoryAddresses = {
-	"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A unlocked
-	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B unlocked
-	"C": 0xAA1156,	// $AA1156: [Bit Flag] bit 0 => Ending C unlocked
-	"D": 0xAA1157,	// $AA1157: [Bit Flag] bit 0 => Ending D unlocked
-	"E": 0xAA1158,	// $AA1158: [Bit Flag] bit 0 => Ending E unlocked
-	"EX": 0xAA1159}	// $AA1159: [Bit Flag] bit 0 => Ending EX unlocked
+	"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A achieved
+	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B achieved
+	"C": 0xAA1156,	// $AA1156: [Bit Flag] bit 0 => Ending C achieved
+	"D": 0xAA1157,	// $AA1157: [Bit Flag] bit 0 => Ending D achieved
+	"E": 0xAA1158,	// $AA1158: [Bit Flag] bit 0 => Ending E achieved
+	"EX": 0xAA1159}	// $AA1159: [Bit Flag] bit 0 => Ending EX achieved
 
-function isEndingUnlocked(string_EndingCharacter) =>
+function isEndingAchieved(string_EndingCharacter) =>
 	bit0(const_endingBitFlagsMemoryAddresses[string_EndingCharacter]) == 1
 
-function isExChapterUnlocked() => 
-	all_of(const_endingBitFlagsMemoryAddresses, (endingChar) => bit0(const_endingBitFlagsMemoryAddresses[endingChar]) == 1)
+function isExChapterUnlocked() => // If endings ABCDE are achieved
+	all_of(const_endingBitFlagsMemoryAddresses, (endingChar) {
+		if (endingChar != "EX")	return bit0(const_endingBitFlagsMemoryAddresses[endingChar]) == 1
+		return always_true()
+	})
 
 function isPrologueInExMode() => 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
 	bit7(0xA9ED98) == 1 			//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
@@ -996,7 +999,6 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // ÷ Achievement CORE DATA ÷
 // **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
-
 const_achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro and overwrite when necessary via the RA website
@@ -1078,9 +1080,6 @@ const_achievements_coreData = {
 		"a_GetOrnamentalEgg": { // WORKING
 			"id": 306885, "points": 1, "badgeId": "461653", "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
-		"a_GetExChapterOrnamentalEgg": { // WORKING
-			"id": 405112, "points": 1, "badgeId": "461653", "hasTips": true,
-			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
 		"a_BecomeThePerformer": { // WORKING
 			"id": 402284, "points": 4, "badgeId": "461649", "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
@@ -1227,6 +1226,9 @@ const_achievements_coreData = {
 		"a_ScareEveryone": { // WORKING
 			"id": 404046, "points": 4, "badgeId": "461722", "hasTips": true,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
+		"a_GetExChapterOrnamentalEgg": { // WORKING
+			"id": 405112, "points": 1, "badgeId": "461653", "hasTips": true,
+			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
 		"a_MeetFamousOleg": { // WORKING
 			"id": 404045, "points": 4, "badgeId": "461713", "hasTips": true,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
@@ -1392,7 +1394,7 @@ function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 		tally(int_tallyCount, 
 			isEnergyUnitsIncreasing() &&
 			isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
-			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&
+			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&	// Check prior values, since isEnergyUnitsIncreasing() hits when the text is already gone
 			isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
 			isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
 			isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
@@ -1897,7 +1899,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("A"))},
+			isEndingAchieved("A"))},
 	"a_EndingB1": function EndingB1() { return
 		never(
 			!isInGame() 			||
@@ -1944,7 +1946,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("B"))},
+			isEndingAchieved("B"))},
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!isInGame() 			||
@@ -1979,7 +1981,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("B"))},
+			isEndingAchieved("B"))},
 	"a_EndingC": function EndingC() { return
 		never(
 			!isInGame() 			||
@@ -2014,7 +2016,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("B"))},
+			isEndingAchieved("C"))},
 	"a_EndingD": function EndingD() { return
 		never(
 			!isInGame() 			||
@@ -2041,7 +2043,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("D"))},
+			isEndingAchieved("D"))},
 	"a_EndingE": function EndingE() { return
 		never(
 			!isInGame() 			||
@@ -2076,7 +2078,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("E"))},
+			isEndingAchieved("E"))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
 			!isInGame() 			||
@@ -2085,8 +2087,8 @@ const_achievement_triggers = {
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
 			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isExChapterUnlocked() && isPrologueInExMode() &&
-			isCurrentChapter("Prologue") 			&&
+			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0xa7a80)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2106,7 +2108,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("EX"))},
+			isEndingAchieved("EX"))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
 			!isInGame() 			||
@@ -2115,8 +2117,8 @@ const_achievement_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
 			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isExChapterUnlocked() && isPrologueInExMode() &&
-			isCurrentChapter("Prologue") 			&&
+			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0x58c00)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2136,7 +2138,7 @@ const_achievement_triggers = {
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
-			isEndingUnlocked("EX"))},
+			isEndingAchieved("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
 		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
@@ -2294,21 +2296,21 @@ const_achievement_triggers = {
 				isCurrentCutsceneSectionDataId(0x6cf0))
 		]) &&
 		trigger_when(isFullCutsceneSequenceEnding())},
-	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return // TODO section ID 
+	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never (
-			!isInGame() 				||
+			!isInGame() 					||
 			!isCurrentChapter("Chapter1") 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
 			isFullCutsceneActive() && 
 			isCurrentCutsceneMasterId(0x19380)		&& 
-			isCurrentCutsceneSectionId_1(0x7)		&&
-			isCurrentCutsceneSectionId_2(0x8)		&&
-			isCurrentCutsceneMasterDataId(0x5e60)	&&
-			isCurrentCutsceneSectionDataId(0x134f0)
+			isCurrentCutsceneSectionId_1(0x1)		&&
+			isCurrentCutsceneSectionId_2(0x0)		&&
+			isCurrentCutsceneMasterDataId(0xd5f0)	&&
+			isCurrentCutsceneSectionDataId(0xe10)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isItemInInventory("OrnamentalEgg") && isNoCutsceneActive())},
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!isInGame() ||
@@ -2316,8 +2318,8 @@ const_achievement_triggers = {
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
 			isFullCutsceneActive() &&
-			isExChapterUnlocked() && isPrologueInExMode() &&
-			isCurrentChapter("Prologue") 			&&
+			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0x30780)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2328,7 +2330,7 @@ const_achievement_triggers = {
 		) &&
 		trigger_when(
 			isItemInInventory("OrnamentalEgg") && 
-			isFullCutsceneSequenceEnding())},
+			isNoCutsceneActive())},
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!isInGame() 					||
