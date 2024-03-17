@@ -1077,18 +1077,27 @@ const_achievements_coreData = {
 			"id": 405097, "points": 50, "badgeId": "461647", "hasTips": false,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
-		"a_GetOrnamentalEgg": { // WORKING
-			"id": 306885, "points": 1, "badgeId": "461653", "hasTips": true,
-			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."},
+		"a_AlertBarmanOfFire": { // WORKING
+			"id": 306976, "points": 4, "badgeId": "461648", "hasTips": true,
+			"devInfo": "Alert the barman of fire in chapter 1"},
 		"a_BecomeThePerformer": { // WORKING
 			"id": 402284, "points": 4, "badgeId": "461649", "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
 		"a_EggCollection": { // WORKING
 			"id": 306977, "points": 4, "badgeId": "461650", "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman during chapter 1. Or in chapter 3 or 4"},
-		"a_AlertBarmanOfFire": { // WORKING
-			"id": 306976, "points": 4, "badgeId": "461648", "hasTips": true,
-			"devInfo": "Alert the barman of fire in chapter 1"}},
+		"a_EikeThePyromancer": { // WORKING
+			"id": 306911, "points": 1, "badgeId": "461685", "hasTips": true,
+			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
+		"a_EikeTheMagician": { // WORKING
+			"id": 306906, "points": 1, "badgeId": "461684", "hasTips": true,
+			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
+		"a_EikeTheFlorist": { // WORKING
+			"id": 306920, "points": 1, "badgeId": "461683", "hasTips": true,
+			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
+		"a_GetOrnamentalEgg": { // WORKING
+			"id": 306885, "points": 1, "badgeId": "461653", "hasTips": true,
+			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // WORKING
 			"id": 315566, "points": 5, "badgeId": "461668", "hasTips": true,
@@ -1108,31 +1117,16 @@ const_achievements_coreData = {
 		"a_EndingE": { // WORKING
 			"id": 322231, "points": 5, "badgeId": "461673", "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
-		"a_EndingEXKillHomunculus": { // WORKING
-			"id": 405113, "points": 3, "badgeId": "461652", "hasTips": true,
-			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"},
 		"a_EndingEXCureHelena": { // WORKING
 			"id": 405114, "points": 3, "badgeId": "461651", "hasTips": true,
-			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"}},
+			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
+		"a_EndingEXKillHomunculus": { // WORKING
+			"id": 405113, "points": 3, "badgeId": "461652", "hasTips": true,
+			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_TimeTravellingCat": { // WORKING
-			"id": 310426, "points": 4, "badgeId": "461728", "hasTips": true,
-			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"},		
-		"a_DoctorateTimeTraveling": { // WORKING
-			"id": 310163, "points": 4, "badgeId": "461679", "hasTips": true,
-			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
-		"a_ShowEggTownPlanter": { // WORKING
-			"id": 307023, "points": 3, "badgeId": "461725", "hasTips": true,
-			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_EikeThePyromancer": { // WORKING
-			"id": 306911, "points": 1, "badgeId": "461685", "hasTips": true,
-			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING
-			"id": 306906, "points": 1, "badgeId": "461684", "hasTips": true,
-			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // WORKING
-			"id": 306920, "points": 1, "badgeId": "461683", "hasTips": true,
-			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
+		"a_AntiquesEule": { // WORKING
+			"id": 310132, "points": 2, "badgeId": "461674", "hasTips": true,
+			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_ArtAppreciator": { // WORKING
 			"id": 307499, "points": 1, "badgeId": "461675", "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
@@ -1142,9 +1136,82 @@ const_achievements_coreData = {
 		"a_ArtInspirationAll": { // WORKING
 			"id": 403825, "points": 5, "badgeId": "461677", "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
-		"a_AntiquesEule": { // WORKING
-			"id": 310132, "points": 2, "badgeId": "461674", "hasTips": true,
-			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
+		"a_BarmansChildren": { // WORKING
+			"id": 315567, "points": 3, "badgeId": "461678", "hasTips": true,
+			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
+		"a_DoctorateTimeTraveling": { // WORKING
+			"id": 310163, "points": 4, "badgeId": "461679", "hasTips": true,
+			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
+		"a_DrunkenGuys": { // WORKING
+			"id": 404048, "points": 2, "badgeId": "461680", "hasTips": true,
+			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
+		"a_EggPocketWatchForCoffee": { // WORKING
+			"id": 313213, "points": 4, "badgeId": "461682", "hasTips": true,
+			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
+		"a_FreeMeal": { // WORKING 
+			"id": 405461, "points": 3, "badgeId": "461695", "hasTips": true,
+			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
+		"a_GetExChapterOrnamentalEgg": { // WORKING
+			"id": 405112, "points": 1, "badgeId": "461653", "hasTips": true,
+			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
+		"a_GiveMargaretteCake": { // WORKING
+			"id": 402296, "points": 4, "badgeId": "461704", "hasTips": true,
+			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
+		"a_HugoMotherChild": { // WORKING
+			"id": 311466, "points": 2, "badgeId": "461705", "hasTips": true,
+			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
+		"a_MaxInventory": { // WORKING
+			"id": 402404, "points": 10, "badgeId": "461712", "hasTips": true,
+			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
+		"a_MeetFamousOleg": { // WORKING
+			"id": 404045, "points": 4, "badgeId": "461713", "hasTips": true,
+			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
+		"a_MeetOldMiriam": { // WORKING
+			"id": 315570, "points": 10, "badgeId": "461714", "hasTips": true,
+			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
+		"a_NewCakeInvented": { // WORKING
+			"id": 402297, "points": 3, "badgeId": "461715", "hasTips": true,
+			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
+		"a_PerformerGoingExtraMile": { // WORKING
+			"id": 403575, "points": 5, "badgeId": "461716", "hasTips": true,
+			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
+		"a_PocketWatchCollection": { // WORKING
+			"id": 315561, "points": 4, "badgeId": "461717", "hasTips": true,
+			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
+		"a_PocketWatchReminiscing": { // WORKING
+			"id": 315562, "points": 4, "badgeId": "461718", "hasTips": true,
+			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
+		"a_PocketWatchTo80sBarman": { // WORKING
+			"id": 407681, "points": 1, "badgeId": "461719", "hasTips": true,
+			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
+		"a_RunningAcrossThe90s": { // WORKING
+			"id": 405086, "points": 2, "badgeId": "461720", "hasTips": true,
+			"devInfo": "Talk to jogging man in present and past (70s)"},
+		"a_SaveMiriamBrum": { // WORKING
+			"id": 315569, "points": 4, "badgeId": "461721", "hasTips": true,
+			"devInfo": "Save Miriam Brum in chapter 6"},			
+		"a_ScareEveryone": { // WORKING
+			"id": 404046, "points": 4, "badgeId": "461722", "hasTips": true,
+			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
+		"a_SeenOlegAsWell": { // WORKING
+			"id": 405098, "points": 1, "badgeId": "461723", "hasTips": true,
+			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
+		"a_ShowEggTownPlanter": { // WORKING
+			"id": 307023, "points": 3, "badgeId": "461725", "hasTips": true,
+			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
+		"a_ShowPocketWatchToPhotographer": { // WORKING 
+			"id": 405460, "points": 2, "badgeId": "461726", "hasTips": true,
+			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
+		"a_ShortestChapter": { // WORKING
+			"id": 403823, "points": 3, "badgeId": "461724", "hasTips": true,
+			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
+		"a_SnowyCrimeScene": { // WORKING
+			"id": 313209, "points": 2, "badgeId": "461727", "hasTips": true,
+			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
+		"a_TimeTravellingCat": { // WORKING
+			"id": 310426, "points": 4, "badgeId": "461728", "hasTips": true,
+			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
+	"c_Extra_Couple": { // Category - Related to the mysterious couple 
 		"a_EnigmaticCouple1": { // WORKING
 			"id": 307495, "points": 3, "badgeId": "461690", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
@@ -1177,19 +1244,8 @@ const_achievements_coreData = {
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // WORKING
 			"id": 315568, "points": 10, "badgeId": "461711", "hasTips": true,
-			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"},
-		"a_HugoMotherChild": { // WORKING
-			"id": 311466, "points": 2, "badgeId": "461705", "hasTips": true,
-			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
-		"a_SnowyCrimeScene": { // WORKING
-			"id": 313209, "points": 2, "badgeId": "461727", "hasTips": true,
-			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
-		"a_SaveMiriamBrum": { // WORKING
-			"id": 315569, "points": 4, "badgeId": "461721", "hasTips": true,
-			"devInfo": "Save Miriam Brum in chapter 6"},
-		"a_MeetOldMiriam": { // WORKING
-			"id": 315570, "points": 10, "badgeId": "461714", "hasTips": true,
-			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
+			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
+	"c_Extra_Energy": { // Category - Related to energy orb gathering
 		"a_EnergyOrbLocatorPresentDay": { // WORKING
 			"id": 399816, "points": 5, "badgeId": "461689", "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
@@ -1201,77 +1257,23 @@ const_achievements_coreData = {
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
 		"a_EnergyOrbLocatorMiddleAges": { // WORKING
 			"id": 399819, "points": 5, "badgeId": "461688", "hasTips": true,
-			"devInfo": "Find all 6 energy orbs in Middle Ages"}, 
-		"a_NewCakeInvented": { // WORKING
-			"id": 402297, "points": 3, "badgeId": "461715", "hasTips": true,
-			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
-		"a_GiveMargaretteCake": { // WORKING
-			"id": 402296, "points": 4, "badgeId": "461704", "hasTips": true,
-			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		"a_MaxInventory": { // WORKING
-			"id": 402404, "points": 10, "badgeId": "461712", "hasTips": true,
-			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
-		"a_PocketWatchCollection": { // WORKING
-			"id": 315561, "points": 4, "badgeId": "461717", "hasTips": true,
-			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
-		"a_PocketWatchReminiscing": { // WORKING
-			"id": 315562, "points": 4, "badgeId": "461718", "hasTips": true,
-			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
-		"a_EggPocketWatchForCoffee": { // WORKING
-			"id": 313213, "points": 4, "badgeId": "461682", "hasTips": true,
-			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_BarmansChildren": { // WORKING
-			"id": 315567, "points": 3, "badgeId": "461678", "hasTips": true,
-			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		"a_ScareEveryone": { // WORKING
-			"id": 404046, "points": 4, "badgeId": "461722", "hasTips": true,
-			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
-		"a_GetExChapterOrnamentalEgg": { // WORKING
-			"id": 405112, "points": 1, "badgeId": "461653", "hasTips": true,
-			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
-		"a_MeetFamousOleg": { // WORKING
-			"id": 404045, "points": 4, "badgeId": "461713", "hasTips": true,
-			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
-		"a_DrunkenGuys": { // WORKING
-			"id": 404048, "points": 2, "badgeId": "461680", "hasTips": true,
-			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
-		"a_SeenOlegAsWell": { // WORKING
-			"id": 405098, "points": 1, "badgeId": "461723", "hasTips": true,
-			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
-		"a_PocketWatchTo80sBarman": { // WORKING
-			"id": 407681, "points": 1, "badgeId": "461719", "hasTips": true,
-			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
-		"a_RunningAcrossThe90s": { // WORKING
-			"id": 405086, "points": 2, "badgeId": "461720", "hasTips": true,
-			"devInfo": "Talk to jogging man in present and past (70s)"},
-		"a_ShortestChapter": { // WORKING
-			"id": 403823, "points": 3, "badgeId": "461724", "hasTips": true,
-			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
-		"a_ShowPocketWatchToPhotographer": { // WORKING 
-			"id": 405460, "points": 2, "badgeId": "461726", "hasTips": true,
-			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
-		"a_FreeMeal": { // WORKING 
-			"id": 405461, "points": 3, "badgeId": "461695", "hasTips": true,
-			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
-		"a_PerformerGoingExtraMile": { // WORKING
-			"id": 403575, "points": 5, "badgeId": "461716", "hasTips": true,
-			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"}},
+			"devInfo": "Find all 6 energy orbs in Middle Ages"}},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
-		"a_MetYouBefore": { // WORKING
-			"id": 306888, "points": 2, "badgeId": "461701", "hasTips": true,
-			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_ErasingEike": { // WORKING
 			"id": 306883, "points": 2, "badgeId": "461699", "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
 		"a_ErasingEike2": { // WORKING
 			"id": 314763, "points": 1, "badgeId": "461698", "hasTips": true,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_RottenRope": { // WORKING
-			"id": 315563, "points": 1, "badgeId": "461702", "hasTips": true,
-			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_ExcuseMeMyMy": { // WORKING
 			"id": 306919, "points": 1, "badgeId": "461700", "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
+		"a_MetYouBefore": { // WORKING
+			"id": 306888, "points": 2, "badgeId": "461701", "hasTips": true,
+			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
+		"a_RottenRope": { // WORKING
+			"id": 315563, "points": 1, "badgeId": "461702", "hasTips": true,
+			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_TimeEgoFlop": { // WORKING
 			"id": 313212, "points": 1, "badgeId": "461703", "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
@@ -1284,12 +1286,14 @@ const_achievement_typeByCategory = {
 	// ------------------------------------------------------
 	
 	// "c_template": "xxxxxx",
-	"c_Endings": 							"win_condition",
 	"c_Completion": 						"progression",
-	"c_Extra_GameOver": 					"missable",
+	"c_Endings": 							"win_condition",
 	"c_AchievementPercentage": 				"missable",
 	"c_Branch": 							"missable",
-	"c_Extra":				 				"missable"}
+	"c_Extra":				 				"missable",
+	"c_Extra_Couple":						"missable",
+	"c_Extra_Energy":						"missable",
+	"c_Extra_GameOver": 					"missable",}
 
 // ***********************************
 // ÷ Achievement TRIGGER GENERATORS ÷
