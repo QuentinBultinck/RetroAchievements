@@ -907,6 +907,7 @@ const_percentageBitflags_new = {
 		0xA9ED74: [0]}}
 
 // -------------------------------------
+// TODO remove const_percentageBitsFlags_old
 const_percentageBitsFlags_old = {
 	"Prologue": {
 		0xAA115B: [1,7],
@@ -2481,7 +2482,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x340e0)	&&
 			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never (
 			!isInGame() 				||
@@ -2497,7 +2498,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x340e0)	&&
 			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never (
 			!isInGame() 				||
@@ -2513,7 +2514,7 @@ const_achievement_triggers = {
 			isCurrentCutsceneMasterDataId(0x340e0)	&&
 			isCurrentCutsceneSectionDataId(0x7130)
 		) &&
-		isCutsceneSectionEnding()},
+		trigger_when(isCutsceneSectionEnding())},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never (
 			!isInGame() 				||
