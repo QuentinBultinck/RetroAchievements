@@ -212,6 +212,11 @@ function isNPCtalkCountIncreasing(string_NPC, string_appearance) {
 	return 
 		let_talkCount > prev(let_talkCount)}
 
+function isTalkingToNPCForFirstTime(string_NPC, string_appearance) {
+	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
+	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
+	return let_talkCount == 0x1}
+
 function isNPCtalkCountAtMax(string_NPC, string_appearance) {
 	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
 	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
@@ -3415,7 +3420,7 @@ const_achievement_triggers = {
 			) &&
 			trigger_when(!isSmallCutsceneActive()) &&
 			measured(measuredComparison(), measuredIfComparison())},
-	"a_SeenOlegAsWell": function SeenOlegAsWell() { return // BUG triggers also when talking for second time, should only trigger on first talk
+	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
 			!isInGame()				||
 			isEventViewerActive() 	||
@@ -3425,7 +3430,7 @@ const_achievement_triggers = {
 			isSmallCutsceneActive() && isCurrentMapScene("CafeSonne80s") &&
 			isTalkingTo("OlderMan_80s") && 
 			isInteractionChapterId(0xb2) && isInteractionId(0x3e7) && 
-			isNPCtalkCountIncreasing("OlderMan_80s", "Chap6_CafeSonne")
+			isTalkingToNPCForFirstTime("OlderMan_80s", "Chap6_CafeSonne")
 		) &&
 		trigger_when(isFullCutsceneSequenceEnding())},
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
