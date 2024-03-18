@@ -6,6 +6,7 @@
 // md5: [hash_here] - [region_here]
 // Platform: [platform_here]
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
+// RA Game Page: [link_to_game_page]
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
