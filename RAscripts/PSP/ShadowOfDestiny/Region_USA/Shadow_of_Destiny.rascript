@@ -6,16 +6,14 @@
 // md5: 2991ecdb4d9a22dc40511b241bfb59a4 - USA
 // Platform: PlayStation Portable
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Shadow-of-Destiny-(PlayStation-Portable)
+// RA Game Page: https://retroachievements.org/game/3945
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO Leaderboards for clear time?
-// TODO Sync code notes on RAwebsite with here
+// TODO Leaderboards for total clear time
 // TODO re-check points distribution 
-// TODO update guides online
-// TODO Template.rascript => Rich Presence still needs to be updated
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -229,7 +227,7 @@ function isNPCtalkCountAtMax(string_NPC, string_appearance) {
 function isTalkingTo_shortHand(string_NPC) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 	dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// - Resets to 0x0 when interaction is done
 
-function isTalkingTo(string_NPC) {						// $A9EFDC: [25-bit] Pointer - Interactions
+function isTalkingTo(string_NPC) {						// $A9EFDC: [25-bit Pointer] Interactions
 	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - [32-bit] NPC ID	
 	//		PSP uses 25-bit pointers					// 		| - Unique per interactable NPC or environment item
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff		// 		| - This value is copied to 0xa9eff4 (refer to notes)
@@ -243,12 +241,12 @@ function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
 	return const_interactables[string_interactable] == dword(let_maskedPointer)}
 
-function isInteractionChapterId(int_Id) {			// $A9EFE0: [25-bit] Pointer - Interactions
+function isInteractionChapterId(int_Id) {			// $A9EFE0: [25-bit Pointer] Interaction Identification
 	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff	// 		+0x0 - [32-bit] Interaction Chapter ID
 	return dword(let_maskedPointer) == int_Id}		//		| - Each chapter has a different value
 
 function isInteractionId(int_Id) {
-	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit] Pointer - Interactions
+	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit Pointer] Interaction Identification
 	return dword(let_maskedPointer) == int_Id}		// 		- Pointer resets to 0x0 when interaction is done
 													// 		+0x0 - [32-bit] Interaction ID
 // -------------------------------------
@@ -287,6 +285,7 @@ function isWomanAdvisedBeTruthful() => 	//	$A9EF8E: [8-bit Current Playthrough F
 function isFullCutsceneActive() => 					// $A9ED26: Flag: Is cutscene active (preferred)
 	byte(0xA9ED26) == 0x5							// 		- 0x00 => no cutscene active
 													// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
+													//		- ... => transitional values
 function isFullCutsceneSequenceEnding() => 			// 		- 0x05 => cutscene active
 	prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		
 
@@ -321,20 +320,20 @@ function isCurrentCutsceneSectionId_2(int_Id) => 	// $A9ECC2: [16-bit] Cutscene 
 function isPriorCutsceneSectionId_2(int_Id) => 
 	prior(word(0xA9ECC2)) == int_Id
 
-function isCurrentCutsceneMasterDataId(int_Id) {		// $A9ECC8: [25-bit] Pointer
-	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data below changes on new cutscene loaded in
+function isCurrentCutsceneMasterDataId(int_Id) {		// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
+	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
 	//		PSP uses 25-bit pointers			 		// 		+0x8 - [32-bit] Cutscene Master Data ID
 	let_maskedPointer = dword(0xA9ECC8) & 0x1ffffff	
 	return dword(let_maskedPointer + 0x8) == int_Id}
 
-function isCurrentCutsceneSectionDataId(int_Id) {		// $A9ECCC: [25-bit] Pointer
-	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff		// 		+0x0 - Data lower then this point changes, when a next section in the cutscene starts
+function isCurrentCutsceneSectionDataId(int_Id) {		// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
+	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff		// 		+0x0 - Data lower than this hex address changes when the next section in the cutscene starts
 	return dword(let_maskedPointer + 0x8) == int_Id}	// 		+0x8 - [32-bit] Cutscene Section Data ID
 
-function isCurrentMinorCutsceneId(int_Id, int_offset) {		// $A9ECD4: [25-bit] Pointer - when a cutscene is active
-	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			// +0x0 - Data lower than this point can be used as Minor Cutscene IDs
-	return dword(let_maskedPointer + int_offset) == int_Id}	// +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
-
+function isCurrentMinorCutsceneId(int_Id, int_offset) {		// $A9ECD4: [25-bit Pointer] Cutscene Identification - Minor IDs
+	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			//	- Pointer active when a cutscene is active
+	return dword(let_maskedPointer + int_offset) == int_Id}	// 		+0x0 - Data lower than this point can be used as Minor Cutscene IDs
+															// 		+0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 
 // ******************************
@@ -562,7 +561,7 @@ const_inventoryItems = {
 		"memAddress_Flag_isInInventory": 0xA9F04B,	// $A9F04B: [Bit 0] Kitten
 		"isDefaultItem": false}}
 
-function isCurrentSelectedInventoryItem(string_item) => 					// $A9F111: [8-bit] Currently selected item ID in inventory
+function isCurrentSelectedInventoryItem(string_item) => 					// $A9F111: [8-bit] Currently selected item in inventory
 	byte(0xA9F111) == const_inventoryItems[string_item]["itemScrollBarId"] 
 
 function isItemInInventory(string_item) => 
@@ -572,9 +571,8 @@ function isItemInInventory(string_item) =>
 // ***********************
 // ÷ BOTTOM SCREEN TEXT ÷
 // ***********************
-// - Memory higher than this address (visually lower in the memory inspector) correlates to a character print system 
-// => It works via a transparant character set image, that is masked to show only 1 character at a time. 
-// 		Functional with offset and different character sets (ex. latin, chinese)
+// Bottom screen text - character printer => works via a transparant character set image, that is masked to show only 1 character at a time. 
+// Refer to code notes on RA game page 
 function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
 											//		- This ID does not change on each new text change, but it does change often between text changes
@@ -647,12 +645,14 @@ function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra me
 													// 		| - ...						| - 0xb => Exit
 													// 		| - 0x8 => Chapter 8
 function isEventViewerActive() =>				// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
-	dword(0x1FFF130) == 0x21 && isInExtraMenu()	// 		0x21 => event viewer menu on screen OR a cutscene is being watched via this menu
-												// 		- other values => not in event viewer
+	dword(0x1FFF130) == 0x21 && isInExtraMenu()	// 		- 32-bit value = 0x21 -> event viewer menu is on screen OR a cutscene is being watched via this menu
+												// 		- other values -> not in event viewer
+												//		- Do not use this as a solo condition to check if event viewer is active.
+												//		- Use with 0xac3170
 function isInResultsMenu() => 					// $AC49F4: [32-bit] Menu ID
 	dword(0xAC49F4) == 0x16	&& isInExtraMenu()	// 		0xe => at title screen					0x16 => at results menu
 												// 		0x4 => at extra menu					0x1a => In sound mode menu
-												// 		0x12 => at event viewer menu			...
+												// 		0x12 => at event viewer menu			0xb => viewing ending file
 
 function isResultsMenuHighlightedChapter(string_chapter) {
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
@@ -692,8 +692,8 @@ function isViewingEndingFileInExtraMenu(string_endingChar) {	// $AC3178: [25-bit
 // ÷ OTHER LOGIC ÷
 // ****************
 function getCurrentEnergyUnits() =>		// $A9DAA8: Number of energy units in possession 
-	byte(0xA9DAA8)						//		- Used for the time travel machine (Z-Pad)
-										//		- Min => 0x0 		Max => 0x0a
+	byte(0xA9DAA8)						//		- If this is 0x0, player can't time travel
+										//		- Values range [0x0-0xa]
 function isEnergyUnitsIncreasing() => 		
 	getCurrentEnergyUnits() > prev(getCurrentEnergyUnits())	
 
@@ -705,8 +705,8 @@ function isEnergyUnitsChanging() =>
 
 // -------------------------------------
 function isInGame() => low4(0xA9EDDC) != 0	// $A9EDDC: [Lower4] Flag -> is in-game
-											// 		= 0 => at title screen
-											// 		> 0 => in-game
+											// 		Lower4 = 0 => at title screen
+											// 		Lower4 > 0 => in-game
 
 function isGoingToTitleSCreen() { return
 	low4(0xA9EDDC) == 0 && prev(low4(0xA9EDDC)) > 0}
@@ -717,12 +717,12 @@ function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 														// 	0x1 => Start		0x3 => Option
 														// 	0x2 => Continue		0x4 => Extra
 
-function isMainSaveLoaded() {						// $AA2998: [25-bit] Pointer - is main save file loaded (at first startup of game)
+function isMainSaveLoaded() {						// $AA2998: [25-bit Pointer] is main save file loaded (at first startup of game)
 	let_maskedPointer = dword(0xAA2998)	& 0x1ffffff	//		+0x4 - [Bit 0] => main save is loaded
 	return 											//		| - Data around this memory address is set on startup or reset
 		bit0(let_maskedPointer + 0x4) == 1}
 
-function isVideoActive() {								// $8FFEF0: [25-bit] Pointer - Video data (intro and credits)
+function isVideoActive() {								// $8FFEF0: [25-bit Pointer]  Video data (intro and credits)
 	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF		// 		+0x18 - [32-bit Flag] 0x101 => video is active
 	return 												// 		+0x2c - [32-bit Flag] 0x41 => video is active
 		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
