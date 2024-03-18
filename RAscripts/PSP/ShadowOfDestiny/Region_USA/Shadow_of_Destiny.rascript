@@ -14,6 +14,7 @@
 // TODO Leaderboards for clear time?
 // TODO Sync code notes on RAwebsite with here
 // TODO re-check points distribution 
+// TODO Template.rascript => Rich Presence still needs to be updated
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
