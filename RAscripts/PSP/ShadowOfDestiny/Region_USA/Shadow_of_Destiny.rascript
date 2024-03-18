@@ -99,18 +99,28 @@ function getCurrentPresentTimeYears() =>	// $AA12A4: [32-bit] Time in present: y
 // ************************
 // ÷ CLEAR TIME & TIMERS ÷
 // ************************
-function getCurrentPlaythroughTimerChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
+function getTimerChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
 	dword(0xAA155C)
+	
+function isTimerChapterClearTimeStarting() => 
+	prev(getTimerChapterClearTime()) == 0 &&
+	getTimerChapterClearTime() > 0
+
+function isTimerChapterClearTimeResetting() =>
+	getTimerChapterClearTime() < prev(getTimerChapterClearTime())
 
 function getTimerTotalClearTime() =>	// $AA1560: [32-bit] Current Playthrough Timer - Total Clear Time
 	dword(0xAA1560)
 
-function isTimerTotalClearTimeActive() =>
+function isTimerTotalClearTimeActive() => 
 	getTimerTotalClearTime() != prev(getTimerTotalClearTime())
 
-function isTimerTotalClearTimeStarting() => 
+function isTimerTotalClearTimeStartingFromZero() => 
 	prev(getTimerTotalClearTime()) == 0 &&
 	getTimerTotalClearTime() > 0
+
+function isTimerTotalClearTimeResetting() =>
+	getTimerTotalClearTime() < prev(getTimerTotalClearTime())
 // *********************
 // ÷ INTERACTIONS IDs ÷
 // *********************
@@ -730,7 +740,8 @@ function isGoingToTitleSCreen() { return
 
 function isAtTitleScreen() { return						// $1FFF5F8: [32-bit] UI/Menu ID
 	dword(0x1FFF5F8) == 0x11 &&							// 	0x11 => title screen			any other value => something else on screen
-	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	// $1FFF604: [8-bit] Selected submenu at title screen
+	0x0 < byte(0x1FFF604) && dword(0x1FFF604) < 0x5}	//	0x1 => chapter complete screen
+														// $1FFF604: [8-bit] Selected submenu at title screen
 														// 	0x1 => Start		0x3 => Option
 														// 	0x2 => Continue		0x4 => Extra
 
@@ -748,6 +759,11 @@ function isVideoActive() {								// $8FFEF0: [25-bit Pointer]  Video data (intr
 function isInGamePauseMenuActive() =>	// $B91514 + $B91518: [Bit Flag] bit 0 => in-game pause menu
 	bit0(0xB91514) == 1 && 
 	bit0(0xB91518) == 1
+
+function isChapterCompletionScreenActive() =>	// $1FFF5F4: [32-bit Flag] Is chapter complete screen active
+	dword(0x1FFF5F8) == 0x1 	&&				//		- 0x21 => chapter completion screen is active (UI asks to save data)
+	dword(0x1FFF5F4) == 0x21 	&&				// $1FFF5D4: [32-bit] Highlighted UI element when chapter complete screen is active
+	dword(0x1FFF5D4) <= 1 						//		- 0x0 = yes		- 0x1 = no
 
 
 // *******************************
@@ -4194,7 +4210,7 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// TODO leaderboards for each chapter + ex chapter??
+// TODO add leaderboards section to template
 
 // **************************
 // ÷ Leaderboard FUNCTIONS ÷
@@ -4203,6 +4219,8 @@ function richPresence_initialize() {
 function getTimerTotalClearTimeInMinutes() =>
 	getTimerTotalClearTime() / 3600
 
+function getTimerChapterClearTimeInSeconds() =>
+	getTimerChapterClearTime() / 60
 // **************************
 // ÷ Leaderboard CORE DATA ÷
 // **************************
@@ -4220,165 +4238,188 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_EndingEClearTime": {
+	"lb_ClearTimeChapter8": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter7": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter6": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter5": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter4": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter3": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter2": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimeChapter1": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in corresponding chapter"},
+	"lb_ClearTimePrologue": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardFormat": "SECS",
+		"devInfo": "Best Clear Time in prologue, excluding EX chapter"},
+	"lb_TotalClearTime": {
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
 		"leaderboardFormat": "MINUTES",
-		"devInfo": "Best Clear Time for ending E"},
-	"lb_EndingDClearTime": {
-		"id": 000000, "isLowerBetter": true,
-		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
-		"leaderboardFormat": "MINUTES",
-		"devInfo": "Best Clear Time for ending D"},
-	"lb_EndingCClearTime": {
-		"id": 000000, "isLowerBetter": true,
-		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
-		"leaderboardFormat": "MINUTES",
-		"devInfo": "Best Clear Time for ending C"},
-	"lb_EndingBClearTime": {
-		"id": 000000, "isLowerBetter": true,
-		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
-		"leaderboardFormat": "MINUTES",
-		"devInfo": "Best Clear Time for ending B"},
-	"lb_EndingAClearTime": {
-		"id": 000000, "isLowerBetter": true,
-		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
-		"leaderboardFormat": "MINUTES",
-		"devInfo": "Best Clear Time for ending A"},
-	}
+		"devInfo": "Best Total Clear Time, excluding EX chapter"}}
 
 // ***********************************
 // ÷ Leaderboard TRIGGER GENERATORS ÷
 // ***********************************
 //	- For leaderboard logic that's reoccuring across multiple triggers
-function leaderboards_generate_BaseEndingClearTime_StartTrigger() =>
-	isInGame() && isTimerTotalClearTimeStarting()
-function leaderboards_generate_BaseEndingClearTime_SubmitTrigger(string_endingChar, comparison_cutsceneBeforeCredits) =>
-	never(
-		!isInGame()	||
-		isEventViewerActive()
+function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
+	let_chapterSpecificComparison = always_true()
+	if (string_chapter == "Prologue") 
+		let_chapterSpecificComparison = !isPrologueInExMode()
+	return 
+		never(!isInGame()) &&
+		once(isTimerChapterClearTimeStarting()) &&
+		repeated(700, isInGame()) &&	// <-- Repeated here, FIXfor bug when loading a save, would otherwise start and cancel immediately after
+		isCurrentChapter(string_chapter) &&
+		let_chapterSpecificComparison}
+function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
+	let_chapterSpecificComparison = always_false()
+	if (string_chapter == "Prologue")
+		let_chapterSpecificComparison = isPrologueInExMode()
+	return 	
+		!isInGame() || 
+		let_chapterSpecificComparison || 
+		isTimerChapterClearTimeResetting() 	||
+		!isCurrentChapter(string_chapter)}
+function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
+	never( // Reset count if...
+		!isChapterCompletionScreenActive() || 
+		!isCurrentChapter(string_chapter)
 	) &&
-	comparison_cutsceneBeforeCredits && // <-- This comparison makes sure the leaderboards for the other endings don't trigger
-	tally(20, // Checks if timer has stopped for 20 frames
-		never(isTimerTotalClearTimeActive()) && // <-- Reset tally count when timer is active
-		isEndingAchieved(string_endingChar) &&
-		isVideoActive() &&
-		!isTimerTotalClearTimeActive() &&
-		!isInGamePauseMenuActive())
-function leaderboards_generate_BaseEndingClearTime_CancelTrigger(comparison_margaretteChoice) =>
-	!isInGame() 				|| 
-	isPrologueInExMode() 		||
-	comparison_margaretteChoice ||
-	tally(50, // Checks if timer has stopped for 50 frames
-		never(isTimerTotalClearTimeActive()) && // <-- Reset tally count when timer is active
-		isVideoActive() &&
-		!isTimerTotalClearTimeActive() &&
-		!isInGamePauseMenuActive())
+	tally(10, // Check if chapter completion screen is active for 10 frames
+		isChapterCompletionScreenActive() &&
+		isCurrentChapter(string_chapter))
 
 // *************************
 // ÷ Leaderboard TRIGGERS ÷
 // *************************
 leaderboards_startTriggers = {
-	"lb_EndingEClearTime": () => 
-		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
-	"lb_EndingDClearTime": () => 
-		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
-	"lb_EndingCClearTime": () => 
-		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
-	"lb_EndingBClearTime": () => 
-		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
-	"lb_EndingAClearTime": () => 
-		leaderboards_generate_BaseEndingClearTime_StartTrigger()}
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		repeated(300, isInGame()) && 
+		once(isTimerTotalClearTimeStartingFromZero()) && 
+		!isPrologueInExMode()}
 leaderboards_cancelTriggers = {
-	"lb_EndingEClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
-			isMargaretteAncestor()
-		),
-	"lb_EndingDClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
-			isMargaretteAncestor()
-		),
-	"lb_EndingCClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
-			isMargaretteNoAncestor()
-		),
-	"lb_EndingBClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
-			isMargaretteNoAncestor()
-		),
-	"lb_EndingAClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
-			isMargaretteNoAncestor()
-		)}
-leaderboards_submitTriggers = { // TODO Section IDs => needs to activate when skipping
-	"lb_EndingEClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("E",
-			once(	// Identifies Cutscene before credits of ending E => Eike and Dana talk with Homunculus some more
-				isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
-				isCurrentCutsceneMasterId(0xcdcc0)		&& isPriorCutsceneMasterId(0xbef80) &&
-				isCurrentCutsceneSectionId_1(0x1)		&&
-				isCurrentCutsceneSectionId_2(0x2)		&&
-				isCurrentCutsceneMasterDataId(0x33230)	&&
-				isCurrentCutsceneSectionDataId(0x21780))
-		),
-	"lb_EndingDClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("D",
-		once(	// Identifies Cutscene before credits of ending D => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
-			isCurrentCutsceneMasterId(0xc5b40)		&&
-			isCurrentCutsceneSectionId_1(0x3)		&&
-			isCurrentCutsceneSectionId_2(0x4)		&&
-			isCurrentCutsceneMasterDataId(0x69b40)	&&
-			isCurrentCutsceneSectionDataId(0x21b40))
-		),
-	"lb_EndingCClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("C",
-			once(	// Identifies Cutscene before credits of ending C => Eike getting roadkilled
-				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
-				isCurrentCutsceneMasterId(0xcb700)		&& isPriorCutsceneMasterId(0x7b140) &&
-				isCurrentCutsceneSectionId_1(0x5)		&&
-				isCurrentCutsceneSectionId_2(0x6)		&&
-				isCurrentCutsceneMasterDataId(0x1980)	&&
-				isCurrentCutsceneSectionDataId(0x1e8d0))
-		),
-	"lb_EndingBClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("B",
-			once(	// Identifies Cutscene before credits of ending B => Eike goes to the bar
-				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
-				isCurrentCutsceneMasterId(0x56240)		&& 
-				isCurrentCutsceneSectionId_1(0x1)		&&
-				isCurrentCutsceneSectionId_2(0x0)		&&
-				isCurrentCutsceneMasterDataId(0x400d0)	&&
-				isCurrentCutsceneSectionDataId(0x16130))
-		),
-	"lb_EndingAClearTime": () =>
-		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("A",
-			once(	// Identifies Cutscene before credits of ending A => Finding red jewel in tree at square
-				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
-				isCurrentCutsceneMasterId(0x77f80)		&& isPriorCutsceneMasterId(0xdb780) &&
-				isCurrentCutsceneSectionId_1(0x3)		&&
-				isCurrentCutsceneSectionId_2(0x2)		&&
-				isCurrentCutsceneMasterDataId(0x25c50)	&&
-				isCurrentCutsceneSectionDataId(0x1ac90))
-		)}
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		!isInGame() || isPrologueInExMode() || isTimerTotalClearTimeResetting()}
+leaderboards_submitTriggers = { 
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		tally(10, // Trigger when timer has stopped for 10 frames during the credits video
+			never(!isTimerTotalClearTimeActive()) &&
+			isVideoActive() && isCurrentChapter("Epilogue") &&
+			isTimerTotalClearTimeActive())}
 
 // *********************
 // ÷ Leaderboard TEXT ÷
 // *********************
 leaderboards_titles = {
-	// "rp_Template": 							{"en": "xxxxxxxx"},
-	"lb_EndingEClearTime": 					{"en": "Ending E: Best Clear Time"},
-	"lb_EndingDClearTime": 					{"en": "Ending D: Best Clear Time"},
-	"lb_EndingCClearTime": 					{"en": "Ending C: Best Clear Time"},
-	"lb_EndingBClearTime": 					{"en": "Ending B: Best Clear Time"},
-	"lb_EndingAClearTime": 					{"en": "Ending A: Best Clear Time"}}
+	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClearTimeChapter8":					{"en": "Chapter 8 Clear Time"},
+	"lb_ClearTimeChapter7":					{"en": "Chapter 7 Clear Time"},
+	"lb_ClearTimeChapter6":					{"en": "Chapter 6 Clear Time"},
+	"lb_ClearTimeChapter5":					{"en": "Chapter 5 Clear Time"},
+	"lb_ClearTimeChapter4":					{"en": "Chapter 4 Clear Time"},
+	"lb_ClearTimeChapter3":					{"en": "Chapter 3 Clear Time"},
+	"lb_ClearTimeChapter2":					{"en": "Chapter 2 Clear Time"},
+	"lb_ClearTimeChapter1":					{"en": "Chapter 1 Clear Time"},
+	"lb_ClearTimePrologue":					{"en": "Prologue Clear Time"},
+	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
 leaderboards_descriptions = {
-	// "rp_Template": 							{"en": "xxxxxxxx"},
-	"lb_EndingEClearTime": 					{"en": "Achieve ending E"},
-	"lb_EndingDClearTime": 					{"en": "Achieve ending D"},
-	"lb_EndingCClearTime": 					{"en": "Achieve ending C"},
-	"lb_EndingBClearTime": 					{"en": "Achieve ending B"},
-	"lb_EndingAClearTime": 					{"en": "Achieve ending A"}}
+	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for the chapter 8"},
+	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for the chapter 7"},
+	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for the chapter 6"},
+	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for the chapter 5"},
+	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for the chapter 4"},
+	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for the chapter 3"},
+	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for the chapter 2"},
+	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for the chapter 1"},
+	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter is exluded)"},
+	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter is excluded)"}}
 
 // ****************************
 // ÷ Leaderboard INITIALIZER ÷
