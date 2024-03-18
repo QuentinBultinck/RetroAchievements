@@ -14,6 +14,7 @@
 
 // TODO Leaderboards for total clear time
 // TODO re-check points distribution 
+// TODO Energy locator with resetnextif
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -89,11 +90,27 @@ function getCurrentPresentTimeSeconds() =>	// $AA12B8: [32-bit] Time in present:
 
 function getCurrentPresentTimeDays() =>		// $AA12AC: [32-bit] Time in present: days
 	dword(0xAA12AC)
+
 function getCurrentPresentTimeMonths() =>	// $AA12A8: [32-bit] Time in present: months
 	dword(0xAA12A8)
+
 function getCurrentPresentTimeYears() =>	// $AA12A4: [32-bit] Time in present: years
 	dword(0xAA12A4)
+// ************************
+// ÷ CLEAR TIME & TIMERS ÷
+// ************************
+function getCurrentPlaythroughTimerChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
+	dword(0xAA155C)
 
+function getTimerTotalClearTime() =>	// $AA1560: [32-bit] Current Playthrough Timer - Total Clear Time
+	dword(0xAA1560)
+
+function isTimerTotalClearTimeActive() =>
+	getTimerTotalClearTime() != prev(getTimerTotalClearTime())
+
+function isTimerTotalClearTimeStarting() => 
+	prev(getTimerTotalClearTime()) == 0 &&
+	getTimerTotalClearTime() > 0
 // *********************
 // ÷ INTERACTIONS IDs ÷
 // *********************
@@ -3877,13 +3894,13 @@ function achievements_initialize() {
 	// This loop generates the achievements
 	for categoryName in achievements_coreData {
 		for cheevmentName in achievements_coreData[categoryName] {
-			let_cheevment = achievements_coreData[categoryName][cheevmentName]
+			let_achievementData = achievements_coreData[categoryName][cheevmentName]
 			achievement(
-				id = let_cheevment["id"],
+				id = let_achievementData["id"],
 				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
 				type = achievements_typeByCategory[categoryName],
-				description = achievements_generateDescription(cheevmentName, let_cheevment["devInfo"], utility_const_language),
-				points = let_cheevment["points"],
+				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], utility_const_language),
+				points = let_achievementData["points"],
 				trigger = achievements_getTrigger(cheevmentName)
 			)
 		}}
@@ -3903,7 +3920,7 @@ function achievements_initialize() {
 // ****************************
 // ÷ Rich_Presence FUNCTIONS ÷
 // ****************************
-//	- Functions handling memory address logic that should only be used by the rich presence script
+//	- Functions that should only be used by the rich presence script
 function isCurrentChapterIdInRangeOfRecordedIds() {
 	return
 		0 < getChapterId() && 	// Prologue starts at 0x1
@@ -4166,11 +4183,250 @@ function richPresence_initialize() {
 	richPresence_populateLookupTables()
 	richPresence_callDisplayFunctions()}
 
+// ***************************************************************************************************** \\
+//																										 \\
+//   ██╗     ███████╗ █████╗ ██████╗ ███████╗██████╗ ██████╗  ██████╗  █████╗ ██████╗ ██████╗ ███████╗   \\
+//   ██║     ██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝   \\
+//   ██║     █████╗  ███████║██║  ██║█████╗  ██████╔╝██████╔╝██║   ██║███████║██████╔╝██║  ██║███████╗   \\
+//   ██║     ██╔══╝  ██╔══██║██║  ██║██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██║██╔══██╗██║  ██║╚════██║   \\
+//   ███████╗███████╗██║  ██║██████╔╝███████╗██║  ██║██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝███████║   \\
+//   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\                                                                                                 
+//																										 \\
+// ***************************************************************************************************** \\
+
+// TODO leaderboards for each chapter + ex chapter??
+
+// **************************
+// ÷ Leaderboard FUNCTIONS ÷
+// **************************
+//	- Functions that should only be used by the leaderboards logic
+function getTimerTotalClearTimeInMinutes() =>
+	getTimerTotalClearTime() / 3600
+
+// **************************
+// ÷ Leaderboard CORE DATA ÷
+// **************************
+leaderboards_coreData = {
+	// DEV_NOTE: Leaderboards
+	// -----------------------------
+	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
+	//	- RATools documentation => https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions
+	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
+	//	- Example leadersboards => https://retroachievements.org/game/3152
+
+	// "lb_Template": { // CONCEPT lb_template
+	// 	"id": 000000, "isLowerBetter": false, 
+	// 	"leaderboardValue": always_false(),
+	// 	"leaderboardFormat": "VALUE",
+	// 	"devInfo": "xxxxxxx"},
+
+	"lb_EndingEClearTime": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardFormat": "MINUTES",
+		"devInfo": "Best Clear Time for ending E"},
+	"lb_EndingDClearTime": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardFormat": "MINUTES",
+		"devInfo": "Best Clear Time for ending D"},
+	"lb_EndingCClearTime": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardFormat": "MINUTES",
+		"devInfo": "Best Clear Time for ending C"},
+	"lb_EndingBClearTime": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardFormat": "MINUTES",
+		"devInfo": "Best Clear Time for ending B"},
+	"lb_EndingAClearTime": {
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardFormat": "MINUTES",
+		"devInfo": "Best Clear Time for ending A"},
+	}
+
+// ***********************************
+// ÷ Leaderboard TRIGGER GENERATORS ÷
+// ***********************************
+//	- For leaderboard logic that's reoccuring across multiple triggers
+function leaderboards_generate_BaseEndingClearTime_StartTrigger() =>
+	isInGame() && isTimerTotalClearTimeStarting()
+function leaderboards_generate_BaseEndingClearTime_SubmitTrigger(string_endingChar, comparison_cutsceneBeforeCredits) =>
+	never(
+		!isInGame()	||
+		isEventViewerActive()
+	) &&
+	comparison_cutsceneBeforeCredits && // <-- This comparison makes sure the leaderboards for the other endings don't trigger
+	tally(20, // Checks if timer has stopped for 20 frames
+		never(isTimerTotalClearTimeActive()) && // <-- Reset tally count when timer is active
+		isEndingAchieved(string_endingChar) &&
+		isVideoActive() &&
+		!isTimerTotalClearTimeActive() &&
+		!isInGamePauseMenuActive())
+function leaderboards_generate_BaseEndingClearTime_CancelTrigger(comparison_margaretteChoice) =>
+	!isInGame() 				|| 
+	isPrologueInExMode() 		||
+	comparison_margaretteChoice ||
+	tally(50, // Checks if timer has stopped for 50 frames
+		never(isTimerTotalClearTimeActive()) && // <-- Reset tally count when timer is active
+		isVideoActive() &&
+		!isTimerTotalClearTimeActive() &&
+		!isInGamePauseMenuActive())
+
+// *************************
+// ÷ Leaderboard TRIGGERS ÷
+// *************************
+leaderboards_startTriggers = {
+	"lb_EndingEClearTime": () => 
+		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
+	"lb_EndingDClearTime": () => 
+		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
+	"lb_EndingCClearTime": () => 
+		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
+	"lb_EndingBClearTime": () => 
+		leaderboards_generate_BaseEndingClearTime_StartTrigger(),
+	"lb_EndingAClearTime": () => 
+		leaderboards_generate_BaseEndingClearTime_StartTrigger()}
+leaderboards_cancelTriggers = {
+	"lb_EndingEClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
+			isMargaretteAncestor()
+		),
+	"lb_EndingDClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
+			isMargaretteAncestor()
+		),
+	"lb_EndingCClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
+			isMargaretteNoAncestor()
+		),
+	"lb_EndingBClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
+			isMargaretteNoAncestor()
+		),
+	"lb_EndingAClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_CancelTrigger(
+			isMargaretteNoAncestor()
+		)}
+leaderboards_submitTriggers = { // TODO Section IDs => needs to activate when skipping
+	"lb_EndingEClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("E",
+			once(	// Identifies Cutscene before credits of ending E => Eike and Dana talk with Homunculus some more
+				isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+				isCurrentCutsceneMasterId(0xcdcc0)		&& isPriorCutsceneMasterId(0xbef80) &&
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x2)		&&
+				isCurrentCutsceneMasterDataId(0x33230)	&&
+				isCurrentCutsceneSectionDataId(0x21780))
+		),
+	"lb_EndingDClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("D",
+		once(	// Identifies Cutscene before credits of ending D => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
+			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isCurrentCutsceneMasterId(0xc5b40)		&&
+			isCurrentCutsceneSectionId_1(0x3)		&&
+			isCurrentCutsceneSectionId_2(0x4)		&&
+			isCurrentCutsceneMasterDataId(0x69b40)	&&
+			isCurrentCutsceneSectionDataId(0x21b40))
+		),
+	"lb_EndingCClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("C",
+			once(	// Identifies Cutscene before credits of ending C => Eike getting roadkilled
+				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+				isCurrentCutsceneMasterId(0xcb700)		&& isPriorCutsceneMasterId(0x7b140) &&
+				isCurrentCutsceneSectionId_1(0x5)		&&
+				isCurrentCutsceneSectionId_2(0x6)		&&
+				isCurrentCutsceneMasterDataId(0x1980)	&&
+				isCurrentCutsceneSectionDataId(0x1e8d0))
+		),
+	"lb_EndingBClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("B",
+			once(	// Identifies Cutscene before credits of ending B => Eike goes to the bar
+				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+				isCurrentCutsceneMasterId(0x56240)		&& 
+				isCurrentCutsceneSectionId_1(0x1)		&&
+				isCurrentCutsceneSectionId_2(0x0)		&&
+				isCurrentCutsceneMasterDataId(0x400d0)	&&
+				isCurrentCutsceneSectionDataId(0x16130))
+		),
+	"lb_EndingAClearTime": () =>
+		leaderboards_generate_BaseEndingClearTime_SubmitTrigger("A",
+			once(	// Identifies Cutscene before credits of ending A => Finding red jewel in tree at square
+				isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+				isCurrentCutsceneMasterId(0x77f80)		&& isPriorCutsceneMasterId(0xdb780) &&
+				isCurrentCutsceneSectionId_1(0x3)		&&
+				isCurrentCutsceneSectionId_2(0x2)		&&
+				isCurrentCutsceneMasterDataId(0x25c50)	&&
+				isCurrentCutsceneSectionDataId(0x1ac90))
+		)}
+
+// *********************
+// ÷ Leaderboard TEXT ÷
+// *********************
+leaderboards_titles = {
+	// "rp_Template": 							{"en": "xxxxxxxx"},
+	"lb_EndingEClearTime": 					{"en": "Ending E: Best Clear Time"},
+	"lb_EndingDClearTime": 					{"en": "Ending D: Best Clear Time"},
+	"lb_EndingCClearTime": 					{"en": "Ending C: Best Clear Time"},
+	"lb_EndingBClearTime": 					{"en": "Ending B: Best Clear Time"},
+	"lb_EndingAClearTime": 					{"en": "Ending A: Best Clear Time"}}
+leaderboards_descriptions = {
+	// "rp_Template": 							{"en": "xxxxxxxx"},
+	"lb_EndingEClearTime": 					{"en": "Achieve ending E"},
+	"lb_EndingDClearTime": 					{"en": "Achieve ending D"},
+	"lb_EndingCClearTime": 					{"en": "Achieve ending C"},
+	"lb_EndingBClearTime": 					{"en": "Achieve ending B"},
+	"lb_EndingAClearTime": 					{"en": "Achieve ending A"}}
+
+// ****************************
+// ÷ Leaderboard INITIALIZER ÷
+// ****************************
+function leaderboards_initialize() {
+	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
+		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
+			format("[{0}]", substring(string_leaderboardDevName, 3))
+		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
+			leaderboards_titles[string_leaderboardDevName][string_languageCode]
+		return format("{0} {1}", 
+			leaderboards_createDevName(string_leaderboardDevName),
+			leaderboards_getTitle(string_leaderboardDevName, string_languageCode))}
+	
+	function leaderboards_generateDescription(string_leaderboardDevName, string_devInfo, string_languageCode) {	
+		function leaderboards_getDescription(string_leaderboardDevName, string_languageCode) {
+			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
+		function leaderboards_formatDevInfo(string_devInfo) {
+			let_devInfoString = ""
+			if (utility_const_debugMode && string_devInfo != "") {
+				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
+			}
+			return let_devInfoString}
+		return format("{0}{1}",
+			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
+			leaderboards_formatDevInfo(string_devInfo))}
+
+	for let_leaderboardKey in leaderboards_coreData {
+		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
+		leaderboard(
+			id = let_leaderboardData["id"],
+			title = leaderboards_generateTitle(let_leaderboardKey, utility_const_language), 
+			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], utility_const_language),
+			start = leaderboards_startTriggers[let_leaderboardKey], 
+			cancel = leaderboards_cancelTriggers[let_leaderboardKey], 
+			submit = leaderboards_submitTriggers[let_leaderboardKey], 
+			value = let_leaderboardData["leaderboardValue"], 
+			format = let_leaderboardData["leaderboardFormat"], 
+			lower_is_better = let_leaderboardData["isLowerBetter"])}
+	}
+
+
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
 	achievements_initialize()
-	richPresence_initialize()}
+	richPresence_initialize()
+	leaderboards_initialize()}
 initializeRAscript()
