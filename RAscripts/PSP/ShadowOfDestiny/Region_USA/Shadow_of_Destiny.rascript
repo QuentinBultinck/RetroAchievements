@@ -14,6 +14,7 @@
 // TODO Leaderboards for clear time?
 // TODO Sync code notes on RAwebsite with here
 // TODO re-check points distribution 
+// TODO update guides online
 // TODO Template.rascript => Rich Presence still needs to be updated
 
 // Info regarding usage/reading this RAScript
@@ -45,11 +46,11 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 // TODO debug off
-const_utilitySettings_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
-const_utilitySettings_language = "en"	// ISO 639-1 language codes 
+utility_const_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
+utility_const_language = "en"	// ISO 639-1 language codes 
 
-const_utilitySettings_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
-const_utilitySettings_isGuideLinkEnabled = false			// if false => above link will not be placed into the achievement description, even when the achievement has tips in the guide 
+utility_const_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
+utility_const_isGuideLinkEnabled = false			// if false => above link will not be placed into the achievement description, even when the achievement has tips in the guide 
 
 function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -197,7 +198,8 @@ const_interactables = {
 	"Painting_LandscapeTown": 0x169,
 	"Painting_Alchemist": 0x167}
 
-function getMaxTalkCountFor(string_NPC, string_appearance) => const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
+function getMaxTalkCountFor(string_NPC, string_appearance) => 
+	const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
 
 function isNPCtalkCountIncreasingToMax(string_NPC, string_appearance) {
 	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
@@ -1000,7 +1002,7 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // ÷ Achievement CORE DATA ÷
 // **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
-const_achievements_coreData = {
+achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro and overwrite when necessary via the RA website
 	// ------------------------------------------------
@@ -1279,7 +1281,7 @@ const_achievements_coreData = {
 			"id": 313212, "points": 1, "badgeId": "461703", "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
-const_achievement_typeByCategory = {
+achievements_typeByCategory = {
 	// DEV_NOTE: Achievement type property
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
@@ -1300,7 +1302,7 @@ const_achievement_typeByCategory = {
 // ÷ Achievement TRIGGER GENERATORS ÷
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) {
+function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
@@ -1365,7 +1367,7 @@ function generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) 
 			measured(let_measuredComparison, when = isCurrentChapter(string_chapter) && isInGame(), format = "percent")
 	}}
 
-function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
+function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
 		"G": {
 			"index": 0,	
@@ -1409,7 +1411,7 @@ function generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 // *************************
 // ÷ Achievement TRIGGERS ÷
 // *************************
-const_achievement_triggers = {
+achievements_triggers = {
 	// "a_Template": function Template() {	// WIP_template
 	// 	return always_false()
 	// },
@@ -1840,34 +1842,34 @@ const_achievement_triggers = {
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Prologue"]
-		return generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter1"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter2"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter3"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter4"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter5"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter6"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter7"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
 	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter8"]
-		return generate_FullTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
 	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
-		return generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
 		function mapAllPercentageBitFlagsToOneDict() {
 			let_PercentageBitFlags = {}
@@ -1877,7 +1879,7 @@ const_achievement_triggers = {
 				}
 			}
 			return let_PercentageBitFlags}
-		return generate_FullTrigger_MaxAchievementRate("Total", mapAllPercentageBitFlagsToOneDict())},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Total", mapAllPercentageBitFlagsToOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 			||
@@ -2145,7 +2147,7 @@ const_achievement_triggers = {
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
-		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
+		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group		
 			unless(
@@ -2168,7 +2170,7 @@ const_achievement_triggers = {
 			)
 		},
 	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
-		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
+		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			unless(
@@ -2186,7 +2188,7 @@ const_achievement_triggers = {
 			)
 		},
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
-		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(6)
+		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(6)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			never(	// Reset when chapter changes or when using digipad
@@ -2207,7 +2209,7 @@ const_achievement_triggers = {
 			)
 		},
 	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
-		function measuredComparison() => generate_Tally_PickUpEnergyOrbs(5)
+		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
 		function measuredIfComparison() => isInGame()
 		return // Core group
 			never(	// Reset when chapter changes or when using digipad
@@ -3646,7 +3648,7 @@ const_achievement_triggers = {
 // *********************
 // ÷ Achievement TEXT ÷
 // *********************
-const_achievement_titles = {
+achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
@@ -3740,7 +3742,7 @@ const_achievement_titles = {
 	"a_MeetFamousOleg":								{"en": "The Next Big Thing"},
 	"a_ScareEveryone": 								{"en": "Terror of Destinies"}}
 // -------------------------------------
-const_achievement_descriptions = {
+achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_PrologueComplete": {							"en": "Complete the prologue",
 													"nl": "Proloog voltooid",
@@ -3839,63 +3841,53 @@ const_achievement_descriptions = {
 // ÷ Achievement INITIALIZER ÷
 // ****************************
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
-function initializeAchievements() {
-	// Generates the achievement title (with developer tags, if devmode == 1)
-	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
-		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
+function achievements_initialize() {
+
+	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
+		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (const_utilitySettings_debugMode) {
+			if (utility_const_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
-				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
-				// let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
+				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
 			}
-			return let_string
-		}	
-		function lookUpAchievementTitle(string_achievementDevName, string_languageCode) {
-			return const_achievement_titles[string_achievementDevName][string_languageCode]
-		}
-		return enterCategoryName(string_achievementCategory, string_achievementDevName) + lookUpAchievementTitle(string_achievementDevName, string_languageCode)
-	}
-	// Generates the achievement description (with extra developer information, if devmode == 1)
-	function generateAchievementDescription(string_achievementDevName, boolean_hasTips, string_devInfo, string_languageCode) {	
-		function lookUpAchievementDescription(string_achievementDevName, string_languageCode) {
-			return const_achievement_descriptions[string_achievementDevName][string_languageCode]
-		}
-		function enterDevInfo(string_devInfo) {
+			return let_string}
+		function achievements_getTitle(string_achievementDevName, string_languageCode) => 
+			achievements_titles[string_achievementDevName][string_languageCode]
+		return format("{0} {1}", 
+			achievements_createCategoryName(string_achievementCategory, string_achievementDevName),
+			achievements_getTitle(string_achievementDevName, string_languageCode))}
+	
+	function achievements_generateDescription(string_achievementDevName, string_devInfo, string_languageCode) {	
+		function achievements_getDescription(string_achievementDevName, string_languageCode) {
+			return achievements_descriptions[string_achievementDevName][string_languageCode]}
+		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (const_utilitySettings_debugMode && string_devInfo != "") {
-				let_devInfoString = let_devInfoString + " - [DEV: " + string_devInfo + "]"
+			if (utility_const_debugMode && string_devInfo != "") {
+				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
-			return let_devInfoString
-		}	
-		function enterTipsLink(boolean_hasTips) {
-			let_tipsLink = ""
-			if (const_utilitySettings_isGuideLinkEnabled && boolean_hasTips == true) let_tipsLink = " - [Tips: " + const_utilitySettings_guideLink + "]"
-			return let_tipsLink 
-		}
-		return lookUpAchievementDescription(string_achievementDevName, string_languageCode) + enterTipsLink(boolean_hasTips) + enterDevInfo(string_devInfo) 
-	}
-	// Returns the achievement trigger 
-	function lookUpAchievementTrigger(string_achievementDevName) {
-		return const_achievement_triggers[string_achievementDevName]
-	}
+			return let_devInfoString}
+		return format("{0}{1}",
+			achievements_getDescription(string_achievementDevName, string_languageCode),
+			achievements_formatDevInfo(string_devInfo))}
+
+	function achievements_getTrigger(string_achievementDevName) => 
+		achievements_triggers[string_achievementDevName]
 
 	// This loop generates the achievements
-	for categoryName in const_achievements_coreData {
-		for cheevmentName in const_achievements_coreData[categoryName] {
-			let_cheevment = const_achievements_coreData[categoryName][cheevmentName]
+	for categoryName in achievements_coreData {
+		for cheevmentName in achievements_coreData[categoryName] {
+			let_cheevment = achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
-				title = generateAchievementTitle(cheevmentName, categoryName, const_utilitySettings_language), 
-				badge = let_cheevment["badgeId"],
-				type = const_achievement_typeByCategory[categoryName],
-				description = generateAchievementDescription(cheevmentName, let_cheevment["hasTips"], let_cheevment["devInfo"], const_utilitySettings_language),
+				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
+				type = achievements_typeByCategory[categoryName],
+				description = achievements_generateDescription(cheevmentName, let_cheevment["devInfo"], utility_const_language),
 				points = let_cheevment["points"],
-				trigger = lookUpAchievementTrigger(cheevmentName)
+				trigger = achievements_getTrigger(cheevmentName)
 			)
-		}
-	}}
+		}}
+	}
 
 // ***************************************************************************************************** \\
 //																										 \\
@@ -3921,92 +3913,146 @@ function isCurrentChapterOneOf(array_chapterIds) {
 // ***********************
 // ÷ Rich_Presence TEXT ÷
 // ***********************
-//	- Contains text for all the rich presence scripts 
-const_richPresence_text = {
-	// "rp_Template": 										{"en": "xxxxxxxx"},	
-
-	"rpp_FatedHour_Lookup_Prologue": 					{"en": "14h30"},
-	"rpp_FatedHour_Lookup_Chapter1": 					{"en": "15h00"},
-	"rpp_FatedHour_Lookup_Chapter2": 					{"en": "15h30"},
-	"rpp_FatedHour_Lookup_Chapter3": 					{"en": "17h50"},
-	"rpp_FatedHour_Lookup_Chapter4": 					{"en": "20h30"},
-	"rpp_FatedHour_Lookup_Chapter5": 					{"en": "22h30"},
-	"rpp_FatedHour_Lookup_Chapter6": 					{"en": "23h55"},
-	"rpp_FatedHour_Lookup_Chapter7": 					{"en": "01h30"},
-	"rpp_FatedHour_Lookup_Chapter8": 					{"en": "04h30"},
-	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
-
-	"rpp_Chapter_Lookup_Prologue":						{"en": "Defying destiny"},
-	"rpp_Chapter_Lookup_Chapter1":						{"en": "Extinguishing the heat"},
-	"rpp_Chapter_Lookup_Chapter2":						{"en": "Exploring Lebensbaum"},
-	"rpp_Chapter_Lookup_Chapter3":						{"en": "Visiting the art museum"},
-	"rpp_Chapter_Lookup_Chapter4":						{"en": "Searching for an iron plate"},
-	"rpp_Chapter_Lookup_Chapter5":						{"en": "Amalgamating an antidote"},
-	"rpp_Chapter_Lookup_Chapter6":						{"en": "Producing a film"},
-	"rpp_Chapter_Lookup_Chapter7":						{"en": "Examining a tower"},
-	"rpp_Chapter_Lookup_Chapter8":						{"en": "Seeking the red stone"},
-	"rpp_Chapter_Lookup_Epilogue":						{"en": "Cheating death"},
-	"rpp_Chapter_LookupFallback":						{"en": "Roaming Lebensbaum"},
-
-	"rpp_TimePeriod_Lookup_MiddleAges":					{"en": "in the Middle Ages"},
-	"rpp_TimePeriod_Lookup_Late20Century":				{"en": "in the late 20th century"},
-	"rpp_TimePeriod_Lookup_Early20Century":				{"en": "in the early 20th century"},
-	"rpp_TimePeriod_Lookup_Present":					{"en": "in the present"},
-	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"},
+//	- Contains text for the rich presence script
+richPresence_text = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
 
 	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
 	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
 	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} | Current 🕑 {4} | Completion: {5}%"},
 	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen"},
+
 	"rp_Default":										{"en": "Wandering Lebensbaum"}}
-function getRichPresenceText(string_textKey) =>
-	const_richPresence_text[string_textKey][const_utilitySettings_language]
+richPresence_LookupTablesText = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+
+	"rpp_FatedHour_Prologue": 							{"en": "14h30"},
+	"rpp_FatedHour_Chapter1": 							{"en": "15h00"},
+	"rpp_FatedHour_Chapter2": 							{"en": "15h30"},
+	"rpp_FatedHour_Chapter3": 							{"en": "17h50"},
+	"rpp_FatedHour_Chapter4": 							{"en": "20h30"},
+	"rpp_FatedHour_Chapter5": 							{"en": "22h30"},
+	"rpp_FatedHour_Chapter6": 							{"en": "23h55"},
+	"rpp_FatedHour_Chapter7": 							{"en": "01h30"},
+	"rpp_FatedHour_Chapter8": 							{"en": "04h30"},
+	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
+
+	"rpp_Chapter_Prologue":								{"en": "Defying destiny"},
+	"rpp_Chapter_Chapter1":								{"en": "Extinguishing the heat"},
+	"rpp_Chapter_Chapter2":								{"en": "Exploring Lebensbaum"},
+	"rpp_Chapter_Chapter3":								{"en": "Visiting the art museum"},
+	"rpp_Chapter_Chapter4":								{"en": "Searching for an iron plate"},
+	"rpp_Chapter_Chapter5":								{"en": "Amalgamating an antidote"},
+	"rpp_Chapter_Chapter6":								{"en": "Producing a film"},
+	"rpp_Chapter_Chapter7":								{"en": "Examining a tower"},
+	"rpp_Chapter_Chapter8":								{"en": "Seeking the red stone"},
+	"rpp_Chapter_Epilogue":								{"en": "Cheating death"},
+	"rpp_Chapter_LookupFallback":						{"en": "Roaming Lebensbaum"},
+
+	"rpp_TimePeriod_MiddleAges":						{"en": "in the Middle Ages"},
+	"rpp_TimePeriod_Late20Century":						{"en": "in the late 20th century"},
+	"rpp_TimePeriod_Early20Century":					{"en": "in the early 20th century"},
+	"rpp_TimePeriod_Present":							{"en": "in the present"},
+	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"}}
+function richPresence_getText(string_textKey) =>
+	richPresence_text[string_textKey][utility_const_language]
+function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
+	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
+	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
 // -------------------------------------
-const_richPresence_lookupTables = {
-	"rpp_FatedHour": {	// Corresponds to chapter
-		0x1: "rpp_FatedHour_Lookup_Prologue", 
-		0x2: "rpp_FatedHour_Lookup_Chapter1",
-		0x3: "rpp_FatedHour_Lookup_Chapter2",
-		0x4: "rpp_FatedHour_Lookup_Chapter3",
-		0x5: "rpp_FatedHour_Lookup_Chapter4",
-		0x6: "rpp_FatedHour_Lookup_Chapter5",
-		0x7: "rpp_FatedHour_Lookup_Chapter6",
-		0x8: "rpp_FatedHour_Lookup_Chapter7",
-		0x9: "rpp_FatedHour_Lookup_Chapter8",
-		0xb: "rpp_FatedHour_Lookup_Chapter8",
-		0xa: "rpp_FatedHour_Lookup_Chapter8",
-		0xc: "rpp_FatedHour_Lookup_Chapter8"},
+richPresence_lookupTables = {
+	"rpp_FatedHour": { // Each chapter has a fated hour
+		0x1: "Prologue", 
+		0x2: "Chapter1",
+		0x3: "Chapter2",
+		0x4: "Chapter3",
+		0x5: "Chapter4",
+		0x6: "Chapter5",
+		0x7: "Chapter6",
+		0x8: "Chapter7",
+		0x9: "Chapter8",
+		0xb: "Chapter8",
+		0xa: "Chapter8",
+		0xc: "Chapter8"},
 	"rpp_TimePeriod": {	// Refer to 0xAA1268
-		0x80: "rpp_TimePeriod_Lookup_MiddleAges",
-		0x82: "rpp_TimePeriod_Lookup_Early20Century",
-		0x81: "rpp_TimePeriod_Lookup_Late20Century",
-		0x88: "rpp_TimePeriod_Lookup_Late20Century",
-		0x83: "rpp_TimePeriod_Lookup_Present"},
-	"rpp_Chapter": {	// Refer to const_chapterIDs
-		0x1: "rpp_Chapter_Lookup_Prologue",
-		0x2: "rpp_Chapter_Lookup_Chapter1",
-		0x3: "rpp_Chapter_Lookup_Chapter2",
-		0x4: "rpp_Chapter_Lookup_Chapter3",
-		0x5: "rpp_Chapter_Lookup_Chapter4",
-		0x6: "rpp_Chapter_Lookup_Chapter5",
-		0x7: "rpp_Chapter_Lookup_Chapter6",
-		0x8: "rpp_Chapter_Lookup_Chapter7",
-		0x9: "rpp_Chapter_Lookup_Chapter8",
-		0xb: "rpp_Chapter_Lookup_Chapter8",
-		0xa: "rpp_Chapter_Lookup_Epilogue",
-		0xc: "rpp_Chapter_Lookup_Epilogue"}}
-function getRichPresenceLookupTable(string_lookupParameterKey) =>
-	const_richPresence_lookupTables[string_lookupParameterKey]
+		0x80: "MiddleAges",
+		0x82: "Early20Century",
+		0x81: "Late20Century",
+		0x88: "Late20Century",
+		0x83: "Present"},
+	"rpp_Chapter": { // Refer to const_chapterIDs
+		0x1: "Prologue",
+		0x2: "Chapter1",
+		0x3: "Chapter2",
+		0x4: "Chapter3",
+		0x5: "Chapter4",
+		0x6: "Chapter5",
+		0x7: "Chapter6",
+		0x8: "Chapter7",
+		0x9: "Chapter8",
+		0xb: "Chapter8",
+		0xa: "Epilogue",
+		0xc: "Epilogue"}}
+function richPresence_getLookupTable(string_lookupParameterKey) =>
+	richPresence_lookupTables[string_lookupParameterKey]
 // ****************************
 // ÷ Rich_Presence CORE DATA ÷
 // ****************************
-//	- Contains logic data for all the rich presence scripts
-enum_RPPARAMETER_VALUE = 1		// rich_presence_value(name, expression, [format])
-enum_RPPARAMETER_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
-enum_RPPARAMETER_MACRO = 3		// rich_presence_macro(macro, expression)
+//	- Contains logic data for the rich presence script
+function richPresence_callDisplayFunctions(){
+	rich_presence_conditional_display(	// rp_isPaused
+		richPresence_getCondition("rp_isPaused"),
+		richPresence_getText("rp_isPaused"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameEXChapterOnly
+		richPresence_getCondition("rp_InGameEXChapterOnly"),
+		richPresence_getText("rp_InGameEXChapterOnly"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameChapterOnly
+		richPresence_getCondition("rp_InGameChapterOnly"),
+		richPresence_getText("rp_InGameChapterOnly"),
+		richPresence_callParameterFunction("rpp_Chapter"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod
+		richPresence_getCondition("rp_InGameChapterWithTimePeriod"),
+		richPresence_getText("rp_InGameChapterWithTimePeriod"),
+		richPresence_callParameterFunction("rpp_Chapter"),
+		richPresence_callParameterFunction("rpp_TimePeriod"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// rp_AtTitleScreen
+		richPresence_getCondition("rp_AtTitleScreen"),
+		richPresence_getText("rp_AtTitleScreen"))
+
+	rich_presence_display(	// rp_Default
+		richPresence_getText("rp_Default"))}
 // -------------------------------------
-const_richPresence_conditions = {
+richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
+richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
+// -------------------------------------
+richPresence_conditions = {
 	"rp_isPaused": () => isInGame() && isInGamePauseMenuActive(),
 	"rp_InGameEXChapterOnly": () =>
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
@@ -4024,150 +4070,107 @@ const_richPresence_conditions = {
 		isMainSaveLoaded() && 
 		(isAtTitleScreen() || !isInGame())
 	}
-function getRichPresenceCondition(string_displayKey) =>
-	const_richPresence_conditions[string_displayKey]
+function richPresence_getCondition(string_displayKey) =>
+	richPresence_conditions[string_displayKey]
 // -------------------------------------
-const_richPresence_parameterData = {
+richPresence_parameterData = {
 	// DEV_NOTE: rich presence
-	// 		- Expression examples => byte(0x000) OR getCurrentLevel() + 1
+	// 		- Expression examples:
+	//			-- Memory Accessor => byte(0x000)
+	//			-- Arithmetic Expression => getCurrentLevel() + 1
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
 	"rpp_Chapter": {
-		"RPtype": enum_RPPARAMETER_LOOKUP,
+		"RPtype": richPresence_enum_LOOKUP,
 		"Expression": getChapterId(),
-		"LookupFallback": getRichPresenceText("rpp_Chapter_LookupFallback")},
+		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
 	"rpp_TimePeriod": {	
-		"RPtype": enum_RPPARAMETER_LOOKUP,
+		"RPtype": richPresence_enum_LOOKUP,
 		"Expression": getCurrentTimePeriod(),
-		"LookupFallback": getRichPresenceText("rpp_TimePeriod_LookupFallback")},
+		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
 	"rpp_TotalCompletionRate": {
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getTotalAchievementRate(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeSeconds": {
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getCurrentPresentTimeSeconds(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getCurrentPresentTimeMinutes(),
 		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": (getCurrentPresentTimeMinutes() + getCurrentPresentTimeHours() * 60),
 		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getCurrentPresentTimeHours(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getCurrentPresentTimeYears(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeDays": {
-		"RPtype": enum_RPPARAMETER_MACRO,
+		"RPtype": richPresence_enum_MACRO,
 		"Expression": getCurrentPresentTimeDays(),
 		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
-		"RPtype": enum_RPPARAMETER_LOOKUP,
+		"RPtype": richPresence_enum_LOOKUP,
 		"Expression": getChapterId(),
-		"LookupFallback": getRichPresenceText("rpp_FatedHour_LookupFallback")}
+		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
 	}	
 // ******************************
 // ÷ Rich_Presence INITIALIZER ÷
 // ******************************
-function populateRPlookupTablesWithText() {	// Changes the const_richPresence_lookupTables IDs to the corresponding text in const_richPresence_text
-	for let_lookupTable in const_richPresence_lookupTables {
-		for let_valueKey in const_richPresence_lookupTables[let_lookupTable] {
-			let_lookupID = const_richPresence_lookupTables[let_lookupTable][let_valueKey]
-			const_richPresence_lookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID)
+function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
+	for let_parameterKey in richPresence_lookupTables {
+		let_lookupTable = richPresence_lookupTables[let_parameterKey]
+		for let_lookupKey in let_lookupTable {
+			let_lookupValue = richPresence_lookupTables[let_parameterKey][let_lookupKey]
+			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
 		}
 	}}
-function createNameFromParameterkey(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
-function callRichPresenceParameterFunction(string_parameterKey) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in const_richPresence_parameterData
-	function callRichPresenceValue(string_parameterKey, dict_paramValueData) {
-		let_name = createNameFromParameterkey(string_parameterKey)
+function richPresence_createParameterName(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function richPresence_callParameterFunction(string_parameterKey) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in richPresence_parameterData
+	function richPresence_callValueFunction(string_parameterKey, dict_paramValueData) {
+		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramValueData["Expression"]
 		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function callRichPresenceLookup(string_parameterKey, dict_paramLookupData) {
-		let_name = createNameFromParameterkey(string_parameterKey)
+	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData) {
+		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"]
-		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey)
+		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
-	function callRichPresenceMacro(dict_paramMacroData) {
+	function richPresence_callMacroFunction(dict_paramMacroData) {
 		let_macro = dict_paramMacroData["MacroFormat"] 
 		let_expression = dict_paramMacroData["Expression"]
 		return rich_presence_macro(let_macro, let_expression)}
 
-	let_parameterData = const_richPresence_parameterData[string_parameterKey]
+	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == enum_RPPARAMETER_VALUE) callRichPresenceValue(string_parameterKey, let_parameterData)
-	else if (let_RPtype == enum_RPPARAMETER_LOOKUP) callRichPresenceLookup(string_parameterKey, let_parameterData)
-	else if (let_RPtype == enum_RPPARAMETER_MACRO) callRichPresenceMacro(let_parameterData)
+	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
 	else throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
 
-function initializeRichPresence() {
-	populateRPlookupTablesWithText()
-	
-	rich_presence_conditional_display(	// rp_isPaused
-		getRichPresenceCondition("rp_isPaused"),
-		getRichPresenceText("rp_isPaused"),
-		callRichPresenceParameterFunction("rpp_FatedHour"),
-		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
-		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
-		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
-		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameEXChapterOnly
-		getRichPresenceCondition("rp_InGameEXChapterOnly"),
-		getRichPresenceText("rp_InGameEXChapterOnly"),
-		callRichPresenceParameterFunction("rpp_FatedHour"),
-		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
-		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
-		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
-		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameChapterOnly
-		getRichPresenceCondition("rp_InGameChapterOnly"),
-		getRichPresenceText("rp_InGameChapterOnly"),
-		callRichPresenceParameterFunction("rpp_Chapter"),
-		callRichPresenceParameterFunction("rpp_FatedHour"),
-		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
-		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
-		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
-		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod
-		getRichPresenceCondition("rp_InGameChapterWithTimePeriod"),
-		getRichPresenceText("rp_InGameChapterWithTimePeriod"),
-		callRichPresenceParameterFunction("rpp_Chapter"),
-		callRichPresenceParameterFunction("rpp_TimePeriod"),
-		callRichPresenceParameterFunction("rpp_FatedHour"),
-		callRichPresenceParameterFunction("rpp_PresentTimeDays"),
-		callRichPresenceParameterFunction("rpp_PresentTimeYears"),
-		callRichPresenceParameterFunction("rpp_PresentTimeHourMinutes"),
-		callRichPresenceParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_AtTitleScreen
-		getRichPresenceCondition("rp_AtTitleScreen"),
-		getRichPresenceText("rp_AtTitleScreen"))
-
-	rich_presence_display(	// rp_Default
-		getRichPresenceText("rp_Default"))
-	}
+function richPresence_initialize() {
+	richPresence_populateLookupTables()
+	richPresence_callDisplayFunctions()}
 
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
-	initializeAchievements()
-	initializeRichPresence()}
+	achievements_initialize()
+	richPresence_initialize()}
 initializeRAscript()

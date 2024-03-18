@@ -38,8 +38,8 @@
 //#####################################################################################################\\
 
 // TODO Turn off debug mode
-const_utility_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
-const_utility_language = "en"	// ISO 639-1 language codes 
+utility_const_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
+utility_const_language = "en"	// ISO 639-1 language codes 
 
 function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -132,7 +132,7 @@ function doThisC() => always_false()
 // ÷ Achievement DICTIONARY ÷
 // ***************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
-const_achievements_coreData = {
+achievements_coreData = {
 	// DEV NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Easily upload badges via the game page on the RA website
 	// ------------------------------------------------
@@ -166,7 +166,7 @@ const_achievements_coreData = {
             "devInfo": "xxxxxxx"}
     }}
 // -------------------------------------
-const_achievement_typeByCategory = {
+achievements_typeByCategory = {
 	//	DEV NOTE: Achievement type property
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
@@ -182,15 +182,15 @@ const_achievement_typeByCategory = {
 // ÷ Achievement TRIGGER GENERATORS ÷
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function generate_Tally_TemplateA() {
+function achievements_generate_Tally_TemplateA() {
 	return always_false()}
-function generate_Tally_TemplateB() {
+function achievements_generate_Tally_TemplateB() {
 	return always_false()}
 
 // *************************
 // ÷ Achievement TRIGGERS ÷
 // *************************
-const_achievement_triggers = {
+achievements_triggers = {
     // "a_Template": () { return // WIP_template
 	//	always_false()},
     "a_AchievementF": () { return 
@@ -209,7 +209,7 @@ const_achievement_triggers = {
 // **********************
 // ÷ Achievement TEXT ÷
 // **********************
-const_achievement_titles = {
+achievements_titles = {
     // "a_Template":						{"en": "xxxxx"}, 
     "a_AchievementF":						{"en": "EnglishTitle"},
     "a_AchievementE":						{"en": "EnglishTitle"},
@@ -222,7 +222,7 @@ const_achievement_titles = {
 											"fr": "FrenchTitle",
 											"nl": "DutchTitle"},}
 // -------------------------------------
-const_achievement_descriptions = {
+achievements_descriptions = {
     // "a_Template": 						{"en": "xxxxx"}, 
     "a_AchievementF":						{"en": "EnglishDescription"},
     "a_AchievementE":						{"en": "EnglishDescription"},
@@ -238,58 +238,54 @@ const_achievement_descriptions = {
 // ****************************
 // ÷ Achievement INITIALIZER ÷
 // ****************************
-//	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
-function initializeAchievements() {
-	// Generates the achievement title (with developer tags, if devmode == 1)
-	function generateAchievementTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
-		function enterCategoryName(string_achievementCategory, string_achievementDevName) {
+//	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (achievements_coreData)
+function achievements_initialize() {
+
+	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
+		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (const_utility_debugMode) {
+			if (utility_const_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
-				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
-				// let_string + "[" + let_shortenedAchievementCategory + "_" + let_shortenedAchievementDevName + "] " 
+				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
 			}
-			return let_string
-		}	
-		function lookUpAchievementTitle(string_achievementDevName, string_languageCode) {
-			return const_achievement_titles[string_achievementDevName][string_languageCode]
-		}
-		return enterCategoryName(string_achievementCategory, string_achievementDevName) + lookUpAchievementTitle(string_achievementDevName, string_languageCode)
-	}
-	// Generates the achievement description (with extra developer information, if devmode == 1)
-	function generateAchievementDescription(string_achievementDevName, string_devInfo, string_languageCode) {	
-		function lookUpAchievementDescription(string_achievementDevName, string_languageCode) {
-			return const_achievement_descriptions[string_achievementDevName][string_languageCode]
-		}
-		function enterDevInfo(string_devInfo) {
+			return let_string}
+		function achievements_getTitle(string_achievementDevName, string_languageCode) => 
+			achievements_titles[string_achievementDevName][string_languageCode]
+		return format("{0} {1}", 
+			achievements_createCategoryName(string_achievementCategory, string_achievementDevName),
+			achievements_getTitle(string_achievementDevName, string_languageCode))}
+	
+	function achievements_generateDescription(string_achievementDevName, string_devInfo, string_languageCode) {	
+		function achievements_getDescription(string_achievementDevName, string_languageCode) {
+			return achievements_descriptions[string_achievementDevName][string_languageCode]}
+		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (const_utility_debugMode && string_devInfo != "") {
+			if (utility_const_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
-			return let_devInfoString
-		}
-		return lookUpAchievementDescription(string_achievementDevName, string_languageCode) + enterDevInfo(string_devInfo) 
-	}
-	// Returns the achievement trigger 
-	function lookUpAchievementTrigger(string_achievementDevName) {
-		return const_achievement_triggers[string_achievementDevName]
-	}
+			return let_devInfoString}
+		return format("{0}{1}",
+			achievements_getDescription(string_achievementDevName, string_languageCode),
+			achievements_formatDevInfo(string_devInfo))}
+
+	function achievements_getTrigger(string_achievementDevName) => 
+		achievements_triggers[string_achievementDevName]
 
 	// This loop generates the achievements
-	for categoryName in const_achievements_coreData {
-		for cheevmentName in const_achievements_coreData[categoryName] {
-			let_cheevment = const_achievements_coreData[categoryName][cheevmentName]
+	for categoryName in achievements_coreData {
+		for cheevmentName in achievements_coreData[categoryName] {
+			let_cheevment = achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_cheevment["id"],
-				title = generateAchievementTitle(cheevmentName, categoryName, const_utility_language),
-				type = const_achievement_typeByCategory[categoryName],
-				description = generateAchievementDescription(cheevmentName, let_cheevment["devInfo"], const_utility_language),
+				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
+				type = achievements_typeByCategory[categoryName],
+				description = achievements_generateDescription(cheevmentName, let_cheevment["devInfo"], utility_const_language),
 				points = let_cheevment["points"],
-				trigger = lookUpAchievementTrigger(cheevmentName)
+				trigger = achievements_getTrigger(cheevmentName)
 			)
-		}
-	}}
+		}}
+	}
 
 
 // ***************************************************************************************************** \\
@@ -302,7 +298,7 @@ function initializeAchievements() {
 //   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
-// TODO_Rich_Presence
+
 // ****************************
 // ÷ Rich_Presence FUNCTIONS ÷
 // ****************************
@@ -312,167 +308,132 @@ function initializeAchievements() {
 // ÷ Rich_Presence TEXT ÷
 // ***********************
 //	- Contains text for the rich presence script
-const_richPresence_text = {
-	// "rp_Template": 							{"en": "xxxxxxxx"},	
+richPresence_text = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
 
+	"rp_templateB":										{"en": "xxxxxxxx"},
+	"rp_templateA":										{"en": "{0} {1} {2}"},
+
+	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
+richPresence_LookupTablesText = {
 	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
 	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
 	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},
-
-	"rp_Default":										{"en": ""}}	// TODO_rp_Default
-const_richPresence_lookupTables = {
-	"rpp_LookupTemplate": {	// Info_about_lookup_table
-		0x0: "rpp_LookupTemplate_Lookup_A",
-		0x1: "rpp_LookupTemplate_Lookup_B",
-		0x2: "rpp_LookupTemplate_Lookup_C"}}
-function getRichPresenceText(string_textKey) =>
-	const_richPresence_text[string_textKey][const_utility_language]
-function getRichPresenceLookupTable(string_lookupParameterKey) =>
-	const_richPresence_lookupTables[string_lookupParameterKey]
+	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
+function richPresence_getText(string_textKey) =>
+	richPresence_text[string_textKey][utility_const_language]
+function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
+	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
+	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+// -------------------------------------
+richPresence_lookupTables = {
+	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
+		0x1: "Lookup_A",
+		0x2: "Lookup_B",
+		0x3: "Lookup_C"}}
+function richPresence_getLookupTable(string_lookupParameterKey) =>
+	richPresence_lookupTables[string_lookupParameterKey]
 // ****************************
 // ÷ Rich_Presence CORE DATA ÷
 // ****************************
 //	- Contains logic data for the rich presence script
-enum_RPtype_DISPLAY_NORMAL = 10			// rich_presence_display(format_string, parameters...)
-enum_RPtype_DISPLAY_CONDITIONAL = 11	// rich_presence_conditional_display(condition, format_string, parameters...)
-enum_RPtype_PARAMETER_VALUE = 100		// rich_presence_value(name, expression, [format])
-enum_RPtype_PARAMETER_LOOKUP = 101		// rich_presence_lookup(name, expression, dictionary, [fallback])
-enum_RPtype_PARAMETER_MACRO = 102		// rich_presence_macro(macro, expression)
+function richPresence_callDisplayFunctions(){
+	rich_presence_conditional_display(	// rp_templateA
+		richPresence_getCondition("rp_templateA"),
+		richPresence_getText("rp_templateA"),
+		richPresence_callParameterFunction("rpp_ValueTemplate"),
+		richPresence_callParameterFunction("rpp_LookupTemplate"),
+		richPresence_callParameterFunction("rpp_MacroTemplate"))
+		
+	rich_presence_conditional_display(	// rp_templateB
+		richPresence_getCondition("rp_templateB"),
+		richPresence_getText("rp_templateB"))
+
+	rich_presence_display(	// rp_Default
+		richPresence_getText("rp_Default"))}
+richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
+richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
-const_richPresence_coreData = {
-	//	DEV NOTE: rich presence
-	// 		- Expression examples => byte(0x000) OR getCurrentLevel() + 1
+richPresence_conditions = {
+	"rp_templateA": () =>
+		always_false(),
+	"rp_templateB": () =>
+		always_false(),
+	}
+function richPresence_getCondition(string_displayKey) =>
+	richPresence_conditions[string_displayKey]
+// -------------------------------------
+richPresence_parameterData = {
+	// DEV_NOTE: rich presence
+	// 		- Expression examples:
+	//			-- Memory Accessor => byte(0x000)
+	//			-- Arithmetic Expression => getCurrentLevel() + 1
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	// "rp_Template": { // CONCEPT rp_template
-	// 	"RPtype": enum_RPtype_DISPLAY_CONDITIONAL,
-	// 	"Condition": () =>  
-	// 		always_false(),
-	// 	"PlaceholderParameters": {
-	// 		0: "rpp_Param1",
-	// 		1: "rpp_Param2",
-	// 		2: "rpp_Param3"}},
-
-	"rp_Default": {		// Only 1 DISPLAY_NORMAL is allowed, more will overwrite the previous ones; refer to https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions
-		"RPtype": enum_RPtype_DISPLAY_NORMAL,
-		"PlaceholderParameters": {}}
-	}
-const_richPresence_placeholderParameterData = {
-	"rpp_ValueTemplate": {
-		"RPtype": enum_RPtype_PARAMETER_VALUE,
-		"Expression": byte(0x0000),
+	"rpp_ValueTemplate": {	
+		"RPtype": richPresence_enum_VALUE,
+		"Expression": always_false(),
 		"ValueFormat": "VALUE"},
-	"rpp_LookupTemplate": {
-		"RPtype": enum_RPtype_PARAMETER_LOOKUP,
-		"Expression": byte(0x0000),
-		"LookupFallback": getRichPresenceText("rpp_LookupTemplate_LookupFallback")},
+	"rpp_LookupTemplate": {	
+		"RPtype": richPresence_enum_LOOKUP,
+		"Expression": always_false(),
+		"LookupFallback": richPresence_getLookupTableText("rpp_LookupTemplate", "LookupFallback")},
 	"rpp_MacroTemplate": {
-		"RPtype": enum_RPtype["MACRO"],
-		"Expression": byte(0x0000),
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": always_false(),
 		"MacroFormat": "Number"},
-	}
+	}	
 // ******************************
 // ÷ Rich_Presence INITIALIZER ÷
 // ******************************
-function createNameFromPlaceholderParameterkey(string_placeholderParameterKey) => substring(string_placeholderParameterKey, 4)	// Removes rpp_ 
-function populateRPlookupTablesWithText() {	// Changes the const_richPresence_lookupTables IDs to the corresponding text in const_richPresence_text
-	for let_lookupTable in const_richPresence_lookupTables {
-		for let_valueKey in const_richPresence_lookupTables[let_lookupTable] {
-			let_lookupID = const_richPresence_lookupTables[let_lookupTable][let_valueKey]
-			const_richPresence_lookupTables[let_lookupTable][let_valueKey] = getRichPresenceText(let_lookupID)
+function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
+	for let_parameterKey in richPresence_lookupTables {
+		let_lookupTable = richPresence_lookupTables[let_parameterKey]
+		for let_lookupKey in let_lookupTable {
+			let_lookupValue = richPresence_lookupTables[let_parameterKey][let_lookupKey]
+			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
 		}
 	}}
-function createCorrespondingRPparameterFunction(string_placeholderParameterKey) {
-	function createRPparameterFunction_Value(string_parameterKey, dict_paramValueData) {
-		let_name = createNameFromPlaceholderParameterkey(string_parameterKey)
+function richPresence_createParameterName(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function richPresence_callParameterFunction(string_parameterKey) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in richPresence_parameterData
+	function richPresence_callValueFunction(string_parameterKey, dict_paramValueData) {
+		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramValueData["Expression"]
-		let_format = dict_paramValueData["Format"] 	
+		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function createRPparameterFunction_Lookup(string_parameterKey, dict_paramLookupData) {
-		let_name = createNameFromPlaceholderParameterkey(string_parameterKey)
+	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData) {
+		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"]
-		let_lookUpTable = getRichPresenceLookupTable(string_parameterKey)
+		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
-	function createRPparameterFunction_Macro(dict_paramMacroData) {
-		let_macro = dict_paramMacroData["Macro"] 
+	function richPresence_callMacroFunction(dict_paramMacroData) {
+		let_macro = dict_paramMacroData["MacroFormat"] 
 		let_expression = dict_paramMacroData["Expression"]
 		return rich_presence_macro(let_macro, let_expression)}
-	
-	let_placeholderParameterData = const_richPresence_placeholderParameterData[string_placeholderParameterKey]
-	let_RPtype = let_placeholderParameterData["RPtype"]
-	if (let_RPtype == enum_RPtype_PARAMETER_VALUE) {
-		createRPparameterFunction_Value(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype_PARAMETER_LOOKUP) {
-		createRPparameterFunction_Lookup(string_placeholderParameterKey, let_placeholderParameterData)
-	} else if (let_RPtype == enum_RPtype_PARAMETER_MACRO) {
-		createRPparameterFunction_Macro(let_placeholderParameterData)
-	} else {
-		throwError(format("The rich presence parameter script: {0} did not evaluate correctly", int_placeholderParameterIndex))
-	}}
-function createRPparameters(dict_placeholderParameterData){ // Place RPplaceholderParameters in correct order for the format function placeholders
-	let_unOrderedRPparameters = {}
-	for placeholderParameterIndex in dict_placeholderParameterData {
-		let_RPparam = createCorrespondingRPparameterFunction(dict_placeholderParameterData[placeholderParameterIndex])
-		let_unOrderedRPparameters[placeholderParameterIndex] = let_RPparam
+
+	let_parameterData = richPresence_parameterData[string_parameterKey]
+	let_RPtype = let_parameterData["RPtype"]
+	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
+	else throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
-	let_orderedRPparameters = []
-	for let_placeholderIndex in range(0, length(let_unOrderedRPparameters) - 1) { 
-		array_push(let_orderedRPparameters, let_unOrderedRPparameters[let_placeholderIndex])
-	}
-	return let_orderedRPparameters}
-function initilalizeRPdisplay(string_displayScriptKey, dict_rpDisplayData) {	// generates rich presence display functions
-	function initializeRPdisplay_Normal(string_displayScriptKey, dict_displayNormalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey)		
-		if (length(dict_displayNormalData["PlaceholderParameters"]) > 0) {			
-			rich_presence_display(let_formatString, createRPparameters(dict_displayNormalData["PlaceholderParameters"]))
-		} else {
-			rich_presence_display(let_formatString)
-		}}
-	function initializeRPdisplay_Conditional(string_displayScriptKey, dict_displayConditionalData) {
-		let_formatString = getRichPresenceText(string_displayScriptKey)
-		let_condition = dict_displayConditionalData["Condition"]
-		if (length(dict_displayConditionalData["PlaceholderParameters"]) > 0) {
-			rich_presence_conditional_display(let_condition, let_formatString, createRPparameters(dict_displayConditionalData["PlaceholderParameters"]))
-		} else {
-			rich_presence_conditional_display(let_condition, let_formatString)
-		}}
-	let_countDisplayNormalScripts = 0
-	let_RPtype = dict_rpDisplayData["RPtype"]
-	if (let_RPtype == enum_RPtype_DISPLAY_NORMAL) {
-		initializeRPdisplay_Normal(string_displayScriptKey, dict_rpDisplayData)
-		let_countDisplayNormalScripts = let_countDisplayNormalScripts + 1
-		if (let_countDisplayNormalScripts > 1) throwError("More than one DISPLAY_NORMAL script was defined; The last one will overwrite all the previous ones")
-	} else if (let_RPtype == enum_RPtype_DISPLAY_CONDITIONAL) {
-		initializeRPdisplay_Conditional(string_displayScriptKey, dict_rpDisplayData)
-	} else {
-		throwError(format("The rich presence display script: {0} did not evaluate correctly", string_displayScriptKey))
-	}}
-function initializeRichPresence() {
-	// DEV NOTE: rich_presence_macro(macro, expression)
-	//		- rich_presence_macro() are placed within a display script; like rich_presence_lookup() and rich_presence_value()
-	// ------------------------------------------------------	
-	// EXAMPLE:
-	// 		rich_presence_conditional_display(is_title_screen(), "Title Screen")
-	// 		rich_presence_display("Playing Battle {0} in {1} | Score: {2}", 
-	// 			rich_presence_value("Battle", getCurrentLevel()),
-	// 			rich_presence_lookup("Area", getCurrentArea(), areaDictionary),
-	// 			rich_presence_macro("Score", getCurrentScore())
-	// 		)
-	populateRPlookupTablesWithText()
-	for rpDisplayScriptKey in const_richPresence_coreData {
-		initilalizeRPdisplay(rpDisplayScriptKey, const_richPresence_coreData[rpDisplayScriptKey])}
-	}
+
+function richPresence_initialize() {
+	richPresence_populateLookupTables()
+	richPresence_callDisplayFunctions()}
+
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
-	initializeAchievements()
-	initializeRichPresence()}
+	achievements_initialize()
+	richPresence_initialize()}
 initializeRAscript()
