@@ -69,9 +69,9 @@ function addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
-// ******************
-// ÷ TIME AND DATE ÷
-// ******************
+// *****************
+// ◦ TIME AND DATE ◦
+// *****************
 function getCurrentTimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
 									// 		0x81 => Late 20th Century 1900s
@@ -96,9 +96,9 @@ function getCurrentPresentTimeMonths() =>	// $AA12A8: [32-bit] Time in present: 
 
 function getCurrentPresentTimeYears() =>	// $AA12A4: [32-bit] Time in present: years
 	dword(0xAA12A4)
-// ************************
-// ÷ CLEAR TIME & TIMERS ÷
-// ************************
+// ***********************
+// ◦ CLEAR TIME & TIMERS ◦
+// ***********************
 function getTimerChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
 	dword(0xAA155C)
 	
@@ -121,9 +121,9 @@ function isTimerTotalClearTimeStartingFromZero() =>
 
 function isTimerTotalClearTimeResetting() =>
 	getTimerTotalClearTime() < prev(getTimerTotalClearTime())
-// *********************
-// ÷ INTERACTIONS IDs ÷
-// *********************
+// ********************
+// ◦ INTERACTIONS IDs ◦
+// ********************
 const_NPCs = {
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
@@ -306,9 +306,9 @@ function isWomanAdvisedBeTruthful() => 	//	$A9EF8E: [8-bit Current Playthrough F
 										// 		- Increases by 0x1 with each interaction with the man starts at 0x1 and to a max of 0x3
 
 
-// ****************************
-// ÷ CUTSCENE IDENTIFICATION ÷
-// ****************************
+// ***************************
+// ◦ CUTSCENE IDENTIFICATION ◦
+// ***************************
 function isFullCutsceneActive() => 					// $A9ED26: Flag: Is cutscene active (preferred)
 	byte(0xA9ED26) == 0x5							// 		- 0x00 => no cutscene active
 													// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
@@ -363,9 +363,9 @@ function isCurrentMinorCutsceneId(int_Id, int_offset) {		// $A9ECD4: [25-bit Poi
 															// 		+0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 
-// ******************************
-// ÷ MAP/SCENE/AREA IDENTIFIER ÷
-// ******************************
+// *****************************
+// ◦ MAP/SCENE/AREA IDENTIFIER ◦
+// *****************************
 const_mapIDs= {	// list not complete, add as is necessary
 	"PresentDayCity": 0x375,
 	"PresentNightCityPM": 0x44,
@@ -397,9 +397,9 @@ function isCurrentMapScene(string_mapId) => 	// $A82E48: [32-bit] Current loaded
 	dword(0xA82E48) == const_mapIDs[string_mapId]	
 
 
-// ******************
-// ÷ CHAPTER LOGIC ÷
-// ******************
+// *****************
+// ◦ CHAPTER LOGIC ◦
+// *****************
 const_chapterIDs = {
 	"Prologue": 0x1,	// Also counts for EX chapter
 	"Chapter1": 0x2,
@@ -479,9 +479,9 @@ function isChapterChangingTo(string_chapter) {
 
 
 
-// ********************
-// ÷ INVENTORY LOGIC ÷
-// ********************
+// *******************
+// ◦ INVENTORY LOGIC ◦
+// *******************
 //	- itemScrollBarId => Id of the item in the inventory scrollbar menu
 //	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
 //	- isDefaultItem => true, when player gets this item at start of game
@@ -595,9 +595,9 @@ function isItemInInventory(string_item) =>
 	bit0(const_inventoryItems[string_item]["memAddress_Flag_isInInventory"]) == 1
 
 
-// ***********************
-// ÷ BOTTOM SCREEN TEXT ÷
-// ***********************
+// **********************
+// ◦ BOTTOM SCREEN TEXT ◦
+// **********************
 // Bottom screen text - character printer => works via a transparant character set image, that is masked to show only 1 character at a time. 
 // Refer to code notes on RA game page 
 function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
@@ -649,9 +649,9 @@ function isPriorCharacterPrinted(objDict_characterPrintData) {
 		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)}
 
 
-// ***************
-// ÷ EXTRA MENU ÷
-// ***************
+// **************
+// ◦ EXTRA MENU ◦
+// **************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
 function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra menu
@@ -715,9 +715,9 @@ function isViewingEndingFileInExtraMenu(string_endingChar) {	// $AC3178: [25-bit
 																// 		+0xc - [16-bit] Ending file text ID
 
 
-// ****************
-// ÷ OTHER LOGIC ÷
-// ****************
+// ***************
+// ◦ OTHER LOGIC ◦
+// ***************
 function getCurrentEnergyUnits() =>		// $A9DAA8: Number of energy units in possession 
 	byte(0xA9DAA8)						//		- If this is 0x0, player can't time travel
 										//		- Values range [0x0-0xa]
@@ -766,9 +766,9 @@ function isChapterCompletionScreenActive() =>	// $1FFF5F4: [32-bit Flag] Is chap
 	dword(0x1FFF5D4) <= 1 						//		- 0x0 = yes		- 0x1 = no
 
 
-// *******************************
-// ÷ CUTSCENE/CHOICES BIT FLAGS ÷
-// *******************************
+// ******************************
+// ◦ CUTSCENE/CHOICES BIT FLAGS ◦
+// ******************************
 const_endingBitFlagsMemoryAddresses = {
 	"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A achieved
 	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B achieved
@@ -876,9 +876,9 @@ function isWearingPerformerOutfit() => 	// $A9EDA5: [Current Playthrough Bit Fla
 	bit2(0xA9EDA5) == 1					//		 bit 2 => is wearing performer outfit
 
 
-// ************************************
-// ÷ ACHIEVEMENT PERCENTAGE BITFLAGS ÷
-// ************************************
+// ***********************************
+// ◦ ACHIEVEMENT PERCENTAGE BITFLAGS ◦
+// ***********************************
 // - Each flag corresponds to 1 cutscene and counts toward the achievement percentage
 // - At end of a cutscene one of these flags will become true
 // - Flags are grouped per chapter
@@ -1032,7 +1032,7 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // ****************************************************************************************************************************************** \\
 
 // **************************
-// ÷ Achievement CORE DATA ÷
+// • Achievements CORE DATA •
 // **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
@@ -1045,272 +1045,272 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // WORKING 
+		"a_PrologueComplete": { // VERIFIED 
 			"id": 306884, "points": 5, "badgeId": "461667", "hasTips": false, 
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // WORKING
+		"a_Chapter1Complete": { // VERIFIED
 			"id": 306886, "points": 5, "badgeId": "461654", "hasTips": false,
 			"devInfo": "Complete chapter 1"},
-		"a_Chapter2Complete": { // WORKING
+		"a_Chapter2Complete": { // VERIFIED
 			"id": 306922, "points": 5, "badgeId": "461655", "hasTips": false,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // WORKING
+		"a_Chapter3Complete": { // VERIFIED
 			"id": 306921, "points": 5, "badgeId": "461656", "hasTips": false,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // WORKING
+		"a_Chapter4CompletePan": { // VERIFIED
 			"id": 308964, "points": 3, "badgeId": "461657", "hasTips": true,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // WORKING
+		"a_Chapter4CompleteSign": { // VERIFIED
 			"id": 310149, "points": 3, "badgeId": "461658", "hasTips": true,
 			"devInfo": "Complete chapter 4, using a sign"},
-		"a_Chapter5Complete": { // WORKING
+		"a_Chapter5Complete": { // VERIFIED
 			"id": 311616, "points": 5, "badgeId": "461659", "hasTips": false,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // WORKING
+		"a_Chapter6CompleteThriller": { // VERIFIED
 			"id": 313211, "points": 3, "badgeId": "461661", "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // WORKING
+		"a_Chapter6CompleteLove": { // VERIFIED
 			"id": 313210, "points": 3, "badgeId": "461660", "hasTips": false,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
-		"a_Chapter7Complete": { // WORKING
+		"a_Chapter7Complete": { // VERIFIED
 			"id": 315565, "points": 5, "badgeId": "461665", "hasTips": false,
 			"devInfo": "Complete chapter 7"},
-		"a_Chapter8Complete": { // WORKING 
+		"a_Chapter8Complete": { // VERIFIED 
 			"id": 315571, "points": 5, "badgeId": "461666", "hasTips": false,
 			"devInfo": "Complete chapter 8"}},
 	"c_AchievementPercentage": {
-		"a_MaxAchievementPrologue": { // WORKING
+		"a_MaxAchievementPrologue": { // VERIFIED
 			"id": 405087, "points": 10, "badgeId": "461646", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
-		"a_MaxAchievementChapter1": { // WORKING
+		"a_MaxAchievementChapter1": { // VERIFIED
 			"id": 405088, "points": 10, "badgeId": "461637", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 1"},
-		"a_MaxAchievementChapter2": { // WORKING
+		"a_MaxAchievementChapter2": { // VERIFIED
 			"id": 405089, "points": 10, "badgeId": "461638", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 2"},
-		"a_MaxAchievementChapter3": { // WORKING
+		"a_MaxAchievementChapter3": { // VERIFIED
 			"id": 405090, "points": 10, "badgeId": "461639", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 3"},
-		"a_MaxAchievementChapter4": { // WORKING
+		"a_MaxAchievementChapter4": { // VERIFIED
 			"id": 405091, "points": 10, "badgeId": "461640", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 4"},
-		"a_MaxAchievementChapter5": { // WORKING
+		"a_MaxAchievementChapter5": { // VERIFIED
 			"id": 405092, "points": 10, "badgeId": "461641", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 5"},
-		"a_MaxAchievementChapter6": { // WORKING
+		"a_MaxAchievementChapter6": { // VERIFIED
 			"id": 405093, "points": 10, "badgeId": "461642", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 6"},
-		"a_MaxAchievementChapter7": { // WORKING
+		"a_MaxAchievementChapter7": { // VERIFIED
 			"id": 405094, "points": 10, "badgeId": "461643", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 7"},
-		"a_MaxAchievementChapter8": { // WORKING
+		"a_MaxAchievementChapter8": { // VERIFIED
 			"id": 405095, "points": 10, "badgeId": "461644", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in chapter 8"},
-		"a_MaxAchievementEpilogue": { // WORKING	
+		"a_MaxAchievementEpilogue": { // VERIFIED	
 			"id": 405096, "points": 10, "badgeId": "461645", "hasTips": false,
 			"devInfo": "Seen all the important cutscenes in epilogue"},
-		"a_MaxAchievementTotal": { // WORKING
+		"a_MaxAchievementTotal": { // VERIFIED
 			"id": 405097, "points": 50, "badgeId": "461647", "hasTips": false,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
-		"a_AlertBarmanOfFire": { // WORKING
+		"a_AlertBarmanOfFire": { // VERIFIED
 			"id": 306976, "points": 4, "badgeId": "461648", "hasTips": true,
 			"devInfo": "Alert the barman of fire in chapter 1"},
-		"a_BecomeThePerformer": { // WORKING
+		"a_BecomeThePerformer": { // VERIFIED
 			"id": 402284, "points": 4, "badgeId": "461649", "hasTips": true,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
-		"a_EggCollection": { // WORKING
+		"a_EggCollection": { // VERIFIED
 			"id": 306977, "points": 4, "badgeId": "461650", "hasTips": true,
 			"devInfo": "Give the ornamental egg to the barman during chapter 1. Or in chapter 3 or 4"},
-		"a_EikeThePyromancer": { // WORKING
+		"a_EikeThePyromancer": { // VERIFIED
 			"id": 306911, "points": 1, "badgeId": "461685", "hasTips": true,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheMagician": { // WORKING
+		"a_EikeTheMagician": { // VERIFIED
 			"id": 306906, "points": 1, "badgeId": "461684", "hasTips": true,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
-		"a_EikeTheFlorist": { // WORKING
+		"a_EikeTheFlorist": { // VERIFIED
 			"id": 306920, "points": 1, "badgeId": "461683", "hasTips": true,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
-		"a_GetOrnamentalEgg": { // WORKING
+		"a_GetOrnamentalEgg": { // VERIFIED
 			"id": 306885, "points": 1, "badgeId": "461653", "hasTips": true,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
-		"a_EndingA": { // WORKING
+		"a_EndingA": { // VERIFIED
 			"id": 315566, "points": 5, "badgeId": "461668", "hasTips": true,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		"a_EndingB1":{ // WORKING
+		"a_EndingB1":{ // VERIFIED
 			"id": 315573, "points": 5, "badgeId": "461669", "hasTips": true,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
-		"a_EndingB2":{ // WORKING
+		"a_EndingB2":{ // VERIFIED
 			"id": 315572, "points": 5, "badgeId": "461670", "hasTips": true,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		"a_EndingC": { // WORKING
+		"a_EndingC": { // VERIFIED
 			"id": 317118, "points": 5, "badgeId": "461671", "hasTips": true,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		"a_EndingD": { // WORKING
+		"a_EndingD": { // VERIFIED
 			"id": 322230, "points": 5, "badgeId": "461672", "hasTips": true,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		"a_EndingE": { // WORKING
+		"a_EndingE": { // VERIFIED
 			"id": 322231, "points": 5, "badgeId": "461673", "hasTips": true,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
-		"a_EndingEXCureHelena": { // WORKING
+		"a_EndingEXCureHelena": { // VERIFIED
 			"id": 405114, "points": 3, "badgeId": "461651", "hasTips": true,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
-		"a_EndingEXKillHomunculus": { // WORKING
+		"a_EndingEXKillHomunculus": { // VERIFIED
 			"id": 405113, "points": 3, "badgeId": "461652", "hasTips": true,
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
-		"a_AntiquesEule": { // WORKING
+		"a_AntiquesEule": { // VERIFIED
 			"id": 310132, "points": 2, "badgeId": "461674", "hasTips": true,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
-		"a_ArtAppreciator": { // WORKING
+		"a_ArtAppreciator": { // VERIFIED
 			"id": 307499, "points": 1, "badgeId": "461675", "hasTips": true,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
-		"a_ArtInspiration1": { // WORKING
+		"a_ArtInspiration1": { // VERIFIED
 			"id": 403824, "points": 3, "badgeId": "461676", "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
-		"a_ArtInspirationAll": { // WORKING
+		"a_ArtInspirationAll": { // VERIFIED
 			"id": 403825, "points": 5, "badgeId": "461677", "hasTips": true,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
-		"a_BarmansChildren": { // WORKING
+		"a_BarmansChildren": { // VERIFIED
 			"id": 315567, "points": 3, "badgeId": "461678", "hasTips": true,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
-		"a_DoctorateTimeTraveling": { // WORKING
+		"a_DoctorateTimeTraveling": { // VERIFIED
 			"id": 310163, "points": 4, "badgeId": "461679", "hasTips": true,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
-		"a_DrunkenGuys": { // WORKING
+		"a_DrunkenGuys": { // VERIFIED
 			"id": 404048, "points": 2, "badgeId": "461680", "hasTips": true,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
-		"a_EggPocketWatchForCoffee": { // WORKING
+		"a_EggPocketWatchForCoffee": { // VERIFIED
 			"id": 313213, "points": 4, "badgeId": "461682", "hasTips": true,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
-		"a_FreeMeal": { // WORKING 
+		"a_FreeMeal": { // VERIFIED 
 			"id": 405461, "points": 3, "badgeId": "461695", "hasTips": true,
 			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
-		"a_GetExChapterOrnamentalEgg": { // WORKING
+		"a_GetExChapterOrnamentalEgg": { // VERIFIED
 			"id": 405112, "points": 1, "badgeId": "461653", "hasTips": true,
 			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
-		"a_GiveMargaretteCake": { // WORKING
+		"a_GiveMargaretteCake": { // VERIFIED
 			"id": 402296, "points": 4, "badgeId": "461704", "hasTips": true,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
-		"a_HugoMotherChild": { // WORKING
+		"a_HugoMotherChild": { // VERIFIED
 			"id": 311466, "points": 2, "badgeId": "461705", "hasTips": true,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
-		"a_MaxInventory": { // WORKING
+		"a_MaxInventory": { // VERIFIED
 			"id": 402404, "points": 10, "badgeId": "461712", "hasTips": true,
 			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
-		"a_MeetFamousOleg": { // WORKING
+		"a_MeetFamousOleg": { // VERIFIED
 			"id": 404045, "points": 4, "badgeId": "461713", "hasTips": true,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
-		"a_MeetOldMiriam": { // WORKING
+		"a_MeetOldMiriam": { // VERIFIED
 			"id": 315570, "points": 10, "badgeId": "461714", "hasTips": true,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
-		"a_NewCakeInvented": { // WORKING
+		"a_NewCakeInvented": { // VERIFIED
 			"id": 402297, "points": 3, "badgeId": "461715", "hasTips": true,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
-		"a_PerformerGoingExtraMile": { // WORKING
+		"a_PerformerGoingExtraMile": { // VERIFIED
 			"id": 403575, "points": 5, "badgeId": "461716", "hasTips": true,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
-		"a_PocketWatchCollection": { // WORKING
+		"a_PocketWatchCollection": { // VERIFIED
 			"id": 315561, "points": 4, "badgeId": "461717", "hasTips": true,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
-		"a_PocketWatchReminiscing": { // WORKING
+		"a_PocketWatchReminiscing": { // VERIFIED
 			"id": 315562, "points": 4, "badgeId": "461718", "hasTips": true,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
-		"a_PocketWatchTo80sBarman": { // WORKING
+		"a_PocketWatchTo80sBarman": { // VERIFIED
 			"id": 407681, "points": 1, "badgeId": "461719", "hasTips": true,
 			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
-		"a_RunningAcrossThe90s": { // WORKING
+		"a_RunningAcrossThe90s": { // VERIFIED
 			"id": 405086, "points": 2, "badgeId": "461720", "hasTips": true,
 			"devInfo": "Talk to jogging man in present and past (70s)"},
-		"a_SaveMiriamBrum": { // WORKING
+		"a_SaveMiriamBrum": { // VERIFIED
 			"id": 315569, "points": 4, "badgeId": "461721", "hasTips": true,
 			"devInfo": "Save Miriam Brum in chapter 6"},			
-		"a_ScareEveryone": { // WORKING
+		"a_ScareEveryone": { // VERIFIED
 			"id": 404046, "points": 4, "badgeId": "461722", "hasTips": true,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
-		"a_SeenOlegAsWell": { // WORKING
+		"a_SeenOlegAsWell": { // VERIFIED
 			"id": 405098, "points": 1, "badgeId": "461723", "hasTips": true,
 			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
-		"a_ShowEggTownPlanter": { // WORKING
+		"a_ShowEggTownPlanter": { // VERIFIED
 			"id": 307023, "points": 3, "badgeId": "461725", "hasTips": true,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
-		"a_ShowPocketWatchToPhotographer": { // WORKING 
+		"a_ShowPocketWatchToPhotographer": { // VERIFIED 
 			"id": 405460, "points": 2, "badgeId": "461726", "hasTips": true,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
-		"a_ShortestChapter": { // WORKING
+		"a_ShortestChapter": { // VERIFIED
 			"id": 403823, "points": 3, "badgeId": "461724", "hasTips": true,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
-		"a_SnowyCrimeScene": { // WORKING
+		"a_SnowyCrimeScene": { // VERIFIED
 			"id": 313209, "points": 2, "badgeId": "461727", "hasTips": true,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
-		"a_TimeTravellingCat": { // WORKING
+		"a_TimeTravellingCat": { // VERIFIED
 			"id": 310426, "points": 4, "badgeId": "461728", "hasTips": true,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
 	"c_Extra_Couple": { // Category - Related to the mysterious couple 
-		"a_EnigmaticCouple1": { // WORKING
+		"a_EnigmaticCouple1": { // VERIFIED
 			"id": 307495, "points": 3, "badgeId": "461690", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
-		"a_EnigmaticCouple2": { // WORKING
+		"a_EnigmaticCouple2": { // VERIFIED
 			"id": 310131, "points": 3, "badgeId": "461691", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
-		"a_EnigmaticCouple3": { // WORKING
+		"a_EnigmaticCouple3": { // VERIFIED
 			"id": 310134, "points": 3, "badgeId": "461692", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
-		"a_EnigmaticCouple4": { // WORKING
+		"a_EnigmaticCouple4": { // VERIFIED
 			"id": 310135, "points": 3, "badgeId": "461693", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
-		"a_EnigmaticCouple5": { // WORKING
+		"a_EnigmaticCouple5": { // VERIFIED
 			"id": 315564, "points": 3, "badgeId": "461694", "hasTips": true,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
-		"a_LostYoungCouple1": { // WORKING
+		"a_LostYoungCouple1": { // VERIFIED
 			"id": 306984, "points": 4, "badgeId": "461706", "hasTips": true,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
-		"a_LostYoungCouple2": { // WORKING
+		"a_LostYoungCouple2": { // VERIFIED
 			"id": 310133, "points": 4, "badgeId": "461707", "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
-		"a_LostYoungCouple3": { // WORKING
+		"a_LostYoungCouple3": { // VERIFIED
 			"id": 309393, "points": 4, "badgeId": "461708", "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
-		"a_LostYoungCouple4": { // WORKING
+		"a_LostYoungCouple4": { // VERIFIED
 			"id": 310162, "points": 1, "badgeId": "461709", "hasTips": true,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // WORKING
+		"a_LostYoungCouple5": { // VERIFIED
 			"id": 314753, "points": 2, "badgeId": "461710", "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // WORKING
+		"a_LostYoungCouple6": { // VERIFIED
 			"id": 315568, "points": 10, "badgeId": "461711", "hasTips": true,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_Extra_Energy": { // Category - Related to energy orb gathering
-		"a_EnergyOrbLocatorPresentDay": { // WORKING
+		"a_EnergyOrbLocatorPresentDay": { // VERIFIED
 			"id": 399816, "points": 5, "badgeId": "461689", "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // WORKING
+		"a_EnergyOrbLocator70s80s": { // VERIFIED
 			"id": 399817, "points": 5, "badgeId": "461687", "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // WORKING
+		"a_EnergyOrbLocator1900Days": { // VERIFIED
 			"id": 399818, "points": 5, "badgeId": "461686", "hasTips": true,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // WORKING
+		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED
 			"id": 399819, "points": 5, "badgeId": "461688", "hasTips": true,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}},
 	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
-		"a_ErasingEike": { // WORKING
+		"a_ErasingEike": { // VERIFIED
 			"id": 306883, "points": 2, "badgeId": "461699", "hasTips": true,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
-		"a_ErasingEike2": { // WORKING
+		"a_ErasingEike2": { // VERIFIED
 			"id": 314763, "points": 1, "badgeId": "461698", "hasTips": true,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_ExcuseMeMyMy": { // WORKING
+		"a_ExcuseMeMyMy": { // VERIFIED
 			"id": 306919, "points": 1, "badgeId": "461700", "hasTips": true,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_MetYouBefore": { // WORKING
+		"a_MetYouBefore": { // VERIFIED
 			"id": 306888, "points": 2, "badgeId": "461701", "hasTips": true,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
-		"a_RottenRope": { // WORKING
+		"a_RottenRope": { // VERIFIED
 			"id": 315563, "points": 1, "badgeId": "461702", "hasTips": true,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_TimeEgoFlop": { // WORKING
+		"a_TimeEgoFlop": { // VERIFIED
 			"id": 313212, "points": 1, "badgeId": "461703", "hasTips": true,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
@@ -1332,7 +1332,7 @@ achievements_typeByCategory = {
 	"c_Extra_GameOver": 					"missable",}
 
 // ***********************************
-// ÷ Achievement TRIGGER GENERATORS ÷
+// • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
 function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) {
@@ -1442,7 +1442,7 @@ function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 		)}
 
 // *************************
-// ÷ Achievement TRIGGERS ÷
+// • Achievements TRIGGERS •
 // *************************
 achievements_triggers = {
 	// "a_Template": function Template() {	// WIP_template
@@ -3678,9 +3678,9 @@ achievements_triggers = {
 		) &&
 		trigger_when(isCutsceneSectionEnding())}}
 
-// *********************
-// ÷ Achievement TEXT ÷
-// *********************
+// ********************
+// • Achievement TEXT •
+// ********************
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
@@ -3871,7 +3871,7 @@ achievements_descriptions = {
 
 
 // ****************************
-// ÷ Achievement INITIALIZER ÷
+// • Achievements INITIALIZER •
 // ****************************
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
 function achievements_initialize() {
@@ -3933,9 +3933,9 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// ****************************
-// ÷ Rich_Presence FUNCTIONS ÷
-// ****************************
+// **************************
+// • RichPresence FUNCTIONS •
+// **************************
 //	- Functions that should only be used by the rich presence script
 function isCurrentChapterIdInRangeOfRecordedIds() {
 	return
@@ -3943,9 +3943,135 @@ function isCurrentChapterIdInRangeOfRecordedIds() {
 		getChapterId() <= 0xb} 	// Epilogue ends at 0xb
 function isCurrentChapterOneOf(array_chapterIds) {
 	any_of(array_chapterIds, (chapterId) => isCurrentChapter(chapterId))}
-// ***********************
-// ÷ Rich_Presence TEXT ÷
-// ***********************
+// **************************
+// • RichPresence CORE DATA •
+// **************************
+//	- Contains logic data for the rich presence script
+function richPresence_callDisplayFunctions(){
+	rich_presence_conditional_display(	// VERIFIED - rp_isPaused	
+		richPresence_getCondition("rp_isPaused"),
+		richPresence_getText("rp_isPaused"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// VERIFIED - rp_InGameEXChapterOnly
+		richPresence_getCondition("rp_InGameEXChapterOnly"),
+		richPresence_getText("rp_InGameEXChapterOnly"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// VERIFIED - rp_InGameChapterOnly
+		richPresence_getCondition("rp_InGameChapterOnly"),
+		richPresence_getText("rp_InGameChapterOnly"),
+		richPresence_callParameterFunction("rpp_Chapter"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// VERIFIED - rp_InGameChapterWithTimePeriod
+		richPresence_getCondition("rp_InGameChapterWithTimePeriod"),
+		richPresence_getText("rp_InGameChapterWithTimePeriod"),
+		richPresence_callParameterFunction("rpp_Chapter"),
+		richPresence_callParameterFunction("rpp_TimePeriod"),
+		richPresence_callParameterFunction("rpp_FatedHour"),
+		richPresence_callParameterFunction("rpp_PresentTimeDays"),
+		richPresence_callParameterFunction("rpp_PresentTimeYears"),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+
+	rich_presence_conditional_display(	// VERIFIED - rp_AtTitleScreen
+		richPresence_getCondition("rp_AtTitleScreen"),
+		richPresence_getText("rp_AtTitleScreen"))
+
+	rich_presence_display(	// VERIFIED - rp_Default
+		richPresence_getText("rp_Default"))}
+// -------------------------------------
+richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
+richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
+// -------------------------------------
+richPresence_conditions = {
+	"rp_isPaused": () => isInGame() && isInGamePauseMenuActive(),
+	"rp_InGameEXChapterOnly": () =>
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		isPrologueInExMode() && isExChapterUnlocked() && 
+		!isInGamePauseMenuActive() &&
+		isCurrentChapter("Prologue"),
+	"rp_InGameChapterOnly": () =>
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		!isInGamePauseMenuActive() &&
+		!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"]),
+	"rp_InGameChapterWithTimePeriod": () { return
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && !isInGamePauseMenuActive() &&
+		isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"])},
+	"rp_AtTitleScreen": () =>
+		isMainSaveLoaded() && 
+		(isAtTitleScreen() || !isInGame())
+	}
+function richPresence_getCondition(string_displayKey) =>
+	richPresence_conditions[string_displayKey]
+// -------------------------------------
+richPresence_parameterData = {
+	// DEV_NOTE: rich presence
+	// 		- Expression examples:
+	//			-- Memory Accessor => byte(0x000)
+	//			-- Arithmetic Expression => getCurrentLevel() + 1
+	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
+	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
+	// ------------------------------------------------------
+
+	"rpp_Chapter": {
+		"RPtype": richPresence_enum_LOOKUP,
+		"Expression": getChapterId(),
+		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
+	"rpp_TimePeriod": {	
+		"RPtype": richPresence_enum_LOOKUP,
+		"Expression": getCurrentTimePeriod(),
+		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
+	"rpp_TotalCompletionRate": {
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getTotalAchievementRate(),
+		"MacroFormat": "Number"},
+	"rpp_PresentTimeSeconds": {
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getCurrentPresentTimeSeconds(),
+		"MacroFormat": "Number"},
+	"rpp_PresentTimeMinutes": {	
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getCurrentPresentTimeMinutes(),
+		"MacroFormat": "Number"},	
+	"rpp_PresentTimeHourMinutes": {	
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": (getCurrentPresentTimeMinutes() + getCurrentPresentTimeHours() * 60),
+		"MacroFormat": "Minutes"},
+	"rpp_PresentTimeHours": {	
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getCurrentPresentTimeHours(),
+		"MacroFormat": "Number"},
+	"rpp_PresentTimeYears": {	
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getCurrentPresentTimeYears(),
+		"MacroFormat": "Number"},
+	"rpp_PresentTimeDays": {
+		"RPtype": richPresence_enum_MACRO,
+		"Expression": getCurrentPresentTimeDays(),
+		"MacroFormat": "Number"},
+	"rpp_FatedHour": {
+		"RPtype": richPresence_enum_LOOKUP,
+		"Expression": getChapterId(),
+		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
+	}	
+// *********************
+// • RichPresence TEXT •
+// *********************
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
@@ -4030,135 +4156,9 @@ richPresence_lookupTables = {
 		0xc: "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
-// ****************************
-// ÷ Rich_Presence CORE DATA ÷
-// ****************************
-//	- Contains logic data for the rich presence script
-function richPresence_callDisplayFunctions(){
-	rich_presence_conditional_display(	// rp_isPaused
-		richPresence_getCondition("rp_isPaused"),
-		richPresence_getText("rp_isPaused"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameEXChapterOnly
-		richPresence_getCondition("rp_InGameEXChapterOnly"),
-		richPresence_getText("rp_InGameEXChapterOnly"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameChapterOnly
-		richPresence_getCondition("rp_InGameChapterOnly"),
-		richPresence_getText("rp_InGameChapterOnly"),
-		richPresence_callParameterFunction("rpp_Chapter"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod
-		richPresence_getCondition("rp_InGameChapterWithTimePeriod"),
-		richPresence_getText("rp_InGameChapterWithTimePeriod"),
-		richPresence_callParameterFunction("rpp_Chapter"),
-		richPresence_callParameterFunction("rpp_TimePeriod"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_conditional_display(	// rp_AtTitleScreen
-		richPresence_getCondition("rp_AtTitleScreen"),
-		richPresence_getText("rp_AtTitleScreen"))
-
-	rich_presence_display(	// rp_Default
-		richPresence_getText("rp_Default"))}
-// -------------------------------------
-richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
-// -------------------------------------
-richPresence_conditions = {
-	"rp_isPaused": () => isInGame() && isInGamePauseMenuActive(),
-	"rp_InGameEXChapterOnly": () =>
-		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-		isPrologueInExMode() && isExChapterUnlocked() && 
-		!isInGamePauseMenuActive() &&
-		isCurrentChapter("Prologue"),
-	"rp_InGameChapterOnly": () =>
-		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-		!isInGamePauseMenuActive() &&
-		!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"]),
-	"rp_InGameChapterWithTimePeriod": () { return
-		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && !isInGamePauseMenuActive() &&
-		isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"])},
-	"rp_AtTitleScreen": () =>
-		isMainSaveLoaded() && 
-		(isAtTitleScreen() || !isInGame())
-	}
-function richPresence_getCondition(string_displayKey) =>
-	richPresence_conditions[string_displayKey]
-// -------------------------------------
-richPresence_parameterData = {
-	// DEV_NOTE: rich presence
-	// 		- Expression examples:
-	//			-- Memory Accessor => byte(0x000)
-	//			-- Arithmetic Expression => getCurrentLevel() + 1
-	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
-	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
-	// ------------------------------------------------------
-
-	"rpp_Chapter": {
-		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getChapterId(),
-		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
-	"rpp_TimePeriod": {	
-		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getCurrentTimePeriod(),
-		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
-	"rpp_TotalCompletionRate": {
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getTotalAchievementRate(),
-		"MacroFormat": "Number"},
-	"rpp_PresentTimeSeconds": {
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeSeconds(),
-		"MacroFormat": "Number"},
-	"rpp_PresentTimeMinutes": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeMinutes(),
-		"MacroFormat": "Number"},	
-	"rpp_PresentTimeHourMinutes": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": (getCurrentPresentTimeMinutes() + getCurrentPresentTimeHours() * 60),
-		"MacroFormat": "Minutes"},
-	"rpp_PresentTimeHours": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeHours(),
-		"MacroFormat": "Number"},
-	"rpp_PresentTimeYears": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeYears(),
-		"MacroFormat": "Number"},
-	"rpp_PresentTimeDays": {
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeDays(),
-		"MacroFormat": "Number"},
-	"rpp_FatedHour": {
-		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getChapterId(),
-		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
-	}	
-// ******************************
-// ÷ Rich_Presence INITIALIZER ÷
-// ******************************
+// *****************************
+// • Rich_Presence INITIALIZER •
+// *****************************
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_parameterKey in richPresence_lookupTables {
 		let_lookupTable = richPresence_lookupTables[let_parameterKey]
@@ -4213,7 +4213,7 @@ function richPresence_initialize() {
 // TODO add leaderboards section to template
 
 // **************************
-// ÷ Leaderboard FUNCTIONS ÷
+// • Leaderboards FUNCTIONS •
 // **************************
 //	- Functions that should only be used by the leaderboards logic
 function getTimerTotalClearTimeInMinutes() =>
@@ -4222,7 +4222,7 @@ function getTimerTotalClearTimeInMinutes() =>
 function getTimerChapterClearTimeInSeconds() =>
 	getTimerChapterClearTime() / 60
 // **************************
-// ÷ Leaderboard CORE DATA ÷
+// • Leaderboards CORE DATA •
 // **************************
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
@@ -4238,60 +4238,60 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_ClearTimeChapter8": {
+	"lb_ClearTimeChapter8": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter7": {
+	"lb_ClearTimeChapter7": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter6": {
+	"lb_ClearTimeChapter6": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter5": {
+	"lb_ClearTimeChapter5": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter4": {
+	"lb_ClearTimeChapter4": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter3": {
+	"lb_ClearTimeChapter3": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter2": {
+	"lb_ClearTimeChapter2": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter1": {
+	"lb_ClearTimeChapter1": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimePrologue": {
+	"lb_ClearTimePrologue": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in prologue, excluding EX chapter"},
-	"lb_TotalClearTime": {
+	"lb_TotalClearTime": { // UNVERIFIED 
 		"id": 000000, "isLowerBetter": true,
 		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
 		"leaderboardFormat": "MINUTES",
 		"devInfo": "Best Total Clear Time, excluding EX chapter"}}
 
-// ***********************************
-// ÷ Leaderboard TRIGGER GENERATORS ÷
-// ***********************************
+// ************************************
+// ▴ Leaderboards TRIGGER GENERATORS ▴
+// ************************************
 //	- For leaderboard logic that's reoccuring across multiple triggers
 function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
 	let_chapterSpecificComparison = always_true()
@@ -4322,7 +4322,7 @@ function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
 		isCurrentChapter(string_chapter))
 
 // *************************
-// ÷ Leaderboard TRIGGERS ÷
+// • Leaderboards TRIGGERS •
 // *************************
 leaderboards_startTriggers = {
 	"lb_ClearTimeChapter8": () =>
@@ -4394,7 +4394,7 @@ leaderboards_submitTriggers = {
 			isTimerTotalClearTimeActive())}
 
 // *********************
-// ÷ Leaderboard TEXT ÷
+// • Leaderboards TEXT •
 // *********************
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
@@ -4422,7 +4422,7 @@ leaderboards_descriptions = {
 	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter is excluded)"}}
 
 // ****************************
-// ÷ Leaderboard INITIALIZER ÷
+// • Leaderboards INITIALIZER •
 // ****************************
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {

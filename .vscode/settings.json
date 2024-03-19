@@ -6,9 +6,9 @@
     "todo-tree.general.tags": [
         "$",
 
-        "÷",
+        "◦",
 
-        "▴",
+        "•",
 
         "VERIFIED",
         "MODIFIED",
@@ -83,7 +83,7 @@
             "hideFromActivityBar": true, // ActivityBar is count in the side menu panel
             "hideFromTree": true // Hide from side menu panel, only show in-editor window
         },
-        "÷": {
+        "◦": {
             "foreground": "#02a80a",
             "background": "#6a7c05",
             "opacity": 12,
@@ -93,11 +93,11 @@
             "hideFromStatusBar": true,
             "hideFromActivityBar": true
         },
-        "▴": {
+        "•": {
             "foreground": "#02a80a",
             "background": "#6a7c05",
             "opacity": 12,
-            "icon": "square",
+            "icon": "$(circle-small-filled)",
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,

@@ -60,9 +60,9 @@ function addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
-// *****************
-// ÷ SUB HEADER 1 ÷
-// *****************
+// ****************
+// ◦ SUB HEADER 1 ◦
+// ****************
 // 	- Some explanation...		
 // 	- Some explanation...		
 enum_TEMPLATE_AREA_A = 0x1
@@ -87,9 +87,9 @@ function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" s
 // 	- Some explanation...
 // 	- Some explanation...
 
-// *****************
-// ÷ SUB HEADER 2 ÷
-// *****************
+// ****************
+// ◦ SUB HEADER 2 ◦
+// ****************
 // 	- Some explanation...
 // 	- Some explanation...
 enum_TEMPLATE_WEAPON_A = 100
@@ -129,9 +129,9 @@ function doThisC() => always_false()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-// ***************************
-// ÷ Achievement DICTIONARY ÷
-// ***************************
+// **************************
+// • Achievements CORE DATA •
+// **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
 	// DEV NOTE: Achievement property 'badgeId'
@@ -180,7 +180,7 @@ achievements_typeByCategory = {
 	"c_ExampleCategeroy3":				"missable"}
 
 // ***********************************
-// ÷ Achievement TRIGGER GENERATORS ÷
+// • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
 function achievements_generate_Tally_TemplateA() {
@@ -189,7 +189,7 @@ function achievements_generate_Tally_TemplateB() {
 	return always_false()}
 
 // *************************
-// ÷ Achievement TRIGGERS ÷
+// • Achievements TRIGGERS •
 // *************************
 achievements_triggers = {
     // "a_Template": () { return // WIP_template
@@ -207,9 +207,9 @@ achievements_triggers = {
 	"a_AchievementA": () { return 
 		always_false()}}
 
-// **********************
-// ÷ Achievement TEXT ÷
-// **********************
+// ********************
+// • Achievement TEXT •
+// ********************
 achievements_titles = {
     // "a_Template":						{"en": "xxxxx"}, 
     "a_AchievementF":						{"en": "EnglishTitle"},
@@ -237,7 +237,7 @@ achievements_descriptions = {
 											"nl": "DutchDescription"}}
 
 // ****************************
-// ÷ Achievement INITIALIZER ÷
+// • Achievements INITIALIZER •
 // ****************************
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (achievements_coreData)
 function achievements_initialize() {
@@ -276,13 +276,13 @@ function achievements_initialize() {
 	// This loop generates the achievements
 	for categoryName in achievements_coreData {
 		for cheevmentName in achievements_coreData[categoryName] {
-			let_cheevment = achievements_coreData[categoryName][cheevmentName]
+			let_achievementData = achievements_coreData[categoryName][cheevmentName]
 			achievement(
-				id = let_cheevment["id"],
+				id = let_achievementData["id"],
 				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
 				type = achievements_typeByCategory[categoryName],
-				description = achievements_generateDescription(cheevmentName, let_cheevment["devInfo"], utility_const_language),
-				points = let_cheevment["points"],
+				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], utility_const_language),
+				points = let_achievementData["points"],
 				trigger = achievements_getTrigger(cheevmentName)
 			)
 		}}
@@ -300,43 +300,14 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// ****************************
-// ÷ Rich_Presence FUNCTIONS ÷
-// ****************************
+// **************************
+// • RichPresence FUNCTIONS •
+// **************************
 //	- Functions handling memory address logic that should only be used by the rich presence script
 
-// ***********************
-// ÷ Rich_Presence TEXT ÷
-// ***********************
-//	- Contains text for the rich presence script
-richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-
-	"rp_templateB":										{"en": "xxxxxxxx"},
-	"rp_templateA":										{"en": "{0} {1} {2}"},
-
-	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
-richPresence_LookupTablesText = {
-	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
-function richPresence_getText(string_textKey) =>
-	richPresence_text[string_textKey][utility_const_language]
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
-// -------------------------------------
-richPresence_lookupTables = {
-	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
-		0x1: "Lookup_A",
-		0x2: "Lookup_B",
-		0x3: "Lookup_C"}}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
-// ****************************
-// ÷ Rich_Presence CORE DATA ÷
-// ****************************
+// **************************
+// • RichPresence CORE DATA •
+// **************************
 //	- Contains logic data for the rich presence script
 function richPresence_callDisplayFunctions(){
 	rich_presence_conditional_display(	// rp_templateA
@@ -387,9 +358,38 @@ richPresence_parameterData = {
 		"Expression": always_false(),
 		"MacroFormat": "Number"},
 	}	
-// ******************************
-// ÷ Rich_Presence INITIALIZER ÷
-// ******************************
+// *********************
+// • RichPresence TEXT •
+// *********************
+//	- Contains text for the rich presence script
+richPresence_text = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+
+	"rp_templateB":										{"en": "xxxxxxxx"},
+	"rp_templateA":										{"en": "{0} {1} {2}"},
+
+	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
+richPresence_LookupTablesText = {
+	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
+function richPresence_getText(string_textKey) =>
+	richPresence_text[string_textKey][utility_const_language]
+function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
+	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
+	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+// -------------------------------------
+richPresence_lookupTables = {
+	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
+		0x1: "Lookup_A",
+		0x2: "Lookup_B",
+		0x3: "Lookup_C"}}
+function richPresence_getLookupTable(string_lookupParameterKey) =>
+	richPresence_lookupTables[string_lookupParameterKey]
+// *****************************
+// • Rich_Presence INITIALIZER •
+// *****************************
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_parameterKey in richPresence_lookupTables {
 		let_lookupTable = richPresence_lookupTables[let_parameterKey]
@@ -430,11 +430,223 @@ function richPresence_initialize() {
 	richPresence_populateLookupTables()
 	richPresence_callDisplayFunctions()}
 
+// ***************************************************************************************************** \\
+//																										 \\
+//   ██╗     ███████╗ █████╗ ██████╗ ███████╗██████╗ ██████╗  ██████╗  █████╗ ██████╗ ██████╗ ███████╗   \\
+//   ██║     ██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝   \\
+//   ██║     █████╗  ███████║██║  ██║█████╗  ██████╔╝██████╔╝██║   ██║███████║██████╔╝██║  ██║███████╗   \\
+//   ██║     ██╔══╝  ██╔══██║██║  ██║██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██║██╔══██╗██║  ██║╚════██║   \\
+//   ███████╗███████╗██║  ██║██████╔╝███████╗██║  ██║██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝███████║   \\
+//   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\                                                                                                 
+//																										 \\
+// ***************************************************************************************************** \\
+
+// **************************
+// • Leaderboards FUNCTIONS •
+// **************************
+//	- Functions that should only be used by the leaderboards logic
+function getTimerTotalClearTimeInMinutes() =>
+	getTimerTotalClearTime() / 3600
+
+function getTimerChapterClearTimeInSeconds() =>
+	getTimerChapterClearTime() / 60
+// **************************
+// • Leaderboards CORE DATA •
+// **************************
+leaderboards_coreData = {
+	// DEV_NOTE: Leaderboards
+	// -----------------------------
+	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
+	//	- RATools documentation => https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions
+	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
+	//	- Example leadersboards => https://retroachievements.org/game/3152
+
+	// "lb_Template": { // CONCEPT lb_template
+	// 	"id": 000000, "isLowerBetter": false, 
+	// 	"leaderboardValue": always_false(),
+	// 	"leaderboardFormat": "VALUE",
+	// 	"devInfo": "xxxxxxx"},
+	}
+
+// ***********************************
+// • Leaderboards TRIGGER GENERATORS •
+// ***********************************
+//	- For leaderboard logic that's reoccuring across multiple triggers
+function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
+	let_chapterSpecificComparison = always_true()
+	if (string_chapter == "Prologue") 
+		let_chapterSpecificComparison = !isPrologueInExMode()
+	return 
+		never(!isInGame()) &&
+		once(isTimerChapterClearTimeStarting()) &&
+		repeated(700, isInGame()) &&	// <-- Repeated here, FIXfor bug when loading a save, would otherwise start and cancel immediately after
+		isCurrentChapter(string_chapter) &&
+		let_chapterSpecificComparison}
+function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
+	let_chapterSpecificComparison = always_false()
+	if (string_chapter == "Prologue")
+		let_chapterSpecificComparison = isPrologueInExMode()
+	return 	
+		!isInGame() || 
+		let_chapterSpecificComparison || 
+		isTimerChapterClearTimeResetting() 	||
+		!isCurrentChapter(string_chapter)}
+function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
+	never( // Reset count if...
+		!isChapterCompletionScreenActive() || 
+		!isCurrentChapter(string_chapter)
+	) &&
+	tally(10, // Check if chapter completion screen is active for 10 frames
+		isChapterCompletionScreenActive() &&
+		isCurrentChapter(string_chapter))
+
+// *************************
+// • Leaderboards TRIGGERS •
+// *************************
+leaderboards_startTriggers = {
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		repeated(300, isInGame()) && 
+		once(isTimerTotalClearTimeStartingFromZero()) && 
+		!isPrologueInExMode()}
+leaderboards_cancelTriggers = {
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_CancelTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		!isInGame() || isPrologueInExMode() || isTimerTotalClearTimeResetting()}
+leaderboards_submitTriggers = { 
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter8"),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter7"),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter6"),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter5"),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter4"),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter3"),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter2"),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter1"),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
+	"lb_TotalClearTime": () =>
+		tally(10, // Trigger when timer has stopped for 10 frames during the credits video
+			never(!isTimerTotalClearTimeActive()) &&
+			isVideoActive() && isCurrentChapter("Epilogue") &&
+			isTimerTotalClearTimeActive())}
+
+// *********************
+// • Leaderboards TEXT •
+// *********************
+leaderboards_titles = {
+	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClearTimeChapter8":					{"en": "Chapter 8 Clear Time"},
+	"lb_ClearTimeChapter7":					{"en": "Chapter 7 Clear Time"},
+	"lb_ClearTimeChapter6":					{"en": "Chapter 6 Clear Time"},
+	"lb_ClearTimeChapter5":					{"en": "Chapter 5 Clear Time"},
+	"lb_ClearTimeChapter4":					{"en": "Chapter 4 Clear Time"},
+	"lb_ClearTimeChapter3":					{"en": "Chapter 3 Clear Time"},
+	"lb_ClearTimeChapter2":					{"en": "Chapter 2 Clear Time"},
+	"lb_ClearTimeChapter1":					{"en": "Chapter 1 Clear Time"},
+	"lb_ClearTimePrologue":					{"en": "Prologue Clear Time"},
+	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
+leaderboards_descriptions = {
+	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for the chapter 8"},
+	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for the chapter 7"},
+	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for the chapter 6"},
+	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for the chapter 5"},
+	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for the chapter 4"},
+	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for the chapter 3"},
+	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for the chapter 2"},
+	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for the chapter 1"},
+	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter is exluded)"},
+	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter is excluded)"}}
+
+// ****************************
+// • Leaderboards INITIALIZER •
+// ****************************
+function leaderboards_initialize() {
+	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
+		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
+			format("[{0}]", substring(string_leaderboardDevName, 3))
+		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
+			leaderboards_titles[string_leaderboardDevName][string_languageCode]
+		return format("{0} {1}", 
+			leaderboards_createDevName(string_leaderboardDevName),
+			leaderboards_getTitle(string_leaderboardDevName, string_languageCode))}
+	
+	function leaderboards_generateDescription(string_leaderboardDevName, string_devInfo, string_languageCode) {	
+		function leaderboards_getDescription(string_leaderboardDevName, string_languageCode) {
+			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
+		function leaderboards_formatDevInfo(string_devInfo) {
+			let_devInfoString = ""
+			if (utility_const_debugMode && string_devInfo != "") {
+				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
+			}
+			return let_devInfoString}
+		return format("{0}{1}",
+			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
+			leaderboards_formatDevInfo(string_devInfo))}
+
+	for let_leaderboardKey in leaderboards_coreData {
+		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
+		leaderboard(
+			id = let_leaderboardData["id"],
+			title = leaderboards_generateTitle(let_leaderboardKey, utility_const_language), 
+			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], utility_const_language),
+			start = leaderboards_startTriggers[let_leaderboardKey], 
+			cancel = leaderboards_cancelTriggers[let_leaderboardKey], 
+			submit = leaderboards_submitTriggers[let_leaderboardKey], 
+			value = let_leaderboardData["leaderboardValue"], 
+			format = let_leaderboardData["leaderboardFormat"], 
+			lower_is_better = let_leaderboardData["isLowerBetter"])}
+	}
+
+
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
 	achievements_initialize()
-	richPresence_initialize()}
+	richPresence_initialize()
+	leaderboards_initialize()}
 initializeRAscript()
