@@ -8,21 +8,27 @@
 
         "÷",
 
-        "DONE",
-        "OK",
-        "WORKING",
-        "REWORKED",
+        "▴",
+
+        "VERIFIED",
+        "MODIFIED",
+        "UPDATED",
 
         "TODO",
-
-        "FIXME",
-        "BUG",
-
-        "OFF",
-
+        "PENDING",
+        
         "WIP",
-        "TEST",
+        "QA",
         "TESTING",
+
+        "BUG",
+        "ERROR",
+
+        "DISABLED"
+        "INACTIVE",
+
+        "UNVERIFIED",
+        "TEST",
 
         "IDEA",
         "CONCEPT",
@@ -30,19 +36,27 @@
         "DEV_NOTE"
     ],
     "todo-tree.general.tagGroups": {
-        "DONE": [
-            "DONE",
-            "WORKING",
-            "OK",
-            "REWORKED"
+        "VERIFIED": [
+            "VERIFIED",
+            "MODIFIED",
+            "UPDATED"
         ],
-        "FIXME": [
-            "FIXME",
-            "BUG",
+        "TODO": [
+            "TODO",
+            "PENDING",
         ],
-        "TEST": [
+        "BUG": [
+            "ERROR",
+            "BUG"
+        ],
+        "TESTING": [
+            "WIP",
+            "TESTING",
+            "QA",
+        ],
+        "UNVERIFIED": [
             "TEST",
-            "TESTING"
+            "UNVERIFIED",
         ],
         "IDEA": [
             "IDEA",
@@ -62,7 +76,7 @@
             "foreground": "#02a80a",
             "background": "#6a7c05",
             "opacity": 12,
-            "icon": "bookmark",
+            "icon": "bookmark", // Default icon list here -> https://primer.style/foundations/icons/
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,  // StatusBar is bottomleft
@@ -73,36 +87,46 @@
             "foreground": "#02a80a",
             "background": "#6a7c05",
             "opacity": 12,
-            "icon": "link",
+            "icon": "$(circle-small)", // This icon is from https://microsoft.github.io/vscode-codicons/dist/codicon.html
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,
             "hideFromActivityBar": true
         },
-        "TODO": {
-            "icon": "issue-draft" 
+        "▴": {
+            "foreground": "#02a80a",
+            "background": "#6a7c05",
+            "opacity": 12,
+            "icon": "square",
+            "type": "text-and-comment",
+            "rulerLane": "right",
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true
         },
-        "WIP": {
+        "TESTING": {
             "foreground": "#eaff71",
             "background": "#8a8100",            
             "type": "whole-line", 
             "opacity": 37,
             "icon": "tools"
         },
-        "TEST": {
+        "TODO": {
+            "icon": "issue-draft" 
+        },
+        "UNVERIFIED": {
             "foreground": "#fafc8a",
             "background": "#aa6f00",
             "type": "line", 
             "opacity": 37,  
             "icon": "unverified"
         },
-        "DONE": {   
+        "VERIFIED": {   
             "icon": "verified",
             "hideFromStatusBar": true, 
             "hideFromActivityBar": true,
             "hideFromTree": true
         },
-        "FIXME": {
+        "BUG": {
             "foreground": "#fc5353",
             "background": "#612c03",
             "type": "text-and-comment",             
