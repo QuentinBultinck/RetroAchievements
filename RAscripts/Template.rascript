@@ -512,9 +512,14 @@ function leaderboards_initialize() {
 			format("[{0}]", substring(string_leaderboardDevName, 3))
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
-		return format("{0} {1}", 
-			leaderboards_createDevName(string_leaderboardDevName),
-			leaderboards_getTitle(string_leaderboardDevName, string_languageCode))}
+
+		if (utility_const_debugMode) {
+			return format("{0} {1}", 
+				leaderboards_createDevName(string_leaderboardDevName),
+				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
+		} else {
+			return leaderboards_getTitle(string_leaderboardDevName, string_languageCode)
+		}}
 	
 	function leaderboards_generateDescription(string_leaderboardDevName, string_devInfo, string_languageCode) {	
 		function leaderboards_getDescription(string_leaderboardDevName, string_languageCode) {

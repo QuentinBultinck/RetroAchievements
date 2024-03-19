@@ -13,7 +13,6 @@
 //#####################################################################################################\\
 
 // TODO re-check points distribution 
-// TODO Energy locator with resetnextif
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -36,6 +35,15 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 
+// How to: ResetNextIf
+// ---------------------------------------------
+//	- Call never() inside a tally(), once() or repeated()
+//	- Example
+// 			tally(10, 
+// 				never(healthDecreases()) && // <-- reset this hit count when taking damage, will generate a 'resetnextif' flag when it is applicable with the rest of the trigger, otherwise it may just be a normal 'reset' flag
+// 				succesfullDodges() // <-- +1 hit count when dodging
+// 			)
+
 // General info regarding PSP structures
 // ---------------------------------------------
 // 	- PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
@@ -44,7 +52,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 // TODO debug off
-utility_const_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
+utility_const_debugMode = false	// if true => extra information may be displayed on achievement titles & descriptions
 utility_const_language = "en"	// ISO 639-1 language codes 
 
 utility_const_guideLink = "bit.ly/ShadowOfDestiny" // https://bit.ly/ShadowOfDestiny => links to written achievement guide on github (https://github.com/QuentinBultinck/RetroAchievements/blob/main/RAscripts/PSP/ShadowOfDestiny/README.md)
@@ -602,6 +610,14 @@ function isItemInInventory(string_item) =>
 function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
 											//		- This ID does not change on each new text change, but it does change often between text changes
+
+function isTotalCharacterCountOnBottomScreen(int_characterCount) { // Count starts at 1
+	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
+	return 
+		dword(0xAC31E4 + let_offsetOfLastCharacterPrint) != 0x0 			&& // <-- this block checks if there is an Nth character on screen; where N = int_characterCount
+		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa) != 0x0 	&&	
+		dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10) == 0x0 			&& // <-- this block checks if there's no more characters after Nth one
+		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa + 0x10) == 0x0}
 
 function isPriorMinimumAmountOfCharactersOnBottomScreen(int_characterCount) { // Count starts at 1
 	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
@@ -1340,13 +1356,6 @@ function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, di
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
-
-	// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
-	// -----------------------------------------
-	// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
-	// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and can count
-	//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
-	//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0
 
 	function countTotalAmountOfBitFlags(dict_BitFlags) {
 		let_bitFlagCount = 0
@@ -2178,10 +2187,15 @@ achievements_triggers = {
 		trigger_when(
 			!isVideoActive() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("EX"))},
-	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
-		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
-		function measuredIfComparison() => isInGame()
-		return // Core group		
+	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() { return
+		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
+		// -----------------------------------------
+		// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
+		// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and start counting from this value
+		//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
+		//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0		
+			
+		(	// Core group	
 			unless(
 				isWearingPerformerOutfit()	||
 				(
@@ -2190,75 +2204,70 @@ achievements_triggers = {
 					!isCurrentMapScene("PresentNightCityAM")
 				) 
 			) &&
-			measured(measuredComparison(), measuredIfComparison()) &&
-			(
-				(	// Alt 1: otherwise pause will lock reset
-					never(	// Reset when chapter changes or when using digipad
-						isEnergyUnitsDecreasing() ||
-						isChapterChanging()) 
-				) || ( // Alt 2: always_false to create 1 funcional alt group
-					always_false()
-				)
+			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		) && (
+			(	// Alt 1: otherwise pause can lock the reset
+				never(	// Reset measure when chapter changes or when using digipad
+					isEnergyUnitsDecreasing()	||
+					isChapterChanging()			||
+					!isInGame()) 
+			) || ( // Alt 2: always_false to create 1 functional alt group
+				always_false()
 			)
-		},
-	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() {
-		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
-		function measuredIfComparison() => isInGame()
-		return // Core group
+		)},
+	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() { return
+		(	// Core group	
 			unless(
-				!isCurrentMapScene("80sColdCity") && !isCurrentMapScene("70sNightCity")
+				!isCurrentMapScene("80sColdCity") && 
+				!isCurrentMapScene("70sNightCity")
 			) &&
-			measured(measuredComparison(), measuredIfComparison()) &&
-			(
-				(	// Alt 1: otherwise pause will lock reset
-					never( 	// Reset when chapter changes or when using digipad
-						isEnergyUnitsDecreasing() ||
-						isChapterChanging()) 
-				) || ( // Alt 2: always_false to create 1 funcional alt group
-					always_false()
-				)
+			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		) && (
+			(	// Alt 1: otherwise pause can lock the reset
+				never(	// Reset measure when chapter changes or when using digipad
+					isEnergyUnitsDecreasing()	||
+					isChapterChanging()			||
+					!isInGame()) 
+			) || ( // Alt 2: always_false to create 1 functional alt group
+				always_false()
 			)
-		},
-	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() {
-		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(6)
-		function measuredIfComparison() => isInGame()
-		return // Core group
-			never(	// Reset when chapter changes or when using digipad
-				isEnergyUnitsDecreasing() ||
-				isChapterChanging()
-			) && (
-				(	// Alt 1: otherwise pause will lock reset
-					unless(
-						!isCurrentMapScene("MedievalCity") 				&& 
-						!isCurrentMapScene("MedievalNightCity")			&&
-						!isCurrentMapScene("ExplodedAlchemistBasement")	&&
-						!isCurrentMapScene("MedievalChurch")
-					) &&
-					measured(measuredComparison(), measuredIfComparison())
-				) || ( // Alt 2: always_false to create 1 funcional alt group
-					always_false()
-				)
+		)},
+	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() { return
+		(	// Core group	
+			unless(
+				!isCurrentMapScene("MedievalCity") 				&& 
+				!isCurrentMapScene("MedievalNightCity")			&&
+				!isCurrentMapScene("ExplodedAlchemistBasement")	&&
+				!isCurrentMapScene("MedievalChurch")
+			) &&
+			measured(achievements_generate_Tally_PickUpEnergyOrbs(6))
+		) && (
+			(	// Alt 1: otherwise pause can lock the reset
+				never(	// Reset measure when chapter changes or when using digipad
+					isEnergyUnitsDecreasing()	||
+					isChapterChanging()			||
+					!isInGame()) 
+			) || ( // Alt 2: always_false to create 1 functional alt group
+				always_false()
 			)
-		},
-	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() {
-		function measuredComparison() => achievements_generate_Tally_PickUpEnergyOrbs(5)
-		function measuredIfComparison() => isInGame()
-		return // Core group
-			never(	// Reset when chapter changes or when using digipad
-				isEnergyUnitsDecreasing() 	||
-				isChapterChanging()			||
-				(isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity"))	// --> Fix for bug, where player could pick up the energy orb in the 
-			) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
-				(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
-					unless(	
-						!isCurrentMapScene("1900sCity") && !isCurrentMapScene("1900sBrumMansion")
-					) &&
-					measured(measuredComparison(), measuredIfComparison())
-				) || ( // Alt 2: always_false to create 1 funcional alt group
-					always_false()
-				)
+		)},
+	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() { return
+		// Core group
+		never(	// Reset when chapter changes or when using digipad
+			isEnergyUnitsDecreasing() 	||
+			isChapterChanging()			||
+			!isInGame()					||
+			(isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity"))	// --> Fix for bug, where player could pick up the energy orb in the 
+		) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
+			(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
+				unless(	
+					!isCurrentMapScene("1900sCity") && !isCurrentMapScene("1900sBrumMansion")
+				) &&
+				measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+			) || ( // Alt 2: always_false to create 1 functional alt group
+				always_false()
 			)
-		},
+		)},
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!isInGame() ||
@@ -4085,7 +4094,8 @@ richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionar
 richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
 richPresence_conditions = {
-	"rp_isPaused": () => isInGame() && isInGamePauseMenuActive(),
+	"rp_isPaused": () => 
+		isInGame() && isInGamePauseMenuActive(),
 	"rp_InGameEXChapterOnly": () =>
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
 		isPrologueInExMode() && isExChapterUnlocked() && 
@@ -4224,10 +4234,12 @@ function getTimerChapterClearTimeInSeconds() =>
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
 	// -----------------------------
+	//	- WARNING: Make sure leaderboards are thoroughly tested, because there's no staging phase for these
+	//		-- Change title and description via Dev menu on RA game page => Manage Leaderboards
 	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
 	//	- RATools documentation => https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions
 	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
-	//	- Example leadersboards => https://retroachievements.org/game/3152
+	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
 	// 	"id": 000000, "isLowerBetter": false, 
@@ -4235,53 +4247,53 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_ClearTimeChapter8": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter8": { // VERIFIED 
+		"id": 92203, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter7": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter7": { // VERIFIED 
+		"id": 92202, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter6": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter6": { // VERIFIED 
+		"id": 92201, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter5": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter5": { // VERIFIED 
+		"id": 92200, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter4": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter4": { // VERIFIED 
+		"id": 92199, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter3": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter3": { // VERIFIED 
+		"id": 92198, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter2": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter2": { // VERIFIED 
+		"id": 92197, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimeChapter1": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimeChapter1": { // VERIFIED 
+		"id": 92196, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
-	"lb_ClearTimePrologue": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_ClearTimePrologue": { // VERIFIED 
+		"id": 92195, "isLowerBetter": true,
 		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in prologue, excluding EX chapter"},
-	"lb_TotalClearTime": { // UNVERIFIED 
-		"id": 000000, "isLowerBetter": true,
+	"lb_TotalClearTime": { // VERIFIED 
+		"id": 92194, "isLowerBetter": true,
 		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
 		"leaderboardFormat": "MINUTES",
 		"devInfo": "Best Total Clear Time, excluding EX chapter"}}
@@ -4297,7 +4309,7 @@ function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
 	return 
 		never(!isInGame()) &&
 		once(isTimerChapterClearTimeStarting()) &&
-		repeated(700, isInGame()) &&	// <-- Repeated here, FIXfor bug when loading a save, would otherwise start and cancel immediately after
+		repeated(700, isInGame()) &&	// <-- Delay FIX for bug when loading a save from chapter start
 		isCurrentChapter(string_chapter) &&
 		let_chapterSpecificComparison}
 function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
@@ -4341,7 +4353,8 @@ leaderboards_startTriggers = {
 	"lb_ClearTimePrologue": () =>
 		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
 	"lb_TotalClearTime": () =>
-		repeated(300, isInGame()) && 
+		never(!isInGame()) &&
+		repeated(700, isInGame()) &&	// <-- delay popup 
 		once(isTimerTotalClearTimeStartingFromZero()) && 
 		!isPrologueInExMode()}
 leaderboards_cancelTriggers = {
@@ -4385,10 +4398,10 @@ leaderboards_submitTriggers = {
 	"lb_ClearTimePrologue": () =>
 		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
 	"lb_TotalClearTime": () =>
-		tally(10, // Trigger when timer has stopped for 10 frames during the credits video
-			never(!isTimerTotalClearTimeActive()) &&
+		never(!isTimerTotalClearTimeActive() && !isVideoActive()) &&
+		tally(20, // Trigger when timer has stopped for 20 frames during the credits video
 			isVideoActive() && isCurrentChapter("Epilogue") &&
-			isTimerTotalClearTimeActive())}
+			!isTimerTotalClearTimeActive())}
 
 // *********************
 // • Leaderboards TEXT •
@@ -4427,9 +4440,14 @@ function leaderboards_initialize() {
 			format("[{0}]", substring(string_leaderboardDevName, 3))
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
-		return format("{0} {1}", 
-			leaderboards_createDevName(string_leaderboardDevName),
-			leaderboards_getTitle(string_leaderboardDevName, string_languageCode))}
+
+		if (utility_const_debugMode) {
+			return format("{0} {1}", 
+				leaderboards_createDevName(string_leaderboardDevName),
+				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
+		} else {
+			return leaderboards_getTitle(string_leaderboardDevName, string_languageCode)
+		}}
 	
 	function leaderboards_generateDescription(string_leaderboardDevName, string_devInfo, string_languageCode) {	
 		function leaderboards_getDescription(string_leaderboardDevName, string_languageCode) {
