@@ -305,6 +305,35 @@ function achievements_initialize() {
 // **************************
 //	- Functions handling memory address logic that should only be used by the rich presence script
 
+// *********************
+// • RichPresence TEXT •
+// *********************
+//	- Contains text for the rich presence script
+richPresence_text = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+
+	"rp_templateB":										{"en": "xxxxxxxx"},
+	"rp_templateA":										{"en": "{0} {1} {2}"},
+
+	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
+richPresence_LookupTablesText = {
+	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
+	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
+function richPresence_getText(string_textKey) =>
+	richPresence_text[string_textKey][utility_const_language]
+function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
+	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
+	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+// -------------------------------------
+richPresence_lookupTables = {
+	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
+		0x1: "Lookup_A",
+		0x2: "Lookup_B",
+		0x3: "Lookup_C"}}
+function richPresence_getLookupTable(string_lookupParameterKey) =>
+	richPresence_lookupTables[string_lookupParameterKey]
 // **************************
 // • RichPresence CORE DATA •
 // **************************
@@ -358,35 +387,6 @@ richPresence_parameterData = {
 		"Expression": always_false(),
 		"MacroFormat": "Number"},
 	}	
-// *********************
-// • RichPresence TEXT •
-// *********************
-//	- Contains text for the rich presence script
-richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-
-	"rp_templateB":										{"en": "xxxxxxxx"},
-	"rp_templateA":										{"en": "{0} {1} {2}"},
-
-	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
-richPresence_LookupTablesText = {
-	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
-function richPresence_getText(string_textKey) =>
-	richPresence_text[string_textKey][utility_const_language]
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
-// -------------------------------------
-richPresence_lookupTables = {
-	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
-		0x1: "Lookup_A",
-		0x2: "Lookup_B",
-		0x3: "Lookup_C"}}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
 // *****************************
 // • Rich_Presence INITIALIZER •
 // *****************************
@@ -445,11 +445,7 @@ function richPresence_initialize() {
 // • Leaderboards FUNCTIONS •
 // **************************
 //	- Functions that should only be used by the leaderboards logic
-function getTimerTotalClearTimeInMinutes() =>
-	getTimerTotalClearTime() / 3600
 
-function getTimerChapterClearTimeInSeconds() =>
-	getTimerChapterClearTime() / 60
 // **************************
 // • Leaderboards CORE DATA •
 // **************************
@@ -472,133 +468,40 @@ leaderboards_coreData = {
 // • Leaderboards TRIGGER GENERATORS •
 // ***********************************
 //	- For leaderboard logic that's reoccuring across multiple triggers
-function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
-	let_chapterSpecificComparison = always_true()
-	if (string_chapter == "Prologue") 
-		let_chapterSpecificComparison = !isPrologueInExMode()
-	return 
-		never(!isInGame()) &&
-		once(isTimerChapterClearTimeStarting()) &&
-		repeated(700, isInGame()) &&	// <-- Repeated here, FIXfor bug when loading a save, would otherwise start and cancel immediately after
-		isCurrentChapter(string_chapter) &&
-		let_chapterSpecificComparison}
-function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
-	let_chapterSpecificComparison = always_false()
-	if (string_chapter == "Prologue")
-		let_chapterSpecificComparison = isPrologueInExMode()
-	return 	
-		!isInGame() || 
-		let_chapterSpecificComparison || 
-		isTimerChapterClearTimeResetting() 	||
-		!isCurrentChapter(string_chapter)}
-function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
-	never( // Reset count if...
-		!isChapterCompletionScreenActive() || 
-		!isCurrentChapter(string_chapter)
-	) &&
-	tally(10, // Check if chapter completion screen is active for 10 frames
-		isChapterCompletionScreenActive() &&
-		isCurrentChapter(string_chapter))
+function leaderboards_generate_Template_StartTrigger() {
+	return always_false()
+}
+function leaderboards_generate_Template_CancelTrigger() {
+	return always_false()
+}
+function leaderboards_generate_Template_SubmitTrigger() =>
+	always_false()
 
 // *************************
 // • Leaderboards TRIGGERS •
 // *************************
 leaderboards_startTriggers = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter8"),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter7"),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter6"),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter5"),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter4"),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter3"),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter2"),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter1"),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
-	"lb_TotalClearTime": () =>
-		repeated(300, isInGame()) && 
-		once(isTimerTotalClearTimeStartingFromZero()) && 
-		!isPrologueInExMode()}
+	"lb_Template": () =>
+		leaderboards_generate_Template_StartTrigger(),
+	}
 leaderboards_cancelTriggers = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter8"),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter7"),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter6"),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter5"),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter4"),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter3"),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter2"),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter1"),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Prologue"),
-	"lb_TotalClearTime": () =>
-		!isInGame() || isPrologueInExMode() || isTimerTotalClearTimeResetting()}
+	"lb_Template": () =>
+		leaderboards_generate_Template_CancelTrigger(),
+	}
 leaderboards_submitTriggers = { 
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter8"),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter7"),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter6"),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter5"),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter4"),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter3"),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter2"),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter1"),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
-	"lb_TotalClearTime": () =>
-		tally(10, // Trigger when timer has stopped for 10 frames during the credits video
-			never(!isTimerTotalClearTimeActive()) &&
-			isVideoActive() && isCurrentChapter("Epilogue") &&
-			isTimerTotalClearTimeActive())}
+	"lb_Template": () =>
+		leaderboards_generate_Template_SubmitTrigger(),
+	}
 
 // *********************
 // • Leaderboards TEXT •
 // *********************
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_ClearTimeChapter8":					{"en": "Chapter 8 Clear Time"},
-	"lb_ClearTimeChapter7":					{"en": "Chapter 7 Clear Time"},
-	"lb_ClearTimeChapter6":					{"en": "Chapter 6 Clear Time"},
-	"lb_ClearTimeChapter5":					{"en": "Chapter 5 Clear Time"},
-	"lb_ClearTimeChapter4":					{"en": "Chapter 4 Clear Time"},
-	"lb_ClearTimeChapter3":					{"en": "Chapter 3 Clear Time"},
-	"lb_ClearTimeChapter2":					{"en": "Chapter 2 Clear Time"},
-	"lb_ClearTimeChapter1":					{"en": "Chapter 1 Clear Time"},
-	"lb_ClearTimePrologue":					{"en": "Prologue Clear Time"},
-	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
+}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for the chapter 8"},
-	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for the chapter 7"},
-	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for the chapter 6"},
-	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for the chapter 5"},
-	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for the chapter 4"},
-	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for the chapter 3"},
-	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for the chapter 2"},
-	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for the chapter 1"},
-	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter is exluded)"},
-	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter is excluded)"}}
+}
 
 // ****************************
 // • Leaderboards INITIALIZER •
@@ -639,7 +542,6 @@ function leaderboards_initialize() {
 			format = let_leaderboardData["leaderboardFormat"], 
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
-
 
 // ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
