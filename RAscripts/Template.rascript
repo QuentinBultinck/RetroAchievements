@@ -388,7 +388,7 @@ richPresence_parameterData = {
 		"MacroFormat": "Number"},
 	}	
 // *****************************
-// • Rich_Presence INITIALIZER •
+// • RichPresence INITIALIZER •
 // *****************************
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_parameterKey in richPresence_lookupTables {

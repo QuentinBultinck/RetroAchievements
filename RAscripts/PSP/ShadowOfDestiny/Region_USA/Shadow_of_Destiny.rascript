@@ -12,7 +12,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO Leaderboards for total clear time
 // TODO re-check points distribution 
 // TODO Energy locator with resetnextif
 
@@ -3943,6 +3942,93 @@ function isCurrentChapterIdInRangeOfRecordedIds() {
 		getChapterId() <= 0xb} 	// Epilogue ends at 0xb
 function isCurrentChapterOneOf(array_chapterIds) {
 	any_of(array_chapterIds, (chapterId) => isCurrentChapter(chapterId))}
+// *********************
+// • RichPresence TEXT •
+// *********************
+//	- Contains text for the rich presence script
+richPresence_text = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+
+	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
+	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
+	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} | Current 🕑 {4} | Completion: {5}%"},
+	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
+	"rp_AtTitleScreen":									{"en": "Title Screen"},
+
+	"rp_Default":										{"en": "Wandering Lebensbaum"}}
+richPresence_LookupTablesText = {
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+
+	"rpp_FatedHour_Prologue": 							{"en": "14h30"},
+	"rpp_FatedHour_Chapter1": 							{"en": "15h00"},
+	"rpp_FatedHour_Chapter2": 							{"en": "15h30"},
+	"rpp_FatedHour_Chapter3": 							{"en": "17h50"},
+	"rpp_FatedHour_Chapter4": 							{"en": "20h30"},
+	"rpp_FatedHour_Chapter5": 							{"en": "22h30"},
+	"rpp_FatedHour_Chapter6": 							{"en": "23h55"},
+	"rpp_FatedHour_Chapter7": 							{"en": "01h30"},
+	"rpp_FatedHour_Chapter8": 							{"en": "04h30"},
+	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
+
+	"rpp_Chapter_Prologue":								{"en": "Defying destiny"},
+	"rpp_Chapter_Chapter1":								{"en": "Extinguishing the heat"},
+	"rpp_Chapter_Chapter2":								{"en": "Exploring Lebensbaum"},
+	"rpp_Chapter_Chapter3":								{"en": "Visiting the art museum"},
+	"rpp_Chapter_Chapter4":								{"en": "Searching for an iron plate"},
+	"rpp_Chapter_Chapter5":								{"en": "Amalgamating an antidote"},
+	"rpp_Chapter_Chapter6":								{"en": "Producing a film"},
+	"rpp_Chapter_Chapter7":								{"en": "Examining a tower"},
+	"rpp_Chapter_Chapter8":								{"en": "Seeking the red stone"},
+	"rpp_Chapter_Epilogue":								{"en": "Cheating death"},
+	"rpp_Chapter_LookupFallback":						{"en": "Roaming Lebensbaum"},
+
+	"rpp_TimePeriod_MiddleAges":						{"en": "in the Middle Ages"},
+	"rpp_TimePeriod_Late20Century":						{"en": "in the late 20th century"},
+	"rpp_TimePeriod_Early20Century":					{"en": "in the early 20th century"},
+	"rpp_TimePeriod_Present":							{"en": "in the present"},
+	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"}}
+function richPresence_getText(string_textKey) =>
+	richPresence_text[string_textKey][utility_const_language]
+function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
+	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
+	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+// -------------------------------------
+richPresence_lookupTables = {
+	"rpp_FatedHour": { // Each chapter has a fated hour
+		0x1: "Prologue", 
+		0x2: "Chapter1",
+		0x3: "Chapter2",
+		0x4: "Chapter3",
+		0x5: "Chapter4",
+		0x6: "Chapter5",
+		0x7: "Chapter6",
+		0x8: "Chapter7",
+		0x9: "Chapter8",
+		0xb: "Chapter8",
+		0xa: "Chapter8",
+		0xc: "Chapter8"},
+	"rpp_TimePeriod": {	// Refer to 0xAA1268
+		0x80: "MiddleAges",
+		0x82: "Early20Century",
+		0x81: "Late20Century",
+		0x88: "Late20Century",
+		0x83: "Present"},
+	"rpp_Chapter": { // Refer to const_chapterIDs
+		0x1: "Prologue",
+		0x2: "Chapter1",
+		0x3: "Chapter2",
+		0x4: "Chapter3",
+		0x5: "Chapter4",
+		0x6: "Chapter5",
+		0x7: "Chapter6",
+		0x8: "Chapter7",
+		0x9: "Chapter8",
+		0xb: "Chapter8",
+		0xa: "Epilogue",
+		0xc: "Epilogue"}}
+function richPresence_getLookupTable(string_lookupParameterKey) =>
+	richPresence_lookupTables[string_lookupParameterKey]
 // **************************
 // • RichPresence CORE DATA •
 // **************************
@@ -4069,95 +4155,8 @@ richPresence_parameterData = {
 		"Expression": getChapterId(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
 	}	
-// *********************
-// • RichPresence TEXT •
-// *********************
-//	- Contains text for the rich presence script
-richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-
-	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
-	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
-	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} | Current 🕑 {4} | Completion: {5}%"},
-	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
-	"rp_AtTitleScreen":									{"en": "Title Screen"},
-
-	"rp_Default":										{"en": "Wandering Lebensbaum"}}
-richPresence_LookupTablesText = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
-
-	"rpp_FatedHour_Prologue": 							{"en": "14h30"},
-	"rpp_FatedHour_Chapter1": 							{"en": "15h00"},
-	"rpp_FatedHour_Chapter2": 							{"en": "15h30"},
-	"rpp_FatedHour_Chapter3": 							{"en": "17h50"},
-	"rpp_FatedHour_Chapter4": 							{"en": "20h30"},
-	"rpp_FatedHour_Chapter5": 							{"en": "22h30"},
-	"rpp_FatedHour_Chapter6": 							{"en": "23h55"},
-	"rpp_FatedHour_Chapter7": 							{"en": "01h30"},
-	"rpp_FatedHour_Chapter8": 							{"en": "04h30"},
-	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
-
-	"rpp_Chapter_Prologue":								{"en": "Defying destiny"},
-	"rpp_Chapter_Chapter1":								{"en": "Extinguishing the heat"},
-	"rpp_Chapter_Chapter2":								{"en": "Exploring Lebensbaum"},
-	"rpp_Chapter_Chapter3":								{"en": "Visiting the art museum"},
-	"rpp_Chapter_Chapter4":								{"en": "Searching for an iron plate"},
-	"rpp_Chapter_Chapter5":								{"en": "Amalgamating an antidote"},
-	"rpp_Chapter_Chapter6":								{"en": "Producing a film"},
-	"rpp_Chapter_Chapter7":								{"en": "Examining a tower"},
-	"rpp_Chapter_Chapter8":								{"en": "Seeking the red stone"},
-	"rpp_Chapter_Epilogue":								{"en": "Cheating death"},
-	"rpp_Chapter_LookupFallback":						{"en": "Roaming Lebensbaum"},
-
-	"rpp_TimePeriod_MiddleAges":						{"en": "in the Middle Ages"},
-	"rpp_TimePeriod_Late20Century":						{"en": "in the late 20th century"},
-	"rpp_TimePeriod_Early20Century":					{"en": "in the early 20th century"},
-	"rpp_TimePeriod_Present":							{"en": "in the present"},
-	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"}}
-function richPresence_getText(string_textKey) =>
-	richPresence_text[string_textKey][utility_const_language]
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
-// -------------------------------------
-richPresence_lookupTables = {
-	"rpp_FatedHour": { // Each chapter has a fated hour
-		0x1: "Prologue", 
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Chapter8",
-		0xc: "Chapter8"},
-	"rpp_TimePeriod": {	// Refer to 0xAA1268
-		0x80: "MiddleAges",
-		0x82: "Early20Century",
-		0x81: "Late20Century",
-		0x88: "Late20Century",
-		0x83: "Present"},
-	"rpp_Chapter": { // Refer to const_chapterIDs
-		0x1: "Prologue",
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Epilogue",
-		0xc: "Epilogue"}}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
 // *****************************
-// • Rich_Presence INITIALIZER •
+// • RichPresence INITIALIZER •
 // *****************************
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_parameterKey in richPresence_lookupTables {
@@ -4209,8 +4208,6 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\                                                                                                 
 //																										 \\
 // ***************************************************************************************************** \\
-
-// TODO add leaderboards section to template
 
 // **************************
 // • Leaderboards FUNCTIONS •
