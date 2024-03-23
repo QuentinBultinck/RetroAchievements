@@ -25,6 +25,7 @@
         "ERROR",
 
         "DISABLED"
+        "OFF",
         "INACTIVE",
 
         "UNVERIFIED",
@@ -53,6 +54,11 @@
             "WIP",
             "TESTING",
             "QA",
+        ],
+        "DISABLED": [
+            "DISABLED",
+            "OFF",
+            "INACTIVE"
         ],
         "UNVERIFIED": [
             "TEST",
@@ -132,12 +138,15 @@
             "type": "text-and-comment",             
             "icon": "stop"
         },
-        "OFF": {
-            "foreground": "#ffffff",
-            "background": "#990000",
-            "type": "tag-and-comment",
-            "opacity": 50,            
-            "icon": "no-entry"
+        "DISABLED": {
+            "foreground": "#c7c7c7",
+            "background": "#610000",
+            "type": "text-and-comment",
+            "opacity": 50,
+            "icon": "no-entry",
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true,
+            "hideFromTree": true
         },
         "IDEA": {
             "foreground": "#53f9ff",
