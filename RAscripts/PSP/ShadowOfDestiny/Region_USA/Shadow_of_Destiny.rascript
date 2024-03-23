@@ -13,6 +13,8 @@
 //#####################################################################################################\\
 
 // TODO re-check points distribution 
+// TODO create tutorial vids for MaxInventory + EnergyLocators + artinspiration
+// TODO remove pause RP
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -52,7 +54,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 // TODO debug off
-utility_const_debugMode = false	// if true => extra information may be displayed on achievement titles & descriptions
+utility_const_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
 utility_const_language = "en"	// ISO 639-1 language codes 
 
 function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
@@ -179,7 +181,10 @@ const_NPCs = {
 			"InsideBar_UsePocketWatchOrEgg": {"MemAddrTalkCount": 0xA9EE49, "MaxTalkCount": 1}}},	// Counts for chap 6-7-8
 	"OlderMan_80s": { 
 		"ID": 0x18d, "Appearance": {
-			"Chap6_CafeSonne": {"MemAddrTalkCount": 0xA9EF43, "MaxTalkCount": 2}}},
+			"Chap6_CafeSonne": {"MemAddrTalkCount": 0xA9EF43, "MaxTalkCount": 2}}},	
+	"StrawHatMan_MiddleAges": { 
+		"ID": 0x5c, "Appearance": {
+			"Chap2_Streets_Scare": {"MemAddrTalkCount": 0xA9EE36, "MaxTalkCount": 1}}},
 	"YoungCoupleWoman_MiddleAges": { 
 		"ID": 0x197, "Appearance": {
 			"Chap2_WestGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7C, "MaxTalkCount": 1},
@@ -209,10 +214,10 @@ const_NPCs = {
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
 	"EccentricGirl_MiddleAges": { 
 		"ID": 0x2e, "Appearance": {
-			"Chap2_TownSquare": {"MemAddrTalkCount": 0xA9EE70, "MaxTalkCount": 1}}},
+			"Chap2_TownSquare_Scare": {"MemAddrTalkCount": 0xA9EE70, "MaxTalkCount": 1}}},
 	"AspiringApprentice_MiddleAges": {
 		"ID": 0x5d, "Appearance": {
-			"Chap2_SouthEastGate": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}}}
+			"Chap2_SouthEastGate_Scare": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}}}
 const_interactables = {
 	"Antique_FranssenShopSign": 0x8e,
 	"Antique_Rope": 0x98,
@@ -317,7 +322,7 @@ function isFullCutsceneActive() => 					// $A9ED26: Flag: Is cutscene active (pr
 	byte(0xA9ED26) == 0x5							// 		- 0x00 => no cutscene active
 													// 		- 0x01 => black bars (small) cutscene active/transitional value between active-inactive
 													//		- ... => transitional values
-function isFullCutsceneSequenceEnding() => 			// 		- 0x05 => cutscene active
+function isCutsceneEnding() => 			// 		- 0x05 => cutscene active
 	prev(byte(0xA9ED26)) > 0x0 && byte(0xA9ED26) == 0x0		
 
 function isCutsceneSectionEnding() => 
@@ -768,6 +773,22 @@ function isVideoActive() {								// $8FFEF0: [25-bit Pointer]  Video data (intr
 		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
 		dword(let_maskedPointer + 0x2c) == 0x41}
 
+function isVideoEnding() {
+	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF
+	return
+		prev(dword(let_maskedPointer + 0x18)) == 0x101 	&&
+		dword(let_maskedPointer + 0x18)	!= 0x101		&&
+		prev(dword(let_maskedPointer + 0x2c)) == 0x41 	&&
+		dword(let_maskedPointer + 0x2c)	!= 0x41}
+
+function isVideoStarting() {
+	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF
+	return
+		prev(dword(let_maskedPointer + 0x18)) != 0x101 	&&
+		dword(let_maskedPointer + 0x18)	== 0x101		&&
+		prev(dword(let_maskedPointer + 0x2c)) != 0x41 	&&
+		dword(let_maskedPointer + 0x2c)	== 0x41}
+
 function isInGamePauseMenuActive() =>	// $B91514 + $B91518: [Bit Flag] bit 0 => in-game pause menu
 	bit0(0xB91514) == 1 && 
 	bit0(0xB91518) == 1
@@ -777,6 +798,10 @@ function isChapterCompletionScreenActive() =>	// $1FFF5F4: [32-bit Flag] Is chap
 	dword(0x1FFF5F4) == 0x21 	&&				// $1FFF5D4: [32-bit] Highlighted UI element when chapter complete screen is active
 	dword(0x1FFF5D4) <= 1 						//		- 0x0 = yes		- 0x1 = no
 
+function isChapterCompletionScreenBecomingActive() =>
+	dword(0x1FFF5F8) == 0x1  	&& prev(dword(0x1FFF5F8)) != 0x1 	&&
+	dword(0x1FFF5F4) == 0x21 	&& prev(dword(0x1FFF5F4)) != 0x21 	&&
+	dword(0x1FFF5D4) <= 1
 
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
@@ -1164,7 +1189,7 @@ achievements_coreData = {
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		"a_EndingE": { // VERIFIED
 			"id": 322231, "points": 5, "badgeId": "461673",
-			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => Destroyed Lab"},
+			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => after talk with dana, go to present and get dana's letter => give letter to dana in middle ages => Destroyed Lab"},
 		"a_EndingEXCureHelena": { // VERIFIED
 			"id": 405114, "points": 3, "badgeId": "461651",
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
@@ -1259,7 +1284,7 @@ achievements_coreData = {
 		"a_TimeTravellingCat": { // VERIFIED
 			"id": 310426, "points": 4, "badgeId": "461728",
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
-	"c_Extra_Couple": { // Category - Related to the mysterious couple 
+	"c_ExtraCouple": { // Category - Related to the mysterious couple 
 		"a_EnigmaticCouple1": { // VERIFIED
 			"id": 307495, "points": 3, "badgeId": "461690",
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
@@ -1293,7 +1318,7 @@ achievements_coreData = {
 		"a_LostYoungCouple6": { // VERIFIED
 			"id": 315568, "points": 10, "badgeId": "461711",
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
-	"c_Extra_Energy": { // Category - Related to energy orb gathering
+	"c_ExtraEnergy": { // Category - Related to energy orb gathering
 		"a_EnergyOrbLocatorPresentDay": { // VERIFIED
 			"id": 399816, "points": 5, "badgeId": "461689",
 			"devInfo": "Find all 5 energy orbs in present day"},
@@ -1306,7 +1331,7 @@ achievements_coreData = {
 		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED
 			"id": 399819, "points": 5, "badgeId": "461688",
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}},
-	"c_Extra_GameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
+	"c_ExtraGameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
 		"a_ErasingEike": { // VERIFIED
 			"id": 306883, "points": 2, "badgeId": "461699",
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
@@ -1339,9 +1364,9 @@ achievements_typeByCategory = {
 	"c_AchievementPercentage": 				"missable",
 	"c_Branch": 							"missable",
 	"c_Extra":				 				"missable",
-	"c_Extra_Couple":						"missable",
-	"c_Extra_Energy":						"missable",
-	"c_Extra_GameOver": 					"missable",}
+	"c_ExtraCouple":						"missable",
+	"c_ExtraEnergy":						"missable",
+	"c_ExtraGameOver": 						"missable",}
 
 // ***********************************
 // • Achievements TRIGGER GENERATORS •
@@ -1476,7 +1501,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x1ae70)	&&
 					isCurrentCutsceneSectionDataId(0x75d10)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Prologue")
 			)
@@ -1496,7 +1521,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0xbea0)	&&
 					isCurrentCutsceneSectionDataId(0x5b80)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Chapter1")
 			)
@@ -1526,7 +1551,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x11240)	&&
 					isCurrentCutsceneSectionDataId(0x2b0)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Chapter2")
 			)
@@ -1565,7 +1590,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x7e10)	&&
 					isCurrentCutsceneSectionDataId(0x7ca0)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Chapter3")
 			)
@@ -1587,7 +1612,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x11cd0)	&&
 					isCurrentCutsceneSectionDataId(0x3d500)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || ( // Alt 2 
 				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
 					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
@@ -1597,7 +1622,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x17060)	&&
 					isCurrentCutsceneSectionDataId(0x1390)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 3; Failsafe
 				isChapterFinishing("Chapter4")
 			)
@@ -1619,7 +1644,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0xb6e0)	&&
 					isCurrentCutsceneSectionDataId(0xae50)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2
 				isChapterFinishing("Chapter4")
 			)
@@ -1640,7 +1665,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x3f980)		&&
 					isCurrentCutsceneSectionDataId(0x3f980)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Chapter5")
 			)
@@ -1663,7 +1688,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x66600)	&&
 					isCurrentCutsceneSectionDataId(0x20cd0)
 				) && 
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe
 				isChapterFinishing("Chapter6")
 			)
@@ -1686,7 +1711,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0x66600)	&&
 					isCurrentCutsceneSectionDataId(0x20cd0)
 				) && 
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe
 				isChapterFinishing("Chapter6")
 			)
@@ -1732,7 +1757,7 @@ achievements_triggers = {
 					isCurrentCutsceneMasterDataId(0xce0)	&&
 					isCurrentCutsceneSectionDataId(0x11330)
 				) &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				isChapterFinishing("Chapter7")
 			)
@@ -1769,7 +1794,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x5d060)
 				) &&
 				isMargaretteAncestor() &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
@@ -1797,7 +1822,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x62030)
 				) &&
 				isMargaretteAncestor() &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
 					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
@@ -1816,7 +1841,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x6be0)
 				) &&
 				isMargaretteAncestor() &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
 					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
@@ -1827,7 +1852,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x98f0)
 				) &&
 				isMargaretteAncestor() &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
 					isFullCutsceneActive()  && isCurrentChapter("Chapter8_NoAncestress") &&
@@ -1854,7 +1879,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x828a0)
 				) &&
 				isDanaNotSavedFromPast() && isMargaretteNoAncestor() &&
-				isFullCutsceneSequenceEnding()				
+				isCutsceneEnding()				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Brought Margarette to present
 					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
@@ -1873,7 +1898,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x55290)
 				) &&
 				isDanaSavedFromPast() && isMargaretteNoAncestor() &&
-				isFullCutsceneSequenceEnding()
+				isCutsceneEnding()
 			) || // Alt 7+8 => Failsafe; triggers on chapter change
 			isChapterFinishing("Chapter8_Ancestress") ||
 			isChapterFinishing("Chapter8_NoAncestress")
@@ -1943,7 +1968,7 @@ achievements_triggers = {
 		isMargaretteAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("A"))},
 	"a_EndingB1": function EndingB1() { return
 		never(
@@ -1990,7 +2015,7 @@ achievements_triggers = {
 		isMargaretteAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("B"))},
 	"a_EndingB2": function EndingB2() { return
 		never(
@@ -2025,7 +2050,7 @@ achievements_triggers = {
 		isMargaretteAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("B"))},
 	"a_EndingC": function EndingC() { return
 		never(
@@ -2060,7 +2085,7 @@ achievements_triggers = {
 		isMargaretteAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("C"))},
 	"a_EndingD": function EndingD() { return
 		never(
@@ -2087,7 +2112,7 @@ achievements_triggers = {
 		isDanaNotSavedFromPast() && isMargaretteNoAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("D"))},
 	"a_EndingE": function EndingE() { return
 		never(
@@ -2122,7 +2147,7 @@ achievements_triggers = {
 		isDanaSavedFromPast() && isMargaretteNoAncestor() &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("E"))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
@@ -2152,7 +2177,7 @@ achievements_triggers = {
 		) &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("EX"))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
@@ -2182,7 +2207,7 @@ achievements_triggers = {
 		) &&
 		once(isVideoActive()) &&	// Credits video
 		trigger_when(
-			!isVideoActive() &&		// Trigger when Credits video is over/skipped
+			isVideoEnding() &&		// Trigger when Credits video is over/skipped
 			isEndingAchieved("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() { return
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
@@ -2212,7 +2237,7 @@ achievements_triggers = {
 				always_false()
 			)
 		)},
-	"a_EnergyOrbLocator70s80s": function EnergyOrbLocator70s80s() { return
+	"a_EnergyOrbLocator70s80s": () =>
 		(	// Core group	
 			unless(
 				!isCurrentMapScene("80sColdCity") && 
@@ -2228,7 +2253,7 @@ achievements_triggers = {
 			) || ( // Alt 2: always_false to create 1 functional alt group
 				always_false()
 			)
-		)},
+		),
 	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() { return
 		(	// Core group	
 			unless(
@@ -2286,7 +2311,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0xad50, 0x8)	&&
 			isCurrentMinorCutsceneId(0x114a0, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(
 			!isInGame() 				||
@@ -2309,7 +2334,7 @@ achievements_triggers = {
 				isCurrentCutsceneMasterDataId(0x1eaa0)	&&
 				isCurrentCutsceneSectionDataId(0xae70))
 		]) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_MeetOldMiriam": function MeetOldMiriam() { return 
 		never(
 			!isInGame() 				||
@@ -2340,7 +2365,7 @@ achievements_triggers = {
 				isCurrentCutsceneMasterDataId(0x95c0)	&&
 				isCurrentCutsceneSectionDataId(0x6cf0))
 		]) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never (
 			!isInGame() 					||
@@ -2355,7 +2380,7 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0xd5f0)	&&
 			isCurrentCutsceneSectionDataId(0xe10)
 		) &&
-		trigger_when(isItemInInventory("OrnamentalEgg") && isNoCutsceneActive())},
+		trigger_when(isItemInInventory("OrnamentalEgg") && isCutsceneEnding())},
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!isInGame() ||
@@ -2390,7 +2415,7 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0x70e0)	&&
 			isCurrentCutsceneSectionDataId(0x24cb0)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_EggCollection": function AlertBarmanOfFire() { return
 		never (
 			!isInGame() ||
@@ -2420,11 +2445,11 @@ achievements_triggers = {
 				isCurrentCutsceneSectionDataId(0x5c20))
 		])
 		 &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_RunningAcrossThe90s": function RunningAcrossThe90s() {
 		function measuredComparison() { return
 			tally(2, [
-				once(
+				once( // Talk to JoggingMan_Present
 					isSmallCutsceneActive() &&
 					(
 						isCurrentMapScene("PresentDayCity") 	|| 
@@ -2432,7 +2457,7 @@ achievements_triggers = {
 						isCurrentMapScene("PresentNightCityAM")
 					) &&
 					isTalkingTo("JoggingMan_Present")),
-				once(
+				once( // Talk to JoggingMan_80s
 					isSmallCutsceneActive() &&
 					isCurrentMapScene("70sNightCity") &&
 					isTalkingTo("JoggingMan_80s")),
@@ -2443,7 +2468,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5")
 			) &&
 			measured(measuredComparison()) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
 		never (
 			!isInGame() 				||
@@ -2458,7 +2483,7 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0x29d0)	&&
 			isCurrentCutsceneSectionDataId(0xb400)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
 		never (
 			!isInGame() 			||
@@ -2487,7 +2512,7 @@ achievements_triggers = {
 				isCurrentMinorCutsceneId(0x7ec30, 0x8)	&&
 				isCurrentMinorCutsceneId(0x2f730, 0x2c))
 		]) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
 			!isInGame() 					||
@@ -2504,7 +2529,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x70640, 0x8)	&&
 			isCurrentMinorCutsceneId(0x236a0, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never (
 			!isInGame() 					||
@@ -2521,7 +2546,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0xdfbc0, 0x8)	&&
 			isCurrentMinorCutsceneId(0xa420, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
 			!isInGame() 				||
@@ -2631,8 +2656,8 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter2")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
-			trigger_when(isNoCutsceneActive())},
-	"a_LostYoungCouple2": function LostYoungCouple2() {  
+			trigger_when(isCutsceneEnding())},
+	"a_LostYoungCouple2": function LostYoungCouple2() {
 		function measuredComparison() { return
 			tally(6, [
 				once(	// 1st talk with woman
@@ -2678,7 +2703,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter3")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
 		function measuredComparison() { return
 			tally(6, [
@@ -2725,7 +2750,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter4")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
 			tally(getMaxTalkCountFor("YoungCoupleMan_MiddleAges", "Chap5_NearSouthEastGate"), 
@@ -2741,7 +2766,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter5")
 			) &&
 			measured(measuredComparison(), always_true()) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_LostYoungCouple5": function LostYoungCouple5() {
 		function measuredComparison_NoAncestor() { return
 			tally(4, [
@@ -2786,8 +2811,8 @@ achievements_triggers = {
 				measured(measuredComparison_NoAncestor(), isMargaretteNoAncestor()) || 
 				measured(measuredComparison_Ancestor(), isMargaretteAncestor())
 			) &&
-			trigger_when(isNoCutsceneActive())},
-	"a_LostYoungCouple6": function LostYoungCouple6() { 
+			trigger_when(isCutsceneEnding())},
+	"a_LostYoungCouple6": function LostYoungCouple6() {
 		function measuredComparison() { return
 			tally(2, [
 				once(	// 1st talk with man, having a dialogue option
@@ -2810,7 +2835,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter8")
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalCity")) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		function measuredComparison() { return
 			tally(4, [
@@ -2831,8 +2856,8 @@ achievements_triggers = {
 				!isCurrentChapter("Prologue") && !isCurrentChapter("Chapter1")
 			) &&
 			measured(measuredComparison(), always_true()) &&
-			trigger_when(isNoCutsceneActive())},
-	"a_EnigmaticCouple2": function EnigmaticCouple2() { 
+			trigger_when(isCutsceneEnding())},
+	"a_EnigmaticCouple2": function EnigmaticCouple2() {
 		function measuredComparison_onIncrease() { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
 				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
@@ -2865,7 +2890,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter3")
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(!isSmallCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		function measuredComparison_onIncrease() { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
@@ -2899,7 +2924,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter4")
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
 		function measuredComparison_BrumLibrary_onIncrease() { return
 			tally(3, [
@@ -2958,7 +2983,7 @@ achievements_triggers = {
 				!isInGame() ||
 				!isCurrentChapter("Chapter5")
 			) &&
-			trigger_when(isNoCutsceneActive()) &&
+			trigger_when(isCutsceneEnding()) &&
 			(measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
 			measured(measuredComparison_BrumLibrary_onIncrease()) || measured(measuredComparison_BrumLibrary_onMax()))},
 	"a_EnigmaticCouple5": function EnigmaticCouple5() {
@@ -2994,7 +3019,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter7")
 			) &&
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!isInGame()				||
@@ -3026,29 +3051,33 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0xadb40)	&&
 			isCurrentCutsceneSectionDataId(0x5d4a0)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){
 		function measuredComparison() { return
 			tally(7, [
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeYoungBoy_Present") &&
-					isNPCtalkCountIncreasingToMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
+					isCurrentMapScene("PresentDayCity") &&
+					// isNPCtalkCountIncreasingToMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteMother_Present") &&
-					isNPCtalkCountIncreasingToMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
+					isCurrentMapScene("PresentDayCity") &&
+					// isNPCtalkCountIncreasingToMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x336)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BrunetteYoungGirl_Present") &&
-					isNPCtalkCountIncreasingToMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
+					isCurrentMapScene("PresentDayCity") &&
+					// isNPCtalkCountIncreasingToMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x323)),
 				once(
 					isSmallCutsceneActive() &&
 					isTalkingTo("BlondeOldWomanOrangeSweater_Present") &&
-					isNPCtalkCountIncreasingToMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
+					isCurrentMapScene("PresentDayCity") &&
+					// isNPCtalkCountIncreasingToMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
@@ -3061,7 +3090,7 @@ achievements_triggers = {
 					isCurrentMapScene("PresentTownHall") &&
 					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
-					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() &&
 					isCurrentSelectedInventoryItem("Jugglery") &&
 					isCurrentCutsceneMasterId(0x1a300)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -3075,11 +3104,11 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter4")	||
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
-			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset that count here 
-			trigger_when(isCutsceneSectionEnding())},
-	"a_ScareEveryone": function ScareEveryone() {
+			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset measure count here 
+			trigger_when(isCutsceneEnding() || isCutsceneSectionEnding())}, // Can only trigger after the cutscene when giving egg to past Eike
+	"a_ScareEveryone": function ScareEveryone() { // TODO update readme for a_ScareEveryone
 		function measuredComparison() { return
-			tally(7, [	
+			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
 					isFullCutsceneActive() && isCurrentSelectedInventoryItem("Cellphone") &&
 					isCurrentCutsceneMasterId(0x9000)		&&
@@ -3107,15 +3136,30 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0xb220)	&&
 					isCurrentMinorCutsceneId(0x2354f0, 0x8)	&&
 					isCurrentMinorCutsceneId(0xb220, 0x28)),
+				once(	// Identifies cutscene => scaring town planter
+					isFullCutsceneActive() && 
+					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
+					isCurrentCutsceneMasterId(0x98c0)		&&
+					isCurrentCutsceneSectionId_1(0xffff)	&&
+					isCurrentCutsceneSectionId_2(0x0)		&&
+					isCurrentCutsceneMasterDataId(0x9890)	&&
+					isCurrentCutsceneSectionDataId(0x9890)	&&
+					isCurrentMinorCutsceneId(0xcd30, 0x8)	&&
+					isCurrentMinorCutsceneId(0x9890, 0x28)),
 				once(	// Identifies cutscene => scaring eccentric girl
 					isSmallCutsceneActive() &&
 					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-					isNPCtalkCountAtMax("EccentricGirl_MiddleAges", "Chap2_TownSquare") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x314)),
+					isNPCtalkCountAtMax("EccentricGirl_MiddleAges", "Chap2_TownSquare_Scare") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x314)),				
+				once(	// Identifies cutscene => scaring straw hat man
+					isSmallCutsceneActive() &&
+					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
+					isNPCtalkCountAtMax("StrawHatMan_MiddleAges", "Chap2_Streets_Scare") &&
+					isInteractionChapterId(0x163) && isInteractionId(0x2da)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
 					isSmallCutsceneActive() &&
 					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-					isNPCtalkCountIncreasingToMax("AspiringApprentice_MiddleAges", "Chap2_SouthEastGate") &&
+					isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "Chap2_SouthEastGate_Scare") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x2e3))
 			])}
 		return 
@@ -3124,12 +3168,12 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter2")
 			) &&
 			(
-				(
+				(	// Alt => pause is not in same group as reset
 					unless(
 						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonnePresent")			
 					) &&
 					measured(measuredComparison(), isInGame() && isCurrentChapter("Chapter2")) &&
-					trigger_when(isNoCutsceneActive())
+					trigger_when(isCutsceneEnding())
 				) || (
 					always_false()
 				)
@@ -3178,49 +3222,25 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x153d0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x122b0, 0x2c)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_MaxInventory": function MaxInventory(){
-		// function measuredComparison() { 
-		// 	// CODE BLOCK A; only use one CODE BLOCK
-		// 	// let_comparisonsArray = array_map(const_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-		// 	// 	let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
-		// 	// 	return prev(bit0(let_memAddress)) < bit0(let_memAddress)
-		// 	// })
-		// 	// let_deductComparisonArray = array_map(const_inventoryItems, (item) {	// array_map returns a new array with the comparisons
-		// 	// 	let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
-		// 	// 	return deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))
-		// 	// })
-		// 	// for deductComparison in let_deductComparisonArray {
-		// 	// 	array_push(let_comparisonsArray, deductComparison)
-		// 	// }
-		// 	// CODE BLOCK B
-		// 	let_comparisonsArray = [always_false()]
-		// 	for item in const_inventoryItems {
-		// 		let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
-		// 		array_push(let_comparisonsArray, deduct(prev(bit0(let_memAddress)) > bit0(let_memAddress))) 	// Sub hit comparison
-		// 		array_push(let_comparisonsArray, prev(bit0(let_memAddress)) < bit0(let_memAddress)) 			// Add hit comparison
-		// 	}
-		// 	return tally(20, let_comparisonsArray) // Biggest achievable inventory = 15 (+ 5 starter items)
-		// }
-		// return  // Trigger
-		// 	never(
-		// 		isAtTitleScreen()					||
-		// 		// !isInGame()					||	// This comparison bugs this achievement => this flag gets turned on at same time delta comparisons become true, FIX = isAtTitleScreen()
-		// 		isEventViewerActive()					
-		// 	) &&
-		// 	measured(measuredComparison(), always_true())},	
-		
-		// FIX for above code => if item is gained or removed => recalculate all 
-		
-		function measuredComparison(){ 
-			let_biggestPossibleInventoryCount = 20
+		let_biggestPossibleInventoryCount = 20
+		function previousItemCount() =>
+			sum_of(const_inventoryItems, (item) {	// sum_of(prevItemCount) == 19
+				let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
+				return prev(bit0(let_memAddress))
+			})
+		function currentItemCount() => 
+			sum_of(const_inventoryItems, (item) {	// sum_of(currentItemCount) == 20
+				let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
+				return bit0(let_memAddress)
+			})
+		function measuredComparison(int_tallyCount) =>
 			// Checks all item_in_inventory_flags => if in inventory => +1 Add hit
-			return 
-				tally_of(const_inventoryItems, let_biggestPossibleInventoryCount, (item) {
-					let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
-					return once(bit0(let_memAddress) == 1)
-				})
-		}
+			tally_of(const_inventoryItems, int_tallyCount, (item) {
+				let_memAddress = const_inventoryItems[item]["memAddress_Flag_isInInventory"]
+				return once(bit0(let_memAddress) == 1)
+			})
 		return 
 			never(	
 				isAtTitleScreen()		||
@@ -3233,8 +3253,13 @@ achievements_triggers = {
 					return bit0(let_memAddress) < prev(bit0(let_memAddress))
 				})
 			) &&
-			measured(measuredComparison(), always_true()) &&
-			trigger_when(isNoCutsceneActive())},		
+			measured(measuredComparison(let_biggestPossibleInventoryCount), always_true()) &&			
+			once(
+				previousItemCount() < let_biggestPossibleInventoryCount &&
+				currentItemCount() == let_biggestPossibleInventoryCount
+			) &&
+			trigger_when(isCutsceneEnding())
+		},		
 	"a_DrunkenGuys": function DrunkenGuys(){
 		function measuredComparison() { return
 			tally(2, [
@@ -3254,7 +3279,7 @@ achievements_triggers = {
 				!isCurrentMapScene("PresentNightCityPM")
 			) &&
 			measured(measuredComparison(), isInGame()) &&
-			trigger_when(isNoCutsceneActive())},
+			trigger_when(isCutsceneEnding())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!isInGame()						||
@@ -3276,7 +3301,7 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0x11cd0)	&&
 			isCurrentCutsceneSectionDataId(0x3d500)	
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!isInGame()				||
@@ -3293,14 +3318,13 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x8f8e0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x5bb90, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!isInGame() 		||
 			isChapterChanging() ||
 			isBrumEstateLibrary()
 		) && 
-		trigger_when(isNoCutsceneActive()) &&	// Trigger when cutscene is over
 		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 			once(
 				isSmallCutsceneActive() && 
@@ -3339,7 +3363,8 @@ achievements_triggers = {
 				isInteractingWith("Painting_CollapsedHouse") && 
 				(isCurrentMapScene("BrumMuseumUpstairsRoom2Night") || isCurrentMapScene("BrumMuseumUpstairsRoom2Day")) &&	
 				isInteractionId(0x129))
-			])},
+			]) &&
+			trigger_when(isCutsceneEnding())},	// Trigger when cutscene is over
 	"a_ArtInspirationAll": function ArtInspirationAll() {
 		function measuredComparison() {
 			tally(6, [
@@ -3385,7 +3410,7 @@ achievements_triggers = {
 				!isInGame() ||
 				isChapterChanging()
 			) &&
-			trigger_when(isNoCutsceneActive()) &&
+			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
 		function measuredComparison() {
@@ -3436,7 +3461,7 @@ achievements_triggers = {
 				!isInGame() ||
 				isChapterChanging()
 			) &&
-			trigger_when(isNoCutsceneActive()) &&
+			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), always_true())},
 	"a_AntiquesEule": function AntiquesEule() {
 		function measuredComparison() {
@@ -3466,7 +3491,7 @@ achievements_triggers = {
 				!isInGame() ||
 				isChapterChanging()
 			) &&
-			trigger_when(!isSmallCutsceneActive()) &&
+			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), measuredIfComparison())},
 	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
@@ -3480,7 +3505,7 @@ achievements_triggers = {
 			isInteractionChapterId(0xb2) && isInteractionId(0x3e7) && 
 			isTalkingToNPCForFirstTime("OlderMan_80s", "Chap6_CafeSonne")
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
 		never(
 			!isInGame()			||
@@ -3495,7 +3520,7 @@ achievements_triggers = {
 			isTalkingTo("Barman_80s") && isInteractionId(0x2ed) &&
 			isNPCtalkCountAtMax("Barman_80s", "InsideBar_UsePocketWatchOrEgg")
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!isInGame()				||
@@ -3512,7 +3537,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0xb8b90, 0x8)	&&
 			isCurrentMinorCutsceneId(0x4f210, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!isInGame()						||
@@ -3527,7 +3552,7 @@ achievements_triggers = {
 			isCurrentCutsceneMasterDataId(0x546f0)	&&
 			isCurrentCutsceneSectionDataId(0x50b0)	
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!isInGame()					||
@@ -3544,7 +3569,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x282ae0, 0x8)	&&
 			isCurrentMinorCutsceneId(0x3bbc0, 0x28)
 		) &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
 			!isInGame() ||
@@ -3560,7 +3585,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x10930)
 		) &&
 		isKittenGivenToSibylla() &&
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isInGame()				||
@@ -3595,7 +3620,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x377e0, 0x28) 	&&
 			isCurrentMinorCutsceneId(0x23eb0, 0x2c)
 		) && 
-		trigger_when(isFullCutsceneSequenceEnding())},
+		trigger_when(isCutsceneEnding())},
 	"a_RottenRope": function RottenRope() { return
 		never (
 			!isInGame() 				||
@@ -3849,7 +3874,7 @@ achievements_descriptions = {
 	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
 	"a_FreeMeal":									{"en": "Enjoy a free supper at Bar Zum Ei during chapter 5"}, 
 	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
-	"a_ScareEveryone": 								{"en": "Frighten everyone in the past, as well as a person in the present who is indulging some spaghetti, during chapter 2"}, 
+	"a_ScareEveryone": 								{"en": "Try to evoke fear in as many individuals as possible within chapter 2"}, 
 	"a_TimeTravellingCat":							{"en": "Gift a feline friend to a girl during or after chapter 4"},
 	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
 	"a_SeenOlegAsWell": 							{"en": "Find someone who has also met the meditating man in chapter 6"},
@@ -4306,9 +4331,9 @@ function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
 	return 
 		never(!isInGame()) &&
 		once(isTimerChapterClearTimeStarting()) &&
-		repeated(700, isInGame()) &&	// <-- Delay FIX for bug when loading a save from chapter start
-		isCurrentChapter(string_chapter) &&
-		let_chapterSpecificComparison}
+		repeated(700, isInGame()) &&		// <-- Delay FIX for bug when loading a save from chapter start 
+		isCurrentChapter(string_chapter) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
+		let_chapterSpecificComparison}		//			both Total and chapter clear time pop and same time otherwise
 function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
 	let_chapterSpecificComparison = always_false()
 	if (string_chapter == "Prologue")
@@ -4323,9 +4348,8 @@ function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
 		!isChapterCompletionScreenActive() || 
 		!isCurrentChapter(string_chapter)
 	) &&
-	tally(10, // Check if chapter completion screen is active for 10 frames
-		isChapterCompletionScreenActive() &&
-		isCurrentChapter(string_chapter))
+	isChapterCompletionScreenBecomingActive() &&
+	isCurrentChapter(string_chapter)
 
 // *************************
 // • Leaderboards TRIGGERS •
@@ -4351,7 +4375,7 @@ leaderboards_startTriggers = {
 		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
 	"lb_TotalClearTime": () =>
 		never(!isInGame()) &&
-		repeated(700, isInGame()) &&	// <-- delay popup 
+		repeated(300, isInGame()) &&	// <-- delay popup 
 		once(isTimerTotalClearTimeStartingFromZero()) && 
 		!isPrologueInExMode()}
 leaderboards_cancelTriggers = {
@@ -4395,10 +4419,17 @@ leaderboards_submitTriggers = {
 	"lb_ClearTimePrologue": () =>
 		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
 	"lb_TotalClearTime": () =>
-		never(!isTimerTotalClearTimeActive() && !isVideoActive()) &&
-		tally(20, // Trigger when timer has stopped for 20 frames during the credits video
-			isVideoActive() && isCurrentChapter("Epilogue") &&
-			!isTimerTotalClearTimeActive())}
+		isInGame() &&
+		(
+			(		// Alt 1 => Trigger when credits video starts
+				isVideoStarting() && isCurrentChapter("Epilogue")
+			) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
+				never(!isTimerTotalClearTimeActive() && !isVideoActive()) &&
+				tally(20, 
+					isVideoActive() && isCurrentChapter("Epilogue") &&
+					!isTimerTotalClearTimeActive())
+			)
+		)}
 
 // *********************
 // • Leaderboards TEXT •
@@ -4417,16 +4448,16 @@ leaderboards_titles = {
 	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for the chapter 8"},
-	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for the chapter 7"},
-	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for the chapter 6"},
-	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for the chapter 5"},
-	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for the chapter 4"},
-	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for the chapter 3"},
-	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for the chapter 2"},
-	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for the chapter 1"},
-	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter is exluded)"},
-	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter is excluded)"}}
+	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for chapter 8"},
+	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for chapter 7"},
+	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for chapter 6"},
+	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for chapter 5"},
+	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for chapter 4"},
+	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for chapter 3"},
+	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for chapter 2"},
+	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for chapter 1"},
+	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter excluded)"},
+	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter excluded)"}}
 
 // ****************************
 // • Leaderboards INITIALIZER •
