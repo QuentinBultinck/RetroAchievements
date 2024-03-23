@@ -36,6 +36,11 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 
+//	Achievement & Leaderboard logic
+// ---------------------------------------------
+//	- Include delta wherever possible => one of safest way to make sure achievement doesn't pop randomly
+//	- Also include delta's for submit, cancel and start triggers on leaderboard logic
+
 // How to: ResetNextIf
 // ---------------------------------------------
 //	- Call never() inside a tally(), once() or repeated()

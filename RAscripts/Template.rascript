@@ -33,20 +33,33 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 
+//	Achievement & Leaderboard logic
+// ---------------------------------------------
+//	- Include delta wherever possible => one of safest way to make sure achievement doesn't pop randomly
+//	- Also include delta's for submit, cancel and start triggers on leaderboard logic
+
+// How to: ResetNextIf
+// ---------------------------------------------
+//	- Call never() inside a tally(), once() or repeated()
+//	- Example
+// 			tally(10, 
+// 				never(healthDecreases()) && // <-- reset this hit count when taking damage, will generate a 'resetnextif' flag when it is applicable with the rest of the trigger, otherwise it may just be a normal 'reset' flag
+// 				succesfullDodges() // <-- +1 hit count when dodging
+// 			)
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
 // TODO Turn off debug mode
-utility_const_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
-utility_const_language = "en"	// ISO 639-1 language codes 
+util_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
+util_language = "en"	// ISO 639-1 language codes 
 
-function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
+function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
-function addToDictionary(dict, key, value) {
+function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
 // ***************************************************************************************************************************************************************** \\
@@ -95,7 +108,7 @@ function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" s
 enum_TEMPLATE_WEAPON_A = 100
 enum_TEMPLATE_WEAPON_B = 101
 enum_TEMPLATE_WEAPON_C = 102
-const_template_weapons_data = {
+const_template_weapon_data = {
 	enum_TEMPLATE_WEAPON_A: {
 		"equip_ID": 0x21,
 		"memAddr_CurrentWeaponAffinity": 0xAB1C,
@@ -103,16 +116,34 @@ const_template_weapons_data = {
 	enum_TEMPLATE_WEAPON_B: {
 		"equip_ID": 0x22,
 		"memAddr_CurrentWeaponAffinity": 0xAB1D,
-		"maxWeaponAffinity": 99},
+		"maxWeaponAffinity": 77},
 	enum_TEMPLATE_WEAPON_C: {
 		"equip_ID": 0x23,
 		"memAddr_CurrentWeaponAffinity": 0xAB1E,
-		"maxWeaponAffinity": 99}
+		"maxWeaponAffinity": 20}
 	}
 function is_EquippedWeapon(enum_TEMPLATE_WEAPON) =>
-	byte(0xAC12) == const_template_weapons_data[enum_TEMPLATE_WEAPON]["equip_ID"]
+	byte(0xAC12) == const_template_weapon_data[enum_TEMPLATE_WEAPON]["equip_ID"]
+
 function on_WeaponAffinityMaxed(enum_TEMPLATE_WEAPON) { return
 	always_false()}
+
+function memUtil_sumOfAllCurrentWeaponsAffinity() => 
+	sum_of(const_template_weapon_data, (weaponDataKey){
+		let_memAddr_currentWeaponAffinity = const_template_weapon_data[weaponDataKey]["memAddr_CurrentWeaponAffinity"]		
+		return byte(let_memAddr_currentWeaponAffinity)
+	})
+
+function memUtil_totalAffinityOverAllWeapons(){
+	let_totalWeaponAffinity = 0
+	for weaponDataKey in const_template_weapon_data {
+		let_totalWeaponAffinity = let_totalWeaponAffinity + const_template_weapon_data[weaponDataKey]["maxWeaponAffinity"]
+	}
+	return let_totalWeaponAffinity}
+
+function is_AllWeaponsAffinityMaxed() =>
+	memUtil_sumOfAllCurrentWeaponsAffinity() == memUtil_totalAffinityOverAllWeapons()
+
 // -------------------------------------
 function doThisA() => always_false()
 function doThisB() => always_false()
@@ -245,7 +276,7 @@ function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (utility_const_debugMode) {
+			if (util_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -262,7 +293,7 @@ function achievements_initialize() {
 			return achievements_descriptions[string_achievementDevName][string_languageCode]}
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (utility_const_debugMode && string_devInfo != "") {
+			if (util_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -279,9 +310,9 @@ function achievements_initialize() {
 			let_achievementData = achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_achievementData["id"],
-				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
+				title = achievements_generateTitle(cheevmentName, categoryName, util_language),
 				type = achievements_typeByCategory[categoryName],
-				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], utility_const_language),
+				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], util_language),
 				points = let_achievementData["points"],
 				trigger = achievements_getTrigger(cheevmentName)
 			)
@@ -322,10 +353,10 @@ richPresence_LookupTablesText = {
 	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
 	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
 function richPresence_getText(string_textKey) =>
-	richPresence_text[string_textKey][utility_const_language]
+	richPresence_text[string_textKey][util_language]
 function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
 	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
 // -------------------------------------
 richPresence_lookupTables = {
 	"rpp_LookupTemplate": {	// Refer to const_chapterIDs
@@ -423,7 +454,7 @@ function richPresence_callParameterFunction(string_parameterKey) {	// Checks whi
 	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
 	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
 	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
-	else throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
+	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
 
 function richPresence_initialize() {
@@ -513,7 +544,7 @@ function leaderboards_initialize() {
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
-		if (utility_const_debugMode) {
+		if (util_debugMode) {
 			return format("{0} {1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
@@ -526,7 +557,7 @@ function leaderboards_initialize() {
 			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
 		function leaderboards_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (utility_const_debugMode && string_devInfo != "") {
+			if (util_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -538,8 +569,8 @@ function leaderboards_initialize() {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
 		leaderboard(
 			id = let_leaderboardData["id"],
-			title = leaderboards_generateTitle(let_leaderboardKey, utility_const_language), 
-			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], utility_const_language),
+			title = leaderboards_generateTitle(let_leaderboardKey, util_language), 
+			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], util_language),
 			start = leaderboards_startTriggers[let_leaderboardKey], 
 			cancel = leaderboards_cancelTriggers[let_leaderboardKey], 
 			submit = leaderboards_submitTriggers[let_leaderboardKey], 
