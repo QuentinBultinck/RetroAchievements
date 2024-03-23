@@ -225,17 +225,17 @@ function achievements_generate_Tally_TemplateB() {
 achievements_triggers = {
     // "a_Template": () { return // WIP_template
 	//	always_false()},
-    "a_AchievementF": () { return 
+    "a_AchievementF": () { return // VERIFIED
 		always_false()},
-	"a_AchievementE": () { return 
+	"a_AchievementE": () { return // VERIFIED
 		always_false()},
-	"a_AchievementD": () { return 
+	// "a_AchievementD": () { return // DISABLED // VERIFIED reason_of_inactivity
+	// 	always_false()},
+	"a_AchievementC": () { return // VERIFIED
 		always_false()},
-	"a_AchievementC": () { return 
+	"a_AchievementB": () { return // VERIFIED
 		always_false()},
-	"a_AchievementB": () { return 
-		always_false()},
-	"a_AchievementA": () { return 
+	"a_AchievementA": () { return // VERIFIED
 		always_false()}}
 
 // ********************
@@ -370,18 +370,18 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 // **************************
 //	- Contains logic data for the rich presence script
 function richPresence_callDisplayFunctions(){
-	rich_presence_conditional_display(	// rp_templateA
+	rich_presence_conditional_display(	// rp_templateA // VERIFIED 
 		richPresence_getCondition("rp_templateA"),
 		richPresence_getText("rp_templateA"),
 		richPresence_callParameterFunction("rpp_ValueTemplate"),
 		richPresence_callParameterFunction("rpp_LookupTemplate"),
 		richPresence_callParameterFunction("rpp_MacroTemplate"))
 		
-	rich_presence_conditional_display(	// rp_templateB
-		richPresence_getCondition("rp_templateB"),
-		richPresence_getText("rp_templateB"))
+	// rich_presence_conditional_display(	// rp_templateB // DISABLED // VERIFIED reason_of_inactivity
+	// 	richPresence_getCondition("rp_templateB"),
+	// 	richPresence_getText("rp_templateB"))
 
-	rich_presence_display(	// rp_Default
+	rich_presence_display(	// rp_Default // VERIFIED
 		richPresence_getText("rp_Default"))}
 richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
