@@ -14,7 +14,6 @@
 
 // TODO re-check points distribution 
 // TODO create tutorial vids for MaxInventory + EnergyLocators + artinspiration
-// TODO remove pause RP
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -54,14 +53,14 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 // TODO debug off
-utility_const_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
-utility_const_language = "en"	// ISO 639-1 language codes 
+util_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_language = "en"	// ISO 639-1 language codes 
 
-function throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
+function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
-function addToDictionary(dict, key, value) {
+function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
 // ***************************************************************************************************************************************************************** \\
@@ -985,74 +984,49 @@ const_percentageBitflags_new = {
 		0xA9ED72: [0,7],
 		0xA9ED73: [0,7],
 		0xA9ED74: [0]}}
+		
+function memUtil_allPercentageBitFlagsToOneDict() { // This will create a new dict without the chapters as keys;	new dict => memAddress (key): [bits] (value)
+	let_PercentageBitFlags = {} 
+	for chapter in const_percentageBitflags_new {
+		for memAddr in const_percentageBitflags_new[chapter] {
+			util_addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitflags_new[chapter][memAddr])
+		}
+	}
+	return let_PercentageBitFlags}
 
-// -------------------------------------
-// TODO remove const_percentageBitsFlags_old
-const_percentageBitsFlags_old = {
-	"Prologue": {
-		0xAA115B: [1,7],
-		0xAA115C: [0,7],
-		0xAA115D: [0,7],
-		0xAA115E: [0,7],
-		0xAA115F: [0,7],
-		0xAA1160: [0,7],
-		0xAA1161: [0,5]},
-	"Chapter1": {
-		0xAA1162: [6,7],
-		0xAA1163: [0,7],
-		0xAA1164: [0,7],
-		0xAA1165: [0,5]},
-	"Chapter2": {
-		0xAA1166: [3,7],
-		0xAA1167: [0,7],
-		0xAA1168: [0,7],
-		0xAA1169: [0,7],
-		0xAA116A: [0,6],},
-	"Chapter3": {
-		0xAA1177: [2,7],
-		0xAA1178: [0,7],
-		0xAA1179: [0,7]},
-	"Chapter4": {
-		0xAA116C: [1,7],
-		0xAA116D: [0,7],
-		0xAA116E: [0,7],
-		0xAA116F: [0,7],
-		0xAA1170: [0,4]},
-	"Chapter5": {
-		0xAA1171: [1,7],
-		0xAA1172: [0,7],
-		0xAA1173: [0,7],
-		0xAA1174: [0,7],
-		0xAA1175: [0,7],
-		0xAA1176: [0,6]},
-	"Chapter6": {
-		0xAA117A: [2,7],
-		0xAA117B: [0,7],
-		0xAA117C: [0,7],
-		0xAA117D: [0,7],
-		0xAA117E: [0,4]},
-	"Chapter7": {
-		0xAA117F: [2,7],
-		0xAA1180: [0,7],
-		0xAA1181: [0,7],
-		0xAA1182: [0,7],
-		0xAA1183: [0,3]},
-	"Chapter8": {
-		0xAA1184: [5,7],
-		0xAA1185: [0,7],
-		0xAA1186: [0,7],
-		0xAA1187: [0,7],
-		0xAA1188: [0,7],
-		0xAA1189: [0,7],
-		0xAA118A: [0,7],
-		0xAA118B: [0,7],
-		0xAA118C: [0,7],
-		0xAA118D: [0,3]},
-	"Epilogue": {
-		0xAA1190: [2,7],
-		0xAA1191: [0,7],
-		0xAA1192: [0,7],
-		0xAA1193: [0]}}
+function memUtil_percentageBitflagsDictToMemoryAccessorArray(dict_BitFlags) { // Return an array [bit0(0x00), bit1(0x00), bitcount(0x01)] from dict with percentagebitflags
+	let_bitFlagMemoryAccessors = []	
+	for memAddr in dict_BitFlags {
+		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddr]
+		if (length(let_arrayOfBitFlagsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
+			let_bitIndex = let_arrayOfBitFlagsToCheck[0]
+			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+		} else if ( // If all bits => add "bitcount" memory accessor
+			(let_arrayOfBitFlagsToCheck[0] == 0 && let_arrayOfBitFlagsToCheck[1] == 7) || 
+			(let_arrayOfBitFlagsToCheck[0] == 7 && let_arrayOfBitFlagsToCheck[1] == 0)) { 
+				array_push(let_bitFlagMemoryAccessors, bitcount(memAddr))
+		} else { // If not all bits, but more than 1 => memory accessor per bit flag
+			let_step = 1
+			if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) let_step = -1
+			for let_bitIndex in range(let_arrayOfBitFlagsToCheck[0], let_arrayOfBitFlagsToCheck[1], let_step) {	// Example let_arrayOfBitFlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+			}
+		}
+	}
+	return let_bitFlagMemoryAccessors}
+function memUtil_countTotalAmountOfBitFlags(dict_BitFlags) { // Counts how many bitflags are in the dict with percentagebitflags
+	let_bitFlagCount = 0
+	for memAddrWithBitFlags in dict_BitFlags {
+		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
+		if (length(let_arrayOfBitFlagsToCheck) == 1) {
+			let_bitFlagCount = let_bitFlagCount + 1	
+		} else if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) {
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[0] - let_arrayOfBitFlagsToCheck[1])
+		} else {
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[1] - let_arrayOfBitFlagsToCheck[0])
+		}
+	}
+	return let_bitFlagCount}
 
 function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage: Total
 	byte(0xAA1152)
@@ -1379,41 +1353,9 @@ function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, di
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
 
-	function countTotalAmountOfBitFlags(dict_BitFlags) {
-		let_bitFlagCount = 0
-		for memAddrWithBitFlags in dict_BitFlags {
-			let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
-			if (length(let_arrayOfBitFlagsToCheck) == 1) {
-				let_bitFlagCount = let_bitFlagCount + 1	
-			} else if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) {
-				let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[0] - let_arrayOfBitFlagsToCheck[1])
-			} else {
-				let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[1] - let_arrayOfBitFlagsToCheck[0])
-			}
-		}
-		return let_bitFlagCount
-	}
+	let_bitFlagMemoryAccessors = memUtil_percentageBitflagsDictToMemoryAccessorArray(dict_BitFlags)
 
-	let_bitFlagMemoryAccessors = []	// Array will become this => [bit0(0x00), bit1(0x00), bitcount(0x01)]		
-	for memAddr in dict_BitFlags {
-		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddr]
-		if (length(let_arrayOfBitFlagsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
-			let_bitIndex = let_arrayOfBitFlagsToCheck[0]
-			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
-		} else if ( // If all bits => add "bitcount" memory accessor
-			(let_arrayOfBitFlagsToCheck[0] == 0 && let_arrayOfBitFlagsToCheck[1] == 7) || 
-			(let_arrayOfBitFlagsToCheck[0] == 7 && let_arrayOfBitFlagsToCheck[1] == 0)) { 
-				array_push(let_bitFlagMemoryAccessors, bitcount(memAddr))
-		} else { // If not all bits, but more than 1 => memory accessor per bit flag
-			let_step = 1
-			if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) let_step = -1
-			for let_bitIndex in range(let_arrayOfBitFlagsToCheck[0], let_arrayOfBitFlagsToCheck[1], let_step) {	// Example let_arrayOfBitFlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
-			}
-		}
-	}
-
-	let_totalAmountOfBitFlags = countTotalAmountOfBitFlags(dict_BitFlags)
+	let_totalAmountOfBitFlags = memUtil_countTotalAmountOfBitFlags(dict_BitFlags)
 	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
 	let_measuredComparison = let_arithmeticSumOfExpression == let_totalAmountOfBitFlags // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
 
@@ -1934,15 +1876,7 @@ achievements_triggers = {
 		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
 		return achievements_generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
-		function mapAllPercentageBitFlagsToOneDict() {
-			let_PercentageBitFlags = {}
-			for chapter in const_percentageBitflags_new {
-				for memAddr in const_percentageBitflags_new[chapter] {
-					addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitflags_new[chapter][memAddr])
-				}
-			}
-			return let_PercentageBitFlags}
-		return achievements_generate_FullTrigger_MaxAchievementRate("Total", mapAllPercentageBitFlagsToOneDict())},
+		return achievements_generate_FullTrigger_MaxAchievementRate("Total", memUtil_allPercentageBitFlagsToOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 			||
@@ -3106,7 +3040,7 @@ achievements_triggers = {
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset measure count here 
 			trigger_when(isCutsceneEnding() || isCutsceneSectionEnding())}, // Can only trigger after the cutscene when giving egg to past Eike
-	"a_ScareEveryone": function ScareEveryone() { // TODO update readme for a_ScareEveryone
+	"a_ScareEveryone": function ScareEveryone() {
 		function measuredComparison() { return
 			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
@@ -3168,7 +3102,7 @@ achievements_triggers = {
 				!isCurrentChapter("Chapter2")
 			) &&
 			(
-				(	// Alt => pause is not in same group as reset
+				(	// Alt => vs. pause lock
 					unless(
 						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonnePresent")			
 					) &&
@@ -3909,7 +3843,7 @@ function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (utility_const_debugMode) {
+			if (util_debugMode) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -3926,7 +3860,7 @@ function achievements_initialize() {
 			return achievements_descriptions[string_achievementDevName][string_languageCode]}
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (utility_const_debugMode && string_devInfo != "") {
+			if (util_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -3943,9 +3877,9 @@ function achievements_initialize() {
 			let_achievementData = achievements_coreData[categoryName][cheevmentName]
 			achievement(
 				id = let_achievementData["id"],
-				title = achievements_generateTitle(cheevmentName, categoryName, utility_const_language),
+				title = achievements_generateTitle(cheevmentName, categoryName, util_language),
 				type = achievements_typeByCategory[categoryName],
-				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], utility_const_language),
+				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], util_language),
 				points = let_achievementData["points"],
 				trigger = achievements_getTrigger(cheevmentName)
 			)
@@ -3984,7 +3918,7 @@ richPresence_text = {
 	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
 	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} | Current 🕑 {4} | Completion: {5}%"},
 	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
-	"rp_AtTitleScreen":									{"en": "Title Screen"},
+	"rp_AtTitleScreen":									{"en": "Title Screen | Completion {0}%"},
 
 	"rp_Default":										{"en": "Wandering Lebensbaum"}}
 richPresence_LookupTablesText = {
@@ -4020,10 +3954,10 @@ richPresence_LookupTablesText = {
 	"rpp_TimePeriod_Present":							{"en": "in the present"},
 	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"}}
 function richPresence_getText(string_textKey) =>
-	richPresence_text[string_textKey][utility_const_language]
+	richPresence_text[string_textKey][util_language]
 function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
 	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][utility_const_language]}
+	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
 // -------------------------------------
 richPresence_lookupTables = {
 	"rpp_FatedHour": { // Each chapter has a fated hour
@@ -4065,14 +3999,15 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 // **************************
 //	- Contains logic data for the rich presence script
 function richPresence_callDisplayFunctions(){
-	rich_presence_conditional_display(	// VERIFIED - rp_isPaused	
-		richPresence_getCondition("rp_isPaused"),
-		richPresence_getText("rp_isPaused"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+	
+	// rich_presence_conditional_display(	// DISABLED not as elegant inside rich presence 	// VERIFIED - rp_isPaused 
+	// 	richPresence_getCondition("rp_isPaused"),
+	// 	richPresence_getText("rp_isPaused"),
+	// 	richPresence_callParameterFunction("rpp_FatedHour"),
+	// 	richPresence_callParameterFunction("rpp_PresentTimeDays"),
+	// 	richPresence_callParameterFunction("rpp_PresentTimeYears"),
+	// 	richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
+	// 	richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
 	rich_presence_conditional_display(	// VERIFIED - rp_InGameEXChapterOnly
 		richPresence_getCondition("rp_InGameEXChapterOnly"),
@@ -4106,7 +4041,8 @@ function richPresence_callDisplayFunctions(){
 
 	rich_presence_conditional_display(	// VERIFIED - rp_AtTitleScreen
 		richPresence_getCondition("rp_AtTitleScreen"),
-		richPresence_getText("rp_AtTitleScreen"))
+		richPresence_getText("rp_AtTitleScreen"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
 	rich_presence_display(	// VERIFIED - rp_Default
 		richPresence_getText("rp_Default"))}
@@ -4223,7 +4159,7 @@ function richPresence_callParameterFunction(string_parameterKey) {	// Checks whi
 	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
 	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
 	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
-	else throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
+	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
 
 function richPresence_initialize() {
@@ -4469,7 +4405,7 @@ function leaderboards_initialize() {
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
-		if (utility_const_debugMode) {
+		if (util_debugMode) {
 			return format("{0} {1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
@@ -4482,7 +4418,7 @@ function leaderboards_initialize() {
 			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
 		function leaderboards_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (utility_const_debugMode && string_devInfo != "") {
+			if (util_debugMode && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -4494,8 +4430,8 @@ function leaderboards_initialize() {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
 		leaderboard(
 			id = let_leaderboardData["id"],
-			title = leaderboards_generateTitle(let_leaderboardKey, utility_const_language), 
-			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], utility_const_language),
+			title = leaderboards_generateTitle(let_leaderboardKey, util_language), 
+			description = leaderboards_generateDescription(let_leaderboardKey, let_leaderboardData["devInfo"], util_language),
 			start = leaderboards_startTriggers[let_leaderboardKey], 
 			cancel = leaderboards_cancelTriggers[let_leaderboardKey], 
 			submit = leaderboards_submitTriggers[let_leaderboardKey], 
