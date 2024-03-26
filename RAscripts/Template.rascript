@@ -52,7 +52,7 @@
 //#####################################################################################################\\
 
 // TODO Turn off debug mode
-util_debugMode = true	// if true => extra information will be displayed on achievement titles & descriptions
+util_isDebugModeActive = true	// if true => extra information will be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
@@ -276,7 +276,7 @@ function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (util_debugMode) {
+			if (util_isDebugModeActive) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -293,7 +293,7 @@ function achievements_initialize() {
 			return achievements_descriptions[string_achievementDevName][string_languageCode]}
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (util_debugMode && string_devInfo != "") {
+			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -544,7 +544,7 @@ function leaderboards_initialize() {
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
-		if (util_debugMode) {
+		if (util_isDebugModeActive) {
 			return format("{0} {1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
@@ -557,7 +557,7 @@ function leaderboards_initialize() {
 			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
 		function leaderboards_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (util_debugMode && string_devInfo != "") {
+			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
