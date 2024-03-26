@@ -26,6 +26,16 @@
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
+// Nomenclature / Naming Convention
+// ---------------------------------------------
+//	- current_ 	=> returns a memory accessor to the current value
+//	- prior_ 	=> returns a memory accessor to the prior value
+//	- prev_ 	=> returns a memory accessor to the previous/delta value
+//
+//	- is_		=> returns a comparison, which only uses current values
+//	- was_		=> returns a comparison, which uses prior values
+//	- on_		=> returns a comparison, which uses delta/previous values
+
 //	Visual Studio Code: specific info
 // ---------------------------------------------
 //	- Enable: Colored code => select language mode (bottom right of vscode window) => Go (not "plain text")
@@ -93,10 +103,16 @@ function current_AreaID() => 	//	$AC0130: [8-bit] Example memory address code no
 								//		- Code note...
 function prev_AreaID() =>
 	prev(current_AreaID())
+
 function prior_AreaID() =>
 	prior(current_AreaID())
-function is_CurrentArea(enum_TEMPLATE_AREA) =>	// Example usage => is_CurrentArea(enum_TEMPLATE_AREA_A)
+
+function is_Area(enum_TEMPLATE_AREA) =>		// Example usage => is_Area(enum_TEMPLATE_AREA_A)
 	current_AreaID() == enum_TEMPLATE_AREA
+
+function was_Area(enum_TEMPLATE_AREA) =>
+	prior_AreaID() == enum_TEMPLATE_AREA
+
 function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" signifies that this function returns a comparison that's checking delta values
 	current_AreaID() != enum_TEMPLATE_AREA && 
 	prev_AreaID() == enum_TEMPLATE_AREA
@@ -182,7 +198,7 @@ achievements_coreData = {
         "a_AchievementA": { // WORKING
             "id": 000000, "points": 0000000, 
             "devInfo": "xxxxxxx"},
-        "a_AchievementB": { // BUG - something is wrong
+        "a_AchievementB": { // BUG something_is_wrong
             "id": 000000, "points": 0000000,
             "devInfo": "xxxxxxx"},
         "a_AchievementC": { // WORKING
