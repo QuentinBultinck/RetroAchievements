@@ -26,6 +26,16 @@
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
+// Nomenclature / Naming Convention
+// ---------------------------------------------
+//	- current_ 	=> returns a memory accessor to the current value
+//	- prior_ 	=> returns a memory accessor to the prior value
+//	- prev_ 	=> returns a memory accessor to the previous/delta value
+//
+//	- is_		=> returns a comparison, which only uses current values
+//	- was_		=> returns a comparison, which uses prior values
+//	- on_		=> returns a comparison, which uses delta/previous values
+
 //	Visual Studio Code: specific info
 // ---------------------------------------------
 //	- Enable: Colored code => select language mode (bottom right of vscode window) => Go (not "plain text")
@@ -65,55 +75,61 @@ function util_addToDictionary(dict, key, value) {
 // *****************
 // ◦ TIME AND DATE ◦
 // *****************
-function getCurrentTimePeriod() =>	// $AA1268: [32-bit] Time Period
+function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
 									// 		0x81 => Late 20th Century 1900s
 									// 		0x82 => Early 20th Century 1980
 									// 		0x88 => Early 20th Century 1979
 									// 		0x83 => Present 2000s
 
-function getCurrentPresentTimeHours() =>	// $AA12B0: [32-bit] Time in present: hours
+function current_PresentTime_Hours() =>		// $AA12B0: [32-bit] Time in present: hours
 	dword(0xAA12B0)
 
-function getCurrentPresentTimeMinutes() =>	// $AA12B4: [32-bit] Time in present: minutes
+function current_PresentTime_Minutes() =>	// $AA12B4: [32-bit] Time in present: minutes
 	dword(0xAA12B4)
 
-function getCurrentPresentTimeSeconds() =>	// $AA12B8: [32-bit] Time in present: seconds
+function current_PresentTime_Seconds() =>	// $AA12B8: [32-bit] Time in present: seconds
 	dword(0xAA12B8)
 
-function getCurrentPresentTimeDays() =>		// $AA12AC: [32-bit] Time in present: days
+function current_PresentTime_Days() =>		// $AA12AC: [32-bit] Time in present: days
 	dword(0xAA12AC)
 
-function getCurrentPresentTimeMonths() =>	// $AA12A8: [32-bit] Time in present: months
+function current_PresentTime_Months() =>	// $AA12A8: [32-bit] Time in present: months
 	dword(0xAA12A8)
 
-function getCurrentPresentTimeYears() =>	// $AA12A4: [32-bit] Time in present: years
+function current_PresentTime_Years() =>		// $AA12A4: [32-bit] Time in present: years
 	dword(0xAA12A4)
 // ***********************
 // ◦ CLEAR TIME & TIMERS ◦
 // ***********************
-function getTimerChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
+function current_ChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
 	dword(0xAA155C)
 	
-function isTimerChapterClearTimeStarting() => 
-	prev(getTimerChapterClearTime()) == 0 &&
-	getTimerChapterClearTime() > 0
+function prev_ChapterClearTime() =>
+	prev(current_ChapterClearTime())
 
-function isTimerChapterClearTimeResetting() =>
-	getTimerChapterClearTime() < prev(getTimerChapterClearTime())
+function on_Timer_ChapterClearTime_start() => 
+	prev_ChapterClearTime() == 0 &&
+	current_ChapterClearTime() > 0
 
-function getTimerTotalClearTime() =>	// $AA1560: [32-bit] Current Playthrough Timer - Total Clear Time
+function on_Timer_ChapterClearTime_reset() =>
+	current_ChapterClearTime() < prev_ChapterClearTime()
+// -------------------------------------
+function current_TotalClearTime() =>	// $AA1560: [32-bit] Current Playthrough Timer - Total Clear Time
 	dword(0xAA1560)
 
-function isTimerTotalClearTimeActive() => 
-	getTimerTotalClearTime() != prev(getTimerTotalClearTime())
+function prev_TotalClearTime() =>
+	prev(current_TotalClearTime())
 
-function isTimerTotalClearTimeStartingFromZero() => 
-	prev(getTimerTotalClearTime()) == 0 &&
-	getTimerTotalClearTime() > 0
+function on_Timer_TotalClearTime_valueChange() => 
+	current_TotalClearTime() != prev_TotalClearTime()
 
-function isTimerTotalClearTimeResetting() =>
-	getTimerTotalClearTime() < prev(getTimerTotalClearTime())
+function on_Timer_TotalClearTime_start() => 
+	prev_TotalClearTime() == 0 &&
+	current_TotalClearTime() > 0
+
+function on_Timer_TotalClearTime_reset() =>
+	current_TotalClearTime() < prev_TotalClearTime()
 // ********************
 // ◦ INTERACTIONS IDs ◦
 // ********************
@@ -4077,7 +4093,7 @@ richPresence_parameterData = {
 		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
 	"rpp_TimePeriod": {	
 		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getCurrentTimePeriod(),
+		"Expression": current_TimePeriod(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
 	"rpp_TotalCompletionRate": {
 		"RPtype": richPresence_enum_MACRO,
@@ -4085,27 +4101,27 @@ richPresence_parameterData = {
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeSeconds": {
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeSeconds(),
+		"Expression": current_PresentTime_Seconds(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeMinutes(),
+		"Expression": current_PresentTime_Minutes(),
 		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": (getCurrentPresentTimeMinutes() + getCurrentPresentTimeHours() * 60),
+		"Expression": (current_PresentTime_Minutes() + current_PresentTime_Hours() * 60),
 		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeHours(),
+		"Expression": current_PresentTime_Hours(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeYears(),
+		"Expression": current_PresentTime_Years(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeDays": {
 		"RPtype": richPresence_enum_MACRO,
-		"Expression": getCurrentPresentTimeDays(),
+		"Expression": current_PresentTime_Days(),
 		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
 		"RPtype": richPresence_enum_LOOKUP,
@@ -4171,10 +4187,10 @@ function richPresence_initialize() {
 // **************************
 //	- Functions that should only be used by the leaderboards logic
 function getTimerTotalClearTimeInMinutes() =>
-	getTimerTotalClearTime() / 3600
+	current_TotalClearTime() / 3600
 
 function getTimerChapterClearTimeInSeconds() =>
-	getTimerChapterClearTime() / 60
+	current_ChapterClearTime() / 60
 // **************************
 // • Leaderboards CORE DATA •
 // **************************
@@ -4255,7 +4271,7 @@ function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
 		let_chapterSpecificComparison = !isPrologueInExMode()
 	return 
 		never(!isInGame()) &&
-		once(isTimerChapterClearTimeStarting()) &&
+		once(on_Timer_ChapterClearTime_start()) &&
 		repeated(700, isInGame()) &&		// <-- Delay FIX for bug when loading a save from chapter start, would start and cancel immediately
 		isCurrentChapter(string_chapter) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
 		let_chapterSpecificComparison}		//			both Total and chapter clear time pop and same time otherwise
@@ -4266,7 +4282,7 @@ function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
 	return 	
 		!isInGame() || 
 		let_chapterSpecificComparison || 
-		isTimerChapterClearTimeResetting() 	||
+		on_Timer_ChapterClearTime_reset() 	||
 		!isCurrentChapter(string_chapter)}
 function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
 	never(
@@ -4301,7 +4317,7 @@ leaderboards_startTriggers = {
 	"lb_TotalClearTime": () =>
 		never(!isInGame()) &&
 		repeated(300, isInGame()) &&	// <-- delay popup 
-		once(isTimerTotalClearTimeStartingFromZero()) && 
+		once(on_Timer_TotalClearTime_start()) && 
 		!isPrologueInExMode()}
 leaderboards_cancelTriggers = {
 	"lb_ClearTimeChapter8": () =>
@@ -4323,7 +4339,7 @@ leaderboards_cancelTriggers = {
 	"lb_ClearTimePrologue": () =>
 		leaderboards_generate_ClearTimeChapter_CancelTrigger("Prologue"),
 	"lb_TotalClearTime": () =>
-		!isInGame() || isPrologueInExMode() || isTimerTotalClearTimeResetting()}
+		!isInGame() || isPrologueInExMode() || on_Timer_TotalClearTime_reset()}
 leaderboards_submitTriggers = { 
 	"lb_ClearTimeChapter8": () =>
 		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter8"),
@@ -4349,10 +4365,10 @@ leaderboards_submitTriggers = {
 			(		// Alt 1 => Trigger when credits video starts
 				isVideoStarting() && isCurrentChapter("Epilogue")
 			) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
-				never(!isTimerTotalClearTimeActive() && !isVideoActive()) &&
+				never(!on_Timer_TotalClearTime_valueChange() && !isVideoActive()) &&
 				tally(20, 
 					isVideoActive() && isCurrentChapter("Epilogue") &&
-					!isTimerTotalClearTimeActive())
+					!on_Timer_TotalClearTime_valueChange())
 			)
 		)}
 
