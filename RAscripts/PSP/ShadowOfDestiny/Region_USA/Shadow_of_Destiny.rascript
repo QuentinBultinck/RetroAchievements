@@ -12,9 +12,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO re-check points distribution 
-// TODO Title and desc of leaderboard has devInfo
-
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -1130,13 +1127,13 @@ achievements_coreData = {
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
 		"a_AlertBarmanOfFire": { // VERIFIED
-			"id": 306976, "points": 4,
+			"id": 306976, "points": 3,
 			"devInfo": "Alert the barman of fire in chapter 1"},
 		"a_BecomeThePerformer": { // VERIFIED
-			"id": 402284, "points": 4,
+			"id": 402284, "points": 3,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
 		"a_EggCollection": { // VERIFIED
-			"id": 306977, "points": 4,
+			"id": 306977, "points": 3,
 			"devInfo": "Give the ornamental egg to the barman during chapter 1. Or in chapter 3 or 4"},
 		"a_EikeThePyromancer": { // VERIFIED
 			"id": 306911, "points": 1,
@@ -1148,7 +1145,7 @@ achievements_coreData = {
 			"id": 306920, "points": 1,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_GetOrnamentalEgg": { // VERIFIED
-			"id": 306885, "points": 1,
+			"id": 306885, "points": 2,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // VERIFIED
@@ -1170,10 +1167,10 @@ achievements_coreData = {
 			"id": 322231, "points": 5,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => after talk with dana, go to present and get dana's letter => give letter to dana in middle ages => Destroyed Lab"},
 		"a_EndingEXCureHelena": { // VERIFIED
-			"id": 405114, "points": 3,
+			"id": 405114, "points": 4,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
 		"a_EndingEXKillHomunculus": { // VERIFIED
-			"id": 405113, "points": 3,
+			"id": 405113, "points": 4,
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_AntiquesEule": { // VERIFIED
@@ -1192,13 +1189,13 @@ achievements_coreData = {
 			"id": 315567, "points": 3,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 		"a_DoctorateTimeTraveling": { // VERIFIED
-			"id": 310163, "points": 4,
+			"id": 310163, "points": 3,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
 		"a_DrunkenGuys": { // VERIFIED
 			"id": 404048, "points": 2,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
 		"a_EggPocketWatchForCoffee": { // VERIFIED
-			"id": 313213, "points": 4,
+			"id": 313213, "points": 3,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_FreeMeal": { // VERIFIED 
 			"id": 405461, "points": 3,
@@ -1207,7 +1204,7 @@ achievements_coreData = {
 			"id": 405112, "points": 1,
 			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
 		"a_GiveMargaretteCake": { // VERIFIED
-			"id": 402296, "points": 4,
+			"id": 402296, "points": 3,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
 		"a_HugoMotherChild": { // VERIFIED
 			"id": 311466, "points": 2,
@@ -1216,37 +1213,37 @@ achievements_coreData = {
 			"id": 402404, "points": 10,
 			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
 		"a_MeetFamousOleg": { // VERIFIED
-			"id": 404045, "points": 4,
+			"id": 404045, "points": 3,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
 		"a_MeetOldMiriam": { // VERIFIED
-			"id": 315570, "points": 10,
+			"id": 315570, "points": 3,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_NewCakeInvented": { // VERIFIED
 			"id": 402297, "points": 3,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
 		"a_PerformerGoingExtraMile": { // VERIFIED
-			"id": 403575, "points": 5,
+			"id": 403575, "points": 3,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 		"a_PocketWatchCollection": { // VERIFIED
-			"id": 315561, "points": 4,
+			"id": 315561, "points": 3,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
 		"a_PocketWatchReminiscing": { // VERIFIED
-			"id": 315562, "points": 4,
+			"id": 315562, "points": 3,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_PocketWatchTo80sBarman": { // VERIFIED
-			"id": 407681, "points": 1,
+			"id": 407681, "points": 2,
 			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
 		"a_RunningAcrossThe90s": { // VERIFIED
 			"id": 405086, "points": 2,
 			"devInfo": "Talk to jogging man in present and past (70s)"},
 		"a_SaveMiriamBrum": { // VERIFIED
-			"id": 315569, "points": 4,
+			"id": 315569, "points": 3,
 			"devInfo": "Save Miriam Brum in chapter 6"},			
 		"a_ScareEveryone": { // VERIFIED
-			"id": 404046, "points": 4,
+			"id": 404046, "points": 3,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
 		"a_SeenOlegAsWell": { // VERIFIED
-			"id": 405098, "points": 1,
+			"id": 405098, "points": 2,
 			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
 		"a_ShowEggTownPlanter": { // VERIFIED
 			"id": 307023, "points": 3,
@@ -1280,22 +1277,22 @@ achievements_coreData = {
 			"id": 315564, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // VERIFIED
-			"id": 306984, "points": 4,
+			"id": 306984, "points": 3,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
 		"a_LostYoungCouple2": { // VERIFIED
-			"id": 310133, "points": 4,
+			"id": 310133, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
 		"a_LostYoungCouple3": { // VERIFIED
-			"id": 309393, "points": 4,
+			"id": 309393, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
 		"a_LostYoungCouple4": { // VERIFIED
 			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
 		"a_LostYoungCouple5": { // VERIFIED
-			"id": 314753, "points": 2,
+			"id": 314753, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // VERIFIED
-			"id": 315568, "points": 10,
+			"id": 315568, "points": 5,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_ExtraEnergy": { // Category - Related to energy orb gathering
 		"a_EnergyOrbLocatorPresentDay": { // VERIFIED
@@ -4273,7 +4270,7 @@ function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
 	return 
 		never(!isInGame()) &&
 		once(isTimerChapterClearTimeStarting()) &&
-		repeated(700, isInGame()) &&		// <-- Delay FIX for bug when loading a save from chapter start 
+		repeated(700, isInGame()) &&		// <-- Delay FIX for bug when loading a save from chapter start, would start and cancel immediately
 		isCurrentChapter(string_chapter) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
 		let_chapterSpecificComparison}		//			both Total and chapter clear time pop and same time otherwise
 function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
@@ -4286,7 +4283,7 @@ function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
 		isTimerChapterClearTimeResetting() 	||
 		!isCurrentChapter(string_chapter)}
 function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
-	never( // Reset count if...
+	never(
 		!isChapterCompletionScreenActive() || 
 		!isCurrentChapter(string_chapter)
 	) &&
