@@ -47,6 +47,11 @@
 // 				succesfullDodges() // <-- +1 hit count when dodging
 // 			)
 
+// Syncing Local RAdata with server
+// ---------------------------------------------
+// 	- RALibretro => Assets list => Revert all assets (will fetch all changes from RAserver) + Refresh RATools as well
+//		-- For example change badge on RAweb => revert local so badge ID is changed as well locally to the next ID
+
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
