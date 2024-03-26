@@ -32,9 +32,10 @@
 //	- prior_ 	=> returns a memory accessor to the prior value
 //	- prev_ 	=> returns a memory accessor to the previous/delta value
 //
-//	- is_		=> returns a comparison, which only uses current values
-//	- was_		=> returns a comparison, which uses prior values
-//	- on_		=> returns a comparison, which uses delta/previous values
+//	- is_		=> returns a comparison, which only uses current values					-> eg is_Area(id_area) => id_area == byte(0xAA)
+//	- was_		=> returns a comparison, which only uses prior values					-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
+//	- has_ 		=> returns a comparison, which uses current AND prior values			-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
+//	- on_		=> returns a comparison, which uses at least one delta/previous values	-> eg on_Area_change() => current_Area() != prev_Area()
 
 //	Visual Studio Code: specific info
 // ---------------------------------------------
@@ -133,94 +134,162 @@ function on_Timer_TotalClearTime_reset() =>
 // ********************
 // ◦ INTERACTIONS IDs ◦
 // ********************
-const_NPCs = {
+enum_NPC_MiddleAges_AspiringApprentice = 504
+enum_NPC_MiddleAges_EccentricGirl = 503
+enum_NPC_MiddleAges_YoungCoupleMan = 502
+enum_NPC_MiddleAges_YoungCoupleWoman = 501
+enum_NPC_MiddleAges_StrawHatMan = 500
+
+enum_NPC_80s_OlderMan = 302
+enum_NPC_80s_Barman = 301
+enum_NPC_80s_JoggingMan = 300
+
+enum_NPC_Present_JoggingMan = 110
+enum_NPC_Present_CoatedMan = 109
+enum_NPC_Present_CoatedWoman = 108
+enum_NPC_Present_SlimDelinquent = 107
+enum_NPC_Present_BroadDelinquent = 106
+enum_NPC_Present_BlondeElderlyWoman = 105
+enum_NPC_Present_BrunetteAdultManGlasses = 104
+enum_NPC_Present_BlondeOldWomanOrangeSweater = 103
+enum_NPC_Present_BrunetteYoungGirl = 102
+enum_NPC_Present_BrunetteMother = 101
+enum_NPC_Present_BlondeYoungBoy = 100
+
+const_NPCs = {	// TODO add ids to correspnoding code note
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
-	// 		"xxxxxtemplatexxxxxxx": {"MemAddrTalkCount": 0x000000, "MaxTalkCount": 0000}}},
-	"BlondeYoungBoy_Present": { 
+	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": 0x000000, "maxTalkCount": 0000}}},
+	enum_NPC_Present_BlondeYoungBoy: { 
 		"ID": 0x187, "Appearance": {
-			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EEF8, "MaxTalkCount": 2}}},
-	"BrunetteMother_Present": { 
+			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EEF8, "maxTalkCount": 2}}},
+	enum_NPC_Present_BrunetteMother: { 
 		"ID": 0x46,	"Appearance": {
-			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EE92, "MaxTalkCount": 1}}},
-	"BrunetteYoungGirl_Present": { 
+			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE92, "maxTalkCount": 1}}},
+	enum_NPC_Present_BrunetteYoungGirl: { 
 		"ID": 0x42,	"Appearance": {
-			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EE7F, "MaxTalkCount": 1}}},
-	"BlondeOldWomanOrangeSweater_Present": { 
+			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE7F, "maxTalkCount": 1}}},
+	enum_NPC_Present_BlondeOldWomanOrangeSweater: { 
 		"ID": 0x44, "Appearance": {
-			"Chap4_WearingPerformerOutfit": {"MemAddrTalkCount": 0xA9EE88, "MaxTalkCount": 1}}},
-	"BrunetteAdultManGlasses_Present": { 
+			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE88, "maxTalkCount": 1}}},
+	enum_NPC_Present_BrunetteAdultManGlasses: { 
 		"ID": 0x195, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
-	"BlondeElderlyWoman_Present": { 
+	enum_NPC_Present_BlondeElderlyWoman: { 
 		"ID": 0x183, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
-	"BroadDelinquent_Present": { 
+	enum_NPC_Present_BroadDelinquent: { 
 		"ID": 0x10, "Appearance": {
-			"Chap7_CarPark": {"MemAddrTalkCount": 0xA9EE4C, "MaxTalkCount": 1}}},
-	"SlimDelinquent_Present": { 
+			"Chap7_CarPark": {"memAddr_TalkCount": 0xA9EE4C, "maxTalkCount": 1}}},
+	enum_NPC_Present_SlimDelinquent: { 
 		"ID": 0x13, "Appearance": {
-			"Chap7_CarPark": {"MemAddrTalkCount": 0xA9EE51, "MaxTalkCount": 1}}},
-	"CoatedWoman_Present": { 
+			"Chap7_CarPark": {"memAddr_TalkCount": 0xA9EE51, "maxTalkCount": 1}}},
+	enum_NPC_Present_CoatedWoman: { 
 		"ID": 0x57,	"Appearance": {
-			"Chap1Prologue_TownSquare": {"MemAddrTalkCount": 0xA9EE28, "MaxTalkCount": 2},
-			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": {"MemAddrTalkCount": 0xA9EE2C, "MaxTalkCount": 2},
-			"Chap5_NearCafeSonne": {"MemAddrTalkCount": 0xA9EE31, "MaxTalkCount": 1},
-			"Chap7_SouthGate": {"MemAddrTalkCount": 0xA9EE2F, "MaxTalkCount": 2}}},
-	"CoatedMan_Present": { 
+			"Chap1Prologue_TownSquare": {"memAddr_TalkCount": 0xA9EE28, "maxTalkCount": 2},
+			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": {"memAddr_TalkCount": 0xA9EE2C, "maxTalkCount": 2}, // <-- Chap3-4 use same memAddr as they use same dialogue
+			"Chap5_NearCafeSonne": {"memAddr_TalkCount": 0xA9EE31, "maxTalkCount": 1},
+			"Chap7_SouthGate": {"memAddr_TalkCount": 0xA9EE2F, "maxTalkCount": 2}}},
+	enum_NPC_Present_CoatedMan: { 
 		"ID": 0x56, "Appearance": {
-			"Chap1Prologue_NearBar": {"MemAddrTalkCount": 0xA9EE1D, "MaxTalkCount": 2},
-			"Chap3_NearAntiqueShop": {"MemAddrTalkCount": 0xA9EE20, "MaxTalkCount": 2},
-			"Chap4_HaupStrUnderArch": {"MemAddrTalkCount": 0xA9EE21, "MaxTalkCount": 2},
-			"Chap5_NorthEastGate_BrumLibrary": {"MemAddrTalkCount": 0xA9EE25, "MaxTalkCount": 1},
-			"Chap5_NorthEastGate_BrumMuseum": {"MemAddrTalkCount": 0xA9EE26, "MaxTalkCount": 2},
-			"Chap7_NorthWestGate": {"MemAddrTalkCount": 0xA9EE24, "MaxTalkCount": 1}}},
-	"JoggingMan_Present": {
+			"Chap1Prologue_NearBar": {"memAddr_TalkCount": 0xA9EE1D, "maxTalkCount": 2},
+			"Chap3_NearAntiqueShop": {"memAddr_TalkCount": 0xA9EE20, "maxTalkCount": 2},
+			"Chap4_HaupStrUnderArch": {"memAddr_TalkCount": 0xA9EE21, "maxTalkCount": 2},
+			"Chap5_NorthEastGate_BrumLibrary": {"memAddr_TalkCount": 0xA9EE25, "maxTalkCount": 1},
+			"Chap5_NorthEastGate_BrumMuseum": {"memAddr_TalkCount": 0xA9EE26, "maxTalkCount": 2},
+			"Chap7_NorthWestGate": {"memAddr_TalkCount": 0xA9EE24, "maxTalkCount": 1}}},
+	enum_NPC_Present_JoggingMan: {
 		"ID": 0x58},
-	"JoggingMan_80s": {
+	enum_NPC_80s_JoggingMan: {
 		"ID": 0x59},
-	"Barman_80s": { 
+	enum_NPC_80s_Barman: { 
 		"ID": 0xc, "Appearance": {
-			"InsideBar_UsePocketWatchOrEgg": {"MemAddrTalkCount": 0xA9EE49, "MaxTalkCount": 1}}},	// Counts for chap 6-7-8
-	"OlderMan_80s": { 
+			"InsideBar_UsePocketWatchOrEgg": {"memAddr_TalkCount": 0xA9EE49, "maxTalkCount": 1}}},	// Counts for chap 6-7-8
+	enum_NPC_80s_OlderMan: { 
 		"ID": 0x18d, "Appearance": {
-			"Chap6_CafeSonne": {"MemAddrTalkCount": 0xA9EF43, "MaxTalkCount": 2}}},	
-	"StrawHatMan_MiddleAges": { 
+			"Chap6_CafeSonne": {"memAddr_TalkCount": 0xA9EF43, "maxTalkCount": 2}}},	
+	enum_NPC_MiddleAges_StrawHatMan: { 
 		"ID": 0x5c, "Appearance": {
-			"Chap2_Streets_Scare": {"MemAddrTalkCount": 0xA9EE36, "MaxTalkCount": 1}}},
-	"YoungCoupleWoman_MiddleAges": { 
+			"Chap2_Streets_Scare": {"memAddr_TalkCount": 0xA9EE36, "maxTalkCount": 1}}},
+	enum_NPC_MiddleAges_YoungCoupleWoman: { 
 		"ID": 0x197, "Appearance": {
-			"Chap2_WestGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7C, "MaxTalkCount": 1},
-			"Chap2_WestGate_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7D, "MaxTalkCount": 1},
-			"Chap2_EastNearHay_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1},
-			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF7E, "MaxTalkCount": 1},
-			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF80, "MaxTalkCount": 1},
-			"Chap3_OutsideChurch_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF81, "MaxTalkCount": 1},
-			"Chap4_OutsideChurch_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF82, "MaxTalkCount": 1},
-			"Chap4_OutsideChurch_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF83, "MaxTalkCount": 1},	
-			"Chap4_NearBakery_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},	//	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
-			"Chap7_TownSquare": {"MemAddrTalkCount": 0xA9EF84, "MaxTalkCount": 1},						//	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
-			"Chap7_TownSquare_Choice": {"MemAddrTalkCount": 0xA9EF85, "MaxTalkCount": 2}}},
-	"YoungCoupleMan_MiddleAges": { 
+			"Chap2_WestGate_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF7C, "maxTalkCount": 1},
+			"Chap2_WestGate_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF7D, "maxTalkCount": 1},
+			"Chap2_EastNearHay_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF7E, "maxTalkCount": 1},
+			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF7E, "maxTalkCount": 1},
+			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF80, "maxTalkCount": 1},
+			"Chap3_OutsideChurch_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF81, "maxTalkCount": 1},
+			"Chap4_OutsideChurch_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF82, "maxTalkCount": 1},
+			"Chap4_OutsideChurch_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF83, "maxTalkCount": 1},	
+			"Chap4_NearBakery_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF84, "maxTalkCount": 1},	//	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
+			"Chap7_TownSquare": {"memAddr_TalkCount": 0xA9EF84, "maxTalkCount": 1},						//	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
+			"Chap7_TownSquare_Choice": {"memAddr_TalkCount": 0xA9EF85, "maxTalkCount": 2}}},
+	enum_NPC_MiddleAges_YoungCoupleMan: { 
 		"ID": 0x198, "Appearance": {
-			"Chap2_EastNearHay_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF69, "MaxTalkCount": 1},
-			"Chap2_EastNearHay_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6A, "MaxTalkCount": 1},
-			"Chap2_WestGate_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6B, "MaxTalkCount": 1},
-			"Chap3_NearWell_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6C, "MaxTalkCount": 1},
-			"Chap3_NearWell_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6D, "MaxTalkCount": 1},
-			"Chap3_TownSquare_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF6E, "MaxTalkCount": 1},
-			"Chap4_TownSquare_BeforeTalkingToBoth": {"MemAddrTalkCount": 0xA9EF6F, "MaxTalkCount": 1},
-			"Chap4_TownSquare_AfterTalkingToBoth": {"MemAddrTalkCount": 0xA9EF70, "MaxTalkCount": 1},
-			"Chap4_NearBakery_AfterLocationSwitch": {"MemAddrTalkCount": 0xA9EF71, "MaxTalkCount": 1},
-			"Chap5_NearSouthEastGate": {"MemAddrTalkCount": 0xA9EF72, "MaxTalkCount": 2},
-			"Chap7_OutsideChurch": {"MemAddrTalkCount": 0xA9EF74, "MaxTalkCount": 2},
-			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"MemAddrTalkCount": 0xA9EF78, "MaxTalkCount": 1}}},
-	"EccentricGirl_MiddleAges": { 
+			"Chap2_EastNearHay_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF69, "maxTalkCount": 1},
+			"Chap2_EastNearHay_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF6A, "maxTalkCount": 1},
+			"Chap2_WestGate_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF6B, "maxTalkCount": 1},
+			"Chap3_NearWell_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF6C, "maxTalkCount": 1},
+			"Chap3_NearWell_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF6D, "maxTalkCount": 1},
+			"Chap3_TownSquare_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF6E, "maxTalkCount": 1},
+			"Chap4_TownSquare_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF6F, "maxTalkCount": 1},
+			"Chap4_TownSquare_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF70, "maxTalkCount": 1},
+			"Chap4_NearBakery_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF71, "maxTalkCount": 1},
+			"Chap5_NearSouthEastGate": {"memAddr_TalkCount": 0xA9EF72, "maxTalkCount": 2},
+			"Chap7_OutsideChurch": {"memAddr_TalkCount": 0xA9EF74, "maxTalkCount": 2},
+			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"memAddr_TalkCount": 0xA9EF78, "maxTalkCount": 1}}},
+	enum_NPC_MiddleAges_EccentricGirl: { 
 		"ID": 0x2e, "Appearance": {
-			"Chap2_TownSquare_Scare": {"MemAddrTalkCount": 0xA9EE70, "MaxTalkCount": 1}}},
-	"AspiringApprentice_MiddleAges": {
+			"Chap2_TownSquare_Scare": {"memAddr_TalkCount": 0xA9EE70, "maxTalkCount": 1}}},
+	enum_NPC_MiddleAges_AspiringApprentice: {
 		"ID": 0x5d, "Appearance": {
-			"Chap2_SouthEastGate_Scare": {"MemAddrTalkCount": 0xA9EE3F, "MaxTalkCount": 1}}}}
+			"Chap2_SouthEastGate_Scare": {"memAddr_TalkCount": 0xA9EE3F, "maxTalkCount": 1}}}}
+
+function get_NPC_Id(enum_npc) => 
+	const_NPCs[enum_npc]["ID"]
+
+function get_NPC_MaxTalkCount(enum_npc, string_appearance) => 
+	const_NPCs[enum_npc]["Appearance"][string_appearance]["maxTalkCount"]
+
+function current_NPCtalkCount(enum_npc, string_appearance) {
+	let_memAddr = const_NPCs[enum_npc]["Appearance"][string_appearance]["memAddr_TalkCount"]
+	return byte(let_memAddr)}
+
+function prior_NPCtalkCount(enum_npc, string_appearance) =>
+	prior(current_NPCtalkCount(enum_npc, string_appearance))
+
+function prev_NPCtalkCount(enum_npc, string_appearance) =>
+	prev(current_NPCtalkCount(enum_npc, string_appearance))
+
+function on_NPC_TalkCount_hitsMax(enum_npc, string_appearance) {
+	let_maxTalkCount = get_NPC_MaxTalkCount(enum_npc, string_appearance)
+	return 
+		prev_NPCtalkCount(enum_npc, string_appearance) == let_maxTalkCount - 1 &&	
+		current_NPCtalkCount(enum_npc, string_appearance)  == let_maxTalkCount}
+
+function on_NPC_TalkCount_increase(enum_npc, string_appearance) {
+	let_talkCount = current_NPCtalkCount(enum_npc, string_appearance)
+	return 
+		let_talkCount > prev(let_talkCount)}
+
+function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance) => 
+	prior_NPCtalkCount(enum_npc, string_appearance) < 0x1 &&
+	current_NPCtalkCount(enum_npc, string_appearance) == 0x1
+
+function is_NPCtalkCount_atMax(enum_npc, string_appearance) => 
+	current_NPCtalkCount(enum_npc, string_appearance) == get_NPC_MaxTalkCount(enum_npc, string_appearance)
+
+function is_TalkingToNPC_bis(enum_npc) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
+	dword(0xA9EFF4) == get_NPC_Id(enum_npc)		// - Resets to 0x0 when interaction is done
+
+function is_TalkingToNPC(enum_npc) {					// $A9EFDC: [25-bit Pointer] Interactions
+	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - [32-bit] NPC ID	
+	//		PSP uses 25-bit pointers					// 		| - Unique per interactable NPC or environment item
+	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff		// 		| - This value is copied to 0xa9eff4 (refer to notes)
+	return 
+		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}
+
+// -------------------------------------
 const_interactables = {
 	"Antique_FranssenShopSign": 0x8e,
 	"Antique_Rope": 0x98,
@@ -233,48 +302,10 @@ const_interactables = {
 	"Painting_CollapsedHouse": 0x168,
 	"Painting_TowerView": 0x163,
 	"Painting_LandscapeTown": 0x169,
-	"Painting_Alchemist": 0x167}
-
-function getMaxTalkCountFor(string_NPC, string_appearance) => 
-	const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]
-
-function isNPCtalkCountIncreasingToMax(string_NPC, string_appearance) {
-	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
-	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
-	let_maxTalkCount = let_NPCappearance["MaxTalkCount"]
-	return 
-		let_talkCount == let_maxTalkCount &&
-		prev(let_talkCount) == let_maxTalkCount - 1}
-
-function isNPCtalkCountIncreasing(string_NPC, string_appearance) {
-	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
-	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
-	return 
-		let_talkCount > prev(let_talkCount)}
-
-function isTalkingToNPCForFirstTime(string_NPC, string_appearance) {
-	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
-	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
-	return let_talkCount == 0x1}
-
-function isNPCtalkCountAtMax(string_NPC, string_appearance) {
-	let_NPCappearance = const_NPCs[string_NPC]["Appearance"][string_appearance]
-	let_talkCount = byte(let_NPCappearance["MemAddrTalkCount"])
-	return 
-		let_talkCount == const_NPCs[string_NPC]["Appearance"][string_appearance]["MaxTalkCount"]}
-
-function isTalkingTo_shortHand(string_NPC) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
-	dword(0xA9EFF4) == const_NPCs[string_NPC]["ID"]	// - Resets to 0x0 when interaction is done
-
-function isTalkingTo(string_NPC) {						// $A9EFDC: [25-bit Pointer] Interactions
-	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - [32-bit] NPC ID	
-	//		PSP uses 25-bit pointers					// 		| - Unique per interactable NPC or environment item
-	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff		// 		| - This value is copied to 0xa9eff4 (refer to notes)
-	return 
-		const_NPCs[string_NPC]["ID"] == dword(let_maskedPointer)}
+	"Painting_Alchemist": 0x167}		
 
 function isInteractingWith_shortHand(string_interactable) => 
-	dword(0xA9EFF4) == const_interactables[string_NPC]
+	dword(0xA9EFF4) == const_interactables[enum_NPC]
 
 function isInteractingWith(string_interactable) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
@@ -412,81 +443,101 @@ function isCurrentMapScene(string_mapId) => 	// $A82E48: [32-bit] Current loaded
 // *****************
 // ◦ CHAPTER LOGIC ◦
 // *****************
-const_chapterIDs = {
-	"Prologue": 0x1,	// Also counts for EX chapter
-	"Chapter1": 0x2,
-	"Chapter2": 0x3,
-	"Chapter3": 0x4,
-	"Chapter4": 0x5,
-	"Chapter5": 0x6,
-	"Chapter6": 0x7,
-	"Chapter7": 0x8,
-	"Chapter8_Ancestress": 0x9,		// If in chapter 5, player told Margarette she's your ancestress
-	"Epilogue_Ancestress": 0xa,
-	"Chapter8_NoAncestress": 0xb,	// If in chapter 5, player told Margarette she's NOT your ancestress
-	"Epilogue_NoAncestress": 0xc}
-function getChapterId() => 	// $B95704: [8-bit] Chapter ID
-	byte(0xB95704)
-function isCurrentChapter(string_chapter) {	
-	if (string_chapter == "Chapter8") {
-		return
-			(getChapterId() == const_chapterIDs["Chapter8_Ancestress"] || getChapterId() == const_chapterIDs["Chapter8_NoAncestress"])
-	} else if (string_chapter == "Epilogue") {
-		return
-			(getChapterId() == const_chapterIDs["Epilogue_Ancestress"] || getChapterId() == const_chapterIDs["Epilogue_NoAncestress"])
-	} else {
-		return
-			getChapterId() == const_chapterIDs[string_chapter]
-	}} 
+enum_Chapter_Epilogue_NoAncestress = 122
+enum_Chapter_Epilogue_Ancestress = 121
+enum_Chapter_Epilogue = 120
+enum_Chapter_Chapter8_NoAncestress = 112 	// <-- If in chapter 5, player told Margarette she is NOT an ancestress
+enum_Chapter_Chapter8_Ancestress = 111		// <-- If in chapter 5, player told Margarette she is an ancestress
+enum_Chapter_Chapter8 = 110
+enum_Chapter_Chapter7 = 107
+enum_Chapter_Chapter6 = 106
+enum_Chapter_Chapter5 = 105
+enum_Chapter_Chapter4 = 104
+enum_Chapter_Chapter3 = 103
+enum_Chapter_Chapter2 = 102
+enum_Chapter_Chapter1 = 101
+enum_Chapter_Prologue = 100
 
-function isChapterFinishing(string_chapter) { 
-	if (string_chapter == "Chapter7") {
-		return 
-			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
-			(
-				getChapterId() == const_chapterIDs["Chapter8_Ancestress"] 	|| 
-				getChapterId() == const_chapterIDs["Chapter8_NoAncestress"] 
-			)
-	} else if (string_chapter == "Chapter8_Ancestress"){
-		return
-			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
-			getChapterId() == const_chapterIDs["Epilogue_Ancestress"]
-	} else if (string_chapter == "Chapter8_NoAncestress"){
-		return
-			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
-			getChapterId() == const_chapterIDs["Epilogue_NoAncestress"]
-	} else {
-		return
-			prev(getChapterId()) == const_chapterIDs[string_chapter] &&
-			getChapterId() == const_chapterIDs[string_chapter] + 0x1
+const_chapterIDs = {
+	enum_Chapter_Prologue: 0x1,	// Also counts for EX chapter
+	enum_Chapter_Chapter1: 0x2,
+	enum_Chapter_Chapter2: 0x3,
+	enum_Chapter_Chapter3: 0x4,
+	enum_Chapter_Chapter4: 0x5,
+	enum_Chapter_Chapter5: 0x6,
+	enum_Chapter_Chapter6: 0x7,
+	enum_Chapter_Chapter7: 0x8,
+	enum_Chapter_Chapter8_Ancestress: 0x9,
+	enum_Chapter_Epilogue_Ancestress: 0xa,
+	enum_Chapter_Chapter8_NoAncestress: 0xb,
+	enum_Chapter_Epilogue_NoAncestress: 0xc}
+
+function get_ChapterID(enum_chapter) =>
+	const_chapterIDs[enum_chapter]
+
+function current_ChapterID() => 	// $B95704: [8-bit] Chapter ID
+	byte(0xB95704)
+
+function prev_ChapterID() =>
+	prev(current_ChapterID())
+
+function is_Chapter(enum_chapter) {	
+	if (enum_chapter == enum_Chapter_Chapter8) { return
+		(
+			is_Chapter(enum_Chapter_Chapter8_NoAncestress) 	|| 
+			is_Chapter(enum_Chapter_Chapter8_Ancestress)
+		)
+	} else if (enum_chapter == enum_Chapter_Epilogue) {	return
+		(
+			is_Chapter(enum_Chapter_Epilogue_NoAncestress) 	|| 
+			is_Chapter(enum_Chapter_Epilogue_Ancestress)
+		)
+	} else { return
+		current_ChapterID() == get_ChapterID(enum_chapter)
 	}}
 
-function isChapterChanging() => 
-	getChapterId() != prev(getChapterId())
+function on_Chapter_finish(enum_chapter) {
+	if (enum_chapter == enum_Chapter_Chapter7) { return 
+		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter7) &&
+		is_Chapter(enum_Chapter_Chapter8)
+	} else if (enum_chapter == enum_Chapter_Chapter8_Ancestress){ return
+		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_Ancestress) &&		
+		is_Chapter(enum_Chapter_Epilogue_Ancestress)
+	} else if (enum_chapter == enum_Chapter_Chapter8_NoAncestress){ return
+		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_NoAncestress) &&		
+		is_Chapter(enum_Chapter_Epilogue_NoAncestress)
+	} else { return
+		prev_ChapterID() == get_ChapterID(enum_chapter) &&
+		current_ChapterID() == get_ChapterID(enum_chapter) + 0x1
+	}}
 
-function isChapterChangingTo(string_chapter) {
-	let_currentChapterId = getChapterId()
-	if (string_chapter == "Chapter8") {
-		return 
-			prev(let_currentChapterId) != const_chapterIDs["Chapter8_Ancestress"]	&&
-			prev(let_currentChapterId) != const_chapterIDs["Chapter8_NoAncestress"] &&
+function on_Chapter_change() => 
+	current_ChapterID() != prev_ChapterID()
+
+function on_Chapter_changeTo(enum_chapter) {
+	if (enum_chapter == enum_Chapter_Chapter8) { return
+		(
 			(
-				let_currentChapterId == const_chapterIDs["Chapter8_Ancestress"] || 
-				let_currentChapterId == const_chapterIDs["Chapter8_NoAncestress"]
+				prev_ChapterID() != get_ChapterID(enum_Chapter_Chapter8_Ancestress) && 
+				current_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_Ancestress)
+			) || (
+				prev_ChapterID() != get_ChapterID(enum_Chapter_Chapter8_NoAncestress) && 
+				current_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_NoAncestress)
 			)
-	} else if (string_chapter == "Epilogue") {
-		return 
-			prev(let_currentChapterId) != const_chapterIDs["Epilogue_Ancestress"]	&&
-			prev(let_currentChapterId) != const_chapterIDs["Epilogue_NoAncestress"] &&
+		)
+	} else if (enum_chapter == enum_Chapter_Epilogue) { return
+		(
 			(
-				let_currentChapterId == const_chapterIDs["Epilogue_Ancestress"] || 
-				let_currentChapterId == const_chapterIDs["Epilogue_NoAncestress"]
+				prev_ChapterID() != get_ChapterID(enum_Chapter_Epilogue_Ancestress) && 
+				current_ChapterID() == get_ChapterID(enum_Chapter_Epilogue_Ancestress)
+			) || (
+				prev_ChapterID() != get_ChapterID(enum_Chapter_Epilogue_NoAncestress) && 
+				current_ChapterID() == get_ChapterID(enum_Chapter_Epilogue_NoAncestress)
 			)
-	} else {
-		let_chapterId = const_chapterIDs[string_chapter]
-		return 
-			prev(let_currentChapterId) != let_chapterId &&
-			let_currentChapterId == let_chapterId
+		)
+	} else { return 
+		prev_ChapterID() != get_ChapterID(enum_chapter) &&
+		current_ChapterID() == get_ChapterID(enum_chapter)
 	}}
 
 
@@ -701,17 +752,17 @@ function isInResultsMenu() => 					// $AC49F4: [32-bit] Menu ID
 												// 		0x4 => at extra menu					0x1a => In sound mode menu
 												// 		0x12 => at event viewer menu			0xb => viewing ending file
 
-function isResultsMenuHighlightedChapter(string_chapter) {
+function isResultsMenuHighlightedChapter(enum_chapter) {
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
 	let_resultsMenuHighlightedChapterId = 0 
-	if (string_chapter == "Chapter8") {
+	if (enum_chapter == "Chapter8") {
 		let_resultsMenuHighlightedChapterId = 0x8
-	} else if (string_chapter == "Epilogue") {
+	} else if (enum_chapter == "Epilogue") {
 		let_resultsMenuHighlightedChapterId = 0x9
-	} else if (string_chapter == "Total") {
+	} else if (enum_chapter == "Total") {
 		let_resultsMenuHighlightedChapterId = 0xa
 	} else {
-		let_resultsMenuHighlightedChapterId = const_chapterIDs[string_chapter] - 1
+		let_resultsMenuHighlightedChapterId = get_ChapterID(enum_chapter) - 1
 	}
 	return			
 		isInResultsMenu() &&
@@ -1349,7 +1400,7 @@ achievements_typeByCategory = {
 // • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, dict_BitFlags) {
+function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict_BitFlags) {	// TODO Refactor --> Total into another function
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
@@ -1365,14 +1416,14 @@ function achievements_generate_FullTrigger_MaxAchievementRate(string_chapter, di
 	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
 	let_deltaComparison = let_arithmeticSumOfExpression < let_totalAmountOfBitFlags 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
 
-	if (string_chapter == "Total") {
+	if (enum_chapter == "Total") {
 		return 
 			let_deltaComparison && 
 			measured(let_measuredComparison, when = isInGame(), format = "percent")
 	} else {
 		return 
 			let_deltaComparison && 
-			measured(let_measuredComparison, when = isCurrentChapter(string_chapter) && isInGame(), format = "percent")
+			measured(let_measuredComparison, when = is_Chapter(enum_chapter) && isInGame(), format = "percent")
 	}}
 
 function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
@@ -1431,7 +1482,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => watching performer
-					isFullCutsceneActive() && isCurrentChapter("Prologue") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Prologue) &&
 					isCurrentCutsceneMasterId(0x22480)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1439,7 +1490,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0xe10)
 				) &&
 				once(	// Identifies cutscene => shadow/killer walking behind Eike
-					isFullCutsceneActive() && isCurrentChapter("Prologue") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Prologue) &&
 					isCurrentCutsceneMasterId(0x90bc0)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1448,7 +1499,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Prologue")
+				on_Chapter_finish(enum_Chapter_Prologue)
 			)
 		)},
 	"a_Chapter1Complete": function Chapter1Complete() { return
@@ -1459,7 +1510,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => burning bar changes into non-burning
-					isFullCutsceneActive() && isCurrentChapter("Chapter1") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter1) &&
 					isCurrentCutsceneMasterId(0x11a40)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1468,7 +1519,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Chapter1")
+				on_Chapter_finish(enum_Chapter_Chapter1)
 			)
 		)},
 	"a_Chapter2Complete": function Chapter2Complete() { return
@@ -1477,9 +1528,10 @@ achievements_triggers = {
 			isEventViewerActive()	
 		) &&		
 		(
-			(	// Alt 1 => Normal way of identifying cutscenes				
+			(	// Alt 1 => Normal way of identifying cutscenes	
+				// never(!is_Chapter(enum_Chapter_Chapter2)) // TODO refactor is_Chapter(enum_Chapter_Chapter2) inside once to here
 				once(	// Identifies Cutscene => reminiscing about Dana: left in the past
-					isFullCutsceneActive() && isCurrentChapter("Chapter2") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter2) &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x3b240)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1488,7 +1540,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x7130)
 				) &&
 				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-					isFullCutsceneActive() && isCurrentChapter("Chapter2") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter2) &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x3b240)		&&
 					isCurrentCutsceneSectionId_1(0x3)		&&
@@ -1498,7 +1550,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Chapter2")
+				on_Chapter_finish(enum_Chapter_Chapter2)
 			)
 		)},
 	"a_Chapter3Complete": function Chapter3Complete() { return
@@ -1509,7 +1561,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter3) &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x19d80)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1518,7 +1570,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x11ac0)
 				) &&
 				once(	// Identifies Cutscene => Back to Eckart and breaking vase
-					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter3)  &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0xcfb40)		&& isPriorCutsceneMasterId(0x19d80) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1527,7 +1579,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x387a0)
 				) &&
 				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					isFullCutsceneActive() && isCurrentChapter("Chapter3") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter3)  &&
 					isCurrentSelectedInventoryItem("D-pad")	&&
 					isCurrentCutsceneMasterId(0x39680)		&& isPriorCutsceneMasterId(0xcfb40) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
@@ -1537,7 +1589,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Chapter3")
+				on_Chapter_finish(enum_Chapter_Chapter3)
 			)
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
@@ -1550,7 +1602,7 @@ achievements_triggers = {
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with pan 
-					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter4) &&
 					isCurrentCutsceneMasterId(0x4f200)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1560,7 +1612,7 @@ achievements_triggers = {
 				isCutsceneEnding()
 			) || ( // Alt 2 
 				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter4) &&
 					isCurrentCutsceneMasterId(0x54580)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1569,7 +1621,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 3; Failsafe
-				isChapterFinishing("Chapter4")
+				on_Chapter_finish(enum_Chapter_Chapter4)
 			)
 		)},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
@@ -1582,7 +1634,7 @@ achievements_triggers = {
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-					isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter4) &&
 					isCurrentCutsceneMasterId(0x54580)		&&
 					isCurrentCutsceneSectionId_1(0xd)		&&
 					isCurrentCutsceneSectionId_2(0xe)		&&
@@ -1591,7 +1643,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2
-				isChapterFinishing("Chapter4")
+				on_Chapter_finish(enum_Chapter_Chapter4)
 			)
 		)},
 	"a_Chapter5Complete": function Chapter5Complete() { return
@@ -1602,7 +1654,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				once(	// Identifies Cutscene => drinking antidote
-					isFullCutsceneActive() && isCurrentChapter("Chapter5") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter5) &&
 					isCurrentSelectedInventoryItem("Antidote")	&&
 					isCurrentCutsceneMasterId(0x3f980)			&&
 					isCurrentCutsceneSectionId_1(0xffff)		&&
@@ -1612,7 +1664,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Chapter5")
+				on_Chapter_finish(enum_Chapter_Chapter5)
 			)
 		)},
 	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
@@ -1635,7 +1687,7 @@ achievements_triggers = {
 				) && 
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe
-				isChapterFinishing("Chapter6")
+				on_Chapter_finish(enum_Chapter_Chapter6)
 			)
 		)},
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
@@ -1658,7 +1710,7 @@ achievements_triggers = {
 				) && 
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe
-				isChapterFinishing("Chapter6")
+				on_Chapter_finish(enum_Chapter_Chapter6)
 			)
 		)},
 	"a_Chapter7Complete": function Chapter7Complete() { return
@@ -1669,7 +1721,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
 				once(	// Identifies Cutscene => Holding onto rope 
-					isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter7) &&
 					isCurrentCutsceneMasterId(0x43040)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1678,7 +1730,7 @@ achievements_triggers = {
 				) &&
 				tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
 					once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
-						isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
+						isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter7) &&
 						isMargaretteAncestor() &&
 						isCurrentCutsceneMasterId(0xc6800)		&&
 						isCurrentCutsceneSectionId_1(0x5)		&&
@@ -1686,7 +1738,7 @@ achievements_triggers = {
 						isCurrentCutsceneMasterDataId(0x45720)	&&
 						isCurrentCutsceneSectionDataId(0x6ccd0)),
 					once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
-						isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
+						isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter7) &&
 						isMargaretteNoAncestor() &&
 						isCurrentCutsceneMasterId(0xd1bc0)		&&
 						isCurrentCutsceneSectionId_1(0x3)		&&
@@ -1695,7 +1747,7 @@ achievements_triggers = {
 						isCurrentCutsceneSectionDataId(0x5b190))]
 				) &&
 				once(	// Identifies Cutscene => Looking at painting of Dana
-					isFullCutsceneActive() && isCurrentChapter("Chapter7") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter7) &&
 					isCurrentCutsceneMasterId(0x12040)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1704,7 +1756,7 @@ achievements_triggers = {
 				) &&
 				isCutsceneEnding()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				isChapterFinishing("Chapter7")
+				on_Chapter_finish(enum_Chapter_Chapter7)
 			)
 		)},
 	"a_Chapter8Complete": function Chapter8Complete() { return
@@ -1715,7 +1767,7 @@ achievements_triggers = {
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0x8b640)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1723,7 +1775,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x42750)
 				) &&
 				once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0x10ef00)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0x8)		&&
@@ -1731,7 +1783,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0xf4d0)
 				) &&
 				once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0xe4800)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0xa)		&&
@@ -1743,7 +1795,7 @@ achievements_triggers = {
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0xd5440)		&&
 					isCurrentCutsceneSectionId_1(0x7)		&&
 					isCurrentCutsceneSectionId_2(0x6)		&&
@@ -1751,7 +1803,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x2b420)
 				) &&
 				once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0x716c0)		&&
 					isCurrentCutsceneSectionId_1(0x9)		&&
 					isCurrentCutsceneSectionId_2(0xa)		&&
@@ -1759,7 +1811,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x19ef0)
 				) &&
 				once(	// Identifies Cutscene => Eike consoling Margarette
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0xf3c80)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1770,7 +1822,7 @@ achievements_triggers = {
 				isCutsceneEnding()
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0xfbd00)		&&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1778,7 +1830,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x26f30)
 				) &&
 				once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0xc4e40)		&& isPriorCutsceneMasterId(0xfbd00) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1789,7 +1841,7 @@ achievements_triggers = {
 				isCutsceneEnding()
 			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_Ancestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
 					isCurrentCutsceneMasterId(0x1cbc0)		&&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1800,7 +1852,7 @@ achievements_triggers = {
 				isCutsceneEnding()
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
-					isFullCutsceneActive()  && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive()  && is_Chapter(enum_Chapter_Chapter8_NoAncestress) &&
 					isCurrentCutsceneMasterId(0x77a40)		&& isPriorCutsceneMasterId(0x29700) &&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1808,7 +1860,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x45a10)
 				) &&
 				once(	// Identifies Cutscene => Eike confronts Hugo at square
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_NoAncestress) &&
 					isCurrentCutsceneMasterId(0x4b140)		&& isPriorCutsceneMasterId(0x77a40) &&
 					isCurrentCutsceneSectionId_1(0x5)		&&
 					isCurrentCutsceneSectionId_2(0x4)		&&
@@ -1816,7 +1868,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x189f0)
 				) &&
 				once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_NoAncestress) &&
 					isCurrentCutsceneMasterId(0xc9440)		&& isPriorCutsceneMasterId(0xa00c0) &&
 					isCurrentCutsceneSectionId_1(0x3)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1827,7 +1879,7 @@ achievements_triggers = {
 				isCutsceneEnding()				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
 				once(	// Identifies Cutscene => Brought Margarette to present
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_NoAncestress) &&
 					isCurrentCutsceneMasterId(0x101bc0)		&&
 					isCurrentCutsceneSectionId_1(0x1)		&&
 					isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1835,7 +1887,7 @@ achievements_triggers = {
 					isCurrentCutsceneSectionDataId(0x725d0)
 				) &&
 				once(	// Identifies Cutscene => Margarette confronts Hugo in square
-					isFullCutsceneActive() && isCurrentChapter("Chapter8_NoAncestress") &&
+					isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter8_NoAncestress) &&
 					isCurrentCutsceneMasterId(0x137500)		&& isPriorCutsceneMasterId(0x101bc0) &&
 					isCurrentCutsceneSectionId_1(0xc)		&&
 					isCurrentCutsceneSectionId_2(0xd)		&&
@@ -1845,39 +1897,39 @@ achievements_triggers = {
 				isDanaSavedFromPast() && isMargaretteNoAncestor() &&
 				isCutsceneEnding()
 			) || // Alt 7+8 => Failsafe; triggers on chapter change
-			isChapterFinishing("Chapter8_Ancestress") ||
-			isChapterFinishing("Chapter8_NoAncestress")
+			on_Chapter_finish(enum_Chapter_Chapter8_Ancestress) ||
+			on_Chapter_finish(enum_Chapter_Chapter8_NoAncestress)
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Prologue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Prologue", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Prologue, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter1"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter1", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter1, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter2"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter2", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter2, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter3"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter3", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter3, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter4"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter4", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter4, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter5"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter5", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter5, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter6"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter6", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter6, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter7"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter7", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter7, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter8"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Chapter8", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter8, let_PercentageBitFlags)},
 	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate("Epilogue", let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Epilogue, let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
 		return achievements_generate_FullTrigger_MaxAchievementRate("Total", memUtil_allPercentageBitFlagsToOneDict())},
 	"a_EndingA": function EndingA() { return
@@ -1887,7 +1939,7 @@ achievements_triggers = {
 			isViewingEndingFileInExtraMenu("A")
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0xdb780)		&&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1895,7 +1947,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x32ce0)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x77f80)		&& isPriorCutsceneMasterId(0xdb780) &&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1916,7 +1968,7 @@ achievements_triggers = {
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus
-		// 	isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+		// 	isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 		// 	isCurrentCutsceneMasterId(0x3dd40)		&&
 		// 	isCurrentCutsceneSectionId_1(0x3)		&&
 		// 	isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1924,7 +1976,7 @@ achievements_triggers = {
 		// 	isCurrentCutsceneSectionDataId(0x1ed10)
 		// ) &&
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus part2
-		// 	isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+		// 	isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 		// 	isCurrentCutsceneMasterId(0x81b00)		&& isPriorCutsceneMasterId(0x3dd40) &&
 		// 	isCurrentCutsceneSectionId_1(0x1)		&&
 		// 	isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1934,7 +1986,7 @@ achievements_triggers = {
 
 		// Below 2 cutscenes run up to ending credits
 		once(	// Identifies Cutscene => Eike returns from sending Margarette back to past
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x613c0)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1942,7 +1994,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x1d5d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x56240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1961,7 +2013,7 @@ achievements_triggers = {
 			isViewingEndingFileInExtraMenu("B")
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x91240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1969,7 +2021,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x5d2c0)		&& isPriorCutsceneMasterId(0x91240) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -1977,7 +2029,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x56240)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -1996,7 +2048,7 @@ achievements_triggers = {
 			isViewingEndingFileInExtraMenu("C")
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x8cf00)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2004,7 +2056,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0x7b140)		&& isPriorCutsceneMasterId(0x8cf00) &&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2012,7 +2064,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_Ancestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			isCurrentCutsceneMasterId(0xcb700)		&& isPriorCutsceneMasterId(0x7b140) &&
 			isCurrentCutsceneSectionId_1(0x5)		&&
 			isCurrentCutsceneSectionId_2(0x6)		&&
@@ -2031,7 +2083,7 @@ achievements_triggers = {
 			isViewingEndingFileInExtraMenu("D")
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
 			isCurrentCutsceneMasterId(0x709c0)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x4)		&&
@@ -2039,7 +2091,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x11790)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
 			isCurrentCutsceneMasterId(0xc5b40)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x4)		&&
@@ -2058,7 +2110,7 @@ achievements_triggers = {
 			isViewingEndingFileInExtraMenu("E")
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
 			isCurrentCutsceneMasterId(0x88dc0)		&&
 			isCurrentCutsceneSectionId_1(0x3)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2066,7 +2118,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x5ca00)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and Dr. Wagner is killed
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
 			isCurrentCutsceneMasterId(0xbef80)		&&
 			isCurrentCutsceneSectionId_1(0x9)		&&
 			isCurrentCutsceneSectionId_2(0x8)		&&
@@ -2074,7 +2126,7 @@ achievements_triggers = {
 			isCurrentCutsceneSectionDataId(0x155e0)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
-			isFullCutsceneActive() && isCurrentChapter("Epilogue_NoAncestress") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
 			isCurrentCutsceneMasterId(0xcdcc0)		&& isPriorCutsceneMasterId(0xbef80) &&
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x2)		&&
@@ -2094,7 +2146,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
 			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isPrologueInExMode() &&	is_Chapter(enum_Chapter_Prologue) &&
 			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0xa7a80)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -2105,7 +2157,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x41b0,0x28)
 		) && 
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			isCurrentChapter("Prologue") 			&&
+			is_Chapter(enum_Chapter_Prologue) 			&&
 			isCurrentCutsceneMasterId(0x67940)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2124,7 +2176,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
 			isFullCutsceneActive() && isItemInInventory("PhilosopherStone") &&
-			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isPrologueInExMode() &&	is_Chapter(enum_Chapter_Prologue) &&
 			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0x58c00)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -2135,7 +2187,7 @@ achievements_triggers = {
 			isCurrentMinorCutsceneId(0x11bc0,0x28)
 		) &&
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			isCurrentChapter("Prologue") 			&&
+			is_Chapter(enum_Chapter_Prologue) 			&&
 			isCurrentCutsceneMasterId(0x67940)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
 			isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2168,7 +2220,7 @@ achievements_triggers = {
 			(	// Alt 1: otherwise pause can lock the reset
 				never(	// Reset measure when chapter changes or when using digipad
 					isEnergyUnitsDecreasing()	||
-					isChapterChanging()			||
+					on_Chapter_change()			||
 					!isInGame()) 
 			) || ( // Alt 2: always_false to create 1 functional alt group
 				always_false()
@@ -2185,7 +2237,7 @@ achievements_triggers = {
 			(	// Alt 1: otherwise pause can lock the reset
 				never(	// Reset measure when chapter changes or when using digipad
 					isEnergyUnitsDecreasing()	||
-					isChapterChanging()			||
+					on_Chapter_change()			||
 					!isInGame()) 
 			) || ( // Alt 2: always_false to create 1 functional alt group
 				always_false()
@@ -2204,7 +2256,7 @@ achievements_triggers = {
 			(	// Alt 1: otherwise pause can lock the reset
 				never(	// Reset measure when chapter changes or when using digipad
 					isEnergyUnitsDecreasing()	||
-					isChapterChanging()			||
+					on_Chapter_change()			||
 					!isInGame()) 
 			) || ( // Alt 2: always_false to create 1 functional alt group
 				always_false()
@@ -2214,7 +2266,7 @@ achievements_triggers = {
 		// Core group
 		never(	// Reset when chapter changes or when using digipad
 			isEnergyUnitsDecreasing() 	||
-			isChapterChanging()			||
+			on_Chapter_change()			||
 			!isInGame()					||
 			(isWearingPerformerOutfit() && isCurrentMapScene("PresentDayCity"))	// --> Fix for bug, where player could pick up the energy orb in the 
 		) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
@@ -2233,10 +2285,10 @@ achievements_triggers = {
 			isEventViewerActive()
 		) &&
 		never (
-			!isCurrentChapter("Chapter6") && 
-			!isCurrentChapter("Chapter7") &&
-			!isCurrentChapter("Chapter8_Ancestress") &&
-			!isCurrentChapter("Chapter8_NoAncestress")
+			!is_Chapter(enum_Chapter_Chapter6) && 
+			!is_Chapter(enum_Chapter_Chapter7) &&
+			!is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
+			!is_Chapter(enum_Chapter_Chapter8_NoAncestress)
 		) &&
 		once(	// Identifies Cutscene => Showing Franssen in 1902 the pocket watch
 			isFullCutsceneActive() && isCurrentSelectedInventoryItem("EggPocketWatch") &&
@@ -2252,7 +2304,7 @@ achievements_triggers = {
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(
 			!isInGame() 				||
-			!isCurrentChapter("Chapter4")	||
+			!is_Chapter(enum_Chapter_Chapter4)	||
 			isEventViewerActive()
 		) &&
 		tally(1, [
@@ -2275,7 +2327,7 @@ achievements_triggers = {
 	"a_MeetOldMiriam": function MeetOldMiriam() { return 
 		never(
 			!isInGame() 				||
-			!isCurrentChapter("Chapter7")	||
+			!is_Chapter(enum_Chapter_Chapter7)	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
@@ -2306,7 +2358,7 @@ achievements_triggers = {
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never (
 			!isInGame() 					||
-			!isCurrentChapter("Chapter1") 	||
+			!is_Chapter(enum_Chapter_Chapter1) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
@@ -2325,7 +2377,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
 			isFullCutsceneActive() &&
-			isPrologueInExMode() &&	isCurrentChapter("Prologue") &&
+			isPrologueInExMode() &&	is_Chapter(enum_Chapter_Prologue) &&
 			isExChapterUnlocked() &&
 			isCurrentCutsceneMasterId(0x30780)		&& 
 			isCurrentCutsceneSectionId_1(0x1)		&&
@@ -2341,7 +2393,7 @@ achievements_triggers = {
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!isInGame() 					||
-			!isCurrentChapter("Chapter1") 	||
+			!is_Chapter(enum_Chapter_Chapter1) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Warning barman of fire 
@@ -2359,14 +2411,14 @@ achievements_triggers = {
 			isEventViewerActive()
 		) &&
 		never (
-			!isCurrentChapter("Chapter1") && 
-			!isCurrentChapter("Chapter3") && 
-			!isCurrentChapter("Chapter4") 
+			!is_Chapter(enum_Chapter_Chapter1) && 
+			!is_Chapter(enum_Chapter_Chapter3) && 
+			!is_Chapter(enum_Chapter_Chapter4) 
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4
 				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg")	&&
-				(isCurrentChapter("Chapter1") || isCurrentChapter("Chapter4"))	&&
+				(is_Chapter(enum_Chapter_Chapter1) || is_Chapter(enum_Chapter_Chapter4))	&&
 				isCurrentCutsceneMasterId(0x2f9c0)		&& 
 				isCurrentCutsceneSectionId_1(0x1)		&&
 				isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2374,7 +2426,7 @@ achievements_triggers = {
 				isCurrentCutsceneSectionDataId(0x5c20)),
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
 				isFullCutsceneActive() && isItemInInventory("OrnamentalEgg") &&
-				isCurrentChapter("Chapter3")			&&
+				is_Chapter(enum_Chapter_Chapter3)			&&
 				isCurrentCutsceneMasterId(0x32200)		&& 
 				isCurrentCutsceneSectionId_1(0x1)		&&
 				isCurrentCutsceneSectionId_2(0x0)		&&
@@ -2393,23 +2445,23 @@ achievements_triggers = {
 						isCurrentMapScene("PresentNightCityPM") ||
 						isCurrentMapScene("PresentNightCityAM")
 					) &&
-					isTalkingTo("JoggingMan_Present")),
+					is_TalkingToNPC(enum_NPC_Present_JoggingMan)),
 				once( // Talk to JoggingMan_80s
 					isSmallCutsceneActive() &&
 					isCurrentMapScene("70sNightCity") &&
-					isTalkingTo("JoggingMan_80s")),
+					is_TalkingToNPC(enum_NPC_80s_JoggingMan)),
 			])}
 		return 
 			never(	
 				!isInGame() 		||
-				!isCurrentChapter("Chapter3") && !isCurrentChapter("Chapter4") && !isCurrentChapter("Chapter5")
+				!is_Chapter(enum_Chapter_Chapter3) && !is_Chapter(enum_Chapter_Chapter4) && !is_Chapter(enum_Chapter_Chapter5)
 			) &&
 			measured(measuredComparison()) &&
 			trigger_when(isCutsceneEnding())},
 	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter2") 	||
+			!is_Chapter(enum_Chapter_Chapter2) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
@@ -2426,8 +2478,8 @@ achievements_triggers = {
 			!isInGame() 			||
 			isEventViewerActive()	||
 			!isItemInInventory("EggPocketWatch") ||
-			!isCurrentChapter("Chapter6") && !isCurrentChapter("Chapter7") && 
-			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
+			!is_Chapter(enum_Chapter_Chapter6) && !is_Chapter(enum_Chapter_Chapter7) && 
+			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
@@ -2454,7 +2506,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 					||
 			isEventViewerActive()	||
-			!isCurrentChapter("Chapter7")
+			!is_Chapter(enum_Chapter_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
 			isFullCutsceneActive() && isItemInInventory("EggPocketWatch") &&
@@ -2471,7 +2523,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 					||
 			isEventViewerActive()	||
-			!isCurrentChapter("Chapter8_Ancestress") && !isCurrentChapter("Chapter8_NoAncestress")
+			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
 			isFullCutsceneActive() && isItemInInventory("EggPocketWatch") &&
@@ -2487,7 +2539,7 @@ achievements_triggers = {
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter2")	||
+			!is_Chapter(enum_Chapter_Chapter2)	||
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
@@ -2503,7 +2555,7 @@ achievements_triggers = {
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter2")	||
+			!is_Chapter(enum_Chapter_Chapter2)	||
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
@@ -2519,7 +2571,7 @@ achievements_triggers = {
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter2")	||
+			!is_Chapter(enum_Chapter_Chapter2)	||
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
@@ -2535,7 +2587,7 @@ achievements_triggers = {
 	"a_BarmansChildren": function BarmansChildren() { return
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter5")	||
+			!is_Chapter(enum_Chapter_Chapter5)	||
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
@@ -2551,46 +2603,46 @@ achievements_triggers = {
 		function measuredComparison() { return
 			tally(6, [
 				once(	// 1st talk with woman
-					isSmallCutsceneActive() && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time isNPCtalkCountIncreasingToMax() counts
+					isSmallCutsceneActive() && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") && 
-					isNPCtalkCountIncreasingToMax("YoungCoupleWoman_MiddleAges", "Chap2_WestGate_BeforeTalkingToBoth") &&	
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) && 
+					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") &&	
 					isInteractionChapterId(0x163) && isInteractionId(0x420)),
 				once(	// 1st talk with man
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasingToMax("YoungCoupleMan_MiddleAges", "Chap2_EastNearHay_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x40d)),
 				once( 	// 2nd talk with woman; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap2_WestGate_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x421)),
 				once(	// 2nd talk with man; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap2_EastNearHay_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x40e)),
 				once(	// 3rd talk with woman
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap2_EastNearHay_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x422)),
 				once(	// 3rd talk with man
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap2_WestGate_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x40f))
 			])}
 		return 
 			never(
 				!isInGame() || 
-				!isCurrentChapter("Chapter2")
+				!is_Chapter(enum_Chapter_Chapter2)
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isCutsceneEnding())},
@@ -2600,44 +2652,44 @@ achievements_triggers = {
 				once(	// 1st talk with woman
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x423)),
 				once(	// 1st talk with man
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_NearWell_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x410)),
 				once(	// 2nd talk with woman; only available when talking to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x424)),
 				once(	// 2nd talk with man; only available when talking to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_NearWell_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x411)),
 				once(	// 3rd talk with woman
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap3(0x3) &&
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap3_OutsideChurch_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x425)),
 				once(	// 3rd talk with man
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap3(0x3) &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap3_TownSquare_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x412))
 			])}
 		return 
 			never(
 				!isInGame() || 
-				!isCurrentChapter("Chapter3")
+				!is_Chapter(enum_Chapter_Chapter3)
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isCutsceneEnding())},
@@ -2647,60 +2699,60 @@ achievements_triggers = {
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x426)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_TownSquare_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x413)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_OutsideChurch_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x427)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_TownSquare_AfterTalkingToBoth") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x414)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap4_NearBakery_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x428)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleMan_MiddleAges", "Chap4_NearBakery_AfterLocationSwitch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x415))				
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter4")
+				!is_Chapter(enum_Chapter_Chapter4)
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalNightCity")) &&
 			trigger_when(isCutsceneEnding())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
-			tally(getMaxTalkCountFor("YoungCoupleMan_MiddleAges", "Chap5_NearSouthEastGate"), 
+			tally(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
 				repeated(1,
 					isSmallCutsceneActive() &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap5_NearSouthEastGate") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x416))
 			)}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter5")
+				!is_Chapter(enum_Chapter_Chapter5)
 			) &&
 			measured(measuredComparison(), always_true()) &&
 			trigger_when(isCutsceneEnding())},
@@ -2710,39 +2762,39 @@ achievements_triggers = {
 				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
 					isSmallCutsceneActive() && 
 					isMargaretteNoAncestor() &&
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
 					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
-				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap7_OutsideChurch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
 					isInteractionChapterId(0x3b) && isInteractionId(0x418))
 			])}
 		function measuredComparison_Ancestor() { return
 			tally(4, [
-				// once(	// 1st talk with woman		// Commented block FIXfor --> "YoungCoupleWoman_MiddleAges"-"Chap7_TownSquare" and "YoungCoupleWoman_MiddleAges"-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
+				// once(	// 1st talk with woman		// Commented block FIXfor --> enum_NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and enum_NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
 				// 	isSmallCutsceneActive() &&
 				// 	isMargaretteAncestor() &&
-				// 	isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-				// 	isNPCtalkCountIncreasing("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare") &&
+				// 	is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+				// 	on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
 				// 	isInteractionChapterId(0x3b) && isInteractionId(0x428)),
 				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
 					isSmallCutsceneActive() &&
 					isMargaretteAncestor() &&
-					isTalkingTo("YoungCoupleWoman_MiddleAges") &&
-					isNPCtalkCountAtMax("YoungCoupleWoman_MiddleAges", "Chap7_TownSquare_Choice") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice") &&
 					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
-				repeated(getMaxTalkCountFor("YoungCoupleMan_MiddleAges","Chap7_OutsideChurch"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasing("YoungCoupleMan_MiddleAges", "Chap7_OutsideChurch") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
 					isInteractionChapterId(0x3b) && isInteractionId(0x418))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter7")
+				!is_Chapter(enum_Chapter_Chapter7)
 			) &&
 			(
 				measured(measuredComparison_NoAncestor(), isMargaretteNoAncestor()) || 
@@ -2755,170 +2807,170 @@ achievements_triggers = {
 				once(	// 1st talk with man, having a dialogue option
 					isSmallCutsceneActive() &&
 					isWomanAdvisedBeTruthful() &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&
-					isNPCtalkCountIncreasingToMax("YoungCoupleMan_MiddleAges", "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
 					isInteractionChapterId(0x13) && isInteractionId(0x41c)),
 				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
 						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
 					isSmallCutsceneActive() &&		
 					isWomanAdvisedBeTruthful() &&
 					isManToldLoversNeverDestinedMeet() &&
-					isTalkingTo("YoungCoupleMan_MiddleAges") &&					
+					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&					
 					isInteractionChapterId(0x13) && isInteractionId(0x433))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter8")
+				!is_Chapter(enum_Chapter_Chapter8)
 			) &&
 			measured(measuredComparison(), isCurrentMapScene("MedievalCity")) &&
 			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		function measuredComparison() { return
 			tally(4, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap1Prologue_TownSquare"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap1Prologue_TownSquare") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") &&
 					isInteractionId(0x2cc)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap1Prologue_NearBar"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap1Prologue_NearBar") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap1Prologue_NearBar") &&
 					isInteractionId(0x2c1))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Prologue") && !isCurrentChapter("Chapter1")
+				!is_Chapter(enum_Chapter_Prologue) && !is_Chapter(enum_Chapter_Chapter1)
 			) &&
 			measured(measuredComparison(), always_true()) &&
 			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() {
 		function measuredComparison_onIncrease() { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					isInteractionId(0x2d0)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
 					isInteractionId(0x2c4))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					isInteractionId(0x2d0)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap3_NearAntiqueShop"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap3_NearAntiqueShop") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
 					isInteractionId(0x2c4))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter3")
+				!is_Chapter(enum_Chapter_Chapter3)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		function measuredComparison_onIncrease() { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					isInteractionId(0x2d0)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
 					isInteractionId(0x2c5))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					isInteractionId(0x2d0)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap4_HaupStrUnderArch"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap4_HaupStrUnderArch") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
 					isInteractionId(0x2c5))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter4")
+				!is_Chapter(enum_Chapter_Chapter4)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(isCutsceneEnding())},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
 		function measuredComparison_BrumLibrary_onIncrease() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
-				repeated(2, // --> overwrite of '''getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
+				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumLibrary") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumLibrary_onMax() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
-				repeated(2, // --> overwrite of 'getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
+				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumLibrary") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumMuseum_onIncrease() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumMuseum"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap5_NorthEastGate_BrumMuseum") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
 			])}
 		function measuredComparison_BrumMuseum_onMax() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap5_NorthEastGate_BrumMuseum"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap5_NorthEastGate_BrumMuseum") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
 					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter5")
+				!is_Chapter(enum_Chapter_Chapter5)
 			) &&
 			trigger_when(isCutsceneEnding()) &&
 			(measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
@@ -2926,34 +2978,34 @@ achievements_triggers = {
 	"a_EnigmaticCouple5": function EnigmaticCouple5() {
 		function measuredComparison_onIncrease() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap7_SouthGate"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap7_SouthGate"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountIncreasing("CoatedWoman_Present", "Chap7_SouthGate") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap7_NorthWestGate"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountIncreasing("CoatedMan_Present", "Chap7_NorthWestGate") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
 			])}
 		function measuredComparison_onMax() { return
 			tally(3, [
-				repeated(getMaxTalkCountFor("CoatedWoman_Present","Chap7_SouthGate"),
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap7_SouthGate"),
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedWoman_Present") &&
-					isNPCtalkCountAtMax("CoatedWoman_Present", "Chap7_SouthGate") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
-				repeated(getMaxTalkCountFor("CoatedMan_Present","Chap7_NorthWestGate"), 
+				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
-					isTalkingTo("CoatedMan_Present") &&
-					isNPCtalkCountAtMax("CoatedMan_Present", "Chap7_NorthWestGate") &&
+					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
 			])}
 		return 
 			never(	
 				!isInGame() ||
-				!isCurrentChapter("Chapter7")
+				!is_Chapter(enum_Chapter_Chapter7)
 			) &&
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(isCutsceneEnding())},
@@ -2964,7 +3016,7 @@ achievements_triggers = {
 			isNewCutsceneLoading()
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
-			isFullCutsceneActive() && isCurrentChapter("Chapter4") &&
+			isFullCutsceneActive() && is_Chapter(enum_Chapter_Chapter4) &&
 			isCurrentSelectedInventoryItem("Jugglery") &&
 			isWearingPerformerOutfit()				&&
 			isCurrentCutsceneMasterId(0x1a300)		&&
@@ -2994,36 +3046,36 @@ achievements_triggers = {
 			tally(7, [
 				once(
 					isSmallCutsceneActive() &&
-					isTalkingTo("BlondeYoungBoy_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BlondeYoungBoy) &&
 					isCurrentMapScene("PresentDayCity") &&
-					// isNPCtalkCountIncreasingToMax("BlondeYoungBoy_Present", "Chap4_WearingPerformerOutfit") &&
+					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					isSmallCutsceneActive() &&
-					isTalkingTo("BrunetteMother_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BrunetteMother) &&
 					isCurrentMapScene("PresentDayCity") &&
-					// isNPCtalkCountIncreasingToMax("BrunetteMother_Present", "Chap4_WearingPerformerOutfit") &&
+					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x336)),
 				once(
 					isSmallCutsceneActive() &&
-					isTalkingTo("BrunetteYoungGirl_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BrunetteYoungGirl) &&
 					isCurrentMapScene("PresentDayCity") &&
-					// isNPCtalkCountIncreasingToMax("BrunetteYoungGirl_Present", "Chap4_WearingPerformerOutfit") &&
+					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x323)),
 				once(
 					isSmallCutsceneActive() &&
-					isTalkingTo("BlondeOldWomanOrangeSweater_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BlondeOldWomanOrangeSweater) &&
 					isCurrentMapScene("PresentDayCity") &&
-					// isNPCtalkCountIncreasingToMax("BlondeOldWomanOrangeSweater_Present", "Chap4_WearingPerformerOutfit") &&
+					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit") &&
 					isInteractionChapterId(0x44) && isInteractionId(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
-					isTalkingTo("BrunetteAdultManGlasses_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BrunetteAdultManGlasses) &&
 					isCurrentMapScene("PresentTownHall") &&
 					isInteractionChapterId(0x29) && isInteractionId(0x3c6)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
-					isTalkingTo("BlondeElderlyWoman_Present") &&
+					is_TalkingToNPC(enum_NPC_Present_BlondeElderlyWoman) &&
 					isCurrentMapScene("PresentTownHall") &&
 					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
@@ -3038,7 +3090,7 @@ achievements_triggers = {
 		return 
 			never(	
 				!isInGame() 					||
-				!isCurrentChapter("Chapter4")	||
+				!is_Chapter(enum_Chapter_Chapter4)	||
 				repeated(300, !isWearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for isWearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset measure count here 
@@ -3086,30 +3138,30 @@ achievements_triggers = {
 				once(	// Identifies cutscene => scaring eccentric girl
 					isSmallCutsceneActive() &&
 					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-					isNPCtalkCountAtMax("EccentricGirl_MiddleAges", "Chap2_TownSquare_Scare") &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x314)),				
 				once(	// Identifies cutscene => scaring straw hat man
 					isSmallCutsceneActive() &&
 					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-					isNPCtalkCountAtMax("StrawHatMan_MiddleAges", "Chap2_Streets_Scare") &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x2da)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
 					isSmallCutsceneActive() &&
 					(isCurrentSelectedInventoryItem("Lighter") || isCurrentSelectedInventoryItem("Cellphone")) &&
-					isNPCtalkCountAtMax("AspiringApprentice_MiddleAges", "Chap2_SouthEastGate_Scare") &&
+					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare") &&
 					isInteractionChapterId(0x163) && isInteractionId(0x2e3))
 			])}
 		return 
 			never(	
 				!isInGame() 	||
-				!isCurrentChapter("Chapter2")
+				!is_Chapter(enum_Chapter_Chapter2)
 			) &&
 			(
 				(	// Alt => vs. pause lock
 					unless(
 						!isCurrentMapScene("MedievalNightCity") && !isCurrentMapScene("CafeSonnePresent")			
 					) &&
-					measured(measuredComparison(), isInGame() && isCurrentChapter("Chapter2")) &&
+					measured(measuredComparison(), isInGame() && is_Chapter(enum_Chapter_Chapter2)) &&
 					trigger_when(isCutsceneEnding())
 				) || (
 					always_false()
@@ -3119,7 +3171,7 @@ achievements_triggers = {
 		never(
 			!isInGame()						||
 			isEventViewerActive() 			||
-			!isCurrentChapter("Chapter5")	||
+			!is_Chapter(enum_Chapter_Chapter5)	||
 			isFirePutOutByEike()
 		) &&
 		once(	// Identifies Cutscene => Barman gives us free meal
@@ -3202,13 +3254,13 @@ achievements_triggers = {
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
 					isSmallCutsceneActive() && 
-					isTalkingTo("SlimDelinquent_Present") &&
-					isNPCtalkCountIncreasingToMax("SlimDelinquent_Present", "Chap7_CarPark") &&
+					is_TalkingToNPC(enum_NPC_Present_SlimDelinquent) &&
+					on_NPC_TalkCount_hitsMax(enum_NPC_Present_SlimDelinquent, "Chap7_CarPark") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2f5)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					isSmallCutsceneActive() && 
-					isTalkingTo("BroadDelinquent_Present") &&
-					isNPCtalkCountIncreasingToMax("BroadDelinquent_Present", "Chap7_CarPark") &&
+					is_TalkingToNPC(enum_NPC_Present_BroadDelinquent) &&
+					on_NPC_TalkCount_hitsMax(enum_NPC_Present_BroadDelinquent, "Chap7_CarPark") &&
 					isInteractionChapterId(0xb2) && isInteractionId(0x2f0))
 			])}
 		return 
@@ -3220,7 +3272,7 @@ achievements_triggers = {
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!isInGame()						||
-			!isCurrentChapter("Chapter4")	||
+			!is_Chapter(enum_Chapter_Chapter4)	||
 			isEventViewerActive()			||
 			!isCurrentSelectedInventoryItem("FryingPan") ||
 			
@@ -3243,7 +3295,7 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			isEventViewerActive() 	||
-			!isCurrentChapter("Chapter7")
+			!is_Chapter(enum_Chapter_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
 			isFullCutsceneActive() && isCoffeePayed() &&
@@ -3259,7 +3311,7 @@ achievements_triggers = {
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!isInGame() 		||
-			isChapterChanging() ||
+			on_Chapter_change() ||
 			isBrumEstateLibrary()
 		) && 
 		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
@@ -3345,7 +3397,7 @@ achievements_triggers = {
 		return
 			never(
 				!isInGame() ||
-				isChapterChanging()
+				on_Chapter_change()
 			) &&
 			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), always_true())},
@@ -3396,7 +3448,7 @@ achievements_triggers = {
 		return
 			never(
 				!isInGame() ||
-				isChapterChanging()
+				on_Chapter_change()
 			) &&
 			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), always_true())},
@@ -3426,7 +3478,7 @@ achievements_triggers = {
 		return
 			never(
 				!isInGame() ||
-				isChapterChanging()
+				on_Chapter_change()
 			) &&
 			trigger_when(isCutsceneEnding()) &&
 			measured(measuredComparison(), measuredIfComparison())},
@@ -3434,13 +3486,13 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			isEventViewerActive() 	||
-			!isCurrentChapter("Chapter6") 
+			!is_Chapter(enum_Chapter_Chapter6) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
 			isSmallCutsceneActive() && isCurrentMapScene("CafeSonne80s") &&
-			isTalkingTo("OlderMan_80s") && 
+			is_TalkingToNPC(enum_NPC_80s_OlderMan) && 
 			isInteractionChapterId(0xb2) && isInteractionId(0x3e7) && 
-			isTalkingToNPCForFirstTime("OlderMan_80s", "Chap6_CafeSonne")
+			has_startedTalkingToNPC_forFirstTime(enum_NPC_80s_OlderMan, "Chap6_CafeSonne")
 		) &&
 		trigger_when(isCutsceneEnding())},
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
@@ -3454,14 +3506,14 @@ achievements_triggers = {
 				isCurrentSelectedInventoryItem("EggPocketWatch") ||
 				isCurrentSelectedInventoryItem("OrnamentalEgg")
 			) &&
-			isTalkingTo("Barman_80s") && isInteractionId(0x2ed) &&
-			isNPCtalkCountAtMax("Barman_80s", "InsideBar_UsePocketWatchOrEgg")
+			is_TalkingToNPC(enum_NPC_80s_Barman) && isInteractionId(0x2ed) &&
+			is_NPCtalkCount_atMax(enum_NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg")
 		) &&
 		trigger_when(isCutsceneEnding())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!isInGame()				||
-			!isCurrentChapter("Chapter6") 	||
+			!is_Chapter(enum_Chapter_Chapter6) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
@@ -3478,7 +3530,7 @@ achievements_triggers = {
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!isInGame()						||
-			!isCurrentChapter("Chapter6")	||
+			!is_Chapter(enum_Chapter_Chapter6)	||
 			isEventViewerActive()			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
@@ -3493,7 +3545,7 @@ achievements_triggers = {
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!isInGame()					||
-			!isCurrentChapter("Chapter5")		||
+			!is_Chapter(enum_Chapter_Chapter5)		||
 			isEventViewerActive() 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
@@ -3526,7 +3578,7 @@ achievements_triggers = {
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!isInGame()				||
-			!isCurrentChapter("Prologue")	||
+			!is_Chapter(enum_Chapter_Prologue)	||
 			isEventViewerActive()  
 		) &&
 		once(	// Identifies Cutscene => Eike wakes himself up
@@ -3549,7 +3601,7 @@ achievements_triggers = {
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
 			!isInGame()				||
-			!isCurrentChapter("Chapter7")	||
+			!is_Chapter(enum_Chapter_Chapter7)	||
 			isEventViewerActive()  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
@@ -3561,7 +3613,7 @@ achievements_triggers = {
 	"a_RottenRope": function RottenRope() { return
 		never (
 			!isInGame() 				||
-			!isCurrentChapter("Chapter7") 	||
+			!is_Chapter(enum_Chapter_Chapter7) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
@@ -3585,7 +3637,7 @@ achievements_triggers = {
 		never(
 			!isInGame() 					||
 			isEventViewerActive() 	|| 
-			!isCurrentChapter("Chapter6")
+			!is_Chapter(enum_Chapter_Chapter6)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
 				isFullCutsceneActive() && 
@@ -3601,7 +3653,7 @@ achievements_triggers = {
 	"a_MetYouBefore": function MetYouBefore() { return
 		never(
 			!isInGame()				||
-			!isCurrentChapter("Chapter2") 	||
+			!is_Chapter(enum_Chapter_Chapter2) 	||
 			isEventViewerActive()
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
@@ -3625,7 +3677,7 @@ achievements_triggers = {
 		never(
 			!isInGame()					||
 			isEventViewerActive()	||
-			!isCurrentChapter("Chapter3")
+			!is_Chapter(enum_Chapter_Chapter3)
 		) &&
 		once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'
 			isFullCutsceneActive()	&&
@@ -3907,10 +3959,10 @@ function achievements_initialize() {
 //	- Functions that should only be used by the rich presence script
 function isCurrentChapterIdInRangeOfRecordedIds() {
 	return
-		0 < getChapterId() && 	// Prologue starts at 0x1
-		getChapterId() <= 0xb} 	// Epilogue ends at 0xb
+		0 < current_ChapterID() && 	// Prologue starts at 0x1
+		current_ChapterID() <= 0xb} // Epilogue ends at 0xb
 function isCurrentChapterOneOf(array_chapterIds) {
-	any_of(array_chapterIds, (chapterId) => isCurrentChapter(chapterId))}
+	any_of(array_chapterIds, (chapterId) => is_Chapter(chapterId))}
 // *********************
 // • RichPresence TEXT •
 // *********************
@@ -4062,15 +4114,19 @@ richPresence_conditions = {
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
 		isPrologueInExMode() && isExChapterUnlocked() && 
 		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
-		isCurrentChapter("Prologue"),
+		is_Chapter(enum_Chapter_Prologue),
 	"rp_InGameChapterOnly": () =>
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
 		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
-		!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"]),
+		!isPrologueInExMode() && isCurrentChapterOneOf(
+			[enum_Chapter_Prologue, enum_Chapter_Chapter1, enum_Chapter_Epilogue]),
 	"rp_InGameChapterWithTimePeriod": () { return
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
 		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
-		isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"])},
+		isCurrentChapterOneOf([
+			enum_Chapter_Chapter2, enum_Chapter_Chapter3, 
+			enum_Chapter_Chapter4, enum_Chapter_Chapter5, 
+			enum_Chapter_Chapter6, enum_Chapter_Chapter7, enum_Chapter_Chapter8])},
 	"rp_AtTitleScreen": () =>
 		isMainSaveLoaded() && 
 		(isAtTitleScreen() || !isInGame())
@@ -4089,7 +4145,7 @@ richPresence_parameterData = {
 
 	"rpp_Chapter": {
 		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getChapterId(),
+		"Expression": current_ChapterID(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
 	"rpp_TimePeriod": {	
 		"RPtype": richPresence_enum_LOOKUP,
@@ -4125,7 +4181,7 @@ richPresence_parameterData = {
 		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
 		"RPtype": richPresence_enum_LOOKUP,
-		"Expression": getChapterId(),
+		"Expression": current_ChapterID(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
 	}	
 // *****************************
@@ -4265,55 +4321,55 @@ leaderboards_coreData = {
 // ▴ Leaderboards TRIGGER GENERATORS ▴
 // ************************************
 //	- For leaderboard logic that's reoccuring across multiple triggers
-function leaderboards_generate_ClearTimeChapter_StartTrigger(string_chapter) {
+function leaderboards_generate_ClearTimeChapter_StartTrigger(enum_chapter) {
 	let_chapterSpecificComparison = always_true()
-	if (string_chapter == "Prologue") 
+	if (enum_chapter == enum_Chapter_Prologue) 
 		let_chapterSpecificComparison = !isPrologueInExMode()
 	return 
 		never(!isInGame()) &&
 		once(on_Timer_ChapterClearTime_start()) &&
 		repeated(700, isInGame()) &&		// <-- Delay FIX for bug when loading a save from chapter start, would start and cancel immediately
-		isCurrentChapter(string_chapter) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
+		is_Chapter(enum_chapter) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
 		let_chapterSpecificComparison}		//			both Total and chapter clear time pop and same time otherwise
-function leaderboards_generate_ClearTimeChapter_CancelTrigger(string_chapter) {
+function leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_chapter) {
 	let_chapterSpecificComparison = always_false()
-	if (string_chapter == "Prologue")
+	if (enum_chapter == enum_Chapter_Prologue)
 		let_chapterSpecificComparison = isPrologueInExMode()
 	return 	
 		!isInGame() || 
 		let_chapterSpecificComparison || 
 		on_Timer_ChapterClearTime_reset() 	||
-		!isCurrentChapter(string_chapter)}
-function leaderboards_generate_ClearTimeChapter_SubmitTrigger(string_chapter) =>
+		!is_Chapter(enum_chapter)}
+function leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_chapter) =>
 	never(
 		!isChapterCompletionScreenActive() || 
-		!isCurrentChapter(string_chapter)
+		!is_Chapter(enum_chapter)
 	) &&
 	isChapterCompletionScreenBecomingActive() &&
-	isCurrentChapter(string_chapter)
+	is_Chapter(enum_chapter)
 
 // *************************
 // • Leaderboards TRIGGERS •
 // *************************
 leaderboards_startTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter8"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter7"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter6"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter5"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter4"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter3"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter2"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Chapter1"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger("Prologue"),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Prologue),
 	"lb_TotalClearTime": () =>
 		never(!isInGame()) &&
 		repeated(300, isInGame()) &&	// <-- delay popup 
@@ -4321,53 +4377,53 @@ leaderboards_startTriggers = {
 		!isPrologueInExMode()}
 leaderboards_cancelTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter8"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter7"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter6"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter5"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter4"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter3"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter2"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Chapter1"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger("Prologue"),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Prologue),
 	"lb_TotalClearTime": () =>
 		!isInGame() || isPrologueInExMode() || on_Timer_TotalClearTime_reset()}
-leaderboards_submitTriggers = { 
+leaderboards_submitTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter8"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter7"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter6"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter5"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter4"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter3"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter2"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Chapter1"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger("Prologue"),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Prologue),
 	"lb_TotalClearTime": () =>
 		isInGame() &&
 		(
 			(		// Alt 1 => Trigger when credits video starts
-				isVideoStarting() && isCurrentChapter("Epilogue")
+				isVideoStarting() && is_Chapter(enum_Chapter_Epilogue)
 			) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
 				never(!on_Timer_TotalClearTime_valueChange() && !isVideoActive()) &&
 				tally(20, 
-					isVideoActive() && isCurrentChapter("Epilogue") &&
+					isVideoActive() && is_Chapter(enum_Chapter_Epilogue) &&
 					!on_Timer_TotalClearTime_valueChange())
 			)
 		)}
