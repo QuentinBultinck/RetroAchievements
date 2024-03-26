@@ -33,20 +33,6 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 
-//	Achievement & Leaderboard logic
-// ---------------------------------------------
-//	- Include delta wherever possible => one of safest way to make sure achievement doesn't pop randomly
-//	- Also include delta's for submit, cancel and start triggers on leaderboard logic
-
-// How to: ResetNextIf
-// ---------------------------------------------
-//	- Call never() inside a tally(), once() or repeated()
-//	- Example
-// 			tally(10, 
-// 				never(healthDecreases()) && // <-- reset this hit count when taking damage, will generate a 'resetnextif' flag when it is applicable with the rest of the trigger, otherwise it may just be a normal 'reset' flag
-// 				succesfullDodges() // <-- +1 hit count when dodging
-// 			)
-
 // General info regarding PSP structures
 // ---------------------------------------------
 // 	- PSP pointers usually start with 08 or 09 + 25-bit => mask with 0x1ffffff
@@ -1331,7 +1317,6 @@ achievements_typeByCategory = {
 	// DEV_NOTE: Achievement type property
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
-	//		- 14 march 2024: this doesn't work via RATools (wont set type on RA back-end) => update type per achievement this on the game page on RA website
 	// ------------------------------------------------------
 	
 	// "c_template": "xxxxxx",
@@ -3823,7 +3808,7 @@ achievements_descriptions = {
 	"a_SnowyCrimeScene":							{"en": "Witness a chilling crime scene revealed amidst the snowy terrain during Chapter 6"},
 	"a_SaveMiriamBrum":								{"en": "Navigate the labyrinths of fate to shield a member of the Brum family from their destined demise during the events of Chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "Weave the fabric of time and space as co-directors in the creation of 'Time Ego Trip World Conquest' during the narrative of Chapter 6"},
-	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate and retrieve the six energy orbs scattered across present-day Lebensbaum"}, 
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate and retrieve the five energy orbs scattered across present-day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Locate and retrieve the six energy orbs scattered across Medieval Lebensbaum"},
 	"a_EnergyOrbLocator70s80s": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the late 20th century"}, 
 	"a_EnergyOrbLocator1900Days": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the early 20th century"},
@@ -3848,24 +3833,25 @@ function achievements_initialize() {
 			if (util_isDebugModeActive) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
-				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
+				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
 			}
 			return let_string}
 		function achievements_getTitle(string_achievementDevName, string_languageCode) => 
 			achievements_titles[string_achievementDevName][string_languageCode]
-		return format("{0} {1}", 
+		return format("{0}{1}",
 			achievements_createCategoryName(string_achievementCategory, string_achievementDevName),
 			achievements_getTitle(string_achievementDevName, string_languageCode))}
 	
 	function achievements_generateDescription(string_achievementDevName, string_devInfo, string_languageCode) {	
-		function achievements_getDescription(string_achievementDevName, string_languageCode) {
-			return achievements_descriptions[string_achievementDevName][string_languageCode]}
+		function achievements_getDescription(string_achievementDevName, string_languageCode) => 
+			achievements_descriptions[string_achievementDevName][string_languageCode]	
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
 			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
+
 		return format("{0}{1}",
 			achievements_getDescription(string_achievementDevName, string_languageCode),
 			achievements_formatDevInfo(string_devInfo))}
@@ -3916,10 +3902,10 @@ function isCurrentChapterOneOf(array_chapterIds) {
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 
-	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
-	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} | Current 🕑 {3} | Completion: {4}%"},
-	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} | Current 🕑 {4} | Completion: {5}%"},
-	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} | Current 🕑 {5} | Completion: {6}%"},
+	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} 🕑 {3} | Completion: {4}%"},
+	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} 🕑 {3} | Completion: {4}%"},
+	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} 🕑 {4} | Completion: {5}%"},
+	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} 🕑 {5} | Completion: {6}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen | Completion {0}%"},
 
 	"rp_Default":										{"en": "Wandering Lebensbaum"}}
@@ -4387,14 +4373,14 @@ leaderboards_titles = {
 	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_ClearTimeChapter8":					{"en": "Race through time to achieve the fastest clear time for chapter 8"},
-	"lb_ClearTimeChapter7":					{"en": "Race through time to achieve the fastest clear time for chapter 7"},
-	"lb_ClearTimeChapter6":					{"en": "Race through time to achieve the fastest clear time for chapter 6"},
-	"lb_ClearTimeChapter5":					{"en": "Race through time to achieve the fastest clear time for chapter 5"},
-	"lb_ClearTimeChapter4":					{"en": "Race through time to achieve the fastest clear time for chapter 4"},
-	"lb_ClearTimeChapter3":					{"en": "Race through time to achieve the fastest clear time for chapter 3"},
-	"lb_ClearTimeChapter2":					{"en": "Race through time to achieve the fastest clear time for chapter 2"},
-	"lb_ClearTimeChapter1":					{"en": "Race through time to achieve the fastest clear time for chapter 1"},
+	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by conquering Chapter 8 in record time"},
+	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by conquering Chapter 7 in record time"},
+	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by conquering Chapter 6 in record time"},
+	"lb_ClearTimeChapter5":					{"en": "Prove your mastery over time by conquering Chapter 5 in record time"},
+	"lb_ClearTimeChapter4":					{"en": "Prove your mastery over time by conquering Chapter 4 in record time"},
+	"lb_ClearTimeChapter3":					{"en": "Prove your mastery over time by conquering Chapter 3 in record time"},
+	"lb_ClearTimeChapter2":					{"en": "Prove your mastery over time by conquering Chapter 2 in record time"},
+	"lb_ClearTimeChapter1":					{"en": "Prove your mastery over time by conquering Chapter 1 in record time"},
 	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter excluded)"},
 	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter excluded)"}}
 
@@ -4404,12 +4390,12 @@ leaderboards_descriptions = {
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
 		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
-			format("[{0}]", substring(string_leaderboardDevName, 3))
+			format("[{0}] ", substring(string_leaderboardDevName, 3))
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
 		if (util_isDebugModeActive) {
-			return format("{0} {1}", 
+			return format("{0}{1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
 		} else {
