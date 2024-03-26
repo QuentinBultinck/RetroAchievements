@@ -24,7 +24,7 @@
         "BUG",
         "ERROR",
 
-        "DISABLED"
+        "DISABLED",
         "OFF",
         "INACTIVE",
 
