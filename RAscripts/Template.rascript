@@ -284,24 +284,25 @@ function achievements_initialize() {
 			if (util_isDebugModeActive) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
-				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
+				let_string = format("[{0}_{1}] ", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
 			}
 			return let_string}
 		function achievements_getTitle(string_achievementDevName, string_languageCode) => 
 			achievements_titles[string_achievementDevName][string_languageCode]
-		return format("{0} {1}", 
+		return format("{0}{1}",
 			achievements_createCategoryName(string_achievementCategory, string_achievementDevName),
 			achievements_getTitle(string_achievementDevName, string_languageCode))}
 	
 	function achievements_generateDescription(string_achievementDevName, string_devInfo, string_languageCode) {	
-		function achievements_getDescription(string_achievementDevName, string_languageCode) {
-			return achievements_descriptions[string_achievementDevName][string_languageCode]}
+		function achievements_getDescription(string_achievementDevName, string_languageCode) => 
+			achievements_descriptions[string_achievementDevName][string_languageCode]	
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
 			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
+
 		return format("{0}{1}",
 			achievements_getDescription(string_achievementDevName, string_languageCode),
 			achievements_formatDevInfo(string_devInfo))}
@@ -545,12 +546,12 @@ leaderboards_descriptions = {
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
 		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
-			format("[{0}]", substring(string_leaderboardDevName, 3))
+			format("[{0}] ", substring(string_leaderboardDevName, 3))
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
 		if (util_isDebugModeActive) {
-			return format("{0} {1}", 
+			return format("{0}{1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
 		} else {
