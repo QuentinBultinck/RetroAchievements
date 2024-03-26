@@ -13,7 +13,7 @@
 //#####################################################################################################\\
 
 // TODO re-check points distribution 
-// TODO create tutorial vids for MaxInventory + EnergyLocators + artinspiration
+// TODO Title and desc of leaderboard has devInfo
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -58,7 +58,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 // TODO debug off
-util_debugMode = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
@@ -1053,7 +1053,7 @@ function getTotalAchievementRate() =>	// $AA1152: [8-bit] Achievement Percentage
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
-	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro and overwrite when necessary via the RA website
+	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
@@ -1062,272 +1062,272 @@ achievements_coreData = {
 
 	"c_Completion": { // Category - Completing chapters
 		"a_PrologueComplete": { // VERIFIED 
-			"id": 306884, "points": 5, "badgeId": "461667", 
+			"id": 306884, "points": 5,
 			"devInfo": "Complete the prologue"},
 		"a_Chapter1Complete": { // VERIFIED
-			"id": 306886, "points": 5, "badgeId": "461654",
+			"id": 306886, "points": 5,
 			"devInfo": "Complete chapter 1"},
 		"a_Chapter2Complete": { // VERIFIED
-			"id": 306922, "points": 5, "badgeId": "461655",
+			"id": 306922, "points": 5,
 			"devInfo": "Complete chapter 2"},
 		"a_Chapter3Complete": { // VERIFIED
-			"id": 306921, "points": 5, "badgeId": "461656",
+			"id": 306921, "points": 5,
 			"devInfo": "Complete chapter 3"},
 		"a_Chapter4CompletePan": { // VERIFIED
-			"id": 308964, "points": 3, "badgeId": "461657",
+			"id": 308964, "points": 3,
 			"devInfo": "Complete chapter 4, using a frying pan"},
 		"a_Chapter4CompleteSign": { // VERIFIED
-			"id": 310149, "points": 3, "badgeId": "461658",
+			"id": 310149, "points": 3,
 			"devInfo": "Complete chapter 4, using a sign"},
 		"a_Chapter5Complete": { // VERIFIED
-			"id": 311616, "points": 5, "badgeId": "461659",
+			"id": 311616, "points": 5,
 			"devInfo": "Complete chapter 5"},
 		"a_Chapter6CompleteThriller": { // VERIFIED
-			"id": 313211, "points": 3, "badgeId": "461661",
+			"id": 313211, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
 		"a_Chapter6CompleteLove": { // VERIFIED
-			"id": 313210, "points": 3, "badgeId": "461660",
+			"id": 313210, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
 		"a_Chapter7Complete": { // VERIFIED
-			"id": 315565, "points": 5, "badgeId": "461665",
+			"id": 315565, "points": 5,
 			"devInfo": "Complete chapter 7"},
 		"a_Chapter8Complete": { // VERIFIED 
-			"id": 315571, "points": 5, "badgeId": "461666",
+			"id": 315571, "points": 5,
 			"devInfo": "Complete chapter 8"}},
 	"c_AchievementPercentage": {
 		"a_MaxAchievementPrologue": { // VERIFIED
-			"id": 405087, "points": 10, "badgeId": "461646",
+			"id": 405087, "points": 10,
 			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
 		"a_MaxAchievementChapter1": { // VERIFIED
-			"id": 405088, "points": 10, "badgeId": "461637",
+			"id": 405088, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 1"},
 		"a_MaxAchievementChapter2": { // VERIFIED
-			"id": 405089, "points": 10, "badgeId": "461638",
+			"id": 405089, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 2"},
 		"a_MaxAchievementChapter3": { // VERIFIED
-			"id": 405090, "points": 10, "badgeId": "461639",
+			"id": 405090, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 3"},
 		"a_MaxAchievementChapter4": { // VERIFIED
-			"id": 405091, "points": 10, "badgeId": "461640",
+			"id": 405091, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 4"},
 		"a_MaxAchievementChapter5": { // VERIFIED
-			"id": 405092, "points": 10, "badgeId": "461641",
+			"id": 405092, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 5"},
 		"a_MaxAchievementChapter6": { // VERIFIED
-			"id": 405093, "points": 10, "badgeId": "461642",
+			"id": 405093, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 6"},
 		"a_MaxAchievementChapter7": { // VERIFIED
-			"id": 405094, "points": 10, "badgeId": "461643",
+			"id": 405094, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 7"},
 		"a_MaxAchievementChapter8": { // VERIFIED
-			"id": 405095, "points": 10, "badgeId": "461644",
+			"id": 405095, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 8"},
 		"a_MaxAchievementEpilogue": { // VERIFIED	
-			"id": 405096, "points": 10, "badgeId": "461645",
+			"id": 405096, "points": 10,
 			"devInfo": "Seen all the important cutscenes in epilogue"},
 		"a_MaxAchievementTotal": { // VERIFIED
-			"id": 405097, "points": 50, "badgeId": "461647",
+			"id": 405097, "points": 50,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
 		"a_AlertBarmanOfFire": { // VERIFIED
-			"id": 306976, "points": 4, "badgeId": "461648",
+			"id": 306976, "points": 4,
 			"devInfo": "Alert the barman of fire in chapter 1"},
 		"a_BecomeThePerformer": { // VERIFIED
-			"id": 402284, "points": 4, "badgeId": "461649",
+			"id": 402284, "points": 4,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
 		"a_EggCollection": { // VERIFIED
-			"id": 306977, "points": 4, "badgeId": "461650",
+			"id": 306977, "points": 4,
 			"devInfo": "Give the ornamental egg to the barman during chapter 1. Or in chapter 3 or 4"},
 		"a_EikeThePyromancer": { // VERIFIED
-			"id": 306911, "points": 1, "badgeId": "461685",
+			"id": 306911, "points": 1,
 			"devInfo": "Select the lighter to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheMagician": { // VERIFIED
-			"id": 306906, "points": 1, "badgeId": "461684",
+			"id": 306906, "points": 1,
 			"devInfo": "Select the cellphone to scare the people off in 1580 in chapter 2"},
 		"a_EikeTheFlorist": { // VERIFIED
-			"id": 306920, "points": 1, "badgeId": "461683",
+			"id": 306920, "points": 1,
 			"devInfo": "Choose to plant flowers, when talking to the town planter in 1580 in chapter 2"},
 		"a_GetOrnamentalEgg": { // VERIFIED
-			"id": 306885, "points": 1, "badgeId": "461653",
+			"id": 306885, "points": 1,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
 		"a_EndingA": { // VERIFIED
-			"id": 315566, "points": 5, "badgeId": "461668",
+			"id": 315566, "points": 5,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
 		"a_EndingB1":{ // VERIFIED
-			"id": 315573, "points": 5, "badgeId": "461669",
+			"id": 315573, "points": 5,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
 		"a_EndingB2":{ // VERIFIED
-			"id": 315572, "points": 5, "badgeId": "461670",
+			"id": 315572, "points": 5,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
 		"a_EndingC": { // VERIFIED
-			"id": 317118, "points": 5, "badgeId": "461671",
+			"id": 317118, "points": 5,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
 		"a_EndingD": { // VERIFIED
-			"id": 322230, "points": 5, "badgeId": "461672",
+			"id": 322230, "points": 5,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
 		"a_EndingE": { // VERIFIED
-			"id": 322231, "points": 5, "badgeId": "461673",
+			"id": 322231, "points": 5,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => after talk with dana, go to present and get dana's letter => give letter to dana in middle ages => Destroyed Lab"},
 		"a_EndingEXCureHelena": { // VERIFIED
-			"id": 405114, "points": 3, "badgeId": "461651",
+			"id": 405114, "points": 3,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
 		"a_EndingEXKillHomunculus": { // VERIFIED
-			"id": 405113, "points": 3, "badgeId": "461652",
+			"id": 405113, "points": 3,
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
 		"a_AntiquesEule": { // VERIFIED
-			"id": 310132, "points": 2, "badgeId": "461674",
+			"id": 310132, "points": 2,
 			"devInfo": "Take a glance at timeless antiquity at Antique Shop Eule. Shop is open in chapter 3, 4 (present) and 6, 7 (1980)"},
 		"a_ArtAppreciator": { // VERIFIED
-			"id": 307499, "points": 1, "badgeId": "461675",
+			"id": 307499, "points": 1,
 			"devInfo": "Interact with all 8 painting in the Brum Museum during chapter 3. They're on the 2nd floor + 1 on ground floor"}, 
 		"a_ArtInspiration1": { // VERIFIED
-			"id": 403824, "points": 3, "badgeId": "461676",
+			"id": 403824, "points": 3,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him at least once => view art in present, when Brum Estate is in Museum from"},
 		"a_ArtInspirationAll": { // VERIFIED
-			"id": 403825, "points": 5, "badgeId": "461677",
+			"id": 403825, "points": 5,
 			"devInfo": "Talk to Karl Franssen in the Middle Ages and inspire him with different idea's => view art in present, when Brum Estate is in Museum from"},
 		"a_BarmansChildren": { // VERIFIED
-			"id": 315567, "points": 3, "badgeId": "461678",
+			"id": 315567, "points": 3,
 			"devInfo": "Uncover the truth about the barman's children and the mystery child during chapter 5"},
 		"a_DoctorateTimeTraveling": { // VERIFIED
-			"id": 310163, "points": 4, "badgeId": "461679",
+			"id": 310163, "points": 4,
 			"devInfo": "Complete chapter 4 whilst also taking the a picture yourself in this chapter AND having acquired the ornamental egg from the performer in chapter 1 but did NOT use it to give your past self a message"},
 		"a_DrunkenGuys": { // VERIFIED
-			"id": 404048, "points": 2, "badgeId": "461680",
+			"id": 404048, "points": 2,
 			"devInfo": "In chapter 7, once you have the tower key => find them in the present in the car park (not night before)"},
 		"a_EggPocketWatchForCoffee": { // VERIFIED
-			"id": 313213, "points": 4, "badgeId": "461682",
+			"id": 313213, "points": 4,
 			"devInfo": "Show off the egg shaped pocket watch to the barman's ancestor in 1900's from chapter6 onward"},
 		"a_FreeMeal": { // VERIFIED 
-			"id": 405461, "points": 3, "badgeId": "461695",
+			"id": 405461, "points": 3,
 			"devInfo": "Save bar in chap 1 by talking to barman => start chap 5 using free meal"},
 		"a_GetExChapterOrnamentalEgg": { // VERIFIED
-			"id": 405112, "points": 1, "badgeId": "461653",
+			"id": 405112, "points": 1,
 			"devInfo": "In the EX Chapter: go to the performer after not saving grandpa in the fire, thus getting the egg"},
 		"a_GiveMargaretteCake": { // VERIFIED
-			"id": 402296, "points": 4, "badgeId": "461704",
+			"id": 402296, "points": 4,
 			"devInfo": "Acquire cake from bakery => give to margarette"}, 		
 		"a_HugoMotherChild": { // VERIFIED
-			"id": 311466, "points": 2, "badgeId": "461705",
+			"id": 311466, "points": 2,
 			"devInfo": "Secret cutscene in chapter 5 => when going to 1580 (not 1584) => head to marktplatz of Hugo getting bullied"}, 
 		"a_MaxInventory": { // VERIFIED
-			"id": 402404, "points": 10, "badgeId": "461712",
+			"id": 402404, "points": 10,
 			"devInfo": "Only achievable when going for Ending E: Z-pad, notebook, present city map, old map, cellphone, lighter, egg ornament OR Frying pan, medallion, old book, monochrome picture, cake, franssen shop sign, kitten, egg pocket watch, scrap meat, tower key, lab key, red jewel, Dana's letter, comb"}, 
 		"a_MeetFamousOleg": { // VERIFIED
-			"id": 404045, "points": 4, "badgeId": "461713",
+			"id": 404045, "points": 4,
 			"devInfo": "After acquiring the egg pocket watch in chapter 6 => Go to bar in 1900s and pay for coffee => Oleg now spawns in chapter 7 near movie post, after you have the tower key (not night before)"},
 		"a_MeetOldMiriam": { // VERIFIED
-			"id": 315570, "points": 10, "badgeId": "461714",
+			"id": 315570, "points": 10,
 			"devInfo": "Complete chapter 7, whilst having saved Miriam in chapter 6"},
 		"a_NewCakeInvented": { // VERIFIED
-			"id": 402297, "points": 3, "badgeId": "461715",
+			"id": 402297, "points": 3,
 			"devInfo": "Take the cake => give it to margarete => talk to bakery girl again (name of cake is now margarete)"}, 		
 		"a_PerformerGoingExtraMile": { // VERIFIED
-			"id": 403575, "points": 5, "badgeId": "461716",
+			"id": 403575, "points": 5,
 			"devInfo": "Make sure the performer goes the extra mile, by surprising as many people as possible"},
 		"a_PocketWatchCollection": { // VERIFIED
-			"id": 315561, "points": 4, "badgeId": "461717",
+			"id": 315561, "points": 4,
 			"devInfo": "Introduce the egg shaped pocket watch to the barman in 2001 during chapter 7, not night before"},
 		"a_PocketWatchReminiscing": { // VERIFIED
-			"id": 315562, "points": 4, "badgeId": "461718",
+			"id": 315562, "points": 4,
 			"devInfo": "Talk to Eckart with the pocket watch in your inventory during chapter 8"},
 		"a_PocketWatchTo80sBarman": { // VERIFIED
-			"id": 407681, "points": 1, "badgeId": "461719",
+			"id": 407681, "points": 1,
 			"devInfo": "Use the pocket watch next to the barman in 1980, the cold days. He's inside the bar."},
 		"a_RunningAcrossThe90s": { // VERIFIED
-			"id": 405086, "points": 2, "badgeId": "461720",
+			"id": 405086, "points": 2,
 			"devInfo": "Talk to jogging man in present and past (70s)"},
 		"a_SaveMiriamBrum": { // VERIFIED
-			"id": 315569, "points": 4, "badgeId": "461721",
+			"id": 315569, "points": 4,
 			"devInfo": "Save Miriam Brum in chapter 6"},			
 		"a_ScareEveryone": { // VERIFIED
-			"id": 404046, "points": 4, "badgeId": "461722",
+			"id": 404046, "points": 4,
 			"devInfo": "Startle the spaghetti man in the present + the crowd (counts for 4) + the wannabe apprentice + the eccentric girl with a lighter or cellphone"},
 		"a_SeenOlegAsWell": { // VERIFIED
-			"id": 405098, "points": 1, "badgeId": "461723",
+			"id": 405098, "points": 1,
 			"devInfo": "Talk with the adult inside cafe Sonne during chapter 6, he talks about the movie director staring at the sky"},
 		"a_ShowEggTownPlanter": { // VERIFIED
-			"id": 307023, "points": 3, "badgeId": "461725",
+			"id": 307023, "points": 3,
 			"devInfo": "Show the ornamental egg to townplanter in 1580 in chapter 2"},
 		"a_ShowPocketWatchToPhotographer": { // VERIFIED 
-			"id": 405460, "points": 2, "badgeId": "461726",
+			"id": 405460, "points": 2,
 			"devInfo": "In chapter 6 or 7, show the pocket watch to Oleg, movie director's ancestor in 1902"},
 		"a_ShortestChapter": { // VERIFIED
-			"id": 403823, "points": 3, "badgeId": "461724",
+			"id": 403823, "points": 3,
 			"devInfo": "Have frying pan before chapter 4 and use is to skip chapter 4, by using it at the start"},
 		"a_SnowyCrimeScene": { // VERIFIED
-			"id": 313209, "points": 2, "badgeId": "461727",
+			"id": 313209, "points": 2,
 			"devInfo": "Discover a crime scene during the winter, in chapter 6"},
 		"a_TimeTravellingCat": { // VERIFIED
-			"id": 310426, "points": 4, "badgeId": "461728",
+			"id": 310426, "points": 4,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
 	"c_ExtraCouple": { // Category - Related to the mysterious couple 
 		"a_EnigmaticCouple1": { // VERIFIED
-			"id": 307495, "points": 3, "badgeId": "461690",
+			"id": 307495, "points": 3,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
 		"a_EnigmaticCouple2": { // VERIFIED
-			"id": 310131, "points": 3, "badgeId": "461691",
+			"id": 310131, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
 		"a_EnigmaticCouple3": { // VERIFIED
-			"id": 310134, "points": 3, "badgeId": "461692",
+			"id": 310134, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
 		"a_EnigmaticCouple4": { // VERIFIED
-			"id": 310135, "points": 3, "badgeId": "461693",
+			"id": 310135, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
 		"a_EnigmaticCouple5": { // VERIFIED
-			"id": 315564, "points": 3, "badgeId": "461694",
+			"id": 315564, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // VERIFIED
-			"id": 306984, "points": 4, "badgeId": "461706",
+			"id": 306984, "points": 4,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
 		"a_LostYoungCouple2": { // VERIFIED
-			"id": 310133, "points": 4, "badgeId": "461707",
+			"id": 310133, "points": 4,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
 		"a_LostYoungCouple3": { // VERIFIED
-			"id": 309393, "points": 4, "badgeId": "461708",
+			"id": 309393, "points": 4,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
 		"a_LostYoungCouple4": { // VERIFIED
-			"id": 310162, "points": 1, "badgeId": "461709",
+			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
 		"a_LostYoungCouple5": { // VERIFIED
-			"id": 314753, "points": 2, "badgeId": "461710",
+			"id": 314753, "points": 2,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // VERIFIED
-			"id": 315568, "points": 10, "badgeId": "461711",
+			"id": 315568, "points": 10,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_ExtraEnergy": { // Category - Related to energy orb gathering
 		"a_EnergyOrbLocatorPresentDay": { // VERIFIED
-			"id": 399816, "points": 5, "badgeId": "461689",
+			"id": 399816, "points": 5,
 			"devInfo": "Find all 5 energy orbs in present day"},
 		"a_EnergyOrbLocator70s80s": { // VERIFIED
-			"id": 399817, "points": 5, "badgeId": "461687",
+			"id": 399817, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
 		"a_EnergyOrbLocator1900Days": { // VERIFIED
-			"id": 399818, "points": 5, "badgeId": "461686",
+			"id": 399818, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
 		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED
-			"id": 399819, "points": 5, "badgeId": "461688",
+			"id": 399819, "points": 5,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}},
 	"c_ExtraGameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
 		"a_ErasingEike": { // VERIFIED
-			"id": 306883, "points": 2, "badgeId": "461699",
+			"id": 306883, "points": 2,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
 		"a_ErasingEike2": { // VERIFIED
-			"id": 314763, "points": 1, "badgeId": "461698",
+			"id": 314763, "points": 1,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
 		"a_ExcuseMeMyMy": { // VERIFIED
-			"id": 306919, "points": 1, "badgeId": "461700",
+			"id": 306919, "points": 1,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
 		"a_MetYouBefore": { // VERIFIED
-			"id": 306888, "points": 2, "badgeId": "461701",
+			"id": 306888, "points": 2,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
 		"a_RottenRope": { // VERIFIED
-			"id": 315563, "points": 1, "badgeId": "461702",
+			"id": 315563, "points": 1,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
 		"a_TimeEgoFlop": { // VERIFIED
-			"id": 313212, "points": 1, "badgeId": "461703",
+			"id": 313212, "points": 1,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
 achievements_typeByCategory = {
@@ -3746,31 +3746,31 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_PrologueComplete": {							"en": "Complete the prologue",
+	"a_PrologueComplete": {							"en": "Complete the Prologue",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Complete chapter 1",
+	"a_Chapter1Complete": {							"en": "Complete Chapter 1",
 													"nl": "Hoofdstuk 1 voltooid",
 													"fr": "Chapitre 1 terminé"},													
-	"a_Chapter2Complete": 							{"en": "Complete chapter 2"},
-	"a_Chapter3Complete": 							{"en": "Complete chapter 3"},
-	"a_Chapter4CompletePan": 						{"en": "Complete chapter 4, using a frying pan"},
-	"a_Chapter4CompleteSign": 						{"en": "Complete chapter 4, using a sign"},	
-	"a_Chapter5Complete": 							{"en": "Complete chapter 5"}, 
-	"a_Chapter6CompleteThriller":					{"en": "Complete chapter 6, by co-directing a thriller picture"},
-	"a_Chapter6CompleteLove":						{"en": "Complete chapter 6, by co-directing a love picture"},
-	"a_Chapter7Complete":							{"en": "Complete chapter 7"},
-	"a_Chapter8Complete":							{"en": "Complete chapter 8"},
-	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the prologue, including the EX chapter"},
-	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for chapter 1"},
-	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for chapter 2"},
-	"a_MaxAchievementChapter3":						{"en": "Reach 100% achievement rate for chapter 3"},
-	"a_MaxAchievementChapter4":						{"en": "Reach 100% achievement rate for chapter 4"},
-	"a_MaxAchievementChapter5":						{"en": "Reach 100% achievement rate for chapter 5"},
-	"a_MaxAchievementChapter6":						{"en": "Reach 100% achievement rate for chapter 6"},
-	"a_MaxAchievementChapter7":						{"en": "Reach 100% achievement rate for chapter 7"},
-	"a_MaxAchievementChapter8":						{"en": "Reach 100% achievement rate for chapter 8"},
-	"a_MaxAchievementEpilogue":						{"en": "Reach 100% achievement rate for the epilogue"},
+	"a_Chapter2Complete": 							{"en": "Complete Chapter 2"},
+	"a_Chapter3Complete": 							{"en": "Complete Chapter 3"},
+	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
+	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
+	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
+	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
+	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
+	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
+	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
+	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the Prologue, including the EX Chapter"},
+	"a_MaxAchievementChapter1":						{"en": "Reach 100% achievement rate for Chapter 1"},
+	"a_MaxAchievementChapter2":						{"en": "Reach 100% achievement rate for Chapter 2"},
+	"a_MaxAchievementChapter3":						{"en": "Reach 100% achievement rate for Chapter 3"},
+	"a_MaxAchievementChapter4":						{"en": "Reach 100% achievement rate for Chapter 4"},
+	"a_MaxAchievementChapter5":						{"en": "Reach 100% achievement rate for Chapter 5"},
+	"a_MaxAchievementChapter6":						{"en": "Reach 100% achievement rate for Chapter 6"},
+	"a_MaxAchievementChapter7":						{"en": "Reach 100% achievement rate for Chapter 7"},
+	"a_MaxAchievementChapter8":						{"en": "Reach 100% achievement rate for Chapter 8"},
+	"a_MaxAchievementEpilogue":						{"en": "Reach 100% achievement rate for the Epilogue"},
 	"a_MaxAchievementTotal":						{"en": "Reach 100% total achievement rate"},
 	"a_EndingA":									{"en": "Achieve ending A"},
 	"a_EndingB1":									{"en": "Achieve ending B1"},
@@ -3780,63 +3780,63 @@ achievements_descriptions = {
 	"a_EndingE": 									{"en": "Achieve ending E"},
 	"a_EndingEXKillHomunculus":						{"en": "Achieve ending EX, by destroying the jewel"},
 	"a_EndingEXCureHelena":							{"en": "Achieve ending EX, by creating a miracle cure"},
-	"a_DoctorateTimeTraveling": 					{"en": "Get lectured in time-travelling physics during chapter 4"}, 
-	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man in the past, as well as his present self during chapter 3, 4 or 5"},
-	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from a performer during chapter 1"},
-	"a_ShowEggTownPlanter": 						{"en": "Show off your egg collection to the barman's ancestor during chapter 2"},
-	"a_EggPocketWatchForCoffee": 					{"en": "Pay for some coffee with an oval shaped object from chapter 6 onward"},
-	"a_BarmansChildren":							{"en": "Discover the truth about the barman's grandchildren during chapter 5"},
-	"a_PocketWatchCollection": 						{"en": "Show off your egg collection to a younger barman during chapter 7"},
-	"a_PocketWatchReminiscing": 					{"en": "Reminisce about your egg collection with Eckart during chapter 8"},
-	"a_EggCollection": 								{"en": "Exchange an egg for a pan during chapter 1, 3 or 4"},
-	"a_AlertBarmanOfFire": 							{"en": "Alert the young boy's grandpa of imminent disaster during chapter 1"},
-	"a_GetExChapterOrnamentalEgg" :					{"en": "Acquire one last message during the EX chapter"},	
+	"a_DoctorateTimeTraveling": 					{"en": "Receive a lecture on time-travel physics within Chapter 4"}, 
+	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man from a bygone era, as well as his present self during Chapter 3, 4 or 5"},
+	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from aN entertainer in Chapter 1"},
+	"a_ShowEggTownPlanter": 						{"en": "Present the barman's ancestor with your egg collection in Chapter 2"},
+	"a_EggPocketWatchForCoffee": 					{"en": "Pay for some coffee with an oval shaped object from Chapter 6 onward"},
+	"a_BarmansChildren":							{"en": "Uncover the truth about the barman's grandchildren in Chapter 5"},
+	"a_PocketWatchCollection": 						{"en": "Share your egg collection with a younger barman during Chapter 7"},
+	"a_PocketWatchReminiscing": 					{"en": "Share stories about your newly acquired pocket watch with Eckart in Chapter 8"},
+	"a_EggCollection": 								{"en": "Exchange an egg for a pan during Chapter 1, 3 or 4"},
+	"a_AlertBarmanOfFire": 							{"en": "Notify the young boy's grandpa of an approaching threat during Chapter 1"},
+	"a_GetExChapterOrnamentalEgg" :					{"en": "Obtain one final message during the EX Chapter"},	
 	"a_ShowPocketWatchToPhotographer":				{"en": "Kindle the joy of watchmaking to an ancestor of the Franssen's"},
-	"a_EikeThePyromancer": 							{"en": "Become honored as a pyrokinetic during chapter 2"},
-	"a_EikeTheMagician": 							{"en": "Become honored as a magician during chapter 2"},
-	"a_EikeTheFlorist": 							{"en": "Planted flowers during chapter 2"},
-	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7, after saving her"},
-	"a_LostYoungCouple1": 							{"en": "Help a lost young couple reunite in the Middle Ages during chapter 2"}, 
-	"a_LostYoungCouple2": 							{"en": "Help a lost young couple reunite again in the Middle Ages during chapter 3"},
-	"a_LostYoungCouple3": 							{"en": "Reunite the lost young couple in the Middle Ages during chapter 4"},
-	"a_LostYoungCouple4": 							{"en": "Consult the young man in the Middle Ages during chapter 5"},
-	"a_LostYoungCouple5": 							{"en": "Consult the young couple in the Middle Ages during chapter 7"},
-	"a_LostYoungCouple6": 							{"en": "Advise the young man in the Middle Ages during chapter 8"},
-	"a_EnigmaticCouple1": 							{"en": "Find the coated man and woman in the present during the prologue or chapter 1"}, 
-	"a_EnigmaticCouple2": 							{"en": "Find the coated man and woman in the present during chapter 3"}, 
-	"a_EnigmaticCouple3": 							{"en": "Find the coated man and woman in the present during chapter 4"}, 
-	"a_EnigmaticCouple4": 							{"en": "Find the coated man and woman in the present during chapter 5"},	
-	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the present during chapter 7"},
-	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the prologue"},
-	"a_ErasingEike2": 								{"en": "Run into yourself during chapter 7"}, 
-	"a_RottenRope": 								{"en": "Use an aged cable to save yourself in chapter 7"},
-	"a_MetYouBefore": 								{"en": "Keep chatting with Dana at the Marktplatz tree during chapter 2"},
-	"a_FreeMeal":									{"en": "Enjoy a free supper at Bar Zum Ei during chapter 5"}, 
-	"a_DrunkenGuys":								{"en": "Encounter some rascals in chapter 7"},
-	"a_ScareEveryone": 								{"en": "Try to evoke fear in as many individuals as possible within chapter 2"}, 
-	"a_TimeTravellingCat":							{"en": "Gift a feline friend to a girl during or after chapter 4"},
-	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a 2nd time in chapter 7"},
-	"a_SeenOlegAsWell": 							{"en": "Find someone who has also met the meditating man in chapter 6"},
+	"a_EikeThePyromancer": 							{"en": "Ascend to reverence as a pyrokinetic in Chapter 2"},
+	"a_EikeTheMagician": 							{"en": "Ascend to renown as a magician in Chapter 2"},
+	"a_EikeTheFlorist": 							{"en": "Set up a floral display in Chapter 2"},
+	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7, after your valiant act"},
+	"a_LostYoungCouple1": 							{"en": "Aid a bewildered young couple in their reunion amidst the medieval era within Chapter 2"}, 
+	"a_LostYoungCouple2": 							{"en": "Weave the threads of fate into another chance at reunion for a lost young couple in Chapter 3"},
+	"a_LostYoungCouple3": 							{"en": "Successfully orchestrate the reunion of the lost young couple in the Middle Ages during Chapter 4"},
+	"a_LostYoungCouple4": 							{"en": "Assess the developments surrounding the young man amidst the Medieval period in Chapter 5"},
+	"a_LostYoungCouple5": 							{"en": "Offer guidance to the young couple in the Middle Ages during Chapter 7"},
+	"a_LostYoungCouple6": 							{"en": "Share a piece of wisdom with the young man in the Middle Ages and assess his interpretation within Chapter 8"},
+	"a_EnigmaticCouple1": 							{"en": "Identify the coated man and woman in the modern-day setting during the Prologue or Chapter 1"}, 
+	"a_EnigmaticCouple2": 							{"en": "Discover the coated man and woman in the contemporary setting within Chapter 3"}, 
+	"a_EnigmaticCouple3": 							{"en": "Seek out the coated man and woman in the present during Chapter 4"}, 
+	"a_EnigmaticCouple4": 							{"en": "Encounter the coated man and woman in the current timeline during Chapter 5"},	
+	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the present during Chapter 7"},
+	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the Prologue"},
+	"a_ErasingEike2": 								{"en": "Stumble upon yourself in Chapter 7"}, 
+	"a_RottenRope": 								{"en": "Employ a worn-out cable to save yourself during Chapter 7"},
+	"a_MetYouBefore": 								{"en": "Keep chatting with Dana under the Marktplatz tree during Chapter 2, even as whispers of fate gently caress the periphery of your dialogue"},
+	"a_FreeMeal":									{"en": "Enjoy a free dinner  at Bar Zum Ei during Chapter 5"}, 
+	"a_DrunkenGuys":								{"en": "Encounter some mischievous rascals in Chapter 7"},
+	"a_ScareEveryone": 								{"en": "Attempt to sow fear among numerous individuals within Chapter 2"}, 
+	"a_TimeTravellingCat":							{"en": "Offer a charming kitty to the girl either during or after Chapter 4"},
+	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a second time during Chapter 7"},
+	"a_SeenOlegAsWell": 							{"en": "Find someone who shares a similar experience of meeting the meditating man in Chapter 6"},
 	"a_PocketWatchTo80sBarman": 					{"en": "Pique someone's interest with an oval shape of your own in the 1980's"},
-	"a_HugoMotherChild":							{"en": "Find Hugo outside his house during chapter 5"}, 
-	"a_ArtAppreciator": 							{"en": "Admire all original paintings in the Brum Museum"},
-	"a_AntiquesEule": 								{"en": "Take a glance at the timeless relics in Antique Shop Eule"},
-	"a_ExcuseMeMyMy":								{"en": "Run from the apparition during chapter 3"}, 
-	"a_BecomeThePerformer":							{"en": "Become a performer and give yourself a message during chapter 4"}, 
-	"a_SnowyCrimeScene":							{"en": "Uncover a snowy crime scene during chapter 6"},
-	"a_SaveMiriamBrum":								{"en": "Save a member of the Brum family from a predestined death during chapter 6"}, 
-	"a_TimeEgoFlop":								{"en": "Co-direct 'Time Ego Trip World Conquest' during chapter 6"},
-	"a_EnergyOrbLocatorPresentDay": 				{"en": "Collect all 5 energy orbs in present day Lebensbaum"}, 
-	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Collect all 6 energy orbs in Medieval Lebensbaum"}, 
-	"a_EnergyOrbLocator70s80s": 					{"en": "Collect all 5 energy orbs in Lebensbaum during the late 20th century"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Collect all 5 energy orbs in Lebensbaum, a century ago"},
-	"a_GiveMargaretteCake": 						{"en": "Gift a tasty sweet to a someone dear to you"}, 
+	"a_HugoMotherChild":							{"en": "Chance upon Hugo in the vicinity of his home during the events of Chapter 5"}, 
+	"a_ArtAppreciator": 							{"en": "Marvel at the beauty of each unique painting on display at the Brum Museum"},
+	"a_AntiquesEule": 								{"en": "Spare a moment to glance at the timeless relics within the esteemed Antique Shop Eule"},
+	"a_ExcuseMeMyMy":								{"en": "Firmly excuse yourself from the apparition's company in Chapter 3"}, 
+	"a_BecomeThePerformer":							{"en": "Step into the shoes of a performer and clandestinely transmit a message to yourself during Chapter 4"}, 
+	"a_SnowyCrimeScene":							{"en": "Witness a chilling crime scene revealed amidst the snowy terrain during Chapter 6"},
+	"a_SaveMiriamBrum":								{"en": "Navigate the labyrinths of fate to shield a member of the Brum family from their destined demise during the events of Chapter 6"}, 
+	"a_TimeEgoFlop":								{"en": "Weave the fabric of time and space as co-directors in the creation of 'Time Ego Trip World Conquest' during the narrative of Chapter 6"},
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate and retrieve the six energy orbs scattered across present-day Lebensbaum"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Locate and retrieve the six energy orbs scattered across Medieval Lebensbaum"},
+	"a_EnergyOrbLocator70s80s": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the late 20th century"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the early 20th century"},
+	"a_GiveMargaretteCake": 						{"en": "Gift a delectable sweet to a cherished individual in your life"},
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
-	"a_ShortestChapter": 							{"en": "Acquire an iron plate before chapter 4 and use it once it becomes necessary"}, 
-	"a_MaxInventory": 								{"en": "Acquire the biggest hoard of items in a single playthrough"},
-	"a_PerformerGoingExtraMile": 					{"en": "Make sure the performer goes the extra mile for those who would appreciate his gesture, including yourself"}, 	
-	"a_ArtInspiration1": 							{"en": "Inspire an acclaimed artist and appraise his work"}, 
-	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for an acclaimed artist and appraise all his works"}}
+	"a_ShortestChapter": 							{"en": "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary"}, 
+	"a_MaxInventory": 								{"en": "Accrue the ultimate arsenal of items during a singular playthrough"},
+	"a_PerformerGoingExtraMile": 					{"en": "Highlight the significance of going above and beyond, especially for those, including yourself, who would truly value the performer's effort"}, 	
+	"a_ArtInspiration1": 							{"en": "Inspire a renowned artist and appraise his work"}, 
+	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for a prominent artist and assess all his works"}}
 
 
 // ****************************
@@ -3848,7 +3848,7 @@ function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
-			if (util_debugMode) {
+			if (util_isDebugModeActive) {
 				let_shortenedAchievementCategory = substring(string_achievementCategory, 2)	// remove c_
 				let_shortenedAchievementDevName = substring(string_achievementDevName, 2)	// remove a_
 				let_string = format("[{0}_{1}]", let_shortenedAchievementCategory, let_shortenedAchievementDevName)
@@ -3865,7 +3865,7 @@ function achievements_initialize() {
 			return achievements_descriptions[string_achievementDevName][string_languageCode]}
 		function achievements_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (util_debugMode && string_devInfo != "") {
+			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
@@ -4005,7 +4005,7 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 //	- Contains logic data for the rich presence script
 function richPresence_callDisplayFunctions(){
 	
-	// rich_presence_conditional_display(	// DISABLED not as elegant inside rich presence 	// VERIFIED - rp_isPaused 
+	// rich_presence_conditional_display(	// rp_isPaused // DISABLED // VERIFIED not as elegant inside rich presence; !! IF !! turning back on re-check richPresence_conditions, some other conditions need changing
 	// 	richPresence_getCondition("rp_isPaused"),
 	// 	richPresence_getText("rp_isPaused"),
 	// 	richPresence_callParameterFunction("rpp_FatedHour"),
@@ -4014,7 +4014,7 @@ function richPresence_callDisplayFunctions(){
 	// 	richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
 	// 	richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
-	rich_presence_conditional_display(	// VERIFIED - rp_InGameEXChapterOnly
+	rich_presence_conditional_display(	// rp_InGameEXChapterOnly // VERIFIED
 		richPresence_getCondition("rp_InGameEXChapterOnly"),
 		richPresence_getText("rp_InGameEXChapterOnly"),
 		richPresence_callParameterFunction("rpp_FatedHour"),
@@ -4023,7 +4023,7 @@ function richPresence_callDisplayFunctions(){
 		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
-	rich_presence_conditional_display(	// VERIFIED - rp_InGameChapterOnly
+	rich_presence_conditional_display(	// rp_InGameChapterOnly // VERIFIED
 		richPresence_getCondition("rp_InGameChapterOnly"),
 		richPresence_getText("rp_InGameChapterOnly"),
 		richPresence_callParameterFunction("rpp_Chapter"),
@@ -4033,7 +4033,7 @@ function richPresence_callDisplayFunctions(){
 		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
-	rich_presence_conditional_display(	// VERIFIED - rp_InGameChapterWithTimePeriod
+	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod // VERIFIED
 		richPresence_getCondition("rp_InGameChapterWithTimePeriod"),
 		richPresence_getText("rp_InGameChapterWithTimePeriod"),
 		richPresence_callParameterFunction("rpp_Chapter"),
@@ -4044,12 +4044,12 @@ function richPresence_callDisplayFunctions(){
 		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
-	rich_presence_conditional_display(	// VERIFIED - rp_AtTitleScreen
+	rich_presence_conditional_display(	// rp_AtTitleScreen // VERIFIED
 		richPresence_getCondition("rp_AtTitleScreen"),
 		richPresence_getText("rp_AtTitleScreen"),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
 
-	rich_presence_display(	// VERIFIED - rp_Default
+	rich_presence_display(	// rp_Default // VERIFIED
 		richPresence_getText("rp_Default"))}
 // -------------------------------------
 richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
@@ -4062,14 +4062,15 @@ richPresence_conditions = {
 	"rp_InGameEXChapterOnly": () =>
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
 		isPrologueInExMode() && isExChapterUnlocked() && 
-		!isInGamePauseMenuActive() &&
+		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
 		isCurrentChapter("Prologue"),
 	"rp_InGameChapterOnly": () =>
 		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-		!isInGamePauseMenuActive() &&
+		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
 		!isPrologueInExMode() && isCurrentChapterOneOf(["Prologue", "Chapter1", "Epilogue"]),
 	"rp_InGameChapterWithTimePeriod": () { return
-		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && !isInGamePauseMenuActive() &&
+		isInGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		// !isInGamePauseMenuActive() &&	// <-- commented as long as rp_isPaused is disabled
 		isCurrentChapterOneOf(["Chapter2", "Chapter3", "Chapter4", "Chapter5", "Chapter6", "Chapter7", "Chapter8"])},
 	"rp_AtTitleScreen": () =>
 		isMainSaveLoaded() && 
@@ -4410,7 +4411,7 @@ function leaderboards_initialize() {
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
-		if (util_debugMode) {
+		if (util_isDebugModeActive) {
 			return format("{0} {1}", 
 				leaderboards_createDevName(string_leaderboardDevName),
 				leaderboards_getTitle(string_leaderboardDevName, string_languageCode))
@@ -4423,7 +4424,7 @@ function leaderboards_initialize() {
 			return leaderboards_descriptions[string_leaderboardDevName][string_languageCode]}
 		function leaderboards_formatDevInfo(string_devInfo) {
 			let_devInfoString = ""
-			if (util_debugMode && string_devInfo != "") {
+			if (util_isDebugModeActive && string_devInfo != "") {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
