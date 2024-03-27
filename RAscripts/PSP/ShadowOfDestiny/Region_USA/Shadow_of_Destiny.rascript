@@ -814,20 +814,14 @@ function is_ResultsMenu_HighlightedChapter(enum_chapter) {
 		is_ResultsMenu_active() &&
 		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
 // -------------------------------------
-enum_EndingFileId_A = 0x0
-enum_EndingFileId_B = 0x1
-enum_EndingFileId_C = 0x2
-enum_EndingFileId_D = 0x3
-enum_EndingFileId_E = 0x4
-enum_EndingFileId_EX = 0x5
-function is_ViewingEndingFile_viaExtraMenu(enum_endingFileId) {	// $AC3178: [25-bit Pointer] Ending File
-	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//		- Resets to 0x0, when no ending file is on screen					
-	return														// 		+0x10 - [8-bit] Ending File ID	
-		is_ExtraMenu_active() &&								// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
-		byte(let_maskedPointer + 0x10) == enum_endingFileId}	// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
-																// 		| - ...	
-																// 		+0x8 - [32-bit] Ending file timer
-																// 		+0xc - [16-bit] Ending file text ID
+function is_ViewingEndingFile_viaExtraMenu(enum_ending) {	// $AC3178: [25-bit Pointer] Ending File
+	let_maskedPointer = dword(0xAC3178) & 0x1ffffff			//		- Resets to 0x0, when no ending file is on screen					
+	let_endingFileId = get_EndingFileId(enum_ending)		// 		+0x10 - [8-bit] Ending File ID	
+	return													// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
+		is_ExtraMenu_active() &&							// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
+		byte(let_maskedPointer + 0x10) == let_endingFileId}	// 		| - ...	
+															// 		+0x8 - [32-bit] Ending file timer
+															// 		+0xc - [16-bit] Ending file text ID															
 // -------------------------------------
 function is_InGamePauseMenu_active() =>	// $B91514 + $B91518: [Bit Flag] bit 0 => in-game pause menu
 	bit0(0xB91514) == 1 && 
@@ -904,26 +898,50 @@ function on_Video_start() {
 		prev(dword(let_maskedPointer + 0x2c)) != 0x41 	&&
 		dword(let_maskedPointer + 0x2c)	== 0x41}
 
+// ****************
+// ◦ ENDING LOGIC ◦
+// ****************
+enum_Ending_A	= 106
+enum_Ending_B	= 105
+enum_Ending_C	= 104
+enum_Ending_D	= 103
+enum_Ending_E	= 102
+enum_Ending_EX	= 101
+const_Endings_data = {
+	enum_Ending_A : {
+		"EndingFile_ID": 0x0,
+		"memAddr_Flag_EndingAchieved": 0xAA1154}, // $AA1154: [Bit Flag] bit 0 => Ending A achieved
+	enum_Ending_B : {
+		"EndingFile_ID": 0x1,
+		"memAddr_Flag_EndingAchieved": 0xAA1155}, // $AA1155: [Bit Flag] bit 0 => Ending B achieved
+	enum_Ending_C : {
+		"EndingFile_ID": 0x2,
+		"memAddr_Flag_EndingAchieved": 0xAA1156}, // $AA1156: [Bit Flag] bit 0 => Ending C achieved
+	enum_Ending_D : {
+		"EndingFile_ID": 0x3,
+		"memAddr_Flag_EndingAchieved": 0xAA1157}, // $AA1157: [Bit Flag] bit 0 => Ending D achieved
+	enum_Ending_E : {
+		"EndingFile_ID": 0x4,
+		"memAddr_Flag_EndingAchieved": 0xAA1158}, // $AA1158: [Bit Flag] bit 0 => Ending E achieved
+	enum_Ending_EX : {
+		"EndingFile_ID": 0x5,
+		"memAddr_Flag_EndingAchieved": 0xAA1159}} // $AA1159: [Bit Flag] bit 0 => Ending EX achieved
+
+function get_EndingFileId(enum_ending) =>
+	const_Endings_data[enum_ending]["EndingFile_ID"]
+
+function is_Ending_achieved(enum_ending) =>
+	bit0(const_Endings_data[enum_ending]["memAddr_Flag_EndingAchieved"]) == 1
+
+function isExChapterUnlocked() => // If endings ABCDE are achieved
+	all_of(const_Endings_data, (enum_ending) {
+		if (enum_ending != enum_ending_EX) return is_Ending_achieved(enum_ending)
+		else return always_true()
+	})
+
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
 // ******************************
-const_endingBitFlagsMemoryAddresses = {
-	"A": 0xAA1154,	// $AA1154: [Bit Flag] bit 0 => Ending A achieved
-	"B": 0xAA1155,	// $AA1155: [Bit Flag] bit 0 => Ending B achieved
-	"C": 0xAA1156,	// $AA1156: [Bit Flag] bit 0 => Ending C achieved
-	"D": 0xAA1157,	// $AA1157: [Bit Flag] bit 0 => Ending D achieved
-	"E": 0xAA1158,	// $AA1158: [Bit Flag] bit 0 => Ending E achieved
-	"EX": 0xAA1159}	// $AA1159: [Bit Flag] bit 0 => Ending EX achieved
-
-function isEndingAchieved(string_EndingCharacter) =>
-	bit0(const_endingBitFlagsMemoryAddresses[string_EndingCharacter]) == 1
-
-function isExChapterUnlocked() => // If endings ABCDE are achieved
-	all_of(const_endingBitFlagsMemoryAddresses, (endingChar) {
-		if (endingChar != "EX")	return bit0(const_endingBitFlagsMemoryAddresses[endingChar]) == 1
-		return always_true()
-	})
-
 function isPrologueInExMode() => 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
 	bit7(0xA9ED98) == 1 			//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
 // -------------------------------------
@@ -2005,7 +2023,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("A"))},
+			is_Ending_achieved("A"))},
 	"a_EndingB1": function EndingB1() { return
 		never(
 			!is_InGame() 			||
@@ -2052,7 +2070,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("B"))},
+			is_Ending_achieved("B"))},
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!is_InGame() 			||
@@ -2087,7 +2105,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("B"))},
+			is_Ending_achieved("B"))},
 	"a_EndingC": function EndingC() { return
 		never(
 			!is_InGame() 			||
@@ -2122,7 +2140,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("C"))},
+			is_Ending_achieved("C"))},
 	"a_EndingD": function EndingD() { return
 		never(
 			!is_InGame() 			||
@@ -2149,7 +2167,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("D"))},
+			is_Ending_achieved("D"))},
 	"a_EndingE": function EndingE() { return
 		never(
 			!is_InGame() 			||
@@ -2184,7 +2202,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("E"))},
+			is_Ending_achieved("E"))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
 			!is_InGame() 			||
@@ -2214,7 +2232,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("EX"))},
+			is_Ending_achieved("EX"))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
 			!is_InGame() 			||
@@ -2244,7 +2262,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			isEndingAchieved("EX"))},
+			is_Ending_achieved("EX"))},
 	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() { return
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
 		// -----------------------------------------
