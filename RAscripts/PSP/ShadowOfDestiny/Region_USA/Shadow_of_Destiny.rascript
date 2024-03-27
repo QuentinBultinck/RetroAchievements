@@ -713,14 +713,14 @@ function is_ItemPresentInInventory(enum_item) =>
 
 // **********************
 // ◦ BOTTOM SCREEN TEXT ◦
-// **********************
+// **********************	// TODO Refactor this with new code notes
 // Bottom screen text - character printer => works via a transparant character set image, that is masked to show only 1 character at a time. 
 // Refer to code notes on RA game page 
-function isBottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
+function is_BottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
 											//		- This ID does not change on each new text change, but it does change often between text changes
 
-function isTotalCharacterCountOnBottomScreen(int_characterCount) { // Count starts at 1
+function is_TotalCharacterCountOnBottomScreen(int_characterCount) { // Count starts at 1
 	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
 	return 
 		dword(0xAC31E4 + let_offsetOfLastCharacterPrint) != 0x0 			&& // <-- this block checks if there is an Nth character on screen; where N = int_characterCount
@@ -728,19 +728,19 @@ function isTotalCharacterCountOnBottomScreen(int_characterCount) { // Count star
 		dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10) == 0x0 			&& // <-- this block checks if there's no more characters after Nth one
 		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa + 0x10) == 0x0}
 
-function isPriorMinimumAmountOfCharactersOnBottomScreen(int_characterCount) { // Count starts at 1
+function was_MinimumAmountOfCharactersOnBottomScreen(int_characterCount) { // Count starts at 1
 	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
 	return 
 		prior(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
 		prior(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0}
 
-function isNoCharactersOnBottomScreen() {
+function is_BottomScreenText_empty() {
 	return 
 		dword(0xAC31E4 + 0x4) == 0x0 &&
 		dword_be(0xAC31E4 + 0xa) == 0x0 &&	
 		dword(0xAC31E4 + 0x10) == 0x0}
 // -------------------------------------
-// Use below dictionary as an object definition to pass params to function isCharacterPrinted()
+// Use below dictionary as an object definition to pass params to function is_CharacterOnScreen()
 // 		objDict_characterPrintData = {
 // 			"index": 0000,	// First printed character starts at 0
 // 			"printXaxis": 0x0,
@@ -748,30 +748,23 @@ function isNoCharactersOnBottomScreen() {
 // 			"imageOffsetYaxis": 0x0,
 // 			"imageUnmaskWidth": 0x0,
 // 			"printYaxis": 0x0}
-function isCharacterPrinted(objDict_characterPrintData) {	
-	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
-		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
-		return let_dwordBE}
+function memUtil_charPrintDataToDwordBE(objDict_characterPrintData) {
+	let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
+	let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
+	let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
+	let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
+	return let_dwordBE}
+function is_CharacterOnScreen(objDict_characterPrintData) {	
 	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
 	return 
 		byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6) == objDict_characterPrintData["printXaxis"] &&
-		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == let_charPrintDataToDwordBE(objDict_characterPrintData)}
+		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == memUtil_charPrintDataToDwordBE(objDict_characterPrintData)}
 
-function isPriorCharacterPrinted(objDict_characterPrintData) {	
-	function let_charPrintDataToDwordBE(objDict_characterPrintData) {
-		let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
-		let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
-		return let_dwordBE	}
+function was_CharacterOnScreen(objDict_characterPrintData) {
 	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
 	return 
 		prior(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
-		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == let_charPrintDataToDwordBE(objDict_characterPrintData)}
-
+		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == memUtil_charPrintDataToDwordBE(objDict_characterPrintData)}
 
 // **************
 // ◦ EXTRA MENU ◦
@@ -1512,11 +1505,11 @@ function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 	return
 		tally(int_tallyCount, 
 			isEnergyUnitsIncreasing() &&
-			isPriorMinimumAmountOfCharactersOnBottomScreen(14) &&		
-			isPriorCharacterPrinted(let_charactersToCheck["G"]) &&	// Check prior values, since isEnergyUnitsIncreasing() hits when the text is already gone
-			isPriorCharacterPrinted(let_charactersToCheck["E"]) &&
-			isPriorCharacterPrinted(let_charactersToCheck["Y"]) &&
-			isPriorCharacterPrinted(let_charactersToCheck["I"]) &&
+			was_MinimumAmountOfCharactersOnBottomScreen(14) &&		
+			was_CharacterOnScreen(let_charactersToCheck["G"]) &&	// Check prior values, since isEnergyUnitsIncreasing() hits when the text is already gone
+			was_CharacterOnScreen(let_charactersToCheck["E"]) &&
+			was_CharacterOnScreen(let_charactersToCheck["Y"]) &&
+			was_CharacterOnScreen(let_charactersToCheck["I"]) &&
 			!is_LargeCutscene_active()	// Don't switch with is_Cutscene_notActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
 		)}
 
@@ -1647,8 +1640,8 @@ achievements_triggers = {
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
 		never(	// Core group
-			!isInGame() 							||
-			on_Cutscene_MasterId_change()						||
+			!isInGame() 					||
+			on_Cutscene_MasterId_change()	||
 			isEventViewerActive()			||
 			!is_SelectedItemInScrollBar(enum_Item_FryingPan)
 		) &&
@@ -1679,9 +1672,9 @@ achievements_triggers = {
 		)},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		never(	// Core group
-			!isInGame() 						||
-			on_Cutscene_MasterId_change()					||
-			isEventViewerActive()		||
+			!isInGame() 					||
+			on_Cutscene_MasterId_change()	||
+			isEventViewerActive()			||
 			!is_SelectedItemInScrollBar(enum_Item_Sign)
 		) &&
 		(
