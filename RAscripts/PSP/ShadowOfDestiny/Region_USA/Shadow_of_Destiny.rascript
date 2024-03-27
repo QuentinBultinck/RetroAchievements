@@ -12,6 +12,8 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
+// TODO rewrite character checker bottom screen text, with new notes
+
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -100,9 +102,9 @@ function current_PresentTime_Months() =>	// $AA12A8: [32-bit] Time in present: m
 
 function current_PresentTime_Years() =>		// $AA12A4: [32-bit] Time in present: years
 	dword(0xAA12A4)
-// ***********************
-// ◦ CLEAR TIME & TIMERS ◦
-// ***********************
+// **********************
+// ◦ CLEAR TIME: TIMERS ◦
+// **********************
 function current_ChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough Timer - Chapter Clear Time
 	dword(0xAA155C)
 	
@@ -131,9 +133,9 @@ function on_Timer_TotalClearTime_start() =>
 
 function on_Timer_TotalClearTime_reset() =>
 	current_TotalClearTime() < prev_TotalClearTime()
-// ********************
-// ◦ INTERACTIONS IDs ◦
-// ********************
+// ****************
+// ◦ INTERACTIONS ◦
+// ****************
 enum_NPC_MiddleAges_AspiringApprentice 	= 504
 enum_NPC_MiddleAges_EccentricGirl 		= 503
 enum_NPC_MiddleAges_YoungCoupleMan 		= 502
@@ -287,32 +289,44 @@ function is_TalkingToNPC(enum_npc) {					// $A9EFDC: [25-bit Pointer] Interactio
 		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}
 
 // -------------------------------------
-const_interactables = {
-	"Antique_FranssenShopSign": 0x8e,
-	"Antique_Rope": 0x98,
-	"Antique_Antidote": 0x79,
-	"Antique_Mask": 0xc6,
-	"Painting_SquireCrest": 0x164,
-	"Painting_TownSquare": 0x165,
-	"Painting_AlchemyLab": 0x16a,
-	"Painting_Performer": 0x166,
-	"Painting_CollapsedHouse": 0x168,
-	"Painting_TowerView": 0x163,
-	"Painting_LandscapeTown": 0x169,
-	"Painting_Alchemist": 0x167}		
+enum_InteractItem_Antique_Antidote 			= 203
+enum_InteractItem_Antique_FranssenShopSign 	= 202
+enum_InteractItem_Antique_Mask 				= 201
+enum_InteractItem_Antique_Rope 				= 200
+enum_InteractItem_Painting_Alchemist 			= 107
+enum_InteractItem_Painting_AlchemyLab 			= 106
+enum_InteractItem_Painting_CollapsedHouse 		= 105
+enum_InteractItem_Painting_LandscapeTown  		= 104
+enum_InteractItem_Painting_Performer 			= 103
+enum_InteractItem_Painting_SquireCrest 			= 102
+enum_InteractItem_Painting_TowerView 			= 101
+enum_InteractItem_Painting_TownSquare 			= 100
+const_InteractableItem_IDs = {
+	enum_InteractItem_Antique_FranssenShopSign: 0x8e,
+	enum_InteractItem_Antique_Rope: 0x98,
+	enum_InteractItem_Antique_Antidote: 0x79,
+	enum_InteractItem_Antique_Mask: 0xc6,
+	enum_InteractItem_Painting_SquireCrest: 0x164,
+	enum_InteractItem_Painting_TownSquare: 0x165,
+	enum_InteractItem_Painting_AlchemyLab: 0x16a,
+	enum_InteractItem_Painting_Performer: 0x166,
+	enum_InteractItem_Painting_CollapsedHouse: 0x168,
+	enum_InteractItem_Painting_TowerView: 0x163,
+	enum_InteractItem_Painting_LandscapeTown: 0x169,
+	enum_InteractItem_Painting_Alchemist: 0x167}		
 
-function isInteractingWith_shortHand(string_interactable) => 
-	dword(0xA9EFF4) == const_interactables[enum_NPC]
+function is_InteractingWith_bis(enum_interactableItem) => 
+	dword(0xA9EFF4) == const_InteractableItem_IDs[enum_interactableItem]
 
-function isInteractingWith(string_interactable) {
+function is_InteractingWith(enum_interactableItem) {
 	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
-	return const_interactables[string_interactable] == dword(let_maskedPointer)}
+	return const_InteractableItem_IDs[enum_interactableItem] == dword(let_maskedPointer)}
 
-function isInteractionChapterId(int_Id) {			// $A9EFE0: [25-bit Pointer] Interaction Identification
+function is_InteractionChapterId(int_Id) {			// $A9EFE0: [25-bit Pointer] Interaction Identification
 	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff	// 		+0x0 - [32-bit] Interaction Chapter ID
 	return dword(let_maskedPointer) == int_Id}		//		| - Each chapter has a different value
 
-function isInteractionId(int_Id) {
+function is_InteractionId(int_Id) {
 	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit Pointer] Interaction Identification
 	return dword(let_maskedPointer) == int_Id}		// 		- Pointer resets to 0x0 when interaction is done
 													// 		+0x0 - [32-bit] Interaction ID
@@ -430,7 +444,7 @@ enum_Area_Present_CafeSonne			= 103
 enum_Area_Present_City_NightAM		= 102
 enum_Area_Present_City_NightPM		= 101
 enum_Area_Present_City_Day			= 100
-const_AreaIDs= {	// list not complete, add as is necessary
+const_Area_IDs= {	// list not complete, add as is necessary
 	enum_Area_MiddleAges_City_Day: 0x3f3,
 	enum_Area_MiddleAges_City_Night: 0x33c,
 	enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement: 0x217,
@@ -460,7 +474,7 @@ const_AreaIDs= {	// list not complete, add as is necessary
 	enum_Area_Present_BrumMuseum_Downstairs_Room_Night: 0x32,
 	enum_Area_Present_BrumMuseum_Downstairs_Room_Day: 0x2ed}
 function is_Area(enum_area) => 	// $A82E48: [32-bit] Current loaded area
-	dword(0xA82E48) == const_AreaIDs[enum_area]	
+	dword(0xA82E48) == const_Area_IDs[enum_area]	
 
 // *****************
 // ◦ CHAPTER LOGIC ◦
@@ -479,7 +493,7 @@ enum_Chapter_Chapter3 	= 103
 enum_Chapter_Chapter2 	= 102
 enum_Chapter_Chapter1 	= 101
 enum_Chapter_Prologue 	= 100
-const_chapterIDs = {
+const_chapter_IDs = {
 	enum_Chapter_Prologue: 0x1,	// Also counts for EX chapter
 	enum_Chapter_Chapter1: 0x2,
 	enum_Chapter_Chapter2: 0x3,
@@ -494,7 +508,7 @@ const_chapterIDs = {
 	enum_Chapter_Epilogue_NoAncestress: 0xc}
 
 function get_ChapterID(enum_chapter) => 
-	const_chapterIDs[enum_chapter]	
+	const_chapter_IDs[enum_chapter]	
 
 function current_ChapterID() => 	// $B95704: [8-bit] Chapter ID
 	byte(0xB95704)
@@ -2652,37 +2666,37 @@ achievements_triggers = {
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) && 
 					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") &&	
-					isInteractionChapterId(0x163) && isInteractionId(0x420)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x420)),
 				once(	// 1st talk with man
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x0) || isLostYoungCoupleProgressChap2(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x40d)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x40d)),
 				once( 	// 2nd talk with woman; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x421)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x421)),
 				once(	// 2nd talk with man; is only available when having talked to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap2(0x1) || isLostYoungCoupleProgressChap2(0x2)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x40e)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x40e)),
 				once(	// 3rd talk with woman
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x422)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x422)),
 				once(	// 3rd talk with man
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap2(0x3) &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x40f))
+					is_InteractionChapterId(0x163) && is_InteractionId(0x40f))
 			])}
 		return 
 			never(
@@ -2699,37 +2713,37 @@ achievements_triggers = {
 					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x423)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x423)),
 				once(	// 1st talk with man
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x0) || isLostYoungCoupleProgressChap3(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x410)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x410)),
 				once(	// 2nd talk with woman; only available when talking to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x424)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x424)),
 				once(	// 2nd talk with man; only available when talking to both at least once
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap3(0x1) || isLostYoungCoupleProgressChap3(0x2)) &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x411)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x411)),
 				once(	// 3rd talk with woman
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap3(0x3) &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x425)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x425)),
 				once(	// 3rd talk with man
 					isSmallCutsceneActive() &&
 					isLostYoungCoupleProgressChap3(0x3) &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x412))
+					is_InteractionChapterId(0x163) && is_InteractionId(0x412))
 			])}
 		return 
 			never(
@@ -2746,37 +2760,37 @@ achievements_triggers = {
 					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x426)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x426)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x0) || isLostYoungCoupleProgressChap4(0x1)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x413)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x413)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x427)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x427)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x1) || isLostYoungCoupleProgressChap4(0x2)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x414)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x414)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x428)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x428)),
 				once(
 					isSmallCutsceneActive() &&
 					(isLostYoungCoupleProgressChap4(0x2) || isLostYoungCoupleProgressChap4(0x3)) &&	
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x415))				
+					is_InteractionChapterId(0x163) && is_InteractionId(0x415))				
 			])}
 		return 
 			never(	
@@ -2792,7 +2806,7 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x416))
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x416))
 			)}
 		return 
 			never(	
@@ -2809,12 +2823,12 @@ achievements_triggers = {
 					isMargaretteNoAncestor() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
+					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x418))
+					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
 			])}
 		function measuredComparison_Ancestor() { return
 			tally(4, [
@@ -2823,18 +2837,18 @@ achievements_triggers = {
 				// 	isMargaretteAncestor() &&
 				// 	is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 				// 	on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
-				// 	isInteractionChapterId(0x3b) && isInteractionId(0x428)),
+				// 	is_InteractionChapterId(0x3b) && is_InteractionId(0x428)),
 				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
 					isSmallCutsceneActive() &&
 					isMargaretteAncestor() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x429)),
+					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
-					isInteractionChapterId(0x3b) && isInteractionId(0x418))
+					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
 			])}
 		return 
 			never(	
@@ -2854,14 +2868,14 @@ achievements_triggers = {
 					isWomanAdvisedBeTruthful() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
 					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
-					isInteractionChapterId(0x13) && isInteractionId(0x41c)),
+					is_InteractionChapterId(0x13) && is_InteractionId(0x41c)),
 				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
 						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
 					isSmallCutsceneActive() &&		
 					isWomanAdvisedBeTruthful() &&
 					isManToldLoversNeverDestinedMeet() &&
 					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&					
-					isInteractionChapterId(0x13) && isInteractionId(0x433))
+					is_InteractionChapterId(0x13) && is_InteractionId(0x433))
 			])}
 		return 
 			never(	
@@ -2877,12 +2891,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") &&
-					isInteractionId(0x2cc)),
+					is_InteractionId(0x2cc)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap1Prologue_NearBar") &&
-					isInteractionId(0x2c1))
+					is_InteractionId(0x2c1))
 			])}
 		return 
 			never(	
@@ -2898,12 +2912,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionId(0x2d0)),
+					is_InteractionId(0x2d0)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
-					isInteractionId(0x2c4))
+					is_InteractionId(0x2c4))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2911,12 +2925,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionId(0x2d0)),
+					is_InteractionId(0x2d0)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
-					isInteractionId(0x2c4))
+					is_InteractionId(0x2c4))
 			])}
 		return 
 			never(	
@@ -2932,12 +2946,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionId(0x2d0)),
+					is_InteractionId(0x2d0)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
-					isInteractionId(0x2c5))
+					is_InteractionId(0x2c5))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
@@ -2945,12 +2959,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					isInteractionId(0x2d0)),
+					is_InteractionId(0x2d0)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
-					isInteractionId(0x2c5))
+					is_InteractionId(0x2c5))
 			])}
 		return 
 			never(	
@@ -2966,12 +2980,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
 				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumLibrary_onMax() { return
 			tally(3, [
@@ -2979,12 +2993,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
 				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
 					isSmallCutsceneActive() && isBrumEstateLibrary() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2c9))
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumMuseum_onIncrease() { return
 			tally(3, [
@@ -2992,12 +3006,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
 			])}
 		function measuredComparison_BrumMuseum_onMax() { return
 			tally(3, [
@@ -3005,12 +3019,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2d5)),
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					isSmallCutsceneActive() && isBrumEstateMuseum() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
-					isInteractionChapterId(0x4b) && isInteractionId(0x2ca))
+					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
 			])}
 		return 
 			never(	
@@ -3027,12 +3041,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
 			])}
 		function measuredComparison_onMax() { return
 			tally(3, [
@@ -3040,12 +3054,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2d3)),
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
 				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
 					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2c8))
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
 			])}
 		return 
 			never(	
@@ -3094,35 +3108,35 @@ achievements_triggers = {
 					is_TalkingToNPC(enum_NPC_Present_BlondeYoungBoy) &&
 					is_Area(enum_Area_Present_City_Day) &&
 					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit") &&
-					isInteractionChapterId(0x44) && isInteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
+					is_InteractionChapterId(0x44) && is_InteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_BrunetteMother) &&
 					is_Area(enum_Area_Present_City_Day) &&
 					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit") &&
-					isInteractionChapterId(0x44) && isInteractionId(0x336)),
+					is_InteractionChapterId(0x44) && is_InteractionId(0x336)),
 				once(
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_BrunetteYoungGirl) &&
 					is_Area(enum_Area_Present_City_Day) &&
 					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit") &&
-					isInteractionChapterId(0x44) && isInteractionId(0x323)),
+					is_InteractionChapterId(0x44) && is_InteractionId(0x323)),
 				once(
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_BlondeOldWomanOrangeSweater) &&
 					is_Area(enum_Area_Present_City_Day) &&
 					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit") &&
-					isInteractionChapterId(0x44) && isInteractionId(0x32c)),
+					is_InteractionChapterId(0x44) && is_InteractionId(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_BrunetteAdultManGlasses) &&
 					is_Area(enum_Area_Present_TownHall) &&
-					isInteractionChapterId(0x29) && isInteractionId(0x3c6)),
+					is_InteractionChapterId(0x29) && is_InteractionId(0x3c6)),
 				once(	// This appearance does not have a memory address for talk count
 					isSmallCutsceneActive() &&
 					is_TalkingToNPC(enum_NPC_Present_BlondeElderlyWoman) &&
 					is_Area(enum_Area_Present_TownHall) &&
-					isInteractionChapterId(0x29) && isInteractionId(0x3cc)),
+					is_InteractionChapterId(0x29) && is_InteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
 					isFullCutsceneActive() &&
 					is_SelectedItemInScrollBar(enum_Item_Jugglery) &&
@@ -3184,17 +3198,17 @@ achievements_triggers = {
 					isSmallCutsceneActive() &&
 					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x314)),				
+					is_InteractionChapterId(0x163) && is_InteractionId(0x314)),				
 				once(	// Identifies cutscene => scaring straw hat man
 					isSmallCutsceneActive() &&
 					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x2da)),
+					is_InteractionChapterId(0x163) && is_InteractionId(0x2da)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
 					isSmallCutsceneActive() &&
 					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
 					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare") &&
-					isInteractionChapterId(0x163) && isInteractionId(0x2e3))
+					is_InteractionChapterId(0x163) && is_InteractionId(0x2e3))
 			])}
 		return 
 			never(	
@@ -3301,12 +3315,12 @@ achievements_triggers = {
 					isSmallCutsceneActive() && 
 					is_TalkingToNPC(enum_NPC_Present_SlimDelinquent) &&
 					on_NPC_TalkCount_hitsMax(enum_NPC_Present_SlimDelinquent, "Chap7_CarPark") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2f5)),
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f5)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					isSmallCutsceneActive() && 
 					is_TalkingToNPC(enum_NPC_Present_BroadDelinquent) &&
 					on_NPC_TalkCount_hitsMax(enum_NPC_Present_BroadDelinquent, "Chap7_CarPark") &&
-					isInteractionChapterId(0xb2) && isInteractionId(0x2f0))
+					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f0))
 			])}
 		return 
 			never(
@@ -3363,40 +3377,40 @@ achievements_triggers = {
 			once(
 				isSmallCutsceneActive() && 
 				isPaintingTowerViewInspired() &&
-				isInteractingWith("Painting_TowerView") && 
+				is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
-				isInteractionId(0x124)),
+				is_InteractionId(0x124)),
 			
 			once(
 				isSmallCutsceneActive() && 	
 				isPaintingSquireCrestInspired() &&
-				isInteractingWith("Painting_SquireCrest") && 
+				is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-				isInteractionId(0x125)),
+				is_InteractionId(0x125)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingMarktplatzInspired() &&
-				isInteractingWith("Painting_TownSquare") && 
+				is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-				isInteractionId(0x126)),
+				is_InteractionId(0x126)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingAntidoteInspired() &&
-				isInteractingWith("Painting_AlchemyLab") && 
+				is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				isInteractionId(0x127)),
+				is_InteractionId(0x127)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingPerformerInspired() &&
-				isInteractingWith("Painting_Performer") && 
+				is_InteractingWith(enum_InteractItem_Painting_Performer) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				isInteractionId(0x128)),
+				is_InteractionId(0x128)),
 			once(
 				isSmallCutsceneActive() &&
 				isPaintingHouseCollapseInspired() &&
-				isInteractingWith("Painting_CollapsedHouse") && 
+				is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				isInteractionId(0x129))
+				is_InteractionId(0x129))
 			]) &&
 			trigger_when(isCutsceneEnding())},	// Trigger when cutscene is over
 	"a_ArtInspirationAll": function ArtInspirationAll() {
@@ -3405,39 +3419,39 @@ achievements_triggers = {
 				once(
 					isSmallCutsceneActive() && 
 					isPaintingTowerViewInspired() &&
-					isInteractingWith("Painting_TowerView") && 
+					is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
-					isInteractionId(0x124)),
+					is_InteractionId(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
 					isPaintingSquireCrestInspired() &&
-					isInteractingWith("Painting_SquireCrest") && 
+					is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					isInteractionId(0x125)),
+					is_InteractionId(0x125)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingMarktplatzInspired() &&
-					isInteractingWith("Painting_TownSquare") && 
+					is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					isInteractionId(0x126)),
+					is_InteractionId(0x126)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingAntidoteInspired() &&
-					isInteractingWith("Painting_AlchemyLab") && 
+					is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x127)),
+					is_InteractionId(0x127)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingPerformerInspired() &&
-					isInteractingWith("Painting_Performer") && 
+					is_InteractingWith(enum_InteractItem_Painting_Performer) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x128)),
+					is_InteractionId(0x128)),
 				once(
 					isSmallCutsceneActive() &&
 					isPaintingHouseCollapseInspired() &&
-					isInteractingWith("Painting_CollapsedHouse") && 
+					is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x129))
+					is_InteractionId(0x129))
 			])}
 		return
 			never(
@@ -3451,44 +3465,44 @@ achievements_triggers = {
 			tally(8, [
 				once(
 					isSmallCutsceneActive() && 	
-					isInteractingWith("Painting_TowerView") && 
+					is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
-					isInteractionId(0x124)),
+					is_InteractionId(0x124)),
 				once(
 					isSmallCutsceneActive() && 	
-					isInteractingWith("Painting_SquireCrest") && 
+					is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					isInteractionId(0x125)),
+					is_InteractionId(0x125)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_TownSquare") && 
+					is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					isInteractionId(0x126)),
+					is_InteractionId(0x126)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_AlchemyLab") && 
+					is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x127)),
+					is_InteractionId(0x127)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_Performer") && 
+					is_InteractingWith(enum_InteractItem_Painting_Performer) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x128)),
+					is_InteractionId(0x128)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_CollapsedHouse") && 
+					is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					isInteractionId(0x129)),
+					is_InteractionId(0x129)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_LandscapeTown") && 
+					is_InteractingWith(enum_InteractItem_Painting_LandscapeTown) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
-					isInteractionId(0xffffffff)),
+					is_InteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Painting_Alchemist") && 
+					is_InteractingWith(enum_InteractItem_Painting_Alchemist) && 
 					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
-					isInteractionId(0xffffffff))
+					is_InteractionId(0xffffffff))
 			])}
 		return
 			never(
@@ -3502,20 +3516,20 @@ achievements_triggers = {
 			tally(4, [
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Antique_FranssenShopSign") && 
-					isInteractionId(0xffffffff)),
+					is_InteractingWith(enum_InteractItem_Antique_FranssenShopSign) && 
+					is_InteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Antique_Rope") &&
-					isInteractionId(0xffffffff)),
+					is_InteractingWith(enum_InteractItem_Antique_Rope) &&
+					is_InteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Antique_Antidote") &&
-					isInteractionId(0xffffffff)),
+					is_InteractingWith(enum_InteractItem_Antique_Antidote) &&
+					is_InteractionId(0xffffffff)),
 				once(
 					isSmallCutsceneActive() &&
-					isInteractingWith("Antique_Mask") &&
-					isInteractionId(0xffffffff))
+					is_InteractingWith(enum_InteractItem_Antique_Mask) &&
+					is_InteractionId(0xffffffff))
 			])}
 		function measuredIfComparison() { return
 			is_Area(enum_Area_80s_AntiquesEule) ||
@@ -3536,7 +3550,7 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
 			isSmallCutsceneActive() && is_Area(enum_Area_80s_CafeSonne) &&
 			is_TalkingToNPC(enum_NPC_80s_OlderMan) && 
-			isInteractionChapterId(0xb2) && isInteractionId(0x3e7) && 
+			is_InteractionChapterId(0xb2) && is_InteractionId(0x3e7) && 
 			has_startedTalkingToNPC_forFirstTime(enum_NPC_80s_OlderMan, "Chap6_CafeSonne")
 		) &&
 		trigger_when(isCutsceneEnding())},
@@ -3551,7 +3565,7 @@ achievements_triggers = {
 				is_SelectedItemInScrollBar(enum_Item_EggPocketWatch) ||
 				is_SelectedItemInScrollBar(enum_Item_OrnamentalEgg)
 			) &&
-			is_TalkingToNPC(enum_NPC_80s_Barman) && isInteractionId(0x2ed) &&
+			is_TalkingToNPC(enum_NPC_80s_Barman) && is_InteractionId(0x2ed) &&
 			is_NPCtalkCount_atMax(enum_NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg")
 		) &&
 		trigger_when(isCutsceneEnding())},
@@ -4080,7 +4094,7 @@ richPresence_lookupTables = {
 		0x81: "Late20Century",
 		0x88: "Late20Century",
 		0x83: "Present"},
-	"rpp_Chapter": { // Refer to const_chapterIDs
+	"rpp_Chapter": { // Refer to const_chapter_IDs
 		0x1: "Prologue",
 		0x2: "Chapter1",
 		0x3: "Chapter2",
