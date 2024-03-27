@@ -32,9 +32,10 @@
 //	- prior_ 	=> returns a memory accessor to the prior value
 //	- prev_ 	=> returns a memory accessor to the previous/delta value
 //
-//	- is_		=> returns a comparison, which only uses current values
-//	- was_		=> returns a comparison, which uses prior values
-//	- on_		=> returns a comparison, which uses delta/previous values
+//	- is_		=> returns a comparison, which only uses current values					-> eg is_Area(id_area) => id_area == byte(0xAA)
+//	- was_		=> returns a comparison, which only uses prior values					-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
+//	- has_ 		=> returns a comparison, which uses current AND prior values			-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
+//	- on_		=> returns a comparison, which uses at least one delta/previous values	-> eg on_Area_change() => current_Area() != prev_Area()
 
 //	Visual Studio Code: specific info
 // ---------------------------------------------
