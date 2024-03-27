@@ -712,58 +712,146 @@ function is_ItemPresentInInventory(enum_item) =>
 // **********************
 // ◦ BOTTOM SCREEN TEXT ◦
 // **********************	// TODO Refactor this with new code notes
-// Bottom screen text - character printer => works via a transparant character set image, that is masked to show only 1 character at a time. 
-// Refer to code notes on RA game page 
+// - The text at the bottom of the screen (subtitles & info in menu's) is printed on the screen via a transparent character set image, 
+// 		which is masked to show only 1 character at a time. 
+//		Functional with offset and different character sets (ex. latin, chinese) (more info refer to code notes @ 0xac31e8)
 function is_BottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	dword(0xAC31E4) == int_id				//		- Identifies a series of text lines at the bottom of the screen (during cutscenes or in a menu)
 											//		- This ID does not change on each new text change, but it does change often between text changes
-
-function is_TotalCharacterCountOnBottomScreen(int_characterCount) { // Count starts at 1
-	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
-	return 
-		dword(0xAC31E4 + let_offsetOfLastCharacterPrint) != 0x0 			&& // <-- this block checks if there is an Nth character on screen; where N = int_characterCount
-		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa) != 0x0 	&&	
-		dword(0xAC31E4 + let_offsetOfLastCharacterPrint + 0x10) == 0x0 			&& // <-- this block checks if there's no more characters after Nth one
-		dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa + 0x10) == 0x0}
-
-function was_MinimumAmountOfCharactersOnBottomScreen(int_characterCount) { // Count starts at 1
-	let_offsetOfLastCharacterPrint = (int_characterCount - 1) * 0x10 + 0x4
-	return 
-		prior(dword(0xAC31E4 + let_offsetOfLastCharacterPrint)) != 0x0 &&
-		prior(dword_be(0xAC31E4 + let_offsetOfLastCharacterPrint + 0xa)) != 0x0}
-
-function is_BottomScreenText_empty() {
-	return 
-		dword(0xAC31E4 + 0x4) == 0x0 &&
-		dword_be(0xAC31E4 + 0xa) == 0x0 &&	
-		dword(0xAC31E4 + 0x10) == 0x0}
 // -------------------------------------
-// Use below dictionary as an object definition to pass params to function is_CharacterOnScreen()
-// 		objDict_characterPrintData = {
-// 			"index": 0000,	// First printed character starts at 0
-// 			"printXaxis": 0x0,
-// 			"imageOffsetXaxis": 0x0,
-// 			"imageOffsetYaxis": 0x0,
-// 			"imageUnmaskWidth": 0x0,
-// 			"printYaxis": 0x0}
-function memUtil_charPrintDataToDwordBE(objDict_characterPrintData) {
-	let_dwordBE = objDict_characterPrintData["imageOffsetXaxis"] * 0x1000000
-	let_dwordBE = let_dwordBE + objDict_characterPrintData["imageOffsetYaxis"] * 0x10000
-	let_dwordBE = let_dwordBE + objDict_characterPrintData["imageUnmaskWidth"] * 0x100
-	let_dwordBE = let_dwordBE + objDict_characterPrintData["printYaxis"]
+// $AC31E8: [NTSC-U/C][Variable Length Array] List of Character_Print_Data_Objects
+	// - Size is dependent on the amount of characters on the bottom screen (1 character == 1 object)
+	// - A space doesn't count as an object; Special characters (eg .?!') do
+	// - 1st character corresponds to the first letter on the first line; the last char corresponds to the last letter in the last line
+	// >>>{ [Struct Definition][8-byte] Character_Print_Data_Object
+	// >>>| '''''''''''''''''''''''''''''''''''''''''''''''''
+	// >>>| +0x0 - [16-bit] Some control data (unknown usage)
+	// >>>| +0x2 - [8-bit] Height of character
+	// >>>| ¨¨¨¨¨¨¨¨ [Lower4] Sub height (in-between lines)
+	// >>>| ¨¨¨¨¨¨¨¨ [Upper4] Main height
+	// >>>| ¨¨¨¨¨¨¨¨¨¨¨¨ 4 => prints to first line
+	// >>>| ¨¨¨¨¨¨¨¨¨¨¨¨ 5 => prints to second line
+	// >>>| +0x6 - [8-bit] Print location x-axis
+	// >>>| +0xa - [8-bit] Image offset x-axis
+	// >>>| +0xb - [8-bit] Image offset y-axis
+	// >>>| +0xc - [8-bit] Unmask width
+	// >>>| ¨¨¨¨¨¨¨¨ Higher value => more of the image is visible
+	// >>>| +0xd - [8-bit] Print location y-axis
+	// >>>| +0xf - [8-bit] Character set ID
+	// >>>| ¨¨¨¨¨¨¨¨ Default for USA version is 0x8 = latin characters
+	// >>>| ¨¨¨¨¨¨¨¨ There seems to be 15 characters sets; starting from 0x0 up to 0x14; higher than this value defaults to latin characters
+	// >>>| ¨¨¨¨¨¨¨¨ All characters sets are presumably on one big character set image, so this value here might just be another offset
+const_CharacterPrinter_data = {
+	"memAddr": 0xAC31E8,
+	"sizeInBytes_CharacterPrintData_Obj": 16,
+	"offsets_CharacterPrintData_Obj": {
+		"controlData": 0x0,
+		"height": 0x2,
+		"print_Xaxis": 0x6,
+		"imageOffset_Xaxis": 0xa,
+		"imageOffset_Yaxis": 0xb,
+		"imageUnmask_Width": 0xc,
+		"print_Yaxis": 0xd,
+		"characterSetId": 0xe}}
+
+function get_CharPrint_offset(int_charIndex) =>
+	int_charIndex * const_CharacterPrinter_data["sizeInBytes_CharacterPrintData_Obj"]
+
+function current_CharPrint_controlData(int_charIndex) =>
+	word(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["controlData"])
+
+function current_CharPrint_height(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["height"])
+	
+function current_CharPrint_printXaxis(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["print_Xaxis"])
+	
+function current_CharPrint_printYaxis(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["print_Yaxis"])
+
+function current_CharPrint_imageOffsetXaxis(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Xaxis"])
+	
+function current_CharPrint_imageOffsetYaxis(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Yaxis"])
+	
+function current_CharPrint_imageUnmaskWidth(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageUnmask_Width"])
+	
+function current_CharPrint_characterSetId(int_charIndex) =>
+	byte(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["characterSetId"])
+
+function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
+	let_dwordBE = dict_characterPrintData["imageOffset_Xaxis"] * 0x1000000
+	let_dwordBE = let_dwordBE + dict_characterPrintData["imageOffset_Yaxis"] * 0x10000
+	let_dwordBE = let_dwordBE + dict_characterPrintData["imageUnmask_Width"] * 0x100
+	let_dwordBE = let_dwordBE + dict_characterPrintData["print_Yaxis"]
 	return let_dwordBE}
-function is_CharacterOnScreen(objDict_characterPrintData) {	
-	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
-	return 
-		byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6) == objDict_characterPrintData["printXaxis"] &&
-		dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa) == memUtil_charPrintDataToDwordBE(objDict_characterPrintData)}
 
-function was_CharacterOnScreen(objDict_characterPrintData) {
-	let_offsetOfCharacterPrint = objDict_characterPrintData["index"] * 0x10 + 0x4
-	return 
-		prior(byte(0xAC31E4 + let_offsetOfCharacterPrint + 0x6)) == objDict_characterPrintData["printXaxis"] &&
-		prior(dword_be(0xAC31E4 + let_offsetOfCharacterPrint + 0xa)) == memUtil_charPrintDataToDwordBE(objDict_characterPrintData)}
+// Use below dictionary as an object definition to pass params to function is_CharacterOnScreen()
+// 	dict_characterPrintData = {
+	//	"height": 0x0,
+	// 	"print_Xaxis": 0x0,
+	// 	"imageOffset_Xaxis": 0x0,
+	// 	"imageOffset_Yaxis": 0x0,
+	// 	"imageUnmask_Width": 0x0,
+	// 	"print_Yaxis": 0x0,
+	//	"characterSetId": 0x0}
+function is_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
+	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
+	current_CharPrint_printYaxis(int_charIndex) == dict_characterPrintData["print_Yaxis"] &&
+	current_CharPrint_imageOffsetXaxis(int_charIndex) == dict_characterPrintData["imageOffset_Xaxis"] &&
+	current_CharPrint_imageOffsetYaxis(int_charIndex) == dict_characterPrintData["imageOffset_Yaxis"] &&
+	current_CharPrint_imageUnmaskWidth(int_charIndex) == dict_characterPrintData["imageUnmask_Width"] &&
+	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]
 
+function is_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
+	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
+	dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Xaxis"]) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
+	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]	
+
+function was_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
+	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
+	prior(current_CharPrint_printYaxis(int_charIndex)) == dict_characterPrintData["print_Yaxis"] &&
+	prior(current_CharPrint_imageOffsetXaxis(int_charIndex)) == dict_characterPrintData["imageOffset_Xaxis"] &&
+	prior(current_CharPrint_imageOffsetYaxis(int_charIndex)) == dict_characterPrintData["imageOffset_Yaxis"] &&
+	prior(current_CharPrint_imageUnmaskWidth(int_charIndex)) == dict_characterPrintData["imageUnmask_Width"] &&
+	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
+
+function was_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
+	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
+	prior(dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
+		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Xaxis"])) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
+	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
+
+function is_TotalCharacterCountOnBottomScreen(int_charCount) { // Count starts at 1
+	let_lastCharIndex = int_charCount - 1
+	return 
+		current_CharPrint_controlData(let_lastCharIndex) != 0 		&& // <-- this block checks if there is an Nth character printed on screen; where N = int_charCount
+		current_CharPrint_height(let_lastCharIndex) != 0			&&
+
+		current_CharPrint_controlData(let_lastCharIndex + 1) == 0 	&& // <-- this block checks if there's no more characters printed after Nth one
+		current_CharPrint_height(let_lastCharIndex + 1) == 0}
+
+function was_MinimumAmountOfCharactersOnBottomScreen(int_charCount) => // Count starts at 1
+	prior(current_CharPrint_controlData(int_charCount - 1)) != 0x0
+
+function is_BottomScreenText_empty() => 
+	current_CharPrint_controlData(0) == 0x0 &&	// Checks first character
+	current_CharPrint_controlData(7) == 0x0		// Checks 7th character
 // ***********************
 // ◦ MENU IDENTIFICATION ◦
 // ***********************
@@ -810,16 +898,7 @@ function is_ResultsMenu_HighlightedChapter(enum_chapter) {
 	}
 	return			
 		is_ResultsMenu_active() &&
-		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
-// -------------------------------------
-function is_ViewingEndingFile_viaExtraMenu(enum_ending) {	// $AC3178: [25-bit Pointer] Ending File
-	let_maskedPointer = dword(0xAC3178) & 0x1ffffff			//		- Resets to 0x0, when no ending file is on screen					
-	let_endingFileId = get_EndingFileId(enum_ending)		// 		+0x10 - [8-bit] Ending File ID	
-	return													// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
-		is_ExtraMenu_active() &&							// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
-		byte(let_maskedPointer + 0x10) == let_endingFileId}	// 		| - ...	
-															// 		+0x8 - [32-bit] Ending file timer
-															// 		+0xc - [16-bit] Ending file text ID															
+		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}													
 // -------------------------------------
 function is_InGamePauseMenu_active() =>	// $B91514 + $B91518: [Bit Flag] bit 0 => in-game pause menu
 	bit0(0xB91514) == 1 && 
@@ -859,7 +938,7 @@ function current_EnergyUnits() =>		// $A9DAA8: Number of energy units in possess
 function prev_EnergyUnits() =>
 	prev(current_EnergyUnits())
 
-function on_EnergyUnits_increment() => 		
+function on_EnergyUnits_increment() => 
 	current_EnergyUnits() > prev_EnergyUnits()
 
 function on_EnergyUnits_decrement() => 
@@ -937,6 +1016,14 @@ function isExChapterUnlocked() => // If endings ABCDE are achieved
 		else return always_true()
 	})
 
+function is_ViewingEndingFile_viaExtraMenu(enum_ending) {	// $AC3178: [25-bit Pointer] Ending File
+	let_maskedPointer = dword(0xAC3178) & 0x1ffffff			//		- Resets to 0x0, when no ending file is on screen					
+	let_endingFileId = get_EndingFileId(enum_ending)		// 		+0x10 - [8-bit] Ending File ID	
+	return													// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
+		is_ExtraMenu_active() &&							// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
+		byte(let_maskedPointer + 0x10) == let_endingFileId}	// 		| - ...	
+															// 		+0x8 - [32-bit] Ending file timer
+															// 		+0xc - [16-bit] Ending file text ID		
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
 // ******************************
@@ -1492,41 +1579,45 @@ function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict
 function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
 		"G": {
-			"index": 0,	
-			"printXaxis": 0x0,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x0,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x0},
+			"height": 0x48,
+			"print_Xaxis": 0x0,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x0,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
 		"E": {
-			"index": 3,	
-			"printXaxis": 0x1f,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x38,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x0},
+			"height": 0x48,
+			"print_Xaxis": 0x1f,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
 		"Y": {
-			"index": 8,	
-			"printXaxis": 0x4b,
-			"imageOffsetXaxis": 0x48,
-			"imageOffsetYaxis": 0x54,
-			"imageUnmaskWidth": 0x9,
-			"printYaxis": 0x1},		
+			"height": 0x49,
+			"print_Xaxis": 0x4b,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x54,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x1,
+			"characterSetId": 0x8},	
 		"I": {
-			"index": 11,	
-			"printXaxis": 0x6c,
-			"imageOffsetXaxis": 0x0,
-			"imageOffsetYaxis": 0x46,
-			"imageUnmaskWidth": 0x4,
-			"printYaxis": 0x0}}
+			"height": 0x48,
+			"print_Xaxis": 0x6c,
+			"imageOffset_Xaxis": 0x0,
+			"imageOffset_Yaxis": 0x46,
+			"imageUnmask_Width": 0x4,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8}}
 	return
 		tally(int_tallyCount, 
 			on_EnergyUnits_increment() &&
 			was_MinimumAmountOfCharactersOnBottomScreen(14) &&		
-			was_CharacterOnScreen(let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
-			was_CharacterOnScreen(let_charactersToCheck["E"]) &&
-			was_CharacterOnScreen(let_charactersToCheck["Y"]) &&
-			was_CharacterOnScreen(let_charactersToCheck["I"]) &&
+			was_CharacterOnScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+			was_CharacterOnScreen(3, let_charactersToCheck["E"]) &&
+			was_CharacterOnScreen(8, let_charactersToCheck["Y"]) &&
+			was_CharacterOnScreen(11, let_charactersToCheck["I"]) &&
 			!is_LargeCutscene_active()	// Don't switch with is_Cutscene_notActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
 		)}
 
