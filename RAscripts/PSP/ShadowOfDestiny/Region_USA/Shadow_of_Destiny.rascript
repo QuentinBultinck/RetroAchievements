@@ -771,7 +771,7 @@ function was_CharacterOnScreen(objDict_characterPrintData) {
 // **************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra menu
+function is_ExtraMenu_active() {					// $AC3170: [25-bit] Pointer - When in Extra menu
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff	// 		- Extra menu is only visible once at least one is ending is finished
 	return											// 		+0x4 - [32-bit] Extra Menu: Highlighted item
 		dword(let_maskedPointer + 0x4) <= 0x4 &&	// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
@@ -788,22 +788,22 @@ function isInExtraMenu() {							// $AC3170: [25-bit] Pointer - When in Extra me
 													// 		| - 0x1 => Chapter 1		| - 0xa => Total
 													// 		| - ...						| - 0xb => Exit
 													// 		| - 0x8 => Chapter 8
-function isEventViewerActive() =>				// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
-	dword(0x1FFF130) == 0x21 && isInExtraMenu()	// 		- 32-bit value = 0x21 -> event viewer menu is on screen OR a cutscene is being watched via this menu
-												// 		- other values -> not in event viewer
-												//		- Do not use this as a solo condition to check if event viewer is active.
-												//		- Use with 0xac3170
-function isInResultsMenu() => 					// $AC49F4: [32-bit] Menu ID
-	dword(0xAC49F4) == 0x16	&& isInExtraMenu()	// 		0xe => at title screen					0x16 => at results menu
+function is_EventViewer_Active() =>	// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
+	dword(0x1FFF130) == 0x21 && 	// 		- 32-bit value = 0x21 -> event viewer menu is on screen OR a cutscene is being watched via this menu
+	is_ExtraMenu_active()			// 		- other values -> not in event viewer													
+									//		- Do not use this as a solo condition to check if event viewer is active.
+									//		- Use with 0xac3170
+function is_ResultsMenu_Active() => 					// $AC49F4: [32-bit] Menu ID
+	dword(0xAC49F4) == 0x16	&& is_ExtraMenu_active()	// 		0xe => at title screen					0x16 => at results menu
 												// 		0x4 => at extra menu					0x1a => In sound mode menu
 												// 		0x12 => at event viewer menu			0xb => viewing ending file
 
-function isResultsMenuHighlightedChapter(enum_chapter) {
+function is_ResultsMenu_HighlightedChapter(enum_chapter) {
 	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
 	let_resultsMenuHighlightedChapterId = 0 
-	if (enum_chapter == "Chapter8") {
+	if (enum_chapter == enum_Chapter_Chapter8) {
 		let_resultsMenuHighlightedChapterId = 0x8
-	} else if (enum_chapter == "Epilogue") {
+	} else if (enum_chapter == enum_Chapter_Epilogue) {
 		let_resultsMenuHighlightedChapterId = 0x9
 	} else if (enum_chapter == "Total") {
 		let_resultsMenuHighlightedChapterId = 0xa
@@ -811,26 +811,23 @@ function isResultsMenuHighlightedChapter(enum_chapter) {
 		let_resultsMenuHighlightedChapterId = get_ChapterID(enum_chapter) - 1
 	}
 	return			
-		isInResultsMenu() &&
+		is_ResultsMenu_Active() &&
 		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}
 // -------------------------------------
-const_endingFileIDs = {
-	"A": 0x0,
-	"B": 0x1,
-	"C": 0x2,
-	"D": 0x3,
-	"E": 0x4,
-	"EX": 0x5}
-
-function isViewingEndingFileInExtraMenu(string_endingChar) {	// $AC3178: [25-bit] Pointer - Ending File
-	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//		- Resets to 0x0, when no ending file is on screen
-	let_endingFileID = const_endingFileIDs[string_endingChar]	// 		+0x10 - [8-bit] Ending File ID
-	return														// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
-		isInExtraMenu() &&										// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
-		byte(let_maskedPointer + 0x10) == let_endingFileID}		// 		| - ...		
+enum_EndingFileId_A = 0x0
+enum_EndingFileId_B = 0x1
+enum_EndingFileId_C = 0x2
+enum_EndingFileId_D = 0x3
+enum_EndingFileId_E = 0x4
+enum_EndingFileId_EX = 0x5
+function is_ViewingEndingFile_viaExtraMenu(enum_endingFileId) {	// $AC3178: [25-bit Pointer] Ending File
+	let_maskedPointer = dword(0xAC3178) & 0x1ffffff				//		- Resets to 0x0, when no ending file is on screen					
+	return														// 		+0x10 - [8-bit] Ending File ID	
+		is_ExtraMenu_active() &&								// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
+		byte(let_maskedPointer + 0x10) == enum_endingFileId}	// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
+																// 		| - ...	
 																// 		+0x8 - [32-bit] Ending file timer
 																// 		+0xc - [16-bit] Ending file text ID
-
 
 // ***************
 // ◦ OTHER LOGIC ◦
@@ -1523,7 +1520,7 @@ achievements_triggers = {
 	"a_PrologueComplete": () { return
 		never (	// Core group
 			!isInGame() ||
-			isEventViewerActive()	
+			is_EventViewer_Active()	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
@@ -1551,7 +1548,7 @@ achievements_triggers = {
 	"a_Chapter1Complete": function Chapter1Complete() { return
 		never (	// Core group
 			!isInGame() ||
-			isEventViewerActive()	
+			is_EventViewer_Active()	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
@@ -1571,7 +1568,7 @@ achievements_triggers = {
 	"a_Chapter2Complete": function Chapter2Complete() { return
 		never (	// Core group
 			!isInGame() ||
-			isEventViewerActive()	
+			is_EventViewer_Active()	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
@@ -1602,7 +1599,7 @@ achievements_triggers = {
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		never (	// Core group
 			!isInGame() ||
-			isEventViewerActive()	
+			is_EventViewer_Active()	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
@@ -1642,7 +1639,7 @@ achievements_triggers = {
 		never(	// Core group
 			!isInGame() 					||
 			on_Cutscene_MasterId_change()	||
-			isEventViewerActive()			||
+			is_EventViewer_Active()			||
 			!is_SelectedItemInScrollBar(enum_Item_FryingPan)
 		) &&
 		(
@@ -1674,7 +1671,7 @@ achievements_triggers = {
 		never(	// Core group
 			!isInGame() 					||
 			on_Cutscene_MasterId_change()	||
-			isEventViewerActive()			||
+			is_EventViewer_Active()			||
 			!is_SelectedItemInScrollBar(enum_Item_Sign)
 		) &&
 		(
@@ -1695,7 +1692,7 @@ achievements_triggers = {
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(
 			!isInGame() ||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
@@ -1717,7 +1714,7 @@ achievements_triggers = {
 		// Core group
 		never(
 			!isInGame() 			||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		isMovieTimeTravelPicked() 		&&
 		isMovieThrillerStoryPicked() 	&&
@@ -1740,7 +1737,7 @@ achievements_triggers = {
 		// Core group
 		never(
 			!isInGame() 		||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		isMovieTimeTravelPicked() 	&&
 		isMovieLoveStoryPicked() 	&&
@@ -1762,7 +1759,7 @@ achievements_triggers = {
 	"a_Chapter7Complete": function Chapter7Complete() { return
 		never (	// Core group
 			!isInGame() ||
-			isEventViewerActive()	
+			is_EventViewer_Active()	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
@@ -1808,7 +1805,7 @@ achievements_triggers = {
 	"a_Chapter8Complete": function Chapter8Complete() { return
 		never(
 			!isInGame()					||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) && 
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
@@ -1981,8 +1978,8 @@ achievements_triggers = {
 	"a_EndingA": function EndingA() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("A")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_A)
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
@@ -2008,8 +2005,8 @@ achievements_triggers = {
 	"a_EndingB1": function EndingB1() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("B")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_B)
 		) &&
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
@@ -2055,8 +2052,8 @@ achievements_triggers = {
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("B")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_B)
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
@@ -2090,8 +2087,8 @@ achievements_triggers = {
 	"a_EndingC": function EndingC() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("C")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_C)
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
@@ -2125,8 +2122,8 @@ achievements_triggers = {
 	"a_EndingD": function EndingD() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("D")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_D)
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
@@ -2152,8 +2149,8 @@ achievements_triggers = {
 	"a_EndingE": function EndingE() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("E")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_E)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
@@ -2187,8 +2184,8 @@ achievements_triggers = {
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("EX")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_EX)
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
 			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_PhilosopherStone) &&
@@ -2217,8 +2214,8 @@ achievements_triggers = {
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
 			!isInGame() 			||
-			isEventViewerActive()	||
-			isViewingEndingFileInExtraMenu("EX")
+			is_EventViewer_Active()	||
+			is_ViewingEndingFile_viaExtraMenu(enum_EndingFileId_EX)
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
 			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_PhilosopherStone) &&
@@ -2328,7 +2325,7 @@ achievements_triggers = {
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!isInGame() ||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		never (
 			!is_Chapter(enum_Chapter_Chapter6) && 
@@ -2351,7 +2348,7 @@ achievements_triggers = {
 		never(
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter4)	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
@@ -2374,7 +2371,7 @@ achievements_triggers = {
 		never(
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter7)	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
 			is_LargeCutscene_active() && 
@@ -2405,7 +2402,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 					||
 			!is_Chapter(enum_Chapter_Chapter1) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
 			is_LargeCutscene_active() && 
@@ -2419,7 +2416,7 @@ achievements_triggers = {
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!isInGame() ||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
 			is_LargeCutscene_active() &&
@@ -2440,7 +2437,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 					||
 			!is_Chapter(enum_Chapter_Chapter1) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Warning barman of fire 
 			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_OrnamentalEgg) &&
@@ -2454,7 +2451,7 @@ achievements_triggers = {
 	"a_EggCollection": function AlertBarmanOfFire() { return
 		never (
 			!isInGame() ||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		never (
 			!is_Chapter(enum_Chapter_Chapter1) && 
@@ -2508,7 +2505,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter2) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
 			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_OrnamentalEgg) &&
@@ -2522,7 +2519,7 @@ achievements_triggers = {
 	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
 		never (
 			!isInGame() 			||
-			isEventViewerActive()	||
+			is_EventViewer_Active()	||
 			!is_ItemPresentInInventory(enum_Item_EggPocketWatch) ||
 			!is_Chapter(enum_Chapter_Chapter6) && !is_Chapter(enum_Chapter_Chapter7) && 
 			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
@@ -2551,7 +2548,7 @@ achievements_triggers = {
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
 			!isInGame() 					||
-			isEventViewerActive()	||
+			is_EventViewer_Active()	||
 			!is_Chapter(enum_Chapter_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
@@ -2568,7 +2565,7 @@ achievements_triggers = {
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never (
 			!isInGame() 					||
-			isEventViewerActive()	||
+			is_EventViewer_Active()	||
 			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
@@ -2586,7 +2583,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter2)	||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
 			isTreeReplacedByStatue() && isCrowdScaredWithLighter() &&			
@@ -2602,7 +2599,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter2)	||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
 			isTreeReplacedByStatue() && isCrowdScaredWithCellphone() &&			
@@ -2618,7 +2615,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter2)	||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
 			isTreeReplacedByFlowers() &&
@@ -2634,7 +2631,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter5)	||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
 			is_LargeCutscene_active() && 
@@ -3058,7 +3055,7 @@ achievements_triggers = {
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!isInGame()				||
-			isEventViewerActive() 	||
+			is_EventViewer_Active() 	||
 			on_Cutscene_MasterId_change()
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
@@ -3075,7 +3072,7 @@ achievements_triggers = {
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
 			!isInGame()					||
-			isEventViewerActive() 	||
+			is_EventViewer_Active() 	||
 			!is_SelectedItemInScrollBar(enum_Item_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
@@ -3216,7 +3213,7 @@ achievements_triggers = {
 	"a_FreeMeal": function FreeMeal() { return
 		never(
 			!isInGame()						||
-			isEventViewerActive() 			||
+			is_EventViewer_Active() 			||
 			!is_Chapter(enum_Chapter_Chapter5)	||
 			isFirePutOutByEike()
 		) &&
@@ -3244,7 +3241,7 @@ achievements_triggers = {
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!isInGame()					||
-			isEventViewerActive() 	||
+			is_EventViewer_Active() 	||
 			!is_SelectedItemInScrollBar(enum_Item_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
@@ -3279,7 +3276,7 @@ achievements_triggers = {
 		return 
 			never(	
 				isAtTitleScreen()		||
-				isEventViewerActive()	||
+				is_EventViewer_Active()	||
 
 				// Reset tally count if any item is removed => will recalculate the amount of items in inventory
 				// 	Checks if any item_in_inventory_flags has changed
@@ -3319,7 +3316,7 @@ achievements_triggers = {
 		never(
 			!isInGame()							||
 			!is_Chapter(enum_Chapter_Chapter4)	||
-			isEventViewerActive()				||
+			is_EventViewer_Active()				||
 			!is_SelectedItemInScrollBar(enum_Item_FryingPan) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
@@ -3340,7 +3337,7 @@ achievements_triggers = {
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!isInGame()				||
-			isEventViewerActive() 	||
+			is_EventViewer_Active() 	||
 			!is_Chapter(enum_Chapter_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
@@ -3531,7 +3528,7 @@ achievements_triggers = {
 	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
 			!isInGame()				||
-			isEventViewerActive() 	||
+			is_EventViewer_Active() 	||
 			!is_Chapter(enum_Chapter_Chapter6) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
@@ -3544,7 +3541,7 @@ achievements_triggers = {
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
 		never(
 			!isInGame()			||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
 			is_SmallCutscene_active() && is_Area(enum_Area_80s_Bar) &&
@@ -3560,7 +3557,7 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			!is_Chapter(enum_Chapter_Chapter6) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
 			is_LargeCutscene_active() && is_Area(enum_Area_80s_City_Snow) &&
@@ -3577,7 +3574,7 @@ achievements_triggers = {
 		never(
 			!isInGame()						||
 			!is_Chapter(enum_Chapter_Chapter6)	||
-			isEventViewerActive()			 
+			is_EventViewer_Active()			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
 			is_LargeCutscene_active() && is_Area(enum_Area_80s_City_Snow) &&
@@ -3592,7 +3589,7 @@ achievements_triggers = {
 		never(
 			!isInGame()					||
 			!is_Chapter(enum_Chapter_Chapter5)		||
-			isEventViewerActive() 
+			is_EventViewer_Active() 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
 			is_LargeCutscene_active() && 
@@ -3608,7 +3605,7 @@ achievements_triggers = {
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
 			!isInGame() ||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
 			is_LargeCutscene_active() && is_Area(enum_Area_1900s_BrumMansion) &&
@@ -3625,7 +3622,7 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			!is_Chapter(enum_Chapter_Prologue)	||
-			isEventViewerActive()  
+			is_EventViewer_Active()  
 		) &&
 		once(	// Identifies Cutscene => Eike wakes himself up
 			is_LargeCutscene_active()	&&
@@ -3648,7 +3645,7 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			!is_Chapter(enum_Chapter_Chapter7)	||
-			isEventViewerActive()  
+			is_EventViewer_Active()  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
 			is_Cutscene_MinorId(0x23ee0, 0x8) 	&&
@@ -3660,7 +3657,7 @@ achievements_triggers = {
 		never (
 			!isInGame() 				||
 			!is_Chapter(enum_Chapter_Chapter7) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
 			is_LargeCutscene_active()	&&
@@ -3682,7 +3679,7 @@ achievements_triggers = {
 	"a_TimeEgoFlop": function TimeEgoFlop() { return
 		never(
 			!isInGame() 					||
-			isEventViewerActive() 	|| 
+			is_EventViewer_Active() 	|| 
 			!is_Chapter(enum_Chapter_Chapter6)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
@@ -3700,7 +3697,7 @@ achievements_triggers = {
 		never(
 			!isInGame()				||
 			!is_Chapter(enum_Chapter_Chapter2) 	||
-			isEventViewerActive()
+			is_EventViewer_Active()
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
 			is_LargeCutscene_active()	&&	
@@ -3722,7 +3719,7 @@ achievements_triggers = {
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!isInGame()					||
-			isEventViewerActive()	||
+			is_EventViewer_Active()	||
 			!is_Chapter(enum_Chapter_Chapter3)
 		) &&
 		once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'
