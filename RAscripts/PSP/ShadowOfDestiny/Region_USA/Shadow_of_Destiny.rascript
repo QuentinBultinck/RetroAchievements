@@ -57,6 +57,9 @@
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
+iNULL = -1
+sNULL = "-1"
+
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
@@ -75,14 +78,48 @@ function util_addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
+// *******************
+// ◦ PLAYER POSITION ◦
+// *******************
+function is_PlayerPosition_Xaxis_CloseTo(int_value) =>
+	int_value + 0x150000 >=  dword(0xA8ABD0) && dword(0xA8ABD0) >= int_value - 0x150000
+// $A8ABD0: [NTSC-U/C][32-bit] Player Position - x-Axis
+// 	- Prime Meridian (vertical) line => vertical mid-line cutting area in two
+// 	- Standing close on top of line => weird random value
+// 	- Value is relative to this line, each area has a mid-line
+// 	- Heading west from line => value > 0xC0000000
+// 	- Heading east from line => value > 0x40000000
+
+function is_PlayerPosition_Yaxis_CloseTo(int_value) =>
+	int_value + 0x150000 >=  dword(0xA8ABD8) && dword(0xA8ABD8) >= int_value - 0x150000
+// $A8ABD8: [NTSC-U/C][32-bit] Player Position - y-Axis
+// 	- Equator (horizontal) line => horizontal mid-line cutting area in two
+// 	- Standing close/on top of line => weird random value
+// 	- Value is relative to this line, each area has a mid-line
+// 	- Heading south from line => value > 0xC0000000
+// 	- Heading north from line => value > 0x40000000
+
 // *****************
 // ◦ TIME AND DATE ◦
 // *****************
+enum_TimePeriod_MiddleAges = 104
+enum_TimePeriod_Early20thCentury = 103
+enum_TimePeriod_Late20thCentury = 102
+enum_TimePeriod_Present = 101
+const_TimePeriod_IDs = {
+	enum_TimePeriod_Present: {"IDs": [0x83]},
+	enum_TimePeriod_Late20thCentury: {"IDs": [0x82,0x88]},
+	enum_TimePeriod_Early20thCentury: {"IDs": [0x81]},
+	enum_TimePeriod_MiddleAges:{"IDs": [0x80]}}
+
+function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
+	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
+
 function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
-									// 		0x81 => Late 20th Century 1900s
-									// 		0x82 => Early 20th Century 1980
-									// 		0x88 => Early 20th Century 1979
+									// 		0x81 => Early 20th Century 1900s
+									// 		0x82 => Late 20th Century 1980
+									// 		0x88 => Late 20th Century 1979
 									// 		0x83 => Present 2000s
 
 function current_PresentTime_Hours() =>		// $AA12B0: [32-bit] Time in present: hours
@@ -368,7 +405,7 @@ function is_LargeCutscene_active() => 	// $A9ED26: Flag: Is cutscene active (pre
 function is_SmallCutscene_active() => 	//		- ... => transitional values
 	byte(0xA9ED26) == 0x1				// 		- 0x05 => cutscene active	
 
-function is_Cutscene_notActive() => 
+function is_AnyCutscene_notActive() => 
 	byte(0xA9ED26) == 0
 
 function on_Cutscene_end() => 						
@@ -796,7 +833,7 @@ function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
 	let_dwordBE = let_dwordBE + dict_characterPrintData["print_Yaxis"]
 	return let_dwordBE}
 
-// Use below dictionary as an object definition to pass params to function is_CharacterOnScreen()
+// Use below dictionary as an object definition to pass params to function is_CharacterOnBottomScreen()
 // 	dict_characterPrintData = {
 	//	"height": 0x0,
 	// 	"print_Xaxis": 0x0,
@@ -805,7 +842,7 @@ function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
 	// 	"imageUnmask_Width": 0x0,
 	// 	"print_Yaxis": 0x0,
 	//	"characterSetId": 0x0}
-function is_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+function is_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
 	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
 	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
 	current_CharPrint_printYaxis(int_charIndex) == dict_characterPrintData["print_Yaxis"] &&
@@ -814,14 +851,14 @@ function is_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // 
 	current_CharPrint_imageUnmaskWidth(int_charIndex) == dict_characterPrintData["imageUnmask_Width"] &&
 	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]
 
-function is_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+function is_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
 	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
 	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
 	dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
 		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Xaxis"]) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
 	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]	
 
-function was_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+function was_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
 	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
 	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
 	prior(current_CharPrint_printYaxis(int_charIndex)) == dict_characterPrintData["print_Yaxis"] &&
@@ -830,7 +867,7 @@ function was_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => //
 	prior(current_CharPrint_imageUnmaskWidth(int_charIndex)) == dict_characterPrintData["imageUnmask_Width"] &&
 	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
 
-function was_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+function was_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
 	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
 	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
 	prior(dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
@@ -852,6 +889,62 @@ function was_MinimumAmountOfCharactersOnBottomScreen(int_charCount) => // Count 
 function is_BottomScreenText_empty() => 
 	current_CharPrint_controlData(0) == 0x0 &&	// Checks first character
 	current_CharPrint_controlData(7) == 0x0		// Checks 7th character
+
+function was_BottomScreenText_empty() => 
+	prior(current_CharPrint_controlData(0)) == 0x0 &&	// Checks first character
+	prior(current_CharPrint_controlData(7)) == 0x0		// Checks 7th character
+
+function on_BottomScreenText_render() => 
+	current_CharPrint_controlData(0) > 0 && 
+	prev(current_CharPrint_controlData(0)) == 0
+
+function on_BottomScreenText_remove() => 
+	current_CharPrint_controlData(0) == 0 && 
+	prev(current_CharPrint_controlData(0)) > 0
+// ***************
+// ◦ ENERGY ORBS ◦
+// ***************
+const_EnergyOrbs_data = {
+	// enum_TimePeriod_Late20thCentury: {
+	// 	"amountToCollect": 5,
+	// 	"locations": { 		
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
+	// enum_TimePeriod_Late20thCentury: {
+	// 	"amountToCollect": 5,
+	// 	"locations": { 		
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
+	// enum_TimePeriod_MiddleAges: {
+	// 	"amountToCollect": 6,
+	// 	"locations": { 		
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
+	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
+	enum_TimePeriod_Present: {
+		"amountToCollect": 5,
+		"locations": { 		
+			"CarPark": {"xAxis": 0x47030d91, "yAxis": 0x45ad7c4b},
+			"SouthGate": {"xAxis": iNULL, "yAxis": 0xc750d745},	// No xAxis, because it's close to the midline (refer to notes @ 0xa8abd0)
+			"AlleyWay": {"xAxis": 0xc69084cd, "yAxis": 0xc6dcf00d},
+			"UnderArchRuckagrastr": {"xAxis": 0xc69c2e07, "yAxis": 0x45c97393},
+			"OutsideFortuneTeller": {"xAxis": 0x461576c8, "yAxis": 0xc68fb1c3}}
+		}}
+
 // ***********************
 // ◦ MENU IDENTIFICATION ◦
 // ***********************
@@ -1576,6 +1669,124 @@ function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict
 			measured(let_measuredComparison, when = is_Chapter(enum_chapter) && is_InGame(), format = "percent")
 	}}
 
+function achievements_generate_TextComparison_GotEnergyUnit() {
+	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
+		"G": {
+			"height": 0x48,
+			"print_Xaxis": 0x0,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x0,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"E": {
+			"height": 0x48,
+			"print_Xaxis": 0x1f,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"Y": {
+			"height": 0x49,
+			"print_Xaxis": 0x4b,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x54,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x1,
+			"characterSetId": 0x8},	
+		"I": {
+			"height": 0x48,
+			"print_Xaxis": 0x6c,
+			"imageOffset_Xaxis": 0x0,
+			"imageOffset_Yaxis": 0x46,
+			"imageUnmask_Width": 0x4,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8}}
+	return 
+		is_TotalCharacterCountOnBottomScreen(14) &&
+		is_CharacterOnBottomScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+		is_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
+		// is_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
+		is_CharacterOnBottomScreen(11, let_charactersToCheck["I"])}
+
+function achievements_generate_TextComparison_CannotCarryMore() {
+	let_charactersToCheck = {	// I c(A)nnot ca(R)ry an(Y) mor(E).
+		"A": {
+			"height": 0x48,
+			"print_Xaxis": 0x12,
+			"imageOffset_Xaxis": 0x18,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"R": {
+			"height": 0x48,
+			"print_Xaxis": 0x56,
+			"imageOffset_Xaxis": 0x6c,
+			"imageOffset_Yaxis": 0x46,
+			"imageUnmask_Width": 0x7,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"Y": {
+			"height": 0x49,
+			"print_Xaxis": 0x86,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x54,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x1,
+			"characterSetId": 0x8},	
+		"E": {
+			"height": 0x48,
+			"print_Xaxis": 0xb0,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8}}
+	return 
+		is_TotalCharacterCountOnBottomScreen(20) &&
+		is_CharacterOnBottomScreen(2, let_charactersToCheck["A"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+		is_CharacterOnBottomScreen(9, let_charactersToCheck["R"]) &&
+		// is_CharacterOnBottomScreen(14, let_charactersToCheck["Y"]) &&
+		is_CharacterOnBottomScreen(18, let_charactersToCheck["E"])}
+
+function achievements_generate_PartialTrigger_EnergyCollector(enum_timePeriod) {
+	function createTallyComparisonArray(enum_timePeriod) {
+		let_tallyComparisonArray = []
+		let_dict_orbLocations = const_EnergyOrbs_data[enum_timePeriod]["locations"]
+		for let_energyOrbKey in let_dict_orbLocations {
+			let_comparison1 = [achievements_generate_TextComparison_CannotCarryMore()]
+			let_comparison2 = [achievements_generate_TextComparison_GotEnergyUnit()]
+			let_xLocation = let_dict_orbLocations[let_energyOrbKey]["xAxis"]
+			let_yLocation = let_dict_orbLocations[let_energyOrbKey]["yAxis"]
+			if(let_xLocation == iNULL && let_yLocation == iNULL)
+				util_throwError("At least 1 axis must be set")
+			if(let_xLocation != iNULL) {
+				array_push(let_comparison1, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
+				array_push(let_comparison2, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
+			}
+			if(let_yLocation != iNULL) {
+				array_push(let_comparison1, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
+				array_push(let_comparison2, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
+			}
+			array_push(let_tallyComparisonArray, once(all_of(let_comparison1, (comparison) => comparison)))			
+			array_push(let_tallyComparisonArray, once(all_of(let_comparison2, (comparison) => comparison)))
+		}
+		return let_tallyComparisonArray}
+	return 
+		disable_when(
+			repeated(100 ,	// <-- delay, so trigger has to time to hit
+				is_BottomScreenText_empty() && is_AnyCutscene_notActive()),
+			until = on_BottomScreenText_render() || is_SmallCutscene_active()
+		) &&
+		measured(
+			tally(const_EnergyOrbs_data[enum_timePeriod]["amountToCollect"], 
+				createTallyComparisonArray(enum_timePeriod))
+		) &&
+		trigger_when(on_Cutscene_end())
+	}
+
 function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
 		"G": {
@@ -1614,11 +1825,11 @@ function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 		tally(int_tallyCount, 
 			on_EnergyUnits_increment() &&
 			was_MinimumAmountOfCharactersOnBottomScreen(14) &&		
-			was_CharacterOnScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
-			was_CharacterOnScreen(3, let_charactersToCheck["E"]) &&
-			was_CharacterOnScreen(8, let_charactersToCheck["Y"]) &&
-			was_CharacterOnScreen(11, let_charactersToCheck["I"]) &&
-			!is_LargeCutscene_active()	// Don't switch with is_Cutscene_notActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+			was_CharacterOnBottomScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+			was_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
+			was_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
+			was_CharacterOnBottomScreen(11, let_charactersToCheck["I"]) &&
+			!is_LargeCutscene_active()	// Don't switch with is_AnyCutscene_notActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
 		)}
 
 // *************************
@@ -2352,15 +2563,38 @@ achievements_triggers = {
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
 			is_Ending_achieved(enum_Ending_EX))},
-	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() { return
+	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() {
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
 		// -----------------------------------------
 		// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
 		// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and start counting from this value
 		//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
 		//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0		
-			
-		(	// Core group	
+				
+		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
+		//	'''''''''''
+		// 	(	// Core group	
+		// 		unless(
+		// 			is_WearingPerformerOutfit()	||
+		// 			(
+		// 				!is_Area(enum_Area_Present_City_Day) 	 && 
+		// 				!is_Area(enum_Area_Present_City_NightPM) &&
+		// 				!is_Area(enum_Area_Present_City_NightAM)
+		// 			) 
+		// 		) &&
+		// 		measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		// 	) && (
+		// 		(	// Alt 1: otherwise pause can lock the reset
+		// 			never(	// Reset measure when chapter changes or when using digipad
+		// 				on_EnergyUnits_decrement()	||
+		// 				on_Chapter_change()			||
+		// 				!is_InGame()) 
+		// 		) || ( // Alt 2: always_false to create 1 functional alt group
+		// 			always_false()
+		// 		)
+		// 	)},
+
+		let_coreGroup = 
 			unless(
 				is_WearingPerformerOutfit()	||
 				(
@@ -2369,17 +2603,21 @@ achievements_triggers = {
 					!is_Area(enum_Area_Present_City_NightAM)
 				) 
 			) &&
-			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
-		) && (
-			(	// Alt 1: otherwise pause can lock the reset
-				never(	// Reset measure when chapter changes or when using digipad
-					on_EnergyUnits_decrement()	||
-					on_Chapter_change()			||
-					!is_InGame()) 
-			) || ( // Alt 2: always_false to create 1 functional alt group
-				always_false()
+			achievements_generate_PartialTrigger_EnergyCollector(enum_TimePeriod_Present) 
+
+		return 
+			let_coreGroup && 
+			(
+				(	// Alt 1: otherwise pause can lock the reset
+					never(	// Reset measure when chapter changes or when using digipad
+						on_EnergyUnits_decrement()	||
+						on_Chapter_change()			||
+						!is_InGame()) 
+				) || ( // Alt 2: always_false to create 1 functional alt group
+					always_false()
+				)
 			)
-		)},
+		},
 	"a_EnergyOrbLocator70s80s": () =>
 		(	// Core group	
 			unless(
@@ -2543,7 +2781,7 @@ achievements_triggers = {
 		) &&
 		trigger_when(
 			is_ItemPresentInInventory(enum_Item_OrnamentalEgg) && 
-			is_Cutscene_notActive())},
+			is_AnyCutscene_notActive())},
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!is_InGame() 					||
@@ -4171,37 +4409,37 @@ function richPresence_getLookupTableText(string_parameterKey, string_lookupValue
 // -------------------------------------
 richPresence_lookupTables = {
 	"rpp_FatedHour": { // Each chapter has a fated hour
-		0x1: "Prologue", 
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Chapter8",
-		0xc: "Chapter8"},
+		get_ChapterID(enum_Chapter_Prologue): "Prologue", 
+		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
+		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
+		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
+		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
+		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
+		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
+		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
+		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Chapter8"},
 	"rpp_TimePeriod": {	// Refer to 0xAA1268
-		0x80: "MiddleAges",
-		0x82: "Early20Century",
-		0x81: "Late20Century",
-		0x88: "Late20Century",
-		0x83: "Present"},
+		get_TimePeriodIDs(enum_TimePeriod_MiddleAges): "MiddleAges",
+		get_TimePeriodIDs(enum_TimePeriod_Early20thCentury): "Early20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 0): "Late20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 1): "Late20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Present): "Present"},
 	"rpp_Chapter": { // Refer to const_chapter_IDs
-		0x1: "Prologue",
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Epilogue",
-		0xc: "Epilogue"}}
+		get_ChapterID(enum_Chapter_Prologue): "Prologue",
+		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
+		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
+		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
+		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
+		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
+		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
+		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
+		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Epilogue",
+		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
 // **************************
