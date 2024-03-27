@@ -1,0 +1,44 @@
+Achievement Ideas
+--------------------
+
+- Win game with only triumphs => depends on time taken in battle
+    -- White countdown (>30s) = triumph --> Earn extra move in overworld map + small heal
+    -- Red/orange countdown (<30s) = victory
+    -- 0s => Close Call --> Next player turn is skipped on overworld map
+- Visit all area's is a map 
+    -- Visited => blue, player can pass through 2 blue areas in 1 turn
+    -- Unvisited => red
+- Finish stage without losing an ability
+- Perform a long juggle combo
+- No Allies death
+- Specific side missions in a stage
+- musou for each character per difficulty?
+    -- One big achievement for completing all musou's on a diff
+- Don't let force morale below a percentage
+- sprint for a few seconds => double tap and hold a directional key to sprint
+- Battle Luck => reach and finish stage 8, starts at stage 1
+    -- last enemy drops 2 crates, picking up wrong create => move stage backward
+    -- KOs needed per stage 10-10-15-15-20-25(end with lu bu)
+
+- Finish a battle with each weapon type the character can wield
+
+- Reach level 20 on one character
+    -- Character can infinitly level up => 
+- Equip an S tier weapon per weapon type
+    -- Not just unlock but equip => since you also need a enough weapon skill to equip it 
+
+- Unlock all weapons which aren't rng drops
+
+- Unlock all weapons => subset?? because rng based drops??
+
+- Collect all weapons of one type => core set
+
+- Slice arrows mid air
+
+- Kill x amount of enemies with elemental dmg?? or proc element
+
+- Side cutscenes
+    -- Witness Guan Yu Finish off Hua Xiong (Shu forces - Hu Lao Gate)
+
+- Leaderboards
+
