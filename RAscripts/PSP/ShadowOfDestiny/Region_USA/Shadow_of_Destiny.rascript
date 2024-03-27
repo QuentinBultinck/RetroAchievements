@@ -12,7 +12,7 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO rewrite character checker bottom screen text, with new notes
+// TODO rewrite character checker bottom screen text, with new note
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
