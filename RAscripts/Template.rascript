@@ -58,6 +58,10 @@
 // 				succesfullDodges() // <-- +1 hit count when dodging
 // 			)
 
+// Git info
+// ---------------------------------------------
+//	- Remove remote branches which have been deleted remotely, from vscode list, run following command => git fetch --prune
+
 // Syncing Local RAdata with server
 // ---------------------------------------------
 // 	- RALibretro => Assets list => Revert all assets (will fetch all changes from RAserver) + Refresh RATools as well
