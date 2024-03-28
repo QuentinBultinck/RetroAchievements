@@ -1964,19 +1964,20 @@ achievements_triggers = {
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(
-					!is_LargeCutscene_active() 			|| 
-					!is_Chapter(enum_Chapter_Prologue)	||
-					!is_Cutscene_SectionId_1(0x1)		||
-					!is_Cutscene_SectionId_2(0x0)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Prologue)) &&
 				once(	// Identifies Cutscene => watching performer
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x22480)		&&
+					is_Cutscene_SectionId_1(0x1)		&&
+					is_Cutscene_SectionId_2(0x0)		&&
 					is_Cutscene_MasterDataId(0x1bcd0)	&&
 					is_Cutscene_SectionDataId(0xe10)
 				) &&
 				once(	// Identifies cutscene => shadow/killer walking behind Eike
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x90bc0)		&&
+					is_Cutscene_SectionId_1(0x1)		&&
+					is_Cutscene_SectionId_2(0x0)		&&
 					is_Cutscene_MasterDataId(0x1ae70)	&&
 					is_Cutscene_SectionDataId(0x75d10)
 				) &&
@@ -2012,13 +2013,11 @@ achievements_triggers = {
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes
-				unless(
-					!is_LargeCutscene_active() 			|| 
-					!is_Chapter(enum_Chapter_Chapter2) 	||
-					!is_Cutscene_MasterId(0x3b240)		||
-					!is_SelectedItemInScrollBar(enum_Item_Dpad)	
-				) &&
-				once(	// Identifies Cutscene => reminiscing about Dana: left in the past
+				unless(!is_Chapter(enum_Chapter_Chapter2)) &&
+				once(	// Identifies Cutscene => reminiscing about Dana: left in the past					
+					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_LargeCutscene_active() 			&& 
+					is_Cutscene_MasterId(0x3b240)		&&
 					is_Cutscene_MasterDataId(0x340e0)	&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -2026,6 +2025,8 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x7130)
 				) &&
 				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
+					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_SectionId_1(0x3)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
 					is_Cutscene_MasterDataId(0x11240)	&&
@@ -2043,25 +2044,31 @@ achievements_triggers = {
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(
-					!is_LargeCutscene_active()			|| 
-					!is_Chapter(enum_Chapter_Chapter3) 	||
-					!is_Cutscene_SectionId_1(0x1) 		||
-					!is_Cutscene_SectionId_2(0x0) 		||
-					!is_SelectedItemInScrollBar(enum_Item_Dpad)
-				) &&			
+				unless(!is_Chapter(enum_Chapter_Chapter3)) &&			
 				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					is_Cutscene_MasterId(0x19d80)		&&
+					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_LargeCutscene_active() 			&& 
+					is_Cutscene_MasterId(0x19d80)		&&	
+					is_Cutscene_SectionId_1(0x1) 		&&
+					is_Cutscene_SectionId_2(0x0) 		&&
 					is_Cutscene_MasterDataId(0x82a0)	&&
 					is_Cutscene_SectionDataId(0x11ac0)
 				) &&
-				once(	// Identifies Cutscene => Back to Eckart and breaking vase					
-					is_Cutscene_MasterId(0xcfb40)		&& was_Cutscene_MasterId(0x19d80) &&
+				once(	// Identifies Cutscene => Back to Eckart and breaking vase
+					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_LargeCutscene_active() 			&& 
+					is_Cutscene_MasterId(0xcfb40)		&& was_Cutscene_MasterId(0x19d80) &&	
+					is_Cutscene_SectionId_1(0x1) 		&&
+					is_Cutscene_SectionId_2(0x0) 		&&
 					is_Cutscene_MasterDataId(0x39f0)	&&
 					is_Cutscene_SectionDataId(0x387a0)
 				) &&
 				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					is_Cutscene_MasterId(0x39680)		&& was_Cutscene_MasterId(0xcfb40) &&
+					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_LargeCutscene_active() 			&& 
+					is_Cutscene_MasterId(0x39680)		&& was_Cutscene_MasterId(0xcfb40) &&	
+					is_Cutscene_SectionId_1(0x1) 		&&
+					is_Cutscene_SectionId_2(0x0) 		&&
 					is_Cutscene_MasterDataId(0x7e10)	&&
 					is_Cutscene_SectionDataId(0x7ca0)
 				) &&
@@ -2079,8 +2086,9 @@ achievements_triggers = {
 		) &&
 		(
 			( // Alt 1 
+				unless(!is_Chapter(enum_Chapter_Chapter4)) && 
 				once(	// Identifies cutscene => protecting yourself with pan 
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter4) &&
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x4f200)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -2090,7 +2098,7 @@ achievements_triggers = {
 				on_Cutscene_end()
 			) || ( // Alt 2 
 				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter4) &&
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x54580)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2148,10 +2156,10 @@ achievements_triggers = {
 	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
 		// Core group
 		never(
-			!is_InGame() 			||
+			!is_InGame() ||
 			is_EventViewer_active() 
 		) &&
-		is_MovieTimeTravel_chosen() 		&&
+		is_MovieTimeTravel_chosen() &&
 		is_MovieThriller_chosen() 	&&
 		(
 			(	// Alt 1 
@@ -2171,11 +2179,11 @@ achievements_triggers = {
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
 		// Core group
 		never(
-			!is_InGame() 		||
+			!is_InGame() ||
 			is_EventViewer_active() 
 		) &&
-		is_MovieTimeTravel_chosen() 	&&
-		is_MovieLove_chosen() 	&&
+		is_MovieTimeTravel_chosen() &&
+		is_MovieLove_chosen() 		&&
 		(
 			(	// Alt 1 
 				once( // Identifies Cutscene => Saved by love story movie
@@ -2198,10 +2206,9 @@ achievements_triggers = {
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter7)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter7)) &&
 				once(	// Identifies Cutscene => Holding onto rope 
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x43040)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -2210,14 +2217,16 @@ achievements_triggers = {
 				) &&
 				tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
 					once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
-						is_MargaretteTold_Ancestor() &&
+						is_LargeCutscene_active()			&&
+						is_MargaretteTold_Ancestor() 		&&
 						is_Cutscene_MasterId(0xc6800)		&&
 						is_Cutscene_SectionId_1(0x5)		&&
 						is_Cutscene_SectionId_2(0x4)		&&
 						is_Cutscene_MasterDataId(0x45720)	&&
 						is_Cutscene_SectionDataId(0x6ccd0)),
 					once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
-						is_MargaretteTold_NoAncestor() &&
+						is_LargeCutscene_active()			&&
+						is_MargaretteTold_NoAncestor() 		&&
 						is_Cutscene_MasterId(0xd1bc0)		&&
 						is_Cutscene_SectionId_1(0x3)		&&
 						is_Cutscene_SectionId_2(0x4)		&&
@@ -2225,6 +2234,7 @@ achievements_triggers = {
 						is_Cutscene_SectionDataId(0x5b190))]
 				) &&
 				once(	// Identifies Cutscene => Looking at painting of Dana
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x12040)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -2243,10 +2253,9 @@ achievements_triggers = {
 		) && 
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter8_Ancestress)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Homunculus
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x8b640)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2254,6 +2263,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x42750)
 				) &&
 				once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x10ef00)		&&
 					is_Cutscene_SectionId_1(0x9)		&&
 					is_Cutscene_SectionId_2(0x8)		&&
@@ -2261,6 +2271,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0xf4d0)
 				) &&
 				once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0xe4800)		&&
 					is_Cutscene_SectionId_1(0x9)		&&
 					is_Cutscene_SectionId_2(0xa)		&&
@@ -2271,10 +2282,9 @@ achievements_triggers = {
 				on_Cutscene_end()
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter8_Ancestress)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0xd5440)		&&
 					is_Cutscene_SectionId_1(0x7)		&&
 					is_Cutscene_SectionId_2(0x6)		&&
@@ -2282,6 +2292,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x2b420)
 				) &&
 				once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x716c0)		&&
 					is_Cutscene_SectionId_1(0x9)		&&
 					is_Cutscene_SectionId_2(0xa)		&&
@@ -2289,6 +2300,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x19ef0)
 				) &&
 				once(	// Identifies Cutscene => Eike consoling Margarette
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0xf3c80)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2298,10 +2310,9 @@ achievements_triggers = {
 				is_MargaretteTold_Ancestor() &&
 				on_Cutscene_end()
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter8_Ancestress)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0xfbd00)		&&
 					is_Cutscene_SectionId_1(0x5)		&&
 					is_Cutscene_SectionId_2(0x4)		&&
@@ -2309,6 +2320,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x26f30)
 				) &&
 				once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0xc4e40)		&& was_Cutscene_MasterId(0xfbd00) &&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2329,10 +2341,9 @@ achievements_triggers = {
 				is_MargaretteTold_Ancestor() &&
 				on_Cutscene_end()
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter8_NoAncestress)) &&
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x77a40)		&& was_Cutscene_MasterId(0x29700) &&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2340,6 +2351,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x45a10)
 				) &&
 				once(	// Identifies Cutscene => Eike confronts Hugo at square
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x4b140)		&& was_Cutscene_MasterId(0x77a40) &&
 					is_Cutscene_SectionId_1(0x5)		&&
 					is_Cutscene_SectionId_2(0x4)		&&
@@ -2347,6 +2359,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x189f0)
 				) &&
 				once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
+					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0xc9440)		&& was_Cutscene_MasterId(0xa00c0) &&
 					is_Cutscene_SectionId_1(0x3)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2356,10 +2369,9 @@ achievements_triggers = {
 				is_Dana_Left_InPast() && is_MargaretteTold_NoAncestor() &&
 				on_Cutscene_end()				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
-				unless(
-					!is_LargeCutscene_active() || !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
-				) &&
+				unless(!is_Chapter(enum_Chapter_Chapter8_NoAncestress)) &&
 				once(	// Identifies Cutscene => Brought Margarette to present
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x101bc0)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2367,6 +2379,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x725d0)
 				) &&
 				once(	// Identifies Cutscene => Margarette confronts Hugo in square
+					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x137500)		&& was_Cutscene_MasterId(0x101bc0) &&
 					is_Cutscene_SectionId_1(0xc)		&&
 					is_Cutscene_SectionId_2(0xd)		&&
@@ -2418,7 +2431,7 @@ achievements_triggers = {
 			is_ViewingEndingFile_viaExtraMenu(enum_Ending_A)
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && !is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0xdb780)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2426,13 +2439,13 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x32ce0)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && !is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x77f80)		&& was_Cutscene_MasterId(0xdb780) &&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
 			is_Cutscene_MasterDataId(0x25c50)	&&
 			is_Cutscene_SectionDataId(0x1ac90)
-		) &&
+		) &&		
 		is_MargaretteTold_Ancestor() &&
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
@@ -2995,7 +3008,7 @@ achievements_triggers = {
 		trigger_when(on_Cutscene_end())},
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
-			!is_InGame() 					||
+			!is_InGame() 			||
 			is_EventViewer_active()	||
 			!is_Chapter(enum_Chapter_Chapter7)
 		) &&
@@ -3029,7 +3042,7 @@ achievements_triggers = {
 		trigger_when(on_Cutscene_end())},
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
-			!is_InGame() 				||
+			!is_InGame() 						||
 			!is_Chapter(enum_Chapter_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
@@ -3045,7 +3058,7 @@ achievements_triggers = {
 		trigger_when(on_CutsceneSection_end())},
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never (
-			!is_InGame() 				||
+			!is_InGame() 						||
 			!is_Chapter(enum_Chapter_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
@@ -3061,7 +3074,7 @@ achievements_triggers = {
 		trigger_when(on_CutsceneSection_end())},
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never (
-			!is_InGame() 				||
+			!is_InGame() 						||
 			!is_Chapter(enum_Chapter_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
@@ -3077,7 +3090,7 @@ achievements_triggers = {
 		trigger_when(on_CutsceneSection_end())},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never (
-			!is_InGame() 				||
+			!is_InGame() 						||
 			!is_Chapter(enum_Chapter_Chapter5)	||
 			is_EventViewer_active() 
 		) &&
@@ -3509,7 +3522,7 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
 			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter4) &&
 			is_SelectedItemInScrollBar(enum_Item_Jugglery) &&
-			is_WearingPerformerOutfit()				&&
+			is_WearingPerformerOutfit()			&&
 			is_Cutscene_MasterId(0x1a300)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3519,12 +3532,12 @@ achievements_triggers = {
 		trigger_when(on_CutsceneSection_end())},
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
-			!is_InGame()					||
+			!is_InGame()				||
 			is_EventViewer_active() 	||
 			!is_SelectedItemInScrollBar(enum_Item_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
-			is_LargeCutscene_active() && 
+			is_LargeCutscene_active() 			&& 
 			is_Cutscene_MasterId(0x10b000)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3723,11 +3736,10 @@ achievements_triggers = {
 			})
 		return 
 			never(	
-				is_TitleMenu_active()		||
+				is_TitleMenu_active()	||
 				is_EventViewer_active()	||
 
-				// Reset tally count if any item is removed => will recalculate the amount of items in inventory
-				// 	Checks if any item_in_inventory_flags has changed
+				// Reset hit counts if any item is removed
 				any_of(const_Items_data, (item) {
 					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"]
 					return bit0(let_memAddress) < prev(bit0(let_memAddress))
@@ -3762,13 +3774,13 @@ achievements_triggers = {
 			trigger_when(on_Cutscene_end())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
-			!is_InGame()							||
+			!is_InGame()						||
 			!is_Chapter(enum_Chapter_Chapter4)	||
 			is_EventViewer_active()				||
 			!is_SelectedItemInScrollBar(enum_Item_FryingPan) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
-			//	=> black and white picture is not found inside book after death in this chapter
+			//	=> black and white picture is not found inside book during this chapter
 			//	=> Thus can be used as a flag for this achievement
 			is_ItemPresentInInventory(enum_Item_BlackWhitePhoto_NoPerformer) 	|| 
 			is_ItemPresentInInventory(enum_Item_BlackWhitePhoto_WithPerformer)			 
@@ -3811,8 +3823,7 @@ achievements_triggers = {
 				is_Painting_TowerView_inspired() &&
 				is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
-				is_InteractionId(0x124)),
-			
+				is_InteractionId(0x124)),			
 			once(
 				is_SmallCutscene_active() && 	
 				is_Painting_SquireCrest_inspired() &&
@@ -3843,8 +3854,8 @@ achievements_triggers = {
 				is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
 				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 				is_InteractionId(0x129))
-			]) &&
-			trigger_when(on_Cutscene_end())},	// Trigger when cutscene is over
+		]) &&
+		trigger_when(on_Cutscene_end())},	// Trigger when cutscene is over
 	"a_ArtInspirationAll": function ArtInspirationAll() {
 		function measuredComparison() {
 			tally(6, [
