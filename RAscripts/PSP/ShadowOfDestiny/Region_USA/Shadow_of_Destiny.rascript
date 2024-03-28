@@ -12,7 +12,7 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO rewrite character checker bottom screen text, with new note
+// TODO update README online
 
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
@@ -57,6 +57,9 @@
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
+iNULL = -1
+sNULL = "-1"
+
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
@@ -75,14 +78,44 @@ function util_addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
+// *******************
+// ◦ PLAYER POSITION ◦
+// *******************
+function is_PlayerPosition_Xaxis_CloseTo(int_value) =>	// $A8ABD0: [NTSC-U/C][32-bit] Player Position - x-Axis
+	int_value + 0x210000 >=  dword(0xA8ABD0) && 		// 	- Prime Meridian (vertical) line => vertical mid-line cutting area in two
+	dword(0xA8ABD0) >= int_value - 0x210000				// 	- Standing close on top of line => weird random value
+														// 	- Value is relative to this line, each area has a mid-line
+														// 	- Heading west from line => value > 0xC0000000
+														// 	- Heading east from line => value > 0x40000000
+
+function is_PlayerPosition_Yaxis_CloseTo(int_value) =>	// $A8ABD8: [NTSC-U/C][32-bit] Player Position - y-Axis
+	int_value + 0x210000 >=  dword(0xA8ABD8) && 		// 	- Equator (horizontal) line => horizontal mid-line cutting area in two
+	dword(0xA8ABD8) >= int_value - 0x210000				// 	- Standing close/on top of line => weird random value
+														// 	- Value is relative to this line, each area has a mid-line
+														// 	- Heading south from line => value > 0xC0000000
+														// 	- Heading north from line => value > 0x40000000
+
 // *****************
 // ◦ TIME AND DATE ◦
 // *****************
+enum_TimePeriod_MiddleAges = 104
+enum_TimePeriod_Early20thCentury = 103
+enum_TimePeriod_Late20thCentury = 102
+enum_TimePeriod_Present = 101
+const_TimePeriod_IDs = {
+	enum_TimePeriod_Present: {"IDs": [0x83]},
+	enum_TimePeriod_Late20thCentury: {"IDs": [0x82,0x88]},
+	enum_TimePeriod_Early20thCentury: {"IDs": [0x81]},
+	enum_TimePeriod_MiddleAges:{"IDs": [0x80]}}
+
+function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
+	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
+
 function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
-									// 		0x81 => Late 20th Century 1900s
-									// 		0x82 => Early 20th Century 1980
-									// 		0x88 => Early 20th Century 1979
+									// 		0x81 => Early 20th Century 1900s
+									// 		0x82 => Late 20th Century 1980
+									// 		0x88 => Late 20th Century 1979
 									// 		0x83 => Present 2000s
 
 function current_PresentTime_Hours() =>		// $AA12B0: [32-bit] Time in present: hours
@@ -111,6 +144,9 @@ function current_ChapterClearTime() =>	// $AA155C: [32-bit] Current Playthrough 
 function prev_ChapterClearTime() =>
 	prev(current_ChapterClearTime())
 
+function get_Timer_ChapterClearTime_InSeconds() =>
+	current_ChapterClearTime() / 60
+
 function on_Timer_ChapterClearTime_start() => 
 	prev_ChapterClearTime() == 0 &&
 	current_ChapterClearTime() > 0
@@ -124,6 +160,9 @@ function current_TotalClearTime() =>	// $AA1560: [32-bit] Current Playthrough Ti
 function prev_TotalClearTime() =>
 	prev(current_TotalClearTime())
 
+function get_Timer_TotalClearTime_InMinutes() =>
+	current_TotalClearTime() / 3600
+
 function on_Timer_TotalClearTime_valueChange() => 
 	current_TotalClearTime() != prev_TotalClearTime()
 
@@ -133,6 +172,7 @@ function on_Timer_TotalClearTime_start() =>
 
 function on_Timer_TotalClearTime_reset() =>
 	current_TotalClearTime() < prev_TotalClearTime()
+
 // ****************
 // ◦ INTERACTIONS ◦
 // ****************
@@ -368,7 +408,7 @@ function is_LargeCutscene_active() => 	// $A9ED26: Flag: Is cutscene active (pre
 function is_SmallCutscene_active() => 	//		- ... => transitional values
 	byte(0xA9ED26) == 0x1				// 		- 0x05 => cutscene active	
 
-function is_Cutscene_notActive() => 
+function is_NoCutscene_active() => 
 	byte(0xA9ED26) == 0
 
 function on_Cutscene_end() => 						
@@ -796,7 +836,7 @@ function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
 	let_dwordBE = let_dwordBE + dict_characterPrintData["print_Yaxis"]
 	return let_dwordBE}
 
-// Use below dictionary as an object definition to pass params to function is_CharacterOnScreen()
+// Use below dictionary as an object definition to pass params to function is_CharacterOnBottomScreen()
 // 	dict_characterPrintData = {
 	//	"height": 0x0,
 	// 	"print_Xaxis": 0x0,
@@ -805,7 +845,7 @@ function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
 	// 	"imageUnmask_Width": 0x0,
 	// 	"print_Yaxis": 0x0,
 	//	"characterSetId": 0x0}
-function is_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+function is_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
 	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
 	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
 	current_CharPrint_printYaxis(int_charIndex) == dict_characterPrintData["print_Yaxis"] &&
@@ -814,14 +854,14 @@ function is_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // 
 	current_CharPrint_imageUnmaskWidth(int_charIndex) == dict_characterPrintData["imageUnmask_Width"] &&
 	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]
 
-function is_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+function is_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
 	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
 	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
 	dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
 		const_CharacterPrinter_data["offsets_CharacterPrintData_Obj"]["imageOffset_Xaxis"]) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
 	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]	
 
-function was_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
+function was_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
 	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
 	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
 	prior(current_CharPrint_printYaxis(int_charIndex)) == dict_characterPrintData["print_Yaxis"] &&
@@ -830,7 +870,7 @@ function was_CharacterOnScreen_bis(int_charIndex, dict_characterPrintData) => //
 	prior(current_CharPrint_imageUnmaskWidth(int_charIndex)) == dict_characterPrintData["imageUnmask_Width"] &&
 	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
 
-function was_CharacterOnScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
+function was_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData) => // index starts at 0
 	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
 	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
 	prior(dword_be(const_CharacterPrinter_data["memAddr"] + get_CharPrint_offset(int_charIndex) + 
@@ -852,6 +892,133 @@ function was_MinimumAmountOfCharactersOnBottomScreen(int_charCount) => // Count 
 function is_BottomScreenText_empty() => 
 	current_CharPrint_controlData(0) == 0x0 &&	// Checks first character
 	current_CharPrint_controlData(7) == 0x0		// Checks 7th character
+
+function was_BottomScreenText_empty() => 
+	prior(current_CharPrint_controlData(0)) == 0x0 &&	// Checks first character
+	prior(current_CharPrint_controlData(7)) == 0x0		// Checks 7th character
+
+function on_BottomScreenText_render() => 
+	current_CharPrint_controlData(0) > 0 && 
+	prev(current_CharPrint_controlData(0)) == 0
+
+function on_BottomScreenText_remove() => 
+	current_CharPrint_controlData(0) == 0 && 
+	prev(current_CharPrint_controlData(0)) > 0
+// ***************
+// ◦ ENERGY ORBS ◦
+// ***************
+// - Some positional axes are set to NULL, because they're too close to the mid-line => value's change too fast close to it, so just check location based on other info
+// - positional value's are based on the player's position close to the orb (refer to notes @ 0xa8abd0)
+const_EnergyOrbs_data = {
+	enum_TimePeriod_Late20thCentury: {
+		"amountToCollect": 5,
+		"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
+		"locations": {
+			"StairsRudolfstr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x46a73a8b, "yAxis": 0xc6906e39}},
+			"AlleyWayBakery": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x46a67b3d, "yAxis": 0x468f3c92}},
+			"NorthGateNearBar": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc621493d, "yAxis": 0x47023a39}},
+			"WellCafeSonne": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc6c83b66, "yAxis": 0x44732a78}},
+			"TreeHaupstr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc5f44e3b, "yAxis": 0xc70e69b4}}
+			},
+		},
+	enum_TimePeriod_Early20thCentury: {
+		"amountToCollect": 5,
+		"sharedArea": iNULL,
+		"locations": { 
+			"InsideBrumMansion": {
+				"area": [enum_Area_1900s_BrumMansion],
+				"pos": {"xAxis": iNULL, "yAxis": iNULL}},
+			"NearNewsPost": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": iNULL, "yAxis": 0xc743a8da}},
+			"TreeBar": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0xc68e1659, "yAxis": 0x46adc88f}},
+			"NorthEastgate": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0x46a725aa, "yAxis": 0x46e49d11}},
+			"OppositeCafeSonne": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0xc6f04f21, "yAxis": 0xc591857f}}
+			},
+		},
+	enum_TimePeriod_MiddleAges: {
+		"amountToCollect": 6,
+		"sharedArea": iNULL, // <-- 2 orbs are not in area_city, so check each location seperate
+		"locations": {
+			"AlchemistBasement": {
+				"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
+				"pos": {"xAxis": iNULL, "yAxis": iNULL}},
+			"InsideChurch": {
+				"area": [enum_Area_MiddleAges_Church],
+				"pos": {"xAxis": iNULL, "yAxis": 0xc5b42ed9}},
+			"EastNearHay": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x46f98191, "yAxis": 0xc56f7d4f}},
+			"AlleyWayCart": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x4697f161, "yAxis": iNULL}},
+			"EastWell": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0xc6c73c8c, "yAxis": iNULL}},
+			"ChurchEntrance": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x460c6f20, "yAxis": 0x46ed4035}},
+			"onBench": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0xc698a2b6, "yAxis": 0x46abfd71}}
+			}
+		},
+	enum_TimePeriod_Present: {
+		"amountToCollect": 5,		
+		"sharedArea": [enum_Area_Present_City_Day, enum_Area_Present_City_NightAM, enum_Area_Present_City_NightPM], // <-- all orbs are in the area_city
+		"locations": { 
+			"CarPark": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x47030d91, "yAxis": 0x45ad7c4b}},
+			"SouthGate": {
+				"area": iNULL,
+				"pos": {"xAxis": iNULL, "yAxis": 0xc750d745}}, 
+			"AlleyWay": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc69084cd, "yAxis": 0xc6dcf00d}},
+			"UnderArchRuckagrastr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc69c2e07, "yAxis": 0x45c97393}},
+			"OutsideFortuneTeller": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x461576c8, "yAxis": 0xc68fb1c3}}
+			},
+		}}
+
+function get_EnergyOrb_amountToCollect(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["amountToCollect"]
+
+function get_EnergyOrb_Locations(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"]
+
+function get_EnergyOrb_sharedAreas(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["sharedArea"]
+
+function get_EnergyOrb_Location_area(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["area"]
+
+function get_EnergyOrb_Location_posX(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["xAxis"]
+
+function get_EnergyOrb_Location_posY(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["yAxis"]
+
 // ***********************
 // ◦ MENU IDENTIFICATION ◦
 // ***********************
@@ -904,22 +1071,32 @@ function is_InGamePauseMenu_active() =>	// $B91514 + $B91518: [Bit Flag] bit 0 =
 	bit0(0xB91514) == 1 && 
 	bit0(0xB91518) == 1
 
-function is_ChapterCompletionMenu_active() =>	// $1FFF5F4: [32-bit Flag] Is chapter complete screen active
-	dword(0x1FFF5F8) == 0x1 	&&				//		- 0x21 => chapter completion screen is active (UI asks to save data)
-	dword(0x1FFF5F4) == 0x21 	&&				// $1FFF5D4: [32-bit] Highlighted UI element when chapter complete screen is active
-	dword(0x1FFF5D4) <= 1 						//		- 0x0 = yes		- 0x1 = no
-
-function on_ChapterCompletionMenu_render() =>
-	dword(0x1FFF5F8) == 0x1  	&& prev(dword(0x1FFF5F8)) != 0x1 	&&
-	dword(0x1FFF5F4) == 0x21 	&& prev(dword(0x1FFF5F4)) != 0x21 	&&
-	dword(0x1FFF5D4) <= 1
-
 function is_TitleMenu_active() { return	// $1FFF5F8: [32-bit] UI/Menu ID
 	dword(0x1FFF5F8) == 0x11 	&&		// 	0x11 => title screen			any other value => something else on screen
 	0x0 < byte(0x1FFF604) 		&& 		//	0x1 => chapter complete screen
 	dword(0x1FFF604) < 0x5}				// $1FFF604: [8-bit] Selected submenu at title screen
 										// 	0x1 => Start		0x3 => Option
 										// 	0x2 => Continue		0x4 => Extra
+
+function is_ChapterCompletionMenu_active() =>	// $1FFF5F4: [32-bit Flag] Is chapter complete screen active
+	dword(0x1FFF5F8) == 0x1 	&&				//		- 0x21 => chapter completion screen is active (UI asks to save data)
+	dword(0x1FFF5F4) == 0x21 	&&				// $A82E2C: [Bit Flag] bit 0 => Is Chapter Completion Menu Displayed -OR- Is Loading
+	bit0(0xA82E2C) == 1							// 	- bit 0 = 1 => when chapter complete screen is displayed, when the ending video credits + ending file are played, when loading (+during time travel)
+												// 	- bit 0 = 0 => when in-game AND nothing is loading
+
+function is_Loading() =>
+	bit0(0xA82E2C) == 1
+
+function on_ChapterCompletionMenu_render() =>
+	dword(0x1FFF5F8) == 0x1  	&& prev(dword(0x1FFF5F8)) != 0x1 &&
+	dword(0x1FFF5F4) == 0x21 	&& prev(dword(0x1FFF5F4)) != 0x21 &&
+	bit0(0xA82E2C) > prior(bit0(0xA82E2C))
+
+function on_ChapterCompletionMenu_exit() =>
+	dword(0x1FFF5F8) != 0x1  	&& prev(dword(0x1FFF5F8)) == 0x1 &&
+	dword(0x1FFF5F4) != 0x21 	&& prev(dword(0x1FFF5F4)) == 0x21 &&
+	bit0(0xA82E2C) < prior(bit0(0xA82E2C))
+									
 function is_InGame() => // $A9EDDC: [Lower4] Flag -> is in-game
 	low4(0xA9EDDC) != 0	// 		Lower4 = 0 => at title screen
 						// 		Lower4 > 0 => in-game
@@ -1509,7 +1686,8 @@ achievements_coreData = {
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
 		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED
 			"id": 399819, "points": 5,
-			"devInfo": "Find all 6 energy orbs in Middle Ages"}},
+			"devInfo": "Find all 6 energy orbs in Middle Ages"}
+		},
 	"c_ExtraGameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
 		"a_ErasingEike": { // VERIFIED
 			"id": 306883, "points": 2,
@@ -1576,6 +1754,157 @@ function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict
 			measured(let_measuredComparison, when = is_Chapter(enum_chapter) && is_InGame(), format = "percent")
 	}}
 
+function achievements_generate_TextComparison_GotEnergyUnit() {
+	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
+		"G": {
+			"height": 0x48,
+			"print_Xaxis": 0x0,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x0,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"E": {
+			"height": 0x48,
+			"print_Xaxis": 0x1f,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"Y": {
+			"height": 0x49,
+			"print_Xaxis": 0x4b,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x54,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x1,
+			"characterSetId": 0x8},	
+		"I": {
+			"height": 0x48,
+			"print_Xaxis": 0x6c,
+			"imageOffset_Xaxis": 0x0,
+			"imageOffset_Yaxis": 0x46,
+			"imageUnmask_Width": 0x4,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8}}
+	return 
+		is_TotalCharacterCountOnBottomScreen(14) &&
+		is_CharacterOnBottomScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+		is_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
+		// is_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
+		is_CharacterOnBottomScreen(11, let_charactersToCheck["I"])}
+
+function achievements_generate_TextComparison_CannotCarryMore() {
+	let_charactersToCheck = {	// I c(A)nnot ca(R)ry an(Y) mor(E).
+		"A": {
+			"height": 0x48,
+			"print_Xaxis": 0x12,
+			"imageOffset_Xaxis": 0x18,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"R": {
+			"height": 0x48,
+			"print_Xaxis": 0x56,
+			"imageOffset_Xaxis": 0x6c,
+			"imageOffset_Yaxis": 0x46,
+			"imageUnmask_Width": 0x7,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8},
+		"Y": {
+			"height": 0x49,
+			"print_Xaxis": 0x86,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x54,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x1,
+			"characterSetId": 0x8},	
+		"E": {
+			"height": 0x48,
+			"print_Xaxis": 0xb0,
+			"imageOffset_Xaxis": 0x48,
+			"imageOffset_Yaxis": 0x38,
+			"imageUnmask_Width": 0x9,
+			"print_Yaxis": 0x0,
+			"characterSetId": 0x8}}
+	return 
+		is_TotalCharacterCountOnBottomScreen(20) &&
+		is_CharacterOnBottomScreen(2, let_charactersToCheck["A"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+		is_CharacterOnBottomScreen(9, let_charactersToCheck["R"]) &&
+		// is_CharacterOnBottomScreen(14, let_charactersToCheck["Y"]) &&
+		is_CharacterOnBottomScreen(18, let_charactersToCheck["E"])}
+
+function achievements_generate_ComparisonArray_CheckAllAreas(array_areaEnums) {
+	let_comparisonArray = []
+	if (array_areaEnums != iNULL) {
+		for enum_area in array_areaEnums {
+			array_push(let_comparisonArray, is_Area(enum_area))
+		}
+	}
+	return let_comparisonArray}
+
+function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod) {
+	function create_TallyComparisonArray(enum_timePeriod) {
+		let_tallyComparisonArray = []
+		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
+			let_comparison1 = [achievements_generate_TextComparison_CannotCarryMore()]
+			let_comparison2 = [achievements_generate_TextComparison_GotEnergyUnit()]
+			let_xLocation = get_EnergyOrb_Location_posX(enum_timePeriod, let_OrbLocationKey)
+			let_yLocation = get_EnergyOrb_Location_posY(enum_timePeriod, let_OrbLocationKey)			
+			let_orbLocationArea = get_EnergyOrb_Location_area(enum_timePeriod, let_OrbLocationKey)
+			if(let_xLocation == iNULL && let_yLocation == iNULL && let_orbLocationArea == iNULL)
+				util_throwError(format("At least one property of for energy orb {0} must be not be NULL", let_OrbLocationKey))
+			if(let_xLocation != iNULL) {
+				array_push(let_comparison1, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
+				array_push(let_comparison2, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
+			}
+			if(let_yLocation != iNULL) {
+				array_push(let_comparison1, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
+				array_push(let_comparison2, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
+			}
+			if(get_EnergyOrb_sharedAreas(enum_timePeriod) == iNULL) {
+				if(let_orbLocationArea == iNULL) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
+				if(length(let_orbLocationArea) < 1) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
+				let_areaComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_orbLocationArea)
+				let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
+				array_push(let_comparison1, let_areaComparison)
+				array_push(let_comparison2, let_areaComparison)
+			}
+			array_push(let_tallyComparisonArray, once(all_of(let_comparison1, (comparison) => comparison)))			
+			array_push(let_tallyComparisonArray, once(all_of(let_comparison2, (comparison) => comparison)))
+		}
+		return let_tallyComparisonArray}
+	function create_Pause_WhenNotInSharedAreas(enum_timePeriod) {		
+		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
+		let_pauseComparisonArray = []
+		if(let_sharedAreas != iNULL){
+			if (length(let_sharedAreas) < 1) util_throwError(format("const_EnergyOrbs_data sharedArea for enum_TimePeriod: {0}, must contain one enum_area Or be iNULL", enum_timePeriod))
+			let_pauseComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_sharedAreas)
+		}
+		if (length(let_pauseComparisonArray) < 1) {	return 
+			always_true()
+		} else { return 
+			unless(
+				none_of(let_pauseComparisonArray, (comparison) => comparison)
+			)
+		}}
+	return 
+		disable_when(
+			repeated(70 ,	// <-- delay, so trigger has to time to hit
+				is_BottomScreenText_empty()),
+			until = on_BottomScreenText_render()
+		) &&
+		unless(!is_InGame() && is_Loading()) &&
+		create_Pause_WhenNotInSharedAreas(enum_timePeriod) &&
+		measured(
+			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
+				create_TallyComparisonArray(enum_timePeriod))
+		) &&
+		trigger_when(on_Cutscene_end())
+	}
+
 function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
 		"G": {
@@ -1614,11 +1943,11 @@ function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 		tally(int_tallyCount, 
 			on_EnergyUnits_increment() &&
 			was_MinimumAmountOfCharactersOnBottomScreen(14) &&		
-			was_CharacterOnScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
-			was_CharacterOnScreen(3, let_charactersToCheck["E"]) &&
-			was_CharacterOnScreen(8, let_charactersToCheck["Y"]) &&
-			was_CharacterOnScreen(11, let_charactersToCheck["I"]) &&
-			!is_LargeCutscene_active()	// Don't switch with is_Cutscene_notActive() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+			was_CharacterOnBottomScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
+			was_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
+			was_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
+			was_CharacterOnBottomScreen(11, let_charactersToCheck["I"]) &&
+			!is_LargeCutscene_active()	// Don't switch with is_NoCutscene_active() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
 		)}
 
 // *************************
@@ -2352,87 +2681,99 @@ achievements_triggers = {
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
 			is_Ending_achieved(enum_Ending_EX))},
-	"a_EnergyOrbLocatorPresentDay": function EnergyOrbLocatorPresentDay() { return
+	"a_EnergyOrbLocatorPresentDay": () =>
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
 		// -----------------------------------------
 		// 	- When Pause if = true => measurement hit count is frozen, the progress is still viewable on RA overlay
 		// 	- When Measure if = false => measurement hit count is set to 0, thus the progress is not viewable on RA overlay, but once Measure if = true => hit count will be set to previous value and start counting from this value
 		//		-- Example: current hit count = 21 -> Measure if = false -> Previous hit count is stored and current hit count = 0 -> Measure if = true -> current hit count = 21
 		//	- When Reset if = true => measurement will be reset to 0, measurement has to restart counting/hit counts from 0		
-			
-		(	// Core group	
-			unless(
-				is_WearingPerformerOutfit()	||
-				(
-					!is_Area(enum_Area_Present_City_Day) 	 && 
-					!is_Area(enum_Area_Present_City_NightPM) &&
-					!is_Area(enum_Area_Present_City_NightAM)
-				) 
-			) &&
-			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
-		) && (
-			(	// Alt 1: otherwise pause can lock the reset
-				never(	// Reset measure when chapter changes or when using digipad
-					on_EnergyUnits_decrement()	||
-					on_Chapter_change()			||
-					!is_InGame()) 
-			) || ( // Alt 2: always_false to create 1 functional alt group
-				always_false()
-			)
-		)},
+				
+		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
+		//	'''''''''''
+		//	(	// Core group	
+		//		unless(
+		//			is_WearingPerformerOutfit()	||
+		//			(
+		//				!is_Area(enum_Area_Present_City_Day) 	 && 
+		//				!is_Area(enum_Area_Present_City_NightPM) &&
+		//				!is_Area(enum_Area_Present_City_NightAM)
+		//			) 
+		//		) &&
+		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		//	) && (
+		//		(	// Alt 1: otherwise pause can lock the reset
+		//			never(	// Reset measure when chapter changes or when using digipad
+		//				on_EnergyUnits_decrement()	||
+		//				on_Chapter_change()			||
+		//				!is_InGame()) 
+		//		) || ( // Alt 2: always_false to create 1 functional alt group
+		//			always_false()
+		//		)
+		//	),
+		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Present),
 	"a_EnergyOrbLocator70s80s": () =>
-		(	// Core group	
-			unless(
-				!is_Area(enum_Area_80s_City_Snow) && 
-				!is_Area(enum_Area_70s_City_Night)
-			) &&
-			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
-		) && (
-			(	// Alt 1: otherwise pause can lock the reset
-				never(	// Reset measure when chapter changes or when using digipad
-					on_EnergyUnits_decrement()	||
-					on_Chapter_change()			||
-					!is_InGame()) 
-			) || ( // Alt 2: always_false to create 1 functional alt group
-				always_false()
-			)
-		),
-	"a_EnergyOrbLocatorMiddleAges": function EnergyOrbLocatorMiddleAges() { return
-		(	// Core group	
-			unless(
-				!is_Area(enum_Area_MiddleAges_City_Day) 				&& 
-				!is_Area(enum_Area_MiddleAges_City_Night)			&&
-				!is_Area(enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement)	&&
-				!is_Area(enum_Area_MiddleAges_Church)
-			) &&
-			measured(achievements_generate_Tally_PickUpEnergyOrbs(6))
-		) && (
-			(	// Alt 1: otherwise pause can lock the reset
-				never(	// Reset measure when chapter changes or when using digipad
-					on_EnergyUnits_decrement()	||
-					on_Chapter_change()			||
-					!is_InGame()) 
-			) || ( // Alt 2: always_false to create 1 functional alt group
-				always_false()
-			)
-		)},
-	"a_EnergyOrbLocator1900Days": function EnergyOrbLocator1900Days() { return
-		// Core group
-		never(	// Reset when chapter changes or when using digipad
-			on_EnergyUnits_decrement() 	||
-			on_Chapter_change()			||
-			!is_InGame()					||
-			(is_WearingPerformerOutfit() && is_Area(enum_Area_Present_City_Day))	// --> Fix for bug, where player could pick up the energy orb in the 
-		) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
-			(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
-				unless(	
-					!is_Area(enum_Area_1900s_City) && !is_Area(enum_Area_1900s_BrumMansion)
-				) &&
-				measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
-			) || ( // Alt 2: always_false to create 1 functional alt group
-				always_false()
-			)
-		)},
+		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
+		//	'''''''''''
+		//	(	// Core group	
+		//		unless(
+		//			!is_Area(enum_Area_80s_City_Snow) && 
+		//			!is_Area(enum_Area_70s_City_Night)
+		//		) &&
+		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		//	) && (
+		//		(	// Alt 1: otherwise pause can lock the reset
+		//			never(	// Reset measure when chapter changes or when using digipad
+		//				on_EnergyUnits_decrement()	||
+		//				on_Chapter_change()			||
+		//				!is_InGame()) 
+		//		) || ( // Alt 2: always_false to create 1 functional alt group
+		//			always_false()
+		//		)
+		//	),
+		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Late20thCentury),
+	"a_EnergyOrbLocatorMiddleAges": () => 
+		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
+		//	'''''''''''
+		//	(	// Core group	
+		//		unless(
+		//			!is_Area(enum_Area_MiddleAges_City_Day) 				&& 
+		//			!is_Area(enum_Area_MiddleAges_City_Night)			&&
+		//			!is_Area(enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement)	&&
+		//			!is_Area(enum_Area_MiddleAges_Church)
+		//		) &&
+		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(6))
+		//	) && (
+		//		(	// Alt 1: otherwise pause can lock the reset
+		//			never(	// Reset measure when chapter changes or when using digipad
+		//				on_EnergyUnits_decrement()	||
+		//				on_Chapter_change()			||
+		//				!is_InGame()) 
+		//		) || ( // Alt 2: always_false to create 1 functional alt group
+		//			always_false()
+		//		)
+		//	),
+		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_MiddleAges),
+	"a_EnergyOrbLocator1900Days": () =>
+		//  Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
+		// '''''''''''
+		//	Core group
+		//	never(	// Reset when chapter changes or when using digipad
+		//		on_EnergyUnits_decrement() 	||
+		//		on_Chapter_change()			||
+		//		!is_InGame()					||
+		//		(is_WearingPerformerOutfit() && is_Area(enum_Area_Present_City_Day))	// --> Fix for bug, where player could pick up the energy orb in the 
+		//	) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
+		//		(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
+		//			unless(	
+		//				!is_Area(enum_Area_1900s_City) && !is_Area(enum_Area_1900s_BrumMansion)
+		//			) &&
+		//			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
+		//		) || ( // Alt 2: always_false to create 1 functional alt group
+		//			always_false()
+		//		)
+		//	)
+		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Early20thCentury),
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!is_InGame() ||
@@ -2543,7 +2884,7 @@ achievements_triggers = {
 		) &&
 		trigger_when(
 			is_ItemPresentInInventory(enum_Item_OrnamentalEgg) && 
-			is_Cutscene_notActive())},
+			is_NoCutscene_active())},
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!is_InGame() 					||
@@ -4030,10 +4371,10 @@ achievements_descriptions = {
 	"a_SnowyCrimeScene":							{"en": "Witness a chilling crime scene revealed amidst the snowy terrain during Chapter 6"},
 	"a_SaveMiriamBrum":								{"en": "Navigate the labyrinths of fate to shield a member of the Brum family from their destined demise during the events of Chapter 6"}, 
 	"a_TimeEgoFlop":								{"en": "Weave the fabric of time and space as co-directors in the creation of 'Time Ego Trip World Conquest' during the narrative of Chapter 6"},
-	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate and retrieve the five energy orbs scattered across present-day Lebensbaum"}, 
-	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Locate and retrieve the six energy orbs scattered across Medieval Lebensbaum"},
-	"a_EnergyOrbLocator70s80s": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the late 20th century"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Locate and retrieve the five energy orbs scattered across Lebensbaum during the early 20th century"},
+	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate five unique energy orbs scattered across present-day Lebensbaum"}, 
+	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Locate six unique energy orbs scattered across Medieval Lebensbaum"},
+	"a_EnergyOrbLocator70s80s": 					{"en": "Locate five unique energy orbs scattered across Lebensbaum during the late 20th century"}, 
+	"a_EnergyOrbLocator1900Days": 					{"en": "Locate five unique energy orbs scattered across Lebensbaum during the early 20th century"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a delectable sweet to a cherished individual in your life"},
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
 	"a_ShortestChapter": 							{"en": "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary"}, 
@@ -4171,37 +4512,37 @@ function richPresence_getLookupTableText(string_parameterKey, string_lookupValue
 // -------------------------------------
 richPresence_lookupTables = {
 	"rpp_FatedHour": { // Each chapter has a fated hour
-		0x1: "Prologue", 
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Chapter8",
-		0xc: "Chapter8"},
+		get_ChapterID(enum_Chapter_Prologue): "Prologue", 
+		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
+		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
+		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
+		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
+		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
+		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
+		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
+		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Chapter8"},
 	"rpp_TimePeriod": {	// Refer to 0xAA1268
-		0x80: "MiddleAges",
-		0x82: "Early20Century",
-		0x81: "Late20Century",
-		0x88: "Late20Century",
-		0x83: "Present"},
+		get_TimePeriodIDs(enum_TimePeriod_MiddleAges): "MiddleAges",
+		get_TimePeriodIDs(enum_TimePeriod_Early20thCentury): "Early20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 0): "Late20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 1): "Late20Century",
+		get_TimePeriodIDs(enum_TimePeriod_Present): "Present"},
 	"rpp_Chapter": { // Refer to const_chapter_IDs
-		0x1: "Prologue",
-		0x2: "Chapter1",
-		0x3: "Chapter2",
-		0x4: "Chapter3",
-		0x5: "Chapter4",
-		0x6: "Chapter5",
-		0x7: "Chapter6",
-		0x8: "Chapter7",
-		0x9: "Chapter8",
-		0xb: "Chapter8",
-		0xa: "Epilogue",
-		0xc: "Epilogue"}}
+		get_ChapterID(enum_Chapter_Prologue): "Prologue",
+		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
+		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
+		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
+		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
+		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
+		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
+		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
+		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Epilogue",
+		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
 // **************************
@@ -4396,11 +4737,7 @@ function richPresence_initialize() {
 // • Leaderboards FUNCTIONS •
 // **************************
 //	- Functions that should only be used by the leaderboards logic
-function getTimerTotalClearTimeInMinutes() =>
-	current_TotalClearTime() / 3600
 
-function getTimerChapterClearTimeInSeconds() =>
-	current_ChapterClearTime() / 60
 // **************************
 // • Leaderboards CORE DATA •
 // **************************
@@ -4422,52 +4759,52 @@ leaderboards_coreData = {
 
 	"lb_ClearTimeChapter8": { // VERIFIED 
 		"id": 92203, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter7": { // VERIFIED 
 		"id": 92202, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter6": { // VERIFIED 
 		"id": 92201, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter5": { // VERIFIED 
 		"id": 92200, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter4": { // VERIFIED 
 		"id": 92199, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter3": { // VERIFIED 
 		"id": 92198, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter2": { // VERIFIED 
 		"id": 92197, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter1": { // VERIFIED 
 		"id": 92196, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimePrologue": { // VERIFIED 
 		"id": 92195, "isLowerBetter": true,
-		"leaderboardValue": getTimerChapterClearTimeInSeconds(),
+		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in prologue, excluding EX chapter"},
 	"lb_TotalClearTime": { // VERIFIED 
 		"id": 92194, "isLowerBetter": true,
-		"leaderboardValue": getTimerTotalClearTimeInMinutes(),
+		"leaderboardValue": get_Timer_TotalClearTime_InMinutes(),
 		"leaderboardFormat": "MINUTES",
 		"devInfo": "Best Total Clear Time, excluding EX chapter"}}
 
@@ -4495,10 +4832,6 @@ function leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_chapter) {
 		on_Timer_ChapterClearTime_reset() 	||
 		!is_Chapter(enum_chapter)}
 function leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_chapter) =>
-	never(
-		!is_ChapterCompletionMenu_active() || 
-		!is_Chapter(enum_chapter)
-	) &&
 	on_ChapterCompletionMenu_render() &&
 	is_Chapter(enum_chapter)
 
