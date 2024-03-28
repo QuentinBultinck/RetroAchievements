@@ -12,8 +12,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO rewrite character checker bottom screen text, with new note
-
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -907,43 +905,112 @@ function on_BottomScreenText_remove() =>
 const_EnergyOrbs_data = {
 	// enum_TimePeriod_Late20thCentury: {
 	// 	"amountToCollect": 5,
-	// 	"locations": { 		
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
-	// enum_TimePeriod_Late20thCentury: {
+	// 	"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
+	// 	"locations": {
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}}
+	// 		},
+	// 	},
+	// enum_TimePeriod_Early20thCentury: {
 	// 	"amountToCollect": 5,
-	// 	"locations": { 		
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
+	// 	"sharedArea": [enum_Area_1900s_City],
+	// 	"locations": { 
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	//			"area": iNULL,
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}}
+	// 		},
+	// 	},
 	// enum_TimePeriod_MiddleAges: {
 	// 	"amountToCollect": 6,
-	// 	"locations": { 		
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000},
-	// 		"xxxx": {"xAxis": 0x0000, "yAxis": 0x0000}}},
+	// 	"sharedArea": iNULL, // <-- 2 orbs are not in area_city, so check each location seperate
+	// 	"locations": {
+	// 		"xxxx": {
+	// 			"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	// 			"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"xxxx": {
+	// 			"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"EastWell": {
+	// 			"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+	// 			"pos": {"xAxis": 0000, "yAxis": 0000}},
+	// 		"ChurchEntrance": {
+	// 			"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+	// 			"pos": {"xAxis": 0x460c6f20, "yAxis": 0x46ed4035}},
+	// 		"InsideChurch": {
+	// 			"area": [enum_Area_MiddleAges_Church],
+	// 			"pos": {"xAxis": 0xc6c72014, "yAxis": 0x4470550e}},
+	// 		"onBench": {
+	// 			"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+	// 			"pos": {"xAxis": 0xc698a2b6, "yAxis": 0x46abfd71}}
+	// 		}
+	// 	},
 	enum_TimePeriod_Present: {
-		"amountToCollect": 5,
-		"locations": { 		
-			"CarPark": {"xAxis": 0x47030d91, "yAxis": 0x45ad7c4b},
-			"SouthGate": {"xAxis": iNULL, "yAxis": 0xc750d745},	// No xAxis, because it's close to the midline (refer to notes @ 0xa8abd0)
-			"AlleyWay": {"xAxis": 0xc69084cd, "yAxis": 0xc6dcf00d},
-			"UnderArchRuckagrastr": {"xAxis": 0xc69c2e07, "yAxis": 0x45c97393},
-			"OutsideFortuneTeller": {"xAxis": 0x461576c8, "yAxis": 0xc68fb1c3}}
+		"amountToCollect": 5,		
+		"sharedArea": [enum_Area_Present_City_Day, enum_Area_Present_City_NightAM, enum_Area_Present_City_NightPM], // <-- all orbs are in the area_city
+		"locations": { 
+			"CarPark": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x47030d91, "yAxis": 0x45ad7c4b}},
+			"SouthGate": {
+				"area": iNULL,
+				"pos": {"xAxis": iNULL, "yAxis": 0xc750d745}}, // <-- No xAxis, because it's close to the midline (refer to notes @ 0xa8abd0)
+			"AlleyWay": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc69084cd, "yAxis": 0xc6dcf00d}},
+			"UnderArchRuckagrastr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc69c2e07, "yAxis": 0x45c97393}},
+			"OutsideFortuneTeller": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x461576c8, "yAxis": 0xc68fb1c3}}
+			},
 		}}
+
+function get_EnergyOrb_amountToCollect(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["amountToCollect"]
+
+function get_EnergyOrb_Locations(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"]
+
+function get_EnergyOrb_sharedAreas(enum_timePeriod) =>
+	const_EnergyOrbs_data[enum_timePeriod]["sharedArea"]
+
+function get_EnergyOrb_Location_area(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]
+
+function get_EnergyOrb_Location_posX(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["xAxis"]
+
+function get_EnergyOrb_Location_posY(enum_timePeriod, string_locationKey) =>
+	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["yAxis"]
 
 // ***********************
 // ◦ MENU IDENTIFICATION ◦
@@ -1751,15 +1818,23 @@ function achievements_generate_TextComparison_CannotCarryMore() {
 		// is_CharacterOnBottomScreen(14, let_charactersToCheck["Y"]) &&
 		is_CharacterOnBottomScreen(18, let_charactersToCheck["E"])}
 
+function achievements_generate_ComparisonArray_CheckAllAreas(array_areaEnums) {
+	let_comparisonArray = []
+	if (array_areaEnums != iNULL) {
+		for enum_area in array_areaEnums {
+			array_push(let_comparisonArray, is_Area(enum_area))
+		}
+	}
+	return let_comparisonArray}
+
 function achievements_generate_PartialTrigger_EnergyCollector(enum_timePeriod) {
-	function createTallyComparisonArray(enum_timePeriod) {
+	function create_TallyComparisonArray(enum_timePeriod) {
 		let_tallyComparisonArray = []
-		let_dict_orbLocations = const_EnergyOrbs_data[enum_timePeriod]["locations"]
-		for let_energyOrbKey in let_dict_orbLocations {
+		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
 			let_comparison1 = [achievements_generate_TextComparison_CannotCarryMore()]
 			let_comparison2 = [achievements_generate_TextComparison_GotEnergyUnit()]
-			let_xLocation = let_dict_orbLocations[let_energyOrbKey]["xAxis"]
-			let_yLocation = let_dict_orbLocations[let_energyOrbKey]["yAxis"]
+			let_xLocation = get_EnergyOrb_Location_posX(enum_timePeriod, let_OrbLocationKey)
+			let_yLocation = get_EnergyOrb_Location_posY(enum_timePeriod, let_OrbLocationKey)
 			if(let_xLocation == iNULL && let_yLocation == iNULL)
 				util_throwError("At least 1 axis must be set")
 			if(let_xLocation != iNULL) {
@@ -1770,19 +1845,38 @@ function achievements_generate_PartialTrigger_EnergyCollector(enum_timePeriod) {
 				array_push(let_comparison1, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
 				array_push(let_comparison2, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
 			}
+			if(get_EnergyOrb_sharedAreas(enum_timePeriod) == iNULL) {
+				let_orbLocationArea = get_EnergyOrb_Location_area(enum_timePeriod)
+				if(let_orbLocationArea == iNULL) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
+				if(length(let_orbLocationArea) < 1) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
+				let_areaCheckComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_orbLocationArea)
+				let_areaComparison = any_of(let_areaCheckComparisonArray, (comparison) => comparison)
+				array_push(let_comparison1, let_areaComparison)
+				array_push(let_comparison2, let_areaComparison)
+			}
 			array_push(let_tallyComparisonArray, once(all_of(let_comparison1, (comparison) => comparison)))			
 			array_push(let_tallyComparisonArray, once(all_of(let_comparison2, (comparison) => comparison)))
 		}
 		return let_tallyComparisonArray}
+	function create_Pause_WhenNotInSharedAreas(enum_timePeriod) {
+		let_pauseComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(get_EnergyOrb_sharedAreas(enum_timePeriod))
+		if (length(let_pauseComparisonArray) < 1) {	return 
+			always_true()
+		} else { return 
+			unless(
+				none_of(let_pauseComparisonArray, (comparison) => comparison)
+			)
+		}}
 	return 
 		disable_when(
 			repeated(100 ,	// <-- delay, so trigger has to time to hit
 				is_BottomScreenText_empty() && is_AnyCutscene_notActive()),
 			until = on_BottomScreenText_render() || is_SmallCutscene_active()
 		) &&
+		create_Pause_WhenNotInSharedAreas(enum_timePeriod) &&
 		measured(
-			tally(const_EnergyOrbs_data[enum_timePeriod]["amountToCollect"], 
-				createTallyComparisonArray(enum_timePeriod))
+			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
+				create_TallyComparisonArray(enum_timePeriod))
 		) &&
 		trigger_when(on_Cutscene_end())
 	}
