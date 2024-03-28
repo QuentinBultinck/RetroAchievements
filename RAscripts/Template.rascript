@@ -71,6 +71,9 @@
 util_isDebugModeActive = true	// if true => extra information will be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
+iNULL = -1
+sNULL = "-1"
+
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}

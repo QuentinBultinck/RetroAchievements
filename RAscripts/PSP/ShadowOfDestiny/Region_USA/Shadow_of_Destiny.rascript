@@ -12,8 +12,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO update README online
-
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -751,7 +749,7 @@ function is_ItemPresentInInventory(enum_item) =>
 
 // **********************
 // ◦ BOTTOM SCREEN TEXT ◦
-// **********************	// TODO Refactor this with new code notes
+// **********************
 // - The text at the bottom of the screen (subtitles & info in menu's) is printed on the screen via a transparent character set image, 
 // 		which is masked to show only 1 character at a time. 
 //		Functional with offset and different character sets (ex. latin, chinese) (more info refer to code notes @ 0xac31e8)
@@ -1728,7 +1726,7 @@ achievements_typeByCategory = {
 // • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict_BitFlags) {	// TODO Refactor --> Total into another function
+function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict_BitFlags) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
@@ -4381,7 +4379,7 @@ achievements_descriptions = {
 	"a_FreeMeal":									{"en": "Enjoy a free dinner  at Bar Zum Ei during Chapter 5"}, 
 	"a_DrunkenGuys":								{"en": "Encounter some mischievous rascals in Chapter 7"},
 	"a_ScareEveryone": 								{"en": "Attempt to sow fear among numerous individuals within Chapter 2"}, 
-	"a_TimeTravellingCat":							{"en": "Offer a charming kitty to the girl either during or after Chapter 4"},
+	"a_TimeTravellingCat":							{"en": "Offer a charming kitty to a lonely girl either during or after Chapter 4"},
 	"a_MeetFamousOleg":								{"en": "Inspire the movie director for a second time during Chapter 7"},
 	"a_SeenOlegAsWell": 							{"en": "Find someone who shares a similar experience of meeting the meditating man in Chapter 6"},
 	"a_PocketWatchTo80sBarman": 					{"en": "Pique someone's interest with an oval shape of your own in the 1980's"},
