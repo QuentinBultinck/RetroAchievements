@@ -4527,7 +4527,7 @@ achievements_descriptions = {
 	"a_EndingEXCureHelena":							{"en": "Achieve ending EX, by creating a miracle cure"},
 	"a_DoctorateTimeTraveling": 					{"en": "Receive a lecture on time-travel physics within Chapter 4"}, 
 	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man from a bygone era, as well as his present self during Chapter 3, 4 or 5"},
-	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from aN entertainer in Chapter 1"},
+	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from an entertainer in Chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Present the barman's ancestor with your egg collection in Chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Pay for some coffee with an oval shaped object from Chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Uncover the truth about the barman's grandchildren in Chapter 5"},
@@ -4578,7 +4578,7 @@ achievements_descriptions = {
 	"a_GiveMargaretteCake": 						{"en": "Gift a delectable sweet to a cherished individual in your life"},
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
 	"a_ShortestChapter": 							{"en": "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary"}, 
-	"a_MaxInventory": 								{"en": "Accrue the ultimate arsenal of items during a singular playthrough"},
+	"a_MaxInventory": 								{"en": "Accrue the largest arsenal of items during a singular playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Highlight the significance of going above and beyond, especially for those, including yourself, who would truly value the performer's effort"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire a renowned artist and appraise his work"}, 
 	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for a prominent artist and assess all his works"}}
