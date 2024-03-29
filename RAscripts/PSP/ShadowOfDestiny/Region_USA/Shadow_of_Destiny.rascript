@@ -65,6 +65,19 @@ function util_throwError(string_errMsg) {	// This function will throw an error i
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
+function sysUtil_maskPointer(ptr) =>
+	ptr & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
+
+
+function never_toAlt(comparison) =>
+	(
+		(
+			never(comparison)
+		) || (
+			always_false()
+		)
+	)
+
 // ***************************************************************************************************************************************************************** \\
 //																																									 \\
 //   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
@@ -76,22 +89,42 @@ function util_addToDictionary(dict, key, value) {
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
 
-// *******************
-// ◦ PLAYER POSITION ◦
-// *******************
-function is_PlayerPosition_Xaxis_CloseTo(int_value) =>	// $A8ABD0: [NTSC-U/C][32-bit] Player Position - x-Axis
-	int_value + 0x210000 >=  dword(0xA8ABD0) && 		// 	- Prime Meridian (vertical) line => vertical mid-line cutting area in two
-	dword(0xA8ABD0) >= int_value - 0x210000				// 	- Standing close on top of line => weird random value
-														// 	- Value is relative to this line, each area has a mid-line
-														// 	- Heading west from line => value > 0xC0000000
-														// 	- Heading east from line => value > 0x40000000
+function memUtil_floatToInt(float_value) =>				// Function will return an integer from the floored float value => refer to https://docs.retroachievements.org/AddSource-Flag/#interaction-with-floats
+	high4(0x1FFFFF0) + float_value + high4(0x1FFFFF0)	// 	- RAtools will clean => 	```0 + float(0xaa) + 0´´´	 -->	```float(0xa)´´´
+														// 	- Workaround is the following => 	```byte(memAddr_WhereValueNeverChanges) + float(0xa) + byte(memAddr_WhereValueNeverChanges)´´´
+														//	$1FFFFF0: [NTSC-U/C][Upper4] Always_Null || Value_Never_Changes
+														//	 - This is used for converting floats to floored integers via RAtools
 
-function is_PlayerPosition_Yaxis_CloseTo(int_value) =>	// $A8ABD8: [NTSC-U/C][32-bit] Player Position - y-Axis
-	int_value + 0x210000 >=  dword(0xA8ABD8) && 		// 	- Equator (horizontal) line => horizontal mid-line cutting area in two
-	dword(0xA8ABD8) >= int_value - 0x210000				// 	- Standing close/on top of line => weird random value
-														// 	- Value is relative to this line, each area has a mid-line
-														// 	- Heading south from line => value > 0xC0000000
-														// 	- Heading north from line => value > 0x40000000
+// *******************
+// ◦ PLAYER POSITION ◦ /// TODO calc position for energy orb on 2d plane
+// *******************
+// These functions do not convert their 32-bit values to Float because we need to calculate with negatives
+	// Below function doesn't work to compare the values
+	// 	function is_PlayerPosition_Xaxis_Near(int_value) =>
+	// 		int_value + 0x45034000 >=  float(0xA8ABD0) && 
+	// 		float(0xA8ABD0) >= int_value - 0x45034000
+
+function is_PlayerPosition_Xaxis_Near(hex_value) =>
+	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD0)) &&	
+	memUtil_floatToInt(float(0xA8ABD0)) >= hex_value - 0x834
+
+function is_PlayerPosition_Yaxis_Near(int_value) =>
+	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD8)) &&
+	memUtil_floatToInt(float(0xA8ABD8)) >= hex_value - 0x834
+
+// function is_PlayerPosition_Xaxis_Near(int_value) =>	// $A8ABD0: [NTSC-U/C][Float] Player Position - x-Axis
+// 	int_value + 0x45034000 >=  dword(0xA8ABD0) && 	// 	- Heading west => value decreases
+// 	dword(0xA8ABD0) >= int_value - 0x45034000		//	- Heading east => value increases
+// 	// [Float] 0x45034000 == [decimal] 2100 		// - Prime Meridian (vertical mid-line cutting area in two) => value is 0 on this mid-line
+// 													// - West from mid-line => value is positive
+// 													// - East from mid-line => value is negative
+
+// function is_PlayerPosition_Yaxis_Near(int_value) =>	// $A8ABD8: [NTSC-U/C][Float] Player Position - y-Axis
+// 	int_value + 0x45034000 >=  dword(0xA8ABD8) && 	//	- Heading north => value increases
+// 	dword(0xA8ABD8) >= int_value - 0x45034000		//	- Heading south => value decreases
+// 	// [Float] 0x45034000 == [decimal] 2100 		// 	- Equator (horizontal mid-line cutting area in two) => value is 0 on this mid-line
+// 													// 	- North from mid-line => value is positive
+// 													// 	- South from mid-line => value is negative
 
 // *****************
 // ◦ TIME AND DATE ◦
@@ -304,12 +337,13 @@ function is_NPCtalkCount_atMax(enum_npc, string_appearance) =>
 function is_TalkingToNPC_bis(enum_npc) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 	dword(0xA9EFF4) == get_NPC_Id(enum_npc)		// - Resets to 0x0 when interaction is done
 
-function is_TalkingToNPC(enum_npc) {					// $A9EFDC: [25-bit Pointer] Interactions
-	// & 0x1ffffff => masks 32-bit value to 25-bit;		// 		+0x0 - [32-bit] NPC ID	
-	//		PSP uses 25-bit pointers					// 		| - Unique per interactable NPC or environment item
-	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff		// 		| - This value is copied to 0xa9eff4 (refer to notes)
-	return 
-		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}
+function is_TalkingToNPC(enum_npc) {							// $A9EFDC: [25-bit Pointer] Interactions
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFDC))	// 		+0x0 - [32-bit] NPC ID	
+	return 														// 		| - This value is copied to 0xa9eff4 (refer to notes)
+		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}		// 		| - Unique per interactable NPC or environment item
+		
+	
+		
 
 function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance) => 
 	prior_NPCtalkCount(enum_npc, string_appearance) < 0x1 &&
@@ -356,17 +390,17 @@ function is_InteractingWith_bis(enum_interactableItem) =>
 	dword(0xA9EFF4) == const_InteractableItem_IDs[enum_interactableItem]
 
 function is_InteractingWith(enum_interactableItem) {
-	let_maskedPointer = dword(0xA9EFDC) & 0x1ffffff
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFDC))
 	return const_InteractableItem_IDs[enum_interactableItem] == dword(let_maskedPointer)}
 
-function is_InteractionChapterId(int_Id) {			// $A9EFE0: [25-bit Pointer] Interaction Identification
-	let_maskedPointer = dword(0xA9EFE0) & 0x1ffffff	// 		+0x0 - [32-bit] Interaction Chapter ID
-	return dword(let_maskedPointer) == int_Id}		//		| - Each chapter has a different value
+function is_InteractionChapterId(int_Id) {						// $A9EFE0: [25-bit Pointer] Interaction Identification
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFE0))	// 		+0x0 - [32-bit] Interaction Chapter ID
+	return dword(let_maskedPointer) == int_Id}					//		| - Each chapter has a different value
 
 function is_InteractionId(int_Id) {
-	let_maskedPointer = dword(0xA9EFE4) & 0x1ffffff	// $A9EFE4: [25-bit Pointer] Interaction Identification
-	return dword(let_maskedPointer) == int_Id}		// 		- Pointer resets to 0x0 when interaction is done
-													// 		+0x0 - [32-bit] Interaction ID
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFE4))	// $A9EFE4: [25-bit Pointer] Interaction Identification
+	return dword(let_maskedPointer) == int_Id}					// 		- Pointer resets to 0x0 when interaction is done
+																// 		+0x0 - [32-bit] Interaction ID
 // -------------------------------------
 function is_LostYoungCoupleProgress_Chapter2(int_flagValue) => 	//	$A9EF89: [8-bit Current Playthrough Flag]  Progress of Young Couple sidequest: Chapter 2
 	byte(0xA9EF89) == int_flagValue								// 		0x1 => has talked with 0xa9ef69 AND 0xa9ef7c
@@ -433,20 +467,18 @@ function is_Cutscene_SectionId_1(int_Id) => // $A9ECC0: [16-bit] Cutscene Sectio
 function is_Cutscene_SectionId_2(int_Id) => // $A9ECC2: [16-bit] Cutscene Section ID_2
 	word(0xA9ECC2) == int_Id
 
-function is_Cutscene_MasterDataId(int_Id) {			// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
-	// & 0x1ffffff => masks 32-bit value to 25-bit;	// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
-	//		PSP uses 25-bit pointers			 	// 		+0x8 - [32-bit] Cutscene Master Data ID
-	let_maskedPointer = dword(0xA9ECC8) & 0x1ffffff	
-	return dword(let_maskedPointer + 0x8) == int_Id}
+function is_Cutscene_MasterDataId(int_Id) {						// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECC8))	// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
+	return dword(let_maskedPointer + 0x8) == int_Id}			// 		+0x8 - [32-bit] Cutscene Master Data ID
 
-function is_Cutscene_SectionDataId(int_Id) {			// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
-	let_maskedPointer = dword(0xA9ECCC) & 0x1ffffff		// 		+0x0 - Data lower than this hex address changes when the next section in the cutscene starts
-	return dword(let_maskedPointer + 0x8) == int_Id}	// 		+0x8 - [32-bit] Cutscene Section Data ID
+function is_Cutscene_SectionDataId(int_Id) {					// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECCC))	// 		+0x0 - Data lower than this hex address changes when the next section in the cutscene starts
+	return dword(let_maskedPointer + 0x8) == int_Id}			// 		+0x8 - [32-bit] Cutscene Section Data ID
 
-function is_Cutscene_MinorId(int_Id, int_offset) {			// $A9ECD4: [25-bit Pointer] Cutscene Identification - Minor IDs
-	let_maskedPointer = dword(0xA9ECD4) & 0x1ffffff			//	- Pointer active when a cutscene is active
-	return dword(let_maskedPointer + int_offset) == int_Id}	// 		+0x0 - Data lower than this point can be used as Minor Cutscene IDs
-															// 		+0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
+function is_Cutscene_MinorId(int_Id, int_offset) {				// $A9ECD4: [25-bit Pointer] Cutscene Identification - Minor IDs
+	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECD4))	//	- Pointer active when a cutscene is active
+	return dword(let_maskedPointer + int_offset) == int_Id}		// 		+0x0 - Data lower than this point can be used as Minor Cutscene IDs
+																// 		+0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
 // ***********************
 // ◦ AREA IDENTIFICATION ◦
@@ -912,42 +944,45 @@ const_EnergyOrbs_data = {
 		"amountToCollect": 5,
 		"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
 		"locations": {
-			"StairsRudolfstr": {
-				"area": iNULL,
-				"pos": {"xAxis": 0x46a73a8b, "yAxis": 0xc6906e39}},
-			"AlleyWayBakery": {
-				"area": iNULL,
-				"pos": {"xAxis": 0x46a67b3d, "yAxis": 0x468f3c92}},
 			"NorthGateNearBar": {
 				"area": iNULL,
-				"pos": {"xAxis": 0xc621493d, "yAxis": 0x47023a39}},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x4},
 			"WellCafeSonne": {
 				"area": iNULL,
-				"pos": {"xAxis": 0xc6c83b66, "yAxis": 0x44732a78}},
-			"TreeHaupstr": {
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x5},
+			"Haupstr": {
 				"area": iNULL,
-				"pos": {"xAxis": 0xc5f44e3b, "yAxis": 0xc70e69b4}}
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x6},
+			"StairsRudolfstr": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x7},
+			"AlleyWayBakery": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x8},
 			},
 		},
 	enum_TimePeriod_Early20thCentury: {
-		"amountToCollect": 5,
-		"sharedArea": iNULL,
+		"amountToCollect": 6, // TODO update guideREADME + descr with 6th
+		"sharedArea": iNULL, // <-- 1 are not in area_city, so check each location seperate
 		"locations": { 
 			"InsideBrumMansion": {
 				"area": [enum_Area_1900s_BrumMansion],
-				"pos": {"xAxis": iNULL, "yAxis": iNULL}},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44304)) + 0x4},
+			"TreeNearBar": {
+				"area": [enum_Area_1900s_City],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x4},
+			"StairsOppositeCafeSonne": {
+				"area": [enum_Area_1900s_City],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x5},
 			"NearNewsPost": {
 				"area": [enum_Area_1900s_City],
-				"pos": {"xAxis": iNULL, "yAxis": 0xc743a8da}},
-			"TreeBar": {
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x6},
+			"ParkRudolfStr": {
 				"area": [enum_Area_1900s_City],
-				"pos": {"xAxis": 0xc68e1659, "yAxis": 0x46adc88f}},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x7},
 			"NorthEastgate": {
 				"area": [enum_Area_1900s_City],
-				"pos": {"xAxis": 0x46a725aa, "yAxis": 0x46e49d11}},
-			"OppositeCafeSonne": {
-				"area": [enum_Area_1900s_City],
-				"pos": {"xAxis": 0xc6f04f21, "yAxis": 0xc591857f}}
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x8},
 			},
 		},
 	enum_TimePeriod_MiddleAges: {
@@ -956,25 +991,116 @@ const_EnergyOrbs_data = {
 		"locations": {
 			"AlchemistBasement": {
 				"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
-				"pos": {"xAxis": iNULL, "yAxis": iNULL}},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44300)) + 0x4},
 			"InsideChurch": {
 				"area": [enum_Area_MiddleAges_Church],
-				"pos": {"xAxis": iNULL, "yAxis": 0xc5b42ed9}},
-			"EastNearHay": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
-				"pos": {"xAxis": 0x46f98191, "yAxis": 0xc56f7d4f}},
-			"AlleyWayCart": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
-				"pos": {"xAxis": 0x4697f161, "yAxis": iNULL}},
-			"EastWell": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
-				"pos": {"xAxis": 0xc6c73c8c, "yAxis": iNULL}},
-			"ChurchEntrance": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
-				"pos": {"xAxis": 0x460c6f20, "yAxis": 0x46ed4035}},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA4430C)) + 0x4},
 			"onBench": {
 				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
-				"pos": {"xAxis": 0xc698a2b6, "yAxis": 0x46abfd71}}
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x4},
+			"EastWell": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x5},
+			"AlleyWayCart": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x6},
+			"EastNearHay": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x7},
+			"ChurchEntrance": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x8},
+			}
+		},
+	enum_TimePeriod_Present: {
+		"amountToCollect": 5,
+		"sharedArea": [enum_Area_Present_City_Day, enum_Area_Present_City_NightAM, enum_Area_Present_City_NightPM], // <-- all orbs are in the area_city
+		"locations": { 
+			"OutsideFortuneTeller": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x4},
+			"AlleyWay": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x5},
+			"SouthGate": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x6},
+			"UnderArchRuckagrastr": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x7},
+			"CarPark": {
+				"area": iNULL,
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x8},
+			}
+		}}
+const_EnergyOrbs_data_old = {
+	enum_TimePeriod_Late20thCentury: {
+		"amountToCollect": 5,
+		"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
+		"locations": {
+			"StairsRudolfstr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x46a5a000, "yAxis": 0xc6915000}}, // <---ToFloat--- [21200,-18600]
+			"AlleyWayBakery": {
+				"area": iNULL,
+				"pos": {"xAxis": 0x46a73000, "yAxis": 0x468bd800}}, // <---ToFloat--- [21400,17900]
+			"NorthGateNearBar": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc6241000, "yAxis": 0x4701b000}}, // <---ToFloat--- [-10500,33200]
+			"WellCafeSonne": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc6bf6800, "yAxis": 0x44834000}}, // <---ToFloat--- [-24500,1050]
+			"TreeHaupstr": {
+				"area": iNULL,
+				"pos": {"xAxis": 0xc5ed8000, "yAxis": 0xc70ef800}}, // <---ToFloat--- [-7600,-36600]
+			},
+		},
+	enum_TimePeriod_Early20thCentury: {
+		"amountToCollect": 5,
+		"sharedArea": iNULL,
+		"locations": { 
+			"InsideBrumMansion": {
+				"area": [enum_Area_1900s_BrumMansion],
+				"pos": iNULL},
+			"NearNewsPost": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0x45abe000, "yAxis": 0xc7435000}}, // <---ToFloat--- [5500,-50000]
+			"TreeBar": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0xc68e3000, "yAxis": 0x46ae3800}}, // <---ToFloat--- [-18200,22300]
+			"NorthEastgate": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0x46a7f800, "yAxis": 0x46e67800}}, // <---ToFloat--- [21500,29500]
+			"OppositeCafeSonne": {
+				"area": [enum_Area_1900s_City],
+				"pos": {"xAxis": 0xc6ee4800, "yAxis": 0xc5960000}}, // <---ToFloat--- [-30500,-4800]
+			},
+		},
+	enum_TimePeriod_MiddleAges: {
+		"amountToCollect": 6,
+		"sharedArea": iNULL, // <-- 2 orbs are not in area_city, so check each location seperate
+		"locations": {
+			"AlchemistBasement": {
+				"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
+				"pos": iNULL},
+			"InsideChurch": {
+				"area": [enum_Area_MiddleAges_Church],
+				"pos": iNULL},
+			"EastNearHay": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x46f61800, "yAxis": 0xc57a0000}}, // <---ToFloat--- [31500,-4000]
+			"AlleyWayCart": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x46985800, "yAxis": 0x44960000}}, // <---ToFloat--- [19500,1200]
+			"EastWell": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0xc6c73800, "yAxis": 0x4b371ee8}}, // <---ToFloat--- [-25500,1000]
+			"ChurchEntrance": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0x460ca000, "yAxis": 0x46ea6000}}, // <---ToFloat--- [9000,30000]
+			"onBench": {
+				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"pos": {"xAxis": 0xc6985800, "yAxis": 0x46abe000}}, // <---ToFloat--- [-19500,22000]
 			}
 		},
 	enum_TimePeriod_Present: {
@@ -983,22 +1109,21 @@ const_EnergyOrbs_data = {
 		"locations": { 
 			"CarPark": {
 				"area": iNULL,
-				"pos": {"xAxis": 0x47030d91, "yAxis": 0x45ad7c4b}},
+				"pos": {"xAxis": 33500, "yAxis": 5600}}, // <---ToFloat--- [33500,5600]
 			"SouthGate": {
 				"area": iNULL,
-				"pos": {"xAxis": iNULL, "yAxis": 0xc750d745}}, 
+				"pos": {"xAxis": 0x0, "yAxis": -53400}}, // <---ToFloat--- [0,-53400]
 			"AlleyWay": {
 				"area": iNULL,
-				"pos": {"xAxis": 0xc69084cd, "yAxis": 0xc6dcf00d}},
+				"pos": {"xAxis": -18500, "yAxis": -25300}}, // <---ToFloat--- [-18500,-25300]
 			"UnderArchRuckagrastr": {
 				"area": iNULL,
-				"pos": {"xAxis": 0xc69c2e07, "yAxis": 0x45c97393}},
+				"pos": {"xAxis": 9600, "yAxis": -18500}}, // <---ToFloat--- [9600,-18500]
 			"OutsideFortuneTeller": {
 				"area": iNULL,
-				"pos": {"xAxis": 0x461576c8, "yAxis": 0xc68fb1c3}}
+				"pos": {"xAxis": -20000, "yAxis": 6600}}, // <---ToFloat--- [-20000,6600]
 			},
 		}}
-
 function get_EnergyOrb_amountToCollect(enum_timePeriod) =>
 	const_EnergyOrbs_data[enum_timePeriod]["amountToCollect"]
 
@@ -1011,34 +1136,53 @@ function get_EnergyOrb_sharedAreas(enum_timePeriod) =>
 function get_EnergyOrb_Location_area(enum_timePeriod, string_locationKey) =>
 	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["area"]
 
-function get_EnergyOrb_Location_posX(enum_timePeriod, string_locationKey) =>
-	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["xAxis"]
+function current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey) =>
+	bit0(const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["memAddr_Flag_isCollected"])
 
-function get_EnergyOrb_Location_posY(enum_timePeriod, string_locationKey) =>
-	const_EnergyOrbs_data[enum_timePeriod]["locations"][string_locationKey]["pos"]["yAxis"]
+function prev_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey) =>
+	prev(current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey))
+
+function on_EnergyOrb_Collect(enum_timePeriod, string_locationKey) => 
+	current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey) > prev_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey)
+// -------------------------------------
+function current_EnergyUnits() =>		// $A9DAA8: Number of energy units in possession 
+	byte(0xA9DAA8)						//		- If this is 0x0, player can't time travel
+										//		- Values range [0x0-0xa]
+
+function prev_EnergyUnits() =>
+	prev(current_EnergyUnits())
+
+function on_EnergyUnits_increment() => 
+	current_EnergyUnits() > prev_EnergyUnits()
+
+function on_EnergyUnits_decrement() => 
+	current_EnergyUnits() < prev_EnergyUnits()
+
+function on_EnergyUnits_valueChange() => 
+	current_EnergyUnits() != prev_EnergyUnits()
 
 // ***********************
 // ◦ MENU IDENTIFICATION ◦
 // ***********************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function is_ExtraMenu_active() {					// $AC3170: [25-bit] Pointer - When in Extra menu
-	let_maskedPointer = dword(0xAC3170) & 0x1ffffff	// 		- Extra menu is only visible once at least one is ending is finished
-	return											// 		+0x4 - [32-bit] Extra Menu: Highlighted item
-		dword(let_maskedPointer + 0x4) <= 0x4 &&	// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
-		dword(let_maskedPointer + 0x14) <= 0x5 &&	// 		| - 0x1 => Ending files (replay ending cutscenes)
-		dword(let_maskedPointer + 0x48) <= 0xb}		// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-													// 		| - 0x3 => Sound Mode (Play sound effects & music)
-													// 		| - 0x4 => Exit (back to Title Screen)
-													// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
-													// 		| - 0x0 => ending A			| - 0x3 => ending D
-													// 		| - 0x1 => ending B			| - 0x4 => ending E	
-													// 		| - 0x2 => ending C			| - 0x5 => ending EX
-													// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
-													// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
-													// 		| - 0x1 => Chapter 1		| - 0xa => Total
-													// 		| - ...						| - 0xb => Exit
-													// 		| - 0x8 => Chapter 8
+function is_ExtraMenu_active() {								// $AC3170: [25-bit] Pointer - When in Extra menu
+	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3170))	// 		- Extra menu is only visible once at least one is ending is finished
+	return														// 		+0x4 - [32-bit] Extra Menu: Highlighted item
+		dword(let_maskedPointer + 0x4) <= 0x4 &&				// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
+		dword(let_maskedPointer + 0x14) <= 0x5 &&				// 		| - 0x1 => Ending files (replay ending cutscenes)
+		dword(let_maskedPointer + 0x48) <= 0xb}					// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+																// 		| - 0x3 => Sound Mode (Play sound effects & music)
+																// 		| - 0x4 => Exit (back to Title Screen)
+																// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
+																// 		| - 0x0 => ending A			| - 0x3 => ending D
+																// 		| - 0x1 => ending B			| - 0x4 => ending E	
+																// 		| - 0x2 => ending C			| - 0x5 => ending EX
+																// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
+																// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
+																// 		| - 0x1 => Chapter 1		| - 0xa => Total
+																// 		| - ...						| - 0xb => Exit
+																// 		| - 0x8 => Chapter 8
 function is_EventViewer_active() =>	// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
 	dword(0x1FFF130) == 0x21 && 	// 		- 32-bit value = 0x21 -> event viewer menu is on screen OR a cutscene is being watched via this menu
 	is_ExtraMenu_active()			// 		- other values -> not in event viewer													
@@ -1050,7 +1194,7 @@ function is_ResultsMenu_active() => 	// $AC49F4: [32-bit] Menu ID
 										// 		0x12 => at event viewer menu		0xb => viewing ending file
 
 function is_ResultsMenu_HighlightedChapter(enum_chapter) {
-	let_maskedPointer = dword(0xAC3170) & 0x1ffffff
+	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3170))
 	let_resultsMenuHighlightedChapterId = 0 
 	if (enum_chapter == enum_Chapter_Chapter8) {
 		let_resultsMenuHighlightedChapterId = 0x8
@@ -1106,36 +1250,19 @@ function on_TitleMenu_render() { return
 // ***************
 // ◦ OTHER LOGIC ◦
 // ***************
-function current_EnergyUnits() =>		// $A9DAA8: Number of energy units in possession 
-	byte(0xA9DAA8)						//		- If this is 0x0, player can't time travel
-										//		- Values range [0x0-0xa]
-
-function prev_EnergyUnits() =>
-	prev(current_EnergyUnits())
-
-function on_EnergyUnits_increment() => 
-	current_EnergyUnits() > prev_EnergyUnits()
-
-function on_EnergyUnits_decrement() => 
-	current_EnergyUnits() < prev_EnergyUnits()
-
-function on_EnergyUnits_valueChange() => 
-	current_EnergyUnits() != prev_EnergyUnits()
-
-// -------------------------------------
-function is_MainSave_loaded() {						// $AA2998: [25-bit Pointer] is main save file loaded (at first startup of game)
-	let_maskedPointer = dword(0xAA2998)	& 0x1ffffff	//		+0x4 - [Bit 0] => main save is loaded
-	return 											//		| - Data around this memory address is set on startup or reset
+function is_MainSave_loaded() {									// $AA2998: [25-bit Pointer] is main save file loaded (at first startup of game)
+	let_maskedPointer = sysUtil_maskPointer(dword(0xAA2998))	//		+0x4 - [Bit 0] => main save is loaded
+	return 														//		| - Data around this memory address is set on startup or reset
 		bit0(let_maskedPointer + 0x4) == 1}
 
-function is_Video_active() {						// $8FFEF0: [25-bit Pointer]  Video data (intro and credits)
-	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF	// 		+0x18 - [32-bit Flag] 0x101 => video is active
-	return 											// 		+0x2c - [32-bit Flag] 0x41 => video is active
-		dword(let_maskedPointer + 0x18) == 0x101 &&	// 		+0x40 - [32-bit] Video timer
+function is_Video_active() {									// $8FFEF0: [25-bit Pointer]  Video data (intro and credits)
+	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))	// 		+0x18 - [32-bit Flag] 0x101 => video is active
+	return 														// 		+0x2c - [32-bit Flag] 0x41 => video is active
+		dword(let_maskedPointer + 0x18) == 0x101 &&				// 		+0x40 - [32-bit] Video timer
 		dword(let_maskedPointer + 0x2c) == 0x41}
 
 function on_Video_end() {
-	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF
+	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))
 	return
 		prev(dword(let_maskedPointer + 0x18)) == 0x101 	&&
 		dword(let_maskedPointer + 0x18)	!= 0x101		&&
@@ -1143,7 +1270,7 @@ function on_Video_end() {
 		dword(let_maskedPointer + 0x2c)	!= 0x41}
 
 function on_Video_start() {
-	let_maskedPointer = dword(0x8FFEF0) & 0x1FFFFFF
+	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))
 	return
 		prev(dword(let_maskedPointer + 0x18)) != 0x101 	&&
 		dword(let_maskedPointer + 0x18)	== 0x101		&&
@@ -1191,20 +1318,20 @@ function isExChapterUnlocked() => // If endings ABCDE are achieved
 		else return always_true()
 	})
 
-function is_ViewingEndingFile_viaExtraMenu(enum_ending) {	// $AC3178: [25-bit Pointer] Ending File
-	let_maskedPointer = dword(0xAC3178) & 0x1ffffff			//		- Resets to 0x0, when no ending file is on screen					
-	let_endingFileId = get_EndingFileId(enum_ending)		// 		+0x10 - [8-bit] Ending File ID	
-	return													// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
-		is_ExtraMenu_active() &&							// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
-		byte(let_maskedPointer + 0x10) == let_endingFileId}	// 		| - ...	
-															// 		+0x8 - [32-bit] Ending file timer
-															// 		+0xc - [16-bit] Ending file text ID		
+function is_ViewingEndingFile_viaExtraMenu(enum_ending) {		// $AC3178: [25-bit Pointer] Ending File
+	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3178))	//		- Resets to 0x0, when no ending file is on screen					
+	let_endingFileId = get_EndingFileId(enum_ending)			// 		+0x10 - [8-bit] Ending File ID	
+	return														// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
+		is_ExtraMenu_active() &&								// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
+		byte(let_maskedPointer + 0x10) == let_endingFileId}		// 		| - ...	
+																// 		+0x8 - [32-bit] Ending file timer
+																// 		+0xc - [16-bit] Ending file text ID		
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
 // ******************************
 function is_PrologueExMode_active() => 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
 	bit7(0xA9ED98) == 1 				//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
-// -------------------------------------
+// -------------- SquareTree ---------------
 function is_TreeReplacedBy_Statue() => 	// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
 	bit2(0xA9EDA0)	== 0				// 		bit 0 => acquired ladder
 										// 		bit 1 = 0 => LIGHTER used to scare crowd
@@ -1216,7 +1343,7 @@ function is_CrowdScaredWith_Cellphone() =>
 	
 function is_CrowdScaredWith_Lighter() => 
 	bit1(0xA9EDA0) == 0	
-// -------------------------------------
+// ------------ Movie --------------
 function is_MovieWorldConquest_chosen() => 
 	bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1	// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
 												// 		bit 5 => Movie choice 1: Meditating Man
@@ -1231,7 +1358,7 @@ function is_MovieThriller_chosen() => 			// 		bit 2 => Movie Choice 3: Love stor
 
 function is_MovieLove_chosen() => 
 	bit2(0xA9EDB8) == 1 && bit1(0xA9EDB8) == 0	
-// -------------------------------------
+// ---------- Paintings ------------
 function is_Painting_Antidote_inspired() => 	// $A9EDB0: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
 	bit7(0xA9EDB0) == 1							//  - 8 paintings viewable at Brum museum, 6 can altered by inspiring Karl Franssen	
 												// 		bit 7 => Antidote painting
@@ -1249,19 +1376,19 @@ function is_Painting_Performer_inspired() => 	// $A9EDB1: [Current Playthrough B
 												// 		bit 1 => Achemist house collapse painting
 function is_Painting_HouseCollapse_inspired() => 
 	bit1(0xA9EDB1) == 1	
-// -------------------------------------
+// ----------- BrumEstate ----------------
 function is_BrumEstate_Museum() => 	//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
 	bit5(0xA9EDAA) == 0				//		bit 5 = 0 => Brum Estate is museum
 									//		bit 5 = 1 => Brum Estate is library
 function is_BrumEstate_Library() => 
 	bit5(0xA9EDAA) == 1
-// -------------------------------------
+// -----------AncestorChoice--------------
 function is_MargaretteTold_Ancestor() => 			// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
 	bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0	// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
 												// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
 function is_MargaretteTold_NoAncestor() => 
 	bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		
-// -------------------------------------
+// ------------FireChapter1---------------
 function is_FirePutOutBy_Barman() => 	// $A9ED9D: [Current Playthrough Bit Flags]: Chapter 1
 	bit5(0xA9ED9D) == 0 &&				//		bit 5 => put out fire yourself
 	bit7(0xA9ED9D) == 1					//		bit 7 => Saved bar from fire by warning barman
@@ -1269,7 +1396,7 @@ function is_FirePutOutBy_Barman() => 	// $A9ED9D: [Current Playthrough Bit Flags
 function is_FirePutOutBy_Eike() => 
 	bit5(0xA9ED9D) == 1 &&
 	bit7(0xA9ED9D) == 0	
-// -------------------------------------
+// -----------DanaChoice----------------
 function is_Dana_Saved_FromPast(){ return	// $A9EDC4: [Current Playthrough Bit Flags]: Saved Dana from Past
 	bit1(0xA9EDC4) == 1 && 					// 		bit 1 => Gave letter to Dana
 	bit3(0xA9EDC4) == 1 && 					// 		bit 3-4 => Took Dana back to present
@@ -1279,7 +1406,7 @@ function is_Dana_Left_InPast(){ return
 	bit1(0xA9EDC4) == 0 &&
 	bit3(0xA9EDC4) == 0 &&
 	bit4(0xA9EDC4) == 0}
-// -------------------------------------
+// ----------Misc--------------
 function is_CoffeePayed() => 	// $A9EDCC: [Current Playthrough Bit Flags]: Multi-chapter
 	bit3(0xA9EDCC) == 1			// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
 
@@ -1751,7 +1878,53 @@ function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict
 			let_deltaComparison && 
 			measured(let_measuredComparison, when = is_Chapter(enum_chapter) && is_InGame(), format = "percent")
 	}}
-
+function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod) {
+	function create_TallyComparisonArray(enum_timePeriod) {
+		let_tallyComparisonArray = []
+		let_sharedArea = get_EnergyOrb_sharedAreas(enum_timePeriod)
+		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
+			let_arrayAreaEnums = get_EnergyOrb_Location_area(enum_timePeriod, let_OrbLocationKey)
+			if(let_sharedArea == iNULL && let_arrayAreaEnums == iNULL)
+				util_throwError("At least one area must be given for energy orb: {0}", let_OrbLocationKey)			
+			let_areaComparisonArray = [always_true()]
+			if (let_arrayAreaEnums != iNULL && length(let_arrayAreaEnums) > 0) {
+				for enum_area in let_arrayAreaEnums {
+					array_push(let_areaComparisonArray, is_Area(enum_area))
+				}
+			}
+			let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
+			array_push(let_tallyComparisonArray, once(let_areaComparison && on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey)))
+		}
+		return let_tallyComparisonArray}
+	function create_Pause_WhenNotInSharedAreas(enum_timePeriod) {		
+		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
+		let_pauseComparisonArray = iNULL
+		if(let_sharedAreas != iNULL){
+			if (length(let_sharedAreas) < 1) util_throwError(format("const_EnergyOrbs_data sharedArea for enum_TimePeriod: {0}, must contain one enum_area Or be iNULL", enum_timePeriod))
+			let_pauseComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_sharedAreas)
+		}
+		if (let_pauseComparisonArray == iNULL) { return 
+			always_true()
+		} else { return 
+			unless(
+				none_of(let_pauseComparisonArray, (comparison) => comparison)
+			)
+		}}
+	return 
+		unless(is_Loading()) &&
+		create_Pause_WhenNotInSharedAreas(enum_timePeriod) &&
+		measured(
+			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
+				create_TallyComparisonArray(enum_timePeriod))
+		) &&
+		trigger_when(on_Cutscene_end()) &&
+		never_toAlt(
+			!is_InGame() ||
+			on_Chapter_change() ||
+			on_EnergyUnits_decrement()
+		)
+	}	
+// -------- Below trigger generators are deprecated -------- 
 function achievements_generate_TextComparison_GotEnergyUnit() {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
 		"G": {
@@ -1792,6 +1965,7 @@ function achievements_generate_TextComparison_GotEnergyUnit() {
 		is_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
 		// is_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
 		is_CharacterOnBottomScreen(11, let_charactersToCheck["I"])}
+
 
 function achievements_generate_TextComparison_CannotCarryMore() {
 	let_charactersToCheck = {	// I c(A)nnot ca(R)ry an(Y) mor(E).
@@ -1837,30 +2011,37 @@ function achievements_generate_TextComparison_CannotCarryMore() {
 function achievements_generate_ComparisonArray_CheckAllAreas(array_areaEnums) {
 	let_comparisonArray = []
 	if (array_areaEnums != iNULL) {
-		for enum_area in array_areaEnums {
-			array_push(let_comparisonArray, is_Area(enum_area))
+		if (length(array_areaEnums) < 1) 
+			array_push(let_comparisonArray, always_true())
+		else {
+			for enum_area in array_areaEnums {
+				array_push(let_comparisonArray, is_Area(enum_area))
+			}
 		}
 	}
 	return let_comparisonArray}
 
-function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod) {
+
+function achievements_generate_FullTrigger_EnergyCollector_old(enum_timePeriod) {
 	function create_TallyComparisonArray(enum_timePeriod) {
 		let_tallyComparisonArray = []
 		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
 			let_comparison1 = [achievements_generate_TextComparison_CannotCarryMore()]
 			let_comparison2 = [achievements_generate_TextComparison_GotEnergyUnit()]
-			let_xLocation = get_EnergyOrb_Location_posX(enum_timePeriod, let_OrbLocationKey)
-			let_yLocation = get_EnergyOrb_Location_posY(enum_timePeriod, let_OrbLocationKey)			
+			let_position = get_EnergyOrb_Location_position(enum_timePeriod, let_OrbLocationKey)
 			let_orbLocationArea = get_EnergyOrb_Location_area(enum_timePeriod, let_OrbLocationKey)
-			if(let_xLocation == iNULL && let_yLocation == iNULL && let_orbLocationArea == iNULL)
-				util_throwError(format("At least one property of for energy orb {0} must be not be NULL", let_OrbLocationKey))
-			if(let_xLocation != iNULL) {
-				array_push(let_comparison1, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
-				array_push(let_comparison2, is_PlayerPosition_Xaxis_CloseTo(let_xLocation))
-			}
-			if(let_yLocation != iNULL) {
-				array_push(let_comparison1, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
-				array_push(let_comparison2, is_PlayerPosition_Yaxis_CloseTo(let_yLocation))
+
+			if(let_position == iNULL && let_orbLocationArea == iNULL)
+				util_throwError(format("EnergyOrb '{0}': pos or area must by given", let_OrbLocationKey))
+			if(let_orbLocationArea == iNULL && let_position != iNULL) {
+				let_xLocation = let_position["xAxis"]
+				let_yLocation = let_position["yAxis"]
+				if(let_yLocation == iNULL || let_xLocation == iNULL)
+					util_throwError(format("EnergyOrb '{0}': if area is NULL then both axes must be given", let_OrbLocationKey))
+				array_push(let_comparison1, is_PlayerPosition_Xaxis_Near(let_xLocation))
+				array_push(let_comparison2, is_PlayerPosition_Xaxis_Near(let_xLocation))
+				array_push(let_comparison1, is_PlayerPosition_Yaxis_Near(let_yLocation))
+				array_push(let_comparison2, is_PlayerPosition_Yaxis_Near(let_yLocation))
 			}
 			if(get_EnergyOrb_sharedAreas(enum_timePeriod) == iNULL) {
 				if(let_orbLocationArea == iNULL) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
@@ -4394,7 +4575,7 @@ achievements_descriptions = {
 	"a_EnergyOrbLocatorPresentDay": 				{"en": "Locate five unique energy orbs scattered across present-day Lebensbaum"}, 
 	"a_EnergyOrbLocatorMiddleAges": 				{"en": "Locate six unique energy orbs scattered across Medieval Lebensbaum"},
 	"a_EnergyOrbLocator70s80s": 					{"en": "Locate five unique energy orbs scattered across Lebensbaum during the late 20th century"}, 
-	"a_EnergyOrbLocator1900Days": 					{"en": "Locate five unique energy orbs scattered across Lebensbaum during the early 20th century"},
+	"a_EnergyOrbLocator1900Days": 					{"en": "Locate six unique energy orbs scattered across Lebensbaum during the early 20th century"},
 	"a_GiveMargaretteCake": 						{"en": "Gift a delectable sweet to a cherished individual in your life"},
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
 	"a_ShortestChapter": 							{"en": "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary"}, 
