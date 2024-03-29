@@ -68,7 +68,6 @@ function util_addToDictionary(dict, key, value) {
 function sysUtil_maskPointer(ptr) =>
 	ptr & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
 
-
 function never_toAlt(comparison) =>
 	(
 		(
@@ -4704,7 +4703,7 @@ richPresence_LookupTablesText = {
 	"rpp_TimePeriod_Late20Century":						{"en": "in the late 20th century"},
 	"rpp_TimePeriod_Early20Century":					{"en": "in the early 20th century"},
 	"rpp_TimePeriod_Present":							{"en": "in the present"},
-	"rpp_TimePeriod_LookupFallback":					{"en": "in an unlikely timeline"}}
+	"rpp_TimePeriod_LookupFallback":					{"en": ""}}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
