@@ -101,11 +101,11 @@ function util_addToDictionary(dict, key, value) {
 // ****************
 // 	- Some explanation...		
 // 	- Some explanation...		
-enum_TEMPLATE_AREA_A = 0x1
-enum_TEMPLATE_AREA_B = 0x2
-enum_TEMPLATE_AREA_C = 0x3
-enum_TEMPLATE_AREA_D = 0x4
-enum_TEMPLATE_AREA_E = 0x5
+AREA_a = 0x1
+AREA_b = 0x2
+AREA_c = 0x3
+AREA_d = 0x4
+AREA_e = 0x5
 function current_AreaID() => 	//	$AC0130: [8-bit] Example memory address code note
 	byte(AC0130)				//		- Code note...
 								//		- Code note...
@@ -115,15 +115,15 @@ function prev_AreaID() =>
 function prior_AreaID() =>
 	prior(current_AreaID())
 
-function is_Area(enum_TEMPLATE_AREA) =>		// Example usage => is_Area(enum_TEMPLATE_AREA_A)
-	current_AreaID() == enum_TEMPLATE_AREA
+function is_Area(enum_area) =>		// Example usage => is_Area(enum_TEMPLATE_AREA_A)
+	current_AreaID() == enum_area
 
-function was_Area(enum_TEMPLATE_AREA) =>
-	prior_AreaID() == enum_TEMPLATE_AREA
+function was_Area(enum_area) =>
+	prior_AreaID() == enum_area
 
-function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" signifies that this function returns a comparison that's checking delta values
-	current_AreaID() != enum_TEMPLATE_AREA && 
-	prev_AreaID() == enum_TEMPLATE_AREA
+function on_AreaFinish(enum_area) =>	// on_templateFunction() => "on" signifies that this function returns a comparison that's checking delta values
+	current_AreaID() != enum_area && 
+	prev_AreaID() == enum_area
 // -------------------------------------
 // 	- Some explanation...
 // 	- Some explanation...
@@ -134,39 +134,39 @@ function on_AreaFinish(enum_TEMPLATE_AREA) =>	// on_templateFunction() => "on" s
 // ****************
 // 	- Some explanation...
 // 	- Some explanation...
-enum_TEMPLATE_WEAPON_A = 100
-enum_TEMPLATE_WEAPON_B = 101
-enum_TEMPLATE_WEAPON_C = 102
-const_template_weapon_data = {
-	enum_TEMPLATE_WEAPON_A: {
+WEAPON_a = 100
+WEAPON_b = 101
+WEAPON_c = 102
+const_weapon_data = {
+	WEAPON_a: {
 		"equip_ID": 0x21,
 		"memAddr_CurrentWeaponAffinity": 0xAB1C,
 		"maxWeaponAffinity": 99},
-	enum_TEMPLATE_WEAPON_B: {
+	WEAPON_b: {
 		"equip_ID": 0x22,
 		"memAddr_CurrentWeaponAffinity": 0xAB1D,
 		"maxWeaponAffinity": 77},
-	enum_TEMPLATE_WEAPON_C: {
+	WEAPON_c: {
 		"equip_ID": 0x23,
 		"memAddr_CurrentWeaponAffinity": 0xAB1E,
 		"maxWeaponAffinity": 20}
 	}
-function is_EquippedWeapon(enum_TEMPLATE_WEAPON) =>
-	byte(0xAC12) == const_template_weapon_data[enum_TEMPLATE_WEAPON]["equip_ID"]
+function is_EquippedWeapon(enum_weapon) =>
+	byte(0xAC12) == const_weapon_data[enum_weapon]["equip_ID"]
 
 function on_WeaponAffinityMaxed(enum_TEMPLATE_WEAPON) { return
 	always_false()}
 
 function memUtil_sumOfAllCurrentWeaponsAffinity() => 
-	sum_of(const_template_weapon_data, (weaponDataKey){
-		let_memAddr_currentWeaponAffinity = const_template_weapon_data[weaponDataKey]["memAddr_CurrentWeaponAffinity"]		
+	sum_of(const_weapon_data, (weaponDataKey){
+		let_memAddr_currentWeaponAffinity = const_weapon_data[weaponDataKey]["memAddr_CurrentWeaponAffinity"]		
 		return byte(let_memAddr_currentWeaponAffinity)
 	})
 
 function memUtil_totalAffinityOverAllWeapons(){
 	let_totalWeaponAffinity = 0
-	for weaponDataKey in const_template_weapon_data {
-		let_totalWeaponAffinity = let_totalWeaponAffinity + const_template_weapon_data[weaponDataKey]["maxWeaponAffinity"]
+	for weaponDataKey in const_weapon_data {
+		let_totalWeaponAffinity = let_totalWeaponAffinity + const_weapon_data[weaponDataKey]["maxWeaponAffinity"]
 	}
 	return let_totalWeaponAffinity}
 
@@ -413,9 +413,9 @@ function richPresence_callDisplayFunctions(){
 
 	rich_presence_display(	// rp_Default // VERIFIED
 		richPresence_getText("rp_Default"))}
-richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
 richPresence_conditions = {
 	"rp_templateA": () =>
@@ -436,15 +436,15 @@ richPresence_parameterData = {
 	// ------------------------------------------------------
 
 	"rpp_ValueTemplate": {	
-		"RPtype": richPresence_enum_VALUE,
+		"RPtype": richPresence_VALUE,
 		"Expression": always_false(),
 		"ValueFormat": "VALUE"},
 	"rpp_LookupTemplate": {	
-		"RPtype": richPresence_enum_LOOKUP,
+		"RPtype": richPresence_LOOKUP,
 		"Expression": always_false(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_LookupTemplate", "LookupFallback")},
 	"rpp_MacroTemplate": {
-		"RPtype": richPresence_enum_MACRO,
+		"RPtype": richPresence_MACRO,
 		"Expression": always_false(),
 		"MacroFormat": "Number"},
 	}	
@@ -481,9 +481,9 @@ function richPresence_callParameterFunction(string_parameterKey) {	// Checks whi
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
+	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
 
