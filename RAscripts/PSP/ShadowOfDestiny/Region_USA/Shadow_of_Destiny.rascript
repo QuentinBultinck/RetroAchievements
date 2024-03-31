@@ -92,54 +92,73 @@ function memUtil_floatToInt(float_value) =>				// Function will return an intege
 	high4(0x1FFFFF0) + float_value + high4(0x1FFFFF0)	// 	- RAtools will clean => 	```0 + float(0xaa) + 0´´´	 -->	```float(0xa)´´´
 														// 	- Workaround is the following => 	```byte(memAddr_WhereValueNeverChanges) + float(0xa) + byte(memAddr_WhereValueNeverChanges)´´´
 														//	$1FFFFF0: [NTSC-U/C][Upper4] Always_Null || Value_Never_Changes
-														//	 - This is used for converting floats to floored integers via RAtools
+
+memory_dataStructures = {
+	"Struct_DateTime": {
+		"sizeInBytes": 24,
+		"offsets": {
+			"32bit_Years": 0x0,
+			"32bit_Months": 0x4,
+			"32bit_Days": 0x8,
+			"32bit_Hours": 0xc,
+			"32bit_Minutes": 0x10,
+			"32bit_Seconds": 0x14
+		}
+	}
+}
+
+function memory_getDataStructSizeInBytes(string_structKey) =>
+	memory_dataStructures[string_structKey]["sizeInBytes"]
+
+function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
+	memory_dataStructures[string_structKey]["offsets"][string_offsetKey]
+// -------------------------------------
+USA = "NTSC-U/C"
+EU = "PAL"
+JP = "NTSC-J"
+memory_addresses = {
+	"32bit_TimePeriod":	{USA: 0xAA1268, EU: iNULL, JP: iNULL},
+	"Struct_DateTime_Present": {USA: 0xAA12A4, EU: iNULL, JP: iNULL},
+}
+
+function memory_initialize() {	// FUNCTION: Use this function, when all address are offset. Don't forget to uncomment this function call in initialization code
+	let_EUoffset = 0x10
+	let_JPoffset = 0x20
+	for memAddrKey in memory_addresses {
+		let_USAaddr = memory_addresses[memAddrKey][USA]
+		if(let_USAaddr == iNULL) util_throwError("Memory Address for {0} is NULL", memAddrKey)
+		memory_addresses[memAddrKey][EU] = let_USAaddr + let_EUoffset
+		memory_addresses[memAddrKey][JP] = let_USAaddr + let_JPoffset
+	}
+}
+
+function memory_getAddress(string_addrKey, string_regionCode) => 
+	memory_addresses[string_addrKey][string_regionCode]
 
 // *******************
-// ◦ PLAYER POSITION ◦ /// TODO calc position for energy orb on 2d plane
+// ◦ PLAYER POSITION ◦
 // *******************
-// These functions do not convert their 32-bit values to Float because we need to calculate with negatives
-	// Below function doesn't work to compare the values
-	// 	function is_PlayerPosition_Xaxis_Near(int_value) =>
-	// 		int_value + 0x45034000 >=  float(0xA8ABD0) && 
-	// 		float(0xA8ABD0) >= int_value - 0x45034000
-
-function is_PlayerPosition_Xaxis_Near(hex_value) =>
+// Functions to check player position are deprecated
+function is_PlayerPosition_Xaxis_Near(hex_value) =>		// $A8ABD0: [NTSC-U/C][Float] Player Position - x-Axis
 	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD0)) &&	
 	memUtil_floatToInt(float(0xA8ABD0)) >= hex_value - 0x834
 
-function is_PlayerPosition_Yaxis_Near(int_value) =>
+function is_PlayerPosition_Yaxis_Near(int_value) =>		// $A8ABD8: [NTSC-U/C][Float] Player Position - y-Axis
 	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD8)) &&
 	memUtil_floatToInt(float(0xA8ABD8)) >= hex_value - 0x834
-
-// function is_PlayerPosition_Xaxis_Near(int_value) =>	// $A8ABD0: [NTSC-U/C][Float] Player Position - x-Axis
-// 	int_value + 0x45034000 >=  dword(0xA8ABD0) && 	// 	- Heading west => value decreases
-// 	dword(0xA8ABD0) >= int_value - 0x45034000		//	- Heading east => value increases
-// 	// [Float] 0x45034000 == [decimal] 2100 		// - Prime Meridian (vertical mid-line cutting area in two) => value is 0 on this mid-line
-// 													// - West from mid-line => value is positive
-// 													// - East from mid-line => value is negative
-
-// function is_PlayerPosition_Yaxis_Near(int_value) =>	// $A8ABD8: [NTSC-U/C][Float] Player Position - y-Axis
-// 	int_value + 0x45034000 >=  dword(0xA8ABD8) && 	//	- Heading north => value increases
-// 	dword(0xA8ABD8) >= int_value - 0x45034000		//	- Heading south => value decreases
-// 	// [Float] 0x45034000 == [decimal] 2100 		// 	- Equator (horizontal mid-line cutting area in two) => value is 0 on this mid-line
-// 													// 	- North from mid-line => value is positive
-// 													// 	- South from mid-line => value is negative
 
 // *****************
 // ◦ TIME AND DATE ◦
 // *****************
-enum_TimePeriod_MiddleAges = 104
-enum_TimePeriod_Early20thCentury = 103
-enum_TimePeriod_Late20thCentury = 102
-enum_TimePeriod_Present = 101
+TIMEPERIOD_MiddleAges = 104
+TIMEPERIOD_Early20thCentury = 103
+TIMEPERIOD_Late20thCentury = 102
+TIMEPERIOD_Present = 101
 const_TimePeriod_IDs = {
-	enum_TimePeriod_Present: {"IDs": [0x83]},
-	enum_TimePeriod_Late20thCentury: {"IDs": [0x82,0x88]},
-	enum_TimePeriod_Early20thCentury: {"IDs": [0x81]},
-	enum_TimePeriod_MiddleAges:{"IDs": [0x80]}}
-
-function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
-	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
+	TIMEPERIOD_Present: {"IDs": [0x83]},
+	TIMEPERIOD_Late20thCentury: {"IDs": [0x82,0x88]},
+	TIMEPERIOD_Early20thCentury: {"IDs": [0x81]},
+	TIMEPERIOD_MiddleAges:{"IDs": [0x80]}}
 
 function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
 	dword(0xAA1268)					//		0x80 => Middle ages 1500s
@@ -148,8 +167,41 @@ function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
 									// 		0x88 => Late 20th Century 1979
 									// 		0x83 => Present 2000s
 
+function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
+	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
+
+// -------------------------------------
+DATETIME_Present = 100
+const_DateTime_memAddr = {
+	DATETIME_Present: {
+		USA: () => memory_getAddress("Struct_DateTime_Present", USA),
+		EU: () => memory_getAddress("Struct_DateTime_Present", EU),
+	}
+}
+
+function get_DateTime_BaseAddr(enum_dateTime, enum_region) => 
+	const_DateTime_memAddr[enum_dateTime][enum_region]
+
+function get_DateTime_Seconds(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Seconds"))
+
+function get_DateTime_Minutes(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Minutes"))
+
+function get_DateTime_Hours(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Hours"))
+
+function get_DateTime_Days(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Days"))
+
+function get_DateTime_Months(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Months"))
+
+function get_DateTime_Years(enum_dateTime, enum_region) =>
+	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Years"))
+
 function current_PresentTime_Hours() =>		// $AA12B0: [32-bit] Time in present: hours
-	dword(0xAA12B0)
+	get_DateTime_Hours()
 
 function current_PresentTime_Minutes() =>	// $AA12B4: [32-bit] Time in present: minutes
 	dword(0xAA12B4)
@@ -206,60 +258,60 @@ function on_Timer_TotalClearTime_reset() =>
 // ****************
 // ◦ INTERACTIONS ◦
 // ****************
-enum_NPC_MiddleAges_AspiringApprentice 	= 504
-enum_NPC_MiddleAges_EccentricGirl 		= 503
-enum_NPC_MiddleAges_YoungCoupleMan 		= 502
-enum_NPC_MiddleAges_YoungCoupleWoman 	= 501
-enum_NPC_MiddleAges_StrawHatMan 		= 500
-enum_NPC_80s_OlderMan 		= 302
-enum_NPC_80s_Barman 		= 301
-enum_NPC_80s_JoggingMan 	= 300
-enum_NPC_Present_JoggingMan 					= 110
-enum_NPC_Present_CoatedMan 						= 109
-enum_NPC_Present_CoatedWoman 					= 108
-enum_NPC_Present_SlimDelinquent 				= 107
-enum_NPC_Present_BroadDelinquent 				= 106
-enum_NPC_Present_BlondeElderlyWoman 			= 105
-enum_NPC_Present_BrunetteAdultManGlasses 		= 104
-enum_NPC_Present_BlondeOldWomanOrangeSweater	= 103
-enum_NPC_Present_BrunetteYoungGirl 				= 102
-enum_NPC_Present_BrunetteMother 				= 101
-enum_NPC_Present_BlondeYoungBoy					= 100
+NPC_MiddleAges_AspiringApprentice 	= 504
+NPC_MiddleAges_EccentricGirl 		= 503
+NPC_MiddleAges_YoungCoupleMan 		= 502
+NPC_MiddleAges_YoungCoupleWoman 	= 501
+NPC_MiddleAges_StrawHatMan 			= 500
+NPC_80s_OlderMan 	= 302
+NPC_80s_Barman 		= 301
+NPC_80s_JoggingMan 	= 300
+NPC_Present_JoggingMan 					= 110
+NPC_Present_CoatedMan 					= 109
+NPC_Present_CoatedWoman 				= 108
+NPC_Present_SlimDelinquent 				= 107
+NPC_Present_BroadDelinquent 			= 106
+NPC_Present_BlondeElderlyWoman 			= 105
+NPC_Present_BrunetteAdultManGlasses 	= 104
+NPC_Present_BlondeOldWomanOrangeSweater	= 103
+NPC_Present_BrunetteYoungGirl 			= 102
+NPC_Present_BrunetteMother 				= 101
+NPC_Present_BlondeYoungBoy				= 100
 const_NPCs_data = {	// TODO add ids to correspnoding code note
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": 0x000000, "maxTalkCount": 0000}}},
-	enum_NPC_Present_BlondeYoungBoy: { 
+	NPC_Present_BlondeYoungBoy: { 
 		"ID": 0x187, "Appearance": {
 			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EEF8, "maxTalkCount": 2}}},
-	enum_NPC_Present_BrunetteMother: { 
+	NPC_Present_BrunetteMother: { 
 		"ID": 0x46,	"Appearance": {
 			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE92, "maxTalkCount": 1}}},
-	enum_NPC_Present_BrunetteYoungGirl: { 
+	NPC_Present_BrunetteYoungGirl: { 
 		"ID": 0x42,	"Appearance": {
 			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE7F, "maxTalkCount": 1}}},
-	enum_NPC_Present_BlondeOldWomanOrangeSweater: { 
+	NPC_Present_BlondeOldWomanOrangeSweater: { 
 		"ID": 0x44, "Appearance": {
 			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": 0xA9EE88, "maxTalkCount": 1}}},
-	enum_NPC_Present_BrunetteAdultManGlasses: { 
+	NPC_Present_BrunetteAdultManGlasses: { 
 		"ID": 0x195, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
-	enum_NPC_Present_BlondeElderlyWoman: { 
+	NPC_Present_BlondeElderlyWoman: { 
 		"ID": 0x183, "Appearance": {
 			"Chap4_WearingPerformerOutfit": always_false()}},	// Has no memory address for talk count
-	enum_NPC_Present_BroadDelinquent: { 
+	NPC_Present_BroadDelinquent: { 
 		"ID": 0x10, "Appearance": {
 			"Chap7_CarPark": {"memAddr_TalkCount": 0xA9EE4C, "maxTalkCount": 1}}},
-	enum_NPC_Present_SlimDelinquent: { 
+	NPC_Present_SlimDelinquent: { 
 		"ID": 0x13, "Appearance": {
 			"Chap7_CarPark": {"memAddr_TalkCount": 0xA9EE51, "maxTalkCount": 1}}},
-	enum_NPC_Present_CoatedWoman: { 
+	NPC_Present_CoatedWoman: { 
 		"ID": 0x57,	"Appearance": {
 			"Chap1Prologue_TownSquare": {"memAddr_TalkCount": 0xA9EE28, "maxTalkCount": 2},
 			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": {"memAddr_TalkCount": 0xA9EE2C, "maxTalkCount": 2}, // <-- Chap3-4 use same memAddr as they use same dialogue
 			"Chap5_NearCafeSonne": {"memAddr_TalkCount": 0xA9EE31, "maxTalkCount": 1},
 			"Chap7_SouthGate": {"memAddr_TalkCount": 0xA9EE2F, "maxTalkCount": 2}}},
-	enum_NPC_Present_CoatedMan: { 
+	NPC_Present_CoatedMan: { 
 		"ID": 0x56, "Appearance": {
 			"Chap1Prologue_NearBar": {"memAddr_TalkCount": 0xA9EE1D, "maxTalkCount": 2},
 			"Chap3_NearAntiqueShop": {"memAddr_TalkCount": 0xA9EE20, "maxTalkCount": 2},
@@ -267,20 +319,20 @@ const_NPCs_data = {	// TODO add ids to correspnoding code note
 			"Chap5_NorthEastGate_BrumLibrary": {"memAddr_TalkCount": 0xA9EE25, "maxTalkCount": 1},
 			"Chap5_NorthEastGate_BrumMuseum": {"memAddr_TalkCount": 0xA9EE26, "maxTalkCount": 2},
 			"Chap7_NorthWestGate": {"memAddr_TalkCount": 0xA9EE24, "maxTalkCount": 1}}},
-	enum_NPC_Present_JoggingMan: {
+	NPC_Present_JoggingMan: {
 		"ID": 0x58},
-	enum_NPC_80s_JoggingMan: {
+	NPC_80s_JoggingMan: {
 		"ID": 0x59},
-	enum_NPC_80s_Barman: { 
+	NPC_80s_Barman: { 
 		"ID": 0xc, "Appearance": {
 			"InsideBar_UsePocketWatchOrEgg": {"memAddr_TalkCount": 0xA9EE49, "maxTalkCount": 1}}},	// Counts for chap 6-7-8
-	enum_NPC_80s_OlderMan: { 
+	NPC_80s_OlderMan: { 
 		"ID": 0x18d, "Appearance": {
 			"Chap6_CafeSonne": {"memAddr_TalkCount": 0xA9EF43, "maxTalkCount": 2}}},	
-	enum_NPC_MiddleAges_StrawHatMan: { 
+	NPC_MiddleAges_StrawHatMan: { 
 		"ID": 0x5c, "Appearance": {
 			"Chap2_Streets_Scare": {"memAddr_TalkCount": 0xA9EE36, "maxTalkCount": 1}}},
-	enum_NPC_MiddleAges_YoungCoupleWoman: { 
+	NPC_MiddleAges_YoungCoupleWoman: { 
 		"ID": 0x197, "Appearance": {
 			"Chap2_WestGate_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF7C, "maxTalkCount": 1},
 			"Chap2_WestGate_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF7D, "maxTalkCount": 1},
@@ -293,7 +345,7 @@ const_NPCs_data = {	// TODO add ids to correspnoding code note
 			"Chap4_NearBakery_AfterLocationSwitch": {"memAddr_TalkCount": 0xA9EF84, "maxTalkCount": 1},	//	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
 			"Chap7_TownSquare": {"memAddr_TalkCount": 0xA9EF84, "maxTalkCount": 1},						//	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
 			"Chap7_TownSquare_Choice": {"memAddr_TalkCount": 0xA9EF85, "maxTalkCount": 2}}},
-	enum_NPC_MiddleAges_YoungCoupleMan: { 
+	NPC_MiddleAges_YoungCoupleMan: { 
 		"ID": 0x198, "Appearance": {
 			"Chap2_EastNearHay_BeforeTalkingToBoth": {"memAddr_TalkCount": 0xA9EF69, "maxTalkCount": 1},
 			"Chap2_EastNearHay_AfterTalkingToBoth": {"memAddr_TalkCount": 0xA9EF6A, "maxTalkCount": 1},
@@ -307,10 +359,10 @@ const_NPCs_data = {	// TODO add ids to correspnoding code note
 			"Chap5_NearSouthEastGate": {"memAddr_TalkCount": 0xA9EF72, "maxTalkCount": 2},
 			"Chap7_OutsideChurch": {"memAddr_TalkCount": 0xA9EF74, "maxTalkCount": 2},
 			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"memAddr_TalkCount": 0xA9EF78, "maxTalkCount": 1}}},
-	enum_NPC_MiddleAges_EccentricGirl: { 
+	NPC_MiddleAges_EccentricGirl: { 
 		"ID": 0x2e, "Appearance": {
 			"Chap2_TownSquare_Scare": {"memAddr_TalkCount": 0xA9EE70, "maxTalkCount": 1}}},
-	enum_NPC_MiddleAges_AspiringApprentice: {
+	NPC_MiddleAges_AspiringApprentice: {
 		"ID": 0x5d, "Appearance": {
 			"Chap2_SouthEastGate_Scare": {"memAddr_TalkCount": 0xA9EE3F, "maxTalkCount": 1}}}}
 
@@ -340,9 +392,6 @@ function is_TalkingToNPC(enum_npc) {							// $A9EFDC: [25-bit Pointer] Interact
 	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFDC))	// 		+0x0 - [32-bit] NPC ID	
 	return 														// 		| - This value is copied to 0xa9eff4 (refer to notes)
 		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}		// 		| - Unique per interactable NPC or environment item
-		
-	
-		
 
 function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance) => 
 	prior_NPCtalkCount(enum_npc, string_appearance) < 0x1 &&
@@ -359,31 +408,31 @@ function on_NPC_TalkCount_increase(enum_npc, string_appearance) {
 	return 
 		let_talkCount > prev(let_talkCount)}
 // -------------------------------------
-enum_InteractItem_Antique_Antidote 			= 203
-enum_InteractItem_Antique_FranssenShopSign 	= 202
-enum_InteractItem_Antique_Mask 				= 201
-enum_InteractItem_Antique_Rope 				= 200
-enum_InteractItem_Painting_Alchemist 			= 107
-enum_InteractItem_Painting_AlchemyLab 			= 106
-enum_InteractItem_Painting_CollapsedHouse 		= 105
-enum_InteractItem_Painting_LandscapeTown  		= 104
-enum_InteractItem_Painting_Performer 			= 103
-enum_InteractItem_Painting_SquireCrest 			= 102
-enum_InteractItem_Painting_TowerView 			= 101
-enum_InteractItem_Painting_TownSquare 			= 100
+INTERACTABLE_Antique_Antidote 			= 203
+INTERACTABLE_Antique_FranssenShopSign 	= 202
+INTERACTABLE_Antique_Mask 				= 201
+INTERACTABLE_Antique_Rope 				= 200
+INTERACTABLE_Painting_Alchemist 			= 107
+INTERACTABLE_Painting_AlchemyLab 			= 106
+INTERACTABLE_Painting_CollapsedHouse 		= 105
+INTERACTABLE_Painting_LandscapeTown  		= 104
+INTERACTABLE_Painting_Performer 			= 103
+INTERACTABLE_Painting_SquireCrest 			= 102
+INTERACTABLE_Painting_TowerView 			= 101
+INTERACTABLE_Painting_TownSquare 			= 100
 const_InteractableItem_IDs = {
-	enum_InteractItem_Antique_FranssenShopSign: 0x8e,
-	enum_InteractItem_Antique_Rope: 0x98,
-	enum_InteractItem_Antique_Antidote: 0x79,
-	enum_InteractItem_Antique_Mask: 0xc6,
-	enum_InteractItem_Painting_SquireCrest: 0x164,
-	enum_InteractItem_Painting_TownSquare: 0x165,
-	enum_InteractItem_Painting_AlchemyLab: 0x16a,
-	enum_InteractItem_Painting_Performer: 0x166,
-	enum_InteractItem_Painting_CollapsedHouse: 0x168,
-	enum_InteractItem_Painting_TowerView: 0x163,
-	enum_InteractItem_Painting_LandscapeTown: 0x169,
-	enum_InteractItem_Painting_Alchemist: 0x167}		
+	INTERACTABLE_Antique_FranssenShopSign: 0x8e,
+	INTERACTABLE_Antique_Rope: 0x98,
+	INTERACTABLE_Antique_Antidote: 0x79,
+	INTERACTABLE_Antique_Mask: 0xc6,
+	INTERACTABLE_Painting_SquireCrest: 0x164,
+	INTERACTABLE_Painting_TownSquare: 0x165,
+	INTERACTABLE_Painting_AlchemyLab: 0x16a,
+	INTERACTABLE_Painting_Performer: 0x166,
+	INTERACTABLE_Painting_CollapsedHouse: 0x168,
+	INTERACTABLE_Painting_TowerView: 0x163,
+	INTERACTABLE_Painting_LandscapeTown: 0x169,
+	INTERACTABLE_Painting_Alchemist: 0x167}		
 
 function is_InteractingWith_bis(enum_interactableItem) => 
 	dword(0xA9EFF4) == const_InteractableItem_IDs[enum_interactableItem]
@@ -482,93 +531,93 @@ function is_Cutscene_MinorId(int_Id, int_offset) {				// $A9ECD4: [25-bit Pointe
 // ***********************
 // ◦ AREA IDENTIFICATION ◦
 // ***********************
-enum_Area_MiddleAges_City_Day							= 503
-enum_Area_MiddleAges_City_Night							= 502
-enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement	= 501
-enum_Area_MiddleAges_Church								= 500
-enum_Area_1900s_City			= 401
-enum_Area_1900s_BrumMansion		= 400
-enum_Area_70s_City_Night 	= 300
-enum_Area_80s_Bar					= 203
-enum_Area_80s_AntiquesEule			= 202
-enum_Area_80s_CafeSonne				= 201
-enum_Area_80s_City_Snow				= 200
-enum_Area_Present_BrumMuseum_Upstairs_Room1_Night	= 157
-enum_Area_Present_BrumMuseum_Upstairs_Room1_Day		= 156
-enum_Area_Present_BrumMuseum_Upstairs_Room2_Night	= 155
-enum_Area_Present_BrumMuseum_Upstairs_Room2_Day		= 154
-enum_Area_Present_BrumMuseum_Upstairs_Room3_Night	= 153
-enum_Area_Present_BrumMuseum_Upstairs_Room3_Day		= 152
-enum_Area_Present_BrumMuseum_Downstairs_Room_Night	= 151
-enum_Area_Present_BrumMuseum_Downstairs_Room_Day	= 150
-enum_Area_Present_AntiquesEule		= 105
-enum_Area_Present_TownHall			= 104
-enum_Area_Present_CafeSonne			= 103
-enum_Area_Present_City_NightAM		= 102
-enum_Area_Present_City_NightPM		= 101
-enum_Area_Present_City_Day			= 100
+AREA_MiddleAges_City_Day							= 503
+AREA_MiddleAges_City_Night							= 502
+AREA_MiddleAges_AlchemistHouse_Exploded_Basement	= 501
+AREA_MiddleAges_Church								= 500
+AREA_1900s_City				= 401
+AREA_1900s_BrumMansion		= 400
+AREA_70s_City_Night 	= 300
+AREA_80s_Bar					= 203
+AREA_80s_AntiquesEule			= 202
+AREA_80s_CafeSonne				= 201
+AREA_80s_City_Snow				= 200
+AREA_Present_BrumMuseum_Upstairs_Room1_Night	= 157
+AREA_Present_BrumMuseum_Upstairs_Room1_Day		= 156
+AREA_Present_BrumMuseum_Upstairs_Room2_Night	= 155
+AREA_Present_BrumMuseum_Upstairs_Room2_Day		= 154
+AREA_Present_BrumMuseum_Upstairs_Room3_Night	= 153
+AREA_Present_BrumMuseum_Upstairs_Room3_Day		= 152
+AREA_Present_BrumMuseum_Downstairs_Room_Night	= 151
+AREA_Present_BrumMuseum_Downstairs_Room_Day		= 150
+AREA_Present_AntiquesEule		= 105
+AREA_Present_TownHall			= 104
+AREA_Present_CafeSonne			= 103
+AREA_Present_City_NightAM		= 102
+AREA_Present_City_NightPM		= 101
+AREA_Present_City_Day			= 100
 const_Area_IDs= {	// list not complete, add as is necessary
-	enum_Area_MiddleAges_City_Day: 0x3f3,
-	enum_Area_MiddleAges_City_Night: 0x33c,
-	enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement: 0x217,
-	enum_Area_MiddleAges_Church: 0x8e,
+	AREA_MiddleAges_City_Day: 0x3f3,
+	AREA_MiddleAges_City_Night: 0x33c,
+	AREA_MiddleAges_AlchemistHouse_Exploded_Basement: 0x217,
+	AREA_MiddleAges_Church: 0x8e,
 
-	enum_Area_1900s_City: 0x239,
-	enum_Area_1900s_BrumMansion: 0x603,	
+	AREA_1900s_City: 0x239,
+	AREA_1900s_BrumMansion: 0x603,	
 
-	enum_Area_70s_City_Night: 0x31d,
-	enum_Area_80s_Bar: 0xf,
-	enum_Area_80s_CafeSonne: 0x15,
-	enum_Area_80s_AntiquesEule: 0x7a,
-	enum_Area_80s_City_Snow: 0x465,
+	AREA_70s_City_Night: 0x31d,
+	AREA_80s_Bar: 0xf,
+	AREA_80s_CafeSonne: 0x15,
+	AREA_80s_AntiquesEule: 0x7a,
+	AREA_80s_City_Snow: 0x465,
 
-	enum_Area_Present_AntiquesEule: 0x6f,
-	enum_Area_Present_City_Day: 0x375,
-	enum_Area_Present_City_NightPM: 0x44,
-	enum_Area_Present_City_NightAM: 0x3,
-	enum_Area_Present_CafeSonne: 0x10,
-	enum_Area_Present_TownHall: 0x16,
-	enum_Area_Present_BrumMuseum_Upstairs_Room1_Night: 0x159,
-	enum_Area_Present_BrumMuseum_Upstairs_Room1_Day: 0x38,
-	enum_Area_Present_BrumMuseum_Upstairs_Room2_Night: 0x224,
-	enum_Area_Present_BrumMuseum_Upstairs_Room2_Day: 0x1bd,
-	enum_Area_Present_BrumMuseum_Upstairs_Room3_Night: 0x140,
-	enum_Area_Present_BrumMuseum_Upstairs_Room3_Day: 0xcd,
-	enum_Area_Present_BrumMuseum_Downstairs_Room_Night: 0x32,
-	enum_Area_Present_BrumMuseum_Downstairs_Room_Day: 0x2ed}
+	AREA_Present_AntiquesEule: 0x6f,
+	AREA_Present_City_Day: 0x375,
+	AREA_Present_City_NightPM: 0x44,
+	AREA_Present_City_NightAM: 0x3,
+	AREA_Present_CafeSonne: 0x10,
+	AREA_Present_TownHall: 0x16,
+	AREA_Present_BrumMuseum_Upstairs_Room1_Night: 0x159,
+	AREA_Present_BrumMuseum_Upstairs_Room1_Day: 0x38,
+	AREA_Present_BrumMuseum_Upstairs_Room2_Night: 0x224,
+	AREA_Present_BrumMuseum_Upstairs_Room2_Day: 0x1bd,
+	AREA_Present_BrumMuseum_Upstairs_Room3_Night: 0x140,
+	AREA_Present_BrumMuseum_Upstairs_Room3_Day: 0xcd,
+	AREA_Present_BrumMuseum_Downstairs_Room_Night: 0x32,
+	AREA_Present_BrumMuseum_Downstairs_Room_Day: 0x2ed}
 function is_Area(enum_area) => 	// $A82E48: [32-bit] Current loaded area
 	dword(0xA82E48) == const_Area_IDs[enum_area]	
 
 // *****************
 // ◦ CHAPTER LOGIC ◦
 // *****************
-enum_Chapter_Epilogue_NoAncestress 		= 122
-enum_Chapter_Epilogue_Ancestress 		= 121
-enum_Chapter_Epilogue 					= 120
-enum_Chapter_Chapter8_NoAncestress 	= 112 	// <-- If in chapter 5, player told Margarette she is NOT an ancestress
-enum_Chapter_Chapter8_Ancestress 	= 111		// <-- If in chapter 5, player told Margarette she is an ancestress
-enum_Chapter_Chapter8 				= 110
-enum_Chapter_Chapter7 	= 107
-enum_Chapter_Chapter6 	= 106
-enum_Chapter_Chapter5 	= 105
-enum_Chapter_Chapter4 	= 104
-enum_Chapter_Chapter3 	= 103
-enum_Chapter_Chapter2 	= 102
-enum_Chapter_Chapter1 	= 101
-enum_Chapter_Prologue 	= 100
+CHAPTER_Epilogue_NoAncestress 		= 122
+CHAPTER_Epilogue_Ancestress 		= 121
+CHAPTER_Epilogue 					= 120
+CHAPTER_Chapter8_NoAncestress 	= 112 	// <-- If in chapter 5, player told Margarette she is NOT an ancestress
+CHAPTER_Chapter8_Ancestress 	= 111		// <-- If in chapter 5, player told Margarette she is an ancestress
+CHAPTER_Chapter8 				= 110
+CHAPTER_Chapter7 	= 107
+CHAPTER_Chapter6 	= 106
+CHAPTER_Chapter5 	= 105
+CHAPTER_Chapter4 	= 104
+CHAPTER_Chapter3 	= 103
+CHAPTER_Chapter2 	= 102
+CHAPTER_Chapter1 	= 101
+CHAPTER_Prologue 	= 100
 const_chapter_IDs = {
-	enum_Chapter_Prologue: 0x1,	// Also counts for EX chapter
-	enum_Chapter_Chapter1: 0x2,
-	enum_Chapter_Chapter2: 0x3,
-	enum_Chapter_Chapter3: 0x4,
-	enum_Chapter_Chapter4: 0x5,
-	enum_Chapter_Chapter5: 0x6,
-	enum_Chapter_Chapter6: 0x7,
-	enum_Chapter_Chapter7: 0x8,
-	enum_Chapter_Chapter8_Ancestress: 0x9,
-	enum_Chapter_Epilogue_Ancestress: 0xa,
-	enum_Chapter_Chapter8_NoAncestress: 0xb,
-	enum_Chapter_Epilogue_NoAncestress: 0xc}
+	CHAPTER_Prologue: 0x1,	// Also counts for EX chapter
+	CHAPTER_Chapter1: 0x2,
+	CHAPTER_Chapter2: 0x3,
+	CHAPTER_Chapter3: 0x4,
+	CHAPTER_Chapter4: 0x5,
+	CHAPTER_Chapter5: 0x6,
+	CHAPTER_Chapter6: 0x7,
+	CHAPTER_Chapter7: 0x8,
+	CHAPTER_Chapter8_Ancestress: 0x9,
+	CHAPTER_Epilogue_Ancestress: 0xa,
+	CHAPTER_Chapter8_NoAncestress: 0xb,
+	CHAPTER_Epilogue_NoAncestress: 0xc}
 
 function get_ChapterID(enum_chapter) => 
 	const_chapter_IDs[enum_chapter]	
@@ -580,30 +629,30 @@ function prev_ChapterID() =>
 	prev(current_ChapterID())
 
 function is_Chapter(enum_chapter) {	
-	if (enum_chapter == enum_Chapter_Chapter8) { return
+	if (enum_chapter == CHAPTER_Chapter8) { return
 		(
-			is_Chapter(enum_Chapter_Chapter8_NoAncestress) 	|| 
-			is_Chapter(enum_Chapter_Chapter8_Ancestress)
+			is_Chapter(CHAPTER_Chapter8_NoAncestress) 	|| 
+			is_Chapter(CHAPTER_Chapter8_Ancestress)
 		)
-	} else if (enum_chapter == enum_Chapter_Epilogue) {	return
+	} else if (enum_chapter == CHAPTER_Epilogue) {	return
 		(
-			is_Chapter(enum_Chapter_Epilogue_NoAncestress) 	|| 
-			is_Chapter(enum_Chapter_Epilogue_Ancestress)
+			is_Chapter(CHAPTER_Epilogue_NoAncestress) 	|| 
+			is_Chapter(CHAPTER_Epilogue_Ancestress)
 		)
 	} else { return
 		current_ChapterID() == get_ChapterID(enum_chapter)
 	}}
 
 function on_Chapter_finish(enum_chapter) {
-	if (enum_chapter == enum_Chapter_Chapter7) { return 
-		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter7) &&
-		is_Chapter(enum_Chapter_Chapter8)
-	} else if (enum_chapter == enum_Chapter_Chapter8_Ancestress){ return
-		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_Ancestress) &&		
-		is_Chapter(enum_Chapter_Epilogue_Ancestress)
-	} else if (enum_chapter == enum_Chapter_Chapter8_NoAncestress){ return
-		prev_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_NoAncestress) &&		
-		is_Chapter(enum_Chapter_Epilogue_NoAncestress)
+	if (enum_chapter == CHAPTER_Chapter7) { return 
+		prev_ChapterID() == get_ChapterID(CHAPTER_Chapter7) &&
+		is_Chapter(CHAPTER_Chapter8)
+	} else if (enum_chapter == CHAPTER_Chapter8_Ancestress){ return
+		prev_ChapterID() == get_ChapterID(CHAPTER_Chapter8_Ancestress) &&		
+		is_Chapter(CHAPTER_Epilogue_Ancestress)
+	} else if (enum_chapter == CHAPTER_Chapter8_NoAncestress){ return
+		prev_ChapterID() == get_ChapterID(CHAPTER_Chapter8_NoAncestress) &&		
+		is_Chapter(CHAPTER_Epilogue_NoAncestress)
 	} else { return
 		prev_ChapterID() == get_ChapterID(enum_chapter) &&
 		current_ChapterID() == get_ChapterID(enum_chapter) + 0x1
@@ -613,24 +662,24 @@ function on_Chapter_change() =>
 	current_ChapterID() != prev_ChapterID()
 
 function on_Chapter_changeTo(enum_chapter) {
-	if (enum_chapter == enum_Chapter_Chapter8) { return
+	if (enum_chapter == CHAPTER_Chapter8) { return
 		(
 			(
-				prev_ChapterID() != get_ChapterID(enum_Chapter_Chapter8_Ancestress) && 
-				current_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_Ancestress)
+				prev_ChapterID() != get_ChapterID(CHAPTER_Chapter8_Ancestress) && 
+				current_ChapterID() == get_ChapterID(CHAPTER_Chapter8_Ancestress)
 			) || (
-				prev_ChapterID() != get_ChapterID(enum_Chapter_Chapter8_NoAncestress) && 
-				current_ChapterID() == get_ChapterID(enum_Chapter_Chapter8_NoAncestress)
+				prev_ChapterID() != get_ChapterID(CHAPTER_Chapter8_NoAncestress) && 
+				current_ChapterID() == get_ChapterID(CHAPTER_Chapter8_NoAncestress)
 			)
 		)
-	} else if (enum_chapter == enum_Chapter_Epilogue) { return
+	} else if (enum_chapter == CHAPTER_Epilogue) { return
 		(
 			(
-				prev_ChapterID() != get_ChapterID(enum_Chapter_Epilogue_Ancestress) && 
-				current_ChapterID() == get_ChapterID(enum_Chapter_Epilogue_Ancestress)
+				prev_ChapterID() != get_ChapterID(CHAPTER_Epilogue_Ancestress) && 
+				current_ChapterID() == get_ChapterID(CHAPTER_Epilogue_Ancestress)
 			) || (
-				prev_ChapterID() != get_ChapterID(enum_Chapter_Epilogue_NoAncestress) && 
-				current_ChapterID() == get_ChapterID(enum_Chapter_Epilogue_NoAncestress)
+				prev_ChapterID() != get_ChapterID(CHAPTER_Epilogue_NoAncestress) && 
+				current_ChapterID() == get_ChapterID(CHAPTER_Epilogue_NoAncestress)
 			)
 		)
 	} else { return 
@@ -644,130 +693,130 @@ function on_Chapter_changeTo(enum_chapter) {
 //	- itemScrollBarId => Id of the item in the inventory scrollbar menu
 //	- inventoryMemoryAddress => Memory address [bit 0] = 1 => this item is in players inventory
 //	- isDefaultItem => true, when player gets this item at start of game
-enum_Item_AlchemyBook 					= 100
-enum_Item_Antidote 						= 101
-enum_Item_BlackWhitePhoto_NoPerformer 	= 102
-enum_Item_BlackWhitePhoto_WithPerformer	= 103
-enum_Item_Cake 							= 104
-enum_Item_Cellphone 					= 105
-enum_Item_Comb 							= 106
-enum_Item_Dpad 							= 107
-enum_Item_EggPocketWatch 				= 108
-enum_Item_FryingPan 					= 109
-enum_Item_Jugglery 						= 110
-enum_Item_Kitten 						= 111
-enum_Item_LabKey 						= 112
-enum_Item_Ladder 						= 113
-enum_Item_LetterToDana 					= 114
-enum_Item_Lighter 						= 115
-enum_Item_Map 							= 116
-enum_Item_Meat 							= 117
-enum_Item_NewRope 						= 118
-enum_Item_Notebook 						= 119
-enum_Item_OldMap 						= 120
-enum_Item_OldRope 						= 121
-enum_Item_OrnamentalEgg 				= 122
-enum_Item_PhilosopherStone 				= 123
-enum_Item_Postcard 						= 124
-enum_Item_Sign 							= 125
-enum_Item_SquireCrest 					= 126
-enum_Item_TowerKey 						= 127
+ITEM_AlchemyBook 					= 100
+ITEM_Antidote 						= 101
+ITEM_BlackWhitePhoto_NoPerformer 	= 102
+ITEM_BlackWhitePhoto_WithPerformer	= 103
+ITEM_Cake 							= 104
+ITEM_Cellphone 						= 105
+ITEM_Comb 							= 106
+ITEM_Dpad 							= 107
+ITEM_EggPocketWatch 				= 108
+ITEM_FryingPan 						= 109
+ITEM_Jugglery 						= 110
+ITEM_Kitten 						= 111
+ITEM_LabKey 						= 112
+ITEM_Ladder 						= 113
+ITEM_LetterToDana 					= 114
+ITEM_Lighter 						= 115
+ITEM_Map 							= 116
+ITEM_Meat 							= 117
+ITEM_NewRope 						= 118
+ITEM_Notebook 						= 119
+ITEM_OldMap 						= 120
+ITEM_OldRope 						= 121
+ITEM_OrnamentalEgg 					= 122
+ITEM_PhilosopherStone 				= 123
+ITEM_Postcard 						= 124
+ITEM_Sign 							= 125
+ITEM_SquireCrest 					= 126
+ITEM_TowerKey 						= 127
 const_Items_data = { 
-	enum_Item_Dpad: {	// In PSP version this is called Z-Pad
+	ITEM_Dpad: {	// In PSP version this is called Z-Pad
 		"memAddress_Flag_isInInventory": 0xA9F034,	// $A9F034: [Bit 0] Z-pad/D-pad
 		"itemScrollBarId": 0x0,
 		"is_starterItem": true, "is_missableItem": false},
-	enum_Item_Cellphone: {
+	ITEM_Cellphone: {
 		"memAddress_Flag_isInInventory": 0xA9F035,	// $A9F035: [Bit 0] Cellphone
 		"itemScrollBarId": 0x1,
 		"is_starterItem": true, "is_missableItem": false},
-	enum_Item_Map: {
+	ITEM_Map: {
 		"memAddress_Flag_isInInventory": 0xA9F04C,	// $A9F04C: [Bit 0] City map
 		"itemScrollBarId": 0x18,
 		"is_starterItem": true, "is_missableItem": false},
-	enum_Item_Notebook: {
+	ITEM_Notebook: {
 		"memAddress_Flag_isInInventory": 0xA9F04F,	// $A9F04F: [Bit 0] Notebook
 		"itemScrollBarId": 0x1b,
 		"is_starterItem": true, "is_missableItem": false},
-	enum_Item_Postcard: {
+	ITEM_Postcard: {
 		"memAddress_Flag_isInInventory": 0xA9F04A,	// $A9F04A: [Bit 0] Letter to dana
 		"is_starterItem": true, "is_missableItem": false},
-	enum_Item_OldMap: {
+	ITEM_OldMap: {
 		"memAddress_Flag_isInInventory": 0xA9F04E,	// $A9F04E: [Bit 0] Old City Map
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_OrnamentalEgg: {
+	ITEM_OrnamentalEgg: {
 		"itemScrollBarId": 0x2,
 		"memAddress_Flag_isInInventory": 0xA9F036,	// $A9F036: [Bit 0] Cake
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_FryingPan: {
+	ITEM_FryingPan: {
 		"itemScrollBarId": 0x4,
 		"memAddress_Flag_isInInventory": 0xA9F038,	// $A9F038: [Bit 0] Frying pan
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_Sign: {
+	ITEM_Sign: {
 		"itemScrollBarId": 0x5,
 		"memAddress_Flag_isInInventory": 0xA9F039,	// $A9F039: [Bit 0] Photo shop sign
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_Lighter: {
+	ITEM_Lighter: {
 		"itemScrollBarId": 0x6,
 		"memAddress_Flag_isInInventory": 0xA9F03A,	// $A9F03A: [Bit 0] Lighter
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_SquireCrest: {
+	ITEM_SquireCrest: {
 		"itemScrollBarId": 0xf,
 		"memAddress_Flag_isInInventory": 0xA9F043,	// $A9F043: [Bit 0] Squire's crest
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Antidote: {
+	ITEM_Antidote: {
 		"itemScrollBarId": 0x11,
 		"memAddress_Flag_isInInventory": 0xA9F045,	// $A9F045: [Bit 0] Antidote
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Jugglery: {
+	ITEM_Jugglery: {
 		"itemScrollBarId": 0xc,
 		"memAddress_Flag_isInInventory": 0xA9F040,	// $A9F040: [Bit 0] Jugglery
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_Cake: {
+	ITEM_Cake: {
 		"itemScrollBarId": 0x13,
 		"memAddress_Flag_isInInventory": 0xA9F047,	// $A9F047: [Bit 0] Cake
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_PhilosopherStone: {
+	ITEM_PhilosopherStone: {
 		"memAddress_Flag_isInInventory": 0xA9F03D,	// $A9F03D: [Bit 0] Philosopher's stone
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_BlackWhitePhoto_NoPerformer: {	// This one switches with the other photo once the picture is taken
+	ITEM_BlackWhitePhoto_NoPerformer: {	// This one switches with the other photo once the picture is taken
 		"memAddress_Flag_isInInventory": 0xA9F03B,	// $A9F03B: [Bit 0] Black and white photo without performer
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_BlackWhitePhoto_WithPerformer: {	
+	ITEM_BlackWhitePhoto_WithPerformer: {	
 		"memAddress_Flag_isInInventory": 0xA9F03C,	// $A9F03C: [Bit 0] Black and white photo with performer
 		"is_starterItem": false, "is_missableItem": true},
-	enum_Item_OldRope: {
+	ITEM_OldRope: {
 		"memAddress_Flag_isInInventory": 0xA9F03F,	// $A9F03F: [Bit 0] Old Rope
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_NewRope: {
+	ITEM_NewRope: {
 		"memAddress_Flag_isInInventory": 0xA9F03E,	// $A9F03E: [Bit 0] New Rope
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Comb: {
+	ITEM_Comb: {
 		"memAddress_Flag_isInInventory": 0xA9F041,	// $A9F041: [Bit 0] Comb
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_AlchemyBook: {
+	ITEM_AlchemyBook: {
 		"memAddress_Flag_isInInventory": 0xA9F042,	// $A9F042: [Bit 0] Old alchemist book
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_EggPocketWatch: {
+	ITEM_EggPocketWatch: {
 		"memAddress_Flag_isInInventory": 0xA9F044,	// $A9F044: [Bit 0] Egg shaped pocket watch
 		"itemScrollBarId": 0x10,
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Meat: {
+	ITEM_Meat: {
 		"memAddress_Flag_isInInventory": 0xA9F046,	// $A9F046: [Bit 0] Scrap of meat
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_LabKey: {
+	ITEM_LabKey: {
 		"memAddress_Flag_isInInventory": 0xA9F048,	// $A9F048: [Bit 0] Lab key
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_TowerKey: {
+	ITEM_TowerKey: {
 		"memAddress_Flag_isInInventory": 0xA9F049,	// $A9F049: [Bit 0] Tower key
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Ladder: {
+	ITEM_Ladder: {
 		"memAddress_Flag_isInInventory": 0xA9F04D,	// $A9F04D: [Bit 0] Ladder
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_LetterToDana: {
+	ITEM_LetterToDana: {
 		"memAddress_Flag_isInInventory": 0xA9F050,	// $A9F050: [Bit 0] Postcard
 		"is_starterItem": false, "is_missableItem": false},
-	enum_Item_Kitten: {
+	ITEM_Kitten: {
 		"memAddress_Flag_isInInventory": 0xA9F04B,	// $A9F04B: [Bit 0] Kitten
 		"is_starterItem": false, "is_missableItem": true}}
 
@@ -939,9 +988,9 @@ function on_BottomScreenText_remove() =>
 // - Some positional axes are set to NULL, because they're too close to the mid-line => value's change too fast close to it, so just check location based on other info
 // - positional value's are based on the player's position close to the orb (refer to notes @ 0xa8abd0)
 const_EnergyOrbs_data = {
-	enum_TimePeriod_Late20thCentury: {
+	TIMEPERIOD_Late20thCentury: {
 		"amountToCollect": 5,
-		"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
+		"sharedArea": [AREA_80s_City_Snow, AREA_70s_City_Night],
 		"locations": {
 			"NorthGateNearBar": {
 				"area": iNULL,
@@ -960,60 +1009,60 @@ const_EnergyOrbs_data = {
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x8},
 			},
 		},
-	enum_TimePeriod_Early20thCentury: {
+	TIMEPERIOD_Early20thCentury: {
 		"amountToCollect": 6, // TODO update guideREADME + descr with 6th
 		"sharedArea": iNULL, // <-- 1 are not in area_city, so check each location seperate
 		"locations": { 
 			"InsideBrumMansion": {
-				"area": [enum_Area_1900s_BrumMansion],
+				"area": [AREA_1900s_BrumMansion],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44304)) + 0x4},
 			"TreeNearBar": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x4},
 			"StairsOppositeCafeSonne": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x5},
 			"NearNewsPost": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x6},
 			"ParkRudolfStr": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x7},
 			"NorthEastgate": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x8},
 			},
 		},
-	enum_TimePeriod_MiddleAges: {
+	TIMEPERIOD_MiddleAges: {
 		"amountToCollect": 6,
 		"sharedArea": iNULL, // <-- 2 orbs are not in area_city, so check each location seperate
 		"locations": {
 			"AlchemistBasement": {
-				"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
+				"area": [AREA_MiddleAges_AlchemistHouse_Exploded_Basement],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44300)) + 0x4},
 			"InsideChurch": {
-				"area": [enum_Area_MiddleAges_Church],
+				"area": [AREA_MiddleAges_Church],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA4430C)) + 0x4},
 			"onBench": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x4},
 			"EastWell": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x5},
 			"AlleyWayCart": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x6},
 			"EastNearHay": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x7},
 			"ChurchEntrance": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x8},
 			}
 		},
-	enum_TimePeriod_Present: {
+	TIMEPERIOD_Present: {
 		"amountToCollect": 5,
-		"sharedArea": [enum_Area_Present_City_Day, enum_Area_Present_City_NightAM, enum_Area_Present_City_NightPM], // <-- all orbs are in the area_city
+		"sharedArea": [AREA_Present_City_Day, AREA_Present_City_NightAM, AREA_Present_City_NightPM], // <-- all orbs are in the area_city
 		"locations": { 
 			"OutsideFortuneTeller": {
 				"area": iNULL,
@@ -1033,9 +1082,9 @@ const_EnergyOrbs_data = {
 			}
 		}}
 const_EnergyOrbs_data_old = {
-	enum_TimePeriod_Late20thCentury: {
+	TIMEPERIOD_Late20thCentury: {
 		"amountToCollect": 5,
-		"sharedArea": [enum_Area_80s_City_Snow, enum_Area_70s_City_Night],
+		"sharedArea": [AREA_80s_City_Snow, AREA_70s_City_Night],
 		"locations": {
 			"StairsRudolfstr": {
 				"area": iNULL,
@@ -1054,57 +1103,57 @@ const_EnergyOrbs_data_old = {
 				"pos": {"xAxis": 0xc5ed8000, "yAxis": 0xc70ef800}}, // <---ToFloat--- [-7600,-36600]
 			},
 		},
-	enum_TimePeriod_Early20thCentury: {
+	TIMEPERIOD_Early20thCentury: {
 		"amountToCollect": 5,
 		"sharedArea": iNULL,
 		"locations": { 
 			"InsideBrumMansion": {
-				"area": [enum_Area_1900s_BrumMansion],
+				"area": [AREA_1900s_BrumMansion],
 				"pos": iNULL},
 			"NearNewsPost": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"pos": {"xAxis": 0x45abe000, "yAxis": 0xc7435000}}, // <---ToFloat--- [5500,-50000]
 			"TreeBar": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"pos": {"xAxis": 0xc68e3000, "yAxis": 0x46ae3800}}, // <---ToFloat--- [-18200,22300]
 			"NorthEastgate": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"pos": {"xAxis": 0x46a7f800, "yAxis": 0x46e67800}}, // <---ToFloat--- [21500,29500]
 			"OppositeCafeSonne": {
-				"area": [enum_Area_1900s_City],
+				"area": [AREA_1900s_City],
 				"pos": {"xAxis": 0xc6ee4800, "yAxis": 0xc5960000}}, // <---ToFloat--- [-30500,-4800]
 			},
 		},
-	enum_TimePeriod_MiddleAges: {
+	TIMEPERIOD_MiddleAges: {
 		"amountToCollect": 6,
 		"sharedArea": iNULL, // <-- 2 orbs are not in area_city, so check each location seperate
 		"locations": {
 			"AlchemistBasement": {
-				"area": [enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement],
+				"area": [AREA_MiddleAges_AlchemistHouse_Exploded_Basement],
 				"pos": iNULL},
 			"InsideChurch": {
-				"area": [enum_Area_MiddleAges_Church],
+				"area": [AREA_MiddleAges_Church],
 				"pos": iNULL},
 			"EastNearHay": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"pos": {"xAxis": 0x46f61800, "yAxis": 0xc57a0000}}, // <---ToFloat--- [31500,-4000]
 			"AlleyWayCart": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"pos": {"xAxis": 0x46985800, "yAxis": 0x44960000}}, // <---ToFloat--- [19500,1200]
 			"EastWell": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"pos": {"xAxis": 0xc6c73800, "yAxis": 0x4b371ee8}}, // <---ToFloat--- [-25500,1000]
 			"ChurchEntrance": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"pos": {"xAxis": 0x460ca000, "yAxis": 0x46ea6000}}, // <---ToFloat--- [9000,30000]
 			"onBench": {
-				"area": [enum_Area_MiddleAges_City_Day, enum_Area_MiddleAges_City_Night],
+				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
 				"pos": {"xAxis": 0xc6985800, "yAxis": 0x46abe000}}, // <---ToFloat--- [-19500,22000]
 			}
 		},
-	enum_TimePeriod_Present: {
+	TIMEPERIOD_Present: {
 		"amountToCollect": 5,		
-		"sharedArea": [enum_Area_Present_City_Day, enum_Area_Present_City_NightAM, enum_Area_Present_City_NightPM], // <-- all orbs are in the area_city
+		"sharedArea": [AREA_Present_City_Day, AREA_Present_City_NightAM, AREA_Present_City_NightPM], // <-- all orbs are in the area_city
 		"locations": { 
 			"CarPark": {
 				"area": iNULL,
@@ -1195,9 +1244,9 @@ function is_ResultsMenu_active() => 	// $AC49F4: [32-bit] Menu ID
 function is_ResultsMenu_HighlightedChapter(enum_chapter) {
 	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3170))
 	let_resultsMenuHighlightedChapterId = 0 
-	if (enum_chapter == enum_Chapter_Chapter8) {
+	if (enum_chapter == CHAPTER_Chapter8) {
 		let_resultsMenuHighlightedChapterId = 0x8
-	} else if (enum_chapter == enum_Chapter_Epilogue) {
+	} else if (enum_chapter == CHAPTER_Epilogue) {
 		let_resultsMenuHighlightedChapterId = 0x9
 	} else if (enum_chapter == "Total") {
 		let_resultsMenuHighlightedChapterId = 0xa
@@ -1279,29 +1328,29 @@ function on_Video_start() {
 // ****************
 // ◦ ENDING LOGIC ◦
 // ****************
-enum_Ending_A	= 106
-enum_Ending_B	= 105
-enum_Ending_C	= 104
-enum_Ending_D	= 103
-enum_Ending_E	= 102
-enum_Ending_EX	= 101
+ENDING_A	= 106
+ENDING_B	= 105
+ENDING_C	= 104
+ENDING_D	= 103
+ENDING_E	= 102
+ENDING_EX	= 101
 const_Endings_data = {
-	enum_Ending_A : {
+	ENDING_A : {
 		"EndingFile_ID": 0x0,
 		"memAddr_Flag_EndingAchieved": 0xAA1154}, // $AA1154: [Bit Flag] bit 0 => Ending A achieved
-	enum_Ending_B : {
+	ENDING_B : {
 		"EndingFile_ID": 0x1,
 		"memAddr_Flag_EndingAchieved": 0xAA1155}, // $AA1155: [Bit Flag] bit 0 => Ending B achieved
-	enum_Ending_C : {
+	ENDING_C : {
 		"EndingFile_ID": 0x2,
 		"memAddr_Flag_EndingAchieved": 0xAA1156}, // $AA1156: [Bit Flag] bit 0 => Ending C achieved
-	enum_Ending_D : {
+	ENDING_D : {
 		"EndingFile_ID": 0x3,
 		"memAddr_Flag_EndingAchieved": 0xAA1157}, // $AA1157: [Bit Flag] bit 0 => Ending D achieved
-	enum_Ending_E : {
+	ENDING_E : {
 		"EndingFile_ID": 0x4,
 		"memAddr_Flag_EndingAchieved": 0xAA1158}, // $AA1158: [Bit Flag] bit 0 => Ending E achieved
-	enum_Ending_EX : {
+	ENDING_EX : {
 		"EndingFile_ID": 0x5,
 		"memAddr_Flag_EndingAchieved": 0xAA1159}} // $AA1159: [Bit Flag] bit 0 => Ending EX achieved
 
@@ -1311,9 +1360,9 @@ function get_EndingFileId(enum_ending) =>
 function is_Ending_achieved(enum_ending) =>
 	bit0(const_Endings_data[enum_ending]["memAddr_Flag_EndingAchieved"]) == 1
 
-function isExChapterUnlocked() => // If endings ABCDE are achieved
+function is_ExChapter_unlocked() => // If endings ABCDE are achieved
 	all_of(const_Endings_data, (enum_ending) {
-		if (enum_ending != enum_Ending_EX) return is_Ending_achieved(enum_ending)
+		if (enum_ending != ENDING_EX) return is_Ending_achieved(enum_ending)
 		else return always_true()
 	})
 
@@ -2142,7 +2191,7 @@ achievements_triggers = {
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(!is_Chapter(enum_Chapter_Prologue)) &&
+				unless(!is_Chapter(CHAPTER_Prologue)) &&
 				once(	// Identifies Cutscene => watching performer
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x22480)		&&
@@ -2161,7 +2210,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Prologue)
+				on_Chapter_finish(CHAPTER_Prologue)
 			)
 		)},
 	"a_Chapter1Complete": function Chapter1Complete() { return
@@ -2172,7 +2221,7 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => burning bar changes into non-burning
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter1) &&
+					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter1) &&
 					is_Cutscene_MasterId(0x11a40)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2181,7 +2230,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Chapter1)
+				on_Chapter_finish(CHAPTER_Chapter1)
 			)
 		)},
 	"a_Chapter2Complete": function Chapter2Complete() { return
@@ -2191,9 +2240,9 @@ achievements_triggers = {
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes
-				unless(!is_Chapter(enum_Chapter_Chapter2)) &&
+				unless(!is_Chapter(CHAPTER_Chapter2)) &&
 				once(	// Identifies Cutscene => reminiscing about Dana: left in the past					
-					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_SelectedItemInScrollBar(ITEM_Dpad) &&
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x3b240)		&&
 					is_Cutscene_MasterDataId(0x340e0)	&&
@@ -2203,7 +2252,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x7130)
 				) &&
 				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_SelectedItemInScrollBar(ITEM_Dpad) &&
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_SectionId_1(0x3)		&&
 					is_Cutscene_SectionId_2(0x2)		&&
@@ -2212,7 +2261,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Chapter2)
+				on_Chapter_finish(CHAPTER_Chapter2)
 			)
 		)},
 	"a_Chapter3Complete": function Chapter3Complete() { return
@@ -2222,9 +2271,9 @@ achievements_triggers = {
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(!is_Chapter(enum_Chapter_Chapter3)) &&			
+				unless(!is_Chapter(CHAPTER_Chapter3)) &&			
 				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_SelectedItemInScrollBar(ITEM_Dpad) &&
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x19d80)		&&	
 					is_Cutscene_SectionId_1(0x1) 		&&
@@ -2233,7 +2282,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x11ac0)
 				) &&
 				once(	// Identifies Cutscene => Back to Eckart and breaking vase
-					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_SelectedItemInScrollBar(ITEM_Dpad) &&
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0xcfb40)		&& was_Cutscene_MasterId(0x19d80) &&	
 					is_Cutscene_SectionId_1(0x1) 		&&
@@ -2242,7 +2291,7 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x387a0)
 				) &&
 				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+					is_SelectedItemInScrollBar(ITEM_Dpad) &&
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x39680)		&& was_Cutscene_MasterId(0xcfb40) &&	
 					is_Cutscene_SectionId_1(0x1) 		&&
@@ -2252,7 +2301,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Chapter3)
+				on_Chapter_finish(CHAPTER_Chapter3)
 			)
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
@@ -2260,11 +2309,11 @@ achievements_triggers = {
 			!is_InGame() 					||
 			is_EventViewer_active()			||
 			on_Cutscene_MasterId_change()	||
-			!is_SelectedItemInScrollBar(enum_Item_FryingPan)
+			!is_SelectedItemInScrollBar(ITEM_FryingPan)
 		) &&
 		(
 			( // Alt 1 
-				unless(!is_Chapter(enum_Chapter_Chapter4)) && 
+				unless(!is_Chapter(CHAPTER_Chapter4)) && 
 				once(	// Identifies cutscene => protecting yourself with pan 
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x4f200)		&&
@@ -2285,7 +2334,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 3; Failsafe
-				on_Chapter_finish(enum_Chapter_Chapter4)
+				on_Chapter_finish(CHAPTER_Chapter4)
 			)
 		)},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
@@ -2293,12 +2342,12 @@ achievements_triggers = {
 			!is_InGame() 					||
 			is_EventViewer_active()			||
 			on_Cutscene_MasterId_change()	||
-			!is_SelectedItemInScrollBar(enum_Item_Sign)
+			!is_SelectedItemInScrollBar(ITEM_Sign)
 		) &&
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter4) &&
+					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter4) &&
 					is_Cutscene_MasterId(0x54580)		&&
 					is_Cutscene_SectionId_1(0xd)		&&
 					is_Cutscene_SectionId_2(0xe)		&&
@@ -2307,7 +2356,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2
-				on_Chapter_finish(enum_Chapter_Chapter4)
+				on_Chapter_finish(CHAPTER_Chapter4)
 			)
 		)},
 	"a_Chapter5Complete": function Chapter5Complete() { return
@@ -2318,8 +2367,8 @@ achievements_triggers = {
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				once(	// Identifies Cutscene => drinking antidote
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter5) &&
-					is_SelectedItemInScrollBar(enum_Item_Antidote)	&&
+					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter5) &&
+					is_SelectedItemInScrollBar(ITEM_Antidote)	&&
 					is_Cutscene_MasterId(0x3f980)			&&
 					is_Cutscene_SectionId_1(0xffff)		&&
 					is_Cutscene_SectionId_2(0x0)			&&
@@ -2328,7 +2377,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Chapter5)
+				on_Chapter_finish(CHAPTER_Chapter5)
 			)
 		)},
 	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
@@ -2351,7 +2400,7 @@ achievements_triggers = {
 				) && 
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(enum_Chapter_Chapter6)
+				on_Chapter_finish(CHAPTER_Chapter6)
 			)
 		)},
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
@@ -2374,7 +2423,7 @@ achievements_triggers = {
 				) && 
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(enum_Chapter_Chapter6)
+				on_Chapter_finish(CHAPTER_Chapter6)
 			)
 		)},
 	"a_Chapter7Complete": function Chapter7Complete() { return
@@ -2384,7 +2433,7 @@ achievements_triggers = {
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
-				unless(!is_Chapter(enum_Chapter_Chapter7)) &&
+				unless(!is_Chapter(CHAPTER_Chapter7)) &&
 				once(	// Identifies Cutscene => Holding onto rope 
 					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x43040)		&&
@@ -2421,7 +2470,7 @@ achievements_triggers = {
 				) &&
 				on_Cutscene_end()
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(enum_Chapter_Chapter7)
+				on_Chapter_finish(CHAPTER_Chapter7)
 			)
 		)},
 	"a_Chapter8Complete": function Chapter8Complete() { return
@@ -2431,7 +2480,7 @@ achievements_triggers = {
 		) && 
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
-				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Homunculus
 					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x8b640)		&&
@@ -2460,7 +2509,7 @@ achievements_triggers = {
 				on_Cutscene_end()
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
-				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
 					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0xd5440)		&&
@@ -2488,7 +2537,7 @@ achievements_triggers = {
 				is_MargaretteTold_Ancestor() &&
 				on_Cutscene_end()
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
-				unless(!is_Chapter(enum_Chapter_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0xfbd00)		&&
@@ -2509,7 +2558,7 @@ achievements_triggers = {
 				on_Cutscene_end()
 			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
-					is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
+					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter8_Ancestress) &&
 					is_Cutscene_MasterId(0x1cbc0)		&&
 					is_Cutscene_SectionId_1(0x5)		&&
 					is_Cutscene_SectionId_2(0x4)		&&
@@ -2519,7 +2568,7 @@ achievements_triggers = {
 				is_MargaretteTold_Ancestor() &&
 				on_Cutscene_end()
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
-				unless(!is_Chapter(enum_Chapter_Chapter8_NoAncestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress)) &&
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
 					is_LargeCutscene_active()			&&
 					is_Cutscene_MasterId(0x77a40)		&& was_Cutscene_MasterId(0x29700) &&
@@ -2547,7 +2596,7 @@ achievements_triggers = {
 				is_Dana_Left_InPast() && is_MargaretteTold_NoAncestor() &&
 				on_Cutscene_end()				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
-				unless(!is_Chapter(enum_Chapter_Chapter8_NoAncestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress)) &&
 				once(	// Identifies Cutscene => Brought Margarette to present
 					is_LargeCutscene_active() 			&& 
 					is_Cutscene_MasterId(0x101bc0)		&&
@@ -2567,49 +2616,49 @@ achievements_triggers = {
 				is_Dana_Saved_FromPast() && is_MargaretteTold_NoAncestor() &&
 				on_Cutscene_end()
 			) || // Alt 7+8 => Failsafe; triggers on chapter change
-			on_Chapter_finish(enum_Chapter_Chapter8_Ancestress) ||
-			on_Chapter_finish(enum_Chapter_Chapter8_NoAncestress)
+			on_Chapter_finish(CHAPTER_Chapter8_Ancestress) ||
+			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress)
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Prologue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Prologue, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Prologue, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter1"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter1, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter1, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter2"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter2, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter2, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter3"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter3, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter3, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter4"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter4, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter4, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter5"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter5, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter5, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter6"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter6, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter6, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter7"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter7, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter7, let_PercentageBitFlags)},
 	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Chapter8"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Chapter8, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter8, let_PercentageBitFlags)},
 	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
 		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(enum_Chapter_Epilogue, let_PercentageBitFlags)},
+		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Epilogue, let_PercentageBitFlags)},
 	"a_MaxAchievementTotal": function MaxAchievementTotal() {
 		return achievements_generate_FullTrigger_MaxAchievementRate("Total", memUtil_allPercentageBitFlagsToOneDict())},
 	"a_EndingA": function EndingA() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_A)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_A)
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			is_LargeCutscene_active() && !is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0xdb780)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2617,7 +2666,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x32ce0)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			is_LargeCutscene_active() && !is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x77f80)		&& was_Cutscene_MasterId(0xdb780) &&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2628,17 +2677,17 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_A))},
+			is_Ending_achieved(ENDING_A))},
 	"a_EndingB1": function EndingB1() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_B)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_B)
 		) &&
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus
-		// 	is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+		// 	is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 		// 	is_Cutscene_MasterId(0x3dd40)		&&
 		// 	is_Cutscene_SectionId_1(0x3)		&&
 		// 	is_Cutscene_SectionId_2(0x2)		&&
@@ -2646,7 +2695,7 @@ achievements_triggers = {
 		// 	is_Cutscene_SectionDataId(0x1ed10)
 		// ) &&
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus part2
-		// 	is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+		// 	is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 		// 	is_Cutscene_MasterId(0x81b00)		&& was_Cutscene_MasterId(0x3dd40) &&
 		// 	is_Cutscene_SectionId_1(0x1)		&&
 		// 	is_Cutscene_SectionId_2(0x2)		&&
@@ -2656,7 +2705,7 @@ achievements_triggers = {
 
 		// Below 2 cutscenes run up to ending credits
 		once(	// Identifies Cutscene => Eike returns from sending Margarette back to past
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x613c0)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2664,7 +2713,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x1d5d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x56240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2675,15 +2724,15 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_B))},
+			is_Ending_achieved(ENDING_B))},
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_B)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_B)
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x91240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2691,7 +2740,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x5d2c0)		&& was_Cutscene_MasterId(0x91240) &&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2699,7 +2748,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x56240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2710,15 +2759,15 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_B))},
+			is_Ending_achieved(ENDING_B))},
 	"a_EndingC": function EndingC() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_C)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_C)
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x8cf00)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2726,7 +2775,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x41cd0)
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0x7b140)		&& was_Cutscene_MasterId(0x8cf00) &&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2734,7 +2783,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x2f6d0)
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_Ancestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
 			is_Cutscene_MasterId(0xcb700)		&& was_Cutscene_MasterId(0x7b140) &&
 			is_Cutscene_SectionId_1(0x5)		&&
 			is_Cutscene_SectionId_2(0x6)		&&
@@ -2745,15 +2794,15 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_C))},
+			is_Ending_achieved(ENDING_C))},
 	"a_EndingD": function EndingD() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_D)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_D)
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
 			is_Cutscene_MasterId(0x709c0)		&&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x4)		&&
@@ -2761,7 +2810,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x11790)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
 			is_Cutscene_MasterId(0xc5b40)		&&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x4)		&&
@@ -2772,15 +2821,15 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_D))},
+			is_Ending_achieved(ENDING_D))},
 	"a_EndingE": function EndingE() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_E)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_E)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
 			is_Cutscene_MasterId(0x88dc0)		&&
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2788,7 +2837,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x5ca00)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and Dr. Wagner is killed
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
 			is_Cutscene_MasterId(0xbef80)		&&
 			is_Cutscene_SectionId_1(0x9)		&&
 			is_Cutscene_SectionId_2(0x8)		&&
@@ -2796,7 +2845,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x155e0)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Epilogue_NoAncestress) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
 			is_Cutscene_MasterId(0xcdcc0)		&& was_Cutscene_MasterId(0xbef80) &&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -2807,17 +2856,17 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_E))},
+			is_Ending_achieved(ENDING_E))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_EX)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_EX)
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
-			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_PhilosopherStone) &&
-			is_PrologueExMode_active() &&	is_Chapter(enum_Chapter_Prologue) &&
-			isExChapterUnlocked() &&
+			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_PhilosopherStone) &&
+			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
+			is_ExChapter_unlocked() &&
 			is_Cutscene_MasterId(0xa7a80)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2827,7 +2876,7 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0x41b0,0x28)
 		) && 
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			is_Chapter(enum_Chapter_Prologue) 			&&
+			is_Chapter(CHAPTER_Prologue) 			&&
 			is_Cutscene_MasterId(0x67940)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2837,17 +2886,17 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_EX))},
+			is_Ending_achieved(ENDING_EX))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(enum_Ending_EX)
+			is_ViewingEndingFile_viaExtraMenu(ENDING_EX)
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
-			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_PhilosopherStone) &&
-			is_PrologueExMode_active() &&	is_Chapter(enum_Chapter_Prologue) &&
-			isExChapterUnlocked() &&
+			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_PhilosopherStone) &&
+			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
+			is_ExChapter_unlocked() &&
 			is_Cutscene_MasterId(0x58c00)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2857,7 +2906,7 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0x11bc0,0x28)
 		) &&
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			is_Chapter(enum_Chapter_Prologue) 			&&
+			is_Chapter(CHAPTER_Prologue) 			&&
 			is_Cutscene_MasterId(0x67940)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2867,7 +2916,7 @@ achievements_triggers = {
 		once(is_Video_active()) &&	// Credits video
 		trigger_when(
 			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(enum_Ending_EX))},
+			is_Ending_achieved(ENDING_EX))},
 	"a_EnergyOrbLocatorPresentDay": () =>
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
 		// -----------------------------------------
@@ -2882,9 +2931,9 @@ achievements_triggers = {
 		//		unless(
 		//			is_WearingPerformerOutfit()	||
 		//			(
-		//				!is_Area(enum_Area_Present_City_Day) 	 && 
-		//				!is_Area(enum_Area_Present_City_NightPM) &&
-		//				!is_Area(enum_Area_Present_City_NightAM)
+		//				!is_Area(AREA_Present_City_Day) 	 && 
+		//				!is_Area(AREA_Present_City_NightPM) &&
+		//				!is_Area(AREA_Present_City_NightAM)
 		//			) 
 		//		) &&
 		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
@@ -2898,14 +2947,14 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Present),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present),
 	"a_EnergyOrbLocator70s80s": () =>
 		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		//	'''''''''''
 		//	(	// Core group	
 		//		unless(
-		//			!is_Area(enum_Area_80s_City_Snow) && 
-		//			!is_Area(enum_Area_70s_City_Night)
+		//			!is_Area(AREA_80s_City_Snow) && 
+		//			!is_Area(AREA_70s_City_Night)
 		//		) &&
 		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
 		//	) && (
@@ -2918,16 +2967,16 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Late20thCentury),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Late20thCentury),
 	"a_EnergyOrbLocatorMiddleAges": () => 
 		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		//	'''''''''''
 		//	(	// Core group	
 		//		unless(
-		//			!is_Area(enum_Area_MiddleAges_City_Day) 				&& 
-		//			!is_Area(enum_Area_MiddleAges_City_Night)			&&
-		//			!is_Area(enum_Area_MiddleAges_AlchemistHouse_Exploded_Basement)	&&
-		//			!is_Area(enum_Area_MiddleAges_Church)
+		//			!is_Area(AREA_MiddleAges_City_Day) 				&& 
+		//			!is_Area(AREA_MiddleAges_City_Night)			&&
+		//			!is_Area(AREA_MiddleAges_AlchemistHouse_Exploded_Basement)	&&
+		//			!is_Area(AREA_MiddleAges_Church)
 		//		) &&
 		//		measured(achievements_generate_Tally_PickUpEnergyOrbs(6))
 		//	) && (
@@ -2940,7 +2989,7 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_MiddleAges),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_MiddleAges),
 	"a_EnergyOrbLocator1900Days": () =>
 		//  Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		// '''''''''''
@@ -2949,31 +2998,31 @@ achievements_triggers = {
 		//		on_EnergyUnits_decrement() 	||
 		//		on_Chapter_change()			||
 		//		!is_InGame()					||
-		//		(is_WearingPerformerOutfit() && is_Area(enum_Area_Present_City_Day))	// --> Fix for bug, where player could pick up the energy orb in the 
+		//		(is_WearingPerformerOutfit() && is_Area(AREA_Present_City_Day))	// --> Fix for bug, where player could pick up the energy orb in the 
 		//	) && (																	// 		Brum Estate twice (once before being performer to get frying pan and once after)
 		//		(	// Alt 1: otherwise pause will lock reset 						//		Now it will reset this count, when going back to get frying pan as performer
 		//			unless(	
-		//				!is_Area(enum_Area_1900s_City) && !is_Area(enum_Area_1900s_BrumMansion)
+		//				!is_Area(AREA_1900s_City) && !is_Area(AREA_1900s_BrumMansion)
 		//			) &&
 		//			measured(achievements_generate_Tally_PickUpEnergyOrbs(5))
 		//		) || ( // Alt 2: always_false to create 1 functional alt group
 		//			always_false()
 		//		)
 		//	)
-		achievements_generate_FullTrigger_EnergyCollector(enum_TimePeriod_Early20thCentury),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Early20thCentury),
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!is_InGame() ||
 			is_EventViewer_active()
 		) &&
 		never (
-			!is_Chapter(enum_Chapter_Chapter6) && 
-			!is_Chapter(enum_Chapter_Chapter7) &&
-			!is_Chapter(enum_Chapter_Chapter8_Ancestress) &&
-			!is_Chapter(enum_Chapter_Chapter8_NoAncestress)
+			!is_Chapter(CHAPTER_Chapter6) && 
+			!is_Chapter(CHAPTER_Chapter7) &&
+			!is_Chapter(CHAPTER_Chapter8_Ancestress) &&
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress)
 		) &&
 		once(	// Identifies Cutscene => Showing Franssen in 1902 the pocket watch
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_EggPocketWatch) &&
+			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_EggPocketWatch) &&
 			is_Cutscene_MasterId(0x114c0)		&& 
 			is_Cutscene_SectionId_1(0xffff)	&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -2986,19 +3035,19 @@ achievements_triggers = {
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(
 			!is_InGame() 				||
-			!is_Chapter(enum_Chapter_Chapter4)	||
+			!is_Chapter(CHAPTER_Chapter4)	||
 			is_EventViewer_active()
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
-				is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_FryingPan) &&
+				is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_FryingPan) &&
 				is_Cutscene_MasterId(0xb0100)		&&
 				is_Cutscene_SectionId_1(0xd)		&&
 				is_Cutscene_SectionId_2(0xe)		&&
 				is_Cutscene_MasterDataId(0x1efb0)	&&
 				is_Cutscene_SectionDataId(0xae70)),
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using photo shop sign
-				is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Sign) &&
+				is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Sign) &&
 				is_Cutscene_MasterId(0xb0100)		&& 
 				is_Cutscene_SectionId_1(0xd)		&&
 				is_Cutscene_SectionId_2(0xe)		&&
@@ -3009,7 +3058,7 @@ achievements_triggers = {
 	"a_MeetOldMiriam": function MeetOldMiriam() { return 
 		never(
 			!is_InGame() 				||
-			!is_Chapter(enum_Chapter_Chapter7)	||
+			!is_Chapter(CHAPTER_Chapter7)	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
@@ -3040,7 +3089,7 @@ achievements_triggers = {
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never (
 			!is_InGame() 					||
-			!is_Chapter(enum_Chapter_Chapter1) 	||
+			!is_Chapter(CHAPTER_Chapter1) 	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
@@ -3051,7 +3100,7 @@ achievements_triggers = {
 			is_Cutscene_MasterDataId(0xd5f0)	&&
 			is_Cutscene_SectionDataId(0xe10)
 		) &&
-		trigger_when(is_ItemPresentInInventory(enum_Item_OrnamentalEgg) && on_Cutscene_end())},
+		trigger_when(is_ItemPresentInInventory(ITEM_OrnamentalEgg) && on_Cutscene_end())},
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!is_InGame() ||
@@ -3059,8 +3108,8 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
 			is_LargeCutscene_active() &&
-			is_PrologueExMode_active() &&	is_Chapter(enum_Chapter_Prologue) &&
-			isExChapterUnlocked() &&
+			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
+			is_ExChapter_unlocked() &&
 			is_Cutscene_MasterId(0x30780)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3070,16 +3119,16 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0xe10,0x28)
 		) &&
 		trigger_when(
-			is_ItemPresentInInventory(enum_Item_OrnamentalEgg) && 
+			is_ItemPresentInInventory(ITEM_OrnamentalEgg) && 
 			is_NoCutscene_active())},
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!is_InGame() 					||
-			!is_Chapter(enum_Chapter_Chapter1) 	||
+			!is_Chapter(CHAPTER_Chapter1) 	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Warning barman of fire 
-			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_OrnamentalEgg) &&
+			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg) &&
 			is_Cutscene_MasterId(0x32200)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3093,22 +3142,22 @@ achievements_triggers = {
 			is_EventViewer_active()
 		) &&
 		never (
-			!is_Chapter(enum_Chapter_Chapter1) && 
-			!is_Chapter(enum_Chapter_Chapter3) && 
-			!is_Chapter(enum_Chapter_Chapter4) 
+			!is_Chapter(CHAPTER_Chapter1) && 
+			!is_Chapter(CHAPTER_Chapter3) && 
+			!is_Chapter(CHAPTER_Chapter4) 
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4
-				is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_OrnamentalEgg)	&&
-				(is_Chapter(enum_Chapter_Chapter1) || is_Chapter(enum_Chapter_Chapter4))	&&
+				is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg)	&&
+				(is_Chapter(CHAPTER_Chapter1) || is_Chapter(CHAPTER_Chapter4))	&&
 				is_Cutscene_MasterId(0x2f9c0)		&& 
 				is_Cutscene_SectionId_1(0x1)		&&
 				is_Cutscene_SectionId_2(0x0)		&&
 				is_Cutscene_MasterDataId(0x59c0)	&&
 				is_Cutscene_SectionDataId(0x5c20)),
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
-				is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_OrnamentalEgg) &&
-				is_Chapter(enum_Chapter_Chapter3)			&&
+				is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg) &&
+				is_Chapter(CHAPTER_Chapter3)			&&
 				is_Cutscene_MasterId(0x32200)		&& 
 				is_Cutscene_SectionId_1(0x1)		&&
 				is_Cutscene_SectionId_2(0x0)		&&
@@ -3123,31 +3172,31 @@ achievements_triggers = {
 				once( // Talk to JoggingMan_Present
 					is_SmallCutscene_active() &&
 					(
-						is_Area(enum_Area_Present_City_Day) 	|| 
-						is_Area(enum_Area_Present_City_NightPM) ||
-						is_Area(enum_Area_Present_City_NightAM)
+						is_Area(AREA_Present_City_Day) 	|| 
+						is_Area(AREA_Present_City_NightPM) ||
+						is_Area(AREA_Present_City_NightAM)
 					) &&
-					is_TalkingToNPC(enum_NPC_Present_JoggingMan)),
+					is_TalkingToNPC(NPC_Present_JoggingMan)),
 				once( // Talk to JoggingMan_80s
 					is_SmallCutscene_active() &&
-					is_Area(enum_Area_70s_City_Night) &&
-					is_TalkingToNPC(enum_NPC_80s_JoggingMan)),
+					is_Area(AREA_70s_City_Night) &&
+					is_TalkingToNPC(NPC_80s_JoggingMan)),
 			])}
 		return 
 			never(	
 				!is_InGame() 		||
-				!is_Chapter(enum_Chapter_Chapter3) && !is_Chapter(enum_Chapter_Chapter4) && !is_Chapter(enum_Chapter_Chapter5)
+				!is_Chapter(CHAPTER_Chapter3) && !is_Chapter(CHAPTER_Chapter4) && !is_Chapter(CHAPTER_Chapter5)
 			) &&
 			measured(measuredComparison()) &&
 			trigger_when(on_Cutscene_end())},
 	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
 		never (
 			!is_InGame() 				||
-			!is_Chapter(enum_Chapter_Chapter2) 	||
+			!is_Chapter(CHAPTER_Chapter2) 	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_OrnamentalEgg) &&
+			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_OrnamentalEgg) &&
 			is_Cutscene_MasterId(0xde00)		&& 
 			is_Cutscene_SectionId_1(0x3)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
@@ -3159,13 +3208,13 @@ achievements_triggers = {
 		never (
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			!is_ItemPresentInInventory(enum_Item_EggPocketWatch) ||
-			!is_Chapter(enum_Chapter_Chapter6) && !is_Chapter(enum_Chapter_Chapter7) && 
-			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
+			!is_ItemPresentInInventory(ITEM_EggPocketWatch) ||
+			!is_Chapter(CHAPTER_Chapter6) && !is_Chapter(CHAPTER_Chapter7) && 
+			!is_Chapter(CHAPTER_Chapter8_Ancestress) && !is_Chapter(CHAPTER_Chapter8_NoAncestress)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
-				is_LargeCutscene_active() && is_Area(enum_Area_1900s_City) && 
+				is_LargeCutscene_active() && is_Area(AREA_1900s_City) && 
 				is_Cutscene_MasterId(0x8b440) 		&&
 				is_Cutscene_SectionId_1(0x1)		&&
 				is_Cutscene_SectionId_2(0x0)		&&
@@ -3174,7 +3223,7 @@ achievements_triggers = {
 				is_Cutscene_MinorId(0xdefe0, 0x8)	&&
 				is_Cutscene_MinorId(0x50080, 0x28)),
 			once(	// Identifies Cutscene => Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
-				is_LargeCutscene_active() && is_Area(enum_Area_1900s_City) && 
+				is_LargeCutscene_active() && is_Area(AREA_1900s_City) && 
 				is_Cutscene_MasterId(0xac4c0) 		&&
 				is_Cutscene_SectionId_1(0x1)		&&
 				is_Cutscene_SectionId_2(0x0)		&&
@@ -3188,10 +3237,10 @@ achievements_triggers = {
 		never (
 			!is_InGame() 			||
 			is_EventViewer_active()	||
-			!is_Chapter(enum_Chapter_Chapter7)
+			!is_Chapter(CHAPTER_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
-			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_EggPocketWatch) &&
+			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_EggPocketWatch) &&
 			is_Cutscene_MasterId(0x8ce80) 		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3205,10 +3254,10 @@ achievements_triggers = {
 		never (
 			!is_InGame() 					||
 			is_EventViewer_active()	||
-			!is_Chapter(enum_Chapter_Chapter8_Ancestress) && !is_Chapter(enum_Chapter_Chapter8_NoAncestress)
+			!is_Chapter(CHAPTER_Chapter8_Ancestress) && !is_Chapter(CHAPTER_Chapter8_NoAncestress)
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
-			is_LargeCutscene_active() && is_ItemPresentInInventory(enum_Item_EggPocketWatch) &&
+			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_EggPocketWatch) &&
 			is_Cutscene_MasterId(0x8dcc0) 		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3221,12 +3270,12 @@ achievements_triggers = {
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
 			!is_InGame() 						||
-			!is_Chapter(enum_Chapter_Chapter2)	||
+			!is_Chapter(CHAPTER_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
 			is_TreeReplacedBy_Statue() && is_CrowdScaredWith_Lighter() &&			
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
 			is_Cutscene_MasterId(0x3b240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3237,12 +3286,12 @@ achievements_triggers = {
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never (
 			!is_InGame() 						||
-			!is_Chapter(enum_Chapter_Chapter2)	||
+			!is_Chapter(CHAPTER_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
 			is_TreeReplacedBy_Statue() && is_CrowdScaredWith_Cellphone() &&			
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
 			is_Cutscene_MasterId(0x3b240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3253,12 +3302,12 @@ achievements_triggers = {
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never (
 			!is_InGame() 						||
-			!is_Chapter(enum_Chapter_Chapter2)	||
+			!is_Chapter(CHAPTER_Chapter2)	||
 			is_EventViewer_active() 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
 			is_TreeReplacedBy_Flowers() &&
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Dpad) &&
+			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
 			is_Cutscene_MasterId(0x3b240)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -3269,7 +3318,7 @@ achievements_triggers = {
 	"a_BarmansChildren": function BarmansChildren() { return
 		never (
 			!is_InGame() 						||
-			!is_Chapter(enum_Chapter_Chapter5)	||
+			!is_Chapter(CHAPTER_Chapter5)	||
 			is_EventViewer_active() 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
@@ -3287,46 +3336,46 @@ achievements_triggers = {
 				once(	// 1st talk with woman
 					is_SmallCutscene_active() && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
 					(is_LostYoungCoupleProgress_Chapter2(0x0) || is_LostYoungCoupleProgress_Chapter2(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) && 
-					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) && 
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") &&	
 					is_InteractionChapterId(0x163) && is_InteractionId(0x420)),
 				once(	// 1st talk with man
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter2(0x0) || is_LostYoungCoupleProgress_Chapter2(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x40d)),
 				once( 	// 2nd talk with woman; is only available when having talked to both at least once
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter2(0x1) || is_LostYoungCoupleProgress_Chapter2(0x2)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x421)),
 				once(	// 2nd talk with man; is only available when having talked to both at least once
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter2(0x1) || is_LostYoungCoupleProgress_Chapter2(0x2)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x40e)),
 				once(	// 3rd talk with woman
 					is_SmallCutscene_active() &&
 					is_LostYoungCoupleProgress_Chapter2(0x3) &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x422)),
 				once(	// 3rd talk with man
 					is_SmallCutscene_active() &&
 					is_LostYoungCoupleProgress_Chapter2(0x3) &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x40f))
 			])}
 		return 
 			never(
 				!is_InGame() || 
-				!is_Chapter(enum_Chapter_Chapter2)
+				!is_Chapter(CHAPTER_Chapter2)
 			) &&
-			measured(measuredComparison(), is_Area(enum_Area_MiddleAges_City_Night)) &&
+			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
 			trigger_when(on_Cutscene_end())},
 	"a_LostYoungCouple2": function LostYoungCouple2() {
 		function measuredComparison() { return
@@ -3334,46 +3383,46 @@ achievements_triggers = {
 				once(	// 1st talk with woman
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter3(0x0) || is_LostYoungCoupleProgress_Chapter3(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x423)),
 				once(	// 1st talk with man
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter3(0x0) || is_LostYoungCoupleProgress_Chapter3(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x410)),
 				once(	// 2nd talk with woman; only available when talking to both at least once
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter3(0x1) || is_LostYoungCoupleProgress_Chapter3(0x2)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x424)),
 				once(	// 2nd talk with man; only available when talking to both at least once
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter3(0x1) || is_LostYoungCoupleProgress_Chapter3(0x2)) &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x411)),
 				once(	// 3rd talk with woman
 					is_SmallCutscene_active() &&
 					is_LostYoungCoupleProgress_Chapter3(0x3) &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x425)),
 				once(	// 3rd talk with man
 					is_SmallCutscene_active() &&
 					is_LostYoungCoupleProgress_Chapter3(0x3) &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x412))
 			])}
 		return 
 			never(
 				!is_InGame() || 
-				!is_Chapter(enum_Chapter_Chapter3)
+				!is_Chapter(CHAPTER_Chapter3)
 			) &&
-			measured(measuredComparison(), is_Area(enum_Area_MiddleAges_City_Night)) &&
+			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
 			trigger_when(on_Cutscene_end())},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
 		function measuredComparison() { return
@@ -3381,60 +3430,60 @@ achievements_triggers = {
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x0) || is_LostYoungCoupleProgress_Chapter4(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x426)),
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x0) || is_LostYoungCoupleProgress_Chapter4(0x1)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x413)),
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x1) || is_LostYoungCoupleProgress_Chapter4(0x2)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x427)),
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x1) || is_LostYoungCoupleProgress_Chapter4(0x2)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x414)),
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x2) || is_LostYoungCoupleProgress_Chapter4(0x3)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x428)),
 				once(
 					is_SmallCutscene_active() &&
 					(is_LostYoungCoupleProgress_Chapter4(0x2) || is_LostYoungCoupleProgress_Chapter4(0x3)) &&	
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x415))				
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter4)
+				!is_Chapter(CHAPTER_Chapter4)
 			) &&
-			measured(measuredComparison(), is_Area(enum_Area_MiddleAges_City_Night)) &&
+			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
 			trigger_when(on_Cutscene_end())},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
 		function measuredComparison() { return
-			tally(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
+			tally(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
 				repeated(1,
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x416))
 			)}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter5)
+				!is_Chapter(CHAPTER_Chapter5)
 			) &&
 			measured(measuredComparison(), always_true()) &&
 			trigger_when(on_Cutscene_end())},
@@ -3444,39 +3493,39 @@ achievements_triggers = {
 				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
 					is_SmallCutscene_active() && 
 					is_MargaretteTold_NoAncestor() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
 					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
+				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
 					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
 			])}
 		function measuredComparison_Ancestor() { return
 			tally(4, [
-				// once(	// 1st talk with woman		// Commented block FIXfor --> enum_NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and enum_NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
+				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
 				// 	is_SmallCutscene_active() &&
 				// 	is_MargaretteTold_Ancestor() &&
-				// 	is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-				// 	on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
+				// 	is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+				// 	on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
 				// 	is_InteractionChapterId(0x3b) && is_InteractionId(0x428)),
 				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
 					is_SmallCutscene_active() &&
 					is_MargaretteTold_Ancestor() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice") &&
 					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
+				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
 					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter7)
+				!is_Chapter(CHAPTER_Chapter7)
 			) &&
 			(
 				measured(measuredComparison_NoAncestor(), is_MargaretteTold_NoAncestor()) || 
@@ -3489,170 +3538,170 @@ achievements_triggers = {
 				once(	// 1st talk with man, having a dialogue option
 					is_SmallCutscene_active() &&
 					is_WomanAdvisedBeTruthful() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_hitsMax(enum_NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
 					is_InteractionChapterId(0x13) && is_InteractionId(0x41c)),
 				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
 						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
 					is_SmallCutscene_active() &&		
 					is_WomanAdvisedBeTruthful() &&
 					is_ManToldLoversNeverDestinedMeet() &&
-					is_TalkingToNPC(enum_NPC_MiddleAges_YoungCoupleMan) &&					
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&					
 					is_InteractionChapterId(0x13) && is_InteractionId(0x433))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter8)
+				!is_Chapter(CHAPTER_Chapter8)
 			) &&
-			measured(measuredComparison(), is_Area(enum_Area_MiddleAges_City_Day)) &&
+			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Day)) &&
 			trigger_when(on_Cutscene_end())},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		function measuredComparison() { return
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") &&
 					is_InteractionId(0x2cc)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap1Prologue_NearBar") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap1Prologue_NearBar") &&
 					is_InteractionId(0x2c1))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Prologue) && !is_Chapter(enum_Chapter_Chapter1)
+				!is_Chapter(CHAPTER_Prologue) && !is_Chapter(CHAPTER_Chapter1)
 			) &&
 			measured(measuredComparison(), always_true()) &&
 			trigger_when(on_Cutscene_end())},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() {
 		function measuredComparison_onIncrease() { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
 					is_InteractionId(0x2c4))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
 					is_InteractionId(0x2c4))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter3)
+				!is_Chapter(CHAPTER_Chapter3)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(on_Cutscene_end())},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
 		function measuredComparison_onIncrease() { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
 					is_InteractionId(0x2c5))
 			])}
 		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
 					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
 					is_InteractionId(0x2c5))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter4)
+				!is_Chapter(CHAPTER_Chapter4)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(on_Cutscene_end())},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
 		function measuredComparison_BrumLibrary_onIncrease() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
+				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
 					is_SmallCutscene_active() && is_BrumEstate_Library() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumLibrary_onMax() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
+				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
 					is_SmallCutscene_active() && is_BrumEstate_Library() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
 			])}
 		function measuredComparison_BrumMuseum_onIncrease() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					is_SmallCutscene_active() && is_BrumEstate_Museum() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
 			])}
 		function measuredComparison_BrumMuseum_onMax() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
 					is_SmallCutscene_active() && is_BrumEstate_Museum() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter5)
+				!is_Chapter(CHAPTER_Chapter5)
 			) &&
 			trigger_when(on_Cutscene_end()) &&
 			(measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
@@ -3660,34 +3709,34 @@ achievements_triggers = {
 	"a_EnigmaticCouple5": function EnigmaticCouple5() {
 		function measuredComparison_onIncrease() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap7_SouthGate"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
 			])}
 		function measuredComparison_onMax() { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedWoman,"Chap7_SouthGate"),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
-				repeated(get_NPC_MaxTalkCount(enum_NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(enum_NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
+					is_TalkingToNPC(NPC_Present_CoatedMan) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
 			])}
 		return 
 			never(	
 				!is_InGame() ||
-				!is_Chapter(enum_Chapter_Chapter7)
+				!is_Chapter(CHAPTER_Chapter7)
 			) &&
 			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
 			trigger_when(on_Cutscene_end())},
@@ -3698,8 +3747,8 @@ achievements_triggers = {
 			on_Cutscene_MasterId_change()
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
-			is_LargeCutscene_active() && is_Chapter(enum_Chapter_Chapter4) &&
-			is_SelectedItemInScrollBar(enum_Item_Jugglery) &&
+			is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter4) &&
+			is_SelectedItemInScrollBar(ITEM_Jugglery) &&
 			is_WearingPerformerOutfit()			&&
 			is_Cutscene_MasterId(0x1a300)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
@@ -3712,7 +3761,7 @@ achievements_triggers = {
 		never(
 			!is_InGame()				||
 			is_EventViewer_active() 	||
-			!is_SelectedItemInScrollBar(enum_Item_Cake)	
+			!is_SelectedItemInScrollBar(ITEM_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
 			is_LargeCutscene_active() 			&& 
@@ -3728,41 +3777,41 @@ achievements_triggers = {
 			tally(7, [
 				once(
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BlondeYoungBoy) &&
-					is_Area(enum_Area_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit") &&
+					is_TalkingToNPC(NPC_Present_BlondeYoungBoy) &&
+					is_Area(AREA_Present_City_Day) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit") &&
 					is_InteractionChapterId(0x44) && is_InteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BrunetteMother) &&
-					is_Area(enum_Area_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit") &&
+					is_TalkingToNPC(NPC_Present_BrunetteMother) &&
+					is_Area(AREA_Present_City_Day) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit") &&
 					is_InteractionChapterId(0x44) && is_InteractionId(0x336)),
 				once(
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BrunetteYoungGirl) &&
-					is_Area(enum_Area_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit") &&
+					is_TalkingToNPC(NPC_Present_BrunetteYoungGirl) &&
+					is_Area(AREA_Present_City_Day) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit") &&
 					is_InteractionChapterId(0x44) && is_InteractionId(0x323)),
 				once(
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BlondeOldWomanOrangeSweater) &&
-					is_Area(enum_Area_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(enum_NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit") &&
+					is_TalkingToNPC(NPC_Present_BlondeOldWomanOrangeSweater) &&
+					is_Area(AREA_Present_City_Day) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit") &&
 					is_InteractionChapterId(0x44) && is_InteractionId(0x32c)),
 				once(	// This appearance does not have a memory address for talk count
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BrunetteAdultManGlasses) &&
-					is_Area(enum_Area_Present_TownHall) &&
+					is_TalkingToNPC(NPC_Present_BrunetteAdultManGlasses) &&
+					is_Area(AREA_Present_TownHall) &&
 					is_InteractionChapterId(0x29) && is_InteractionId(0x3c6)),
 				once(	// This appearance does not have a memory address for talk count
 					is_SmallCutscene_active() &&
-					is_TalkingToNPC(enum_NPC_Present_BlondeElderlyWoman) &&
-					is_Area(enum_Area_Present_TownHall) &&
+					is_TalkingToNPC(NPC_Present_BlondeElderlyWoman) &&
+					is_Area(AREA_Present_TownHall) &&
 					is_InteractionChapterId(0x29) && is_InteractionId(0x3cc)),
 				once(	// This counts Eike, giving egg to Eike/yourself
 					is_LargeCutscene_active() &&
-					is_SelectedItemInScrollBar(enum_Item_Jugglery) &&
+					is_SelectedItemInScrollBar(ITEM_Jugglery) &&
 					is_Cutscene_MasterId(0x1a300)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -3772,7 +3821,7 @@ achievements_triggers = {
 		return 
 			never(	
 				!is_InGame() 					||
-				!is_Chapter(enum_Chapter_Chapter4)	||
+				!is_Chapter(CHAPTER_Chapter4)	||
 				repeated(300, !is_WearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
 			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset measure count here 
@@ -3781,7 +3830,7 @@ achievements_triggers = {
 		function measuredComparison() { return
 			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Cellphone) &&
+					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Cellphone) &&
 					is_Cutscene_MasterId(0x9000)		&&
 					is_Cutscene_SectionId_1(0xffff)	&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -3790,7 +3839,7 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0x5f80, 0x8)	&&
 					is_Cutscene_MinorId(0x9000, 0x28)),
 				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4, instead of below cutscene
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Cellphone) &&
+					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Cellphone) &&
 					is_Cutscene_MasterId(0xc6e00)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -3799,7 +3848,7 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0x2451a0, 0x8)	&&
 					is_Cutscene_MinorId(0x55b0, 0x28)),
 				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4, instead of above cutscene
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(enum_Item_Lighter) &&
+					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Lighter) &&
 					is_Cutscene_MasterId(0xa84c0)		&&
 					is_Cutscene_SectionId_1(0x1)		&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -3809,7 +3858,7 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0xb220, 0x28)),
 				once(	// Identifies cutscene => scaring town planter
 					is_LargeCutscene_active() && 
-					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
 					is_Cutscene_MasterId(0x98c0)		&&
 					is_Cutscene_SectionId_1(0xffff)	&&
 					is_Cutscene_SectionId_2(0x0)		&&
@@ -3819,31 +3868,31 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0x9890, 0x28)),
 				once(	// Identifies cutscene => scaring eccentric girl
 					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare") &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x314)),				
 				once(	// Identifies cutscene => scaring straw hat man
 					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare") &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x2da)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
 					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(enum_Item_Lighter) || is_SelectedItemInScrollBar(enum_Item_Cellphone)) &&
-					is_NPCtalkCount_atMax(enum_NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare") &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare") &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x2e3))
 			])}
 		return 
 			never(	
 				!is_InGame() 	||
-				!is_Chapter(enum_Chapter_Chapter2)
+				!is_Chapter(CHAPTER_Chapter2)
 			) &&
 			(
 				(	// Alt => vs. pause lock
 					unless(
-						!is_Area(enum_Area_MiddleAges_City_Night) && !is_Area(enum_Area_Present_CafeSonne)			
+						!is_Area(AREA_MiddleAges_City_Night) && !is_Area(AREA_Present_CafeSonne)			
 					) &&
-					measured(measuredComparison(), is_InGame() && is_Chapter(enum_Chapter_Chapter2)) &&
+					measured(measuredComparison(), is_InGame() && is_Chapter(CHAPTER_Chapter2)) &&
 					trigger_when(on_Cutscene_end())
 				) || (
 					always_false()
@@ -3853,7 +3902,7 @@ achievements_triggers = {
 		never(
 			!is_InGame()						||
 			is_EventViewer_active() 			||
-			!is_Chapter(enum_Chapter_Chapter5)	||
+			!is_Chapter(CHAPTER_Chapter5)	||
 			is_FirePutOutBy_Eike()
 		) &&
 		once(	// Identifies Cutscene => Barman gives us free meal
@@ -3881,7 +3930,7 @@ achievements_triggers = {
 		never(
 			!is_InGame()					||
 			is_EventViewer_active() 	||
-			!is_SelectedItemInScrollBar(enum_Item_Cake)	
+			!is_SelectedItemInScrollBar(ITEM_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
 			is_LargeCutscene_active() && 
@@ -3935,33 +3984,33 @@ achievements_triggers = {
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
 					is_SmallCutscene_active() && 
-					is_TalkingToNPC(enum_NPC_Present_SlimDelinquent) &&
-					on_NPC_TalkCount_hitsMax(enum_NPC_Present_SlimDelinquent, "Chap7_CarPark") &&
+					is_TalkingToNPC(NPC_Present_SlimDelinquent) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f5)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					is_SmallCutscene_active() && 
-					is_TalkingToNPC(enum_NPC_Present_BroadDelinquent) &&
-					on_NPC_TalkCount_hitsMax(enum_NPC_Present_BroadDelinquent, "Chap7_CarPark") &&
+					is_TalkingToNPC(NPC_Present_BroadDelinquent) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark") &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f0))
 			])}
 		return 
 			never(
-				!is_Area(enum_Area_Present_City_NightPM)
+				!is_Area(AREA_Present_City_NightPM)
 			) &&
 			measured(measuredComparison(), is_InGame()) &&
 			trigger_when(on_Cutscene_end())},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!is_InGame()						||
-			!is_Chapter(enum_Chapter_Chapter4)	||
+			!is_Chapter(CHAPTER_Chapter4)	||
 			is_EventViewer_active()				||
-			!is_SelectedItemInScrollBar(enum_Item_FryingPan) ||
+			!is_SelectedItemInScrollBar(ITEM_FryingPan) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
 			//	=> black and white picture is not found inside book during this chapter
 			//	=> Thus can be used as a flag for this achievement
-			is_ItemPresentInInventory(enum_Item_BlackWhitePhoto_NoPerformer) 	|| 
-			is_ItemPresentInInventory(enum_Item_BlackWhitePhoto_WithPerformer)			 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_NoPerformer) 	|| 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_WithPerformer)			 
 		) &&
 		once(	// Identifies Cutscene => Using frying pan for defence
 			is_LargeCutscene_active() && 
@@ -3976,7 +4025,7 @@ achievements_triggers = {
 		never(
 			!is_InGame()				||
 			is_EventViewer_active() 	||
-			!is_Chapter(enum_Chapter_Chapter7)
+			!is_Chapter(CHAPTER_Chapter7)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
 			is_LargeCutscene_active() && is_CoffeePayed() &&
@@ -3999,38 +4048,38 @@ achievements_triggers = {
 			once(
 				is_SmallCutscene_active() && 
 				is_Painting_TowerView_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
+				is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
+				(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
 				is_InteractionId(0x124)),			
 			once(
 				is_SmallCutscene_active() && 	
 				is_Painting_SquireCrest_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+				is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
+				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 				is_InteractionId(0x125)),
 			once(
 				is_SmallCutscene_active() &&
 				is_Painting_Marktplatz_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+				is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
+				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 				is_InteractionId(0x126)),
 			once(
 				is_SmallCutscene_active() &&
 				is_Painting_Antidote_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+				is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
+				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 				is_InteractionId(0x127)),
 			once(
 				is_SmallCutscene_active() &&
 				is_Painting_Performer_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_Performer) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+				is_InteractingWith(INTERACTABLE_Painting_Performer) && 
+				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 				is_InteractionId(0x128)),
 			once(
 				is_SmallCutscene_active() &&
 				is_Painting_HouseCollapse_inspired() &&
-				is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
-				(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+				is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
+				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 				is_InteractionId(0x129))
 		]) &&
 		trigger_when(on_Cutscene_end())},	// Trigger when cutscene is over
@@ -4040,38 +4089,38 @@ achievements_triggers = {
 				once(
 					is_SmallCutscene_active() && 
 					is_Painting_TowerView_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
+					(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
 					is_InteractionId(0x124)),
 				once(
 					is_SmallCutscene_active() && 	
 					is_Painting_SquireCrest_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 					is_InteractionId(0x125)),
 				once(
 					is_SmallCutscene_active() &&
 					is_Painting_Marktplatz_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 					is_InteractionId(0x126)),
 				once(
 					is_SmallCutscene_active() &&
 					is_Painting_Antidote_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x127)),
 				once(
 					is_SmallCutscene_active() &&
 					is_Painting_Performer_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_Performer) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_Performer) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x128)),
 				once(
 					is_SmallCutscene_active() &&
 					is_Painting_HouseCollapse_inspired() &&
-					is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x129))
 			])}
 		return
@@ -4086,43 +4135,43 @@ achievements_triggers = {
 			tally(8, [
 				once(
 					is_SmallCutscene_active() && 	
-					is_InteractingWith(enum_InteractItem_Painting_TowerView) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(enum_Area_Present_BrumMuseum_Downstairs_Room_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
+					(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
 					is_InteractionId(0x124)),
 				once(
 					is_SmallCutscene_active() && 	
-					is_InteractingWith(enum_InteractItem_Painting_SquireCrest) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 					is_InteractionId(0x125)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_TownSquare) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room1_Day)) &&
+					is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
 					is_InteractionId(0x126)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_AlchemyLab) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x127)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_Performer) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_Performer) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x128)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_CollapsedHouse) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
 					is_InteractionId(0x129)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_LandscapeTown) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_LandscapeTown) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
 					is_InteractionId(0xffffffff)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Painting_Alchemist) && 
-					(is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(enum_Area_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
+					is_InteractingWith(INTERACTABLE_Painting_Alchemist) && 
+					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
 					is_InteractionId(0xffffffff))
 			])}
 		return
@@ -4137,24 +4186,24 @@ achievements_triggers = {
 			tally(4, [
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Antique_FranssenShopSign) && 
+					is_InteractingWith(INTERACTABLE_Antique_FranssenShopSign) && 
 					is_InteractionId(0xffffffff)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Antique_Rope) &&
+					is_InteractingWith(INTERACTABLE_Antique_Rope) &&
 					is_InteractionId(0xffffffff)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Antique_Antidote) &&
+					is_InteractingWith(INTERACTABLE_Antique_Antidote) &&
 					is_InteractionId(0xffffffff)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(enum_InteractItem_Antique_Mask) &&
+					is_InteractingWith(INTERACTABLE_Antique_Mask) &&
 					is_InteractionId(0xffffffff))
 			])}
 		function measuredIfComparison() { return
-			is_Area(enum_Area_80s_AntiquesEule) ||
-			is_Area(enum_Area_Present_AntiquesEule)}
+			is_Area(AREA_80s_AntiquesEule) ||
+			is_Area(AREA_Present_AntiquesEule)}
 		return
 			never(
 				!is_InGame() ||
@@ -4166,13 +4215,13 @@ achievements_triggers = {
 		never(
 			!is_InGame()				||
 			is_EventViewer_active() 	||
-			!is_Chapter(enum_Chapter_Chapter6) 
+			!is_Chapter(CHAPTER_Chapter6) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
-			is_SmallCutscene_active() && is_Area(enum_Area_80s_CafeSonne) &&
-			is_TalkingToNPC(enum_NPC_80s_OlderMan) && 
+			is_SmallCutscene_active() && is_Area(AREA_80s_CafeSonne) &&
+			is_TalkingToNPC(NPC_80s_OlderMan) && 
 			is_InteractionChapterId(0xb2) && is_InteractionId(0x3e7) && 
-			has_startedTalkingToNPC_forFirstTime(enum_NPC_80s_OlderMan, "Chap6_CafeSonne")
+			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne")
 		) &&
 		trigger_when(on_Cutscene_end())},
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
@@ -4181,13 +4230,13 @@ achievements_triggers = {
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
-			is_SmallCutscene_active() && is_Area(enum_Area_80s_Bar) &&
+			is_SmallCutscene_active() && is_Area(AREA_80s_Bar) &&
 			(
-				is_SelectedItemInScrollBar(enum_Item_EggPocketWatch) ||
-				is_SelectedItemInScrollBar(enum_Item_OrnamentalEgg)
+				is_SelectedItemInScrollBar(ITEM_EggPocketWatch) ||
+				is_SelectedItemInScrollBar(ITEM_OrnamentalEgg)
 			) &&
-			is_TalkingToNPC(enum_NPC_80s_Barman) && is_InteractionId(0x2ed) &&
-			is_NPCtalkCount_atMax(enum_NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg")
+			is_TalkingToNPC(NPC_80s_Barman) && is_InteractionId(0x2ed) &&
+			is_NPCtalkCount_atMax(NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg")
 		) &&
 		trigger_when(on_Cutscene_end())},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
@@ -4196,8 +4245,8 @@ achievements_triggers = {
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
-			is_LargeCutscene_active() && is_Area(enum_Area_80s_City_Snow) &&
-			is_Chapter(enum_Chapter_Chapter6) 	&&
+			is_LargeCutscene_active() && is_Area(AREA_80s_City_Snow) &&
+			is_Chapter(CHAPTER_Chapter6) 	&&
 			is_Cutscene_MasterId(0x756c0)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -4213,8 +4262,8 @@ achievements_triggers = {
 			is_EventViewer_active()			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
-			is_LargeCutscene_active() && is_Area(enum_Area_80s_City_Snow) &&
-			is_Chapter(enum_Chapter_Chapter6)	&&
+			is_LargeCutscene_active() && is_Area(AREA_80s_City_Snow) &&
+			is_Chapter(CHAPTER_Chapter6)	&&
 			is_Cutscene_MasterId(0xebac0)		&&
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -4225,7 +4274,7 @@ achievements_triggers = {
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!is_InGame()						||
-			!is_Chapter(enum_Chapter_Chapter5)	||
+			!is_Chapter(CHAPTER_Chapter5)	||
 			is_EventViewer_active() 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
@@ -4245,8 +4294,8 @@ achievements_triggers = {
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
-			is_LargeCutscene_active() && is_Area(enum_Area_1900s_BrumMansion) &&
-			is_ItemPresentInInventory(enum_Item_Kitten) &&
+			is_LargeCutscene_active() && is_Area(AREA_1900s_BrumMansion) &&
+			is_ItemPresentInInventory(ITEM_Kitten) &&
 			is_Cutscene_MasterId(0x25200)		&& 
 			is_Cutscene_SectionId_1(0x1)		&&
 			is_Cutscene_SectionId_2(0x0)		&&
@@ -4258,7 +4307,7 @@ achievements_triggers = {
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!is_InGame()						||
-			!is_Chapter(enum_Chapter_Prologue)	||
+			!is_Chapter(CHAPTER_Prologue)	||
 			is_EventViewer_active()  
 		) &&
 		(
@@ -4288,7 +4337,7 @@ achievements_triggers = {
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
 			!is_InGame()				||
-			!is_Chapter(enum_Chapter_Chapter7)	||
+			!is_Chapter(CHAPTER_Chapter7)	||
 			is_EventViewer_active()  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
@@ -4300,7 +4349,7 @@ achievements_triggers = {
 	"a_RottenRope": function RottenRope() { return
 		never (
 			!is_InGame() 				||
-			!is_Chapter(enum_Chapter_Chapter7) 	||
+			!is_Chapter(CHAPTER_Chapter7) 	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
@@ -4324,7 +4373,7 @@ achievements_triggers = {
 		never(
 			!is_InGame() 				||
 			is_EventViewer_active() 	|| 
-			!is_Chapter(enum_Chapter_Chapter6)
+			!is_Chapter(CHAPTER_Chapter6)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
 				is_LargeCutscene_active() 			&& 
@@ -4340,7 +4389,7 @@ achievements_triggers = {
 	"a_MetYouBefore": function MetYouBefore() { return
 		never(
 			!is_InGame()						||
-			!is_Chapter(enum_Chapter_Chapter2) 	||
+			!is_Chapter(CHAPTER_Chapter2) 	||
 			is_EventViewer_active()
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
@@ -4364,7 +4413,7 @@ achievements_triggers = {
 		never(
 			!is_InGame()			||
 			is_EventViewer_active()	||
-			!is_Chapter(enum_Chapter_Chapter3)
+			!is_Chapter(CHAPTER_Chapter3)
 		) &&
 		(
 			(
@@ -4652,11 +4701,11 @@ function achievements_initialize() {
 // • RichPresence FUNCTIONS •
 // **************************
 //	- Functions that should only be used by the rich presence script
-function isCurrentChapterIdInRangeOfRecordedIds() {
+function is_ChapterIdInRangeOfRecordedIds() {
 	return
 		0 < current_ChapterID() && 	// Prologue starts at 0x1
 		current_ChapterID() <= 0xb} // Epilogue ends at 0xb
-function isCurrentChapterOneOf(array_chapterIds) {
+function is_ChapterOneOf(array_chapterIds) {
 	any_of(array_chapterIds, (chapterId) => is_Chapter(chapterId))}
 // *********************
 // • RichPresence TEXT •
@@ -4712,37 +4761,37 @@ function richPresence_getLookupTableText(string_parameterKey, string_lookupValue
 // -------------------------------------
 richPresence_lookupTables = {
 	"rpp_FatedHour": { // Each chapter has a fated hour
-		get_ChapterID(enum_Chapter_Prologue): "Prologue", 
-		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
-		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
-		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
-		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
-		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
-		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
-		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
-		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
-		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
-		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Chapter8",
-		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Chapter8"},
+		get_ChapterID(CHAPTER_Prologue): "Prologue", 
+		get_ChapterID(CHAPTER_Chapter1): "Chapter1",
+		get_ChapterID(CHAPTER_Chapter2): "Chapter2",
+		get_ChapterID(CHAPTER_Chapter3): "Chapter3",
+		get_ChapterID(CHAPTER_Chapter4): "Chapter4",
+		get_ChapterID(CHAPTER_Chapter5): "Chapter5",
+		get_ChapterID(CHAPTER_Chapter6): "Chapter6",
+		get_ChapterID(CHAPTER_Chapter7): "Chapter7",
+		get_ChapterID(CHAPTER_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(CHAPTER_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(CHAPTER_Epilogue_NoAncestress): "Chapter8",
+		get_ChapterID(CHAPTER_Epilogue_Ancestress): "Chapter8"},
 	"rpp_TimePeriod": {	// Refer to 0xAA1268
-		get_TimePeriodIDs(enum_TimePeriod_MiddleAges): "MiddleAges",
-		get_TimePeriodIDs(enum_TimePeriod_Early20thCentury): "Early20Century",
-		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 0): "Late20Century",
-		get_TimePeriodIDs(enum_TimePeriod_Late20thCentury, 1): "Late20Century",
-		get_TimePeriodIDs(enum_TimePeriod_Present): "Present"},
+		get_TimePeriodIDs(TIMEPERIOD_MiddleAges): "MiddleAges",
+		get_TimePeriodIDs(TIMEPERIOD_Early20thCentury): "Early20Century",
+		get_TimePeriodIDs(TIMEPERIOD_Late20thCentury, 0): "Late20Century",
+		get_TimePeriodIDs(TIMEPERIOD_Late20thCentury, 1): "Late20Century",
+		get_TimePeriodIDs(TIMEPERIOD_Present): "Present"},
 	"rpp_Chapter": { // Refer to const_chapter_IDs
-		get_ChapterID(enum_Chapter_Prologue): "Prologue",
-		get_ChapterID(enum_Chapter_Chapter1): "Chapter1",
-		get_ChapterID(enum_Chapter_Chapter2): "Chapter2",
-		get_ChapterID(enum_Chapter_Chapter3): "Chapter3",
-		get_ChapterID(enum_Chapter_Chapter4): "Chapter4",
-		get_ChapterID(enum_Chapter_Chapter5): "Chapter5",
-		get_ChapterID(enum_Chapter_Chapter6): "Chapter6",
-		get_ChapterID(enum_Chapter_Chapter7): "Chapter7",
-		get_ChapterID(enum_Chapter_Chapter8_NoAncestress): "Chapter8",
-		get_ChapterID(enum_Chapter_Chapter8_Ancestress): "Chapter8",
-		get_ChapterID(enum_Chapter_Epilogue_NoAncestress): "Epilogue",
-		get_ChapterID(enum_Chapter_Epilogue_Ancestress): "Epilogue"}}
+		get_ChapterID(CHAPTER_Prologue): "Prologue",
+		get_ChapterID(CHAPTER_Chapter1): "Chapter1",
+		get_ChapterID(CHAPTER_Chapter2): "Chapter2",
+		get_ChapterID(CHAPTER_Chapter3): "Chapter3",
+		get_ChapterID(CHAPTER_Chapter4): "Chapter4",
+		get_ChapterID(CHAPTER_Chapter5): "Chapter5",
+		get_ChapterID(CHAPTER_Chapter6): "Chapter6",
+		get_ChapterID(CHAPTER_Chapter7): "Chapter7",
+		get_ChapterID(CHAPTER_Chapter8_NoAncestress): "Chapter8",
+		get_ChapterID(CHAPTER_Chapter8_Ancestress): "Chapter8",
+		get_ChapterID(CHAPTER_Epilogue_NoAncestress): "Epilogue",
+		get_ChapterID(CHAPTER_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
 // **************************
@@ -4798,30 +4847,30 @@ function richPresence_callDisplayFunctions(){
 	rich_presence_display(	// rp_Default // VERIFIED
 		richPresence_getText("rp_Default"))}
 // -------------------------------------
-richPresence_enum_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_enum_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_enum_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
 richPresence_conditions = {
 	"rp_isPaused": () => 
 		is_InGame() && is_InGamePauseMenu_active(),
 	"rp_InGameEXChapterOnly": () =>
-		is_InGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
-		is_PrologueExMode_active() && isExChapterUnlocked() && 
+		is_InGame() && is_ChapterIdInRangeOfRecordedIds() && 
+		is_PrologueExMode_active() && is_ExChapter_unlocked() && 
 		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		is_Chapter(enum_Chapter_Prologue),
+		is_Chapter(CHAPTER_Prologue),
 	"rp_InGameChapterOnly": () =>
-		is_InGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		is_InGame() && is_ChapterIdInRangeOfRecordedIds() && 
 		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		!is_PrologueExMode_active() && isCurrentChapterOneOf(
-			[enum_Chapter_Prologue, enum_Chapter_Chapter1, enum_Chapter_Epilogue]),
+		!is_PrologueExMode_active() && is_ChapterOneOf(
+			[CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue]),
 	"rp_InGameChapterWithTimePeriod": () { return
-		is_InGame() && isCurrentChapterIdInRangeOfRecordedIds() && 
+		is_InGame() && is_ChapterIdInRangeOfRecordedIds() && 
 		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		isCurrentChapterOneOf([
-			enum_Chapter_Chapter2, enum_Chapter_Chapter3, 
-			enum_Chapter_Chapter4, enum_Chapter_Chapter5, 
-			enum_Chapter_Chapter6, enum_Chapter_Chapter7, enum_Chapter_Chapter8])},
+		is_ChapterOneOf([
+			CHAPTER_Chapter2, CHAPTER_Chapter3, 
+			CHAPTER_Chapter4, CHAPTER_Chapter5, 
+			CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8])},
 	"rp_AtTitleScreen": () =>
 		is_MainSave_loaded() && 
 		(is_TitleMenu_active() || !is_InGame())
@@ -4839,43 +4888,43 @@ richPresence_parameterData = {
 	// ------------------------------------------------------
 
 	"rpp_Chapter": {
-		"RPtype": richPresence_enum_LOOKUP,
+		"RPtype": richPresence_LOOKUP,
 		"Expression": current_ChapterID(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
 	"rpp_TimePeriod": {	
-		"RPtype": richPresence_enum_LOOKUP,
+		"RPtype": richPresence_LOOKUP,
 		"Expression": current_TimePeriod(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
 	"rpp_TotalCompletionRate": {
-		"RPtype": richPresence_enum_MACRO,
+		"RPtype": richPresence_MACRO,
 		"Expression": getTotalAchievementRate(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeSeconds": {
-		"RPtype": richPresence_enum_MACRO,
+		"RPtype": richPresence_MACRO,
 		"Expression": current_PresentTime_Seconds(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": current_PresentTime_Minutes(),
+		"RPtype": richPresence_MACRO,
+		"Expression": get_DateTime_Minutes(DATETIME_Present, USA),
 		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": (current_PresentTime_Minutes() + current_PresentTime_Hours() * 60),
+		"RPtype": richPresence_MACRO,
+		"Expression": (get_DateTime_Minutes(DATETIME_Present, USA) + get_DateTime_Hours(DATETIME_Present, USA) * 60),
 		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
-		"RPtype": richPresence_enum_MACRO,
-		"Expression": current_PresentTime_Hours(),
+		"RPtype": richPresence_MACRO,
+		"Expression": get_DateTime_Hours(DATETIME_Present, USA),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
-		"RPtype": richPresence_enum_MACRO,
+		"RPtype": richPresence_MACRO,
 		"Expression": current_PresentTime_Years(),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeDays": {
-		"RPtype": richPresence_enum_MACRO,
+		"RPtype": richPresence_MACRO,
 		"Expression": current_PresentTime_Days(),
 		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
-		"RPtype": richPresence_enum_LOOKUP,
+		"RPtype": richPresence_LOOKUP,
 		"Expression": current_ChapterID(),
 		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
 	}	
@@ -4912,9 +4961,9 @@ function richPresence_callParameterFunction(string_parameterKey) {	// Checks whi
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_enum_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_enum_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_enum_MACRO) richPresence_callMacroFunction(let_parameterData)
+	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
+	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
 	}
 
@@ -5014,7 +5063,7 @@ leaderboards_coreData = {
 //	- For leaderboard logic that's reoccuring across multiple triggers
 function leaderboards_generate_ClearTimeChapter_StartTrigger(enum_chapter) {
 	let_chapterSpecificComparison = always_true()
-	if (enum_chapter == enum_Chapter_Prologue) 
+	if (enum_chapter == CHAPTER_Prologue) 
 		let_chapterSpecificComparison = !is_PrologueExMode_active()
 	return 
 		never(!is_InGame()) &&
@@ -5025,7 +5074,7 @@ function leaderboards_generate_ClearTimeChapter_StartTrigger(enum_chapter) {
 										//			both Total and chapter clear time pop and same time otherwise
 function leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_chapter) {
 	let_chapterSpecificComparison = always_false()
-	if (enum_chapter == enum_Chapter_Prologue)
+	if (enum_chapter == CHAPTER_Prologue)
 		let_chapterSpecificComparison = is_PrologueExMode_active()
 	return 	
 		!is_InGame() 						|| 
@@ -5041,23 +5090,23 @@ function leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_chapter) =>
 // *************************
 leaderboards_startTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter8),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter7),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter6),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter5),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter4),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter3),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter2),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Chapter1),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(enum_Chapter_Prologue),
+		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Prologue),
 	"lb_TotalClearTime": () =>
 		never(!is_InGame()) &&
 		once(on_Timer_TotalClearTime_start()) 	&&
@@ -5065,53 +5114,53 @@ leaderboards_startTriggers = {
 		!is_PrologueExMode_active()}
 leaderboards_cancelTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter8),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter7),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter6),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter5),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter4),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter3),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter2),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Chapter1),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_Chapter_Prologue),
+		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Prologue),
 	"lb_TotalClearTime": () =>
 		!is_InGame() || is_PrologueExMode_active() || on_Timer_TotalClearTime_reset()}
 leaderboards_submitTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter8),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter7),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter6),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter5),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter4),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter3),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter2),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Chapter1),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_Chapter_Prologue),
+		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Prologue),
 	"lb_TotalClearTime": () =>
 		is_InGame() &&
 		(
 			(		// Alt 1 => Trigger when credits video starts
-				on_Video_start() && is_Chapter(enum_Chapter_Epilogue)
+				on_Video_start() && is_Chapter(CHAPTER_Epilogue)
 			) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
 				never(!on_Timer_TotalClearTime_valueChange() && !is_Video_active()) &&
 				tally(20, 
-					is_Video_active() && is_Chapter(enum_Chapter_Epilogue) &&
+					is_Video_active() && is_Chapter(CHAPTER_Epilogue) &&
 					!on_Timer_TotalClearTime_valueChange())
 			)
 		)}
@@ -5195,6 +5244,7 @@ function leaderboards_initialize() {
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
+	// memory_initialize()
 	achievements_initialize()
 	richPresence_initialize()
 	leaderboards_initialize()}
