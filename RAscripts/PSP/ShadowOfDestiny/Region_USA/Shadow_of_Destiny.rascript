@@ -117,13 +117,55 @@ USA = "NTSC-U/C"
 EU = "PAL"
 JP = "NTSC-J"
 memory_addresses = {
-	"32bit_TimePeriod":	{USA: 0xAA1268, EU: iNULL, JP: iNULL},
-	"Struct_DateTime_Present": {USA: 0xAA12A4, EU: iNULL, JP: iNULL},
+//	"DataType": {
+//		"Template": {USA: iNULL, EU: iNULL, JP: iNULL},
+//	}
+	"BitFlag": {
+		"IsLoading_OR_IsChapterCompletionMenuDisplayed": {USA: 0xa82e2c, EU: iNULL, JP: iNULL},
+	},
+	"8bit_Flag": {
+		"IsCutsceneActive": {USA: 0xa9ed26, EU: iNULL, JP: iNULL},
+	},
+	"8bit": {
+		"EnergyUnits": {USA: 0xa9daa8, EU: iNULL, JP: iNULL},
+	},
+	"16bit": {
+		"Cutscene_SectionID1": {USA: 0xa9ecc0, EU: iNULL, JP: iNULL},
+		"Cutscene_SectionID2": {USA: 0xa9ecc2, EU: iNULL, JP: iNULL},
+	},
+	"25bit_Pointer": {
+		"Cutscene_MasterData": {USA: 0xa9ecc8, EU: iNULL, JP: iNULL},
+		"Cutscene_SectionData": {USA: 0xa9eccc, EU: iNULL, JP: iNULL},
+		"VideoData": {USA: 0x8ffef0, EU: iNULL, JP: 0x8fbef0},
+		"EnergyOrbs_Present_City": {USA: 0xa442ec, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_Late20thCentury_City": {USA: 0xa442f0, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_Early20thCentury_City": {USA: 0xa442f4, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_Early20thCentury_BrumMansion": {USA: 0xa44304, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_MiddleAges_City": {USA: 0xa442f8, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_MiddleAges_AlchemyLab": {USA: 0xa44300, EU: iNULL, JP: iNULL},
+		"EnergyOrbs_MiddleAges_Church": {USA: 0xa4430c, EU: iNULL, JP: iNULL},
+	},
+	"32bit": {
+		"Cutscene_Timer": {USA: 0xa9ecbc, EU: iNULL, JP: iNULL},
+		"Cutscene_MasterID": {USA: 0xa9ecbc, EU: iNULL, JP: iNULL},
+		"AreaID": {USA: 0xa82e48, EU: iNULL, JP: iNULL},
+		"TimerPeriod": {USA: 0xAA1268, EU: iNULL, JP: iNULL},
+	},
+	"Float": {
+		"PlayerPosition_xAxis": {USA: 0xa8abd0, EU: iNULL, JP: iNULL},
+		"PlayerPosition_yAxis": {USA: 0xa8abd8, EU: iNULL, JP: iNULL},
+	},
+	"Struct": {
+		"DateTime_Present": {USA: 0xAA12A4, EU: iNULL, JP: iNULL},
+	},
 }
 
+function memory_getAddress(string_dataType, string_addrKey, string_regionCode) => 
+	memory_addresses[string_addrKey][string_regionCode]
+
 function memory_initialize() {	// FUNCTION: Use this function, when all address are offset. Don't forget to uncomment this function call in initialization code
-	let_EUoffset = 0x10
-	let_JPoffset = 0x20
+	let_EUoffset = sNULL
+	let_JPoffset = sNULL
 	for memAddrKey in memory_addresses {
 		let_USAaddr = memory_addresses[memAddrKey][USA]
 		if(let_USAaddr == iNULL) util_throwError("Memory Address for {0} is NULL", memAddrKey)
@@ -132,8 +174,7 @@ function memory_initialize() {	// FUNCTION: Use this function, when all address 
 	}
 }
 
-function memory_getAddress(string_addrKey, string_regionCode) => 
-	memory_addresses[string_addrKey][string_regionCode]
+
 
 // *******************
 // ◦ PLAYER POSITION ◦
