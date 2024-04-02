@@ -65,8 +65,8 @@ function util_throwError(string_errMsg) {	// This function will throw an error i
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
-function sysUtil_maskPointer(ptr) =>
-	ptr & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
+function sysUtil_maskPointer(memAddr_ptr) =>
+	dword(memAddr_ptr) & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
 
 function never_toAlt(comparison) =>
 	(
@@ -104,7 +104,7 @@ memory_dataStructures = {
 			"32bit_Minutes": 0x10,
 			"32bit_Seconds": 0x14
 		}
-	}
+	},
 }
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -113,68 +113,108 @@ function memory_getDataStructSizeInBytes(string_structKey) =>
 function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 	memory_dataStructures[string_structKey]["offsets"][string_offsetKey]
 // -------------------------------------
-USA = "NTSC-U/C"
-EU = "PAL"
-JP = "NTSC-J"
+GAMEREGION_USA = "NTSC-U/C"
+GAMEREGION_EUR = "PAL"
+GAMEREGION_JPN = "NTSC-J"
+
+DATATYPE_BitFlag 				= 700
+DATATYPE_4Bit 					= 600
+DATATYPE_8Bit 					= 500
+DATATYPE_16Bit 					= 400
+DATATYPE_25BitPointer 			= 300
+DATATYPE_Float					= 201
+DATATYPE_32Bit 					= 200
+DATATYPE_Struct 				= 100
 memory_addresses = {
-//	"DataType": {
-//		"Template": {USA: iNULL, EU: iNULL, JP: iNULL},
-//	}
-	"BitFlag": {
-		"IsLoading_OR_IsChapterCompletionMenuDisplayed": {USA: 0xa82e2c, EU: iNULL, JP: iNULL},
+	//	"DataType": {
+	//		"Template": {GAMEREGION_USA: sNULL, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: sNULL},
+	//	}
+	DATATYPE_BitFlag: {
+		"IsLoading_OR_IsChapterCompletionMenuDisplayed": {GAMEREGION_USA: 0xa82e2c, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa8a97c},
 	},
-	"8bit_Flag": {
-		"IsCutsceneActive": {USA: 0xa9ed26, EU: iNULL, JP: iNULL},
+	DATATYPE_4Bit: {
+		"IsInGame": {GAMEREGION_USA: 0xa9eddc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa692c},
 	},
-	"8bit": {
-		"EnergyUnits": {USA: 0xa9daa8, EU: iNULL, JP: iNULL},
+	DATATYPE_8Bit: {
+		"EnergyUnits": {GAMEREGION_USA: 0xa9daa8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa55f8},
+		"IsCutsceneActive": {GAMEREGION_USA: 0xa9ed26, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6876},
+		"ChapterID": {GAMEREGION_USA: 0xb95704, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xb9d284},
 	},
-	"16bit": {
-		"Cutscene_SectionID1": {USA: 0xa9ecc0, EU: iNULL, JP: iNULL},
-		"Cutscene_SectionID2": {USA: 0xa9ecc2, EU: iNULL, JP: iNULL},
+	DATATYPE_16Bit: {
+		"Cutscene_SectionID_1": {GAMEREGION_USA: 0xa9ecc0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6810},
+		"Cutscene_SectionID_2": {GAMEREGION_USA: 0xa9ecc2, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6812},
 	},
-	"25bit_Pointer": {
-		"Cutscene_MasterData": {USA: 0xa9ecc8, EU: iNULL, JP: iNULL},
-		"Cutscene_SectionData": {USA: 0xa9eccc, EU: iNULL, JP: iNULL},
-		"VideoData": {USA: 0x8ffef0, EU: iNULL, JP: 0x8fbef0},
-		"EnergyOrbs_Present_City": {USA: 0xa442ec, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_Late20thCentury_City": {USA: 0xa442f0, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_Early20thCentury_City": {USA: 0xa442f4, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_Early20thCentury_BrumMansion": {USA: 0xa44304, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_MiddleAges_City": {USA: 0xa442f8, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_MiddleAges_AlchemyLab": {USA: 0xa44300, EU: iNULL, JP: iNULL},
-		"EnergyOrbs_MiddleAges_Church": {USA: 0xa4430c, EU: iNULL, JP: iNULL},
+	DATATYPE_25BitPointer: {
+		"GameRegionIdentifier": {GAMEREGION_USA: 0xaa2998, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaaa4e8},
+		"Cutscene_MasterData": {GAMEREGION_USA: 0xa9ecc8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6818},
+		"Cutscene_SectionData": {GAMEREGION_USA: 0xa9eccc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa681c},
+		"Cutscene_MinorIDs": {GAMEREGION_USA: 0xa9ecd4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6824},
+		"VideoData": {GAMEREGION_USA: 0x8ffef0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0x8fbef0},
+		"EnergyOrbs_Present_City": {GAMEREGION_USA: 0xa442ec, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450bc},
+		"EnergyOrbs_Late20thCentury_City": {GAMEREGION_USA: 0xa442f0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450c0},
+		"EnergyOrbs_Early20thCentury_City": {GAMEREGION_USA: 0xa442f4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450c4},
+		"EnergyOrbs_Early20thCentury_BrumMansion": {GAMEREGION_USA: 0xa44304, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450d4},
+		"EnergyOrbs_MiddleAges_City": {GAMEREGION_USA: 0xa442f8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450c8},
+		"EnergyOrbs_MiddleAges_AlchemyLab": {GAMEREGION_USA: 0xa44300, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450d0},
+		"EnergyOrbs_MiddleAges_Church": {GAMEREGION_USA: 0xa4430c, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa450dc},
 	},
-	"32bit": {
-		"Cutscene_Timer": {USA: 0xa9ecbc, EU: iNULL, JP: iNULL},
-		"Cutscene_MasterID": {USA: 0xa9ecbc, EU: iNULL, JP: iNULL},
-		"AreaID": {USA: 0xa82e48, EU: iNULL, JP: iNULL},
-		"TimerPeriod": {USA: 0xAA1268, EU: iNULL, JP: iNULL},
+	DATATYPE_Float: {
+		"PlayerPosition_xAxis": {GAMEREGION_USA: 0xa8abd0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa92720},
+		"PlayerPosition_yAxis": {GAMEREGION_USA: 0xa8abd8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa92728},
 	},
-	"Float": {
-		"PlayerPosition_xAxis": {USA: 0xa8abd0, EU: iNULL, JP: iNULL},
-		"PlayerPosition_yAxis": {USA: 0xa8abd8, EU: iNULL, JP: iNULL},
+	DATATYPE_32Bit: {
+		"Cutscene_Timer": {GAMEREGION_USA: 0xa9ecbc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6888},
+		"Cutscene_MasterID": {GAMEREGION_USA: 0xa9ecbc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa680c},
+		"AreaID": {GAMEREGION_USA: 0xa82e48, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa8a998},
+		"TimePeriod": {GAMEREGION_USA: 0xAA1268, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa8db8},
 	},
-	"Struct": {
-		"DateTime_Present": {USA: 0xAA12A4, EU: iNULL, JP: iNULL},
-	},
+	DATATYPE_Struct: {
+		"DateTime_Present": {GAMEREGION_USA: 0xAA12A4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa8df4},
+		"AchievementPercentage_Prologue_base": {GAMEREGION_USA: 0xa9ed3c, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa688c},
+		"AchievementPercentage_Chapter1_base": {GAMEREGION_USA: 0xa9ed43, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6893},
+		"AchievementPercentage_Chapter2_base": {GAMEREGION_USA: 0xa9ed47, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6897},
+		"AchievementPercentage_Chapter3_base": {GAMEREGION_USA: 0xa9ed58, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68a8},
+		"AchievementPercentage_Chapter4_base": {GAMEREGION_USA: 0xa9ed4d, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa689d},
+		"AchievementPercentage_Chapter5_base": {GAMEREGION_USA: 0xa9ed52, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68a2},
+		"AchievementPercentage_Chapter6_base": {GAMEREGION_USA: 0xa9ed5b, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68ab},
+		"AchievementPercentage_Chapter7_base": {GAMEREGION_USA: 0xa9ed60, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68b0},
+		"AchievementPercentage_Chapter8_base": {GAMEREGION_USA: 0xa9ed65, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68b5},
+		"AchievementPercentage_Epilogue_base": {GAMEREGION_USA: 0xa9ed71, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68c1},
+	}}
+
+function memory_getAddress(enum_dateType, string_addrKey, enum_gameRegion) {
+	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_gameRegion]
+	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_gameRegion))
+	return let_memAddr
 }
 
-function memory_getAddress(string_dataType, string_addrKey, string_regionCode) => 
-	memory_addresses[string_addrKey][string_regionCode]
+function memory_initialize() {
+	function initialize_OtherRegions() {	// Use this function when all memory addresses are offset
+		let_EUoffset = sNULL
+		let_JPoffset = sNULL
+		for memAddrKey in memory_addresses {
+			let_USAaddr = memory_addresses[memAddrKey][GAMEREGION_USA]
+			if(let_USAaddr == iNULL) util_throwError("Memory Address for {0} is NULL", memAddrKey)
+			memory_addresses[memAddrKey][GAMEREGION_EUR] = let_USAaddr + let_EUoffset
+			memory_addresses[memAddrKey][GAMEREGION_JPN] = let_USAaddr + let_JPoffset
+		}
+	}
+	// initialize_OtherRegions()
+}
 
-function memory_initialize() {	// FUNCTION: Use this function, when all address are offset. Don't forget to uncomment this function call in initialization code
-	let_EUoffset = sNULL
-	let_JPoffset = sNULL
-	for memAddrKey in memory_addresses {
-		let_USAaddr = memory_addresses[memAddrKey][USA]
-		if(let_USAaddr == iNULL) util_throwError("Memory Address for {0} is NULL", memAddrKey)
-		memory_addresses[memAddrKey][EU] = let_USAaddr + let_EUoffset
-		memory_addresses[memAddrKey][JP] = let_USAaddr + let_JPoffset
+function is_GameRegion(enum_gameRegion) {
+	let_memAddrPtrUSA = memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", GAMEREGION_USA)
+	let_memAddrPtrJPN = memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", GAMEREGION_JPN)
+	let_comparison_isUSA = bit0(sysUtil_maskPointer(let_memAddrPtrUSA) + 0x4) == 1 	
+	let_comparison_isJPN = bit0(sysUtil_maskPointer(let_memAddrPtrJPN) + 0x4) == 1 
+	if(enum_gameRegion == GAMEREGION_USA) { return 
+		let_comparison_isUSA && !let_comparison_isJPN
+	} else if (enum_gameRegion == GAMEREGION_JPN) { return
+		!let_comparison_isUSA && let_comparison_isJPN
+	} else {
+		util_throwError(format("Game region '{0}' does not exist", enum_gameRegion))
 	}
 }
-
-
 
 // *******************
 // ◦ PLAYER POSITION ◦
@@ -201,45 +241,37 @@ const_TimePeriod_IDs = {
 	TIMEPERIOD_Early20thCentury: {"IDs": [0x81]},
 	TIMEPERIOD_MiddleAges:{"IDs": [0x80]}}
 
-function current_TimePeriod() =>	// $AA1268: [32-bit] Time Period
-	dword(0xAA1268)					//		0x80 => Middle ages 1500s
-									// 		0x81 => Early 20th Century 1900s
-									// 		0x82 => Late 20th Century 1980
-									// 		0x88 => Late 20th Century 1979
-									// 		0x83 => Present 2000s
+function current_TimePeriod(enum_regionCode = GAMEREGION_USA) =>
+	dword(memory_getAddress(DATATYPE_32Bit, "TimePeriod", enum_regionCode))
 
 function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
 	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
 
 // -------------------------------------
 DATETIME_Present = 100
-const_DateTime_memAddr = {
+const_DateTime_memAddr = { 
 	DATETIME_Present: {
-		USA: () => memory_getAddress("Struct_DateTime_Present", USA),
-		EU: () => memory_getAddress("Struct_DateTime_Present", EU),
-	}
-}
-
-function get_DateTime_BaseAddr(enum_dateTime, enum_region) => 
-	const_DateTime_memAddr[enum_dateTime][enum_region]
+		GAMEREGION_USA: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", GAMEREGION_USA),
+		GAMEREGION_EUR: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", GAMEREGION_JPN),
+	}}
 
 function get_DateTime_Seconds(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Seconds"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Seconds"))
 
 function get_DateTime_Minutes(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Minutes"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Minutes"))
 
 function get_DateTime_Hours(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Hours"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Hours"))
 
 function get_DateTime_Days(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Days"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Days"))
 
 function get_DateTime_Months(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Months"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Months"))
 
 function get_DateTime_Years(enum_dateTime, enum_region) =>
-	dword(get_DateTime_BaseAddr(enum_dateTime, enum_region) + memory_getDataStructOffset("Struct_DateTime","32bit_Years"))
+	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32bit_Years"))
 
 function current_PresentTime_Hours() =>		// $AA12B0: [32-bit] Time in present: hours
 	get_DateTime_Hours()
@@ -429,10 +461,10 @@ function is_NPCtalkCount_atMax(enum_npc, string_appearance) =>
 function is_TalkingToNPC_bis(enum_npc) => 		// $A9EFF4: Copy of [32-bit] NPC ID (refer to notes @ 0xa9efdc)
 	dword(0xA9EFF4) == get_NPC_Id(enum_npc)		// - Resets to 0x0 when interaction is done
 
-function is_TalkingToNPC(enum_npc) {							// $A9EFDC: [25-bit Pointer] Interactions
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFDC))	// 		+0x0 - [32-bit] NPC ID	
-	return 														// 		| - This value is copied to 0xa9eff4 (refer to notes)
-		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}		// 		| - Unique per interactable NPC or environment item
+function is_TalkingToNPC(enum_npc) {						// $A9EFDC: [25-bit Pointer] Interactions
+	let_maskedPointer = sysUtil_maskPointer(0xA9EFDC)		// 		+0x0 - [32-bit] NPC ID	
+	return 													// 		| - This value is copied to 0xa9eff4 (refer to notes)
+		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}	// 		| - Unique per interactable NPC or environment item
 
 function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance) => 
 	prior_NPCtalkCount(enum_npc, string_appearance) < 0x1 &&
@@ -479,17 +511,17 @@ function is_InteractingWith_bis(enum_interactableItem) =>
 	dword(0xA9EFF4) == const_InteractableItem_IDs[enum_interactableItem]
 
 function is_InteractingWith(enum_interactableItem) {
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFDC))
+	let_maskedPointer = sysUtil_maskPointer(0xA9EFDC)
 	return const_InteractableItem_IDs[enum_interactableItem] == dword(let_maskedPointer)}
 
-function is_InteractionChapterId(int_Id) {						// $A9EFE0: [25-bit Pointer] Interaction Identification
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFE0))	// 		+0x0 - [32-bit] Interaction Chapter ID
-	return dword(let_maskedPointer) == int_Id}					//		| - Each chapter has a different value
+function is_InteractionChapterId(int_Id) {				// $A9EFE0: [25-bit Pointer] Interaction Identification
+	let_maskedPointer = sysUtil_maskPointer(0xA9EFE0)	// 		+0x0 - [32-bit] Interaction Chapter ID
+	return dword(let_maskedPointer) == int_Id}			//		| - Each chapter has a different value
 
 function is_InteractionId(int_Id) {
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9EFE4))	// $A9EFE4: [25-bit Pointer] Interaction Identification
-	return dword(let_maskedPointer) == int_Id}					// 		- Pointer resets to 0x0 when interaction is done
-																// 		+0x0 - [32-bit] Interaction ID
+	let_maskedPointer = sysUtil_maskPointer(0xA9EFE4)	// $A9EFE4: [25-bit Pointer] Interaction Identification
+	return dword(let_maskedPointer) == int_Id}			// 		- Pointer resets to 0x0 when interaction is done
+														// 		+0x0 - [32-bit] Interaction ID
 // -------------------------------------
 function is_LostYoungCoupleProgress_Chapter2(int_flagValue) => 	//	$A9EF89: [8-bit Current Playthrough Flag]  Progress of Young Couple sidequest: Chapter 2
 	byte(0xA9EF89) == int_flagValue								// 		0x1 => has talked with 0xa9ef69 AND 0xa9ef7c
@@ -556,16 +588,16 @@ function is_Cutscene_SectionId_1(int_Id) => // $A9ECC0: [16-bit] Cutscene Sectio
 function is_Cutscene_SectionId_2(int_Id) => // $A9ECC2: [16-bit] Cutscene Section ID_2
 	word(0xA9ECC2) == int_Id
 
-function is_Cutscene_MasterDataId(int_Id) {						// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECC8))	// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
-	return dword(let_maskedPointer + 0x8) == int_Id}			// 		+0x8 - [32-bit] Cutscene Master Data ID
+function is_Cutscene_MasterDataId(int_Id) {				// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
+	let_maskedPointer = sysUtil_maskPointer(0xA9ECC8)	// 		+0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
+	return dword(let_maskedPointer + 0x8) == int_Id}	// 		+0x8 - [32-bit] Cutscene Master Data ID
 
-function is_Cutscene_SectionDataId(int_Id) {					// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECCC))	// 		+0x0 - Data lower than this hex address changes when the next section in the cutscene starts
-	return dword(let_maskedPointer + 0x8) == int_Id}			// 		+0x8 - [32-bit] Cutscene Section Data ID
+function is_Cutscene_SectionDataId(int_Id) {			// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
+	let_maskedPointer = sysUtil_maskPointer(0xA9ECCC)	// 		+0x0 - Data lower than this hex address changes when the next section in the cutscene starts
+	return dword(let_maskedPointer + 0x8) == int_Id}	// 		+0x8 - [32-bit] Cutscene Section Data ID
 
 function is_Cutscene_MinorId(int_Id, int_offset) {				// $A9ECD4: [25-bit Pointer] Cutscene Identification - Minor IDs
-	let_maskedPointer = sysUtil_maskPointer(dword(0xA9ECD4))	//	- Pointer active when a cutscene is active
+	let_maskedPointer = sysUtil_maskPointer(0xA9ECD4)			//	- Pointer active when a cutscene is active
 	return dword(let_maskedPointer + int_offset) == int_Id}		// 		+0x0 - Data lower than this point can be used as Minor Cutscene IDs
 																// 		+0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
 
@@ -661,27 +693,27 @@ const_chapter_IDs = {
 	CHAPTER_Epilogue_NoAncestress: 0xc}
 
 function get_ChapterID(enum_chapter) => 
-	const_chapter_IDs[enum_chapter]	
+	const_chapter_IDs[enum_chapter]
 
-function current_ChapterID() => 	// $B95704: [8-bit] Chapter ID
-	byte(0xB95704)
+function current_ChapterID(enum_gameRegion = GAMEREGION_USA) => 	// $B95704: [8-bit] Chapter ID
+	byte(memory_getAddress(DATATYPE_8Bit, "ChapterID", enum_gameRegion))
 
-function prev_ChapterID() =>
-	prev(current_ChapterID())
+function prev_ChapterID(enum_gameRegion = GAMEREGION_USA) =>
+	prev(current_ChapterID(enum_gameRegion))
 
-function is_Chapter(enum_chapter) {	
+function is_Chapter(enum_chapter, enum_gameRegion = GAMEREGION_USA) {	
 	if (enum_chapter == CHAPTER_Chapter8) { return
 		(
-			is_Chapter(CHAPTER_Chapter8_NoAncestress) 	|| 
-			is_Chapter(CHAPTER_Chapter8_Ancestress)
+			is_Chapter(CHAPTER_Chapter8_NoAncestress, enum_gameRegion) 	|| 
+			is_Chapter(CHAPTER_Chapter8_Ancestress, enum_gameRegion)
 		)
 	} else if (enum_chapter == CHAPTER_Epilogue) {	return
 		(
-			is_Chapter(CHAPTER_Epilogue_NoAncestress) 	|| 
-			is_Chapter(CHAPTER_Epilogue_Ancestress)
+			is_Chapter(CHAPTER_Epilogue_NoAncestress, enum_gameRegion) 	|| 
+			is_Chapter(CHAPTER_Epilogue_Ancestress, enum_gameRegion)
 		)
 	} else { return
-		current_ChapterID() == get_ChapterID(enum_chapter)
+		current_ChapterID(enum_gameRegion) == get_ChapterID(enum_chapter)
 	}}
 
 function on_Chapter_finish(enum_chapter) {
@@ -897,7 +929,7 @@ function is_BottomScreenTextId(int_id) =>	// $AC31E4:  Bottom screen text ID
 	// >>>| ¨¨¨¨¨¨¨¨ Higher value => more of the image is visible
 	// >>>| +0xd - [8-bit] Print location y-axis
 	// >>>| +0xf - [8-bit] Character set ID
-	// >>>| ¨¨¨¨¨¨¨¨ Default for USA version is 0x8 = latin characters
+	// >>>| ¨¨¨¨¨¨¨¨ Default for GAMEREGION_USA version is 0x8 = latin characters
 	// >>>| ¨¨¨¨¨¨¨¨ There seems to be 15 characters sets; starting from 0x0 up to 0x14; higher than this value defaults to latin characters
 	// >>>| ¨¨¨¨¨¨¨¨ All characters sets are presumably on one big character set image, so this value here might just be another offset
 const_CharacterPrinter_data = {
@@ -1035,19 +1067,19 @@ const_EnergyOrbs_data = {
 		"locations": {
 			"NorthGateNearBar": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F0) +0x4},
 			"WellCafeSonne": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x5},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F0) +0x5},
 			"Haupstr": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x6},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F0) +0x6},
 			"StairsRudolfstr": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x7},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F0) +0x7},
 			"AlleyWayBakery": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F0)) + 0x8},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F0) +0x8},
 			},
 		},
 	TIMEPERIOD_Early20thCentury: {
@@ -1056,22 +1088,22 @@ const_EnergyOrbs_data = {
 		"locations": { 
 			"InsideBrumMansion": {
 				"area": [AREA_1900s_BrumMansion],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44304)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA44304) +0x4},
 			"TreeNearBar": {
 				"area": [AREA_1900s_City],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F4) +0x4},
 			"StairsOppositeCafeSonne": {
 				"area": [AREA_1900s_City],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x5},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F4) +0x5},
 			"NearNewsPost": {
 				"area": [AREA_1900s_City],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x6},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F4) +0x6},
 			"ParkRudolfStr": {
 				"area": [AREA_1900s_City],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x7},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F4) +0x7},
 			"NorthEastgate": {
 				"area": [AREA_1900s_City],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F4)) + 0x8},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F4) +0x8},
 			},
 		},
 	TIMEPERIOD_MiddleAges: {
@@ -1080,25 +1112,25 @@ const_EnergyOrbs_data = {
 		"locations": {
 			"AlchemistBasement": {
 				"area": [AREA_MiddleAges_AlchemistHouse_Exploded_Basement],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA44300)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA44300) +0x4},
 			"InsideChurch": {
 				"area": [AREA_MiddleAges_Church],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA4430C)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA4430C) +0x4},
 			"onBench": {
 				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F8) +0x4},
 			"EastWell": {
 				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x5},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F8) +0x5},
 			"AlleyWayCart": {
 				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x6},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F8) +0x6},
 			"EastNearHay": {
 				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x7},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F8) + 0x7},
 			"ChurchEntrance": {
 				"area": [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night],
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442F8)) + 0x8},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442F8) + 0x8},
 			}
 		},
 	TIMEPERIOD_Present: {
@@ -1107,19 +1139,19 @@ const_EnergyOrbs_data = {
 		"locations": { 
 			"OutsideFortuneTeller": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x4},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442EC) + 0x4},
 			"AlleyWay": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x5},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442EC) + 0x5},
 			"SouthGate": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x6},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442EC) + 0x6},
 			"UnderArchRuckagrastr": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x7},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442EC) + 0x7},
 			"CarPark": {
 				"area": iNULL,
-				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(dword(0xA442EC)) + 0x8},
+				"memAddr_Flag_isCollected": () => sysUtil_maskPointer(0xA442EC) + 0x8},
 			}
 		}}
 const_EnergyOrbs_data_old = {
@@ -1255,23 +1287,23 @@ function on_EnergyUnits_valueChange() =>
 // ***********************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function is_ExtraMenu_active() {								// $AC3170: [25-bit] Pointer - When in Extra menu
-	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3170))	// 		- Extra menu is only visible once at least one is ending is finished
-	return														// 		+0x4 - [32-bit] Extra Menu: Highlighted item
-		dword(let_maskedPointer + 0x4) <= 0x4 &&				// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
-		dword(let_maskedPointer + 0x14) <= 0x5 &&				// 		| - 0x1 => Ending files (replay ending cutscenes)
-		dword(let_maskedPointer + 0x48) <= 0xb}					// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
-																// 		| - 0x3 => Sound Mode (Play sound effects & music)
-																// 		| - 0x4 => Exit (back to Title Screen)
-																// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
-																// 		| - 0x0 => ending A			| - 0x3 => ending D
-																// 		| - 0x1 => ending B			| - 0x4 => ending E	
-																// 		| - 0x2 => ending C			| - 0x5 => ending EX
-																// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
-																// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
-																// 		| - 0x1 => Chapter 1		| - 0xa => Total
-																// 		| - ...						| - 0xb => Exit
-																// 		| - 0x8 => Chapter 8
+function is_ExtraMenu_active() {						// $AC3170: [25-bit] Pointer - When in Extra menu
+	let_maskedPointer = sysUtil_maskPointer(0xAC3170)	// 		- Extra menu is only visible once at least one is ending is finished
+	return												// 		+0x4 - [32-bit] Extra Menu: Highlighted item
+		dword(let_maskedPointer + 0x4) <= 0x4 &&		// 		| - 0x0 => Event viewer (replay unlocked cutscenes)
+		dword(let_maskedPointer + 0x14) <= 0x5 &&		// 		| - 0x1 => Ending files (replay ending cutscenes)
+		dword(let_maskedPointer + 0x48) <= 0xb}			// 		| - 0x2 => Results (View best clear time & percentage cutscenes unlocked per chapter)
+														// 		| - 0x3 => Sound Mode (Play sound effects & music)
+														// 		| - 0x4 => Exit (back to Title Screen)
+														// 		+0x14 - [32-bit] Extra Menu: Highlighted ending file
+														// 		| - 0x0 => ending A			| - 0x3 => ending D
+														// 		| - 0x1 => ending B			| - 0x4 => ending E	
+														// 		| - 0x2 => ending C			| - 0x5 => ending EX
+														// 		+0x48 - [32-bit] Results Menu/Event Viewer: Highlighted chapter
+														// 		| - 0x0 => Prologue			| - 0x9 => Epilogue
+														// 		| - 0x1 => Chapter 1		| - 0xa => Total
+														// 		| - ...						| - 0xb => Exit
+														// 		| - 0x8 => Chapter 8
 function is_EventViewer_active() =>	// $1FFF130: [32-bit] Flag -> Event viewer (preferred)
 	dword(0x1FFF130) == 0x21 && 	// 		- 32-bit value = 0x21 -> event viewer menu is on screen OR a cutscene is being watched via this menu
 	is_ExtraMenu_active()			// 		- other values -> not in event viewer													
@@ -1283,7 +1315,7 @@ function is_ResultsMenu_active() => 	// $AC49F4: [32-bit] Menu ID
 										// 		0x12 => at event viewer menu		0xb => viewing ending file
 
 function is_ResultsMenu_HighlightedChapter(enum_chapter) {
-	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3170))
+	let_maskedPointer = sysUtil_maskPointer(0xAC3170)
 	let_resultsMenuHighlightedChapterId = 0 
 	if (enum_chapter == CHAPTER_Chapter8) {
 		let_resultsMenuHighlightedChapterId = 0x8
@@ -1328,9 +1360,8 @@ function on_ChapterCompletionMenu_exit() =>
 	dword(0x1FFF5F4) != 0x21 	&& prev(dword(0x1FFF5F4)) == 0x21 &&
 	bit0(0xA82E2C) < prior(bit0(0xA82E2C))
 									
-function is_InGame() => // $A9EDDC: [Lower4] Flag -> is in-game
-	low4(0xA9EDDC) != 0	// 		Lower4 = 0 => at title screen
-						// 		Lower4 > 0 => in-game
+function is_InGame(enum_gameRegion = GAMEREGION_USA) =>
+	low4(memory_getAddress(DATATYPE_4Bit, "IsInGame", enum_gameRegion)) != 0
 
 function on_TitleMenu_render() { return
 	low4(0xA9EDDC) == 0 && 
@@ -1339,19 +1370,19 @@ function on_TitleMenu_render() { return
 // ***************
 // ◦ OTHER LOGIC ◦
 // ***************
-function is_MainSave_loaded() {									// $AA2998: [25-bit Pointer] is main save file loaded (at first startup of game)
-	let_maskedPointer = sysUtil_maskPointer(dword(0xAA2998))	//		+0x4 - [Bit 0] => main save is loaded
-	return 														//		| - Data around this memory address is set on startup or reset
+function is_GameBootedUp(enum_gameRegion) {
+	let_maskedPointer = sysUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", enum_gameRegion))
+	return 
 		bit0(let_maskedPointer + 0x4) == 1}
 
-function is_Video_active() {									// $8FFEF0: [25-bit Pointer]  Video data (intro and credits)
-	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))	// 		+0x18 - [32-bit Flag] 0x101 => video is active
-	return 														// 		+0x2c - [32-bit Flag] 0x41 => video is active
-		dword(let_maskedPointer + 0x18) == 0x101 &&				// 		+0x40 - [32-bit] Video timer
+function is_Video_active() {							// $8FFEF0: [25-bit Pointer]  Video data (intro and credits)
+	let_maskedPointer = sysUtil_maskPointer(0x8FFEF0)	// 		+0x18 - [32-bit Flag] 0x101 => video is active
+	return 												// 		+0x2c - [32-bit Flag] 0x41 => video is active
+		dword(let_maskedPointer + 0x18) == 0x101 &&		// 		+0x40 - [32-bit] Video timer
 		dword(let_maskedPointer + 0x2c) == 0x41}
 
 function on_Video_end() {
-	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))
+	let_maskedPointer = sysUtil_maskPointer(0x8FFEF0)
 	return
 		prev(dword(let_maskedPointer + 0x18)) == 0x101 	&&
 		dword(let_maskedPointer + 0x18)	!= 0x101		&&
@@ -1359,7 +1390,7 @@ function on_Video_end() {
 		dword(let_maskedPointer + 0x2c)	!= 0x41}
 
 function on_Video_start() {
-	let_maskedPointer = sysUtil_maskPointer(dword(0x8FFEF0))
+	let_maskedPointer = sysUtil_maskPointer(0x8FFEF0)
 	return
 		prev(dword(let_maskedPointer + 0x18)) != 0x101 	&&
 		dword(let_maskedPointer + 0x18)	== 0x101		&&
@@ -1408,7 +1439,7 @@ function is_ExChapter_unlocked() => // If endings ABCDE are achieved
 	})
 
 function is_ViewingEndingFile_viaExtraMenu(enum_ending) {		// $AC3178: [25-bit Pointer] Ending File
-	let_maskedPointer = sysUtil_maskPointer(dword(0xAC3178))	//		- Resets to 0x0, when no ending file is on screen					
+	let_maskedPointer = sysUtil_maskPointer(0xAC3178)			//		- Resets to 0x0, when no ending file is on screen					
 	let_endingFileId = get_EndingFileId(enum_ending)			// 		+0x10 - [8-bit] Ending File ID	
 	return														// 		| - 0x0 => ending file A  	| - 0x4 => ending file E
 		is_ExtraMenu_active() &&								// 		| - 0x1 => ending file B	| - 0x5 => ending file EX
@@ -1515,7 +1546,176 @@ function is_WearingPerformerOutfit() => // $A9EDA5: [Current Playthrough Bit Fla
 // - At end of a cutscene one of these flags will become true
 // - Flags are grouped per chapter
 // - These flags are loaded when loading a save OR when starting a new game whilst having played the game before
-const_percentageBitflags_new = {
+const_percentageBitsets = {
+	CHAPTER_Prologue: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x5, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_USA) + 0x6, "bits": [0,5]},		
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x5, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Prologue_base", GAMEREGION_JPN) + 0x6, "bits": [0,5]},		
+		]
+	},
+	CHAPTER_Chapter1: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_USA) + 0x0, "bits": [6,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_USA) + 0x3, "bits": [0,5]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_JPN) + 0x0, "bits": [6,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter1_base", GAMEREGION_JPN) + 0x3, "bits": [0,5]},
+		]
+	},
+	CHAPTER_Chapter2: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_USA) + 0x0, "bits": [3,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_USA) + 0x4, "bits": [0,6]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_JPN) + 0x0, "bits": [3,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter2_base", GAMEREGION_JPN) + 0x4, "bits": [0,6]},
+		]
+	},
+	CHAPTER_Chapter3: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_USA) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_JPN) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter3_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+		]
+	},
+	CHAPTER_Chapter4: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_USA) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_USA) + 0x4, "bits": [0,4]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_JPN) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter4_base", GAMEREGION_JPN) + 0x4, "bits": [0,4]},
+		]
+	},
+	CHAPTER_Chapter5: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_USA) + 0x5, "bits": [0,6]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x0, "bits": [1,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter5_base", GAMEREGION_JPN) + 0x5, "bits": [0,6]},
+		]
+	},
+	CHAPTER_Chapter6: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_USA) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_USA) + 0x4, "bits": [0,4]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_JPN) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter6_base", GAMEREGION_JPN) + 0x4, "bits": [0,4]},
+		]
+	},
+	CHAPTER_Chapter7: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_USA) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_USA) + 0x4, "bits": [0,3]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_JPN) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter7_base", GAMEREGION_JPN) + 0x4, "bits": [0,3]},
+		]
+	}, 
+	CHAPTER_Chapter8: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x0, "bits": [5,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x5, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x6, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x7, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x8, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_USA) + 0x9, "bits": [0,3]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x0, "bits": [5,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x3, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x4, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x5, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x6, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x7, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x8, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Chapter8_base", GAMEREGION_JPN) + 0x9, "bits": [0,3]},
+		]
+	}, 
+	CHAPTER_Epilogue: {
+		GAMEREGION_USA: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_USA) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_USA) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_USA) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_USA) + 0x3, "bits": [0]},
+		],
+		GAMEREGION_JPN: [
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_JPN) + 0x0, "bits": [2,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_JPN) + 0x1, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_JPN) + 0x2, "bits": [0,7]},
+			{"memAddr": () => memory_getAddress(DATATYPE_Struct, "AchievementPercentage_Epilogue_base", GAMEREGION_JPN) + 0x3, "bits": [0]},
+		]
+	}}
+const_percentageBitflags = {
 	"Prologue": {
 		0xA9ED3C: [1,7],
 		0xA9ED3D: [0,7],
@@ -1581,45 +1781,46 @@ const_percentageBitflags_new = {
 		0xA9ED73: [0,7],
 		0xA9ED74: [0]}}
 		
-function memUtil_allPercentageBitFlagsToOneDict() { // This will create a new dict without the chapters as keys;	new dict => memAddress (key): [bits] (value)
-	let_PercentageBitFlags = {} 
-	for chapter in const_percentageBitflags_new {
-		for memAddr in const_percentageBitflags_new[chapter] {
-			util_addToDictionary(let_PercentageBitFlags, memAddr, const_percentageBitflags_new[chapter][memAddr])
+function memUtil_allPercentageBitsetsToOneArray(enum_gameRegion) {
+	let_array_bitsets = []
+	for chapterKey in const_percentageBitsets {
+		for bitset in const_percentageBitsets[chapterKey][enum_gameRegion] {
+			array_push(let_array_bitsets, bitset)
 		}
 	}
-	return let_PercentageBitFlags}
+	return let_array_bitsets}
 
-function memUtil_percentageBitflagsDictToMemoryAccessorArray(dict_BitFlags) { // Return an array [bit0(0x00), bit1(0x00), bitcount(0x01)] from dict with percentagebitflags
+function memUtil_bitsetArrayToMemoryAccessorArray(array_bitsets) { // Return an array [bit0(0x00), bit1(0x00), bitcount(0x01)] from dict with percentagebitflags
 	let_bitFlagMemoryAccessors = []	
-	for memAddr in dict_BitFlags {
-		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddr]
-		if (length(let_arrayOfBitFlagsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
-			let_bitIndex = let_arrayOfBitFlagsToCheck[0]
-			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+	for bitset in array_bitsets {
+		let_memAddr_bitset = bitset["memAddr"]
+		let_array_BitsToCheck = bitset["bits"]
+		if (length(let_array_BitsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
+			let_bitIndex = let_array_BitsToCheck[0]
+			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, let_memAddr_bitset))
 		} else if ( // If all bits => add "bitcount" memory accessor
-			(let_arrayOfBitFlagsToCheck[0] == 0 && let_arrayOfBitFlagsToCheck[1] == 7) || 
-			(let_arrayOfBitFlagsToCheck[0] == 7 && let_arrayOfBitFlagsToCheck[1] == 0)) { 
-				array_push(let_bitFlagMemoryAccessors, bitcount(memAddr))
+			(let_array_BitsToCheck[0] == 0 && let_array_BitsToCheck[1] == 7) || 
+			(let_array_BitsToCheck[0] == 7 && let_array_BitsToCheck[1] == 0)) { 
+				array_push(let_bitFlagMemoryAccessors, bitcount(let_memAddr_bitset))
 		} else { // If not all bits, but more than 1 => memory accessor per bit flag
 			let_step = 1
-			if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) let_step = -1
-			for let_bitIndex in range(let_arrayOfBitFlagsToCheck[0], let_arrayOfBitFlagsToCheck[1], let_step) {	// Example let_arrayOfBitFlagsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, memAddr))
+			if (let_array_BitsToCheck[0] > let_array_BitsToCheck[1]) let_step = -1
+			for let_bitIndex in range(let_array_BitsToCheck[0], let_array_BitsToCheck[1], let_step) {	// Example let_array_BitsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, let_memAddr_bitset))
 			}
 		}
 	}
 	return let_bitFlagMemoryAccessors}
-function memUtil_countTotalAmountOfBitFlags(dict_BitFlags) { // Counts how many bitflags are in the dict with percentagebitflags
+function memUtil_countTotalBitFlagsInBitsetArray(array_bitsets) { // Counts how many bitflags are in the dict with percentagebitflags
 	let_bitFlagCount = 0
-	for memAddrWithBitFlags in dict_BitFlags {
-		let_arrayOfBitFlagsToCheck = dict_BitFlags[memAddrWithBitFlags]
-		if (length(let_arrayOfBitFlagsToCheck) == 1) {
+	for bitset in array_bitsets {
+		let_array_BitsToCheck = bitset["bits"]
+		if (length(let_array_BitsToCheck) == 1) {
 			let_bitFlagCount = let_bitFlagCount + 1	
-		} else if (let_arrayOfBitFlagsToCheck[0] > let_arrayOfBitFlagsToCheck[1]) {
-			let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[0] - let_arrayOfBitFlagsToCheck[1])
+		} else if (let_array_BitsToCheck[0] > let_array_BitsToCheck[1]) {
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_BitsToCheck[0] - let_array_BitsToCheck[1])
 		} else {
-			let_bitFlagCount = let_bitFlagCount + 1 + (let_arrayOfBitFlagsToCheck[1] - let_arrayOfBitFlagsToCheck[0])
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_BitsToCheck[1] - let_array_BitsToCheck[0])
 		}
 	}
 	return let_bitFlagCount}
@@ -1942,31 +2143,43 @@ achievements_typeByCategory = {
 // • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_FullTrigger_MaxAchievementRate(enum_chapter, dict_BitFlags) {
+function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter, enum_gameRegion) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
+	let_array_bitsets = const_percentageBitsets[enum_chapter][enum_gameRegion]
+	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
 
-	let_bitFlagMemoryAccessors = memUtil_percentageBitflagsDictToMemoryAccessorArray(dict_BitFlags)
+	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_CurrentValues = let_expression_arithmeticSumOf == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
 
-	let_totalAmountOfBitFlags = memUtil_countTotalAmountOfBitFlags(dict_BitFlags)
-	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-	let_measuredComparison = let_arithmeticSumOfExpression == let_totalAmountOfBitFlags // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+	let_comparison_DeltaValues = let_expression_arithmeticSumOf < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
 
-	let_arithmeticSumOfExpression = sum_of(let_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-	let_deltaComparison = let_arithmeticSumOfExpression < let_totalAmountOfBitFlags 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+	return 
+		is_GameRegion(enum_gameRegion) &&
+		let_comparison_DeltaValues && 
+		measured(let_comparison_CurrentValues, when = is_Chapter(enum_chapter, enum_gameRegion) && is_InGame(enum_gameRegion), format = "percent")
+	}
 
-	if (enum_chapter == "Total") {
-		return 
-			let_deltaComparison && 
-			measured(let_measuredComparison, when = is_InGame(), format = "percent")
-	} else {
-		return 
-			let_deltaComparison && 
-			measured(let_measuredComparison, when = is_Chapter(enum_chapter) && is_InGame(), format = "percent")
-	}}
+function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_gameRegion) {
+	let_array_bitsets = memUtil_allPercentageBitsetsToOneArray(enum_gameRegion)
+	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+
+	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_CurrentValues = let_expression_arithmeticSumOf == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+
+	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+	let_comparison_DeltaValues = let_expression_arithmeticSumOf < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+
+	return 
+		is_GameRegion(enum_gameRegion) &&
+		let_comparison_DeltaValues && 
+		measured(let_comparison_CurrentValues, when = is_InGame(enum_gameRegion), format = "percent")}
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod) {
 	function create_TallyComparisonArray(enum_timePeriod) {
 		let_tallyComparisonArray = []
@@ -2660,38 +2873,72 @@ achievements_triggers = {
 			on_Chapter_finish(CHAPTER_Chapter8_Ancestress) ||
 			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress)
 		)},
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Prologue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Prologue, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter1"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter1, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter2"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter2, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter3"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter3, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter4"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter4, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter5"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter5, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter6"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter6, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter7"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter7, let_PercentageBitFlags)},
-	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Chapter8"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Chapter8, let_PercentageBitFlags)},
-	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {
-		let_PercentageBitFlags = const_percentageBitflags_new["Epilogue"]
-		return achievements_generate_FullTrigger_MaxAchievementRate(CHAPTER_Epilogue, let_PercentageBitFlags)},
-	"a_MaxAchievementTotal": function MaxAchievementTotal() {
-		return achievements_generate_FullTrigger_MaxAchievementRate("Total", memUtil_allPercentageBitFlagsToOneDict())},
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {	return 
+		(
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue, GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue, GAMEREGION_JPN)
+		)},
+	"a_MaxAchievementTotal": function MaxAchievementTotal() { return 
+		(
+			achievements_generate_FullTrigger_TotalMaxAchievementRate(GAMEREGION_USA)
+		) || (
+			achievements_generate_FullTrigger_TotalMaxAchievementRate(GAMEREGION_JPN)
+		)},
 	"a_EndingA": function EndingA() { return
 		never(
 			!is_InGame() 			||
@@ -4913,11 +5160,20 @@ richPresence_conditions = {
 			CHAPTER_Chapter4, CHAPTER_Chapter5, 
 			CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8])},
 	"rp_AtTitleScreen": () =>
-		is_MainSave_loaded() && 
-		(is_TitleMenu_active() || !is_InGame())
+		is_GameBootedUp(GAMEREGION_USA) && 
+		(is_TitleMenu_active() || !is_InGame()),
+	
+	
+	
 	}
 function richPresence_getCondition(string_displayKey) =>
 	richPresence_conditions[string_displayKey]
+
+function richPresence_condition_rp_AtTitleScreen(enum_gameRegion) { return
+	is_GameBootedUp(enum_gameRegion) && 
+	(is_TitleMenu_active() || !is_InGame())
+}
+
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -4946,15 +5202,15 @@ richPresence_parameterData = {
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": get_DateTime_Minutes(DATETIME_Present, USA),
+		"Expression": get_DateTime_Minutes(DATETIME_Present, GAMEREGION_USA),
 		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": (get_DateTime_Minutes(DATETIME_Present, USA) + get_DateTime_Hours(DATETIME_Present, USA) * 60),
+		"Expression": (get_DateTime_Minutes(DATETIME_Present, GAMEREGION_USA) + get_DateTime_Hours(DATETIME_Present, GAMEREGION_USA) * 60),
 		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": get_DateTime_Hours(DATETIME_Present, USA),
+		"Expression": get_DateTime_Hours(DATETIME_Present, GAMEREGION_USA),
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
 		"RPtype": richPresence_MACRO,
@@ -5285,7 +5541,7 @@ function leaderboards_initialize() {
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
-	// memory_initialize()
+	memory_initialize()
 	achievements_initialize()
 	richPresence_initialize()
 	leaderboards_initialize()}
