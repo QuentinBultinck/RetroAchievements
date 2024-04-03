@@ -111,11 +111,29 @@ DATATYPE_25BitPointer 			= 300
 DATATYPE_Float					= 201
 DATATYPE_32Bit 					= 200
 DATATYPE_Struct 				= 100
-memory_addresses = {
-	//	"DataType": {
+memory_addresses = { //WIP mem
+	//	"DATATYPE_xxxxx": {
 	//		"Template": {GAMEREGION_USA: sNULL, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: sNULL},
 	//	}
 	DATATYPE_BitFlag: {
+		"EndingData_base": {GAMEREGION_USA: 0xaa1154, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa8ca4},
+		"CurrentPlaythrough_ExChapter": {GAMEREGION_USA: 0xa9ed98, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68e8},
+		"CurrentPlaythrough_Chapter1": {GAMEREGION_USA: 0xa9ed9d, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68ed},
+		"CurrentPlaythrough_Chapter2": {GAMEREGION_USA: 0xa9eda0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68f0},
+		"CurrentPlaythrough_Chapter4": {GAMEREGION_USA: 0xa9eda5, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68f5},
+		"CurrentPlaythrough_AncestorChoice_1": {GAMEREGION_USA: 0xa9edad, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68fd},
+		"CurrentPlaythrough_AncestorChoice_2": {GAMEREGION_USA: 0xa9edae, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68fe},
+		"CurrentPlaythrough_MovieChoice_1": {GAMEREGION_USA: 0xa9edb7, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6907},
+		"CurrentPlaythrough_MovieChoice_2": {GAMEREGION_USA: 0xa9edb8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6908},
+		"CurrentPlaythrough_MultiChapter_1": {GAMEREGION_USA: 0xa9ed76, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68c6},
+		"CurrentPlaythrough_MultiChapter_2": {GAMEREGION_USA: 0xa9edca, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa691a},
+		"CurrentPlaythrough_MultiChapter_3": {GAMEREGION_USA: 0xa9edcb, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa691b},
+		"CurrentPlaythrough_MultiChapter_4": {GAMEREGION_USA: 0xa9edcc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa691c},
+		"CurrentPlaythrough_InspiredKarlFranssenArt_1": {GAMEREGION_USA: 0xa9edb0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6900},
+		"CurrentPlaythrough_InspiredKarlFranssenArt_2": {GAMEREGION_USA: 0xa9edb1, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6901},
+		"CurrentPlaythrough_BrumEstateChoice": {GAMEREGION_USA: 0xa9edaa, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa68fa},
+		"CurrentPlaythrough_DanaChoice": {GAMEREGION_USA: 0xa9edc0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6910},
+		"CurrentPlaythrough_SaveDanaFromPast": {GAMEREGION_USA: 0xa9edc4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6914},
 		"IsInGamePauseMenuDisplayed": {GAMEREGION_USA: 0xb91514, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xb99094},
 		"IsLoading_OR_IsChapterCompletionMenuDisplayed": {GAMEREGION_USA: 0xa82e2c, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xa8a97c},
 	},
@@ -136,7 +154,6 @@ memory_addresses = {
 		"Cutscene_SectionID_2": {GAMEREGION_USA: 0xa9ecc2, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6812},
 	},
 	DATATYPE_25BitPointer: {
-		"EndingFileData": {GAMEREGION_USA: 0xac3178, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xacacb8},
 		"InteractionID": {GAMEREGION_USA: 0xa9efe4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6b34},
 		"InteractionChapterID": {GAMEREGION_USA: 0xa9efe0, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6b30},
 		"NPCinteractionID": {GAMEREGION_USA: 0xa9efdc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6b2c},
@@ -717,7 +734,7 @@ function is_Chapter(enum_chapter, enum_gameRegion) {
 function on_Chapter_finish(enum_chapter, enum_gameRegion) {
 	if (enum_chapter == CHAPTER_Chapter7) { return 
 		prev_ChapterID(enum_gameRegion) == get_ChapterID(CHAPTER_Chapter7) &&
-		is_Chapter(CHAPTER_Chapter8)
+		is_Chapter(CHAPTER_Chapter8, enum_gameRegion)
 	} else if (enum_chapter == CHAPTER_Chapter8_Ancestress){ return
 		prev_ChapterID(enum_gameRegion) == get_ChapterID(CHAPTER_Chapter8_Ancestress) &&		
 		is_Chapter(CHAPTER_Epilogue_Ancestress, enum_gameRegion)
@@ -1382,22 +1399,41 @@ ENDING_EX	= 101
 const_Endings_data = {
 	ENDING_A : {
 		"EndingFile_ID": 0x0,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1154, GAMEREGIN_JPN: iNULL}},
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x0,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x0, 
+		}},
 	ENDING_B : {
 		"EndingFile_ID": 0x1,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1155, GAMEREGIN_JPN: iNULL}},
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x1,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x1, 
+		}},
 	ENDING_C : {
 		"EndingFile_ID": 0x2,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1156, GAMEREGIN_JPN: iNULL}},
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x2,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x2, 
+		}},
 	ENDING_D : {
 		"EndingFile_ID": 0x3,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1157, GAMEREGIN_JPN: iNULL}},
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x3,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x3, 
+		}},
 	ENDING_E : {
 		"EndingFile_ID": 0x4,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1158, GAMEREGIN_JPN: iNULL}},
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x4,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x4, 
+		}},
 	ENDING_EX : {
 		"EndingFile_ID": 0x5,
-		"memAddr_Flag_EndingAchieved": {GAMEREGION_USA: 0xAA1159, GAMEREGIN_JPN: iNULL}}}
+		"memAddr_Flag_EndingAchieved": {
+			GAMEREGION_USA: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_USA) + 0x5,
+			GAMEREGION_JPN: () => memory_getAddress(DATATYPE_BitFlag, "EndingData_base", GAMEREGION_JPN) + 0x5, 
+		}}
+	}
 
 function get_EndingFileId(enum_ending) =>
 	const_Endings_data[enum_ending]["EndingFile_ID"]
@@ -1421,94 +1457,115 @@ function is_ViewingEndingFile_viaExtraMenu(enum_ending, enum_gameRegion) {
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
 // ******************************
-function is_PrologueExMode_active() => 	// $A9ED98: [Current Playthrough Bit Flags]: EX Chapter
-	bit7(0xA9ED98) == 1 				//		bit 7 => EX Chapter is active // 2nd dialogue option "Oh, Homunculus" => activates EX chapter
+function is_PrologueExMode_active(enum_gameRegion) => 
+	bit7(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_ExChapter", enum_gameRegion)) == 1
+
 // -------------- SquareTree ---------------
-function is_TreeReplacedBy_Statue() => 	// $A9EDA0: [Current Playthrough Bit Flags]: Chapter 2
-	bit2(0xA9EDA0)	== 0				// 		bit 0 => acquired ladder
-										// 		bit 1 = 0 => LIGHTER used to scare crowd
-function is_TreeReplacedBy_Flowers() => // 		bit 1 = 1 => TELEPHONE used 
-	bit2(0xA9EDA0) == 1					// 		bit 2 = 0 => Chosen to plant STATUE instead of flowers	
-										// 		bit 2 = 1 => Chosen to plant FLOWERS instead of statue
-function is_CrowdScaredWith_Cellphone() => 	
-	bit1(0xA9EDA0) == 1	
+function is_TreeReplacedBy_Statue(enum_gameRegion) =>
+	bit2(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter2", enum_gameRegion)) == 0
+
+function is_TreeReplacedBy_Flowers(enum_gameRegion) =>
+	bit2(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter2", enum_gameRegion)) == 1
+
+function is_CrowdScaredWith_Cellphone(enum_gameRegion) => 	
+	bit1(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter2", enum_gameRegion)) == 1	
 	
-function is_CrowdScaredWith_Lighter() => 
-	bit1(0xA9EDA0) == 0	
+function is_CrowdScaredWith_Lighter(enum_gameRegion) => 
+	bit1(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter2", enum_gameRegion)) == 0	
 // ------------ Movie --------------
-function is_MovieWorldConquest_chosen() => 
-	bit7(0xA9EDB7) == 1 && bit0(0xA9EDB8) == 1	// $A9EDB7: [Current Playthrough Bit Flags]: Chapter 6
-												// 		bit 5 => Movie choice 1: Meditating Man
-function is_MovieTimeTravel_chosen() => 		// 		bit 6 => Movie choice 1: Time Travel
-	bit6(0xA9EDB7) == 1 && bit5(0xA9EDB7) == 0	// 		bit 7 => Movie choice 2: Take over the world
-																						
-function is_MovieFindCauseDeath_chosen() => 	// $A9EDB8: [Current Playthrough Bit Flags]: Chapter 6
-	bit0(0xA9EDB8) == 1 && bit7(0xA9EDB7) == 0	// 		bit 0 => Movie Choice 2: Find cause of own death
-												// 		bit 1 => Movie Choice 3: Thriller story	
-function is_MovieThriller_chosen() => 			// 		bit 2 => Movie Choice 3: Love story
-	bit1(0xA9EDB8) == 1 && bit2(0xA9EDB8) == 0		
+function is_MovieWorldConquest_chosen(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_1", enum_gameRegion)
+	return bit7(let_memAddr) == 1 && bit0(let_memAddr) == 1}
 
-function is_MovieLove_chosen() => 
-	bit2(0xA9EDB8) == 1 && bit1(0xA9EDB8) == 0	
+function is_MovieTimeTravel_chosen(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_1", enum_gameRegion)
+	return bit6(let_memAddr) == 1 && bit5(let_memAddr) == 0}
+
+function is_MovieFindCauseDeath_chosen(enum_gameRegion) =>
+	bit7(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_1", enum_gameRegion)) == 0 &&
+	bit0(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_2", enum_gameRegion)) == 1 
+
+function is_MovieThriller_chosen(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_2", enum_gameRegion)
+	return bit1(let_memAddr) == 1 && bit2(let_memAddr) == 0}
+
+function is_MovieLove_chosen(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MovieChoice_2", enum_gameRegion) 
+	return bit2(let_memAddr) == 1 && bit1(let_memAddr) == 0}
+
 // ---------- Paintings ------------
-function is_Painting_Antidote_inspired() => 	// $A9EDB0: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
-	bit7(0xA9EDB0) == 1							//  - 8 paintings viewable at Brum museum, 6 can altered by inspiring Karl Franssen	
-												// 		bit 7 => Antidote painting
-function is_Painting_Marktplatz_inspired() => 	// 		bit 6 => Marktplatz painting (insinuating removing the tree)
-	bit6(0xA9EDB0) == 1							// 		bit 5 => Squire's crest painting
-												// 		bit 4 => Tower view painting (downstairs)
-function is_Painting_SquireCrest_inspired() => 
-	bit5(0xA9EDB0) == 1	
+function is_Painting_Antidote_inspired(enum_gameRegion) =>
+	bit7(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_1", enum_gameRegion)) == 1	
+
+function is_Painting_Marktplatz_inspired(enum_gameRegion) => 
+	bit6(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_1", enum_gameRegion)) == 1
+
+function is_Painting_SquireCrest_inspired(enum_gameRegion) => 
+	bit5(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_1", enum_gameRegion)) == 1	
 					
-function is_Painting_TowerView_inspired() => 
-	bit4(0xA9EDB0) == 1
+function is_Painting_TowerView_inspired(enum_gameRegion) => 
+	bit4(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_1", enum_gameRegion)) == 1
 
-function is_Painting_Performer_inspired() => 	// $A9EDB1: [Current Playthrough Bit Flags]: Inspired Karl Franssen's Art
-	bit0(0xA9EDB1) == 1							// 		bit 0 => Performer painting (only possible when player became performer in chapter 4)
-												// 		bit 1 => Achemist house collapse painting
-function is_Painting_HouseCollapse_inspired() => 
-	bit1(0xA9EDB1) == 1	
+function is_Painting_Performer_inspired(enum_gameRegion) =>
+	bit0(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_2", enum_gameRegion)) == 1	
+
+function is_Painting_HouseCollapse_inspired(enum_gameRegion) => 
+	bit1(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_InspiredKarlFranssenArt_2", enum_gameRegion)) == 1	
 // ----------- BrumEstate ----------------
-function is_BrumEstate_Museum() => 	//	$A9EDAA: [Current Playthrough Bit Flags]: Brum Estate Choice
-	bit5(0xA9EDAA) == 0				//		bit 5 = 0 => Brum Estate is museum
-									//		bit 5 = 1 => Brum Estate is library
-function is_BrumEstate_Library() => 
-	bit5(0xA9EDAA) == 1
+function is_BrumEstate_Museum(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_BrumEstateChoice", enum_gameRegion)
+	return bit5(let_memAddr) == 0}
+
+function is_BrumEstate_Library(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_BrumEstateChoice", enum_gameRegion)
+	return bit5(let_memAddr) == 1} 
+
 // -----------AncestorChoice--------------
-function is_MargaretteTold_Ancestor() => 			// $A9EDAE: [Current Playthrough Bit Flags]: Margarette Ancestor choice
-	bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0	// 		bit 6 => Margarette is ancestor, sets after leaving alchemist house
-												// 		bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house
-function is_MargaretteTold_NoAncestor() => 
-	bit6(0xA9EDAE) == 0 && bit7(0xA9EDAE) == 1		
+function is_MargaretteTold_Ancestor(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_AncestorChoice_2", enum_gameRegion)
+	return 	bit6(let_memAddr) == 1 && bit7(let_memAddr) == 0}
+
+function is_MargaretteTold_NoAncestor(enum_gameRegion) {	
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_AncestorChoice_2", enum_gameRegion)
+	return bit6(let_memAddr) == 0 && bit7(let_memAddr) == 1}
+
 // ------------FireChapter1---------------
-function is_FirePutOutBy_Barman() => 	// $A9ED9D: [Current Playthrough Bit Flags]: Chapter 1
-	bit5(0xA9ED9D) == 0 &&				//		bit 5 => put out fire yourself
-	bit7(0xA9ED9D) == 1					//		bit 7 => Saved bar from fire by warning barman
+function is_FirePutOutBy_Barman(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter1", enum_gameRegion)
+	return
+		bit5(let_memAddr) == 0 &&
+		bit7(let_memAddr) == 1	}
 
-function is_FirePutOutBy_Eike() => 
-	bit5(0xA9ED9D) == 1 &&
-	bit7(0xA9ED9D) == 0	
+function is_FirePutOutBy_Eike(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter1", enum_gameRegion)
+	return 
+		bit5(let_memAddr) == 1 &&
+		bit7(let_memAddr) == 0}	
+
 // -----------DanaChoice----------------
-function is_Dana_Saved_FromPast(){ return	// $A9EDC4: [Current Playthrough Bit Flags]: Saved Dana from Past
-	bit1(0xA9EDC4) == 1 && 					// 		bit 1 => Gave letter to Dana
-	bit3(0xA9EDC4) == 1 && 					// 		bit 3-4 => Took Dana back to present
-	bit4(0xA9EDC4) == 1}
+function is_Dana_Saved_FromPast(enum_gameRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_SaveDanaFromPast", enum_gameRegion)
+	return
+		bit1(let_memAddr) == 1 && 
+		bit3(let_memAddr) == 1 && 
+		bit4(let_memAddr) == 1}
 
-function is_Dana_Left_InPast(){ return
-	bit1(0xA9EDC4) == 0 &&
-	bit3(0xA9EDC4) == 0 &&
-	bit4(0xA9EDC4) == 0}
+function is_Dana_Left_InPast(enum_gameRegion){
+	let_memAddr = memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_SaveDanaFromPast", enum_gameRegion)
+	return
+		bit1(let_memAddr) == 0 &&
+		bit3(let_memAddr) == 0 &&
+		bit4(let_memAddr) == 0}
+	
 // ----------Misc--------------
-function is_CoffeePayed() => 	// $A9EDCC: [Current Playthrough Bit Flags]: Multi-chapter
-	bit3(0xA9EDCC) == 1			// 		bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
+function is_CoffeePayed(enum_gameRegion) => 
+	bit3(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MultiChapter_4", enum_gameRegion)) == 1
 
-function is_KittenGivenToSibylla() =>	// $A9EDCB: [Current Playthrough Bit Flags]: Multi-chapter
-	bit6(0xA9EDCB) == 1					// 		bit 2 => talked with Oleg 1st time in Chapter 3
-										// 		bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ xa9edcc == 1
-										// 		bit 6 => gave kitten to Sibylla
+function is_KittenGivenToSibylla(enum_gameRegion) =>
+	bit6(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_MultiChapter_3", enum_gameRegion)) == 1
 
-function is_WearingPerformerOutfit() => // $A9EDA5: [Current Playthrough Bit Flags]: Chapter 4
-	bit2(0xA9EDA5) == 1					//		 bit 2 => is wearing performer outfit
+function is_WearingPerformerOutfit(enum_gameRegion) =>
+	bit2(memory_getAddress(DATATYPE_BitFlag, "CurrentPlaythrough_Chapter4", enum_gameRegion)) == 1
 
 
 // ***********************************
@@ -2356,7 +2413,7 @@ function achievements_generate_FullTrigger_EnergyCollector_old(enum_timePeriod) 
 			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
 				create_TallyComparisonArray(enum_timePeriod))
 		) &&
-		trigger_when(on_Cutscene_end())
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))
 	}
 
 function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
@@ -2401,7 +2458,7 @@ function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
 			was_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
 			was_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
 			was_CharacterOnBottomScreen(11, let_charactersToCheck["I"]) &&
-			!is_LargeCutscene_active()	// Don't switch with is_NoCutscene_active() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
+			!is_LargeCutscene_active(GAMEREGION_USA)	// Don't switch with is_NoCutscene_active() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
 		)}
 
 // *************************
@@ -2443,408 +2500,408 @@ achievements_triggers = {
 	"a_Chapter1Complete": function Chapter1Complete() { return
 		never (	// Core group
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()	
+			is_EventViewer_active(GAMEREGION_USA)	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
 				once(	// Identifies Cutscene => burning bar changes into non-burning
-					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter1) &&
-					is_Cutscene_MasterId(0x11a40)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0xbea0)	&&
-					is_Cutscene_SectionDataId(0x5b80)
+					is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter1) &&
+					is_Cutscene_MasterId(0x11a40, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0xbea0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x5b80, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter1)
+				on_Chapter_finish(CHAPTER_Chapter1, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter2Complete": function Chapter2Complete() { return
 		never (	// Core group
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()	
+			is_EventViewer_active(GAMEREGION_USA)	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes
 				unless(!is_Chapter(CHAPTER_Chapter2)) &&
 				once(	// Identifies Cutscene => reminiscing about Dana: left in the past					
-					is_SelectedItemInScrollBar(ITEM_Dpad) &&
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x3b240)		&&
-					is_Cutscene_MasterDataId(0x340e0)	&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x340e0)	&&
-					is_Cutscene_SectionDataId(0x7130)
+					is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x3b240, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x340e0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x340e0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x7130, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-					is_SelectedItemInScrollBar(ITEM_Dpad) &&
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_SectionId_1(0x3)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x11240)	&&
-					is_Cutscene_SectionDataId(0x2b0)
+					is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x11240, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x2b0, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter2)
+				on_Chapter_finish(CHAPTER_Chapter2, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		never (	// Core group
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()	
+			is_EventViewer_active(GAMEREGION_USA)	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(!is_Chapter(CHAPTER_Chapter3)) &&			
+				unless(!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA)) &&			
 				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					is_SelectedItemInScrollBar(ITEM_Dpad) &&
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x19d80)		&&	
-					is_Cutscene_SectionId_1(0x1) 		&&
-					is_Cutscene_SectionId_2(0x0) 		&&
-					is_Cutscene_MasterDataId(0x82a0)	&&
-					is_Cutscene_SectionDataId(0x11ac0)
+					is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x19d80, GAMEREGION_USA)		&&	
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA) 		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA) 		&&
+					is_Cutscene_MasterDataId(0x82a0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x11ac0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Back to Eckart and breaking vase
-					is_SelectedItemInScrollBar(ITEM_Dpad) &&
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0xcfb40)		&& was_Cutscene_MasterId(0x19d80) &&	
-					is_Cutscene_SectionId_1(0x1) 		&&
-					is_Cutscene_SectionId_2(0x0) 		&&
-					is_Cutscene_MasterDataId(0x39f0)	&&
-					is_Cutscene_SectionDataId(0x387a0)
+					is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0xcfb40, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x19d80, GAMEREGION_USA) &&	
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA) 		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA) 		&&
+					is_Cutscene_MasterDataId(0x39f0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x387a0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					is_SelectedItemInScrollBar(ITEM_Dpad) &&
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x39680)		&& was_Cutscene_MasterId(0xcfb40) &&	
-					is_Cutscene_SectionId_1(0x1) 		&&
-					is_Cutscene_SectionId_2(0x0) 		&&
-					is_Cutscene_MasterDataId(0x7e10)	&&
-					is_Cutscene_SectionDataId(0x7ca0)
+					is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x39680, GAMEREGION_USA)		&& was_Cutscene_MasterId(0xcfb40, GAMEREGION_USA) &&	
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA) 		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA) 		&&
+					is_Cutscene_MasterDataId(0x7e10, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x7ca0, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter3)
+				on_Chapter_finish(CHAPTER_Chapter3, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
 		never(	// Core group
 			!is_InGame(GAMEREGION_USA) 					||
-			is_EventViewer_active()			||
-			on_Cutscene_MasterId_change()	||
-			!is_SelectedItemInScrollBar(ITEM_FryingPan)
+			is_EventViewer_active(GAMEREGION_USA)			||
+			on_Cutscene_MasterId_change(GAMEREGION_USA)	||
+			!is_SelectedItemInScrollBar(ITEM_FryingPan, GAMEREGION_USA)
 		) &&
 		(
 			( // Alt 1 
-				unless(!is_Chapter(CHAPTER_Chapter4)) && 
+				unless(!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)) && 
 				once(	// Identifies cutscene => protecting yourself with pan 
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x4f200)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x11cd0)	&&
-					is_Cutscene_SectionDataId(0x3d500)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x4f200, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x11cd0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x3d500, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || ( // Alt 2 
 				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x54580)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x17060)	&&
-					is_Cutscene_SectionDataId(0x1390)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x54580, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x17060, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x1390, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 3; Failsafe
-				on_Chapter_finish(CHAPTER_Chapter4)
+				on_Chapter_finish(CHAPTER_Chapter4, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		never(	// Core group
 			!is_InGame(GAMEREGION_USA) 					||
-			is_EventViewer_active()			||
-			on_Cutscene_MasterId_change()	||
-			!is_SelectedItemInScrollBar(ITEM_Sign)
+			is_EventViewer_active(GAMEREGION_USA)			||
+			on_Cutscene_MasterId_change(GAMEREGION_USA)	||
+			!is_SelectedItemInScrollBar(ITEM_Sign, GAMEREGION_USA)
 		) &&
 		(
 			( // Alt 1 
 				once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter4) &&
-					is_Cutscene_MasterId(0x54580)		&&
-					is_Cutscene_SectionId_1(0xd)		&&
-					is_Cutscene_SectionId_2(0xe)		&&
-					is_Cutscene_MasterDataId(0xb6e0)	&&
-					is_Cutscene_SectionDataId(0xae50)
+					is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA) &&
+					is_Cutscene_MasterId(0x54580, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0xd, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0xe, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0xb6e0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0xae50, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2
-				on_Chapter_finish(CHAPTER_Chapter4)
+				on_Chapter_finish(CHAPTER_Chapter4, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				once(	// Identifies Cutscene => drinking antidote
-					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter5) &&
-					is_SelectedItemInScrollBar(ITEM_Antidote)	&&
-					is_Cutscene_MasterId(0x3f980)			&&
-					is_Cutscene_SectionId_1(0xffff)		&&
-					is_Cutscene_SectionId_2(0x0)			&&
-					is_Cutscene_MasterDataId(0x3f980)		&&
-					is_Cutscene_SectionDataId(0x3f980)
+					is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA) &&
+					is_SelectedItemInScrollBar(ITEM_Antidote, GAMEREGION_USA)	&&
+					is_Cutscene_MasterId(0x3f980, GAMEREGION_USA)			&&
+					is_Cutscene_SectionId_1(0xffff, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)			&&
+					is_Cutscene_MasterDataId(0x3f980, GAMEREGION_USA)		&&
+					is_Cutscene_SectionDataId(0x3f980, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter5)
+				on_Chapter_finish(CHAPTER_Chapter5, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
 		// Core group
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active() 
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
-		is_MovieTimeTravel_chosen() &&
-		is_MovieThriller_chosen() 	&&
+		is_MovieTimeTravel_chosen(GAMEREGION_USA) &&
+		is_MovieThriller_chosen(GAMEREGION_USA) 	&&
 		(
 			(	// Alt 1 
 				once( // Identifies Cutscene => Saved by love story movie
-					is_LargeCutscene_active() && 
-					is_Cutscene_MasterId(0x9db40)		&&
-					is_Cutscene_SectionId_1(0x7)		&&
-					is_Cutscene_SectionId_2(0x8)		&&
-					is_Cutscene_MasterDataId(0x66600)	&&
-					is_Cutscene_SectionDataId(0x20cd0)
+					is_LargeCutscene_active(GAMEREGION_USA) && 
+					is_Cutscene_MasterId(0x9db40, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x7, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x8, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x66600, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x20cd0, GAMEREGION_USA)
 				) && 
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(CHAPTER_Chapter6)
+				on_Chapter_finish(CHAPTER_Chapter6, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
 		// Core group
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active() 
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
-		is_MovieTimeTravel_chosen() &&
-		is_MovieLove_chosen() 		&&
+		is_MovieTimeTravel_chosen(GAMEREGION_USA) &&
+		is_MovieLove_chosen(GAMEREGION_USA) 		&&
 		(
 			(	// Alt 1 
 				once( // Identifies Cutscene => Saved by love story movie
-					is_LargeCutscene_active() && 				
-					is_Cutscene_MasterId(0x9db40)		&&
-					is_Cutscene_SectionId_1(0x7)		&&
-					is_Cutscene_SectionId_2(0x8)		&&
-					is_Cutscene_MasterDataId(0x66600)	&&
-					is_Cutscene_SectionDataId(0x20cd0)
+					is_LargeCutscene_active(GAMEREGION_USA) && 				
+					is_Cutscene_MasterId(0x9db40, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x7, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x8, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x66600, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x20cd0, GAMEREGION_USA)
 				) && 
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(CHAPTER_Chapter6)
+				on_Chapter_finish(CHAPTER_Chapter6, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter7Complete": function Chapter7Complete() { return
 		never (	// Core group
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()	
+			is_EventViewer_active(GAMEREGION_USA)	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
-				unless(!is_Chapter(CHAPTER_Chapter7)) &&
+				unless(!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Holding onto rope 
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x43040)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x7ce0)	&&
-					is_Cutscene_SectionDataId(0xd940)
+					is_LargeCutscene_active(GAMEREGION_USA)			&&
+					is_Cutscene_MasterId(0x43040, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x7ce0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0xd940, GAMEREGION_USA)
 				) &&
 				tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
 					once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
-						is_LargeCutscene_active()			&&
-						is_MargaretteTold_Ancestor() 		&&
-						is_Cutscene_MasterId(0xc6800)		&&
-						is_Cutscene_SectionId_1(0x5)		&&
-						is_Cutscene_SectionId_2(0x4)		&&
-						is_Cutscene_MasterDataId(0x45720)	&&
-						is_Cutscene_SectionDataId(0x6ccd0)),
+						is_LargeCutscene_active(GAMEREGION_USA)			&&
+						is_MargaretteTold_Ancestor(GAMEREGION_USA) 		&&
+						is_Cutscene_MasterId(0xc6800, GAMEREGION_USA)		&&
+						is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+						is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+						is_Cutscene_MasterDataId(0x45720, GAMEREGION_USA)	&&
+						is_Cutscene_SectionDataId(0x6ccd0, GAMEREGION_USA)),
 					once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
-						is_LargeCutscene_active()			&&
-						is_MargaretteTold_NoAncestor() 		&&
-						is_Cutscene_MasterId(0xd1bc0)		&&
-						is_Cutscene_SectionId_1(0x3)		&&
-						is_Cutscene_SectionId_2(0x4)		&&
-						is_Cutscene_MasterDataId(0x48000)	&&
-						is_Cutscene_SectionDataId(0x5b190))]
+						is_LargeCutscene_active(GAMEREGION_USA)			&&
+						is_MargaretteTold_NoAncestor(GAMEREGION_USA) 		&&
+						is_Cutscene_MasterId(0xd1bc0, GAMEREGION_USA)		&&
+						is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+						is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+						is_Cutscene_MasterDataId(0x48000, GAMEREGION_USA)	&&
+						is_Cutscene_SectionDataId(0x5b190, GAMEREGION_USA))]
 				) &&
 				once(	// Identifies Cutscene => Looking at painting of Dana
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x12040)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0xce0)	&&
-					is_Cutscene_SectionDataId(0x11330)
+					is_LargeCutscene_active(GAMEREGION_USA)			&&
+					is_Cutscene_MasterId(0x12040, GAMEREGION_USA)	&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)	&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)	&&
+					is_Cutscene_MasterDataId(0xce0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x11330, GAMEREGION_USA)
 				) &&
-				on_Cutscene_end()
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter7)
+				on_Chapter_finish(CHAPTER_Chapter7, GAMEREGION_USA)
 			)
 		)},
 	"a_Chapter8Complete": function Chapter8Complete() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) && 
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Talk to Homunculus
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x8b640)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x2d440)	&&
-					is_Cutscene_SectionDataId(0x42750)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0x8b640, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x2d440, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x42750, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x10ef00)		&&
-					is_Cutscene_SectionId_1(0x9)		&&
-					is_Cutscene_SectionId_2(0x8)		&&
-					is_Cutscene_MasterDataId(0xb620)	&&
-					is_Cutscene_SectionDataId(0xf4d0)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0x10ef00, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x9, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x8, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0xb620, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0xf4d0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0xe4800)		&&
-					is_Cutscene_SectionId_1(0x9)		&&
-					is_Cutscene_SectionId_2(0xa)		&&
-					is_Cutscene_MasterDataId(0x66aa0)	&&
-					is_Cutscene_SectionDataId(0x5d060)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0xe4800, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x9, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0xa, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x66aa0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x5d060, GAMEREGION_USA)
 				) &&
-				is_MargaretteTold_Ancestor() &&
-				on_Cutscene_end()
+				is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)
 			) || 
 			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0xd5440)		&&
-					is_Cutscene_SectionId_1(0x7)		&&
-					is_Cutscene_SectionId_2(0x6)		&&
-					is_Cutscene_MasterDataId(0x41550)	&&
-					is_Cutscene_SectionDataId(0x2b420)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0xd5440, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x7, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x6, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x41550, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x2b420, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x716c0)		&&
-					is_Cutscene_SectionId_1(0x9)		&&
-					is_Cutscene_SectionId_2(0xa)		&&
-					is_Cutscene_MasterDataId(0x239f0)	&&
-					is_Cutscene_SectionDataId(0x19ef0)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0x716c0, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x9, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0xa, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x239f0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x19ef0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Eike consoling Margarette
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0xf3c80)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x91c30)	&&
-					is_Cutscene_SectionDataId(0x62030)
+					is_LargeCutscene_active(GAMEREGION_USA)				&&
+					is_Cutscene_MasterId(0xf3c80, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x91c30, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x62030, GAMEREGION_USA)
 				) &&
-				is_MargaretteTold_Ancestor() &&
-				on_Cutscene_end()
+				is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0xfbd00)		&&
-					is_Cutscene_SectionId_1(0x5)		&&
-					is_Cutscene_SectionId_2(0x4)		&&
-					is_Cutscene_MasterDataId(0x5ff00)	&&
-					is_Cutscene_SectionDataId(0x26f30)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0xfbd00, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x5ff00, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x26f30, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0xc4e40)		&& was_Cutscene_MasterId(0xfbd00) &&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x62650)	&&
-					is_Cutscene_SectionDataId(0x6be0)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0xc4e40, GAMEREGION_USA)		&& was_Cutscene_MasterId(0xfbd00, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x62650, GAMEREGION_USA, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x6be0, GAMEREGION_USA)
 				) &&
-				is_MargaretteTold_Ancestor() &&
-				on_Cutscene_end()
+				is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
 				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
-					is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter8_Ancestress) &&
-					is_Cutscene_MasterId(0x1cbc0)		&&
-					is_Cutscene_SectionId_1(0x5)		&&
-					is_Cutscene_SectionId_2(0x4)		&&
-					is_Cutscene_MasterDataId(0xc8e0)	&&
-					is_Cutscene_SectionDataId(0x98f0)
+					is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) &&
+					is_Cutscene_MasterId(0x1cbc0, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0xc8e0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x98f0, GAMEREGION_USA)
 				) &&
-				is_MargaretteTold_Ancestor() &&
-				on_Cutscene_end()
+				is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)
 			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
-				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x77a40)		&& was_Cutscene_MasterId(0x29700) &&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x31fd0)	&&
-					is_Cutscene_SectionDataId(0x45a10)
+					is_LargeCutscene_active(GAMEREGION_USA)			&&
+					is_Cutscene_MasterId(0x77a40, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x29700, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x31fd0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x45a10, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Eike confronts Hugo at square
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0x4b140)		&& was_Cutscene_MasterId(0x77a40) &&
-					is_Cutscene_SectionId_1(0x5)		&&
-					is_Cutscene_SectionId_2(0x4)		&&
-					is_Cutscene_MasterDataId(0x122b0)	&&
-					is_Cutscene_SectionDataId(0x189f0)
+					is_LargeCutscene_active(GAMEREGION_USA)			&&
+					is_Cutscene_MasterId(0x4b140, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x77a40, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x122b0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x189f0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
-					is_LargeCutscene_active()			&&
-					is_Cutscene_MasterId(0xc9440)		&& was_Cutscene_MasterId(0xa00c0) &&
-					is_Cutscene_SectionId_1(0x3)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x46b50)	&&
-					is_Cutscene_SectionDataId(0x828a0)
+					is_LargeCutscene_active(GAMEREGION_USA)			&&
+					is_Cutscene_MasterId(0xc9440, GAMEREGION_USA)		&& was_Cutscene_MasterId(0xa00c0, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x46b50, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x828a0, GAMEREGION_USA)
 				) &&
-				is_Dana_Left_InPast() && is_MargaretteTold_NoAncestor() &&
-				on_Cutscene_end()				
+				is_Dana_Left_InPast(GAMEREGION_USA) && is_MargaretteTold_NoAncestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)				
 			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
-				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress)) &&
+				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)) &&
 				once(	// Identifies Cutscene => Brought Margarette to present
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x101bc0)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x77920)	&&
-					is_Cutscene_SectionDataId(0x725d0)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x101bc0, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x77920, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x725d0, GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Margarette confronts Hugo in square
-					is_LargeCutscene_active() 			&& 
-					is_Cutscene_MasterId(0x137500)		&& was_Cutscene_MasterId(0x101bc0) &&
-					is_Cutscene_SectionId_1(0xc)		&&
-					is_Cutscene_SectionId_2(0xd)		&&
-					is_Cutscene_MasterDataId(0x7bdf0)	&&
-					is_Cutscene_SectionDataId(0x55290)
+					is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+					is_Cutscene_MasterId(0x137500, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x101bc0, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0xc, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0xd, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x7bdf0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x55290, GAMEREGION_USA)
 				) &&
-				is_Dana_Saved_FromPast() && is_MargaretteTold_NoAncestor() &&
-				on_Cutscene_end()
+				is_Dana_Saved_FromPast(GAMEREGION_USA) && is_MargaretteTold_NoAncestor(GAMEREGION_USA) &&
+				on_Cutscene_end(GAMEREGION_USA)
 			) || // Alt 7+8 => Failsafe; triggers on chapter change
-			on_Chapter_finish(CHAPTER_Chapter8_Ancestress) ||
-			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress)
+			on_Chapter_finish(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) ||
+			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)
 		)},
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {	return 
 		(
@@ -2915,269 +2972,269 @@ achievements_triggers = {
 	"a_EndingA": function EndingA() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_A)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_A, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			is_LargeCutscene_active() && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0xdb780)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x1bb0)	&&
-			is_Cutscene_SectionDataId(0x32ce0)
+			is_LargeCutscene_active(GAMEREGION_USA) && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
+			is_Cutscene_MasterId(0xdb780, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1bb0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x32ce0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			is_LargeCutscene_active() && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x77f80)		&& was_Cutscene_MasterId(0xdb780) &&
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x25c50)	&&
-			is_Cutscene_SectionDataId(0x1ac90)
+			is_LargeCutscene_active(GAMEREGION_USA) && !is_Chapter(CHAPTER_Epilogue_Ancestress) &&
+			is_Cutscene_MasterId(0x77f80, GAMEREGION_USA)		&& was_Cutscene_MasterId(0xdb780, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x25c50, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x1ac90, GAMEREGION_USA)
 		) &&		
-		is_MargaretteTold_Ancestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_A))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_A, GAMEREGION_USA))},
 	"a_EndingB1": function EndingB1() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_B)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_B, GAMEREGION_USA)
 		) &&
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus
-		// 	is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-		// 	is_Cutscene_MasterId(0x3dd40)		&&
-		// 	is_Cutscene_SectionId_1(0x3)		&&
-		// 	is_Cutscene_SectionId_2(0x2)		&&
-		// 	is_Cutscene_MasterDataId(0x9d20)	&&
-		// 	is_Cutscene_SectionDataId(0x1ed10)
+		// 	is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+		// 	is_Cutscene_MasterId(0x3dd40, GAMEREGION_USA)		&&
+		// 	is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+		// 	is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+		// 	is_Cutscene_MasterDataId(0x9d20, GAMEREGION_USA)	&&
+		// 	is_Cutscene_SectionDataId(0x1ed10, GAMEREGION_USA)
 		// ) &&
 		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus part2
-		// 	is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-		// 	is_Cutscene_MasterId(0x81b00)		&& was_Cutscene_MasterId(0x3dd40) &&
-		// 	is_Cutscene_SectionId_1(0x1)		&&
-		// 	is_Cutscene_SectionId_2(0x2)		&&
-		// 	is_Cutscene_MasterDataId(0x250f0)	&&
-		// 	is_Cutscene_SectionDataId(0x13ff0)
+		// 	is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+		// 	is_Cutscene_MasterId(0x81b00, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x3dd40, GAMEREGION_USA) &&
+		// 	is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+		// 	is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+		// 	is_Cutscene_MasterDataId(0x250f0, GAMEREGION_USA)	&&
+		// 	is_Cutscene_SectionDataId(0x13ff0, GAMEREGION_USA)
 		// ) &&
 
 		// Below 2 cutscenes run up to ending credits
 		once(	// Identifies Cutscene => Eike returns from sending Margarette back to past
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x613c0)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x613c0, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
 			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x43db0)	&&
-			is_Cutscene_SectionDataId(0x1d5d0)
+			is_Cutscene_MasterDataId(0x43db0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x1d5d0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x56240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x400d0)	&&
-			is_Cutscene_SectionDataId(0x16130)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x56240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x400d0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x16130, GAMEREGION_USA)
 		) &&
-		is_MargaretteTold_Ancestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_B))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_B, GAMEREGION_USA))},
 	"a_EndingB2": function EndingB2() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_B)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_B, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x91240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x44340)	&&
-			is_Cutscene_SectionDataId(0x41cd0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x91240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x44340, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x41cd0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x5d2c0)		&& was_Cutscene_MasterId(0x91240) &&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x1efd0)	&&
-			is_Cutscene_SectionDataId(0x2f6d0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x5d2c0, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x91240, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1efd0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x2f6d0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x56240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x400d0)	&&
-			is_Cutscene_SectionDataId(0x16130)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
+			is_Cutscene_MasterId(0x56240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x400d0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x16130, GAMEREGION_USA)
 		) &&
-		is_MargaretteTold_Ancestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_B))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_B, GAMEREGION_USA))},
 	"a_EndingC": function EndingC() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_C)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_C, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x8cf00)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x44340)	&&
-			is_Cutscene_SectionDataId(0x41cd0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x8cf00, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x44340, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x41cd0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0x7b140)		&& was_Cutscene_MasterId(0x8cf00) &&
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x1d530)	&&
-			is_Cutscene_SectionDataId(0x2f6d0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x7b140, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x8cf00, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1d530, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x2f6d0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
-			is_Cutscene_MasterId(0xcb700)		&& was_Cutscene_MasterId(0x7b140) &&
-			is_Cutscene_SectionId_1(0x5)		&&
-			is_Cutscene_SectionId_2(0x6)		&&
-			is_Cutscene_MasterDataId(0x1980)	&&
-			is_Cutscene_SectionDataId(0x1e8d0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress) &&
+			is_Cutscene_MasterId(0xcb700, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x7b140, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x6, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1980, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x1e8d0, GAMEREGION_USA)
 		) &&
-		is_MargaretteTold_Ancestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_MargaretteTold_Ancestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_C))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_C, GAMEREGION_USA))},
 	"a_EndingD": function EndingD() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_D)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_D, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
-			is_Cutscene_MasterId(0x709c0)		&&
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x4)		&&
-			is_Cutscene_MasterDataId(0x24770)	&&
-			is_Cutscene_SectionDataId(0x11790)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x709c0, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x24770, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x11790, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
-			is_Cutscene_MasterId(0xc5b40)		&&
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x4)		&&
-			is_Cutscene_MasterDataId(0x69b40)	&&
-			is_Cutscene_SectionDataId(0x21b40)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xc5b40, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x4, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x69b40, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x21b40, GAMEREGION_USA)
 		) &&
-		is_Dana_Left_InPast() && is_MargaretteTold_NoAncestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_Dana_Left_InPast(GAMEREGION_USA) && is_MargaretteTold_NoAncestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_D))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_D, GAMEREGION_USA))},
 	"a_EndingE": function EndingE() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_E)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_E, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
-			is_Cutscene_MasterId(0x88dc0)		&&
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x2c3a0)	&&
-			is_Cutscene_SectionDataId(0x5ca00)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x88dc0, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x2c3a0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x5ca00, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and Dr. Wagner is killed
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
-			is_Cutscene_MasterId(0xbef80)		&&
-			is_Cutscene_SectionId_1(0x9)		&&
-			is_Cutscene_SectionId_2(0x8)		&&
-			is_Cutscene_MasterDataId(0x59f60)	&&
-			is_Cutscene_SectionDataId(0x155e0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xbef80, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x9, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x8, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x59f60, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x155e0, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Epilogue_NoAncestress) &&
-			is_Cutscene_MasterId(0xcdcc0)		&& was_Cutscene_MasterId(0xbef80) &&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x33230)	&&
-			is_Cutscene_SectionDataId(0x21780)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xcdcc0, GAMEREGION_USA)		&& was_Cutscene_MasterId(0xbef80, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x33230, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x21780, GAMEREGION_USA)
 		) &&
-		is_Dana_Saved_FromPast() && is_MargaretteTold_NoAncestor() &&
-		once(is_Video_active()) &&	// Credits video
+		is_Dana_Saved_FromPast(GAMEREGION_USA) && is_MargaretteTold_NoAncestor(GAMEREGION_USA) &&
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_E))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_E, GAMEREGION_USA))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_EX)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_EX, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
-			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_PhilosopherStone) &&
-			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
-			is_ExChapter_unlocked() &&
-			is_Cutscene_MasterId(0xa7a80)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x394f0)	&&
-			is_Cutscene_SectionDataId(0x41b0)	&&
-			is_Cutscene_MinorId(0x1413a0,0x8)	&&			
-			is_Cutscene_MinorId(0x41b0,0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, GAMEREGION_USA) &&
+			is_PrologueExMode_active(GAMEREGION_USA) &&	is_Chapter(CHAPTER_Prologue, GAMEREGION_USA) &&
+			is_ExChapter_unlocked(GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xa7a80, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x394f0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x41b0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x1413a0,0x8, GAMEREGION_USA)	&&			
+			is_Cutscene_MinorId(0x41b0,0x28, GAMEREGION_USA)
 		) && 
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
 			is_Chapter(CHAPTER_Prologue) 			&&
-			is_Cutscene_MasterId(0x67940)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xd220)	&&
-			is_Cutscene_SectionDataId(0x5a6f0)
+			is_Cutscene_MasterId(0x67940, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xd220, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x5a6f0, GAMEREGION_USA)
 		) &&
-		once(is_Video_active()) &&	// Credits video
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_EX))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_EX, GAMEREGION_USA))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_EX)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			is_ViewingEndingFile_viaExtraMenu(ENDING_EX, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
-			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_PhilosopherStone) &&
-			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
-			is_ExChapter_unlocked() &&
-			is_Cutscene_MasterId(0x58c00)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x268f0)	&&
-			is_Cutscene_SectionDataId(0x11bc0)	&&
-			is_Cutscene_MinorId(0x721f0,0x8)	&&			
-			is_Cutscene_MinorId(0x11bc0,0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, GAMEREGION_USA) &&
+			is_PrologueExMode_active(GAMEREGION_USA) &&	is_Chapter(CHAPTER_Prologue, GAMEREGION_USA) &&
+			is_ExChapter_unlocked(GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x58c00, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x268f0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x11bc0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x721f0,0x8, GAMEREGION_USA)	&&			
+			is_Cutscene_MinorId(0x11bc0,0x28, GAMEREGION_USA)
 		) &&
 		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
 			is_Chapter(CHAPTER_Prologue) 			&&
-			is_Cutscene_MasterId(0x67940)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xd220)	&&
-			is_Cutscene_SectionDataId(0x5a6f0)
+			is_Cutscene_MasterId(0x67940, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xd220, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x5a6f0, GAMEREGION_USA)
 		) &&
-		once(is_Video_active()) &&	// Credits video
+		once(is_Video_active(GAMEREGION_USA)) &&	// Credits video
 		trigger_when(
-			on_Video_end() &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_EX))},
+			on_Video_end(GAMEREGION_USA) &&		// Trigger when Credits video is over/skipped
+			is_Ending_achieved(ENDING_EX, GAMEREGION_USA))},
 	"a_EnergyOrbLocatorPresentDay": () =>
 		// DEV_NOTE: Measure Flag with Pause If - Measure If - Reset If
 		// -----------------------------------------
@@ -3208,7 +3265,7 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present, GAMEREGION_USA),
 	"a_EnergyOrbLocator70s80s": () =>
 		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		//	'''''''''''
@@ -3228,7 +3285,7 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Late20thCentury),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Late20thCentury, GAMEREGION_USA),
 	"a_EnergyOrbLocatorMiddleAges": () => 
 		//	 Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		//	'''''''''''
@@ -3250,7 +3307,7 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	),
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_MiddleAges),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_MiddleAges, GAMEREGION_USA),
 	"a_EnergyOrbLocator1900Days": () =>
 		//  Code Below => will only count when effectivly picking up orbs, the other code will count whenever interacting with an orb even if energyUnits is maxed
 		// '''''''''''
@@ -3270,500 +3327,505 @@ achievements_triggers = {
 		//			always_false()
 		//		)
 		//	)
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Early20thCentury),
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Early20thCentury, GAMEREGION_USA),
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		never (
-			!is_Chapter(CHAPTER_Chapter6) && 
-			!is_Chapter(CHAPTER_Chapter7) &&
-			!is_Chapter(CHAPTER_Chapter8_Ancestress) &&
-			!is_Chapter(CHAPTER_Chapter8_NoAncestress)
+			!is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA) 				&& 
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA) 				&&
+			!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) 	&&
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Showing Franssen in 1902 the pocket watch
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_EggPocketWatch) &&
-			is_Cutscene_MasterId(0x114c0)		&& 
-			is_Cutscene_SectionId_1(0xffff)	&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x114a0)	&&
-			is_Cutscene_SectionDataId(0x114a0)	&&
-			is_Cutscene_MinorId(0xad50, 0x8)	&&
-			is_Cutscene_MinorId(0x114a0, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_EggPocketWatch, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x114c0, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0xffff, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x114a0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x114a0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0xad50, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x114a0, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_DoctorateTimeTraveling": function DoctorateTimeTraveling() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 				||
-			!is_Chapter(CHAPTER_Chapter4)	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
-				is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_FryingPan) &&
-				is_Cutscene_MasterId(0xb0100)		&&
-				is_Cutscene_SectionId_1(0xd)		&&
-				is_Cutscene_SectionId_2(0xe)		&&
-				is_Cutscene_MasterDataId(0x1efb0)	&&
-				is_Cutscene_SectionDataId(0xae70)),
+				is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_FryingPan, GAMEREGION_USA) &&
+				is_Cutscene_MasterId(0xb0100, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_1(0xd, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0xe, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x1efb0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0xae70, GAMEREGION_USA)),
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using photo shop sign
-				is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Sign) &&
-				is_Cutscene_MasterId(0xb0100)		&& 
-				is_Cutscene_SectionId_1(0xd)		&&
-				is_Cutscene_SectionId_2(0xe)		&&
-				is_Cutscene_MasterDataId(0x1eaa0)	&&
-				is_Cutscene_SectionDataId(0xae70))
+				is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_Sign, GAMEREGION_USA) &&
+				is_Cutscene_MasterId(0xb0100, GAMEREGION_USA)		&& 
+				is_Cutscene_SectionId_1(0xd, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0xe, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x1eaa0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0xae70, GAMEREGION_USA))
 		]) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_MeetOldMiriam": function MeetOldMiriam() { return 
 		never(
 			!is_InGame(GAMEREGION_USA) 				||
-			!is_Chapter(CHAPTER_Chapter7)	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0x43040)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x7ce0)	&&
-			is_Cutscene_SectionDataId(0xd940)
+			is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+			is_Cutscene_MasterId(0x43040, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x7ce0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xd940, GAMEREGION_USA)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Ancestor path => Old Miriam walks into conversation with Eckart and Eike
-				is_LargeCutscene_active() && is_MargaretteTold_Ancestor() && 
-				is_Cutscene_MasterId(0xc7940)		&&
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x95c0)	&&
-				is_Cutscene_SectionDataId(0x7410)),
+				is_LargeCutscene_active(GAMEREGION_USA) && is_MargaretteTold_Ancestor() && 
+				is_Cutscene_MasterId(0xc7940, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x95c0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x7410, GAMEREGION_USA)),
 			once(	// Identifies Cutscene => No Ancestor path => Old Miriam walks into conversation with Eckart and Eike
-				is_LargeCutscene_active() && is_MargaretteTold_NoAncestor() && 
-				is_Cutscene_MasterId(0xb2540)		&&
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x95c0)	&&
-				is_Cutscene_SectionDataId(0x6cf0))
+				is_LargeCutscene_active(GAMEREGION_USA) && is_MargaretteTold_NoAncestor() && 
+				is_Cutscene_MasterId(0xb2540, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x95c0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x6cf0, GAMEREGION_USA))
 		]) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_GetOrnamentalEgg": function AcquireOrnamentalEgg() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 					||
-			!is_Chapter(CHAPTER_Chapter1) 	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter1, GAMEREGION_USA) 	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0x19380)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xd5f0)	&&
-			is_Cutscene_SectionDataId(0xe10)
+			is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+			is_Cutscene_MasterId(0x19380, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xd5f0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xe10, GAMEREGION_USA)
 		) &&
-		trigger_when(is_ItemPresentInInventory(ITEM_OrnamentalEgg) && on_Cutscene_end())},
+		trigger_when(is_ItemPresentInInventory(ITEM_OrnamentalEgg) && on_Cutscene_end(GAMEREGION_USA))},
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
-			is_LargeCutscene_active() &&
-			is_PrologueExMode_active() &&	is_Chapter(CHAPTER_Prologue) &&
-			is_ExChapter_unlocked() &&
-			is_Cutscene_MasterId(0x30780)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xd5f0)	&&
-			is_Cutscene_SectionDataId(0xe10)	&&
-			is_Cutscene_MinorId(0x7fd10,0x8)	&&			
-			is_Cutscene_MinorId(0xe10,0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) &&
+			is_PrologueExMode_active(GAMEREGION_USA) &&	is_Chapter(CHAPTER_Prologue) &&
+			is_ExChapter_unlocked(GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x30780, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xd5f0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xe10, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x7fd10,0x8, GAMEREGION_USA)	&&			
+			is_Cutscene_MinorId(0xe10,0x28, GAMEREGION_USA)
 		) &&
 		trigger_when(
 			is_ItemPresentInInventory(ITEM_OrnamentalEgg) && 
-			is_NoCutscene_active())},
+			is_NoCutscene_active(GAMEREGION_USA))},
 	"a_AlertBarmanOfFire": function EggCollection() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 					||
-			!is_Chapter(CHAPTER_Chapter1) 	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter1, GAMEREGION_USA) 	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Warning barman of fire 
-			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg) &&
-			is_Cutscene_MasterId(0x32200)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x70e0)	&&
-			is_Cutscene_SectionDataId(0x24cb0)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_OrnamentalEgg) &&
+			is_Cutscene_MasterId(0x32200, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x70e0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x24cb0, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EggCollection": function AlertBarmanOfFire() { return
 		never (
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		never (
-			!is_Chapter(CHAPTER_Chapter1) && 
-			!is_Chapter(CHAPTER_Chapter3) && 
-			!is_Chapter(CHAPTER_Chapter4) 
+			!is_Chapter(CHAPTER_Chapter1, GAMEREGION_USA) && 
+			!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA) && 
+			!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA) 
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4
-				is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg)	&&
-				(is_Chapter(CHAPTER_Chapter1) || is_Chapter(CHAPTER_Chapter4))	&&
-				is_Cutscene_MasterId(0x2f9c0)		&& 
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x59c0)	&&
-				is_Cutscene_SectionDataId(0x5c20)),
+				is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_OrnamentalEgg, GAMEREGION_USA)	&&
+				(is_Chapter(CHAPTER_Chapter1, GAMEREGION_USA) || is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA))	&&
+				is_Cutscene_MasterId(0x2f9c0, GAMEREGION_USA)		&& 
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x59c0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x5c20, GAMEREGION_USA)),
 			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
-				is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_OrnamentalEgg) &&
-				is_Chapter(CHAPTER_Chapter3)			&&
-				is_Cutscene_MasterId(0x32200)		&& 
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x59c0)	&&
-				is_Cutscene_SectionDataId(0x5c20))
+				is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_OrnamentalEgg, GAMEREGION_USA) &&
+				is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA)			&&
+				is_Cutscene_MasterId(0x32200, GAMEREGION_USA)		&& 
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x59c0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x5c20, GAMEREGION_USA))
 		])
 		 &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_RunningAcrossThe90s": function RunningAcrossThe90s() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(2, [
 				once( // Talk to JoggingMan_Present
-					is_SmallCutscene_active() &&
+					is_SmallCutscene_active(enum_gameRegion) &&
 					(
-						is_Area(AREA_Present_City_Day) 	|| 
-						is_Area(AREA_Present_City_NightPM) ||
-						is_Area(AREA_Present_City_NightAM)
+						is_Area(AREA_Present_City_Day, enum_gameRegion) 	|| 
+						is_Area(AREA_Present_City_NightPM, enum_gameRegion) ||
+						is_Area(AREA_Present_City_NightAM, enum_gameRegion)
 					) &&
-					is_TalkingToNPC(NPC_Present_JoggingMan)),
+					is_TalkingToNPC(NPC_Present_JoggingMan, enum_gameRegion)),
 				once( // Talk to JoggingMan_80s
-					is_SmallCutscene_active() &&
-					is_Area(AREA_70s_City_Night) &&
-					is_TalkingToNPC(NPC_80s_JoggingMan)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_Area(AREA_70s_City_Night, enum_gameRegion) &&
+					is_TalkingToNPC(NPC_80s_JoggingMan, enum_gameRegion)),
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) 		||
-				!is_Chapter(CHAPTER_Chapter3) && !is_Chapter(CHAPTER_Chapter4) && !is_Chapter(CHAPTER_Chapter5)
+				!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA) && 
+				!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA) && 
+				!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison()) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_ShowEggTownPlanter": function ShowEggTownPlanter() { return 
 		never (
 			!is_InGame(GAMEREGION_USA) 				||
-			!is_Chapter(CHAPTER_Chapter2) 	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA) 	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_OrnamentalEgg) &&
-			is_Cutscene_MasterId(0xde00)		&& 
-			is_Cutscene_SectionId_1(0x3)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x29d0)	&&
-			is_Cutscene_SectionDataId(0xb400)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_OrnamentalEgg, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xde00, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x3, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x29d0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xb400, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
 		never (
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			!is_ItemPresentInInventory(ITEM_EggPocketWatch) ||
-			!is_Chapter(CHAPTER_Chapter6) && !is_Chapter(CHAPTER_Chapter7) && 
-			!is_Chapter(CHAPTER_Chapter8_Ancestress) && !is_Chapter(CHAPTER_Chapter8_NoAncestress)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			!is_ItemPresentInInventory(ITEM_EggPocketWatch, GAMEREGION_USA) ||
+			!is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA) 				&& 
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA) 				&& 
+			!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) 	&& 
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
-				is_LargeCutscene_active() && is_Area(AREA_1900s_City) && 
-				is_Cutscene_MasterId(0x8b440) 		&&
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x3b3a0)	&&
-				is_Cutscene_SectionDataId(0x50080)	&&
-				is_Cutscene_MinorId(0xdefe0, 0x8)	&&
-				is_Cutscene_MinorId(0x50080, 0x28)),
+				is_LargeCutscene_active(GAMEREGION_USA) && is_Area(AREA_1900s_City, GAMEREGION_USA) && 
+				is_Cutscene_MasterId(0x8b440, GAMEREGION_USA) 		&&
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x3b3a0, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x50080, GAMEREGION_USA)	&&
+				is_Cutscene_MinorId(0xdefe0, 0x8, GAMEREGION_USA)	&&
+				is_Cutscene_MinorId(0x50080, 0x28, GAMEREGION_USA)),
 			once(	// Identifies Cutscene => Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
-				is_LargeCutscene_active() && is_Area(AREA_1900s_City) && 
-				is_Cutscene_MasterId(0xac4c0) 		&&
-				is_Cutscene_SectionId_1(0x1)		&&
-				is_Cutscene_SectionId_2(0x0)		&&
-				is_Cutscene_MasterDataId(0x5ac20)	&&
-				is_Cutscene_SectionDataId(0x51870)	&&
-				is_Cutscene_MinorId(0x7ec30, 0x8)	&&
-				is_Cutscene_MinorId(0x2f730, 0x2c))
+				is_LargeCutscene_active(GAMEREGION_USA) && is_Area(AREA_1900s_City, GAMEREGION_USA) && 
+				is_Cutscene_MasterId(0xac4c0, GAMEREGION_USA) 		&&
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x5ac20, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x51870, GAMEREGION_USA)	&&
+				is_Cutscene_MinorId(0x7ec30, 0x8, GAMEREGION_USA)	&&
+				is_Cutscene_MinorId(0x2f730, 0x2c, GAMEREGION_USA))
 		]) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
 			!is_InGame(GAMEREGION_USA) 			||
-			is_EventViewer_active()	||
-			!is_Chapter(CHAPTER_Chapter7)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
-			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_EggPocketWatch) &&
-			is_Cutscene_MasterId(0x8ce80) 		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x4c600)	&&
-			is_Cutscene_SectionDataId(0x236a0)	&&
-			is_Cutscene_MinorId(0x70640, 0x8)	&&
-			is_Cutscene_MinorId(0x236a0, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_EggPocketWatch, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x8ce80, GAMEREGION_USA) 		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x4c600, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x236a0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x70640, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x236a0, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 					||
-			is_EventViewer_active()	||
-			!is_Chapter(CHAPTER_Chapter8_Ancestress) && !is_Chapter(CHAPTER_Chapter8_NoAncestress)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			!is_Chapter(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) && 
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
-			is_LargeCutscene_active() && is_ItemPresentInInventory(ITEM_EggPocketWatch) &&
-			is_Cutscene_MasterId(0x8dcc0) 		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x31a90)	&&
-			is_Cutscene_SectionDataId(0xa420)	&&
-			is_Cutscene_MinorId(0xdfbc0, 0x8)	&&
-			is_Cutscene_MinorId(0xa420, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_ItemPresentInInventory(ITEM_EggPocketWatch, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x8dcc0, GAMEREGION_USA) 		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x31a90, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xa420, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0xdfbc0, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0xa420, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EikeThePyromancer": function EikeThePyromancer() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2)	||
-			is_EventViewer_active() 
+			!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
-			is_TreeReplacedBy_Statue() && is_CrowdScaredWith_Lighter() &&			
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
-			is_Cutscene_MasterId(0x3b240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x340e0)	&&
-			is_Cutscene_SectionDataId(0x7130)
+			is_TreeReplacedBy_Statue(GAMEREGION_USA) && is_CrowdScaredWith_Lighter() &&			
+			is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x3b240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x340e0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x7130, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_EikeTheMagician": function EikeTheMagician() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2)	||
-			is_EventViewer_active() 
+			!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
-			is_TreeReplacedBy_Statue() && is_CrowdScaredWith_Cellphone() &&			
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
-			is_Cutscene_MasterId(0x3b240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x340e0)	&&
-			is_Cutscene_SectionDataId(0x7130)
+			is_TreeReplacedBy_Statue(GAMEREGION_USA) && is_CrowdScaredWith_Cellphone() &&			
+			is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x3b240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x340e0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x7130, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_EikeTheFlorist": function EikeTheFlorist() { return 
 		never (
 			!is_InGame(GAMEREGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2)	||
-			is_EventViewer_active() 
+			!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
-			is_TreeReplacedBy_Flowers() &&
-			is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Dpad) &&
-			is_Cutscene_MasterId(0x3b240)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x340e0)	&&
-			is_Cutscene_SectionDataId(0x7130)
+			is_TreeReplacedBy_Flowers(GAMEREGION_USA) &&
+			is_LargeCutscene_active(GAMEREGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x3b240, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x340e0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x7130, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_BarmansChildren": function BarmansChildren() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter5)	||
-			is_EventViewer_active() 
+			!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0xd0200)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x3d290)	&&
-			is_Cutscene_SectionDataId(0x92f30)
+			is_LargeCutscene_active(GAMEREGION_USA) && 
+			is_Cutscene_MasterId(0xd0200, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x3d290, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x92f30, GAMEREGION_USA)
 		) &&
-		on_CutsceneSection_end()},
+		on_CutsceneSection_end(GAMEREGION_USA)},
 	"a_LostYoungCouple1": function LostYoungCouple1() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(6, [
 				once(	// 1st talk with woman
-					is_SmallCutscene_active() && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
-					(is_LostYoungCoupleProgress_Chapter2(0x0) || is_LostYoungCoupleProgress_Chapter2(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) && 
-					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") &&	
-					is_InteractionChapterId(0x163) && is_InteractionId(0x420)),
+					is_SmallCutscene_active(enum_gameRegion) && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
+					(is_LostYoungCoupleProgress_Chapter2(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter2(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) && 
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_gameRegion) &&	
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x420, enum_gameRegion)),
 				once(	// 1st talk with man
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter2(0x0) || is_LostYoungCoupleProgress_Chapter2(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x40d)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter2(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter2(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x40d, enum_gameRegion)),
 				once( 	// 2nd talk with woman; is only available when having talked to both at least once
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter2(0x1) || is_LostYoungCoupleProgress_Chapter2(0x2)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x421)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter2(0x1, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter2(0x2, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x421, enum_gameRegion)),
 				once(	// 2nd talk with man; is only available when having talked to both at least once
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter2(0x1) || is_LostYoungCoupleProgress_Chapter2(0x2)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x40e)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter2(0x1, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter2(0x2, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x40e, enum_gameRegion)),
 				once(	// 3rd talk with woman
-					is_SmallCutscene_active() &&
-					is_LostYoungCoupleProgress_Chapter2(0x3) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x422)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_LostYoungCoupleProgress_Chapter2(0x3, enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x422, enum_gameRegion)),
 				once(	// 3rd talk with man
-					is_SmallCutscene_active() &&
-					is_LostYoungCoupleProgress_Chapter2(0x3) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x40f))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_LostYoungCoupleProgress_Chapter2(0x3, enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x40f, enum_gameRegion))
 			])}
 		return 
 			never(
 				!is_InGame(GAMEREGION_USA) || 
-				!is_Chapter(CHAPTER_Chapter2)
+				!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), is_Area(AREA_MiddleAges_City_Night, GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_LostYoungCouple2": function LostYoungCouple2() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(6, [
 				once(	// 1st talk with woman
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter3(0x0) || is_LostYoungCoupleProgress_Chapter3(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x423)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter3(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter3(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x423, enum_gameRegion)),
 				once(	// 1st talk with man
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter3(0x0) || is_LostYoungCoupleProgress_Chapter3(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") &&
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter3(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter3(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_gameRegion) &&
 					is_InteractionChapterId(0x163) && is_InteractionId(0x410)),
 				once(	// 2nd talk with woman; only available when talking to both at least once
-					is_SmallCutscene_active() &&
+					is_SmallCutscene_active(enum_gameRegion) &&
 					(is_LostYoungCoupleProgress_Chapter3(0x1) || is_LostYoungCoupleProgress_Chapter3(0x2)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x424)),
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x424, enum_gameRegion)),
 				once(	// 2nd talk with man; only available when talking to both at least once
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter3(0x1) || is_LostYoungCoupleProgress_Chapter3(0x2)) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x411)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter3(0x1, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter3(0x2, enum_gameRegion)) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x411, enum_gameRegion)),
 				once(	// 3rd talk with woman
-					is_SmallCutscene_active() &&
-					is_LostYoungCoupleProgress_Chapter3(0x3) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x425)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_LostYoungCoupleProgress_Chapter3(0x3, enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x425, enum_gameRegion)),
 				once(	// 3rd talk with man
-					is_SmallCutscene_active() &&
-					is_LostYoungCoupleProgress_Chapter3(0x3) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x412))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_LostYoungCoupleProgress_Chapter3(0x3, enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x412, enum_gameRegion))
 			])}
 		return 
 			never(
 				!is_InGame(GAMEREGION_USA) || 
-				!is_Chapter(CHAPTER_Chapter3)
+				!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), is_Area(AREA_MiddleAges_City_Night, GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_LostYoungCouple3" : function LostYoungCouple3() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(6, [
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x0) || is_LostYoungCoupleProgress_Chapter4(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x426)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x426, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x0) || is_LostYoungCoupleProgress_Chapter4(0x1)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x413)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x0, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x1, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x413, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x1) || is_LostYoungCoupleProgress_Chapter4(0x2)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x427)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x1, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x2, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x427, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x1) || is_LostYoungCoupleProgress_Chapter4(0x2)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x414)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x1, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x2, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x414, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x2) || is_LostYoungCoupleProgress_Chapter4(0x3)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x428)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x2, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x3, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x428, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					(is_LostYoungCoupleProgress_Chapter4(0x2) || is_LostYoungCoupleProgress_Chapter4(0x3)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x415))				
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_LostYoungCoupleProgress_Chapter4(0x2, enum_gameRegion) || is_LostYoungCoupleProgress_Chapter4(0x3, enum_gameRegion)) &&	
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x415, enum_gameRegion))				
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter4)
+				!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Night)) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), is_Area(AREA_MiddleAges_City_Night, GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_LostYoungCouple4": function LostYoungCouple4() {
-		function measuredComparison() { return
-			tally(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
+		function measuredComparison(enum_gameRegion) { return
+			tally(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate", enum_gameRegion), 
 				repeated(1,
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x416))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x416, enum_gameRegion))
 			)}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter5)
+				!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), always_true()) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), always_true()) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_LostYoungCouple5": function LostYoungCouple5() {
-		function measuredComparison_NoAncestor() { return
+		function measuredComparison_NoAncestor(enum_gameRegion) { return
 			tally(4, [
 				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
-					is_SmallCutscene_active() && 
-					is_MargaretteTold_NoAncestor() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
-					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
-				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
-					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
+					is_SmallCutscene_active(enum_gameRegion) && 
+					is_MargaretteTold_NoAncestor(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare", enum_gameRegion) &&
+					is_InteractionChapterId(0x3b, enum_gameRegion) && is_InteractionId(0x429, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch", enum_gameRegion) &&
+					is_InteractionChapterId(0x3b, enum_gameRegion) && is_InteractionId(0x418, enum_gameRegion))
 			])}
-		function measuredComparison_Ancestor() { return
+		function measuredComparison_Ancestor(enum_gameRegion) { return
 			tally(4, [
 				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
 				// 	is_SmallCutscene_active() &&
@@ -3772,389 +3834,389 @@ achievements_triggers = {
 				// 	on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare") &&
 				// 	is_InteractionChapterId(0x3b) && is_InteractionId(0x428)),
 				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
-					is_SmallCutscene_active() &&
-					is_MargaretteTold_Ancestor() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice") &&
-					is_InteractionChapterId(0x3b) && is_InteractionId(0x429)),
-				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch") &&
-					is_InteractionChapterId(0x3b) && is_InteractionId(0x418))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_MargaretteTold_Ancestor(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice", enum_gameRegion) &&
+					is_InteractionChapterId(0x3b, enum_gameRegion) && is_InteractionId(0x429, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch", enum_gameRegion) &&
+					is_InteractionChapterId(0x3b, enum_gameRegion) && is_InteractionId(0x418, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter7)
+				!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)
 			) &&
 			(
-				measured(measuredComparison_NoAncestor(), is_MargaretteTold_NoAncestor()) || 
-				measured(measuredComparison_Ancestor(), is_MargaretteTold_Ancestor())
+				measured(measuredComparison_NoAncestor(GAMEREGION_USA), is_MargaretteTold_NoAncestor(GAMEREGION_USA)) || 
+				measured(measuredComparison_Ancestor(GAMEREGION_USA), is_MargaretteTold_Ancestor(GAMEREGION_USA))
 			) &&
-			trigger_when(on_Cutscene_end())},
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_LostYoungCouple6": function LostYoungCouple6() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(2, [
 				once(	// 1st talk with man, having a dialogue option
-					is_SmallCutscene_active() &&
-					is_WomanAdvisedBeTruthful() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&
-					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful") &&
-					is_InteractionChapterId(0x13) && is_InteractionId(0x41c)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_WomanAdvisedBeTruthful(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&
+					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful", enum_gameRegion) &&
+					is_InteractionChapterId(0x13, enum_gameRegion) && is_InteractionId(0x41c, enum_gameRegion)),
 				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
 						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
-					is_SmallCutscene_active() &&		
-					is_WomanAdvisedBeTruthful() &&
-					is_ManToldLoversNeverDestinedMeet() &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan) &&					
-					is_InteractionChapterId(0x13) && is_InteractionId(0x433))
+					is_SmallCutscene_active(enum_gameRegion) &&		
+					is_WomanAdvisedBeTruthful(enum_gameRegion) &&
+					is_ManToldLoversNeverDestinedMeet(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_gameRegion) &&					
+					is_InteractionChapterId(0x13, enum_gameRegion) && is_InteractionId(0x433, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter8)
+				!is_Chapter(CHAPTER_Chapter8, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), is_Area(AREA_MiddleAges_City_Day)) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), is_Area(AREA_MiddleAges_City_Day, GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") &&
-					is_InteractionId(0x2cc)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare", enum_gameRegion) &&
+					is_InteractionId(0x2cc, enum_gameRegion)),
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap1Prologue_NearBar") &&
-					is_InteractionId(0x2c1))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap1Prologue_NearBar", enum_gameRegion) &&
+					is_InteractionId(0x2c1, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Prologue) && !is_Chapter(CHAPTER_Chapter1)
+				!is_Chapter(CHAPTER_Prologue, GAMEREGION_USA) && !is_Chapter(CHAPTER_Chapter1, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), always_true()) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), always_true()) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EnigmaticCouple2": function EnigmaticCouple2() {
-		function measuredComparison_onIncrease() { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
+		function measuredComparison_onIncrease(enum_gameRegion) { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
-					is_InteractionId(0x2c4))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion) &&
+					is_InteractionId(0x2d0, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop", enum_gameRegion) &&
+					is_InteractionId(0x2c4, enum_gameRegion))
 			])}
-		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_onMax(enum_gameRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop") &&
-					is_InteractionId(0x2c4))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion) &&
+					is_InteractionId(0x2d0, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap3_NearAntiqueShop", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop", enum_gameRegion) &&
+					is_InteractionId(0x2c4, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter3)
+				!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(on_Cutscene_end())},
+			(measured(measuredComparison_onIncrease(GAMEREGION_USA), always_true()) || measured(measuredComparison_onMax(GAMEREGION_USA), always_true())) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EnigmaticCouple3": function EnigmaticCouple3() {
-		function measuredComparison_onIncrease() { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
+		function measuredComparison_onIncrease(enum_gameRegion) { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion) &&
 					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
-					is_InteractionId(0x2c5))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch", enum_gameRegion) &&
+					is_InteractionId(0x2c5, enum_gameRegion))
 			])}
-		function measuredComparison_onMax() { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_onMax(enum_gameRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar") &&
-					is_InteractionId(0x2d0)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch") &&
-					is_InteractionId(0x2c5))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar", enum_gameRegion) &&
+					is_InteractionId(0x2d0, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap4_HaupStrUnderArch", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch", enum_gameRegion) &&
+					is_InteractionId(0x2c5, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter4)
+				!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(on_Cutscene_end())},
+			(measured(measuredComparison_onIncrease(GAMEREGION_USA), always_true()) || measured(measuredComparison_onMax(GAMEREGION_USA), always_true())) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_EnigmaticCouple4": function EnigmaticCouple4() {
-		function measuredComparison_BrumLibrary_onIncrease() { return
+		function measuredComparison_BrumLibrary_onIncrease(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2d5, enum_gameRegion)),
 				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
-					is_SmallCutscene_active() && is_BrumEstate_Library() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
+					is_SmallCutscene_active(enum_gameRegion) && is_BrumEstate_Library(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2c9, enum_gameRegion))
 			])}
-		function measuredComparison_BrumLibrary_onMax() { return
+		function measuredComparison_BrumLibrary_onMax(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2d5, enum_gameRegion)),
 				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
-					is_SmallCutscene_active() && is_BrumEstate_Library() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2c9))
+					is_SmallCutscene_active(enum_gameRegion) && is_BrumEstate_Library(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2c9, enum_gameRegion))
 			])}
-		function measuredComparison_BrumMuseum_onIncrease() { return
+		function measuredComparison_BrumMuseum_onIncrease(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_gameRegion) &&
 					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
-					is_SmallCutscene_active() && is_BrumEstate_Museum() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) && is_BrumEstate_Museum(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2ca, enum_gameRegion))
 			])}
-		function measuredComparison_BrumMuseum_onMax() { return
+		function measuredComparison_BrumMuseum_onMax(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2d5)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
-					is_SmallCutscene_active() && is_BrumEstate_Museum() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum") &&
-					is_InteractionChapterId(0x4b) && is_InteractionId(0x2ca))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2d5, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) && is_BrumEstate_Museum(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_gameRegion) &&
+					is_InteractionChapterId(0x4b, enum_gameRegion) && is_InteractionId(0x2ca, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter5)
+				!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)
 			) &&
-			trigger_when(on_Cutscene_end()) &&
-			(measured(measuredComparison_BrumMuseum_onIncrease()) || measured(measuredComparison_BrumMuseum_onMax()) ||
-			measured(measuredComparison_BrumLibrary_onIncrease()) || measured(measuredComparison_BrumLibrary_onMax()))},
+			trigger_when(on_Cutscene_end(GAMEREGION_USA)) &&
+			(measured(measuredComparison_BrumMuseum_onIncrease(GAMEREGION_USA)) || measured(measuredComparison_BrumMuseum_onMax(GAMEREGION_USA)) ||
+			measured(measuredComparison_BrumLibrary_onIncrease(GAMEREGION_USA)) || measured(measuredComparison_BrumLibrary_onMax(GAMEREGION_USA)))},
 	"a_EnigmaticCouple5": function EnigmaticCouple5() {
-		function measuredComparison_onIncrease() { return
+		function measuredComparison_onIncrease(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_gameRegion) &&
 					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
-					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_gameRegion) &&
+					is_InteractionChapterId(0xb2, enum_gameRegion) && is_InteractionId(0x2c8, enum_gameRegion))
 			])}
-		function measuredComparison_onMax() { return
+		function measuredComparison_onMax(enum_gameRegion) { return
 			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate") &&
-					is_InteractionChapterId(0xb2) && is_InteractionId(0x2d3)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_CoatedMan) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate") &&
-					is_InteractionChapterId(0xb2) && is_InteractionId(0x2c8))
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate", enum_gameRegion),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_gameRegion) &&
+					is_InteractionChapterId(0xb2, enum_gameRegion) && is_InteractionId(0x2d3, enum_gameRegion)),
+				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate", enum_gameRegion), 
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_CoatedMan, enum_gameRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_gameRegion) &&
+					is_InteractionChapterId(0xb2, enum_gameRegion) && is_InteractionId(0x2c8, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter7)
+				!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)
 			) &&
-			(measured(measuredComparison_onIncrease(), always_true()) || measured(measuredComparison_onMax(), always_true())) &&
-			trigger_when(on_Cutscene_end())},
+			(measured(measuredComparison_onIncrease(GAMEREGION_USA), always_true()) || measured(measuredComparison_onMax(GAMEREGION_USA), always_true())) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!is_InGame(GAMEREGION_USA)				||
-			is_EventViewer_active() 	||
-			on_Cutscene_MasterId_change()
+			is_EventViewer_active(GAMEREGION_USA) 	||
+			on_Cutscene_MasterId_change(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
-			is_LargeCutscene_active() && is_Chapter(CHAPTER_Chapter4) &&
-			is_SelectedItemInScrollBar(ITEM_Jugglery) &&
-			is_WearingPerformerOutfit()			&&
-			is_Cutscene_MasterId(0x1a300)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xd440)	&&
-			is_Cutscene_SectionDataId(0x3a00)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA) &&
+			is_SelectedItemInScrollBar(ITEM_Jugglery, GAMEREGION_USA) &&
+			is_WearingPerformerOutfit(GAMEREGION_USA)			&&
+			is_Cutscene_MasterId(0x1a300, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xd440, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x3a00, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
 			!is_InGame(GAMEREGION_USA)				||
-			is_EventViewer_active() 	||
+			is_EventViewer_active(GAMEREGION_USA) 	||
 			!is_SelectedItemInScrollBar(ITEM_Cake)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
-			is_LargeCutscene_active() 			&& 
-			is_Cutscene_MasterId(0x10b000)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0xadb40)	&&
-			is_Cutscene_SectionDataId(0x5d4a0)
+			is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+			is_Cutscene_MasterId(0x10b000, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0xadb40, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x5d4a0, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(7, [
 				once(
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BlondeYoungBoy) &&
-					is_Area(AREA_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit") &&
-					is_InteractionChapterId(0x44) && is_InteractionId(0x39c)),	// IDs last dialogue sequence on this NPC's appearance
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BlondeYoungBoy, enum_gameRegion) &&
+					is_Area(AREA_Present_City_Day, enum_gameRegion) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit", enum_gameRegion) &&
+					is_InteractionChapterId(0x44, enum_gameRegion) && is_InteractionId(0x39c, enum_gameRegion)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BrunetteMother) &&
-					is_Area(AREA_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit") &&
-					is_InteractionChapterId(0x44) && is_InteractionId(0x336)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BrunetteMother, enum_gameRegion) &&
+					is_Area(AREA_Present_City_Day, enum_gameRegion) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit", enum_gameRegion) &&
+					is_InteractionChapterId(0x44, enum_gameRegion) && is_InteractionId(0x336, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BrunetteYoungGirl) &&
-					is_Area(AREA_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit") &&
-					is_InteractionChapterId(0x44) && is_InteractionId(0x323)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BrunetteYoungGirl, enum_gameRegion) &&
+					is_Area(AREA_Present_City_Day, enum_gameRegion) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit", enum_gameRegion) &&
+					is_InteractionChapterId(0x44, enum_gameRegion) && is_InteractionId(0x323, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BlondeOldWomanOrangeSweater) &&
-					is_Area(AREA_Present_City_Day) &&
-					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit") &&
-					is_InteractionChapterId(0x44) && is_InteractionId(0x32c)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BlondeOldWomanOrangeSweater, enum_gameRegion) &&
+					is_Area(AREA_Present_City_Day, enum_gameRegion) &&
+					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit", enum_gameRegion) &&
+					is_InteractionChapterId(0x44, enum_gameRegion) && is_InteractionId(0x32c, enum_gameRegion)),
 				once(	// This appearance does not have a memory address for talk count
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BrunetteAdultManGlasses) &&
-					is_Area(AREA_Present_TownHall) &&
-					is_InteractionChapterId(0x29) && is_InteractionId(0x3c6)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BrunetteAdultManGlasses, enum_gameRegion) &&
+					is_Area(AREA_Present_TownHall, enum_gameRegion) &&
+					is_InteractionChapterId(0x29, enum_gameRegion) && is_InteractionId(0x3c6, enum_gameRegion)),
 				once(	// This appearance does not have a memory address for talk count
-					is_SmallCutscene_active() &&
-					is_TalkingToNPC(NPC_Present_BlondeElderlyWoman) &&
-					is_Area(AREA_Present_TownHall) &&
-					is_InteractionChapterId(0x29) && is_InteractionId(0x3cc)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_TalkingToNPC(NPC_Present_BlondeElderlyWoman, enum_gameRegion) &&
+					is_Area(AREA_Present_TownHall, enum_gameRegion) &&
+					is_InteractionChapterId(0x29, enum_gameRegion) && is_InteractionId(0x3cc, enum_gameRegion)),
 				once(	// This counts Eike, giving egg to Eike/yourself
-					is_LargeCutscene_active() &&
-					is_SelectedItemInScrollBar(ITEM_Jugglery) &&
-					is_Cutscene_MasterId(0x1a300)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0xd440)	&&
-					is_Cutscene_SectionDataId(0x3a00))
+					is_LargeCutscene_active(enum_gameRegion) &&
+					is_SelectedItemInScrollBar(ITEM_Jugglery, enum_gameRegion) &&
+					is_Cutscene_MasterId(0x1a300, enum_gameRegion)		&&
+					is_Cutscene_SectionId_1(0x1, enum_gameRegion)		&&
+					is_Cutscene_SectionId_2(0x0, enum_gameRegion)		&&
+					is_Cutscene_MasterDataId(0xd440, enum_gameRegion)	&&
+					is_Cutscene_SectionDataId(0x3a00, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) 					||
-				!is_Chapter(CHAPTER_Chapter4)	||
-				repeated(300, !is_WearingPerformerOutfit())		// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() 
+				!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)	||
+				repeated(300, !is_WearingPerformerOutfit(GAMEREGION_USA))		// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() 
 			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
-			measured(measuredComparison(), always_true()) &&	// 		=> we don't want to reset measure count here 
-			trigger_when(on_Cutscene_end() || on_CutsceneSection_end())}, // Can only trigger after the cutscene when giving egg to past Eike
+			measured(measuredComparison(GAMEREGION_USA), always_true()) &&	// 		=> we don't want to reset measure count here 
+			trigger_when(on_Cutscene_end(GAMEREGION_USA) || on_CutsceneSection_end(GAMEREGION_USA))}, // Can only trigger after the cutscene when giving egg to past Eike
 	"a_ScareEveryone": function ScareEveryone() {
-		function measuredComparison() { return
+		function measuredComparison(enum_gameRegion) { return
 			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Cellphone) &&
-					is_Cutscene_MasterId(0x9000)		&&
-					is_Cutscene_SectionId_1(0xffff)	&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x9000)	&&
-					is_Cutscene_SectionDataId(0x9000)	&&
-					is_Cutscene_MinorId(0x5f80, 0x8)	&&
-					is_Cutscene_MinorId(0x9000, 0x28)),
+					is_LargeCutscene_active(enum_gameRegion) && is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion) &&
+					is_Cutscene_MasterId(0x9000, enum_gameRegion)		&&
+					is_Cutscene_SectionId_1(0xffff, enum_gameRegion)	&&
+					is_Cutscene_SectionId_2(0x0, enum_gameRegion)		&&
+					is_Cutscene_MasterDataId(0x9000, enum_gameRegion)	&&
+					is_Cutscene_SectionDataId(0x9000, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x5f80, 0x8, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x9000, 0x28, enum_gameRegion)),
 				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4, instead of below cutscene
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Cellphone) &&
-					is_Cutscene_MasterId(0xc6e00)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x5ad0)	&&
-					is_Cutscene_SectionDataId(0x55b0)	&&
-					is_Cutscene_MinorId(0x2451a0, 0x8)	&&
-					is_Cutscene_MinorId(0x55b0, 0x28)),
+					is_LargeCutscene_active(enum_gameRegion) && is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion) &&
+					is_Cutscene_MasterId(0xc6e00, enum_gameRegion)		&&
+					is_Cutscene_SectionId_1(0x1, enum_gameRegion)		&&
+					is_Cutscene_SectionId_2(0x0, enum_gameRegion)		&&
+					is_Cutscene_MasterDataId(0x5ad0, enum_gameRegion)	&&
+					is_Cutscene_SectionDataId(0x55b0, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x2451a0, 0x8, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x55b0, 0x28, enum_gameRegion)),
 				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4, instead of above cutscene
-					is_LargeCutscene_active() && is_SelectedItemInScrollBar(ITEM_Lighter) &&
-					is_Cutscene_MasterId(0xa84c0)		&&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x2e40)	&&
-					is_Cutscene_SectionDataId(0xb220)	&&
-					is_Cutscene_MinorId(0x2354f0, 0x8)	&&
-					is_Cutscene_MinorId(0xb220, 0x28)),
+					is_LargeCutscene_active(enum_gameRegion) && is_SelectedItemInScrollBar(ITEM_Lighter, enum_gameRegion) &&
+					is_Cutscene_MasterId(0xa84c0, enum_gameRegion)		&&
+					is_Cutscene_SectionId_1(0x1, enum_gameRegion)		&&
+					is_Cutscene_SectionId_2(0x0, enum_gameRegion)		&&
+					is_Cutscene_MasterDataId(0x2e40, enum_gameRegion)	&&
+					is_Cutscene_SectionDataId(0xb220, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x2354f0, 0x8, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0xb220, 0x28, enum_gameRegion)),
 				once(	// Identifies cutscene => scaring town planter
-					is_LargeCutscene_active() && 
-					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
-					is_Cutscene_MasterId(0x98c0)		&&
-					is_Cutscene_SectionId_1(0xffff)	&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x9890)	&&
-					is_Cutscene_SectionDataId(0x9890)	&&
-					is_Cutscene_MinorId(0xcd30, 0x8)	&&
-					is_Cutscene_MinorId(0x9890, 0x28)),
+					is_LargeCutscene_active(enum_gameRegion) && 
+					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_gameRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion)) &&
+					is_Cutscene_MasterId(0x98c0, enum_gameRegion)		&&
+					is_Cutscene_SectionId_1(0xffff, enum_gameRegion)	&&
+					is_Cutscene_SectionId_2(0x0, enum_gameRegion)		&&
+					is_Cutscene_MasterDataId(0x9890, enum_gameRegion)	&&
+					is_Cutscene_SectionDataId(0x9890, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0xcd30, 0x8, enum_gameRegion)	&&
+					is_Cutscene_MinorId(0x9890, 0x28, enum_gameRegion)),
 				once(	// Identifies cutscene => scaring eccentric girl
-					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x314)),				
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_gameRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x314, enum_gameRegion)),				
 				once(	// Identifies cutscene => scaring straw hat man
-					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x2da)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_gameRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x2da, enum_gameRegion)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
-					is_SmallCutscene_active() &&
-					(is_SelectedItemInScrollBar(ITEM_Lighter) || is_SelectedItemInScrollBar(ITEM_Cellphone)) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare") &&
-					is_InteractionChapterId(0x163) && is_InteractionId(0x2e3))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_gameRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_gameRegion)) &&
+					is_NPCtalkCount_atMax(NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare", enum_gameRegion) &&
+					is_InteractionChapterId(0x163, enum_gameRegion) && is_InteractionId(0x2e3, enum_gameRegion))
 			])}
 		return 
 			never(	
 				!is_InGame(GAMEREGION_USA) 	||
-				!is_Chapter(CHAPTER_Chapter2)
+				!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)
 			) &&
 			(
 				(	// Alt => vs. pause lock
 					unless(
-						!is_Area(AREA_MiddleAges_City_Night) && !is_Area(AREA_Present_CafeSonne)			
+						!is_Area(AREA_MiddleAges_City_Night, GAMEREGION_USA) && !is_Area(AREA_Present_CafeSonne, GAMEREGION_USA)			
 					) &&
-					measured(measuredComparison(), is_InGame(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter2)) &&
-					trigger_when(on_Cutscene_end())
+					measured(measuredComparison(GAMEREGION_USA), is_InGame(GAMEREGION_USA) && is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA)) &&
+					trigger_when(on_Cutscene_end(GAMEREGION_USA))
 				) || (
 					always_false()
 				)
@@ -4162,435 +4224,495 @@ achievements_triggers = {
 	"a_FreeMeal": function FreeMeal() { return
 		never(
 			!is_InGame(GAMEREGION_USA)						||
-			is_EventViewer_active() 			||
-			!is_Chapter(CHAPTER_Chapter5)	||
-			is_FirePutOutBy_Eike()
+			is_EventViewer_active(GAMEREGION_USA) 			||
+			!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)	||
+			is_FirePutOutBy_Eike(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Barman gives us free meal
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0x62840)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x261a0)	&&
-			is_Cutscene_SectionDataId(0x6cc0)	&&
-			is_Cutscene_MinorId(0x9bd60, 0x8)	&&
-			is_Cutscene_MinorId(0x6cc0, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+			is_Cutscene_MasterId(0x62840, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x261a0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x6cc0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x9bd60, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x6cc0, 0x28, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Reading book whilst barman get Eike his meal + poison
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0xf9cc0)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x5eb0)	&&
-			is_Cutscene_SectionDataId(0xf3df0)	&&
-			is_Cutscene_MinorId(0x2aea60, 0x8)	&&
-			is_Cutscene_MinorId(0xf3df0, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+			is_Cutscene_MasterId(0xf9cc0, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x5eb0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xf3df0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x2aea60, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0xf3df0, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!is_InGame(GAMEREGION_USA)					||
-			is_EventViewer_active() 	||
-			!is_SelectedItemInScrollBar(ITEM_Cake)	
+			is_EventViewer_active(GAMEREGION_USA) 	||
+			!is_SelectedItemInScrollBar(ITEM_Cake, GAMEREGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0x1fd80)		&&
-			is_Cutscene_SectionId_1(0xffff)	&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x1fd50)	&&
-			is_Cutscene_SectionDataId(0x1fd50)	&&
-			is_Cutscene_MinorId(0x153d0, 0x8)	&&
-			is_Cutscene_MinorId(0x122b0, 0x2c)
+			is_LargeCutscene_active(GAMEREGION_USA) && 
+			is_Cutscene_MasterId(0x1fd80, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0xffff, GAMEREGION_USA)	&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1fd50, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x1fd50, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x153d0, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x122b0, 0x2c, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_MaxInventory": function MaxInventory(){
 		let_biggestPossibleInventoryCount = 20
-		function previousItemCount() =>
+		function previousItemCount(enum_gameRegion) =>
 			sum_of(const_Items_data, (item) {	// sum_of(prevItemCount) == 19
-				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"]
+				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_gameRegion]
 				return prev(bit0(let_memAddress))
 			})
-		function currentItemCount() => 
+		function currentItemCount(enum_gameRegion) => 
 			sum_of(const_Items_data, (item) {	// sum_of(currentItemCount) == 20
-				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"]
+				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_gameRegion]
 				return bit0(let_memAddress)
 			})
-		function measuredComparison(int_tallyCount) =>
+		function measuredComparison(int_tallyCount, enum_gameRegion) =>
 			// Checks all item_in_inventory_flags => if in inventory => +1 Add hit
 			tally_of(const_Items_data, int_tallyCount, (item) {
-				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"]
+				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_gameRegion]
 				return once(bit0(let_memAddress) == 1)
 			})
 		return 
 			never(	
-				is_TitleMenu_active()	||
-				is_EventViewer_active()	||
+				is_TitleMenu_active(GAMEREGION_USA)	||
+				is_EventViewer_active(GAMEREGION_USA)	||
 
 				// Reset hit counts if any item is removed
 				any_of(const_Items_data, (item) {
-					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"]
+					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][GAMEREGION_USA]
 					return bit0(let_memAddress) < prev(bit0(let_memAddress))
 				})
 			) &&
-			measured(measuredComparison(let_biggestPossibleInventoryCount), always_true()) &&			
+			measured(measuredComparison(let_biggestPossibleInventoryCount, GAMEREGION_USA), always_true()) &&			
 			once(
-				previousItemCount() < let_biggestPossibleInventoryCount &&
-				currentItemCount() == let_biggestPossibleInventoryCount
+				previousItemCount(GAMEREGION_USA) < let_biggestPossibleInventoryCount &&
+				currentItemCount(GAMEREGION_USA) == let_biggestPossibleInventoryCount
 			) &&
-			trigger_when(on_Cutscene_end())
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))
 		},		
 	"a_DrunkenGuys": function DrunkenGuys(){
 		function measuredComparison() { return
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
-					is_SmallCutscene_active() && 
-					is_TalkingToNPC(NPC_Present_SlimDelinquent) &&
-					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark") &&
-					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f5)),
+					is_SmallCutscene_active(GAMEREGION_USA) && 
+					is_TalkingToNPC(NPC_Present_SlimDelinquent, GAMEREGION_USA) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", GAMEREGION_USA) &&
+					is_InteractionChapterId(0xb2, GAMEREGION_USA) && is_InteractionId(0x2f5, GAMEREGION_USA)),
 				once(	// Identifies Cutscene => talking to broad delinquent
-					is_SmallCutscene_active() && 
-					is_TalkingToNPC(NPC_Present_BroadDelinquent) &&
-					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark") &&
-					is_InteractionChapterId(0xb2) && is_InteractionId(0x2f0))
+					is_SmallCutscene_active(GAMEREGION_USA) && 
+					is_TalkingToNPC(NPC_Present_BroadDelinquent, GAMEREGION_USA) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", GAMEREGION_USA) &&
+					is_InteractionChapterId(0xb2, GAMEREGION_USA) && is_InteractionId(0x2f0, GAMEREGION_USA))
 			])}
 		return 
 			never(
-				!is_Area(AREA_Present_City_NightPM)
+				!is_Area(AREA_Present_City_NightPM, GAMEREGION_USA)
 			) &&
-			measured(measuredComparison(), is_InGame(GAMEREGION_USA)) &&
-			trigger_when(on_Cutscene_end())},
+			measured(measuredComparison(GAMEREGION_USA), is_InGame(GAMEREGION_USA)) &&
+			trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
 			!is_InGame(GAMEREGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter4)	||
-			is_EventViewer_active()				||
-			!is_SelectedItemInScrollBar(ITEM_FryingPan) ||
+			!is_Chapter(CHAPTER_Chapter4, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA)				||
+			!is_SelectedItemInScrollBar(ITEM_FryingPan, GAMEREGION_USA) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
 			//	=> black and white picture is not found inside book during this chapter
 			//	=> Thus can be used as a flag for this achievement
-			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_NoPerformer) 	|| 
-			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_WithPerformer)			 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_NoPerformer, GAMEREGION_USA) 	|| 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_WithPerformer, GAMEREGION_USA)			 
 		) &&
 		once(	// Identifies Cutscene => Using frying pan for defence
-			is_LargeCutscene_active() && 
-			is_Cutscene_MasterId(0x4f200)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x11cd0)	&&
-			is_Cutscene_SectionDataId(0x3d500)	
+			is_LargeCutscene_active(GAMEREGION_USA) && 
+			is_Cutscene_MasterId(0x4f200, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x11cd0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x3d500, GAMEREGION_USA)	
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!is_InGame(GAMEREGION_USA)				||
-			is_EventViewer_active() 	||
-			!is_Chapter(CHAPTER_Chapter7)
+			is_EventViewer_active(GAMEREGION_USA) 	||
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
-			is_LargeCutscene_active() && is_CoffeePayed() &&
-			is_Cutscene_MasterId(0xa0f40)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x45370)	&&
-			is_Cutscene_SectionDataId(0x5bb90)	&&
-			is_Cutscene_MinorId(0x8f8e0, 0x8)	&&
-			is_Cutscene_MinorId(0x5bb90, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_CoffeePayed(GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0xa0f40, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x45370, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x5bb90, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x8f8e0, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x5bb90, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 		||
-			on_Chapter_change() ||
-			is_BrumEstate_Library()
+			on_Chapter_change(GAMEREGION_USA) ||
+			is_BrumEstate_Library(GAMEREGION_USA)
 		) && 
 		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 			once(
-				is_SmallCutscene_active() && 
-				is_Painting_TowerView_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
-				(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
-				is_InteractionId(0x124)),			
+				is_SmallCutscene_active(GAMEREGION_USA) && 
+				is_Painting_TowerView_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_TowerView, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night, GAMEREGION_USA) || 
+					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day, GAMEREGION_USA)
+				) &&
+				is_InteractionId(0x124, GAMEREGION_USA)),			
 			once(
-				is_SmallCutscene_active() && 	
-				is_Painting_SquireCrest_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
-				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-				is_InteractionId(0x125)),
+				is_SmallCutscene_active(GAMEREGION_USA) && 	
+				is_Painting_SquireCrest_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_SquireCrest, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, GAMEREGION_USA) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, GAMEREGION_USA)
+				) &&
+				is_InteractionId(0x125, GAMEREGION_USA)),
 			once(
-				is_SmallCutscene_active() &&
-				is_Painting_Marktplatz_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
-				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-				is_InteractionId(0x126)),
+				is_SmallCutscene_active(GAMEREGION_USA) &&
+				is_Painting_Marktplatz_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_TownSquare, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, GAMEREGION_USA) ||
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, GAMEREGION_USA)
+				) &&
+				is_InteractionId(0x126, GAMEREGION_USA)),
 			once(
-				is_SmallCutscene_active() &&
-				is_Painting_Antidote_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
-				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				is_InteractionId(0x127)),
+				is_SmallCutscene_active(GAMEREGION_USA) &&
+				is_Painting_Antidote_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_AlchemyLab, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+				) &&	
+				is_InteractionId(0x127, GAMEREGION_USA)),
 			once(
-				is_SmallCutscene_active() &&
-				is_Painting_Performer_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_Performer) && 
-				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				is_InteractionId(0x128)),
+				is_SmallCutscene_active(GAMEREGION_USA) &&
+				is_Painting_Performer_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_Performer, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+				) &&	
+				is_InteractionId(0x128, GAMEREGION_USA)),
 			once(
-				is_SmallCutscene_active() &&
-				is_Painting_HouseCollapse_inspired() &&
-				is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
-				(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-				is_InteractionId(0x129))
+				is_SmallCutscene_active(GAMEREGION_USA) &&
+				is_Painting_HouseCollapse_inspired(GAMEREGION_USA) &&
+				is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse, GAMEREGION_USA) && 
+				(
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+				) &&	
+				is_InteractionId(0x129, GAMEREGION_USA))
 		]) &&
-		trigger_when(on_Cutscene_end())},	// Trigger when cutscene is over
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},	// Trigger when cutscene is over
 	"a_ArtInspirationAll": function ArtInspirationAll() {
 		function measuredComparison() {
-			tally(6, [
+			tally(6, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 				once(
-					is_SmallCutscene_active() && 
-					is_Painting_TowerView_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
-					(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
-					is_InteractionId(0x124)),
+					is_SmallCutscene_active(GAMEREGION_USA) && 
+					is_Painting_TowerView_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_TowerView, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night, GAMEREGION_USA) || 
+						is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day, GAMEREGION_USA)
+					) &&
+					is_InteractionId(0x124, GAMEREGION_USA)),			
 				once(
-					is_SmallCutscene_active() && 	
-					is_Painting_SquireCrest_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					is_InteractionId(0x125)),
+					is_SmallCutscene_active(GAMEREGION_USA) && 	
+					is_Painting_SquireCrest_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_SquireCrest, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, GAMEREGION_USA) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, GAMEREGION_USA)
+					) &&
+					is_InteractionId(0x125, GAMEREGION_USA)),
 				once(
-					is_SmallCutscene_active() &&
-					is_Painting_Marktplatz_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					is_InteractionId(0x126)),
+					is_SmallCutscene_active(GAMEREGION_USA) &&
+					is_Painting_Marktplatz_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_TownSquare, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, GAMEREGION_USA) ||
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, GAMEREGION_USA)
+					) &&
+					is_InteractionId(0x126, GAMEREGION_USA)),
 				once(
-					is_SmallCutscene_active() &&
-					is_Painting_Antidote_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x127)),
+					is_SmallCutscene_active(GAMEREGION_USA) &&
+					is_Painting_Antidote_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+					) &&	
+					is_InteractionId(0x127, GAMEREGION_USA)),
 				once(
-					is_SmallCutscene_active() &&
-					is_Painting_Performer_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_Performer) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x128)),
+					is_SmallCutscene_active(GAMEREGION_USA) &&
+					is_Painting_Performer_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_Performer, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+					) &&	
+					is_InteractionId(0x128, GAMEREGION_USA)),
 				once(
-					is_SmallCutscene_active() &&
-					is_Painting_HouseCollapse_inspired() &&
-					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x129))
+					is_SmallCutscene_active(GAMEREGION_USA) &&
+					is_Painting_HouseCollapse_inspired(GAMEREGION_USA) &&
+					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse, GAMEREGION_USA) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, GAMEREGION_USA) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, GAMEREGION_USA)
+					) &&	
+					is_InteractionId(0x129, GAMEREGION_USA))
 			])}
 		return
 			never(
 				!is_InGame(GAMEREGION_USA) ||
-				on_Chapter_change()
+				on_Chapter_change(GAMEREGION_USA)
 			) &&
-			trigger_when(on_Cutscene_end()) &&
-			measured(measuredComparison(), always_true())},
+			trigger_when(on_Cutscene_end(GAMEREGION_USA)) &&
+			measured(measuredComparison(GAMEREGION_USA), always_true())},
 	"a_ArtAppreciator": function ArtAppreciator() {
-		function measuredComparison() {
+		function measuredComparison(enum_gameRegion) {
 			tally(8, [
 				once(
-					is_SmallCutscene_active() && 	
-					is_InteractingWith(INTERACTABLE_Painting_TowerView) && 
-					(is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night) || is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day)) &&
-					is_InteractionId(0x124)),
+					is_SmallCutscene_active(enum_gameRegion) && 	
+					is_InteractingWith(INTERACTABLE_Painting_TowerView, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day, enum_gameRegion)
+					) &&
+					is_InteractionId(0x124, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() && 	
-					is_InteractingWith(INTERACTABLE_Painting_SquireCrest) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					is_InteractionId(0x125)),
+					is_SmallCutscene_active(enum_gameRegion) && 	
+					is_InteractingWith(INTERACTABLE_Painting_SquireCrest, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, enum_gameRegion)
+					) &&
+					is_InteractionId(0x125, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_TownSquare) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day)) &&
-					is_InteractionId(0x126)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_TownSquare, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, enum_gameRegion)
+					) &&
+					is_InteractionId(0x126, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x127)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_AlchemyLab, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_gameRegion)
+					) &&	
+					is_InteractionId(0x127, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_Performer) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x128)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_Performer, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_gameRegion)
+					) &&	
+					is_InteractionId(0x128, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day)) &&	
-					is_InteractionId(0x129)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_gameRegion)
+					) &&	
+					is_InteractionId(0x129, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_LandscapeTown) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
-					is_InteractionId(0xffffffff)),
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_LandscapeTown, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day, enum_gameRegion)
+					) &&	
+					is_InteractionId(0xffffffff, enum_gameRegion)),
 				once(
-					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Painting_Alchemist) && 
-					(is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night) || is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day)) &&	
-					is_InteractionId(0xffffffff))
+					is_SmallCutscene_active(enum_gameRegion) &&
+					is_InteractingWith(INTERACTABLE_Painting_Alchemist, enum_gameRegion) && 
+					(
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Night, enum_gameRegion) || 
+						is_Area(AREA_Present_BrumMuseum_Upstairs_Room3_Day, enum_gameRegion)
+					) &&	
+					is_InteractionId(0xffffffff, enum_gameRegion))
 			])}
 		return
 			never(
 				!is_InGame(GAMEREGION_USA) ||
-				on_Chapter_change()
+				on_Chapter_change(GAMEREGION_USA)
 			) &&
-			trigger_when(on_Cutscene_end()) &&
-			measured(measuredComparison(), always_true())},
+			trigger_when(on_Cutscene_end(GAMEREGION_USA)) &&
+			measured(measuredComparison(GAMEREGION_USA), always_true())},
 	"a_AntiquesEule": function AntiquesEule() {
-		function measuredComparison() {
+		function measuredComparison(enum_gameRegion) {
 			tally(4, [
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Antique_FranssenShopSign) && 
-					is_InteractionId(0xffffffff)),
+					is_InteractingWith(INTERACTABLE_Antique_FranssenShopSign, enum_gameRegion) && 
+					is_InteractionId(0xffffffff, enum_gameRegion)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Antique_Rope) &&
-					is_InteractionId(0xffffffff)),
+					is_InteractingWith(INTERACTABLE_Antique_Rope, enum_gameRegion) &&
+					is_InteractionId(0xffffffff, enum_gameRegion)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Antique_Antidote) &&
-					is_InteractionId(0xffffffff)),
+					is_InteractingWith(INTERACTABLE_Antique_Antidote, enum_gameRegion) &&
+					is_InteractionId(0xffffffff, enum_gameRegion)),
 				once(
 					is_SmallCutscene_active() &&
-					is_InteractingWith(INTERACTABLE_Antique_Mask) &&
-					is_InteractionId(0xffffffff))
+					is_InteractingWith(INTERACTABLE_Antique_Mask, enum_gameRegion) &&
+					is_InteractionId(0xffffffff, enum_gameRegion))
 			])}
-		function measuredIfComparison() { return
-			is_Area(AREA_80s_AntiquesEule) ||
-			is_Area(AREA_Present_AntiquesEule)}
+		function measuredIfComparison(enum_gameRegion) { return
+			is_Area(AREA_80s_AntiquesEule, enum_gameRegion) ||
+			is_Area(AREA_Present_AntiquesEule, enum_gameRegion)}
 		return
 			never(
 				!is_InGame(GAMEREGION_USA) ||
-				on_Chapter_change()
+				on_Chapter_change(GAMEREGION_USA)
 			) &&
-			trigger_when(on_Cutscene_end()) &&
-			measured(measuredComparison(), measuredIfComparison())},
+			trigger_when(on_Cutscene_end(GAMEREGION_USA)) &&
+			measured(measuredComparison(GAMEREGION_USA), measuredIfComparison(GAMEREGION_USA))},
 	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
 			!is_InGame(GAMEREGION_USA)				||
-			is_EventViewer_active() 	||
-			!is_Chapter(CHAPTER_Chapter6) 
+			is_EventViewer_active(GAMEREGION_USA) 	||
+			!is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
-			is_SmallCutscene_active() && is_Area(AREA_80s_CafeSonne) &&
-			is_TalkingToNPC(NPC_80s_OlderMan) && 
-			is_InteractionChapterId(0xb2) && is_InteractionId(0x3e7) && 
-			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne")
+			is_SmallCutscene_active(GAMEREGION_USA) && is_Area(AREA_80s_CafeSonne, GAMEREGION_USA) &&
+			is_TalkingToNPC(NPC_80s_OlderMan, GAMEREGION_USA) && 
+			is_InteractionChapterId(0xb2, GAMEREGION_USA) && is_InteractionId(0x3e7, GAMEREGION_USA) && 
+			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne", GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
-			is_SmallCutscene_active() && is_Area(AREA_80s_Bar) &&
+			is_SmallCutscene_active(GAMEREGION_USA) && is_Area(AREA_80s_Bar, GAMEREGION_USA) &&
 			(
-				is_SelectedItemInScrollBar(ITEM_EggPocketWatch) ||
-				is_SelectedItemInScrollBar(ITEM_OrnamentalEgg)
+				is_SelectedItemInScrollBar(ITEM_EggPocketWatch, GAMEREGION_USA) ||
+				is_SelectedItemInScrollBar(ITEM_OrnamentalEgg, GAMEREGION_USA)
 			) &&
-			is_TalkingToNPC(NPC_80s_Barman) && is_InteractionId(0x2ed) &&
-			is_NPCtalkCount_atMax(NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg")
+			is_TalkingToNPC(NPC_80s_Barman, GAMEREGION_USA) && is_InteractionId(0x2ed, GAMEREGION_USA) &&
+			is_NPCtalkCount_atMax(NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg", GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
-			is_LargeCutscene_active() && is_Area(AREA_80s_City_Snow) &&
-			is_Chapter(CHAPTER_Chapter6) 	&&
-			is_Cutscene_MasterId(0x756c0)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x4660)	&&
-			is_Cutscene_SectionDataId(0x4f210) 	&&
-			is_Cutscene_MinorId(0xb8b90, 0x8)	&&
-			is_Cutscene_MinorId(0x4f210, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Area(AREA_80s_City_Snow, GAMEREGION_USA) &&
+			is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA) 	&&
+			is_Cutscene_MasterId(0x756c0, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x4660, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x4f210, GAMEREGION_USA) 	&&
+			is_Cutscene_MinorId(0xb8b90, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x4f210, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()			 
+			is_EventViewer_active(GAMEREGION_USA)			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
-			is_LargeCutscene_active() && is_Area(AREA_80s_City_Snow) &&
-			is_Chapter(CHAPTER_Chapter6)	&&
-			is_Cutscene_MasterId(0xebac0)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x546f0)	&&
-			is_Cutscene_SectionDataId(0x50b0)	
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Area(AREA_80s_City_Snow, GAMEREGION_USA) &&
+			is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA)	&&
+			is_Cutscene_MasterId(0xebac0, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x546f0, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x50b0, GAMEREGION_USA)	
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_HugoMotherChild": function HugoMotherChild() { return
 		never(
 			!is_InGame(GAMEREGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter5)	||
-			is_EventViewer_active() 
+			!is_Chapter(CHAPTER_Chapter5, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
-			is_LargeCutscene_active() &&
-			is_Cutscene_MasterId(0x3ed00)		&&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x3110)	&&
-			is_Cutscene_SectionDataId(0x3bbc0)	&&
-			is_Cutscene_MinorId(0x282ae0, 0x8)	&&
-			is_Cutscene_MinorId(0x3bbc0, 0x28)
+			is_LargeCutscene_active(GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x3ed00, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x3110, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x3bbc0, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x282ae0, 0x8, GAMEREGION_USA)	&&
+			is_Cutscene_MinorId(0x3bbc0, 0x28, GAMEREGION_USA)
 		) &&
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
 			!is_InGame(GAMEREGION_USA) ||
-			is_EventViewer_active()
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
-			is_LargeCutscene_active() && is_Area(AREA_1900s_BrumMansion) &&
-			is_ItemPresentInInventory(ITEM_Kitten) &&
-			is_Cutscene_MasterId(0x25200)		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x2c00)	&&
-			is_Cutscene_SectionDataId(0x10930)
+			is_LargeCutscene_active(GAMEREGION_USA) && is_Area(AREA_1900s_BrumMansion, GAMEREGION_USA) &&
+			is_ItemPresentInInventory(ITEM_Kitten, GAMEREGION_USA) &&
+			is_Cutscene_MasterId(0x25200, GAMEREGION_USA)		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x2c00, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x10930, GAMEREGION_USA)
 		) &&
-		is_KittenGivenToSibylla() &&
-		trigger_when(on_Cutscene_end())},
+		is_KittenGivenToSibylla(GAMEREGION_USA) &&
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_ErasingEike": function ErasingEike() { return 
 		never(
 			!is_InGame(GAMEREGION_USA)						||
 			!is_Chapter(CHAPTER_Prologue)	||
-			is_EventViewer_active()  
+			is_EventViewer_active(GAMEREGION_USA)  
 		) &&
 		(
 			(
 				unless(
-					!is_LargeCutscene_active()
+					!is_LargeCutscene_active(GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Eike wakes himself up					
-					is_Cutscene_MasterId(0x9c00)		&&
-					is_Cutscene_MasterDataId(0x9bf0)	&&
-					is_Cutscene_SectionDataId(0x9bf0)	&&
-					is_Cutscene_MinorId(0x9bf0, 0x28) 	&&
-					is_Cutscene_MinorId(0xea70, 0x8) 	
+					is_Cutscene_MasterId(0x9c00, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x9bf0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x9bf0, GAMEREGION_USA)	&&
+					is_Cutscene_MinorId(0x9bf0, 0x28, GAMEREGION_USA) 	&&
+					is_Cutscene_MinorId(0xea70, 0x8, GAMEREGION_USA) 	
 				) && 
 				once(	// Identifies Cutscene => Eike wakes himself up
-					is_Cutscene_MasterId(0x237c0)		&& was_Cutscene_MasterId(0x9c00) &&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0x18930)	&&
-					is_Cutscene_SectionDataId(0xae60)
+					is_Cutscene_MasterId(0x237c0, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x9c00, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x18930, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0xae60, GAMEREGION_USA)
 				) && 
-				trigger_when(on_CutsceneSection_end())
+				trigger_when(on_CutsceneSection_end(GAMEREGION_USA))
 			) || (
 				always_false()
 			)
@@ -4598,104 +4720,104 @@ achievements_triggers = {
 	"a_ErasingEike2": function ErasingEike2() { return
 		never(
 			!is_InGame(GAMEREGION_USA)				||
-			!is_Chapter(CHAPTER_Chapter7)	||
-			is_EventViewer_active()  
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA)	||
+			is_EventViewer_active(GAMEREGION_USA)  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
-			is_Cutscene_MinorId(0x23ee0, 0x8) 	&&
-			is_Cutscene_MinorId(0x377e0, 0x28) 	&&
-			is_Cutscene_MinorId(0x23eb0, 0x2c)
+			is_Cutscene_MinorId(0x23ee0, 0x8, GAMEREGION_USA) 	&&
+			is_Cutscene_MinorId(0x377e0, 0x28, GAMEREGION_USA) 	&&
+			is_Cutscene_MinorId(0x23eb0, 0x2c, GAMEREGION_USA)
 		) && 
-		trigger_when(on_Cutscene_end())},
+		trigger_when(on_Cutscene_end(GAMEREGION_USA))},
 	"a_RottenRope": function RottenRope() { return
 		never (
 			!is_InGame(GAMEREGION_USA) 				||
-			!is_Chapter(CHAPTER_Chapter7) 	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter7, GAMEREGION_USA) 	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
-			is_LargeCutscene_active()	&&
-			is_Cutscene_MasterId(0x15640) 		&&
-			is_Cutscene_SectionId_1(0x5)		&&
-			is_Cutscene_SectionId_2(0x6)		&&
-			is_Cutscene_MasterDataId(0x7830)	&&
-			is_Cutscene_SectionDataId(0x2220)
+			is_LargeCutscene_active(GAMEREGION_USA)	&&
+			is_Cutscene_MasterId(0x15640, GAMEREGION_USA) 		&&
+			is_Cutscene_SectionId_1(0x5, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x6, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x7830, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x2220, GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Waking up in Limbo after death
-			is_LargeCutscene_active()	&&
-			is_Cutscene_MasterId(0x237c0) 		&& was_Cutscene_MasterId(0x15640) &&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x18930)	&&
-			is_Cutscene_SectionDataId(0xae60)
+			is_LargeCutscene_active(GAMEREGION_USA)	&&
+			is_Cutscene_MasterId(0x237c0, GAMEREGION_USA) 		&& was_Cutscene_MasterId(0x15640, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x18930, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0xae60, GAMEREGION_USA)
 		) &&
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_TimeEgoFlop": function TimeEgoFlop() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 				||
-			is_EventViewer_active() 	|| 
-			!is_Chapter(CHAPTER_Chapter6)
+			is_EventViewer_active(GAMEREGION_USA) 	|| 
+			!is_Chapter(CHAPTER_Chapter6, GAMEREGION_USA)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
-				is_LargeCutscene_active() 			&& 
-				is_MovieTimeTravel_chosen()			&&
-				is_MovieWorldConquest_chosen() 		&&				
-				is_Cutscene_MasterId(0x77980)		&&
-				is_Cutscene_SectionId_1(0xa)		&&
-				is_Cutscene_SectionId_2(0xb)		&&
-				is_Cutscene_MasterDataId(0x2090)	&&
-				is_Cutscene_SectionDataId(0x15d50)
+				is_LargeCutscene_active(GAMEREGION_USA) 			&& 
+				is_MovieTimeTravel_chosen(GAMEREGION_USA)			&&
+				is_MovieWorldConquest_chosen(GAMEREGION_USA) 		&&				
+				is_Cutscene_MasterId(0x77980, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_1(0xa, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0xb, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x2090, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x15d50, GAMEREGION_USA)
 			) && 
-			trigger_when(on_CutsceneSection_end())},
+			trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_MetYouBefore": function MetYouBefore() { return
 		never(
 			!is_InGame(GAMEREGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter2) 	||
-			is_EventViewer_active()
+			!is_Chapter(CHAPTER_Chapter2, GAMEREGION_USA) 	||
+			is_EventViewer_active(GAMEREGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
-			is_LargeCutscene_active()			&&	
-			is_Cutscene_MasterId(0x6e480) 		&& 
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x2)		&&
-			is_Cutscene_MasterDataId(0x45250)	&&
-			is_Cutscene_SectionDataId(0x143f0)	
+			is_LargeCutscene_active(GAMEREGION_USA)			&&	
+			is_Cutscene_MasterId(0x6e480, GAMEREGION_USA) 		&& 
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x45250, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x143f0, GAMEREGION_USA)	
 		) && 
 		once(	// Identifies Cutscene => Getting stabbed from behind
-			is_LargeCutscene_active()			&&	
-			is_Cutscene_MasterId(0x1b740) 		&& was_Cutscene_MasterId(0x6e480) &&
-			is_Cutscene_SectionId_1(0x1)		&&
-			is_Cutscene_SectionId_2(0x0)		&&
-			is_Cutscene_MasterDataId(0x1d00)	&&
-			is_Cutscene_SectionDataId(0x19a20)	
+			is_LargeCutscene_active(GAMEREGION_USA)			&&	
+			is_Cutscene_MasterId(0x1b740, GAMEREGION_USA) 		&& was_Cutscene_MasterId(0x6e480, GAMEREGION_USA) &&
+			is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+			is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+			is_Cutscene_MasterDataId(0x1d00, GAMEREGION_USA)	&&
+			is_Cutscene_SectionDataId(0x19a20, GAMEREGION_USA)	
 		) && 
-		trigger_when(on_CutsceneSection_end())},
+		trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!is_InGame(GAMEREGION_USA)			||
-			is_EventViewer_active()	||
-			!is_Chapter(CHAPTER_Chapter3)
+			is_EventViewer_active(GAMEREGION_USA)	||
+			!is_Chapter(CHAPTER_Chapter3, GAMEREGION_USA)
 		) &&
 		(
 			(
 				unless(
-					!is_LargeCutscene_active()
+					!is_LargeCutscene_active(GAMEREGION_USA)
 				) &&
 				once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'					
-					is_Cutscene_MasterId(0xb140) && was_Cutscene_MasterId(0x5aa80) &&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x2)		&&
-					is_Cutscene_MasterDataId(0x5ac0)	&&
-					is_Cutscene_SectionDataId(0x38b0)	
+					is_Cutscene_MasterId(0xb140, GAMEREGION_USA) && was_Cutscene_MasterId(0x5aa80, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x2, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0x5ac0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0x38b0, GAMEREGION_USA)	
 				) && 
 				once(	// Identifies Cutscene => Waking up in limbo after dying to vase
-					is_Cutscene_MasterId(0x1a440) && was_Cutscene_MasterId(0xb140) &&
-					is_Cutscene_SectionId_1(0x1)		&&
-					is_Cutscene_SectionId_2(0x0)		&&
-					is_Cutscene_MasterDataId(0xd9a0)	&&
-					is_Cutscene_SectionDataId(0xca50)	
+					is_Cutscene_MasterId(0x1a440, GAMEREGION_USA) && was_Cutscene_MasterId(0xb140, GAMEREGION_USA) &&
+					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+					is_Cutscene_MasterDataId(0xd9a0, GAMEREGION_USA)	&&
+					is_Cutscene_SectionDataId(0xca50, GAMEREGION_USA)	
 				) &&
-				trigger_when(on_CutsceneSection_end())
+				trigger_when(on_CutsceneSection_end(GAMEREGION_USA))
 			) || (
 				always_false()
 			)
