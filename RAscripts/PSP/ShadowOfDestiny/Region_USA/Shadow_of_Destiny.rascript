@@ -279,14 +279,19 @@ function never_toAlt(comparison) =>
 // *******************
 // ◦ PLAYER POSITION ◦
 // *******************
-// Functions to check player position are deprecated
-function is_PlayerPosition_Xaxis_Near(hex_value) =>		// $A8ABD0: [NTSC-U/C][Float] Player Position - x-Axis
-	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD0)) &&	
-	memUtil_floatToInt(float(0xA8ABD0)) >= hex_value - 0x834
+PLAYERPOSITION_NEAR_THRESHOLD = 2100.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
 
-function is_PlayerPosition_Yaxis_Near(int_value) =>		// $A8ABD8: [NTSC-U/C][Float] Player Position - y-Axis
-	hex_value + 0x834 >= memUtil_floatToInt(float(0xA8ABD8)) &&
-	memUtil_floatToInt(float(0xA8ABD8)) >= hex_value - 0x834
+function is_PlayerPosition_Xaxis_Near(float_value, enum_gameRegion) {
+	let_memAccessor_playerXpos = memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_gameRegion)
+	return
+		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerXpos &&	
+		let_memAccessor_playerXpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
+
+function is_PlayerPosition_Yaxis_Near(float_value, enum_gameRegion) {
+	let_memAccessor_playerYpos = memory_getAddress(DATATYPE_Float, "PlayerPosition_yAxis", enum_gameRegion)
+	return
+		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerYpos &&	
+		let_memAccessor_playerYpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
 
 // *****************
 // ◦ TIME AND DATE ◦
@@ -392,7 +397,7 @@ NPC_Present_BlondeOldWomanOrangeSweater	= 103
 NPC_Present_BrunetteYoungGirl 			= 102
 NPC_Present_BrunetteMother 				= 101
 NPC_Present_BlondeYoungBoy				= 100
-const_NPCs_data = { // GameRegion_JPN is initialized with memory_initialize_NPCAppearances_gameRegionJPN()
+const_NPCs_data = { // GAMEREGION_JPN is initialized with memory_initialize_NPCAppearances_gameRegionJPN()
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": {GAMEREGION_USA: 0x000000, GAMEREGION_JPN: iNULL}, "maxTalkCount": 0000}}},
@@ -2478,7 +2483,8 @@ achievements_triggers = {
 		never (	// Core group
 			!is_InGame(GAMEREGION_USA) ||
 			is_EventViewer_active(GAMEREGION_USA)	
-		) &&		
+		) &&
+		is_PlayerPosition_Xaxis_Near(40) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				unless(!is_Chapter(CHAPTER_Prologue, GAMEREGION_USA)) &&
@@ -5026,7 +5032,7 @@ richPresence_text = {
 	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} 🕑 {5} | Completion: {6}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen | Completion {0}%"},
 
-	"rp_Default":										{"en": "Wandering Lebensbaum"}}
+	"rp_Default":										{"en": "Wandering Lebensbaum | Completion {0}%"}}
 richPresence_LookupTablesText = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
@@ -5104,93 +5110,107 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 // • RichPresence CORE DATA •
 // ************************** // TODO implement rich presence + leaderboards for JPN
 //	- Contains logic data for the rich presence script
-function richPresence_callDisplayFunctions(){
+function richPresence_callDisplayFunctions(){	
+
+	function rp_isPaused(enum_gameRegion) { // DISABLED // VERIFIED not as elegant inside rich presence; !! IF !! turning back on re-check richPresence_conditions, some other conditions need changing
+		function condition(enum_gameRegion) => 
+			is_InGame(enum_gameRegion) && is_InGamePauseMenu_active(enum_gameRegion)
+		rich_presence_conditional_display(
+			condition(enum_gameRegion),
+			richPresence_getText("rp_isPaused"),
+			richPresence_callParameterFunction("rpp_FatedHour", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	// rp_isPaused(GAMEREGION_USA)
+	// rp_isPaused(GAMEREGION_JPN)
+
+	function rp_InGameEXChapterOnly(enum_gameRegion) { // VERIFIED
+		function condition(enum_gameRegion) => 
+			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+			is_PrologueExMode_active(enum_gameRegion) && is_ExChapter_unlocked(enum_gameRegion) && 
+			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
+			is_Chapter(CHAPTER_Prologue, enum_gameRegion)
+		rich_presence_conditional_display(
+			condition(enum_gameRegion),
+			richPresence_getText("rp_InGameEXChapterOnly"),
+			richPresence_callParameterFunction("rpp_FatedHour", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	rp_InGameEXChapterOnly(GAMEREGION_USA)
+	rp_InGameEXChapterOnly(GAMEREGION_JPN)
 	
-	// rich_presence_conditional_display(	// rp_isPaused // DISABLED // VERIFIED not as elegant inside rich presence; !! IF !! turning back on re-check richPresence_conditions, some other conditions need changing
-	// 	richPresence_getCondition("rp_isPaused"),
-	// 	richPresence_getText("rp_isPaused"),
-	// 	richPresence_callParameterFunction("rpp_FatedHour"),
-	// 	richPresence_callParameterFunction("rpp_PresentTimeDays"),
-	// 	richPresence_callParameterFunction("rpp_PresentTimeYears"),
-	// 	richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-	// 	richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+	funtion rp_InGameChapterOnly(enum_gameRegion) { // VERIFIED
+		function condition(enum_gameRegion) => 
+			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
+			!is_PrologueExMode_active(enum_gameRegion) && 
+			is_ChapterOneOf([CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue], enum_gameRegion)
+		rich_presence_conditional_display(	
+			condition(enum_gameRegion),
+			richPresence_getText("rp_InGameChapterOnly"),
+			richPresence_callParameterFunction("rpp_Chapter", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_FatedHour", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	rp_InGameChapterOnly(GAMEREGION_USA)
+	rp_InGameChapterOnly(GAMEREGION_JPN)
 
-	rich_presence_conditional_display(	// rp_InGameEXChapterOnly // VERIFIED
-		richPresence_getCondition("rp_InGameEXChapterOnly"),
-		richPresence_getText("rp_InGameEXChapterOnly"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+	function rp_InGameChapterWithTimePeriod(enum_gameRegion) { // VERIFIED
+		function condition(enum_gameRegion) { return
+			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
+			is_ChapterOneOf([
+					CHAPTER_Chapter2, CHAPTER_Chapter3, 
+					CHAPTER_Chapter4, CHAPTER_Chapter5, 
+					CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8
+				], enum_gameRegion)}		
+		rich_presence_conditional_display(	
+			condition(enum_gameRegion),
+			richPresence_getText("rp_InGameChapterWithTimePeriod"),
+			richPresence_callParameterFunction("rpp_Chapter", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_TimePeriod", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_FatedHour", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_gameRegion),
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	rp_InGameChapterWithTimePeriod(GAMEREGION_USA)
+	rp_InGameChapterWithTimePeriod(GAMEREGION_JPN)
 
-	rich_presence_conditional_display(	// rp_InGameChapterOnly // VERIFIED
-		richPresence_getCondition("rp_InGameChapterOnly"),
-		richPresence_getText("rp_InGameChapterOnly"),
-		richPresence_callParameterFunction("rpp_Chapter"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+	function rp_AtTitleScreen(enum_gameRegion) { // VERIFIED
+		function condition(enum_gameRegion) { return
+			is_GameBootedUp(enum_gameRegion) && 
+			(is_TitleMenu_active(enum_gameRegion) || !is_InGame(enum_gameRegion))}
+		rich_presence_conditional_display( 
+			condition(enum_gameRegion),
+			richPresence_getText("rp_AtTitleScreen"),
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	rp_AtTitleScreen(GAMEREGION_USA)
+	rp_AtTitleScreen(GAMEREGION_JPN)
 
-	rich_presence_conditional_display(	// rp_InGameChapterWithTimePeriod // VERIFIED
-		richPresence_getCondition("rp_InGameChapterWithTimePeriod"),
-		richPresence_getText("rp_InGameChapterWithTimePeriod"),
-		richPresence_callParameterFunction("rpp_Chapter"),
-		richPresence_callParameterFunction("rpp_TimePeriod"),
-		richPresence_callParameterFunction("rpp_FatedHour"),
-		richPresence_callParameterFunction("rpp_PresentTimeDays"),
-		richPresence_callParameterFunction("rpp_PresentTimeYears"),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
+	function rp_Default(enum_gameRegion) { // VERIFIED
+		rich_presence_display(	
+			richPresence_getText("rp_Default"),			
+			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
+		)}
+	rp_Default(GAMEREGION_USA)
+	rp_Default(GAMEREGION_JPN)}
 
-	rich_presence_conditional_display(	// rp_AtTitleScreen // VERIFIED
-		richPresence_getCondition("rp_AtTitleScreen"),
-		richPresence_getText("rp_AtTitleScreen"),
-		richPresence_callParameterFunction("rpp_TotalCompletionRate"))
-
-	rich_presence_display(	// rp_Default // VERIFIED
-		richPresence_getText("rp_Default"))}
-// -------------------------------------
+// ----------------ParameterData---------------------
 richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
-// -------------------------------------
-richPresence_conditions = {
-	"rp_isPaused": () => 
-		is_InGame(GAMEREGION_USA) && is_InGamePauseMenu_active(GAMEREGION_USA),
-	"rp_InGameEXChapterOnly": () =>
-		is_InGame(GAMEREGION_USA) && is_ChapterIdInRangeOfRecordedIds(GAMEREGION_USA) && 
-		is_PrologueExMode_active(GAMEREGION_USA) && is_ExChapter_unlocked(GAMEREGION_USA) && 
-		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		is_Chapter(CHAPTER_Prologue, GAMEREGION_USA),
-	"rp_InGameChapterOnly": () =>
-		is_InGame(GAMEREGION_USA) && is_ChapterIdInRangeOfRecordedIds(GAMEREGION_USA) && 
-		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		!is_PrologueExMode_active(GAMEREGION_USA) && 
-		is_ChapterOneOf([CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue], GAMEREGION_USA),
-	"rp_InGameChapterWithTimePeriod": () { return
-		is_InGame(GAMEREGION_USA) && is_ChapterIdInRangeOfRecordedIds(GAMEREGION_USA) && 
-		// !is_InGamePauseMenu_active() &&	// <-- commented as long as rp_isPaused is disabled
-		is_ChapterOneOf([
-				CHAPTER_Chapter2, CHAPTER_Chapter3, 
-				CHAPTER_Chapter4, CHAPTER_Chapter5, 
-				CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8
-			], GAMEREGION_USA)},
-	"rp_AtTitleScreen": () =>
-		is_GameBootedUp(GAMEREGION_USA) && 
-		(is_TitleMenu_active(GAMEREGION_USA) || !is_InGame(GAMEREGION_USA)),
-	}
-function richPresence_getCondition(string_displayKey) =>
-	richPresence_conditions[string_displayKey]
-
-function richPresence_condition_rp_AtTitleScreen(enum_gameRegion) { return
-	is_GameBootedUp(enum_gameRegion) && 
-	(is_TitleMenu_active(GAMEREGION_USA) || !is_InGame(GAMEREGION_USA))
-}
-
-// -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
 	// 		- Expression examples:
