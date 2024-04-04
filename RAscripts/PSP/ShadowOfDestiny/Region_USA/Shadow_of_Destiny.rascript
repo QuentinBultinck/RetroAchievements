@@ -267,8 +267,8 @@ function memory_initialize() { // memory_initialize: is called in initialization
 		}
 	}
 	// initialize_OtherRegions()
-	memory_initialize_NPCAppearances_gameRegionJPN() // offset 0x7b50
-}
+	memory_initialize_NPCAppearances_gameRegionJPN()} // offset 0x7b50
+
 // ******************
 // • Memory UTILITY •
 // ******************
@@ -1035,65 +1035,65 @@ function memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) {
 	// 	"imageUnmask_Width": 0x0,
 	// 	"print_Yaxis": 0x0,
 	//	"characterSetId": 0x0}
-function is_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
-	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
-	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
-	current_CharPrint_printYaxis(int_charIndex) == dict_characterPrintData["print_Yaxis"] &&
-	current_CharPrint_imageOffsetXaxis(int_charIndex) == dict_characterPrintData["imageOffset_Xaxis"] &&
-	current_CharPrint_imageOffsetYaxis(int_charIndex) == dict_characterPrintData["imageOffset_Yaxis"] &&
-	current_CharPrint_imageUnmaskWidth(int_charIndex) == dict_characterPrintData["imageUnmask_Width"] &&
-	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]
+function is_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData, enum_gameRegion) => // index starts at 0
+	current_CharPrint_height(int_charIndex, enum_gameRegion) == dict_characterPrintData["height"] &&
+	current_CharPrint_printXaxis(int_charIndex, enum_gameRegion) == dict_characterPrintData["print_Xaxis"] &&
+	current_CharPrint_printYaxis(int_charIndex, enum_gameRegion) == dict_characterPrintData["print_Yaxis"] &&
+	current_CharPrint_imageOffsetXaxis(int_charIndex, enum_gameRegion) == dict_characterPrintData["imageOffset_Xaxis"] &&
+	current_CharPrint_imageOffsetYaxis(int_charIndex, enum_gameRegion) == dict_characterPrintData["imageOffset_Yaxis"] &&
+	current_CharPrint_imageUnmaskWidth(int_charIndex, enum_gameRegion) == dict_characterPrintData["imageUnmask_Width"] &&
+	current_CharPrint_characterSetId(int_charIndex, enum_gameRegion) == dict_characterPrintData["characterSetId"]
 
 function is_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData, enum_gameRegion) => // index starts at 0
-	current_CharPrint_height(int_charIndex) == dict_characterPrintData["height"] &&
-	current_CharPrint_printXaxis(int_charIndex) == dict_characterPrintData["print_Xaxis"] &&
+	current_CharPrint_height(int_charIndex, enum_gameRegion) == dict_characterPrintData["height"] &&
+	current_CharPrint_printXaxis(int_charIndex, enum_gameRegion) == dict_characterPrintData["print_Xaxis"] &&
 	dword_be(memory_getAddress(DATATYPE_Struct, "CharacterPrintData_base", enum_gameRegion) + get_CharPrint_offset(int_charIndex) + 
 		memory_getDataStructOffset("Struct_CharacterPrintData", "8Bit_ImageOffset_Xaxis")) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
-	current_CharPrint_characterSetId(int_charIndex) == dict_characterPrintData["characterSetId"]	
+	current_CharPrint_characterSetId(int_charIndex, enum_gameRegion) == dict_characterPrintData["characterSetId"]	
 
-function was_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData) => // index starts at 0
-	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
-	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
-	prior(current_CharPrint_printYaxis(int_charIndex)) == dict_characterPrintData["print_Yaxis"] &&
-	prior(current_CharPrint_imageOffsetXaxis(int_charIndex)) == dict_characterPrintData["imageOffset_Xaxis"] &&
-	prior(current_CharPrint_imageOffsetYaxis(int_charIndex)) == dict_characterPrintData["imageOffset_Yaxis"] &&
-	prior(current_CharPrint_imageUnmaskWidth(int_charIndex)) == dict_characterPrintData["imageUnmask_Width"] &&
-	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
+function was_CharacterOnBottomScreen_bis(int_charIndex, dict_characterPrintData, enum_gameRegion) => // index starts at 0
+	prior(current_CharPrint_height(int_charIndex, enum_gameRegion)) == dict_characterPrintData["height"] &&
+	prior(current_CharPrint_printXaxis(int_charIndex, enum_gameRegion)) == dict_characterPrintData["print_Xaxis"] &&
+	prior(current_CharPrint_printYaxis(int_charIndex, enum_gameRegion)) == dict_characterPrintData["print_Yaxis"] &&
+	prior(current_CharPrint_imageOffsetXaxis(int_charIndex, enum_gameRegion)) == dict_characterPrintData["imageOffset_Xaxis"] &&
+	prior(current_CharPrint_imageOffsetYaxis(int_charIndex, enum_gameRegion)) == dict_characterPrintData["imageOffset_Yaxis"] &&
+	prior(current_CharPrint_imageUnmaskWidth(int_charIndex, enum_gameRegion)) == dict_characterPrintData["imageUnmask_Width"] &&
+	prior(current_CharPrint_characterSetId(int_charIndex, enum_gameRegion)) == dict_characterPrintData["characterSetId"]
 
 function was_CharacterOnBottomScreen(int_charIndex, dict_characterPrintData, enum_gameRegion) => // index starts at 0
-	prior(current_CharPrint_height(int_charIndex)) == dict_characterPrintData["height"] &&
-	prior(current_CharPrint_printXaxis(int_charIndex)) == dict_characterPrintData["print_Xaxis"] &&
+	prior(current_CharPrint_height(int_charIndex, enum_gameRegion)) == dict_characterPrintData["height"] &&
+	prior(current_CharPrint_printXaxis(int_charIndex, enum_gameRegion)) == dict_characterPrintData["print_Xaxis"] &&
 	prior(dword_be(memory_getAddress(DATATYPE_Struct, "CharacterPrintData_base", enum_gameRegion) + get_CharPrint_offset(int_charIndex) + 
 		memory_getDataStructOffset("Struct_CharacterPrintData", "8Bit_ImageOffset_Xaxis"))) == memUtil_CharacterPrintDataTo_dwordBe(dict_characterPrintData) &&
-	prior(current_CharPrint_characterSetId(int_charIndex)) == dict_characterPrintData["characterSetId"]
+	prior(current_CharPrint_characterSetId(int_charIndex, enum_gameRegion)) == dict_characterPrintData["characterSetId"]
 
-function is_TotalCharacterCountOnBottomScreen(int_charCount) { // Count starts at 1
+function is_TotalCharacterCountOnBottomScreen(int_charCount, enum_gameRegion) { // Count starts at 1
 	let_lastCharIndex = int_charCount - 1
 	return 
-		current_CharPrint_controlData(let_lastCharIndex) != 0 		&& // <-- this block checks if there is an Nth character printed on screen; where N = int_charCount
-		current_CharPrint_height(let_lastCharIndex) != 0			&&
+		current_CharPrint_controlData(let_lastCharIndex, enum_gameRegion) != 0 		&& // <-- this block checks if there is an Nth character printed on screen; where N = int_charCount
+		current_CharPrint_height(let_lastCharIndex, enum_gameRegion) != 0			&&
 
-		current_CharPrint_controlData(let_lastCharIndex + 1) == 0 	&& // <-- this block checks if there's no more characters printed after Nth one
-		current_CharPrint_height(let_lastCharIndex + 1) == 0}
+		current_CharPrint_controlData(let_lastCharIndex + 1, enum_gameRegion) == 0 	&& // <-- this block checks if there's no more characters printed after Nth one
+		current_CharPrint_height(let_lastCharIndex + 1, enum_gameRegion) == 0}
 
-function was_MinimumAmountOfCharactersOnBottomScreen(int_charCount) => // Count starts at 1
-	prior(current_CharPrint_controlData(int_charCount - 1)) != 0x0
+function was_MinimumAmountOfCharactersOnBottomScreen(int_charCount, enum_gameRegion) => // Count starts at 1
+	prior(current_CharPrint_controlData(int_charCount - 1, enum_gameRegion)) != 0x0
 
-function is_BottomScreenText_empty() => 
-	current_CharPrint_controlData(0) == 0x0 &&	// Checks first character
-	current_CharPrint_controlData(7) == 0x0		// Checks 7th character
+function is_BottomScreenText_empty(enum_gameRegion) => 
+	current_CharPrint_controlData(0, enum_gameRegion) == 0x0 &&	// Checks first character
+	current_CharPrint_controlData(7, enum_gameRegion) == 0x0	// Checks 7th character
 
-function was_BottomScreenText_empty() => 
-	prior(current_CharPrint_controlData(0)) == 0x0 &&	// Checks first character
-	prior(current_CharPrint_controlData(7)) == 0x0		// Checks 7th character
+function was_BottomScreenText_empty(enum_gameRegion) => 
+	prior(current_CharPrint_controlData(0, enum_gameRegion)) == 0x0 &&	// Checks first character
+	prior(current_CharPrint_controlData(7, enum_gameRegion)) == 0x0		// Checks 7th character
 
-function on_BottomScreenText_render() => 
-	current_CharPrint_controlData(0) > 0 && 
-	prev(current_CharPrint_controlData(0)) == 0
+function on_BottomScreenText_render(enum_gameRegion) => 
+	current_CharPrint_controlData(0, enum_gameRegion) > 0 && 
+	prev(current_CharPrint_controlData(0, enum_gameRegion)) == 0
 
-function on_BottomScreenText_remove() => 
-	current_CharPrint_controlData(0) == 0 && 
-	prev(current_CharPrint_controlData(0)) > 0
+function on_BottomScreenText_remove(enum_gameRegion) => 
+	current_CharPrint_controlData(0, enum_gameRegion) == 0 && 
+	prev(current_CharPrint_controlData(0, enum_gameRegion)) > 0
 
 // ***************
 // ◦ ENERGY ORBS ◦
