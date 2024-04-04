@@ -199,8 +199,8 @@ memory_addresses = {
 		"VideoData": {RELEASE_REGION_USA: 0x8ffef0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x8fbef0},
 		"IsChapterCompletionScreenActive": {RELEASE_REGION_USA: 0x1fff5f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f4},
 		"IsEventViewerActive": {RELEASE_REGION_USA: 0x1fff130, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff130},
-		"MenuIdentification": {RELEASE_REGION_USA: 0x1fff5f8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f8},
-		"MenuID": {RELEASE_REGION_USA: 0xac49f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacc534},
+		"MenuID": {RELEASE_REGION_USA: 0x1fff5f8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f8},
+		"ExtraMenuState": {RELEASE_REGION_USA: 0xac49f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacc534},
 		"Cutscene_Timer": {RELEASE_REGION_USA: 0xa9ecbc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6888},
 		"Cutscene_MasterID": {RELEASE_REGION_USA: 0xa9ecbc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa680c},
 		"AreaID": {RELEASE_REGION_USA: 0xa82e48, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xa8a998},
@@ -247,7 +247,7 @@ function memory_initialize() { // memory_initialize: is called in initialization
 // ******************
 // • Memory UTILITY •
 // ******************
-function is_GameRegion(enum_releaseRegion) {
+function is_ReleaseRegion(enum_releaseRegion) {
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		let_string_PSPgameId_USA = "ULUS10459"
 		let_memAddr = memory_getAddress(DATATYPE_ASCII, "ReleaseRegionID", RELEASE_REGION_USA)
@@ -1294,61 +1294,18 @@ function on_EnergyUnits_valueChange(enum_releaseRegion) =>
 // ***********************
 //	=> Event viewer is unlocked after completing one ending
 // 	=> Some achievements might be unlockable by playing cutscenes through this menu => not allowed
-function is_ExtraMenu_active(enum_releaseRegion) {	
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "ExtraMenuNavigation", enum_releaseRegion))
-	return
-		dword(let_maskedPointer + 0x4) <= 0x4 &&
-		dword(let_maskedPointer + 0x14) <= 0x5 &&
-		dword(let_maskedPointer + 0x48) <= 0xb}
-
-function is_ExtraMenu_inActive(enum_releaseRegion) {	
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "ExtraMenuNavigation", enum_releaseRegion))
-	return
-		dword(let_maskedPointer + 0x4) > 0x4 &&
-		dword(let_maskedPointer + 0x14) > 0x5 &&
-		dword(let_maskedPointer + 0x48) > 0xb}
-
-function is_EventViewer_active(enum_releaseRegion) =>	
-	dword(memory_getAddress(DATATYPE_32Bit, "IsEventViewerActive", enum_releaseRegion)) == 0x21 && 
-	is_ExtraMenu_active(enum_releaseRegion)
-
-function is_EventViewer_inActive(enum_releaseRegion) =>
-	dword(memory_getAddress(DATATYPE_32Bit, "IsEventViewerActive", enum_releaseRegion)) != 0x21 && 
-	is_ExtraMenu_inActive(enum_releaseRegion)
-
-function is_ResultsMenu_active(enum_releaseRegion) => 	
-	dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion)) == 0x16	&&
-	is_ExtraMenu_active(enum_releaseRegion)
-
-function is_ResultsMenu_HighlightedChapter(enum_chapter) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "ExtraMenuNavigation", enum_releaseRegion))
-	let_resultsMenuHighlightedChapterId = 0 
-	if (enum_chapter == CHAPTER_Chapter8) {
-		let_resultsMenuHighlightedChapterId = 0x8
-	} else if (enum_chapter == CHAPTER_Epilogue) {
-		let_resultsMenuHighlightedChapterId = 0x9
-	} else if (enum_chapter == "Total") {
-		let_resultsMenuHighlightedChapterId = 0xa
-	} else {
-		let_resultsMenuHighlightedChapterId = get_ChapterID(enum_chapter) - 1
-	}
-	return	
-		is_ResultsMenu_active(enum_releaseRegion) &&
-		dword(let_maskedPointer + 0x48) == let_resultsMenuHighlightedChapterId}													
+function is_ExtraMenu_active(enum_releaseRegion) {
+	let_memAddr = memory_getAddress(DATATYPE_32Bit, "ExtraMenuState", enum_releaseRegion)
+	return dword(let_memAddr) > 0}	
 // -------------------------------------
 function is_InGamePauseMenu_active(enum_releaseRegion) {
 	let_memAddr_IsInGamePauseMenuDisplayed = memory_getAddress(DATATYPE_BitFlag, "IsInGamePauseMenuDisplayed", enum_releaseRegion)
 	return 
-		let_memAddr_IsInGamePauseMenuDisplayed == 1 &&
-		let_memAddr_IsInGamePauseMenuDisplayed + 0x4 == 1}
-
-function is_TitleMenu_active(enum_releaseRegion) =>
-	dword(memory_getAddress(DATATYPE_32Bit, "MenuIdentification", enum_releaseRegion)) == 0x11 &&	
-	0x0 < byte(memory_getAddress(DATATYPE_8Bit, "HighlightedButtonAtTitleScreen", enum_releaseRegion)) && 
-	byte(memory_getAddress(DATATYPE_8Bit, "HighlightedButtonAtTitleScreen", enum_releaseRegion)) < 0x5
+		bit0(let_memAddr_IsInGamePauseMenuDisplayed) == 1 &&
+		bit0(let_memAddr_IsInGamePauseMenuDisplayed + 0x4) == 1}
 
 function is_ChapterCompletionMenu_active(enum_releaseRegion) =>
-	dword(memory_getAddress(DATATYPE_32Bit, "MenuIdentification", enum_releaseRegion)) == 0x1 	&&
+	dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion)) == 0x1 	&&
 	dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion)) == 0x21 &&	
 	bit0(memory_getAddress(DATATYPE_32Bit, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion)) == 1	
 
@@ -1356,21 +1313,21 @@ function is_Loading(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion)) == 1
 
 function on_ChapterCompletionMenu_render(enum_releaseRegion) {	
-	let_memAccessor_MenuIdentification = dword(memory_getAddress(DATATYPE_32Bit, "MenuIdentification", enum_releaseRegion))
+	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionScreenActive = dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionMenuDisplayed = bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion))
 	return 		
-		let_memAccessor_MenuIdentification == 0x1  				&& prev(let_memAccessor_MenuIdentification) != 0x1 					&&
-		let_memAccessor_IsChapterCompletionScreenActive == 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) != 0x21 	&&
+		let_memAccessor_MenuID == 0x1 && prev(let_memAccessor_MenuID) != 0x1 &&
+		let_memAccessor_IsChapterCompletionScreenActive == 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) != 0x21 &&
 		let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed)}
 
 function on_ChapterCompletionMenu_exit(enum_releaseRegion) {
-	let_memAccessor_MenuIdentification = dword(memory_getAddress(DATATYPE_32Bit, "MenuIdentification", enum_releaseRegion))
+	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionScreenActive = dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionMenuDisplayed = bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion))
 	return
-		let_memAccessor_MenuIdentification != 0x1 				&& prev(let_memAccessor_MenuIdentification) == 0x1 					&&
-		let_memAccessor_IsChapterCompletionScreenActive != 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) == 0x21 	&&
+		let_memAccessor_MenuID != 0x1 && prev(let_memAccessor_MenuID) == 0x1 &&
+		let_memAccessor_IsChapterCompletionScreenActive != 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) == 0x21 &&
 		let_memAccessor_IsChapterCompletionMenuDisplayed < prior(let_memAccessor_IsChapterCompletionMenuDisplayed)}
 									
 function is_InGame(enum_releaseRegion) =>
@@ -1466,13 +1423,6 @@ function is_ExChapter_unlocked(enum_releaseRegion) => // If endings ABCDE are ac
 		if (enum_ending != ENDING_EX) return is_Ending_achieved(enum_ending, enum_releaseRegion)
 		else return always_true()
 	})
-
-function is_ViewingEndingFile_viaExtraMenu(enum_ending, enum_releaseRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "EndingFileData", enum_releaseRegion))					
-	let_endingFileId = get_EndingFileId(enum_ending)
-	return
-		is_ExtraMenu_active(enum_releaseRegion) &&
-		byte(let_maskedPointer + 0x10) == let_endingFileId}
 
 // ******************************
 // ◦ CUTSCENE/CHOICES BIT FLAGS ◦
@@ -2148,8 +2098,9 @@ function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapte
 			let_comparison_deltaInventoryCount && 
 			measured(let_comparison_currentInventoryCount, 
 				when = 
-					is_GameRegion(enum_releaseRegion) &&
+					is_ReleaseRegion(enum_releaseRegion) &&
 					is_InGame(enum_releaseRegion) && 
+					!is_ExtraMenu_active(enum_releaseRegion) &&
 					is_Chapter(enum_chapter, enum_releaseRegion), 
 				format = "percent")
 		}
@@ -2174,8 +2125,9 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate() {
 			let_comparison_deltaInventoryCount && 
 			measured(let_comparison_currentInventoryCount,
 				when = 
-					is_GameRegion(enum_releaseRegion) &&
-					is_InGame(enum_releaseRegion), 
+					is_ReleaseRegion(enum_releaseRegion) &&
+					is_InGame(enum_releaseRegion) &&
+					!is_ExtraMenu_active(enum_releaseRegion),
 				format = "percent")
 		}
 	return 
@@ -2312,128 +2264,6 @@ function achievements_generate_TextComparison_CannotCarryMore() {
 		is_CharacterOnBottomScreen(9, let_charactersToCheck["R"]) &&
 		// is_CharacterOnBottomScreen(14, let_charactersToCheck["Y"]) &&
 		is_CharacterOnBottomScreen(18, let_charactersToCheck["E"])}
-
-function achievements_generate_ComparisonArray_CheckAllAreas(array_areaEnums) {
-	let_comparisonArray = []
-	if (array_areaEnums != iNULL) {
-		if (length(array_areaEnums) < 1) 
-			array_push(let_comparisonArray, always_true())
-		else {
-			for enum_area in array_areaEnums {
-				array_push(let_comparisonArray, is_Area(enum_area))
-			}
-		}
-	}
-	return let_comparisonArray}
-
-
-function achievements_generate_FullTrigger_EnergyCollector_old(enum_timePeriod) {
-	function create_TallyComparisonArray(enum_timePeriod) {
-		let_tallyComparisonArray = []
-		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
-			let_comparison1 = [achievements_generate_TextComparison_CannotCarryMore()]
-			let_comparison2 = [achievements_generate_TextComparison_GotEnergyUnit()]
-			let_position = get_EnergyOrb_Location_position(enum_timePeriod, let_OrbLocationKey)
-			let_orbLocationArea = get_EnergyOrb_Location_area(enum_timePeriod, let_OrbLocationKey)
-
-			if(let_position == iNULL && let_orbLocationArea == iNULL)
-				util_throwError(format("EnergyOrb '{0}': pos or area must by given", let_OrbLocationKey))
-			if(let_orbLocationArea == iNULL && let_position != iNULL) {
-				let_xLocation = let_position["xAxis"]
-				let_yLocation = let_position["yAxis"]
-				if(let_yLocation == iNULL || let_xLocation == iNULL)
-					util_throwError(format("EnergyOrb '{0}': if area is NULL then both axes must be given", let_OrbLocationKey))
-				array_push(let_comparison1, is_PlayerPosition_Xaxis_Near(let_xLocation))
-				array_push(let_comparison2, is_PlayerPosition_Xaxis_Near(let_xLocation))
-				array_push(let_comparison1, is_PlayerPosition_Yaxis_Near(let_yLocation))
-				array_push(let_comparison2, is_PlayerPosition_Yaxis_Near(let_yLocation))
-			}
-			if(get_EnergyOrb_sharedAreas(enum_timePeriod) == iNULL) {
-				if(let_orbLocationArea == iNULL) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
-				if(length(let_orbLocationArea) < 1) util_throwError("If sharedArea == NULL, then each energyOrb_area must be an array with at least one enum_Area")
-				let_areaComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_orbLocationArea)
-				let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
-				array_push(let_comparison1, let_areaComparison)
-				array_push(let_comparison2, let_areaComparison)
-			}
-			array_push(let_tallyComparisonArray, once(all_of(let_comparison1, (comparison) => comparison)))			
-			array_push(let_tallyComparisonArray, once(all_of(let_comparison2, (comparison) => comparison)))
-		}
-		return let_tallyComparisonArray}
-	function create_Pause_WhenNotInSharedAreas(enum_timePeriod) {		
-		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
-		let_pauseComparisonArray = []
-		if(let_sharedAreas != iNULL){
-			if (length(let_sharedAreas) < 1) util_throwError(format("const_EnergyOrbs_data sharedArea for enum_TimePeriod: {0}, must contain one enum_area Or be iNULL", enum_timePeriod))
-			let_pauseComparisonArray = achievements_generate_ComparisonArray_CheckAllAreas(let_sharedAreas)
-		}
-		if (length(let_pauseComparisonArray) < 1) {	return 
-			always_true()
-		} else { return 
-			unless(
-				none_of(let_pauseComparisonArray, (comparison) => comparison)
-			)
-		}}
-	return 
-		disable_when(
-			repeated(70 ,	// <-- delay, so trigger has to time to hit
-				is_BottomScreenText_empty()),
-			until = on_BottomScreenText_render()
-		) &&
-		unless(!is_InGame(RELEASE_REGION_USA) && is_Loading()) &&
-		create_Pause_WhenNotInSharedAreas(enum_timePeriod) &&
-		measured(
-			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
-				create_TallyComparisonArray(enum_timePeriod))
-		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))
-	}
-
-function achievements_generate_Tally_PickUpEnergyOrbs(int_tallyCount) {
-	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
-		"G": {
-			"height": 0x48,
-			"print_Xaxis": 0x0,
-			"imageOffset_Xaxis": 0x48,
-			"imageOffset_Yaxis": 0x0,
-			"imageUnmask_Width": 0x9,
-			"print_Yaxis": 0x0,
-			"characterSetId": 0x8},
-		"E": {
-			"height": 0x48,
-			"print_Xaxis": 0x1f,
-			"imageOffset_Xaxis": 0x48,
-			"imageOffset_Yaxis": 0x38,
-			"imageUnmask_Width": 0x9,
-			"print_Yaxis": 0x0,
-			"characterSetId": 0x8},
-		"Y": {
-			"height": 0x49,
-			"print_Xaxis": 0x4b,
-			"imageOffset_Xaxis": 0x48,
-			"imageOffset_Yaxis": 0x54,
-			"imageUnmask_Width": 0x9,
-			"print_Yaxis": 0x1,
-			"characterSetId": 0x8},	
-		"I": {
-			"height": 0x48,
-			"print_Xaxis": 0x6c,
-			"imageOffset_Xaxis": 0x0,
-			"imageOffset_Yaxis": 0x46,
-			"imageUnmask_Width": 0x4,
-			"print_Yaxis": 0x0,
-			"characterSetId": 0x8}}
-	return
-		tally(int_tallyCount, 
-			on_EnergyUnits_increment() &&
-			was_MinimumAmountOfCharactersOnBottomScreen(14) &&		
-			was_CharacterOnBottomScreen(0, let_charactersToCheck["G"]) &&	// Check prior values, since on_EnergyUnits_increment() hits when the text is already gone
-			was_CharacterOnBottomScreen(3, let_charactersToCheck["E"]) &&
-			was_CharacterOnBottomScreen(8, let_charactersToCheck["Y"]) &&
-			was_CharacterOnBottomScreen(11, let_charactersToCheck["I"]) &&
-			!is_LargeCutscene_active(RELEASE_REGION_USA)	// Don't switch with is_NoCutscene_active() --> FIXfor: picking up energy orb in chapter 3, when energy drained by Homunculus. The cutscene flag here doesn't turn to 0x0 , but turns to a small cutscene
-		)}
-
 // *************************
 // • Achievements TRIGGERS •
 // *************************
@@ -2446,13 +2276,11 @@ achievements_triggers = {
 			(
 				(	// Alt 1 => Normal way of identifying cutscenes
 					unless(
-						!is_GameRegion(enum_releaseRegion) ||
+						!is_ReleaseRegion(enum_releaseRegion) ||
+						!is_ExtraMenu_active(enum_releaseRegion) ||
 						!is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
-					) &&
-					never(
-						!is_InGame(enum_releaseRegion) ||
-						is_EventViewer_active(enum_releaseRegion)	
-					) &&
+						) &&
+					never(!is_InGame(enum_releaseRegion)) &&
 					once(	// Identifies Cutscene => watching performer
 						is_LargeCutscene_active(enum_releaseRegion) 			&& 
 						is_Cutscene_MasterId(0x22480, enum_releaseRegion)		&&
@@ -2471,9 +2299,9 @@ achievements_triggers = {
 					) &&
 					on_Cutscene_end(enum_releaseRegion)
 				) || (	// Alt 2 => Failsafe; trigger on chapter change
-					is_GameRegion(enum_releaseRegion) &&
+					is_ReleaseRegion(enum_releaseRegion) &&
 					is_InGame(enum_releaseRegion) &&
-					is_EventViewer_inActive(enum_releaseRegion) &&
+					!is_ExtraMenu_active(enum_releaseRegion) &&
 					on_Chapter_finish(CHAPTER_Prologue, enum_releaseRegion)
 				)
 			)		
@@ -2484,7 +2312,7 @@ achievements_triggers = {
 	"a_Chapter1Complete": function Chapter1Complete() { return
 		never (	// Core group
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)	
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes				
@@ -2504,7 +2332,7 @@ achievements_triggers = {
 	"a_Chapter2Complete": function Chapter2Complete() { return
 		never (	// Core group
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)	
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&		
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes
@@ -2535,7 +2363,7 @@ achievements_triggers = {
 	"a_Chapter3Complete": function Chapter3Complete() { return
 		never (	// Core group
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)	
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
@@ -2575,7 +2403,7 @@ achievements_triggers = {
 	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
 		never(	// Core group
 			!is_InGame(RELEASE_REGION_USA) 					||
-			is_EventViewer_active(RELEASE_REGION_USA)			||
+			is_ExtraMenu_active(RELEASE_REGION_USA)			||
 			on_Cutscene_MasterId_change(RELEASE_REGION_USA)	||
 			!is_SelectedItemInScrollBar(ITEM_FryingPan, RELEASE_REGION_USA)
 		) &&
@@ -2608,7 +2436,7 @@ achievements_triggers = {
 	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
 		never(	// Core group
 			!is_InGame(RELEASE_REGION_USA) 					||
-			is_EventViewer_active(RELEASE_REGION_USA)			||
+			is_ExtraMenu_active(RELEASE_REGION_USA)			||
 			on_Cutscene_MasterId_change(RELEASE_REGION_USA)	||
 			!is_SelectedItemInScrollBar(ITEM_Sign, RELEASE_REGION_USA)
 		) &&
@@ -2630,7 +2458,7 @@ achievements_triggers = {
 	"a_Chapter5Complete": function Chapter5Complete() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
@@ -2652,7 +2480,7 @@ achievements_triggers = {
 		// Core group
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		is_MovieTimeTravel_chosen(RELEASE_REGION_USA) &&
 		is_MovieThriller_chosen(RELEASE_REGION_USA) 	&&
@@ -2675,7 +2503,7 @@ achievements_triggers = {
 		// Core group
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		is_MovieTimeTravel_chosen(RELEASE_REGION_USA) &&
 		is_MovieLove_chosen(RELEASE_REGION_USA) 		&&
@@ -2697,7 +2525,7 @@ achievements_triggers = {
 	"a_Chapter7Complete": function Chapter7Complete() { return
 		never (	// Core group
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)	
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
@@ -2744,7 +2572,7 @@ achievements_triggers = {
 	"a_Chapter8Complete": function Chapter8Complete() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) && 
 		(	
 			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
@@ -2911,9 +2739,8 @@ achievements_triggers = {
 		achievements_generate_FullTrigger_TotalMaxAchievementRate(),
 	"a_EndingA": function EndingA() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_A, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
 			is_LargeCutscene_active(RELEASE_REGION_USA) && !is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
@@ -2938,9 +2765,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_A, RELEASE_REGION_USA))},
 	"a_EndingB1": function EndingB1() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_B, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 
 		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
@@ -2985,9 +2811,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_B, RELEASE_REGION_USA))},
 	"a_EndingB2": function EndingB2() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_B, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
@@ -3020,9 +2845,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_B, RELEASE_REGION_USA))},
 	"a_EndingC": function EndingC() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_C, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
@@ -3055,9 +2879,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_C, RELEASE_REGION_USA))},
 	"a_EndingD": function EndingD() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_D, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
@@ -3082,9 +2905,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_D, RELEASE_REGION_USA))},
 	"a_EndingE": function EndingE() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_E, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
@@ -3117,9 +2939,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_E, RELEASE_REGION_USA))},
 	"a_EndingEXKillHomunculus": function KillHomunculus() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_EX, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, RELEASE_REGION_USA) &&
@@ -3147,9 +2968,8 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_EX, RELEASE_REGION_USA))},
 	"a_EndingEXCureHelena": function CureHelena() { return
 		never(
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
-			is_ViewingEndingFile_viaExtraMenu(ENDING_EX, RELEASE_REGION_USA)
+			!is_InGame(RELEASE_REGION_USA) ||
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, RELEASE_REGION_USA) &&
@@ -3186,7 +3006,7 @@ achievements_triggers = {
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		never (
 			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 				&& 
@@ -3209,7 +3029,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA) 				||
 			!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
@@ -3232,7 +3052,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA) 				||
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Holding onto rope 
 			is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
@@ -3263,7 +3083,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 					||
 			!is_Chapter(CHAPTER_Chapter1, RELEASE_REGION_USA) 	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
 			is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
@@ -3277,7 +3097,7 @@ achievements_triggers = {
 	"a_GetExChapterOrnamentalEgg": function GetExChapterOrnamentalEgg() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => EX Chapter, performer throws egg
 			is_LargeCutscene_active(RELEASE_REGION_USA) &&
@@ -3298,7 +3118,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 					||
 			!is_Chapter(CHAPTER_Chapter1, RELEASE_REGION_USA) 	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Warning barman of fire 
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_OrnamentalEgg, RELEASE_REGION_USA) &&
@@ -3312,7 +3132,7 @@ achievements_triggers = {
 	"a_EggCollection": function AlertBarmanOfFire() { return
 		never (
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		never (
 			!is_Chapter(CHAPTER_Chapter1, RELEASE_REGION_USA) && 
@@ -3368,7 +3188,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 				||
 			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA) 	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Show off egg to town planter
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_SelectedItemInScrollBar(ITEM_OrnamentalEgg, RELEASE_REGION_USA) &&
@@ -3382,7 +3202,7 @@ achievements_triggers = {
 	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
 		never (
 			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	||
 			!is_ItemPresentInInventory(ITEM_EggPocketWatch, RELEASE_REGION_USA) ||
 			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 				&& 
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA) 				&& 
@@ -3413,7 +3233,7 @@ achievements_triggers = {
 	"a_PocketWatchCollection": function PocketWatch() { return 
 		never (
 			!is_InGame(RELEASE_REGION_USA) 			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	||
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
@@ -3430,7 +3250,7 @@ achievements_triggers = {
 	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
 		never (
 			!is_InGame(RELEASE_REGION_USA) 					||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	||
 			!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA) && 
 			!is_Chapter(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)
 		) &&
@@ -3449,7 +3269,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 						||
 			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
 			is_TreeReplacedBy_Statue(RELEASE_REGION_USA) && is_CrowdScaredWith_Lighter(RELEASE_REGION_USA) &&			
@@ -3465,7 +3285,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 						||
 			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
 			is_TreeReplacedBy_Statue(RELEASE_REGION_USA) && is_CrowdScaredWith_Cellphone(RELEASE_REGION_USA) &&			
@@ -3481,7 +3301,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 						||
 			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
 			is_TreeReplacedBy_Flowers(RELEASE_REGION_USA) &&
@@ -3497,7 +3317,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 						||
 			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
 			is_LargeCutscene_active(RELEASE_REGION_USA) && 
@@ -3921,7 +3741,7 @@ achievements_triggers = {
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
-			is_EventViewer_active(RELEASE_REGION_USA) 	||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
 			on_Cutscene_MasterId_change(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
@@ -3938,7 +3758,7 @@ achievements_triggers = {
 	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
-			is_EventViewer_active(RELEASE_REGION_USA) 	||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
 			!is_SelectedItemInScrollBar(ITEM_Cake, RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
@@ -4079,7 +3899,7 @@ achievements_triggers = {
 	"a_FreeMeal": function FreeMeal() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA)						||
-			is_EventViewer_active(RELEASE_REGION_USA) 			||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 			||
 			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
 			is_FirePutOutBy_Eike(RELEASE_REGION_USA)
 		) &&
@@ -4107,7 +3927,7 @@ achievements_triggers = {
 	"a_NewCakeInvented": function NewCakeInvented() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA)					||
-			is_EventViewer_active(RELEASE_REGION_USA) 	||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
 			!is_SelectedItemInScrollBar(ITEM_Cake, RELEASE_REGION_USA)	
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
@@ -4141,8 +3961,8 @@ achievements_triggers = {
 			})
 		return 
 			never(	
-				is_TitleMenu_active(RELEASE_REGION_USA)	||
-				is_EventViewer_active(RELEASE_REGION_USA)	||
+				!is_InGame(RELEASE_REGION_USA)	||
+				is_ExtraMenu_active(RELEASE_REGION_USA)	||
 
 				// Reset hit counts if any item is removed
 				any_of(const_Items_data, (item) {
@@ -4183,7 +4003,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA)						||
 			!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA)				||
+			is_ExtraMenu_active(RELEASE_REGION_USA)				||
 			!is_SelectedItemInScrollBar(ITEM_FryingPan, RELEASE_REGION_USA) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
@@ -4204,7 +4024,7 @@ achievements_triggers = {
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
-			is_EventViewer_active(RELEASE_REGION_USA) 	||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
@@ -4454,7 +4274,7 @@ achievements_triggers = {
 	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
-			is_EventViewer_active(RELEASE_REGION_USA) 	||
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
 			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
@@ -4467,7 +4287,7 @@ achievements_triggers = {
 	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
 			is_SmallCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_Bar, RELEASE_REGION_USA) &&
@@ -4482,7 +4302,7 @@ achievements_triggers = {
 	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_City_Snow, RELEASE_REGION_USA) &&
@@ -4499,7 +4319,7 @@ achievements_triggers = {
 	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)			 
+			is_ExtraMenu_active(RELEASE_REGION_USA)			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_City_Snow, RELEASE_REGION_USA) &&
@@ -4515,7 +4335,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA)						||
 			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA) 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
 			is_LargeCutscene_active(RELEASE_REGION_USA) &&
@@ -4531,7 +4351,7 @@ achievements_triggers = {
  	"a_TimeTravellingCat": function TimeTravellingCat() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) ||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
 			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_1900s_BrumMansion, RELEASE_REGION_USA) &&
@@ -4548,7 +4368,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA)						||
 			!is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA)  
+			is_ExtraMenu_active(RELEASE_REGION_USA)  
 		) &&
 		(
 			(
@@ -4578,7 +4398,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)	||
-			is_EventViewer_active(RELEASE_REGION_USA)  
+			is_ExtraMenu_active(RELEASE_REGION_USA)  
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
 			is_Cutscene_MinorId(0x23ee0, 0x8, RELEASE_REGION_USA) 	&&
@@ -4590,7 +4410,7 @@ achievements_triggers = {
 		never (
 			!is_InGame(RELEASE_REGION_USA) 				||
 			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA) 	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
 			is_LargeCutscene_active(RELEASE_REGION_USA)	&&
@@ -4612,7 +4432,7 @@ achievements_triggers = {
 	"a_TimeEgoFlop": function TimeEgoFlop() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) 				||
-			is_EventViewer_active(RELEASE_REGION_USA) 	|| 
+			is_ExtraMenu_active(RELEASE_REGION_USA) 	|| 
 			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
@@ -4630,7 +4450,7 @@ achievements_triggers = {
 		never(
 			!is_InGame(RELEASE_REGION_USA)						||
 			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA) 	||
-			is_EventViewer_active(RELEASE_REGION_USA)
+			is_ExtraMenu_active(RELEASE_REGION_USA)
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
 			is_LargeCutscene_active(RELEASE_REGION_USA)			&&	
@@ -4652,7 +4472,7 @@ achievements_triggers = {
 	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA)			||
-			is_EventViewer_active(RELEASE_REGION_USA)	||
+			is_ExtraMenu_active(RELEASE_REGION_USA)	||
 			!is_Chapter(CHAPTER_Chapter3, RELEASE_REGION_USA)
 		) &&
 		(
@@ -5063,6 +4883,7 @@ function richPresence_callDisplayFunctions() {
 			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
 			is_PrologueExMode_active(enum_releaseRegion) && 
 			is_ExChapter_unlocked(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
 			is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
 		rich_presence_conditional_display(
@@ -5082,6 +4903,7 @@ function richPresence_callDisplayFunctions() {
 			is_InGame(enum_releaseRegion) &&
 			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
 			!is_PrologueExMode_active(enum_releaseRegion) && 
+			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
 			is_ChapterOneOf([
 					CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue
@@ -5101,8 +4923,9 @@ function richPresence_callDisplayFunctions() {
 
 	function rp_InGameChapterWithTimePeriod(enum_releaseRegion) { // VERIFIED
 		function condition(enum_releaseRegion) { return
-			is_GameRegion(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&
 			is_InGame(enum_releaseRegion) && 
+			!is_ExtraMenu_active(enum_releaseRegion) &&
 			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
 			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
 			is_ChapterOneOf([
@@ -5126,9 +4949,10 @@ function richPresence_callDisplayFunctions() {
 
 	function rp_AtTitleScreen(enum_releaseRegion) { // VERIFIED
 		function condition(enum_releaseRegion) { return
-			is_GameRegion(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&
 			(
-				is_TitleMenu_active(enum_releaseRegion) || !is_InGame(enum_releaseRegion)
+				!is_InGame(enum_releaseRegion) || 
+				is_ExtraMenu_active(enum_releaseRegion)
 			)}
 		rich_presence_conditional_display( 
 			condition(enum_releaseRegion),
@@ -5140,9 +4964,7 @@ function richPresence_callDisplayFunctions() {
 
 	function rp_DefaultPlus(enum_releaseRegion) { // UNVERIFIED
 		function condition(enum_releaseRegion) =>
-			is_GameRegion(enum_releaseRegion) &&
-			!is_TitleMenu_active(enum_releaseRegion) &&
-			!is_InGame(enum_releaseRegion)
+			is_ReleaseRegion(enum_releaseRegion)
 		rich_presence_conditional_display( 
 			condition(enum_releaseRegion),
 			richPresence_getText("rp_DefaultPlus"),
@@ -5320,6 +5142,7 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
+
 // TODO chapter leadersboard don't show up => start and submit on chapter completion => less RAoverlay clutter during gameplay
 // also do this for Total clear time?
 
@@ -5395,8 +5218,9 @@ function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter) {
 		if (enum_chapter == CHAPTER_Prologue) 
 			let_chapterSpecificComparison = !is_PrologueExMode_active(enum_releaseRegion)
 		return 
-			unless(!is_GameRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
 			never(!is_InGame(enum_releaseRegion)) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
 			once(on_Timer_ChapterClearTime_start(enum_releaseRegion)) &&
 			repeated(500, 						// <-- Delay FIX for leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
 				is_InGame(enum_releaseRegion) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, both Total and chapter clear time pop and same time otherwise
@@ -5414,7 +5238,7 @@ function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter) {
 		if (enum_chapter == CHAPTER_Prologue)
 			let_chapterSpecificComparison = is_PrologueExMode_active(enum_releaseRegion)
 		return 	
-			is_GameRegion(enum_releaseRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
+			is_ReleaseRegion(enum_releaseRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
 			(
 				!is_InGame(enum_releaseRegion) 	|| 
 				let_chapterSpecificComparison 	|| 
@@ -5427,7 +5251,7 @@ function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter) {
 
 function leaderboards_generate_SubmitTrigger_ClearTimeChapter(enum_chapter) {
 	function trigger(enum_chapter, enum_releaseRegion) => 
-		is_GameRegion(enum_releaseRegion) &&
+		is_ReleaseRegion(enum_releaseRegion) &&
 		on_ChapterCompletionMenu_render(enum_releaseRegion) &&
 		is_Chapter(enum_chapter, enum_releaseRegion)
 	return 
@@ -5443,8 +5267,8 @@ function leaderboards_generate_ValueMeasure_ClearTimeChapter() {
 		
 	return 
 		max_of(
-			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_USA), when = is_GameRegion(RELEASE_REGION_USA)),
-			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_JPN), when = is_GameRegion(RELEASE_REGION_JPN))
+			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_USA), when = is_ReleaseRegion(RELEASE_REGION_USA)),
+			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_JPN), when = is_ReleaseRegion(RELEASE_REGION_JPN))
 		)
 	}
 
@@ -5472,8 +5296,9 @@ leaderboards_startTriggers = {
 		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Prologue),
 	"lb_TotalClearTime": () {
 		function trigger(enum_releaseRegion) => 
-			unless(!is_GameRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
 			never(!is_InGame(enum_releaseRegion)) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
 			once(on_Timer_TotalClearTime_start(enum_releaseRegion)) &&
 			repeated(100, is_InGame(enum_releaseRegion)) && // <-- delay popup 
 			!is_PrologueExMode_active(enum_releaseRegion)
@@ -5502,7 +5327,7 @@ leaderboards_cancelTriggers = {
 		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Prologue),
 	"lb_TotalClearTime": () {
 		function trigger(enum_releaseRegion) =>		
-			is_GameRegion(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&
 			(
 				!is_InGame(enum_releaseRegion) || 
 				is_PrologueExMode_active(enum_releaseRegion) || 
@@ -5533,7 +5358,7 @@ leaderboards_submitTriggers = {
 		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Prologue),
 	"lb_TotalClearTime": () {
 		function trigger(enum_releaseRegion) =>
-			unless(!is_GameRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
 			is_InGame(enum_releaseRegion) &&
 			(
 				(		// Alt 1 => Trigger when credits video starts
@@ -5570,7 +5395,7 @@ leaderboards_valueMeasures = {
 		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
 	"lb_TotalClearTime": () {
 		function valueMeasure(enum_releaseRegion) =>
-			measured(get_Timer_TotalClearTime_InMinutes(enum_releaseRegion), when = is_GameRegion(enum_releaseRegion))
+			measured(get_Timer_TotalClearTime_InMinutes(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
 		return
 			max_of(
 				valueMeasure(RELEASE_REGION_USA),
