@@ -58,6 +58,11 @@ util_language = "en"	// ISO 639-1 language codes
 iNULL = -1
 sNULL = "-1"
 
+RELEASE_REGION_USA = "NTSC-U/C"	// ULUS-10459 => PSP game identification code for USA release region
+RELEASE_REGION_JPN = "NTSC-J"	// ULJM-05512 => PSP game identification code for JPN release region
+RELEASE_REGION_EUR = "PAL"		// --> there's no EUR release for this game
+RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_USA, RELEASE_REGION_JPN]
+
 function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
@@ -111,10 +116,6 @@ function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 // **************************
 // • Memory ADDRESS STORAGE •
 // **************************
-RELEASE_REGION_USA = "NTSC-U/C"	// ULUS-10459 => PSP game identification code for USA release region
-RELEASE_REGION_JPN = "NTSC-J"	// ULJM-05512 => PSP game identification code for JPN release region
-RELEASE_REGION_EUR = "PAL"	// --> there's no EUR release for this game
-// -------------------------------------
 DATATYPE_BitFlag 				= 700
 DATATYPE_4Bit 					= 600
 DATATYPE_8Bit 					= 500
@@ -1787,71 +1788,71 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // VERIFIED 
+		"a_PrologueComplete": { // MODIFIED 
 			"id": 306884, "points": 5,
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // VERIFIED
+		"a_Chapter1Complete": { // MODIFIED
 			"id": 306886, "points": 5,
 			"devInfo": "Complete chapter 1"},
-		"a_Chapter2Complete": { // VERIFIED
+		"a_Chapter2Complete": { // MODIFIED
 			"id": 306922, "points": 5,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // VERIFIED
+		"a_Chapter3Complete": { // MODIFIED
 			"id": 306921, "points": 5,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // VERIFIED
+		"a_Chapter4CompletePan": { // MODIFIED
 			"id": 308964, "points": 3,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // VERIFIED
+		"a_Chapter4CompleteSign": { // MODIFIED
 			"id": 310149, "points": 3,
 			"devInfo": "Complete chapter 4, using a sign"},
-		"a_Chapter5Complete": { // VERIFIED
+		"a_Chapter5Complete": { // MODIFIED
 			"id": 311616, "points": 5,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // VERIFIED
+		"a_Chapter6CompleteThriller": { // MODIFIED
 			"id": 313211, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // VERIFIED
+		"a_Chapter6CompleteLove": { // MODIFIED
 			"id": 313210, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
-		"a_Chapter7Complete": { // VERIFIED
+		"a_Chapter7Complete": { // MODIFIED
 			"id": 315565, "points": 5,
 			"devInfo": "Complete chapter 7"},
-		"a_Chapter8Complete": { // VERIFIED 
+		"a_Chapter8Complete": { // MODIFIED 
 			"id": 315571, "points": 5,
 			"devInfo": "Complete chapter 8"}},
 	"c_AchievementPercentage": {
-		"a_MaxAchievementPrologue": { // VERIFIED
+		"a_MaxAchievementPrologue": { // MODIFIED
 			"id": 405087, "points": 10,
 			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
-		"a_MaxAchievementChapter1": { // VERIFIED
+		"a_MaxAchievementChapter1": { // MODIFIED
 			"id": 405088, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 1"},
-		"a_MaxAchievementChapter2": { // VERIFIED
+		"a_MaxAchievementChapter2": { // MODIFIED
 			"id": 405089, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 2"},
-		"a_MaxAchievementChapter3": { // VERIFIED
+		"a_MaxAchievementChapter3": { // MODIFIED
 			"id": 405090, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 3"},
-		"a_MaxAchievementChapter4": { // VERIFIED
+		"a_MaxAchievementChapter4": { // MODIFIED
 			"id": 405091, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 4"},
-		"a_MaxAchievementChapter5": { // VERIFIED
+		"a_MaxAchievementChapter5": { // MODIFIED
 			"id": 405092, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 5"},
-		"a_MaxAchievementChapter6": { // VERIFIED
+		"a_MaxAchievementChapter6": { // MODIFIED
 			"id": 405093, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 6"},
-		"a_MaxAchievementChapter7": { // VERIFIED
+		"a_MaxAchievementChapter7": { // MODIFIED
 			"id": 405094, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 7"},
-		"a_MaxAchievementChapter8": { // VERIFIED
+		"a_MaxAchievementChapter8": { // MODIFIED
 			"id": 405095, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 8"},
-		"a_MaxAchievementEpilogue": { // VERIFIED	
+		"a_MaxAchievementEpilogue": { // MODIFIED	
 			"id": 405096, "points": 10,
 			"devInfo": "Seen all the important cutscenes in epilogue"},
-		"a_MaxAchievementTotal": { // VERIFIED
+		"a_MaxAchievementTotal": { // MODIFIED
 			"id": 405097, "points": 50,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
@@ -2271,450 +2272,528 @@ achievements_triggers = {
 	// "a_Template": function Template() {	// WIP_template
 	// 	return always_false()
 	// },
-	"a_PrologueComplete": () {
-		function trigger(enum_releaseRegion) =>
+	"a_PrologueComplete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		(	// Alt 1 => Normal way of identifying cutscenes
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||					
+				!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) // <-- Don't put this in reset, otherwise alt 2 can't trigger
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => watching performer
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x22480, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x1bcd0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			) &&
+			once(	// Identifies cutscene => shadow/killer walking behind Eike
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x90bc0, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x1ae70, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x75d10, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)
+		) || (	// Alt 2 => Failsafe; trigger on chapter change
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Prologue, enum_releaseRegion)
+		)),
+	"a_Chapter1Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { return
+		(
+			(	// Alt 1 => Normal way of identifying cutscenes	
+				unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+				never(
+					!is_InGame(enum_releaseRegion) ||
+					is_ExtraMenu_active(enum_releaseRegion)
+				) &&
+				once(	// Identifies Cutscene => burning bar changes into non-burning
+					is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) &&
+					is_Cutscene_MasterId(0x11a40, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0xbea0, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x5b80, enum_releaseRegion)
+				) &&
+				on_Cutscene_end(enum_releaseRegion)
+			) || (	// Alt 2 => Failsafe; trigger on chapter change
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) &&
+				!is_ExtraMenu_active(enum_releaseRegion) &&
+				on_Chapter_finish(CHAPTER_Chapter1, enum_releaseRegion)
+			)
+		)}),
+	"a_Chapter2Complete": function a_Chapter2Complete() { return
+		any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 			(
 				(	// Alt 1 => Normal way of identifying cutscenes
 					unless(
 						!is_ReleaseRegion(enum_releaseRegion) ||
-						!is_ExtraMenu_active(enum_releaseRegion) ||
-						!is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
-						) &&
-					never(!is_InGame(enum_releaseRegion)) &&
-					once(	// Identifies Cutscene => watching performer
-						is_LargeCutscene_active(enum_releaseRegion) 			&& 
-						is_Cutscene_MasterId(0x22480, enum_releaseRegion)		&&
-						is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-						is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-						is_Cutscene_MasterDataId(0x1bcd0, enum_releaseRegion)	&&
-						is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+
+						!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion) || // <-- Don't put this in reset, otherwise alt 2 can't trigger
+						!is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion)
 					) &&
-					once(	// Identifies cutscene => shadow/killer walking behind Eike
-						is_LargeCutscene_active(enum_releaseRegion) 			&& 
-						is_Cutscene_MasterId(0x90bc0, enum_releaseRegion)		&&
+					never(
+						!is_InGame(enum_releaseRegion) ||
+						is_ExtraMenu_active(enum_releaseRegion)
+					) &&
+					once(	// Identifies Cutscene => reminiscing about Dana: left in the past
+						is_LargeCutscene_active(enum_releaseRegion) 			&&
+						is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
+						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
 						is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 						is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-						is_Cutscene_MasterDataId(0x1ae70, enum_releaseRegion)	&&
-						is_Cutscene_SectionDataId(0x75d10, enum_releaseRegion)
+						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+						is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
+					) &&
+					once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
+						is_LargeCutscene_active(enum_releaseRegion) 			&&
+						is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
+						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+						is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+						is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+						is_Cutscene_MasterDataId(0x11240, enum_releaseRegion)	&&
+						is_Cutscene_SectionDataId(0x2b0, enum_releaseRegion)
 					) &&
 					on_Cutscene_end(enum_releaseRegion)
 				) || (	// Alt 2 => Failsafe; trigger on chapter change
 					is_ReleaseRegion(enum_releaseRegion) &&
 					is_InGame(enum_releaseRegion) &&
 					!is_ExtraMenu_active(enum_releaseRegion) &&
-					on_Chapter_finish(CHAPTER_Prologue, enum_releaseRegion)
+					on_Chapter_finish(CHAPTER_Chapter2, enum_releaseRegion)
 				)
-			)		
-		return
-			trigger(RELEASE_REGION_USA) ||
-			trigger(RELEASE_REGION_JPN)
-		},
-	"a_Chapter1Complete": function Chapter1Complete() { return
-		never (	// Core group
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
-		) &&		
-		(
-			(	// Alt 1 => Normal way of identifying cutscenes				
-				once(	// Identifies Cutscene => burning bar changes into non-burning
-					is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter1, RELEASE_REGION_USA) &&
-					is_Cutscene_MasterId(0x11a40, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0xbea0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x5b80, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter1, RELEASE_REGION_USA)
 			)
 		)},
-	"a_Chapter2Complete": function Chapter2Complete() { return
-		never (	// Core group
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
-		) &&		
-		(
-			(	// Alt 1 => Normal way of identifying cutscenes
-				unless(!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => reminiscing about Dana: left in the past					
-					is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x3b240, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x340e0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x340e0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x7130, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-					is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x11240, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x2b0, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter2, RELEASE_REGION_USA)
-			)
-		)},
-	"a_Chapter3Complete": function Chapter3Complete() { return
-		never (	// Core group
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
-		) &&
+	"a_Chapter3Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		alt1 = // Alt 1 => Normal way of identifying cutscenes
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+
+				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) || // <-- Don't put this in reset, otherwise alt 2 can't trigger
+				!is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Time travel back to Brum Museum  
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x19d80, enum_releaseRegion)		&&	
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion) 		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion) 		&&
+				is_Cutscene_MasterDataId(0x82a0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x11ac0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Back to Eckart and breaking vase
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0xcfb40, enum_releaseRegion)		&& was_Cutscene_MasterId(0x19d80, enum_releaseRegion) &&	
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion) 		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion) 		&&
+				is_Cutscene_MasterDataId(0x39f0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x387a0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x39680, enum_releaseRegion)		&& was_Cutscene_MasterId(0xcfb40, enum_releaseRegion) &&	
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion) 		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion) 		&&
+				is_Cutscene_MasterDataId(0x7e10, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x7ca0, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alt2 = // Alt 2 => Failsafe; trigger on chapter change
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter3, enum_releaseRegion)
+		return alt1 || alt2}),
+	"a_Chapter4CompletePan": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		function alt1(enum_releaseRegion) => // Alt 1 => Normal way of identifying cutscenes	
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) ||
+				on_Cutscene_MasterId_change(enum_releaseRegion)	
+			) &&
+			once(	// Identifies cutscene => protecting yourself with pan 
+				is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+				is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x4f200, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x11cd0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x3d500, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)
+		function alt2(enum_releaseRegion) => // Alt 2 => Failsafe; trigger on chapter change
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) ||
+				on_Cutscene_MasterId_change(enum_releaseRegion)	
+			) &&
+			once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
+				is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+				is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x54580, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x17060, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x1390, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)
+		function alt3(enum_releaseRegion) =>
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)
+		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion) || alt3(enum_releaseRegion)
+		}),
+	"a_Chapter4CompleteSign": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		function alt1(enum_releaseRegion) { return
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) ||
+				on_Cutscene_MasterId_change(enum_releaseRegion)	
+			) &&
+			once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
+				is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
+				is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x54580, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0xd, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0xe, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0xb6e0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xae50, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)}
+		function alt2(enum_releaseRegion) { return
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)}
+		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion)}),
+	"a_Chapter5Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
-				unless(!is_Chapter(CHAPTER_Chapter3, RELEASE_REGION_USA)) &&			
-				once(	// Identifies Cutscene => Time travel back to Brum Museum  
-					is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x19d80, RELEASE_REGION_USA)		&&	
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA) 		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA) 		&&
-					is_Cutscene_MasterDataId(0x82a0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x11ac0, RELEASE_REGION_USA)
+				unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+				never(
+					!is_InGame(enum_releaseRegion) ||
+					is_ExtraMenu_active(enum_releaseRegion)
 				) &&
-				once(	// Identifies Cutscene => Back to Eckart and breaking vase
-					is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0xcfb40, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x19d80, RELEASE_REGION_USA) &&	
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA) 		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA) 		&&
-					is_Cutscene_MasterDataId(0x39f0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x387a0, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
-					is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x39680, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0xcfb40, RELEASE_REGION_USA) &&	
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA) 		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA) 		&&
-					is_Cutscene_MasterDataId(0x7e10, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x7ca0, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter3, RELEASE_REGION_USA)
-			)
-		)},
-	"a_Chapter4CompletePan": function Chapter4CompletePan() { return
-		never(	// Core group
-			!is_InGame(RELEASE_REGION_USA) 					||
-			is_ExtraMenu_active(RELEASE_REGION_USA)			||
-			on_Cutscene_MasterId_change(RELEASE_REGION_USA)	||
-			!is_SelectedItemInScrollBar(ITEM_FryingPan, RELEASE_REGION_USA)
-		) &&
-		(
-			( // Alt 1 
-				unless(!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)) && 
-				once(	// Identifies cutscene => protecting yourself with pan 
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x4f200, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x11cd0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x3d500, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || ( // Alt 2 
-				once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x54580, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x17060, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x1390, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 3; Failsafe
-				on_Chapter_finish(CHAPTER_Chapter4, RELEASE_REGION_USA)
-			)
-		)},
-	"a_Chapter4CompleteSign": function Chapter4CompletePan() { return
-		never(	// Core group
-			!is_InGame(RELEASE_REGION_USA) 					||
-			is_ExtraMenu_active(RELEASE_REGION_USA)			||
-			on_Cutscene_MasterId_change(RELEASE_REGION_USA)	||
-			!is_SelectedItemInScrollBar(ITEM_Sign, RELEASE_REGION_USA)
-		) &&
-		(
-			( // Alt 1 
-				once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-					is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA) &&
-					is_Cutscene_MasterId(0x54580, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0xd, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0xe, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0xb6e0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0xae50, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2
-				on_Chapter_finish(CHAPTER_Chapter4, RELEASE_REGION_USA)
-			)
-		)},
-	"a_Chapter5Complete": function Chapter5Complete() { return
-		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
-		) &&
-		(
-			(	// Alt 1 => Normal way of identifying cutscenes	
 				once(	// Identifies Cutscene => drinking antidote
-					is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA) &&
-					is_SelectedItemInScrollBar(ITEM_Antidote, RELEASE_REGION_USA)	&&
-					is_Cutscene_MasterId(0x3f980, RELEASE_REGION_USA)			&&
-					is_Cutscene_SectionId_1(0xffff, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterDataId(0x3f980, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionDataId(0x3f980, RELEASE_REGION_USA)
+					is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter5, enum_releaseRegion) &&
+					is_SelectedItemInScrollBar(ITEM_Antidote, enum_releaseRegion) &&
+					is_Cutscene_MasterId(0x3f980, enum_releaseRegion)			&&
+					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)			&&
+					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)			&&
+					is_Cutscene_MasterDataId(0x3f980, enum_releaseRegion)		&&
+					is_Cutscene_SectionDataId(0x3f980, enum_releaseRegion)
 				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
+				on_Cutscene_end(enum_releaseRegion)
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter5, RELEASE_REGION_USA)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) &&
+				!is_ExtraMenu_active(enum_releaseRegion) &&
+				on_Chapter_finish(CHAPTER_Chapter5, enum_releaseRegion)
 			)
-		)},
-	"a_Chapter6CompleteThriller": function Chapter6CompleteThriller() {	return
-		// Core group
-		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
-		) &&
-		is_MovieTimeTravel_chosen(RELEASE_REGION_USA) &&
-		is_MovieThriller_chosen(RELEASE_REGION_USA) 	&&
+		)),
+	"a_Chapter6CompleteThriller": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		(
-			(	// Alt 1 
+			(	// Alt 1 => Normal way of identifying cutscenes	
+				unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+				never(
+					!is_InGame(enum_releaseRegion) ||
+					is_ExtraMenu_active(enum_releaseRegion) 
+				) &&
+				is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
+				is_MovieThriller_chosen(enum_releaseRegion) 	&&
 				once( // Identifies Cutscene => Saved by love story movie
-					is_LargeCutscene_active(RELEASE_REGION_USA) && 
-					is_Cutscene_MasterId(0x9db40, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x7, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x8, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x66600, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x20cd0, RELEASE_REGION_USA)
+					is_LargeCutscene_active(enum_releaseRegion) && 
+					is_Cutscene_MasterId(0x9db40, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_1(0x7, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x8, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x66600, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x20cd0, enum_releaseRegion)
 				) && 
-				on_Cutscene_end(RELEASE_REGION_USA)
+				on_Cutscene_end(enum_releaseRegion)
 			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(CHAPTER_Chapter6, RELEASE_REGION_USA)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) &&
+				!is_ExtraMenu_active(enum_releaseRegion) &&
+				is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
+				is_MovieThriller_chosen(enum_releaseRegion) 	&&
+				on_Chapter_finish(CHAPTER_Chapter6, enum_releaseRegion)
 			)
-		)},
-	"a_Chapter6CompleteLove": function Chapter6CompleteLove() {	return
-		// Core group
-		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
-		) &&
-		is_MovieTimeTravel_chosen(RELEASE_REGION_USA) &&
-		is_MovieLove_chosen(RELEASE_REGION_USA) 		&&
-		(
-			(	// Alt 1 
-				once( // Identifies Cutscene => Saved by love story movie
-					is_LargeCutscene_active(RELEASE_REGION_USA) && 				
-					is_Cutscene_MasterId(0x9db40, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x7, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x8, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x66600, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x20cd0, RELEASE_REGION_USA)
-				) && 
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2 => Failsafe
-				on_Chapter_finish(CHAPTER_Chapter6, RELEASE_REGION_USA)
+		)),
+	"a_Chapter6CompleteLove": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		(	// Alt 1 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) 
+			) &&
+			is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
+			is_MovieLove_chosen(enum_releaseRegion) 		&&
+			once( // Identifies Cutscene => Saved by love story movie
+				is_LargeCutscene_active(enum_releaseRegion) && 				
+				is_Cutscene_MasterId(0x9db40, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x7, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x8, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x66600, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x20cd0, enum_releaseRegion)
+			) && 
+			on_Cutscene_end(enum_releaseRegion)
+		) || (	// Alt 2 => Failsafe
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
+			is_MovieLove_chosen(enum_releaseRegion) 		&&
+			on_Chapter_finish(CHAPTER_Chapter6, enum_releaseRegion)
+		)),
+	"a_Chapter7Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		alt1 = // Alt 1 => Normal way of identifying cutscenes	(Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)	
+			) &&
+			once(	// Identifies Cutscene => Holding onto rope 
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0x43040, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x7ce0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xd940, enum_releaseRegion)
+			) &&
+			tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
+				once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
+					is_LargeCutscene_active(enum_releaseRegion)				&&
+					is_MargaretteTold_Ancestor(enum_releaseRegion) 			&&
+					is_Cutscene_MasterId(0xc6800, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x45720, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x6ccd0, enum_releaseRegion)),
+				once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
+					is_LargeCutscene_active(enum_releaseRegion)				&&
+					is_MargaretteTold_NoAncestor(enum_releaseRegion) 		&&
+					is_Cutscene_MasterId(0xd1bc0, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x48000, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x5b190, enum_releaseRegion))]
+			) &&
+			once(	// Identifies Cutscene => Looking at painting of Dana
+				is_LargeCutscene_active(enum_releaseRegion)			&&
+				is_Cutscene_MasterId(0x12040, enum_releaseRegion)	&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)	&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)	&&
+				is_Cutscene_MasterDataId(0xce0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x11330, enum_releaseRegion)
+			) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alt2 = // Alt 2 => Failsafe
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter7, enum_releaseRegion)
+		return alt1 || alt2}),
+	"a_Chapter8Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		alts = {}
+		alts[0] = // Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Talk to Homunculus
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0x8b640, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x2d440, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x42750, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0x10ef00, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x9, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x8, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0xb620, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xf4d0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0xe4800, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x9, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0xa, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x66aa0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x5d060, enum_releaseRegion)
+			) &&
+			is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alts[2] = // Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Talk to Hugo and Margarette
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0xd5440, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x7, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x6, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x41550, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x2b420, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0x716c0, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x9, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0xa, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x239f0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x19ef0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Eike consoling Margarette
+				is_LargeCutscene_active(enum_releaseRegion)				&&
+				is_Cutscene_MasterId(0xf3c80, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x91c30, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x62030, enum_releaseRegion)
+			) &&
+			is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alts[3] = // Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Talk to Hugo and Margarette
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0xfbd00, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x5ff00, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x26f30, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0xc4e40, enum_releaseRegion)		&& was_Cutscene_MasterId(0xfbd00, enum_releaseRegion) &&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x62650, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x6be0, enum_releaseRegion)
+			) &&
+			is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alts[4] = // Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
+				is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x1cbc0, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0xc8e0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x98f0, enum_releaseRegion)
+			) &&
+			is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alts[5] = // Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
+				is_LargeCutscene_active(enum_releaseRegion)			&&
+				is_Cutscene_MasterId(0x77a40, enum_releaseRegion)		&& was_Cutscene_MasterId(0x29700, enum_releaseRegion) &&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x31fd0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x45a10, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Eike confronts Hugo at square
+				is_LargeCutscene_active(enum_releaseRegion)			&&
+				is_Cutscene_MasterId(0x4b140, enum_releaseRegion)		&& was_Cutscene_MasterId(0x77a40, enum_releaseRegion) &&
+				is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x122b0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x189f0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
+				is_LargeCutscene_active(enum_releaseRegion)			&&
+				is_Cutscene_MasterId(0xc9440, enum_releaseRegion)		&& was_Cutscene_MasterId(0xa00c0, enum_releaseRegion) &&
+				is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x46b50, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x828a0, enum_releaseRegion)
+			) &&
+			is_Dana_Left_InPast(enum_releaseRegion) && is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)	
+		alts[6] = // Alt 6 => Ending E (Save Dana => Destroyed Lab)
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
+			) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) && 
+			once(	// Identifies Cutscene => Brought Margarette to present
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x101bc0, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x77920, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x725d0, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Margarette confronts Hugo in square
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x137500, enum_releaseRegion)		&& was_Cutscene_MasterId(0x101bc0, enum_releaseRegion) &&
+				is_Cutscene_SectionId_1(0xc, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0xd, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x7bdf0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x55290, enum_releaseRegion)
+			) &&
+			is_Dana_Saved_FromPast(enum_releaseRegion) && is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		alts[7+8] = // Alt 7+8 => Failsafe; triggers on chapter change
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			(
+				on_Chapter_finish(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) ||
+				on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 			)
-		)},
-	"a_Chapter7Complete": function Chapter7Complete() { return
-		never (	// Core group
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
-		) &&
-		(
-			(	// Alt 1 => Normal way of identifying cutscenes	 (Also works when saving Miriam => Miriam is a counts as an extra in-between cutscene)			
-				unless(!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Holding onto rope 
-					is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterId(0x43040, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x7ce0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0xd940, RELEASE_REGION_USA)
-				) &&
-				tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
-					once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
-						is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-						is_MargaretteTold_Ancestor(RELEASE_REGION_USA) 		&&
-						is_Cutscene_MasterId(0xc6800, RELEASE_REGION_USA)		&&
-						is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-						is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-						is_Cutscene_MasterDataId(0x45720, RELEASE_REGION_USA)	&&
-						is_Cutscene_SectionDataId(0x6ccd0, RELEASE_REGION_USA)),
-					once(	// Identifies Cutscene => Talking to Eckart, No Ancestress path 
-						is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-						is_MargaretteTold_NoAncestor(RELEASE_REGION_USA) 		&&
-						is_Cutscene_MasterId(0xd1bc0, RELEASE_REGION_USA)		&&
-						is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-						is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-						is_Cutscene_MasterDataId(0x48000, RELEASE_REGION_USA)	&&
-						is_Cutscene_SectionDataId(0x5b190, RELEASE_REGION_USA))]
-				) &&
-				once(	// Identifies Cutscene => Looking at painting of Dana
-					is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterId(0x12040, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)	&&
-					is_Cutscene_MasterDataId(0xce0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x11330, RELEASE_REGION_USA)
-				) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				on_Chapter_finish(CHAPTER_Chapter7, RELEASE_REGION_USA)
-			)
-		)},
-	"a_Chapter8Complete": function Chapter8Complete() { return
-		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
-		) && 
-		(	
-			(	// Alt 1 => Ending A (Talk to Fortune Teller AND Homunculus => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Talk to Homunculus
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0x8b640, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x2d440, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x42750, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Summon Dr. Wagner with Homunculus
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0x10ef00, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x9, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x8, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0xb620, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0xf4d0, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Dr. Wagner confronts Hugo
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0xe4800, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x9, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0xa, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x66aa0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x5d060, RELEASE_REGION_USA)
-				) &&
-				is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || 
-			(	// Alt 2 => Ending B1 (Talk to Fortune Teller => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0xd5440, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x7, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x6, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x41550, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x2b420, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Hugo inside old Alchemist house collapsing
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0x716c0, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x9, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0xa, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x239f0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x19ef0, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Eike consoling Margarette
-					is_LargeCutscene_active(RELEASE_REGION_USA)				&&
-					is_Cutscene_MasterId(0xf3c80, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x91c30, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x62030, RELEASE_REGION_USA)
-				) &&
-				is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 3 => Ending B2 (Talk to Homunculus => return to Hugo)
-				unless(!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Talk to Hugo and Margarette
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0xfbd00, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x5ff00, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x26f30, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0xc4e40, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0xfbd00, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x62650, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x6be0, RELEASE_REGION_USA)
-				) &&
-				is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 4 => Ending C (Visit destroyed lab => return to Hugo)
-				once(	// Identifies Cutscene => Talk to Homunculus at square after seeing young Hugo erase old Hugo
-					is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA) &&
-					is_Cutscene_MasterId(0x1cbc0, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0xc8e0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x98f0, RELEASE_REGION_USA)
-				) &&
-				is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || (	// Alt 5 => Ending D (Did not save Dana => Destroyed Lab)
-				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
-					is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterId(0x77a40, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x29700, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x31fd0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x45a10, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Eike confronts Hugo at square
-					is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterId(0x4b140, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x77a40, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x122b0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x189f0, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
-					is_LargeCutscene_active(RELEASE_REGION_USA)			&&
-					is_Cutscene_MasterId(0xc9440, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0xa00c0, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x46b50, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x828a0, RELEASE_REGION_USA)
-				) &&
-				is_Dana_Left_InPast(RELEASE_REGION_USA) && is_MargaretteTold_NoAncestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)				
-			) || (	// Alt 6 => Ending E (Save Dana => Destroyed Lab)
-				unless(!is_Chapter(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)) &&
-				once(	// Identifies Cutscene => Brought Margarette to present
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x101bc0, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x77920, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x725d0, RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Margarette confronts Hugo in square
-					is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-					is_Cutscene_MasterId(0x137500, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x101bc0, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0xc, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0xd, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x7bdf0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x55290, RELEASE_REGION_USA)
-				) &&
-				is_Dana_Saved_FromPast(RELEASE_REGION_USA) && is_MargaretteTold_NoAncestor(RELEASE_REGION_USA) &&
-				on_Cutscene_end(RELEASE_REGION_USA)
-			) || // Alt 7+8 => Failsafe; triggers on chapter change
-			on_Chapter_finish(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA) ||
-			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)
-		)},
+		return any_of(alts, (key) => alts[key])}),
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>  
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue),
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>  
@@ -4858,7 +4937,7 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
 // *************************
 // • RichPresence DISPLAYS •
-// ************************* // TODO implement rich presence + leaderboards for JPN
+// *************************
 //	- Contains logic data for the rich presence script
 function richPresence_callDisplayFunctions() { 
 	function rp_isPaused(enum_releaseRegion) { // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on: re-check other richPresence conditions, some other conditions need changing
@@ -4962,7 +5041,7 @@ function richPresence_callDisplayFunctions() {
 	rp_AtTitleScreen(RELEASE_REGION_USA)
 	rp_AtTitleScreen(RELEASE_REGION_JPN)
 
-	function rp_DefaultPlus(enum_releaseRegion) { // UNVERIFIED
+	function rp_DefaultPlus(enum_releaseRegion) { // VERIFIED
 		function condition(enum_releaseRegion) =>
 			is_ReleaseRegion(enum_releaseRegion)
 		rich_presence_conditional_display( 
