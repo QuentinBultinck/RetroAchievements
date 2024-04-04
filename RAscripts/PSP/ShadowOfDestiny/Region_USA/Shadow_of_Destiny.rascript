@@ -123,7 +123,7 @@ DATATYPE_25BitPointer 			= 300
 DATATYPE_Float					= 201
 DATATYPE_32Bit 					= 200
 DATATYPE_Struct 				= 100
-memory_addresses = { //WIP mem
+memory_addresses = {
 	//	"DATATYPE_xxxxx": {
 	//		"Template": {GAMEREGION_USA: sNULL, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: sNULL},
 	//	}
@@ -317,7 +317,7 @@ DATETIME_Present = 100
 const_DateTime_memAddr = { 
 	DATETIME_Present: {
 		GAMEREGION_USA: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", GAMEREGION_USA),
-		GAMEREGION_EUR: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", GAMEREGION_JPN),
+		GAMEREGION_JPN: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", GAMEREGION_JPN),
 	}}
 
 function current_DateTime_Seconds(enum_dateTime, enum_region) =>
@@ -1368,14 +1368,9 @@ function on_TitleMenu_render(enum_gameRegion) {
 		let_memAccessor_IsInGame == 0 && 
 		prev(let_memAccessor_IsInGame) > 0}
 
-// ***************
-// ◦ OTHER LOGIC ◦
-// ***************
-function is_GameBootedUp(enum_gameRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", enum_gameRegion))
-	return 
-		bit0(let_maskedPointer + 0x4) == 1}
-
+// **************
+// ◦ VIDEO DATA ◦
+// **************
 function is_Video_active(enum_gameRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "VideoData", enum_gameRegion))
 	return 
@@ -2253,7 +2248,7 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				none_of(let_pauseComparisonArray, (comparison) => comparison)
 			)
 		}}
-	return // WIP
+	return
 		unless(is_Loading(enum_gameRegion)) &&
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_gameRegion) &&
 		measured(
@@ -2484,7 +2479,6 @@ achievements_triggers = {
 			!is_InGame(GAMEREGION_USA) ||
 			is_EventViewer_active(GAMEREGION_USA)	
 		) &&
-		is_PlayerPosition_Xaxis_Near(40) &&
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				unless(!is_Chapter(CHAPTER_Prologue, GAMEREGION_USA)) &&
@@ -4754,7 +4748,7 @@ achievements_triggers = {
 	}
 
 // ********************
-// • Achievement TEXT •
+// • Achievements TEXT •
 // ********************
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
@@ -5013,12 +5007,13 @@ function achievements_initialize() {
 // • RichPresence FUNCTIONS •
 // **************************
 //	- Functions that should only be used by the rich presence script
-function is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) {
-	return
-		0 < current_ChapterID(enum_gameRegion) && 	// Prologue starts at 0x1
-		current_ChapterID(enum_gameRegion) <= 0xb} 	// Epilogue ends at 0xb
-function is_ChapterOneOf(array_chapterIds, enum_gameRegion) {
-	any_of(array_chapterIds, (chapterId) => is_Chapter(chapterId, enum_gameRegion))}
+function is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) => 
+	0 < current_ChapterID(enum_gameRegion) && 	// Prologue starts at 0x1
+	current_ChapterID(enum_gameRegion) <= 0xb 	// Epilogue ends at 0xb
+
+function is_ChapterOneOf(array_chapterEnums, enum_gameRegion) =>
+	any_of(array_chapterEnums, (enum_chapter) => is_Chapter(enum_chapter, enum_gameRegion))
+
 // *********************
 // • RichPresence TEXT •
 // *********************
@@ -5032,7 +5027,8 @@ richPresence_text = {
 	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} 🕑 {5} | Completion: {6}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen | Completion {0}%"},
 
-	"rp_Default":										{"en": "Wandering Lebensbaum | Completion {0}%"}}
+	"rp_DefaultPlus":									{"en": "Wandering Lebensbaum | Completion {0}%"},	
+	"rp_Default":										{"en": "Wandering Lebensbaum"}}
 richPresence_LookupTablesText = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
@@ -5106,15 +5102,15 @@ richPresence_lookupTables = {
 		get_ChapterID(CHAPTER_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
-// **************************
-// • RichPresence CORE DATA •
-// ************************** // TODO implement rich presence + leaderboards for JPN
+// *************************
+// • RichPresence DISPLAYS •
+// ************************* // TODO implement rich presence + leaderboards for JPN
 //	- Contains logic data for the rich presence script
-function richPresence_callDisplayFunctions(){	
-
-	function rp_isPaused(enum_gameRegion) { // DISABLED // VERIFIED not as elegant inside rich presence; !! IF !! turning back on re-check richPresence_conditions, some other conditions need changing
+function richPresence_callDisplayFunctions() { 
+	function rp_isPaused(enum_gameRegion) { // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on: re-check other richPresence conditions, some other conditions need changing
 		function condition(enum_gameRegion) => 
-			is_InGame(enum_gameRegion) && is_InGamePauseMenu_active(enum_gameRegion)
+			is_InGame(enum_gameRegion) && 
+			is_InGamePauseMenu_active(enum_gameRegion)
 		rich_presence_conditional_display(
 			condition(enum_gameRegion),
 			richPresence_getText("rp_isPaused"),
@@ -5129,9 +5125,11 @@ function richPresence_callDisplayFunctions(){
 
 	function rp_InGameEXChapterOnly(enum_gameRegion) { // VERIFIED
 		function condition(enum_gameRegion) => 
-			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
-			is_PrologueExMode_active(enum_gameRegion) && is_ExChapter_unlocked(enum_gameRegion) && 
+			is_InGame(enum_gameRegion) && 
 			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
+			is_PrologueExMode_active(enum_gameRegion) && 
+			is_ExChapter_unlocked(enum_gameRegion) &&
+			is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
 			is_Chapter(CHAPTER_Prologue, enum_gameRegion)
 		rich_presence_conditional_display(
 			condition(enum_gameRegion),
@@ -5145,12 +5143,15 @@ function richPresence_callDisplayFunctions(){
 	rp_InGameEXChapterOnly(GAMEREGION_USA)
 	rp_InGameEXChapterOnly(GAMEREGION_JPN)
 	
-	funtion rp_InGameChapterOnly(enum_gameRegion) { // VERIFIED
-		function condition(enum_gameRegion) => 
-			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+	function rp_InGameChapterOnly(enum_gameRegion) { // VERIFIED
+		function condition(enum_gameRegion) =>  
+			is_InGame(enum_gameRegion) &&
 			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
 			!is_PrologueExMode_active(enum_gameRegion) && 
-			is_ChapterOneOf([CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue], enum_gameRegion)
+			is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+			is_ChapterOneOf([
+					CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue
+				], enum_gameRegion)			
 		rich_presence_conditional_display(	
 			condition(enum_gameRegion),
 			richPresence_getText("rp_InGameChapterOnly"),
@@ -5166,8 +5167,10 @@ function richPresence_callDisplayFunctions(){
 
 	function rp_InGameChapterWithTimePeriod(enum_gameRegion) { // VERIFIED
 		function condition(enum_gameRegion) { return
-			is_InGame(enum_gameRegion) && is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
+			is_GameRegion(enum_gameRegion) &&
+			is_InGame(enum_gameRegion) && 
 			// !is_InGamePauseMenu_active(enum_gameRegion) &&	// <-- commented as long as rp_isPaused is disabled
+			is_ChapterIdInRangeOfRecordedIds(enum_gameRegion) && 
 			is_ChapterOneOf([
 					CHAPTER_Chapter2, CHAPTER_Chapter3, 
 					CHAPTER_Chapter4, CHAPTER_Chapter5, 
@@ -5189,8 +5192,10 @@ function richPresence_callDisplayFunctions(){
 
 	function rp_AtTitleScreen(enum_gameRegion) { // VERIFIED
 		function condition(enum_gameRegion) { return
-			is_GameBootedUp(enum_gameRegion) && 
-			(is_TitleMenu_active(enum_gameRegion) || !is_InGame(enum_gameRegion))}
+			is_GameRegion(enum_gameRegion) &&
+			(
+				is_TitleMenu_active(enum_gameRegion) || !is_InGame(enum_gameRegion)
+			)}
 		rich_presence_conditional_display( 
 			condition(enum_gameRegion),
 			richPresence_getText("rp_AtTitleScreen"),
@@ -5199,18 +5204,63 @@ function richPresence_callDisplayFunctions(){
 	rp_AtTitleScreen(GAMEREGION_USA)
 	rp_AtTitleScreen(GAMEREGION_JPN)
 
-	function rp_Default(enum_gameRegion) { // VERIFIED
-		rich_presence_display(	
-			richPresence_getText("rp_Default"),			
+	function rp_DefaultPlus(enum_gameRegion) { // UNVERIFIED
+		function condition(enum_gameRegion) =>
+			is_GameRegion(enum_gameRegion) &&
+			!is_TitleMenu_active(enum_gameRegion) &&
+			!is_InGame(enum_gameRegion)
+		rich_presence_conditional_display( 
+			condition(enum_gameRegion),
+			richPresence_getText("rp_DefaultPlus"),
 			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_gameRegion)
 		)}
-	rp_Default(GAMEREGION_USA)
-	rp_Default(GAMEREGION_JPN)}
+	rp_DefaultPlus(GAMEREGION_USA)
+	rp_DefaultPlus(GAMEREGION_JPN)
 
-// ----------------ParameterData---------------------
+	function rp_Default() { // VERIFIED
+		rich_presence_display(	
+			richPresence_getText("rp_Default")
+		)}
+	rp_Default() // rp_DefaultPlus => can be used instead when offering multi-region support AND using placeholder in text 
+}
+// **************************
+// • RichPresence PARAMETERS •
+// ************************** 
 richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_LOOKUP = 2	// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+// -------------------------------------
+function rpp_Chapter(enum_gameRegion) { return
+	current_ChapterID(enum_gameRegion)}
+
+function rpp_TimePeriod(enum_gameRegion) { return
+	current_TimePeriod(enum_gameRegion)}
+
+function rpp_TotalCompletionRate(enum_gameRegion) { return
+	getTotalAchievementRate(enum_gameRegion)}
+
+function rpp_PresentTimeSeconds(enum_gameRegion) { return
+	current_DateTime_Seconds(DATETIME_Present, enum_gameRegion)}
+
+function rpp_PresentTimeMinutes(enum_gameRegion) { return
+	current_DateTime_Minutes(DATETIME_Present, enum_gameRegion)}
+
+function rpp_PresentTimeHourMinutes(enum_gameRegion) { return
+	(current_DateTime_Minutes(DATETIME_Present, enum_gameRegion) + current_DateTime_Hours(DATETIME_Present, enum_gameRegion) * 60)}
+
+function rpp_PresentTimeHours(enum_gameRegion) { return
+	current_DateTime_Hours(DATETIME_Present, enum_gameRegion)}
+
+function rpp_PresentTimeYears(enum_gameRegion) { return
+	current_DateTime_Years(DATETIME_Present, enum_gameRegion)}
+
+function rpp_PresentTimeDays(enum_gameRegion) { return
+	current_DateTime_Days(DATETIME_Present, enum_gameRegion)}
+
+function rpp_FatedHour(enum_gameRegion) =>
+	current_ChapterID(enum_gameRegion)
+
+// -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
 	// 		- Expression examples:
@@ -5222,45 +5272,94 @@ richPresence_parameterData = {
 
 	"rpp_Chapter": {
 		"RPtype": richPresence_LOOKUP,
-		"Expression": current_ChapterID(GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_Chapter(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_Chapter(GAMEREGION_JPN)},
 		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
 	"rpp_TimePeriod": {	
 		"RPtype": richPresence_LOOKUP,
-		"Expression": current_TimePeriod(GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_TimePeriod(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_TimePeriod(GAMEREGION_JPN)},
 		"LookupFallback": richPresence_getLookupTableText("rpp_TimePeriod", "LookupFallback")},
 	"rpp_TotalCompletionRate": {
 		"RPtype": richPresence_MACRO,
-		"Expression": getTotalAchievementRate(GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_TotalCompletionRate(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_TotalCompletionRate(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeSeconds": {
 		"RPtype": richPresence_MACRO,
-		"Expression": current_DateTime_Seconds(DATETIME_Present, GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeSeconds(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeSeconds(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeMinutes": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": current_DateTime_Minutes(DATETIME_Present, GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeMinutes(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeMinutes(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},	
 	"rpp_PresentTimeHourMinutes": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": (current_DateTime_Minutes(DATETIME_Present, GAMEREGION_USA) + current_DateTime_Hours(DATETIME_Present, GAMEREGION_USA) * 60),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeHourMinutes(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeHourMinutes(GAMEREGION_JPN)},
 		"MacroFormat": "Minutes"},
 	"rpp_PresentTimeHours": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": current_DateTime_Hours(DATETIME_Present, GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeHours(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeHours(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeYears": {	
 		"RPtype": richPresence_MACRO,
-		"Expression": current_DateTime_Years(DATETIME_Present, GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeYears(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeYears(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_PresentTimeDays": {
 		"RPtype": richPresence_MACRO,
-		"Expression": current_DateTime_Days(DATETIME_Present, GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_PresentTimeDays(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_PresentTimeDays(GAMEREGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_FatedHour": {
 		"RPtype": richPresence_LOOKUP,
-		"Expression": current_ChapterID(GAMEREGION_USA),
+		"Expression": {
+			GAMEREGION_USA: () => rpp_FatedHour(GAMEREGION_USA), 
+			GAMEREGION_JPN: () => rpp_FatedHour(GAMEREGION_JPN)},
 		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
-	}	
+	}
+// -------------------------------------
+function richPresence_createParameterName(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function richPresence_callParameterFunction(string_parameterKey, enum_gameRegion) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in richPresence_parameterData
+	function richPresence_callValueFunction(string_parameterKey, dict_paramValueData, enum_gameRegion) {
+		let_name = richPresence_createParameterName(string_parameterKey)
+		let_expression = dict_paramValueData["Expression"][enum_gameRegion]
+		let_format = dict_paramValueData["ValueFormat"] 
+		return rich_presence_value(let_name, let_expression, let_format)}
+	
+	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_gameRegion) {
+		let_name = richPresence_createParameterName(string_parameterKey)
+		let_expression = dict_paramLookupData["Expression"][enum_gameRegion]
+		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+	
+	function richPresence_callMacroFunction(dict_paramMacroData, enum_gameRegion) {
+		let_macro = dict_paramMacroData["MacroFormat"] 
+		let_expression = dict_paramMacroData["Expression"][enum_gameRegion]
+		return rich_presence_macro(let_macro, let_expression)}
+
+	let_parameterData = richPresence_parameterData[string_parameterKey]
+	let_RPtype = let_parameterData["RPtype"]
+	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_gameRegion)
+	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_gameRegion)
+	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData, enum_gameRegion)
+	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
+	}
+
 // *****************************
 // • RichPresence INITIALIZER •
 // *****************************
@@ -5272,33 +5371,6 @@ function richPresence_populateLookupTables() {	// Changes the richPresence_looku
 			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
 		}
 	}}
-function richPresence_createParameterName(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
-function richPresence_callParameterFunction(string_parameterKey) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in richPresence_parameterData
-	function richPresence_callValueFunction(string_parameterKey, dict_paramValueData) {
-		let_name = richPresence_createParameterName(string_parameterKey)
-		let_expression = dict_paramValueData["Expression"]
-		let_format = dict_paramValueData["ValueFormat"] 
-		return rich_presence_value(let_name, let_expression, let_format)}
-	
-	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData) {
-		let_name = richPresence_createParameterName(string_parameterKey)
-		let_expression = dict_paramLookupData["Expression"]
-		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
-		let_lookupFallback = dict_paramLookupData["LookupFallback"]
-		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
-	
-	function richPresence_callMacroFunction(dict_paramMacroData) {
-		let_macro = dict_paramMacroData["MacroFormat"] 
-		let_expression = dict_paramMacroData["Expression"]
-		return rich_presence_macro(let_macro, let_expression)}
-
-	let_parameterData = richPresence_parameterData[string_parameterKey]
-	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData)
-	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData)
-	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
-	}
 
 function richPresence_initialize() {
 	richPresence_populateLookupTables()
@@ -5326,9 +5398,6 @@ function richPresence_initialize() {
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
 	// -----------------------------
-	//	- WARNING: Make sure leaderboards are thoroughly tested, because there's no staging phase for these
-	//		-- Change title and description via Dev menu on RA game page => Manage Leaderboards
-	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
 	//	- RATools documentation => https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions
 	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
 	//	- Example leaderboards => https://retroachievements.org/game/3152
@@ -5341,52 +5410,42 @@ leaderboards_coreData = {
 
 	"lb_ClearTimeChapter8": { // VERIFIED 
 		"id": 92203, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter7": { // VERIFIED 
 		"id": 92202, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter6": { // VERIFIED 
 		"id": 92201, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter5": { // VERIFIED 
 		"id": 92200, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter4": { // VERIFIED 
 		"id": 92199, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter3": { // VERIFIED 
 		"id": 92198, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter2": { // VERIFIED 
 		"id": 92197, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimeChapter1": { // VERIFIED 
 		"id": 92196, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in corresponding chapter"},
 	"lb_ClearTimePrologue": { // VERIFIED 
 		"id": 92195, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA),
 		"leaderboardFormat": "SECS",
 		"devInfo": "Best Clear Time in prologue, excluding EX chapter"},
 	"lb_TotalClearTime": { // VERIFIED 
 		"id": 92194, "isLowerBetter": true,
-		"leaderboardValue": get_Timer_TotalClearTime_InMinutes(GAMEREGION_USA),
 		"leaderboardFormat": "MINUTES",
 		"devInfo": "Best Total Clear Time, excluding EX chapter"}}
 
@@ -5394,110 +5453,194 @@ leaderboards_coreData = {
 // ▴ Leaderboards TRIGGER GENERATORS ▴
 // ************************************
 //	- For leaderboard logic that's reoccuring across multiple triggers
-function leaderboards_generate_ClearTimeChapter_StartTrigger(enum_chapter) {
-	let_chapterSpecificComparison = always_true()
-	if (enum_chapter == CHAPTER_Prologue) 
-		let_chapterSpecificComparison = !is_PrologueExMode_active(GAMEREGION_USA)
+function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter) {
+	function trigger(enum_chapter, enum_gameRegion) {
+		let_chapterSpecificComparison = always_true()
+		if (enum_chapter == CHAPTER_Prologue) 
+			let_chapterSpecificComparison = !is_PrologueExMode_active(enum_gameRegion)
+		return 
+			unless(!is_GameRegion(enum_gameRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			never(!is_InGame(enum_gameRegion)) &&
+			once(on_Timer_ChapterClearTime_start(enum_gameRegion)) &&
+			repeated(500, 						// <-- Delay FIX for leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
+				is_InGame(enum_gameRegion) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, both Total and chapter clear time pop and same time otherwise
+				is_Chapter(enum_chapter, enum_gameRegion)
+			) &&
+			let_chapterSpecificComparison					
+		}													
+	return
+		trigger(enum_chapter, GAMEREGION_USA) ||
+		trigger(enum_chapter, GAMEREGION_JPN)}
+	
+function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter) {
+	function trigger(enum_chapter, enum_gameRegion) {
+		let_chapterSpecificComparison = always_false()
+		if (enum_chapter == CHAPTER_Prologue)
+			let_chapterSpecificComparison = is_PrologueExMode_active(enum_gameRegion)
+		return 	
+			is_GameRegion(enum_gameRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
+			(
+				!is_InGame(enum_gameRegion) 	|| 
+				let_chapterSpecificComparison 	|| 
+				on_Timer_ChapterClearTime_reset(enum_gameRegion) ||
+				!is_Chapter(enum_chapter, enum_gameRegion)
+			)}
+	return
+		trigger(enum_chapter, GAMEREGION_USA) ||
+		trigger(enum_chapter, GAMEREGION_JPN)}
+
+function leaderboards_generate_SubmitTrigger_ClearTimeChapter(enum_chapter) {
+	function trigger(enum_chapter, enum_gameRegion) => 
+		is_GameRegion(enum_gameRegion) &&
+		on_ChapterCompletionMenu_render(enum_gameRegion) &&
+		is_Chapter(enum_chapter, enum_gameRegion)
 	return 
-		never(!is_InGame(GAMEREGION_USA)) &&
-		once(on_Timer_ChapterClearTime_start(GAMEREGION_USA)) &&
-		is_Chapter(enum_chapter, GAMEREGION_USA) &&
-		repeated(700, is_InGame(GAMEREGION_USA)) &&	// <-- Delay FIX for bug when loading a save from chapter start, would start and cancel immediately
-		let_chapterSpecificComparison}	//		+ better visual feedback to indicate minutes timer is for chapter clear time, 
-										//			both Total and chapter clear time pop and same time otherwise
-function leaderboards_generate_ClearTimeChapter_CancelTrigger(enum_chapter) {
-	let_chapterSpecificComparison = always_false()
-	if (enum_chapter == CHAPTER_Prologue)
-		let_chapterSpecificComparison = is_PrologueExMode_active(GAMEREGION_USA)
-	return 	
-		!is_InGame(GAMEREGION_USA) 						|| 
-		let_chapterSpecificComparison 		|| 
-		on_Timer_ChapterClearTime_reset(GAMEREGION_USA) 	||
-		!is_Chapter(enum_chapter, GAMEREGION_USA)}
-function leaderboards_generate_ClearTimeChapter_SubmitTrigger(enum_chapter) =>
-	on_ChapterCompletionMenu_render(GAMEREGION_USA) &&
-	is_Chapter(enum_chapter, GAMEREGION_USA)
+		trigger(enum_chapter, GAMEREGION_USA) ||
+		trigger(enum_chapter, GAMEREGION_JPN)}
+
+function leaderboards_generate_ValueMeasure_ClearTimeChapter() {
+	// DEV_NOTE: Leaderboards - Value
+	// -----------------------------
+	//	- 'Value' can be seen as a special trigger. A trigger like submit, cancel and start. But must have a "measured" flag
+	//	- use max_of() --> when there's multiple value's to measure
+	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
+		
+	return 
+		max_of(
+			measured(get_Timer_ChapterClearTime_InSeconds(GAMEREGION_USA), when = is_GameRegion(GAMEREGION_USA)),
+			measured(get_Timer_ChapterClearTime_InSeconds(GAMEREGION_JPN), when = is_GameRegion(GAMEREGION_JPN))
+		)
+	}
 
 // *************************
 // • Leaderboards TRIGGERS •
 // *************************
 leaderboards_startTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter8),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter7),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter6),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter5),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter4),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter3),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter2),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Chapter1),
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_StartTrigger(CHAPTER_Prologue),
-	"lb_TotalClearTime": () =>
-		never(!is_InGame(GAMEREGION_USA)) &&
-		once(on_Timer_TotalClearTime_start(GAMEREGION_USA)) 	&&
-		repeated(300, is_InGame(GAMEREGION_USA)) &&	// <-- delay popup 
-		!is_PrologueExMode_active(GAMEREGION_USA)}
+		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Prologue),
+	"lb_TotalClearTime": () {
+		function trigger(enum_gameRegion) => 
+			unless(!is_GameRegion(enum_gameRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			never(!is_InGame(enum_gameRegion)) &&
+			once(on_Timer_TotalClearTime_start(enum_gameRegion)) &&
+			repeated(100, is_InGame(enum_gameRegion)) && // <-- delay popup 
+			!is_PrologueExMode_active(enum_gameRegion)
+		return	
+			trigger(GAMEREGION_USA) ||
+			trigger(GAMEREGION_JPN)}
+	}
 leaderboards_cancelTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter8),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter7),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter6),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter5),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter4),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter3),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter2),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Chapter1),
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_CancelTrigger(CHAPTER_Prologue),
-	"lb_TotalClearTime": () =>
-		!is_InGame(GAMEREGION_USA) || is_PrologueExMode_active(GAMEREGION_USA) || on_Timer_TotalClearTime_reset(GAMEREGION_USA)}
+		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Prologue),
+	"lb_TotalClearTime": () {
+		function trigger(enum_gameRegion) =>		
+			is_GameRegion(enum_gameRegion) &&
+			(
+				!is_InGame(enum_gameRegion) || 
+				is_PrologueExMode_active(enum_gameRegion) || 
+				on_Timer_TotalClearTime_reset(enum_gameRegion)
+			)
+		return
+			trigger(GAMEREGION_USA) ||
+			trigger(GAMEREGION_JPN)}
+	}
 leaderboards_submitTriggers = {
 	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter8),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter8),
 	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter7),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter7),
 	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter6),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter6),
 	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter5),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter5),
 	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter4),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter4),
 	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter3),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter3),
 	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter2),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter2),
 	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Chapter1),
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter1),
 	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ClearTimeChapter_SubmitTrigger(CHAPTER_Prologue),
-	"lb_TotalClearTime": () =>
-		is_InGame(GAMEREGION_USA) &&
-		(
-			(		// Alt 1 => Trigger when credits video starts
-				on_Video_start(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue, GAMEREGION_USA)
-			) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
-				never(!on_Timer_TotalClearTime_valueChange(GAMEREGION_USA) && !is_Video_active(GAMEREGION_USA)) &&
-				tally(20, 
-					is_Video_active(GAMEREGION_USA) && is_Chapter(CHAPTER_Epilogue, GAMEREGION_USA) &&
-					!on_Timer_TotalClearTime_valueChange(GAMEREGION_USA))
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Prologue),
+	"lb_TotalClearTime": () {
+		function trigger(enum_gameRegion) =>
+			unless(!is_GameRegion(enum_gameRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			is_InGame(enum_gameRegion) &&
+			(
+				(		// Alt 1 => Trigger when credits video starts
+					on_Video_start(enum_gameRegion) && is_Chapter(CHAPTER_Epilogue, enum_gameRegion)
+				) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
+					never(!on_Timer_TotalClearTime_valueChange(enum_gameRegion) && !is_Video_active(enum_gameRegion)) &&
+					tally(20, 
+						is_Video_active(enum_gameRegion) && is_Chapter(CHAPTER_Epilogue, enum_gameRegion) &&
+						!on_Timer_TotalClearTime_valueChange(enum_gameRegion))
+				)
 			)
-		)}
-
+		return
+			trigger(GAMEREGION_USA) ||
+			trigger(GAMEREGION_JPN)}
+	}
+leaderboards_valueMeasures = {
+	"lb_ClearTimeChapter8": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter7": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter6": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter5": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter4": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter3": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter2": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimeChapter1": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_ClearTimePrologue": () =>
+		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+	"lb_TotalClearTime": () {
+		function valueMeasure(enum_gameRegion) =>
+			measured(get_Timer_TotalClearTime_InMinutes(enum_gameRegion), when = is_GameRegion(enum_gameRegion))
+		return
+			max_of(
+				valueMeasure(GAMEREGION_USA),
+				valueMeasure(GAMEREGION_JPN)
+			)}
+	}
 // *********************
 // • Leaderboards TEXT •
 // *********************
@@ -5566,7 +5709,7 @@ function leaderboards_initialize() {
 			start = leaderboards_startTriggers[let_leaderboardKey], 
 			cancel = leaderboards_cancelTriggers[let_leaderboardKey], 
 			submit = leaderboards_submitTriggers[let_leaderboardKey], 
-			value = let_leaderboardData["leaderboardValue"], 
+			value = leaderboards_valueMeasures[let_leaderboardKey],
 			format = let_leaderboardData["leaderboardFormat"], 
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
