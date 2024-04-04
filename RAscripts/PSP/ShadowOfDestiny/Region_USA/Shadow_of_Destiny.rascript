@@ -114,7 +114,36 @@ function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 GAMEREGION_USA = "NTSC-U/C"
 GAMEREGION_EUR = "PAL"
 GAMEREGION_JPN = "NTSC-J"
+memory_gameRegionIdentifiers = { // Memory Addresses which can be used to ID the game region, should be the largest size possible (32bit) to be 100% sure of game region ID
+	"A": {1: 0xaa299c, 2: 0xaaa4ec},
+	"B": {1: 0x8fbef0, 2: 0x8ffef0}}
 
+function is_GameRegion(enum_gameRegion) {
+	function identifyWithA(enum_gameRegion) {
+		if(enum_gameRegion == GAMEREGION_USA) {	return
+			dword(memory_gameRegionIdentifiers["A"][1]) != 0 &&
+			dword(memory_gameRegionIdentifiers["A"][2]) == 0
+		} else if(enum_gameRegion == GAMEREGION_JPN) { return
+			dword(memory_gameRegionIdentifiers["A"][1]) == 0 &&
+			dword(memory_gameRegionIdentifiers["A"][2]) != 0
+		} else {
+			util_throwError(format("Game region '{0}' is not supported", enum_gameRegion))
+		}}
+	
+	function identifyWithB(enum_gameRegion) {
+		if(enum_gameRegion == GAMEREGION_USA) {	return
+			dword(memory_gameRegionIdentifiers["B"][1]) == 0xffffffff &&
+			dword(memory_gameRegionIdentifiers["B"][2]) != 0xffffffff	
+		} else if(enum_gameRegion == GAMEREGION_JPN) { return
+			dword(memory_gameRegionIdentifiers["B"][1]) != 0xffffffff &&
+			dword(memory_gameRegionIdentifiers["B"][2]) == 0xffffffff
+		} else {
+			util_throwError(format("Game region '{0}' is not supported", enum_gameRegion))
+		}}
+
+	identifyWithA(enum_gameRegion)}  // A or B, optional choices to identify game region
+
+// -------------------------------------
 DATATYPE_BitFlag 				= 700
 DATATYPE_4Bit 					= 600
 DATATYPE_8Bit 					= 500
@@ -175,7 +204,6 @@ memory_addresses = {
 		"NPCinteractionID": {GAMEREGION_USA: 0xa9efdc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6b2c},
 		"ExtraMenuNavigation": {GAMEREGION_USA: 0xac3170, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xacacb0},
 		"EndingFileData": {GAMEREGION_USA: 0xac3178, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xacacb8},
-		"GameRegionIdentifier": {GAMEREGION_USA: 0xaa2998, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaaa4e8},
 		"Cutscene_MasterData": {GAMEREGION_USA: 0xa9ecc8, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6818},
 		"Cutscene_SectionData": {GAMEREGION_USA: 0xa9eccc, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa681c},
 		"Cutscene_MinorIDs": {GAMEREGION_USA: 0xa9ecd4, GAMEREGION_EUR: sNULL, GAMEREGION_JPN: 0xaa6824},
@@ -244,19 +272,6 @@ function memory_initialize() { // memory_initialize: is called in initialization
 // ******************
 // • Memory UTILITY •
 // ******************
-function is_GameRegion(enum_gameRegion) {
-	let_memAddrPtrUSA = memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", GAMEREGION_USA)
-	let_memAddrPtrJPN = memory_getAddress(DATATYPE_25BitPointer, "GameRegionIdentifier", GAMEREGION_JPN)
-	let_comparison_isUSA = bit0(memUtil_maskPointer(let_memAddrPtrUSA) + 0x4) == 1 	
-	let_comparison_isJPN = bit0(memUtil_maskPointer(let_memAddrPtrJPN) + 0x4) == 1 
-	if(enum_gameRegion == GAMEREGION_USA) { return 
-		let_comparison_isUSA && !let_comparison_isJPN
-	} else if (enum_gameRegion == GAMEREGION_JPN) { return
-		!let_comparison_isUSA && let_comparison_isJPN
-	} else {
-		util_throwError(format("Game region '{0}' does not exist", enum_gameRegion))
-	}}
-
 // memUtil_floatToInt: will return an integer from the floored float value => refer to https://docs.retroachievements.org/AddSource-Flag/#interaction-with-floats
 	// 	- RAtools will clean => 	```0 + float(0xaa) + 0´´´	 -->	```float(0xa)´´´
 	// 	- Workaround is the following => 	```byte(memAddr_WhereValueNeverChanges) + float(0xa) + byte(memAddr_WhereValueNeverChanges)´´´
@@ -2178,43 +2193,61 @@ achievements_typeByCategory = {
 // • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter, enum_gameRegion) {
+function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
-	let_array_bitsets = const_percentageBitsets[enum_chapter][enum_gameRegion]
-	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
-	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+	function trigger(enum_chapter, enum_gameRegion) {
+		let_array_bitsets = const_percentageBitsets[enum_chapter][enum_gameRegion]
+		let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+		let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+	
+		let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+		let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+	
+		let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+		let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
 
-	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-	let_comparison_CurrentValues = let_expression_arithmeticSumOf == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
-
-	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-	let_comparison_DeltaValues = let_expression_arithmeticSumOf < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
-
+		return
+			let_comparison_deltaInventoryCount && 
+			measured(let_comparison_currentInventoryCount, 
+				when = 
+					is_GameRegion(enum_gameRegion) &&
+					is_InGame(enum_gameRegion) && 
+					is_Chapter(enum_chapter, enum_gameRegion), 
+				format = "percent")
+		}
 	return 
-		is_GameRegion(enum_gameRegion) &&
-		let_comparison_DeltaValues && 
-		measured(let_comparison_CurrentValues, when = is_Chapter(enum_chapter, enum_gameRegion) && is_InGame(enum_gameRegion), format = "percent")
+		trigger(enum_chapter, GAMEREGION_USA) ||
+		trigger(enum_chapter, GAMEREGION_JPN)
 	}
 
-function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_gameRegion) {
-	let_array_bitsets = memUtil_allPercentageBitsetsToOneArray(enum_gameRegion)
-	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
-	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
-
-	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-	let_comparison_CurrentValues = let_expression_arithmeticSumOf == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
-
-	let_expression_arithmeticSumOf = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-	let_comparison_DeltaValues = let_expression_arithmeticSumOf < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
-
+function achievements_generate_FullTrigger_TotalMaxAchievementRate() {
+	function trigger(enum_gameRegion) {
+		let_array_bitsets = memUtil_allPercentageBitsetsToOneArray(enum_gameRegion)
+		let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+		let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+	
+		let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+		let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+	
+		let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+		let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+	
+		return 
+			let_comparison_deltaInventoryCount && 
+			measured(let_comparison_currentInventoryCount,
+				when = 
+					is_GameRegion(enum_gameRegion) &&
+					is_InGame(enum_gameRegion), 
+				format = "percent")
+		}
 	return 
-		is_GameRegion(enum_gameRegion) &&
-		let_comparison_DeltaValues && 
-		measured(let_comparison_CurrentValues, when = is_InGame(enum_gameRegion), format = "percent")}
+		trigger(GAMEREGION_USA) || 
+		trigger(GAMEREGION_JPN)
+	}
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum_gameRegion) {
 	function create_TallyComparisonArray(enum_timePeriod, enum_gameRegion) {
 		let_tallyComparisonArray = []
@@ -2909,72 +2942,28 @@ achievements_triggers = {
 			on_Chapter_finish(CHAPTER_Chapter8_Ancestress, GAMEREGION_USA) ||
 			on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, GAMEREGION_USA)
 		)},
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter1": function MaxAchievementChapter1() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter2": function MaxAchievementChapter2() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter3": function MaxAchievementChapter3() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter4": function MaxAchievementChapter4() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter5": function MaxAchievementChapter5() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter6": function MaxAchievementChapter6() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter7": function MaxAchievementChapter7() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementChapter8": function MaxAchievementChapter8() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() {	return 
-		(
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue, GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue, GAMEREGION_JPN)
-		)},
-	"a_MaxAchievementTotal": function MaxAchievementTotal() { return 
-		(
-			achievements_generate_FullTrigger_TotalMaxAchievementRate(GAMEREGION_USA)
-		) || (
-			achievements_generate_FullTrigger_TotalMaxAchievementRate(GAMEREGION_JPN)
-		)},
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue),
+	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1),
+	"a_MaxAchievementChapter2": function MaxAchievementChapter2() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2),
+	"a_MaxAchievementChapter3": function MaxAchievementChapter3() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3),
+	"a_MaxAchievementChapter4": function MaxAchievementChapter4() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4),
+	"a_MaxAchievementChapter5": function MaxAchievementChapter5() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5),
+	"a_MaxAchievementChapter6": function MaxAchievementChapter6() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6),
+	"a_MaxAchievementChapter7": function MaxAchievementChapter7() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7),
+	"a_MaxAchievementChapter8": function MaxAchievementChapter8() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8),
+	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() =>  
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue),
+	"a_MaxAchievementTotal": function MaxAchievementTotal() =>  
+		achievements_generate_FullTrigger_TotalMaxAchievementRate(),
 	"a_EndingA": function EndingA() { return
 		never(
 			!is_InGame(GAMEREGION_USA) 			||
@@ -4621,14 +4610,14 @@ achievements_triggers = {
 				unless(
 					!is_LargeCutscene_active(GAMEREGION_USA)
 				) &&
-				once(	// Identifies Cutscene => Eike wakes himself up					
+				once(	// Identifies Cutscene => Eike wakes himself up
 					is_Cutscene_MasterId(0x9c00, GAMEREGION_USA)		&&
 					is_Cutscene_MasterDataId(0x9bf0, GAMEREGION_USA)	&&
 					is_Cutscene_SectionDataId(0x9bf0, GAMEREGION_USA)	&&
 					is_Cutscene_MinorId(0x9bf0, 0x28, GAMEREGION_USA) 	&&
 					is_Cutscene_MinorId(0xea70, 0x8, GAMEREGION_USA) 	
 				) && 
-				once(	// Identifies Cutscene => Eike wakes himself up
+				once(	// Identifies Cutscene => Talking with Homunculus in Limbo after death
 					is_Cutscene_MasterId(0x237c0, GAMEREGION_USA)		&& was_Cutscene_MasterId(0x9c00, GAMEREGION_USA) &&
 					is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
 					is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
@@ -4686,10 +4675,10 @@ achievements_triggers = {
 				is_MovieTimeTravel_chosen(GAMEREGION_USA)			&&
 				is_MovieWorldConquest_chosen(GAMEREGION_USA) 		&&				
 				is_Cutscene_MasterId(0x77980, GAMEREGION_USA)		&&
-				is_Cutscene_SectionId_1(0xa, GAMEREGION_USA)		&&
-				is_Cutscene_SectionId_2(0xb, GAMEREGION_USA)		&&
-				is_Cutscene_MasterDataId(0x2090, GAMEREGION_USA)	&&
-				is_Cutscene_SectionDataId(0x15d50, GAMEREGION_USA)
+				is_Cutscene_SectionId_1(0x1, GAMEREGION_USA)		&&
+				is_Cutscene_SectionId_2(0x0, GAMEREGION_USA)		&&
+				is_Cutscene_MasterDataId(0x59240, GAMEREGION_USA)	&&
+				is_Cutscene_SectionDataId(0x1e730, GAMEREGION_USA)
 			) && 
 			trigger_when(on_CutsceneSection_end(GAMEREGION_USA))},
 	"a_MetYouBefore": function MetYouBefore() { return
