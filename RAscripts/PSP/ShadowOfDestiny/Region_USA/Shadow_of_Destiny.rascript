@@ -13,6 +13,8 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
+// TODO add some leaderboards info to achievement guide
+
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -280,7 +282,6 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // ◦ PLAYER POSITION ◦
 // '''''''''''''''''''
 PLAYERPOSITION_NEAR_THRESHOLD = 2100.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
-
 function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
 	let_memAccessor_playerXpos = memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion)
 	return
@@ -356,7 +357,7 @@ function on_Timer_ChapterClearTime_start(enum_releaseRegion) =>
 function on_Timer_ChapterClearTime_reset(enum_releaseRegion) =>
 	current_ChapterClearTime(enum_releaseRegion) < prev_ChapterClearTime(enum_releaseRegion)
 // -------------------------------------
-function current_TotalClearTime(enum_releaseRegion) =>	// $AA1560: [32-bit] Current Playthrough Timer - Total Clear Time
+function current_TotalClearTime(enum_releaseRegion) =>
 	dword(memory_getAddress(DATATYPE_32Bit, "Timer_TotalClearTime", enum_releaseRegion))
 
 function prev_TotalClearTime(enum_releaseRegion) =>
@@ -660,7 +661,7 @@ const_NPCs_data = {
 					RELEASE_REGION_JPN: () => 0xA9EE3F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 1}}}
 	}
-function memory_initialize_NPCAppearances_releaseRegionJPN() { // This function should be called in memory_initialize()
+function memory_initialize_NPCAppearances_releaseRegionJPN() { // This function is called in memory_initialize()
 	let_offsetToJPN = memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")
 	for NPCkey in const_NPCs_data {
 		if (const_NPCs_data[NPCkey]["Appearance"] != iNULL) {
@@ -1271,7 +1272,6 @@ function on_BottomScreenText_remove(enum_releaseRegion) =>
 // ...............
 // ◦ ENERGY ORBS ◦
 // '''''''''''''''
-// - Some positional axes are set to NULL, because they're too close to the mid-line => value's change too fast close to it, so just check location based on other info
 // - positional value's are based on the player's position close to the orb (refer to notes @ 0xa8abd0)
 const_EnergyOrbs_data = {
 	TIMEPERIOD_Late20thCentury: {
@@ -1949,8 +1949,10 @@ function current_TotalAchievementRate(enum_releaseRegion) =>
 // =========================
 // • Memory INITIALIZATION •
 // =========================
-// - This code is for initializing memory addresses which have an offset to another regions memory addresses => lowers amount of hardcoding and chances on mistyping addresses
-function memory_initialize() { // memory_initialize() => should be called before RATools compiles achievements_triggers, because those triggers are compiled at that moment not inside achievements_initialize()
+//	- This code is for initializing memory addresses which have an offset to another regions memory addresses => lowers amount of hardcoding and chances on mistyping addresses
+//	- memory_initialize() => should be called before RATools compiles dictionary achievements_triggers, because those triggers access memory_addresses which might need to be initialized before usage.
+//		- Function calls/anonymous functions calls in a dictionary are run at compile time => therefor we need to memory_initialize() before they compile
+function memory_initialize() { 
 	function initialize_OtherRegions() { // initialize_OtherRegions() => use this when ALL memory addresses for a game region are offset by the same value
 		let_EUoffset = sNULL
 		let_JPoffset = sNULL
@@ -5510,9 +5512,6 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
-
-// TODO chapter leadersboard don't show up => start and submit on chapter completion => less RAoverlay clutter during gameplay
-// also do this for Total clear time?
 
 // ==========================
 // • Leaderboards CORE DATA •
