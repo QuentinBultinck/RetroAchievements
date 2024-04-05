@@ -2533,43 +2533,41 @@ achievements_triggers = {
 		)}),
 	"a_Chapter2Complete": function a_Chapter2Complete() { return
 		any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-			(
-				(	// Alt 1 => Normal way of identifying cutscenes
-					unless(
-						!is_ReleaseRegion(enum_releaseRegion) ||
+			(	// Alt 1 => Normal way of identifying cutscenes
+				unless(
+					!is_ReleaseRegion(enum_releaseRegion) ||
 
-						!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion) || // <-- Don't put this in reset, otherwise alt 2 can't trigger
-						!is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion)
-					) &&
-					never(
-						!is_InGame(enum_releaseRegion) ||
-						is_ExtraMenu_active(enum_releaseRegion)
-					) &&
-					once(	// Identifies Cutscene => reminiscing about Dana: left in the past
-						is_LargeCutscene_active(enum_releaseRegion) 			&&
-						is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
-						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
-						is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-						is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
-						is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
-					) &&
-					once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
-						is_LargeCutscene_active(enum_releaseRegion) 			&&
-						is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
-						is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
-						is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
-						is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-						is_Cutscene_MasterDataId(0x11240, enum_releaseRegion)	&&
-						is_Cutscene_SectionDataId(0x2b0, enum_releaseRegion)
-					) &&
-					on_Cutscene_end(enum_releaseRegion)
-				) || (	// Alt 2 => Failsafe; trigger on chapter change
-					is_ReleaseRegion(enum_releaseRegion) &&
-					is_InGame(enum_releaseRegion) &&
-					!is_ExtraMenu_active(enum_releaseRegion) &&
-					on_Chapter_finish(CHAPTER_Chapter2, enum_releaseRegion)
-				)
+					!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion) || // <-- Don't put this in reset, otherwise alt 2 can't trigger
+					!is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion)
+				) &&
+				never(
+					!is_InGame(enum_releaseRegion) ||
+					is_ExtraMenu_active(enum_releaseRegion)
+				) &&
+				once(	// Identifies Cutscene => reminiscing about Dana: left in the past
+					is_LargeCutscene_active(enum_releaseRegion) 			&&
+					is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
+					is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+					is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
+				) &&
+				once(	// Identifies Cutscene => stopping to smoke + turning around to see flowers/statue
+					is_LargeCutscene_active(enum_releaseRegion) 			&&
+					is_Cutscene_MasterId(0x3b240, enum_releaseRegion) 		&&
+					is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+					is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x11240, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x2b0, enum_releaseRegion)
+				) &&
+				on_Cutscene_end(enum_releaseRegion)
+			) || (	// Alt 2 => Failsafe; trigger on chapter change
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) &&
+				!is_ExtraMenu_active(enum_releaseRegion) &&
+				on_Chapter_finish(CHAPTER_Chapter2, enum_releaseRegion)
 			)
 		)},
 	"a_Chapter3Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -4071,39 +4069,40 @@ achievements_triggers = {
 				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
-	"a_BecomeThePerformer": function BecomeThePerformer() {	return
+	"a_BecomeThePerformer": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)				||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
-			on_Cutscene_MasterId_change(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			on_Cutscene_MasterId_change(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike gives himself a message as performer
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA) &&
-			is_SelectedItemInScrollBar(ITEM_Jugglery, RELEASE_REGION_USA) &&
-			is_WearingPerformerOutfit(RELEASE_REGION_USA)			&&
-			is_Cutscene_MasterId(0x1a300, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0xd440, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x3a00, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+			is_SelectedItemInScrollBar(ITEM_Jugglery, enum_releaseRegion) &&
+			is_WearingPerformerOutfit(enum_releaseRegion)			&&
+			is_Cutscene_MasterId(0x1a300, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0xd440, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x3a00, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_GiveMargaretteCake": function GiveMargaretteCake() { return 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_GiveMargaretteCake": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)				||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
-			!is_SelectedItemInScrollBar(ITEM_Cake, RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 1st time
-			is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-			is_Cutscene_MasterId(0x10b000, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0xadb40, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x5d4a0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Cake, enum_releaseRegion) && 
+			is_Cutscene_MasterId(0x10b000, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0xadb40, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x5d4a0, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_PerformerGoingExtraMile": function PerformerGoingExtraMile(){
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_PerformerGoingExtraMile": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(7, [
 				once(
@@ -4150,18 +4149,24 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x3a00, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) 					||
-				!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)	||
-				repeated(300, !is_WearingPerformerOutfit(RELEASE_REGION_USA))		// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() 
-			) &&												// 		changes to 0 for a few frames when loading into townhall/city 
-			measured(measuredComparison(RELEASE_REGION_USA), always_true()) &&	// 		=> we don't want to reset measure count here 
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA) || on_CutsceneSection_end(RELEASE_REGION_USA))}, // Can only trigger after the cutscene when giving egg to past Eike
-	"a_ScareEveryone": function ScareEveryone() {
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) ||
+				repeated(300, !is_WearingPerformerOutfit(enum_releaseRegion))	// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() changes to 0 for a few frames when loading from/into townhall/city 
+			) &&																// 			=> we don't want the measure count to reset in here 		
+			measured(measuredComparison(enum_releaseRegion)) &&			
+			trigger_when( // Can only trigger after the cutscene when giving egg to past Eike
+				on_Cutscene_end(enum_releaseRegion) || 
+				on_CutsceneSection_end(enum_releaseRegion)
+			)
+		}), 
+	"a_ScareEveryone": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
-					is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
+					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_Present_CafeSonne, enum_releaseRegion) &&
+					is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
 					is_Cutscene_MasterId(0x9000, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)	&&
 					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
@@ -4170,7 +4175,8 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0x5f80, 0x8, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x9000, 0x28, enum_releaseRegion)),
 				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4, instead of below cutscene
-					is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
+					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
+					is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
 					is_Cutscene_MasterId(0xc6e00, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
@@ -4179,7 +4185,8 @@ achievements_triggers = {
 					is_Cutscene_MinorId(0x2451a0, 0x8, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x55b0, 0x28, enum_releaseRegion)),
 				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4, instead of above cutscene
-					is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) &&
+					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
+					is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) &&
 					is_Cutscene_MasterId(0xa84c0, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
@@ -4187,96 +4194,91 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0xb220, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x2354f0, 0x8, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0xb220, 0x28, enum_releaseRegion)),
-				once(	// Identifies cutscene => scaring town planter
-					is_LargeCutscene_active(enum_releaseRegion) && 
+				once(	// Identifies cutscene => scaring town planter 
+					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_Cutscene_MasterId(0x98c0, enum_releaseRegion)		&&
-					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)	&&
+					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)		&&
 					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 					is_Cutscene_MasterDataId(0x9890, enum_releaseRegion)	&&
 					is_Cutscene_SectionDataId(0x9890, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0xcd30, 0x8, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x9890, 0x28, enum_releaseRegion)),
 				once(	// Identifies cutscene => scaring eccentric girl
-					is_SmallCutscene_active(enum_releaseRegion) &&
+					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare", enum_releaseRegion) &&
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x314, enum_releaseRegion)),				
 				once(	// Identifies cutscene => scaring straw hat man
-					is_SmallCutscene_active(enum_releaseRegion) &&
+					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare", enum_releaseRegion) &&
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x2da, enum_releaseRegion)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
-					is_SmallCutscene_active(enum_releaseRegion) &&
+					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare", enum_releaseRegion) &&
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x2e3, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) 	||
-				!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 			) &&
-			(
-				(	// Alt => vs. pause lock
-					unless(
-						!is_Area(AREA_MiddleAges_City_Night, RELEASE_REGION_USA) && !is_Area(AREA_Present_CafeSonne, RELEASE_REGION_USA)			
-					) &&
-					measured(measuredComparison(RELEASE_REGION_USA), is_InGame(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)) &&
-					trigger_when(on_Cutscene_end(RELEASE_REGION_USA))
-				) || (
-					always_false()
-				)
-			)},
-	"a_FreeMeal": function FreeMeal() { return
+			measured(measuredComparison(enum_releaseRegion), is_InGame(enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_FreeMeal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)						||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 			||
-			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
-			is_FirePutOutBy_Eike(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion) ||
+			is_FirePutOutBy_Eike(enum_releaseRegion)
 		) &&
-		once(	// Identifies Cutscene => Barman gives us free meal
-			is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-			is_Cutscene_MasterId(0x62840, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x261a0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x6cc0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x9bd60, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x6cc0, 0x28, RELEASE_REGION_USA)
+		once(	// Identifies Cutscene => Barman gives Eike free meal
+			is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			is_Cutscene_MasterId(0x62840, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x261a0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x6cc0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x9bd60, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x6cc0, 0x28, enum_releaseRegion)
 		) &&
-		once(	// Identifies Cutscene => Reading book whilst barman get Eike his meal + poison
-			is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-			is_Cutscene_MasterId(0xf9cc0, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x5eb0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0xf3df0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x2aea60, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0xf3df0, 0x28, RELEASE_REGION_USA)
+		once(	// Identifies Cutscene => Reading book whilst barman gets Eike his meal + poison
+			is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			is_Cutscene_MasterId(0xf9cc0, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x5eb0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0xf3df0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x2aea60, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0xf3df0, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_NewCakeInvented": function NewCakeInvented() { return
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_NewCakeInvented": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)					||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
-			!is_SelectedItemInScrollBar(ITEM_Cake, RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike gives Margarette Cake for 2nd time
-			is_LargeCutscene_active(RELEASE_REGION_USA) && 
-			is_Cutscene_MasterId(0x1fd80, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0xffff, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1fd50, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x1fd50, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x153d0, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x122b0, 0x2c, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Cake, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x1fd80, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1fd50, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x1fd50, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x153d0, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x122b0, 0x2c, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_MaxInventory": function MaxInventory(){
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_MaxInventory": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_biggestPossibleInventoryCount = 20
-		function previousItemCount(enum_releaseRegion) =>
+		function deltaItemCount(enum_releaseRegion) =>
 			sum_of(const_Items_data, (item) {	// sum_of(prevItemCount) == 19
 				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
 				return prev(bit0(let_memAddress))
@@ -4293,24 +4295,24 @@ achievements_triggers = {
 				return once(bit0(let_memAddress) == 1)
 			})
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA)	||
-				is_ExtraMenu_active(RELEASE_REGION_USA)	||
-
-				// Reset hit counts if any item is removed
-				any_of(const_Items_data, (item) {
-					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][RELEASE_REGION_USA]
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)	||
+				
+				any_of(const_Items_data, (item) { // Reset hit counts if any item is removed
+					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
 					return bit0(let_memAddress) < prev(bit0(let_memAddress))
 				})
 			) &&
-			measured(measuredComparison(let_biggestPossibleInventoryCount, RELEASE_REGION_USA), always_true()) &&			
 			once(
-				previousItemCount(RELEASE_REGION_USA) < let_biggestPossibleInventoryCount &&
-				currentItemCount(RELEASE_REGION_USA) == let_biggestPossibleInventoryCount
+				deltaItemCount(enum_releaseRegion) < let_biggestPossibleInventoryCount &&
+				currentItemCount(enum_releaseRegion) == let_biggestPossibleInventoryCount
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))
-		},		
-	"a_DrunkenGuys": function DrunkenGuys(){
+			measured(measuredComparison(let_biggestPossibleInventoryCount, enum_releaseRegion)) &&	
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),		
+	"a_DrunkenGuys": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		function measuredComparison_onMax(enum_releaseRegion) { return
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
@@ -4326,69 +4328,70 @@ achievements_triggers = {
 					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f0, enum_releaseRegion))
 			])}
-		function measuredComparison_atMax(enum_releaseRegion) { return
+		function measuredComparison_atMax(enum_releaseRegion) { return // AtMax => failsafe when player has loaded a save where he has already talked to them
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_SlimDelinquent, enum_releaseRegion) &&
-					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
 					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f5, enum_releaseRegion)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_BroadDelinquent, enum_releaseRegion) &&
-					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
+					is_NPCtalkCount_atMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
 					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f0, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
+			) && (
+				measured(measuredComparison_onMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion)) ||
+				measured(measuredComparison_atMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion))
 			) &&
-			(
-				measured(measuredComparison_onMax(RELEASE_REGION_USA), when = is_Area(AREA_Present_City_NightPM, RELEASE_REGION_USA)) ||
-				measured(measuredComparison_atMax(RELEASE_REGION_USA), when = is_Area(AREA_Present_City_NightPM, RELEASE_REGION_USA))
-			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_ShortestChapter": function ShortestChapter(){ return
+			trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_ShortestChapter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA)				||
-			!is_SelectedItemInScrollBar(ITEM_FryingPan, RELEASE_REGION_USA) ||
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
 			//	=> black and white picture is not found inside book during this chapter
 			//	=> Thus can be used as a flag for this achievement
-			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_NoPerformer, RELEASE_REGION_USA) 	|| 
-			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_WithPerformer, RELEASE_REGION_USA)			 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_NoPerformer, enum_releaseRegion) || 
+			is_ItemPresentInInventory(ITEM_BlackWhitePhoto_WithPerformer, enum_releaseRegion)			 
 		) &&
 		once(	// Identifies Cutscene => Using frying pan for defence
-			is_LargeCutscene_active(RELEASE_REGION_USA) && 
-			is_Cutscene_MasterId(0x4f200, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x11cd0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x3d500, RELEASE_REGION_USA)	
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x4f200, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x11cd0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x3d500, enum_releaseRegion)	
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_MeetFamousOleg": function MeetFamousOleg(){ return
 		never(
-			!is_InGame(RELEASE_REGION_USA)				||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
-			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion)				||
+			is_ExtraMenu_active(enum_releaseRegion) 	||
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_CoffeePayed(RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xa0f40, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x45370, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x5bb90, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x8f8e0, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x5bb90, 0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_CoffeePayed(enum_releaseRegion) &&
+			is_Cutscene_MasterId(0xa0f40, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x45370, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x5bb90, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x8f8e0, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x5bb90, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
+		trigger_when(on_Cutscene_end(enum_releaseRegion))},
 	"a_ArtInspiration1": function ArtInspiration1() { return
 		never(
 			!is_InGame(RELEASE_REGION_USA) 		||
