@@ -2028,16 +2028,16 @@ achievements_coreData = {
 			"id": 315568, "points": 5,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_ExtraEnergy": { // Category - Related to energy orb gathering
-		"a_EnergyOrbLocatorPresentDay": { // VERIFIED
+		"a_EnergyOrbLocatorPresentDay": { // MODIFIED
 			"id": 399816, "points": 5,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // VERIFIED
+		"a_EnergyOrbLocator70s80s": { // MODIFIED
 			"id": 399817, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // VERIFIED
+		"a_EnergyOrbLocator1900Days": { // MODIFIED
 			"id": 399818, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED
+		"a_EnergyOrbLocatorMiddleAges": { // MODIFIED
 			"id": 399819, "points": 5,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}
 		},
@@ -2081,65 +2081,56 @@ achievements_typeByCategory = {
 // • Achievements TRIGGER GENERATORS •
 // ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter) {
+function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter, enum_releaseRegion) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
 	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
-	function trigger(enum_chapter, enum_releaseRegion) {
-		let_array_bitsets = const_percentageBitsets[enum_chapter][enum_releaseRegion]
-		let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
-		let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
-	
-		let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-		let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
-	
-		let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-		let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
 
-		return
-			let_comparison_deltaInventoryCount && 
-			measured(let_comparison_currentInventoryCount, 
-				when = 
-					is_ReleaseRegion(enum_releaseRegion) &&
-					is_InGame(enum_releaseRegion) && 
-					!is_ExtraMenu_active(enum_releaseRegion) &&
-					is_Chapter(enum_chapter, enum_releaseRegion), 
-				format = "percent")
-		}
-	return 
-		trigger(enum_chapter, RELEASE_REGION_USA) ||
-		trigger(enum_chapter, RELEASE_REGION_JPN)
+	let_array_bitsets = const_percentageBitsets[enum_chapter][enum_releaseRegion]
+	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+
+	let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+
+	let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+	let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+
+	return
+		let_comparison_deltaInventoryCount && 
+		measured(let_comparison_currentInventoryCount, 
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) && 
+				!is_ExtraMenu_active(enum_releaseRegion) &&
+				is_Chapter(enum_chapter, enum_releaseRegion), 
+			format = "percent")
 	}
 
-function achievements_generate_FullTrigger_TotalMaxAchievementRate() {
-	function trigger(enum_releaseRegion) {
-		let_array_bitsets = memUtil_allPercentageBitsetsToOneArray(enum_releaseRegion)
-		let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
-		let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
-	
-		let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-		let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
-	
-		let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-		let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
-	
-		return 
-			let_comparison_deltaInventoryCount && 
-			measured(let_comparison_currentInventoryCount,
-				when = 
-					is_ReleaseRegion(enum_releaseRegion) &&
-					is_InGame(enum_releaseRegion) &&
-					!is_ExtraMenu_active(enum_releaseRegion),
-				format = "percent")
-		}
+function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseRegion) {
+	let_array_bitsets = memUtil_allPercentageBitsetsToOneArray(enum_releaseRegion)
+	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
+	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
+
+	let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+
+	let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
+	let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+
 	return 
-		trigger(RELEASE_REGION_USA) || 
-		trigger(RELEASE_REGION_JPN)
+		let_comparison_deltaInventoryCount && 
+		measured(let_comparison_currentInventoryCount,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_InGame(enum_releaseRegion) &&
+				!is_ExtraMenu_active(enum_releaseRegion),
+			format = "percent")
 	}
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum_releaseRegion) {
-	function create_Tally(enum_timePeriod, enum_releaseRegion) { // WIP
+	function create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion) {
 		let_tallyComparisonArray = []
 		let_sharedArea = get_EnergyOrb_sharedAreas(enum_timePeriod)
 		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
@@ -2179,7 +2170,7 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 	alt_core = // alt_core => contains measurement for energy orbs
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
 		measured(
-			create_Tally(enum_timePeriod, enum_releaseRegion),
+			create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion),
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) && 
 				!is_Loading(enum_releaseRegion)
@@ -2807,29 +2798,28 @@ achievements_triggers = {
 				on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 			)
 		return any_of(alts, (key) => alts[key])}),
-	// TODO anyOf for max achievement
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue),
-	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1),
-	"a_MaxAchievementChapter2": function MaxAchievementChapter2() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2),
-	"a_MaxAchievementChapter3": function MaxAchievementChapter3() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3),
-	"a_MaxAchievementChapter4": function MaxAchievementChapter4() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4),
-	"a_MaxAchievementChapter5": function MaxAchievementChapter5() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5),
-	"a_MaxAchievementChapter6": function MaxAchievementChapter6() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6),
-	"a_MaxAchievementChapter7": function MaxAchievementChapter7() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7),
-	"a_MaxAchievementChapter8": function MaxAchievementChapter8() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8),
-	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() =>
-		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue),
-	"a_MaxAchievementTotal": function MaxAchievementTotal() =>
-		achievements_generate_FullTrigger_TotalMaxAchievementRate(),
+	"a_MaxAchievementPrologue": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue, enum_releaseRegion)),
+	"a_MaxAchievementChapter1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1, enum_releaseRegion)),
+	"a_MaxAchievementChapter2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2, enum_releaseRegion)),
+	"a_MaxAchievementChapter3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3, enum_releaseRegion)),
+	"a_MaxAchievementChapter4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4, enum_releaseRegion)),
+	"a_MaxAchievementChapter5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5, enum_releaseRegion)),
+	"a_MaxAchievementChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6, enum_releaseRegion)),
+	"a_MaxAchievementChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7, enum_releaseRegion)),
+	"a_MaxAchievementChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8, enum_releaseRegion)),
+	"a_MaxAchievementEpilogue": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue, enum_releaseRegion)),
+	"a_MaxAchievementTotal": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseRegion)),
 	"a_EndingA": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
