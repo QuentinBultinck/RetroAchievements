@@ -84,6 +84,13 @@ function util_addToDictionary(dict, key, value) {
 // *****************************
 // • Memory STRUCT DEFINITIONS •
 // *****************************
+memory_regionOffsets = {
+	"Struct_NPCInteractionData": {
+		"offset_USA_to_JPN": 0x7b50
+	}}
+function memory_getRegionOffset(string_structKey, string_offsetKey) =>
+	memory_regionOffsets[string_structKey][string_offsetKey]
+// -------------------------------------
 memory_dataStructures = {
 	"Struct_DateTime": {
 		"sizeInBytes": 24,
@@ -231,20 +238,6 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 	return let_memAddr}
 
-function memory_initialize() { // memory_initialize() => is called in initialization code
-	function initialize_OtherRegions() {	// Use this function when ALL memory addresses for a game region are offset
-		let_EUoffset = sNULL
-		let_JPoffset = sNULL
-		for memAddrKey in memory_addresses {
-			let_USAaddr = memory_addresses[memAddrKey][RELEASE_REGION_USA]
-			if(let_USAaddr == iNULL) util_throwError("Memory Address for {0} is NULL", memAddrKey)
-			memory_addresses[memAddrKey][RELEASE_REGION_EUR] = let_USAaddr + let_EUoffset
-			memory_addresses[memAddrKey][RELEASE_REGION_JPN] = let_USAaddr + let_JPoffset
-		}
-	}
-	// initialize_OtherRegions()
-	memory_initialize_NPCAppearances_releaseRegionJPN()} // offset 0x7b50
-
 // ******************
 // • Memory UTILITY •
 // ******************
@@ -312,8 +305,8 @@ const_TimePeriod_IDs = {
 	TIMEPERIOD_Early20thCentury: {"IDs": [0x81]},
 	TIMEPERIOD_MiddleAges:{"IDs": [0x80]}}
 
-function current_TimePeriod(enum_regionCode) =>
-	dword(memory_getAddress(DATATYPE_32Bit, "TimePeriod", enum_regionCode))
+function current_TimePeriod(enum_releaseRegion) =>
+	dword(memory_getAddress(DATATYPE_32Bit, "TimePeriod", enum_releaseRegion))
 
 function get_TimePeriodIDs(enum_timePeriod, int_idIndex = 0) =>
 	const_TimePeriod_IDs[enum_timePeriod]["IDs"][int_idIndex]
@@ -326,23 +319,23 @@ const_DateTime_memAddr = {
 		RELEASE_REGION_JPN: () => memory_getAddress(DATATYPE_Struct, "DateTime_Present", RELEASE_REGION_JPN),
 	}}
 
-function current_DateTime_Seconds(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Seconds"))
+function current_DateTime_Seconds(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Seconds"))
 
-function current_DateTime_Minutes(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Minutes"))
+function current_DateTime_Minutes(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Minutes"))
 
-function current_DateTime_Hours(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Hours"))
+function current_DateTime_Hours(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Hours"))
 
-function current_DateTime_Days(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Days"))
+function current_DateTime_Days(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Days"))
 
-function current_DateTime_Months(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Months"))
+function current_DateTime_Months(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Months"))
 
-function current_DateTime_Years(enum_dateTime, enum_region) =>
-	dword(const_DateTime_memAddr[enum_dateTime][enum_region] + memory_getDataStructOffset("Struct_DateTime","32Bit_Years"))
+function current_DateTime_Years(enum_dateTime, enum_releaseRegion) =>
+	dword(const_DateTime_memAddr[enum_dateTime][enum_releaseRegion] + memory_getDataStructOffset("Struct_DateTime","32Bit_Years"))
 // **********************
 // ◦ CLEAR TIME: TIMERS ◦
 // **********************
@@ -406,100 +399,266 @@ NPC_Present_BlondeYoungBoy				= 100
 const_NPCs_data = { // RELEASE_REGION_JPN is initialized with memory_initialize_NPCAppearances_releaseRegionJPN()
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
-	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0x000000, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 0000}}},
+	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0x000000, RELEASE_REGION_JPN: xxx + 0x7b50}, "maxTalkCount": 0000}}},
 	NPC_Present_BlondeYoungBoy: { 
 		"ID": 0x187, "Appearance": {
-			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EEF8, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2}}},
+			"Chap4_WearingPerformerOutfit": {
+				"memAddr_TalkCount": {
+						RELEASE_REGION_USA: 0xA9EEF8,
+						RELEASE_REGION_JPN: () => 0xA9EEF8 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")},
+				"maxTalkCount": 2}}},
 	NPC_Present_BrunetteMother: { 
 		"ID": 0x46,	"Appearance": {
-			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE92, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap4_WearingPerformerOutfit": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE92,
+					RELEASE_REGION_JPN: () => 0xA9EE92 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")},
+				"maxTalkCount": 1}}},
 	NPC_Present_BrunetteYoungGirl: { 
 		"ID": 0x42,	"Appearance": {
-			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE7F, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap4_WearingPerformerOutfit": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE7F, 
+					RELEASE_REGION_JPN: () => 0xA9EE7F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_Present_BlondeOldWomanOrangeSweater: { 
 		"ID": 0x44, "Appearance": {
-			"Chap4_WearingPerformerOutfit": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE88, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap4_WearingPerformerOutfit": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE88, 
+					RELEASE_REGION_JPN: () => 0xA9EE88 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_Present_BrunetteAdultManGlasses: { 
 		"ID": 0x195, "Appearance": iNULL},
 	NPC_Present_BlondeElderlyWoman: { 
 		"ID": 0x183, "Appearance": iNULL},
 	NPC_Present_BroadDelinquent: { 
 		"ID": 0x10, "Appearance": {
-			"Chap7_CarPark": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE4C, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
-	NPC_Present_SlimDelinquent: { 
+			"Chap7_CarPark": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE4C, 
+					RELEASE_REGION_JPN: () => 0xA9EE4C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
+		NPC_Present_SlimDelinquent: { 
 		"ID": 0x13, "Appearance": {
-			"Chap7_CarPark": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE51, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap7_CarPark": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE51, 
+					RELEASE_REGION_JPN: () => 0xA9EE51 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_Present_CoatedWoman: { 
 		"ID": 0x57,	"Appearance": {
-			"Chap1Prologue_TownSquare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE28, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE2C, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2}, // <-- Chap3-4 use same memAddr as they use same dialogue
-			"Chap5_NearCafeSonne": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE31, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap7_SouthGate": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE2F, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2}}},
+			"Chap1Prologue_TownSquare": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE28,
+					 RELEASE_REGION_JPN: () => 0xA9EE28 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": { // <-- Chap3-4 use same memAddr as they use same dialogue
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE2C, 
+					RELEASE_REGION_JPN: () => 0xA9EE2C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2}, 
+			"Chap5_NearCafeSonne": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE31, 
+					RELEASE_REGION_JPN: () => 0xA9EE31 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap7_SouthGate": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE2F, 
+					RELEASE_REGION_JPN: () => 0xA9EE2F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2}}},
 	NPC_Present_CoatedMan: { 
 		"ID": 0x56, "Appearance": {
-			"Chap1Prologue_NearBar": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE1D, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap3_NearAntiqueShop": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE20, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap4_HaupStrUnderArch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE21, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap5_NorthEastGate_BrumLibrary": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE25, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap5_NorthEastGate_BrumMuseum": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE26, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap7_NorthWestGate": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE24, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap1Prologue_NearBar": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE1D, 
+					RELEASE_REGION_JPN: () => 0xA9EE1D + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap3_NearAntiqueShop": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE20, 
+					RELEASE_REGION_JPN: () => 0xA9EE20 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap4_HaupStrUnderArch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE21, 
+					RELEASE_REGION_JPN: () => 0xA9EE21 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap5_NorthEastGate_BrumLibrary": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE25, 
+					RELEASE_REGION_JPN: () => 0xA9EE25 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap5_NorthEastGate_BrumMuseum": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE26, 
+					RELEASE_REGION_JPN: () => 0xA9EE26 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap7_NorthWestGate": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE24, 
+					RELEASE_REGION_JPN: () => 0xA9EE24 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_Present_JoggingMan: {
 		"ID": 0x58, "Appearance": iNULL},
 	NPC_80s_JoggingMan: {
 		"ID": 0x59, "Appearance": iNULL},
 	NPC_80s_Barman: { 
 		"ID": 0xc, "Appearance": {
-			"InsideBar_UsePocketWatchOrEgg": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE49, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},	// Counts for chap 6-7-8
+			"InsideBar_UsePocketWatchOrEgg": { // Counts for chap 6-7-8
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE49, 
+					RELEASE_REGION_JPN: () => 0xA9EE49 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")},
+				"maxTalkCount": 1}}},	
 	NPC_80s_OlderMan: { 
 		"ID": 0x18d, "Appearance": {
-			"Chap6_CafeSonne": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF43, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2}}},	
+			"Chap6_CafeSonne": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF43, 
+					RELEASE_REGION_JPN: () => 0xA9EF43 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2}}},	
 	NPC_MiddleAges_StrawHatMan: { 
 		"ID": 0x5c, "Appearance": {
-			"Chap2_Streets_Scare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE36, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap2_Streets_Scare": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE36, 
+					RELEASE_REGION_JPN: () => 0xA9EE36 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_MiddleAges_YoungCoupleWoman: { 
 		"ID": 0x197, "Appearance": {
-			"Chap2_WestGate_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF7C, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap2_WestGate_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF7D, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap2_EastNearHay_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF7E, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF7E, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF80, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_OutsideChurch_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF81, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap4_OutsideChurch_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF82, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap4_OutsideChurch_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF83, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},	
-			"Chap4_NearBakery_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF84, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},	//	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
-			"Chap7_TownSquare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF84, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},						//	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
-			"Chap7_TownSquare_Choice": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF85, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2}}},
+			"Chap2_WestGate_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF7C,
+					RELEASE_REGION_JPN: () => 0xA9EF7C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap2_WestGate_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF7D,
+					RELEASE_REGION_JPN: () => 0xA9EF7D + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap2_EastNearHay_AfterLocationSwitch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF7E, 
+					RELEASE_REGION_JPN: () => 0xA9EF7E + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_NearNorthEastGate_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF7F, 
+					RELEASE_REGION_JPN: () => 0xA9EF7F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_NearNorthEastGate_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF80, 
+					RELEASE_REGION_JPN: () => 0xA9EF80 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_OutsideChurch_AfterLocationSwitch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF81, 
+					RELEASE_REGION_JPN: () => 0xA9EF81 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")},
+				"maxTalkCount": 1},
+			"Chap4_OutsideChurch_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF82, 
+					RELEASE_REGION_JPN: () => 0xA9EF82 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap4_OutsideChurch_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF83, 
+					RELEASE_REGION_JPN: () => 0xA9EF83 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},	
+			"Chap4_NearBakery_AfterLocationSwitch": { //	WARNING => uses same MemAddrTalkCount as Chap7_TownSquare
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF84, 
+					RELEASE_REGION_JPN: () => 0xA9EF84 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},	
+			"Chap7_TownSquare": { //	WARNING => uses same MemAddrTalkCount as Chap4_OutsideChurch_AfterTalkingToBoth
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF84, 
+					RELEASE_REGION_JPN: () => 0xA9EF84 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")},
+				"maxTalkCount": 1},
+			"Chap7_TownSquare_Choice": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF85, 
+					RELEASE_REGION_JPN: () => 0xA9EF85 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2}}},
 	NPC_MiddleAges_YoungCoupleMan: { 
 		"ID": 0x198, "Appearance": {
-			"Chap2_EastNearHay_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF69, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap2_EastNearHay_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6A, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap2_WestGate_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6B, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_NearWell_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6C, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_NearWell_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6D, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap3_TownSquare_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6E, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap4_TownSquare_BeforeTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF6F, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap4_TownSquare_AfterTalkingToBoth": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF70, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap4_NearBakery_AfterLocationSwitch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF71, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1},
-			"Chap5_NearSouthEastGate": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF72, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap7_OutsideChurch": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF74, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 2},
-			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EF78, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap2_EastNearHay_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF69, 
+					RELEASE_REGION_JPN: () => 0xA9EF69 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap2_EastNearHay_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6A, 
+					RELEASE_REGION_JPN: () => 0xA9EF6A + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap2_WestGate_AfterLocationSwitch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6B, 
+					RELEASE_REGION_JPN: () => 0xA9EF6B + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_NearWell_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6C, 
+					RELEASE_REGION_JPN: () => 0xA9EF6C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_NearWell_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6D, 
+					RELEASE_REGION_JPN: () => 0xA9EF6D + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap3_TownSquare_AfterLocationSwitch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6E, 
+					RELEASE_REGION_JPN: () => 0xA9EF6E + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap4_TownSquare_BeforeTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF6F,
+					 RELEASE_REGION_JPN: () => 0xA9EF6F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap4_TownSquare_AfterTalkingToBoth": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF70, 
+					RELEASE_REGION_JPN: () => 0xA9EF70 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap4_NearBakery_AfterLocationSwitch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF71, 
+					RELEASE_REGION_JPN: () => 0xA9EF71 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap5_NearSouthEastGate": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF72, 
+					RELEASE_REGION_JPN: () => 0xA9EF72 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap7_OutsideChurch": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF74, 
+					RELEASE_REGION_JPN: () => 0xA9EF74 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap8_OutsideChurch_AfterExperiment_WomanTruthful": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EF78, 
+					RELEASE_REGION_JPN: () => 0xA9EF78 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_MiddleAges_EccentricGirl: { 
 		"ID": 0x2e, "Appearance": {
-			"Chap2_TownSquare_Scare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE70, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}},
+			"Chap2_TownSquare_Scare": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE70, 
+					RELEASE_REGION_JPN: () => 0xA9EE70 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}},
 	NPC_MiddleAges_AspiringApprentice: {
 		"ID": 0x5d, "Appearance": {
-			"Chap2_SouthEastGate_Scare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE3F, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}}}
-
-function memory_initialize_NPCAppearances_releaseRegionJPN() { // This function should be called in memory_initialize()
-	let_offsetToJPN = 0x7b50
-	for NPCkey in const_NPCs_data {
-		if (const_NPCs_data[NPCkey]["Appearance"] != iNULL) {
-			for appearanceKey in const_NPCs_data[NPCkey]["Appearance"] {
-				let_memAddr_USA = const_NPCs_data[NPCkey]["Appearance"][appearanceKey]["memAddr_TalkCount"][RELEASE_REGION_USA]
-				const_NPCs_data[NPCkey]["Appearance"][appearanceKey]["memAddr_TalkCount"][RELEASE_REGION_JPN] = let_memAddr_USA + let_offsetToJPN
-			}
-		}
-	}}
+			"Chap2_SouthEastGate_Scare": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xA9EE3F, 
+					RELEASE_REGION_JPN: () => 0xA9EE3F + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1}}}
+	}
 
 function get_NPC_Id(enum_npc) => 
 	const_NPCs_data[enum_npc]["ID"]
@@ -509,6 +668,7 @@ function get_NPC_MaxTalkCount(enum_npc, string_appearance) =>
 
 function current_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) {
 	let_memAddr = const_NPCs_data[enum_npc]["Appearance"][string_appearance]["memAddr_TalkCount"][enum_releaseRegion]
+	if(let_memAddr == iNULL) util_throwError(format("NPC {0} for appearance {1} has no memAddr_TalkCount for region {2} - memInit {3}", enum_npc, string_appearance, enum_releaseRegion, memInit))
 	return byte(let_memAddr)}
 
 function prior_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) =>
@@ -2009,22 +2169,22 @@ achievements_coreData = {
 		"a_EnigmaticCouple5": { // VERIFIED
 			"id": 315564, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
-		"a_LostYoungCouple1": { // VERIFIED
+		"a_LostYoungCouple1": { // MODIFIED
 			"id": 306984, "points": 3,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
-		"a_LostYoungCouple2": { // VERIFIED
+		"a_LostYoungCouple2": { // MODIFIED
 			"id": 310133, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
-		"a_LostYoungCouple3": { // VERIFIED
+		"a_LostYoungCouple3": { // MODIFIED
 			"id": 309393, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
-		"a_LostYoungCouple4": { // VERIFIED
+		"a_LostYoungCouple4": { // MODIFIED
 			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // VERIFIED
+		"a_LostYoungCouple5": { // MODIFIED
 			"id": 314753, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // VERIFIED
+		"a_LostYoungCouple6": { // MODIFIED
 			"id": 315568, "points": 5,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_ExtraEnergy": { // Category - Related to energy orb gathering
@@ -3411,7 +3571,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x92f30, RELEASE_REGION_USA)
 		) &&
 		on_CutsceneSection_end(RELEASE_REGION_USA)},
-	"a_LostYoungCouple1": function LostYoungCouple1() {
+	"a_LostYoungCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(6, [
 				once(	// 1st talk with woman
@@ -3452,13 +3612,18 @@ achievements_triggers = {
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40f, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(RELEASE_REGION_USA) || 
-				!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) || 
+				!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), is_Area(AREA_MiddleAges_City_Night, RELEASE_REGION_USA)) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_LostYoungCouple2": function LostYoungCouple2() {
+			measured(
+				measuredComparison(enum_releaseRegion), 
+				when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),		
+	"a_LostYoungCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(6, [
 				once(	// 1st talk with woman
@@ -3472,10 +3637,10 @@ achievements_triggers = {
 					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, RELEASE_REGION_USA) && is_InteractionId(0x410, RELEASE_REGION_USA)),
+					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x410, enum_releaseRegion)),
 				once(	// 2nd talk with woman; only available when talking to both at least once
 					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, RELEASE_REGION_USA) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, RELEASE_REGION_USA)) &&	
+					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) &&
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x424, enum_releaseRegion)),
@@ -3499,13 +3664,15 @@ achievements_triggers = {
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x412, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(RELEASE_REGION_USA) || 
-				!is_Chapter(CHAPTER_Chapter3, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) || 
+				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), is_Area(AREA_MiddleAges_City_Night, RELEASE_REGION_USA)) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_LostYoungCouple3" : function LostYoungCouple3() {
+			measured(measuredComparison(enum_releaseRegion), when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_LostYoungCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(6, [
 				once(
@@ -3546,13 +3713,15 @@ achievements_triggers = {
 					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x415, enum_releaseRegion))				
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), is_Area(AREA_MiddleAges_City_Night, RELEASE_REGION_USA)) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_LostYoungCouple4": function LostYoungCouple4() {
+			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_LostYoungCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
 				repeated(1,
@@ -3562,13 +3731,15 @@ achievements_triggers = {
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x416, enum_releaseRegion))
 			)}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), always_true()) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_LostYoungCouple5": function LostYoungCouple5() {
+			measured(measuredComparison(enum_releaseRegion), always_true()) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_LostYoungCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_NoAncestor(enum_releaseRegion) { return
 			tally(4, [
 				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
@@ -3586,11 +3757,11 @@ achievements_triggers = {
 		function measuredComparison_Ancestor(enum_releaseRegion) { return
 			tally(4, [
 				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
-				// 	is_SmallCutscene_active(RELEASE_REGION_USA) &&
-				// 	is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-				// 	is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, RELEASE_REGION_USA) &&
-				// 	on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare", RELEASE_REGION_USA) &&
-				// 	is_InteractionChapterId(0x3b, RELEASE_REGION_USA) && is_InteractionId(0x428, RELEASE_REGION_USA)),
+				// 	is_SmallCutscene_active(enum_releaseRegion) &&
+				// 	is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+				// 	is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+				// 	on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare", enum_releaseRegion) &&
+				// 	is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
 				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_MargaretteTold_Ancestor(enum_releaseRegion) &&
@@ -3604,16 +3775,18 @@ achievements_triggers = {
 					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x418, enum_releaseRegion))
 			])}
 		return 
-			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) &&
 			(
-				measured(measuredComparison_NoAncestor(RELEASE_REGION_USA), is_MargaretteTold_NoAncestor(RELEASE_REGION_USA)) || 
-				measured(measuredComparison_Ancestor(RELEASE_REGION_USA), is_MargaretteTold_Ancestor(RELEASE_REGION_USA))
+				measured(measuredComparison_NoAncestor(enum_releaseRegion), when = is_MargaretteTold_NoAncestor(enum_releaseRegion)) || 
+				measured(measuredComparison_Ancestor(enum_releaseRegion), when = is_MargaretteTold_Ancestor(enum_releaseRegion))
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_LostYoungCouple6": function LostYoungCouple6() {
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_LostYoungCouple6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(2, [
 				once(	// 1st talk with man, having a dialogue option
@@ -3631,12 +3804,14 @@ achievements_triggers = {
 					is_InteractionChapterId(0x13, enum_releaseRegion) && is_InteractionId(0x433, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter8, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter8, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), is_Area(AREA_MiddleAges_City_Day, RELEASE_REGION_USA)) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
+			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
 	"a_EnigmaticCouple1": function EnigmaticCouple1() {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(4, [
@@ -4781,7 +4956,6 @@ achievements_descriptions = {
 // ****************************
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
 function achievements_initialize() {
-
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
 			let_string = ""
@@ -5563,7 +5737,6 @@ function leaderboards_initialize() {
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ********************************************************************** \\
 function initializeRAscript() {
-	memory_initialize()
 	achievements_initialize()
 	richPresence_initialize()
 	leaderboards_initialize()}
