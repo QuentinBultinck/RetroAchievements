@@ -4650,99 +4650,105 @@ achievements_triggers = {
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
 			measured(measuredComparison(enum_releaseRegion), measuredIfComparison(enum_releaseRegion))}),
-	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
+	"a_SeenOlegAsWell": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)				||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	||
-			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 
 		) &&
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
-			is_SmallCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_CafeSonne, RELEASE_REGION_USA) &&
-			is_TalkingToNPC(NPC_80s_OlderMan, RELEASE_REGION_USA) && 
-			is_InteractionChapterId(0xb2, RELEASE_REGION_USA) && is_InteractionId(0x3e7, RELEASE_REGION_USA) && 
-			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne", RELEASE_REGION_USA)
+			is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_80s_CafeSonne, enum_releaseRegion) &&
+			is_TalkingToNPC(NPC_80s_OlderMan, enum_releaseRegion) && 
+			is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x3e7, enum_releaseRegion) && 
+			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne", enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_PocketWatchTo80sBarman": function PocketWatchTo80sBarman() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_PocketWatchTo80sBarman": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Using pocket watch or ornamental egg near barman in 1980s
-			is_SmallCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_Bar, RELEASE_REGION_USA) &&
+			is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_80s_Bar, enum_releaseRegion) &&
 			(
-				is_SelectedItemInScrollBar(ITEM_EggPocketWatch, RELEASE_REGION_USA) ||
-				is_SelectedItemInScrollBar(ITEM_OrnamentalEgg, RELEASE_REGION_USA)
+				is_SelectedItemInScrollBar(ITEM_EggPocketWatch, enum_releaseRegion) ||
+				is_SelectedItemInScrollBar(ITEM_OrnamentalEgg, enum_releaseRegion)
 			) &&
-			is_TalkingToNPC(NPC_80s_Barman, RELEASE_REGION_USA) && is_InteractionId(0x2ed, RELEASE_REGION_USA) &&
-			is_NPCtalkCount_atMax(NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg", RELEASE_REGION_USA)
+			is_TalkingToNPC(NPC_80s_Barman, enum_releaseRegion) && is_InteractionId(0x2ed, enum_releaseRegion) &&
+			is_NPCtalkCount_atMax(NPC_80s_Barman, "InsideBar_UsePocketWatchOrEgg", enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_SnowyCrimeScene": function SnowyCrimeScene() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_SnowyCrimeScene": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Miriam shot and dying 
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_City_Snow, RELEASE_REGION_USA) &&
-			is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 	&&
-			is_Cutscene_MasterId(0x756c0, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x4660, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x4f210, RELEASE_REGION_USA) 	&&
-			is_Cutscene_MinorId(0xb8b90, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x4f210, 0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_80s_City_Snow, enum_releaseRegion) &&
+			is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 	&&
+			is_Cutscene_MasterId(0x756c0, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x4660, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x4f210, enum_releaseRegion) 	&&
+			is_Cutscene_MinorId(0xb8b90, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x4f210, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_SaveMiriamBrum": function SaveMiriamBrum() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_SaveMiriamBrum": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)			 
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)			 
 		) &&
 		once(	// Identifies Cutscene => Eike save Miriam, after running after her
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_80s_City_Snow, RELEASE_REGION_USA) &&
-			is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA)	&&
-			is_Cutscene_MasterId(0xebac0, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x546f0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x50b0, RELEASE_REGION_USA)	
+			is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_80s_City_Snow, enum_releaseRegion) &&
+			is_Chapter(CHAPTER_Chapter6, enum_releaseRegion)	&&
+			is_Cutscene_MasterId(0xebac0, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x546f0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x50b0, enum_releaseRegion)	
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_HugoMotherChild": function HugoMotherChild() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_HugoMotherChild": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Hugo gets bullied
-			is_LargeCutscene_active(RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x3ed00, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x3110, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x3bbc0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x282ae0, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x3bbc0, 0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x3ed00, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x3110, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x3bbc0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x282ae0, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x3bbc0, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
- 	"a_TimeTravellingCat": function TimeTravellingCat() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+ 	"a_TimeTravellingCat": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Giving kitten to Sibylla
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_1900s_BrumMansion, RELEASE_REGION_USA) &&
-			is_ItemPresentInInventory(ITEM_Kitten, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x25200, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x2c00, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x10930, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_1900s_BrumMansion, enum_releaseRegion) &&
+			is_ItemPresentInInventory(ITEM_Kitten, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x25200, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x2c00, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x10930, enum_releaseRegion)
 		) &&
-		is_KittenGivenToSibylla(RELEASE_REGION_USA) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
+		is_KittenGivenToSibylla(enum_releaseRegion) &&
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_ErasingEike": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
