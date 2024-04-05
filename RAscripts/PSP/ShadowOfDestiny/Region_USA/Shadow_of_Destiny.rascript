@@ -3365,7 +3365,7 @@ achievements_triggers = {
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_GetOrnamentalEgg": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-		never (
+		never(
 			!is_InGame(enum_releaseRegion) ||
 			is_ExtraMenu_active(enum_releaseRegion) ||
 			!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
@@ -3403,7 +3403,7 @@ achievements_triggers = {
 		)),
 	"a_AlertBarmanOfFire": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-		never (
+		never(
 			!is_InGame(enum_releaseRegion) ||
 			is_ExtraMenu_active(enum_releaseRegion) ||
 			!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) 
@@ -3492,135 +3492,142 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0xb400, enum_releaseRegion)
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_EggPocketWatchForCoffee": function IntroduceEggCollecting2() { return 
-		never (
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	||
-			!is_ItemPresentInInventory(ITEM_EggPocketWatch, RELEASE_REGION_USA) ||
-			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA) 				&& 
-			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA) 				&& 
-			!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA) 	&& 
-			!is_Chapter(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)
+	"a_EggPocketWatchForCoffee": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 				&& 
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion) 				&& 
+			!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) 	&& 
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
-				is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_1900s_City, RELEASE_REGION_USA) && 
-				is_Cutscene_MasterId(0x8b440, RELEASE_REGION_USA) 		&&
-				is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-				is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-				is_Cutscene_MasterDataId(0x3b3a0, RELEASE_REGION_USA)	&&
-				is_Cutscene_SectionDataId(0x50080, RELEASE_REGION_USA)	&&
-				is_Cutscene_MinorId(0xdefe0, 0x8, RELEASE_REGION_USA)	&&
-				is_Cutscene_MinorId(0x50080, 0x28, RELEASE_REGION_USA)),
+				is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_1900s_City, enum_releaseRegion) && 
+				is_Cutscene_MasterId(0x8b440, enum_releaseRegion) 		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x3b3a0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x50080, enum_releaseRegion)	&&
+				is_Cutscene_MinorId(0xdefe0, 0x8, enum_releaseRegion)	&&
+				is_Cutscene_MinorId(0x50080, 0x28, enum_releaseRegion)),
 			once(	// Identifies Cutscene => Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
-				is_LargeCutscene_active(RELEASE_REGION_USA) && is_Area(AREA_1900s_City, RELEASE_REGION_USA) && 
-				is_Cutscene_MasterId(0xac4c0, RELEASE_REGION_USA) 		&&
-				is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-				is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-				is_Cutscene_MasterDataId(0x5ac20, RELEASE_REGION_USA)	&&
-				is_Cutscene_SectionDataId(0x51870, RELEASE_REGION_USA)	&&
-				is_Cutscene_MinorId(0x7ec30, 0x8, RELEASE_REGION_USA)	&&
-				is_Cutscene_MinorId(0x2f730, 0x2c, RELEASE_REGION_USA))
+				is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_1900s_City, enum_releaseRegion) && 
+				is_Cutscene_MasterId(0xac4c0, enum_releaseRegion) 		&&
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0x5ac20, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0x51870, enum_releaseRegion)	&&
+				is_Cutscene_MinorId(0x7ec30, 0x8, enum_releaseRegion)	&&
+				is_Cutscene_MinorId(0x2f730, 0x2c, enum_releaseRegion))
 		]) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_PocketWatchCollection": function PocketWatch() { return 
-		never (
-			!is_InGame(RELEASE_REGION_USA) 			||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	||
-			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_PocketWatchCollection": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Show off egg pocket watch to barman in present
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_EggPocketWatch, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x8ce80, RELEASE_REGION_USA) 		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x4c600, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x236a0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x70640, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x236a0, 0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x8ce80, enum_releaseRegion) 		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x4c600, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x236a0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x70640, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x236a0, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_PocketWatchReminiscing": function PocketWatchReminiscing() { return
-		never (
-			!is_InGame(RELEASE_REGION_USA) 					||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	||
-			!is_Chapter(CHAPTER_Chapter8_Ancestress, RELEASE_REGION_USA) && 
-			!is_Chapter(CHAPTER_Chapter8_NoAncestress, RELEASE_REGION_USA)
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_PocketWatchReminiscing": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) && 
+			!is_Chapter(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_EggPocketWatch, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x8dcc0, RELEASE_REGION_USA) 		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x31a90, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0xa420, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0xdfbc0, 0x8, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0xa420, 0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x8dcc0, enum_releaseRegion) 		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x31a90, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0xa420, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0xdfbc0, 0x8, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0xa420, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_EikeThePyromancer": function EikeThePyromancer() { return
-		never (
-			!is_InGame(RELEASE_REGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_EikeThePyromancer": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
-			is_TreeReplacedBy_Statue(RELEASE_REGION_USA) && is_CrowdScaredWith_Lighter(RELEASE_REGION_USA) &&			
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x3b240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x340e0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x7130, RELEASE_REGION_USA)
+			is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Lighter(enum_releaseRegion) &&			
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_EikeTheMagician": function EikeTheMagician() { return
-		never (
-			!is_InGame(RELEASE_REGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_EikeTheMagician": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into magician statue
-			is_TreeReplacedBy_Statue(RELEASE_REGION_USA) && is_CrowdScaredWith_Cellphone(RELEASE_REGION_USA) &&			
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x3b240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x340e0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x7130, RELEASE_REGION_USA)
+			is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Cellphone(enum_releaseRegion) &&			
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_EikeTheFlorist": function EikeTheFlorist() { return 
-		never (
-			!is_InGame(RELEASE_REGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_EikeTheFlorist": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Returning back to present, tree changes into flowers
-			is_TreeReplacedBy_Flowers(RELEASE_REGION_USA) &&
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_SelectedItemInScrollBar(ITEM_Dpad, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x3b240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x340e0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x7130, RELEASE_REGION_USA)
+			is_TreeReplacedBy_Flowers(enum_releaseRegion) &&
+			is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x340e0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x7130, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_BarmansChildren": function BarmansChildren() { return
-		never (
-			!is_InGame(RELEASE_REGION_USA) 						||
-			!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_BarmansChildren": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Talk to barman about grandchildren
-			is_LargeCutscene_active(RELEASE_REGION_USA) && 
-			is_Cutscene_MasterId(0xd0200, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x3d290, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x92f30, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && 
+			is_Cutscene_MasterId(0xd0200, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x3d290, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x92f30, enum_releaseRegion)
 		) &&
-		on_CutsceneSection_end(RELEASE_REGION_USA)},
+		on_CutsceneSection_end(enum_releaseRegion)),
 	"a_LostYoungCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(6, [
