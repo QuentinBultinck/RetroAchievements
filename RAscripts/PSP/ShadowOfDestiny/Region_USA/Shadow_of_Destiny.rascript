@@ -271,10 +271,12 @@ function memUtil_floatToInt(float_value) {
 function memUtil_maskPointer(memAddr_ptr) =>
 	dword(memAddr_ptr) & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
 
-function never_toAlt(comparison) =>
+function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
-			never(comparison)
+			never(comparison) &&
+			always_false()	// <-- This line needs to be here so the other groups can still evaluate, else without this line, the other groups are infinitely on hold
+							//		This signifies that this alt group only functions as a reset group, it can't trigger the achievement
 		) || (
 			always_false()
 		)
@@ -1879,28 +1881,28 @@ achievements_coreData = {
 			"id": 306885, "points": 2,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
-		"a_EndingA": { // VERIFIED
+		"a_EndingA": { // MODIFIED
 			"id": 315566, "points": 5,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		"a_EndingB1":{ // VERIFIED
+		"a_EndingB1":{ // MODIFIED
 			"id": 315573, "points": 5,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
-		"a_EndingB2":{ // VERIFIED
+		"a_EndingB2":{ // MODIFIED
 			"id": 315572, "points": 5,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		"a_EndingC": { // VERIFIED
+		"a_EndingC": { // MODIFIED
 			"id": 317118, "points": 5,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		"a_EndingD": { // VERIFIED
+		"a_EndingD": { // MODIFIED
 			"id": 322230, "points": 5,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		"a_EndingE": { // VERIFIED
+		"a_EndingE": { // MODIFIED
 			"id": 322231, "points": 5,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => after talk with dana, go to present and get dana's letter => give letter to dana in middle ages => Destroyed Lab"},
-		"a_EndingEXCureHelena": { // VERIFIED
+		"a_EndingEXCureHelena": { // MODIFIED
 			"id": 405114, "points": 4,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
-		"a_EndingEXKillHomunculus": { // VERIFIED
+		"a_EndingEXKillHomunculus": { // MODIFIED
 			"id": 405113, "points": 4,
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
@@ -2137,23 +2139,27 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate() {
 		trigger(RELEASE_REGION_JPN)
 	}
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum_releaseRegion) {
-	function create_TallyComparisonArray(enum_timePeriod, enum_releaseRegion) {
+	function create_Tally(enum_timePeriod, enum_releaseRegion) { // WIP
 		let_tallyComparisonArray = []
 		let_sharedArea = get_EnergyOrb_sharedAreas(enum_timePeriod)
 		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
 			let_arrayAreaEnums = get_EnergyOrb_Location_area(enum_timePeriod, let_OrbLocationKey)
 			if(let_sharedArea == iNULL && let_arrayAreaEnums == iNULL)
 				util_throwError("At least one area must be given for energy orb: {0}", let_OrbLocationKey)			
-			let_areaComparisonArray = [always_true()]
+			let_areaComparisonArray = []
 			if (let_arrayAreaEnums != iNULL && length(let_arrayAreaEnums) > 0) {
 				for enum_area in let_arrayAreaEnums {
 					array_push(let_areaComparisonArray, is_Area(enum_area, enum_releaseRegion))
 				}
 			}
-			let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
-			array_push(let_tallyComparisonArray, once(let_areaComparison && on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
+			if(length(let_areaComparisonArray) == 0) {
+				array_push(let_tallyComparisonArray, once(on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
+			} else {
+				let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
+				array_push(let_tallyComparisonArray, once(let_areaComparison && on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
+			}			
 		}
-		return let_tallyComparisonArray}
+		return tally(get_EnergyOrb_amountToCollect(enum_timePeriod), let_tallyComparisonArray)}
 	function create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) {		
 		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
 		let_pauseComparisonArray = []
@@ -2169,20 +2175,26 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				none_of(let_pauseComparisonArray, (comparison) => comparison)
 			)
 		}}
-	return
-		unless(is_Loading(enum_releaseRegion)) &&
+	
+	alt_core = // alt_core => contains measurement for energy orbs
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
 		measured(
-			tally(get_EnergyOrb_amountToCollect(enum_timePeriod), 
-				create_TallyComparisonArray(enum_timePeriod, enum_releaseRegion))
+			create_Tally(enum_timePeriod, enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) && 
+				!is_Loading(enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
+		trigger_when(on_Cutscene_end(enum_releaseRegion))
+	alt_reset = // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
 		never_toAlt(
-			!is_InGame(enum_releaseRegion) ||
-			on_Chapter_change(enum_releaseRegion) ||
-			on_EnergyUnits_decrement(enum_releaseRegion)
+			is_ReleaseRegion(enum_releaseRegion) &&
+			(
+				!is_InGame(enum_releaseRegion) ||
+				on_Chapter_change(enum_releaseRegion) ||
+				on_EnergyUnits_decrement(enum_releaseRegion)
+			)
 		)
-	}	
+	return alt_core || alt_reset}	
 // -------- Below trigger generators are deprecated -------- 
 function achievements_generate_TextComparison_GotEnergyUnit() {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
@@ -2795,6 +2807,7 @@ achievements_triggers = {
 				on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 			)
 		return any_of(alts, (key) => alts[key])}),
+	// TODO anyOf for max achievement
 	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue),
 	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>
@@ -3075,14 +3088,14 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_EX, enum_releaseRegion) &&
 			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
 		)),
-	"a_EnergyOrbLocatorPresentDay": () =>
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present, RELEASE_REGION_USA),
-	"a_EnergyOrbLocator70s80s": () =>
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Late20thCentury, RELEASE_REGION_USA),
-	"a_EnergyOrbLocatorMiddleAges": () =>
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_MiddleAges, RELEASE_REGION_USA),
-	"a_EnergyOrbLocator1900Days": () =>
-		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Early20thCentury, RELEASE_REGION_USA),
+	"a_EnergyOrbLocatorPresentDay": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present, enum_releaseRegion)),
+	"a_EnergyOrbLocator70s80s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Late20thCentury, enum_releaseRegion)),
+	"a_EnergyOrbLocatorMiddleAges": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_MiddleAges, enum_releaseRegion)),
+	"a_EnergyOrbLocator1900Days": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Early20thCentury, enum_releaseRegion)),
 	"a_ShowPocketWatchToPhotographer": function ShowPocketWatchFranssenAncestor() { return
 		never (
 			!is_InGame(RELEASE_REGION_USA) ||
