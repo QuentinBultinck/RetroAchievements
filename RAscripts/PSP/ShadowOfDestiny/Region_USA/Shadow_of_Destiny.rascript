@@ -63,7 +63,7 @@ RELEASE_REGION_JPN = "NTSC-J"	// ULJM-05512 => PSP game identification code for 
 RELEASE_REGION_EUR = "PAL"		// --> there's no EUR release for this game
 RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_USA, RELEASE_REGION_JPN]
 
-function util_throwError(string_errMsg) {	// This function will throw an error in RATools because the key doesn't exist
+function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
@@ -272,13 +272,13 @@ function memUtil_maskPointer(memAddr_ptr) =>
 	dword(memAddr_ptr) & 0x1FFFFFF	// <-- 0x1FFFFFF: masks 32-bit value to 25-bit (PSP uses 25-bit pointers)
 
 function never_toAlt(comparison) =>
-(
 	(
-		never(comparison)
-	) || (
-		always_false()
+		(
+			never(comparison)
+		) || (
+			always_false()
+		)
 	)
-)
 
 // *******************
 // ◦ PLAYER POSITION ◦
@@ -686,8 +686,8 @@ const_Area_IDs= {	// list not complete, add as is necessary
 	AREA_1900s_City: 0x239,
 	AREA_1900s_BrumMansion: 0x603,	
 
-	AREA_70s_City_Night: 0x31d,
-	AREA_80s_Bar: 0xf,
+	AREA_70s_City_Night: 0x31d,	
+	AREA_80s_Bar: 0xf,	
 	AREA_80s_CafeSonne: 0x15,
 	AREA_80s_AntiquesEule: 0x7a,
 	AREA_80s_City_Snow: 0x465,
@@ -708,6 +708,7 @@ const_Area_IDs= {	// list not complete, add as is necessary
 	AREA_Present_BrumMuseum_Downstairs_Room_Day: 0x2ed}
 function is_Area(enum_area, enum_releaseRegion) => 
 	dword(memory_getAddress(DATATYPE_32Bit, "AreaID", enum_releaseRegion)) == const_Area_IDs[enum_area]	
+
 
 // *****************
 // ◦ CHAPTER LOGIC ◦
@@ -2794,286 +2795,286 @@ achievements_triggers = {
 				on_Chapter_finish(CHAPTER_Chapter8_NoAncestress, enum_releaseRegion)
 			)
 		return any_of(alts, (key) => alts[key])}),
-	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>  
+	"a_MaxAchievementPrologue": function MaxAchievementPrologue() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Prologue),
-	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>  
+	"a_MaxAchievementChapter1": function MaxAchievementChapter1() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter1),
-	"a_MaxAchievementChapter2": function MaxAchievementChapter2() =>  
+	"a_MaxAchievementChapter2": function MaxAchievementChapter2() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter2),
-	"a_MaxAchievementChapter3": function MaxAchievementChapter3() =>  
+	"a_MaxAchievementChapter3": function MaxAchievementChapter3() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter3),
-	"a_MaxAchievementChapter4": function MaxAchievementChapter4() =>  
+	"a_MaxAchievementChapter4": function MaxAchievementChapter4() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter4),
-	"a_MaxAchievementChapter5": function MaxAchievementChapter5() =>  
+	"a_MaxAchievementChapter5": function MaxAchievementChapter5() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter5),
-	"a_MaxAchievementChapter6": function MaxAchievementChapter6() =>  
+	"a_MaxAchievementChapter6": function MaxAchievementChapter6() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter6),
-	"a_MaxAchievementChapter7": function MaxAchievementChapter7() =>  
+	"a_MaxAchievementChapter7": function MaxAchievementChapter7() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter7),
-	"a_MaxAchievementChapter8": function MaxAchievementChapter8() =>  
+	"a_MaxAchievementChapter8": function MaxAchievementChapter8() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Chapter8),
-	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() =>  
+	"a_MaxAchievementEpilogue": function MaxAchievementEpilogue() =>
 		achievements_generate_FullTrigger_ChapterMaxAchievementRate(CHAPTER_Epilogue),
-	"a_MaxAchievementTotal": function MaxAchievementTotal() =>  
+	"a_MaxAchievementTotal": function MaxAchievementTotal() =>
 		achievements_generate_FullTrigger_TotalMaxAchievementRate(),
-	"a_EndingA": function EndingA() { return
+	"a_EndingA": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Epilogue_Ancestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Chosen to have Margarette stay in present + Z-pad breaks
-			is_LargeCutscene_active(RELEASE_REGION_USA) && !is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xdb780, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1bb0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x32ce0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			is_Cutscene_MasterId(0xdb780, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1bb0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x32ce0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
-			is_LargeCutscene_active(RELEASE_REGION_USA) && !is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x77f80, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0xdb780, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x25c50, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x1ac90, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && 
+			is_Cutscene_MasterId(0x77f80, enum_releaseRegion)		&& was_Cutscene_MasterId(0xdb780, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x25c50, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x1ac90, enum_releaseRegion)
 		) &&		
-		is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_A, RELEASE_REGION_USA))},
-	"a_EndingB1": function EndingB1() { return
+			is_Ending_achieved(ENDING_A, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingB1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Epilogue_Ancestress, enum_releaseRegion)
 		) &&
-
-		// Below 2 cutscenes, are commented => player can quit and reload game between these cutscenes 
-		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus
-		// 	is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-		// 	is_Cutscene_MasterId(0x3dd40, RELEASE_REGION_USA)		&&
-		// 	is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-		// 	is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-		// 	is_Cutscene_MasterDataId(0x9d20, RELEASE_REGION_USA)	&&
-		// 	is_Cutscene_SectionDataId(0x1ed10, RELEASE_REGION_USA)
-		// ) &&
-		// once(	// Identifies Cutscene => Eike and Margarette talk to Homunculus part2
-		// 	is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-		// 	is_Cutscene_MasterId(0x81b00, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x3dd40, RELEASE_REGION_USA) &&
-		// 	is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-		// 	is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-		// 	is_Cutscene_MasterDataId(0x250f0, RELEASE_REGION_USA)	&&
-		// 	is_Cutscene_SectionDataId(0x13ff0, RELEASE_REGION_USA)
-		// ) &&
-
-		// Below 2 cutscenes run up to ending credits
 		once(	// Identifies Cutscene => Eike returns from sending Margarette back to past
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x613c0, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x43db0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x1d5d0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x613c0, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x43db0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x1d5d0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x56240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x400d0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x16130, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x56240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x400d0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x16130, enum_releaseRegion)
 		) &&
-		is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_B, RELEASE_REGION_USA))},
-	"a_EndingB2": function EndingB2() { return
+			is_Ending_achieved(ENDING_B, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingB2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Epilogue_Ancestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike talks with Homunculus
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x91240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x44340, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x41cd0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion)  			&&
+			is_Cutscene_MasterId(0x91240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x44340, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x41cd0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x5d2c0, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x91240, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1efd0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x2f6d0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x5d2c0, enum_releaseRegion)		&& was_Cutscene_MasterId(0x91240, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1efd0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x2f6d0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x56240, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x400d0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x16130, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x56240, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x400d0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x16130, enum_releaseRegion)
 		) &&
-		is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_B, RELEASE_REGION_USA))},
-	"a_EndingC": function EndingC() { return
+			is_Ending_achieved(ENDING_B, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Epilogue_Ancestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Giving z-pad back to Homunculus
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x8cf00, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x44340, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x41cd0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 	  		&&
+			is_Cutscene_MasterId(0x8cf00, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x44340, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x41cd0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x7b140, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x8cf00, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1d530, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x2f6d0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x7b140, enum_releaseRegion)		&& was_Cutscene_MasterId(0x8cf00, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1d530, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x2f6d0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_Ancestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xcb700, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x7b140, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x6, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1980, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x1e8d0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0xcb700, enum_releaseRegion)		&& was_Cutscene_MasterId(0x7b140, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x6, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1980, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x1e8d0, enum_releaseRegion)
 		) &&
-		is_MargaretteTold_Ancestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_MargaretteTold_Ancestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_C, RELEASE_REGION_USA))},
-	"a_EndingD": function EndingD() { return
+			is_Ending_achieved(ENDING_C, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingD": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Epilogue_NoAncestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Talk to Homunculus at square
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x709c0, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x24770, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x11790, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 	  		&&
+			is_Cutscene_MasterId(0x709c0, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x24770, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x11790, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and becomes youthfull
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xc5b40, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x4, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x69b40, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x21b40, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0xc5b40, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x69b40, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x21b40, enum_releaseRegion)
 		) &&
-		is_Dana_Left_InPast(RELEASE_REGION_USA) && is_MargaretteTold_NoAncestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_Dana_Left_InPast(enum_releaseRegion) && is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_D, RELEASE_REGION_USA))},
-	"a_EndingE": function EndingE() { return
+			is_Ending_achieved(ENDING_D, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingE": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Epilogue_NoAncestress, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x88dc0, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x3, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x2c3a0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x5ca00, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0x88dc0, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x2c3a0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x5ca00, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Flashback: Dr. Wagner summons Homunculus and Dr. Wagner is killed
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xbef80, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_1(0x9, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x8, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x59f60, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x155e0, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0xbef80, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x9, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x8, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x59f60, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x155e0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_Chapter(CHAPTER_Epilogue_NoAncestress, RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xcdcc0, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0xbef80, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x33230, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x21780, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) 			&&
+			is_Cutscene_MasterId(0xcdcc0, enum_releaseRegion)		&& was_Cutscene_MasterId(0xbef80, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x33230, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x21780, enum_releaseRegion)
 		) &&
-		is_Dana_Saved_FromPast(RELEASE_REGION_USA) && is_MargaretteTold_NoAncestor(RELEASE_REGION_USA) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_Dana_Saved_FromPast(enum_releaseRegion) && is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_E, RELEASE_REGION_USA))},
-	"a_EndingEXKillHomunculus": function KillHomunculus() { return
+			is_Ending_achieved(ENDING_E, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingEXKillHomunculus": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => waking up in limbo with Philosopher Stone and destroy Homunculus
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, RELEASE_REGION_USA) &&
-			is_PrologueExMode_active(RELEASE_REGION_USA) &&	is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA) &&
-			is_ExChapter_unlocked(RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0xa7a80, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x394f0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x41b0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x1413a0,0x8, RELEASE_REGION_USA)	&&			
-			is_Cutscene_MinorId(0x41b0,0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_PhilosopherStone, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0xa7a80, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x394f0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x41b0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x1413a0,0x8, enum_releaseRegion)	&&			
+			is_Cutscene_MinorId(0x41b0,0x28, enum_releaseRegion)
 		) && 
-		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA) 			&&
-			is_Cutscene_MasterId(0x67940, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0xd220, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x5a6f0, RELEASE_REGION_USA)
+		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents
+			is_Cutscene_MasterId(0x67940, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0xd220, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x5a6f0, enum_releaseRegion)
 		) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_PrologueExMode_active(enum_releaseRegion) && is_ExChapter_unlocked(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_EX, RELEASE_REGION_USA))},
-	"a_EndingEXCureHelena": function CureHelena() { return
+			is_Ending_achieved(ENDING_EX, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
+	"a_EndingEXCureHelena": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) ||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Helena Wagner is cured
-			is_LargeCutscene_active(RELEASE_REGION_USA) && is_ItemPresentInInventory(ITEM_PhilosopherStone, RELEASE_REGION_USA) &&
-			is_PrologueExMode_active(RELEASE_REGION_USA) &&	is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA) &&
-			is_ExChapter_unlocked(RELEASE_REGION_USA) &&
-			is_Cutscene_MasterId(0x58c00, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x268f0, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x11bc0, RELEASE_REGION_USA)	&&
-			is_Cutscene_MinorId(0x721f0,0x8, RELEASE_REGION_USA)	&&			
-			is_Cutscene_MinorId(0x11bc0,0x28, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_PhilosopherStone, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x58c00, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x268f0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x11bc0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x721f0,0x8, enum_releaseRegion)	&&			
+			is_Cutscene_MinorId(0x11bc0,0x28, enum_releaseRegion)
 		) &&
-		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents			
-			is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA) 			&&
-			is_Cutscene_MasterId(0x67940, RELEASE_REGION_USA)		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0xd220, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x5a6f0, RELEASE_REGION_USA)
+		once(	// Identifies cutscene => Immortal Dr. Wagner // Eike lookalike in present talking with delinquents
+			is_Cutscene_MasterId(0x67940, enum_releaseRegion)		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0xd220, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x5a6f0, enum_releaseRegion)
 		) &&
-		once(is_Video_active(RELEASE_REGION_USA)) &&	// Credits video
+		is_PrologueExMode_active(enum_releaseRegion) && is_ExChapter_unlocked(enum_releaseRegion) &&
+		once(is_Video_active(enum_releaseRegion)) && // Credits video
 		trigger_when(
-			on_Video_end(RELEASE_REGION_USA) &&		// Trigger when Credits video is over/skipped
-			is_Ending_achieved(ENDING_EX, RELEASE_REGION_USA))},
+			is_Ending_achieved(ENDING_EX, enum_releaseRegion) &&
+			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
+		)),
 	"a_EnergyOrbLocatorPresentDay": () =>
 		achievements_generate_FullTrigger_EnergyCollector(TIMEPERIOD_Present, RELEASE_REGION_USA),
 	"a_EnergyOrbLocator70s80s": () =>
