@@ -205,9 +205,9 @@ memory_addresses = {
 		"Timer_TotalClearTime": {RELEASE_REGION_USA: 0xaa1560, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa90b0},
 		"BottomScreenTextID": {RELEASE_REGION_USA: 0xac31e4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacad24},
 		"VideoData": {RELEASE_REGION_USA: 0x8ffef0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x8fbef0},
-		"IsChapterCompletionScreenActive": {RELEASE_REGION_USA: 0x1fff5f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f4},
+		"IsChapterCompletionScreenActive": {RELEASE_REGION_USA: 0x1fff5f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f4}, // USA,JPN use same address
 		"IsEventViewerActive": {RELEASE_REGION_USA: 0x1fff130, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff130},
-		"MenuID": {RELEASE_REGION_USA: 0x1fff5f8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f8},
+		"MenuID": {RELEASE_REGION_USA: 0x1fff5f8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fff5f8}, // USA,JPN use same address
 		"ExtraMenuState": {RELEASE_REGION_USA: 0xac49f4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacc534},
 		"Cutscene_Timer": {RELEASE_REGION_USA: 0xa9ecbc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6888},
 		"Cutscene_MasterID": {RELEASE_REGION_USA: 0xa9ecbc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa680c},
@@ -4319,7 +4319,7 @@ achievements_triggers = {
 			measured(measuredComparison(let_biggestPossibleInventoryCount, enum_releaseRegion)) &&	
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),		
-	"a_DrunkenGuys": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_DrunkenGuys": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_onMax(enum_releaseRegion) { return
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
@@ -4359,13 +4359,14 @@ achievements_triggers = {
 				measured(measuredComparison_onMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion)) ||
 				measured(measuredComparison_atMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion))
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))),
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
 	"a_ShortestChapter": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
 			is_ExtraMenu_active(enum_releaseRegion) ||
-			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) ||
 			
 			// If preventing 1st death in chapter 4 by using the frying pan 
 			//	=> black and white picture is not found inside book during this chapter
@@ -4400,7 +4401,7 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0x5bb90, 0x28, enum_releaseRegion)
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_ArtInspiration1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ArtInspiration1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4463,7 +4464,7 @@ achievements_triggers = {
 				) &&	
 				is_InteractionId(0x129, enum_releaseRegion))
 		]) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion))}), // Trigger when cutscene is over
+		trigger_when(on_Cutscene_end(enum_releaseRegion))), // Trigger when cutscene is over
 	"a_ArtInspirationAll": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) {
 			tally(6, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
@@ -4605,8 +4606,9 @@ achievements_triggers = {
 				!is_InGame(enum_releaseRegion) ||
 				on_Chapter_change(enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
-			measured(measuredComparison(enum_releaseRegion), always_true())}),
+			measured(measuredComparison(enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
 	"a_AntiquesEule": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) {
 			tally(4, [
@@ -4648,8 +4650,9 @@ achievements_triggers = {
 				!is_InGame(enum_releaseRegion) ||
 				on_Chapter_change(enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
-			measured(measuredComparison(enum_releaseRegion), measuredIfComparison(enum_releaseRegion))}),
+			measured(measuredComparison(enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
 	"a_SeenOlegAsWell": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -5571,195 +5574,326 @@ leaderboards_coreData = {
 // • Leaderboards TRIGGER GENERATORS •
 // ===================================
 //	- For leaderboard logic that's reoccuring across multiple triggers
-function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter) {
-	function trigger(enum_chapter, enum_releaseRegion) {
-		let_chapterSpecificComparison = always_true()
-		if (enum_chapter == CHAPTER_Prologue) 
-			let_chapterSpecificComparison = !is_PrologueExMode_active(enum_releaseRegion)
-		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
-			never(!is_InGame(enum_releaseRegion)) &&
-			!is_ExtraMenu_active(enum_releaseRegion) &&
-			once(on_Timer_ChapterClearTime_start(enum_releaseRegion)) &&
-			repeated(500, 						// <-- Delay FIX for leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
-				is_InGame(enum_releaseRegion) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, both Total and chapter clear time pop and same time otherwise
-				is_Chapter(enum_chapter, enum_releaseRegion)
-			) &&
-			let_chapterSpecificComparison					
-		}													
-	return
-		trigger(enum_chapter, RELEASE_REGION_USA) ||
-		trigger(enum_chapter, RELEASE_REGION_JPN)}
-	
-function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter) {
-	function trigger(enum_chapter, enum_releaseRegion) {
-		let_chapterSpecificComparison = always_false()
-		if (enum_chapter == CHAPTER_Prologue)
-			let_chapterSpecificComparison = is_PrologueExMode_active(enum_releaseRegion)
-		return 	
-			is_ReleaseRegion(enum_releaseRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
-			(
-				!is_InGame(enum_releaseRegion) 	|| 
-				let_chapterSpecificComparison 	|| 
-				on_Timer_ChapterClearTime_reset(enum_releaseRegion) ||
-				!is_Chapter(enum_chapter, enum_releaseRegion)
-			)}
-	return
-		trigger(enum_chapter, RELEASE_REGION_USA) ||
-		trigger(enum_chapter, RELEASE_REGION_JPN)}
+// ---------------ClearTimeChapter-------------------
+function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter, enum_releaseRegion) {
+	let_extraComparison_inPrologue = always_true()
+	if(enum_chapter == CHAPTER_Prologue)
+		let_extraComparison_inPrologue = !is_PrologueExMode_active(enum_releaseRegion)
 
-function leaderboards_generate_SubmitTrigger_ClearTimeChapter(enum_chapter) {
-	function trigger(enum_chapter, enum_releaseRegion) => 
-		is_ReleaseRegion(enum_releaseRegion) &&
-		on_ChapterCompletionMenu_render(enum_releaseRegion) &&
-		is_Chapter(enum_chapter, enum_releaseRegion)
 	return 
-		trigger(enum_chapter, RELEASE_REGION_USA) ||
-		trigger(enum_chapter, RELEASE_REGION_JPN)}
+		unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+		never(
+			!is_InGame(enum_releaseRegion) || 
+			is_ExtraMenu_active(enum_releaseRegion)
+		) &&
+		once(on_Timer_ChapterClearTime_start(enum_releaseRegion)) && // <-- once() here because of delay
+		repeated(500, 							// <-- Delay FIX for: leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
+			is_InGame(enum_releaseRegion) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, both Total and chapter clear time pop and same time otherwise
+			is_Chapter(enum_chapter, enum_releaseRegion)
+		) &&
+		let_extraComparison_inPrologue
+	}	
+function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter, enum_releaseRegion) {
+	let_extraComparison_inPrologue = always_false()
+	if (enum_chapter == CHAPTER_Prologue)
+		let_extraComparison_inPrologue = is_PrologueExMode_active(enum_releaseRegion)
 
-function leaderboards_generate_ValueMeasure_ClearTimeChapter() {
-	// DEV_NOTE: Leaderboards - Value
-	// -----------------------------
-	//	- 'Value' can be seen as a special trigger. A trigger like submit, cancel and start. But must have a "measured" flag
-	//	- use max_of() --> when there's multiple value's to measure
-	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
-		
-	return 
-		max_of(
-			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_USA), when = is_ReleaseRegion(RELEASE_REGION_USA)),
-			measured(get_Timer_ChapterClearTime_InSeconds(RELEASE_REGION_JPN), when = is_ReleaseRegion(RELEASE_REGION_JPN))
+	return 	
+		is_ReleaseRegion(enum_releaseRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
+		(
+			!is_InGame(enum_releaseRegion) || 
+			let_extraComparison_inPrologue || 
+			!is_Chapter(enum_chapter, enum_releaseRegion) ||
+			on_Timer_ChapterClearTime_reset(enum_releaseRegion)
 		)
 	}
+function leaderboards_generate_SubmitTrigger_ClearTimeChapter(enum_chapter, enum_releaseRegion) =>
+	is_ReleaseRegion(enum_releaseRegion) &&
+	is_Chapter(enum_chapter, enum_releaseRegion) &&
+	on_ChapterCompletionMenu_render(enum_releaseRegion)
+
+function leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion) =>
+	measured(get_Timer_ChapterClearTime_InSeconds(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
+
+// ---------------ClearTimeChapter_alt-------------------
+function leaderboards_generate_StartTrigger_ClearTimeChapter_alt(enum_chapter, enum_releaseRegion) { // alternative => starts on_ChapterCompletionMenu_render() => submit immediately => to lower RAoverlay clutter 
+	// DEV_NOTE: Leaderboards: Start and submit on same frame
+	// ------------------------------------
+	//	- Reason is to lower the RAoverlay clutter
+	//	- refer to https://docs.retroachievements.org/Leaderboards/#design-tips
+
+	let_extraComparison_inPrologue = always_true()
+	if(enum_chapter == CHAPTER_Prologue)
+		let_extraComparison_inPrologue = !is_PrologueExMode_active(enum_releaseRegion)
+
+	return
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_Chapter(enum_chapter, enum_releaseRegion) &&
+		let_extraComparison_inPrologue &&
+		on_ChapterCompletionMenu_render(enum_releaseRegion)
+	}
+function leaderboards_generate_CancelTrigger_ClearTimeChapter_alt() =>
+	always_false()
+function leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt() =>
+	always_true()
 
 // =========================
 // • Leaderboards TRIGGERS •
 // =========================
 leaderboards_startTriggers = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter7),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter6),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter5),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter4),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter3),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter2),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter1),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Prologue),
-	"lb_TotalClearTime": () {
-		function trigger(enum_releaseRegion) => 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
-			never(!is_InGame(enum_releaseRegion)) &&
-			!is_ExtraMenu_active(enum_releaseRegion) &&
-			once(on_Timer_TotalClearTime_start(enum_releaseRegion)) &&
-			repeated(100, is_InGame(enum_releaseRegion)) && // <-- delay popup 
-			!is_PrologueExMode_active(enum_releaseRegion)
-		return	
-			trigger(RELEASE_REGION_USA) ||
-			trigger(RELEASE_REGION_JPN)}
+	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter8, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)		
+		),		
+	"lb_ClearTimeChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter7, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter7, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter6, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter6, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter5, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter5, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter4, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter4, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter3, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter3, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter2, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter2, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter1, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter1, enum_releaseRegion)
+		),
+	"lb_ClearTimePrologue": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Prologue, enum_releaseRegion)
+		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Prologue, enum_releaseRegion)
+		),
+	"lb_TotalClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// Below code => alt leaderboard with RAoverlay timer - start when entering game/loading a save
+			//	'''''''''''''''''''''''''''''
+			//	unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+			//	never(
+			//		!is_InGame(enum_releaseRegion) ||
+			//		is_ExtraMenu_active(enum_releaseRegion)		
+			//	) &&
+			//	!is_PrologueExMode_active(enum_releaseRegion) &&
+			//	once(on_Timer_TotalClearTime_start(enum_releaseRegion)) && // <-- once() here because of delay
+			//	repeated(100, is_InGame(enum_releaseRegion))) // <-- delay popup
+
+		// DEV_NOTE: __ornext()
+		// --------------------------
+		//	(written with 2 underscores)
+		//	- Will try to make RAtools use 'orNext' Flags instead of creating unnecessary alt groups 
+		//	- Example: __ornext(X || Y || Z) => will generate below logic
+		//				orNext: X
+		//				orNext: Y
+		//			 			Z
+
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_InGame(enum_releaseRegion) &&		
+		__ornext(is_Chapter(CHAPTER_Epilogue, enum_releaseRegion)) && // <-- __ornext() is necessary here because it creates alt groups, when not needed
+		on_Video_start(enum_releaseRegion)) // <-- Trigger when credits video starts
 	}
+
 leaderboards_cancelTriggers = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter8),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter7),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter6),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter5),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter4),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter3),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter2),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter1),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Prologue),
-	"lb_TotalClearTime": () {
-		function trigger(enum_releaseRegion) =>		
-			is_ReleaseRegion(enum_releaseRegion) &&
-			(
-				!is_InGame(enum_releaseRegion) || 
-				is_PrologueExMode_active(enum_releaseRegion) || 
-				on_Timer_TotalClearTime_reset(enum_releaseRegion)
-			)
-		return
-			trigger(RELEASE_REGION_USA) ||
-			trigger(RELEASE_REGION_JPN)}
+	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter7, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter6, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter5, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter4, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter3, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter2, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter1, enum_releaseRegion)
+		),
+	"lb_ClearTimePrologue": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Prologue, enum_releaseRegion)
+		),
+	"lb_TotalClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// Below code => alt leaderboard with RAoverlay timer - start when entering game/loading a save
+			//	'''''''''''''''''''''''''''''
+			//	is_ReleaseRegion(enum_releaseRegion) &&
+			//	(
+			//		!is_InGame(enum_releaseRegion) || 
+			//		is_PrologueExMode_active(enum_releaseRegion) || 
+			//		on_Timer_TotalClearTime_reset(enum_releaseRegion)
+			//	))
+		always_false())
 	}
+
 leaderboards_submitTriggers = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter8),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter7),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter6),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter5),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter4),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter3),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter2),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter1),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Prologue),
-	"lb_TotalClearTime": () {
-		function trigger(enum_releaseRegion) =>
-			unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
-			is_InGame(enum_releaseRegion) &&
-			(
-				(		// Alt 1 => Trigger when credits video starts
-					on_Video_start(enum_releaseRegion) && is_Chapter(CHAPTER_Epilogue, enum_releaseRegion)
-				) || ( 	// Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
-					never(!on_Timer_TotalClearTime_valueChange(enum_releaseRegion) && !is_Video_active(enum_releaseRegion)) &&
-					tally(20, 
-						is_Video_active(enum_releaseRegion) && is_Chapter(CHAPTER_Epilogue, enum_releaseRegion) &&
-						!on_Timer_TotalClearTime_valueChange(enum_releaseRegion))
-				)
-			)
-		return
-			trigger(RELEASE_REGION_USA) ||
-			trigger(RELEASE_REGION_JPN)}
+	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter7, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter6, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter5, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter4, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter3, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter2, enum_releaseRegion)
+		),
+	"lb_ClearTimeChapter1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter1, enum_releaseRegion)
+		),
+	"lb_ClearTimePrologue": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
+		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Prologue, enum_releaseRegion)
+		),
+	"lb_TotalClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// Below code => alt leaderboard with RAoverlay timer - start when entering game/loading a save
+			//	'''''''''''''''''''''''''''''
+			//	alt1 = // Alt 1 => Trigger when credits video starts
+			//		is_ReleaseRegion(enum_releaseRegion) &&
+			//		is_InGame(enum_releaseRegion) &&
+			//		is_Chapter(CHAPTER_Epilogue, enum_releaseRegion) &&
+			//		on_Video_start(enum_releaseRegion) 
+			//	alt2 = // Alt 2 => Trigger when timer has stopped for 20 frames during the credits video
+			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			//		never(
+			//			!is_InGame(enum_releaseRegion) ||
+			//			(
+			//				!is_Video_active(enum_releaseRegion) &&
+			//				!on_Timer_TotalClearTime_valueChange(enum_releaseRegion)
+			//			)
+			//		) &&
+			//		repeated(20, 
+			//			is_Video_active(enum_releaseRegion) && 
+			//			is_Chapter(CHAPTER_Epilogue, enum_releaseRegion) &&
+			//			!on_Timer_TotalClearTime_valueChange(enum_releaseRegion)
+			//		)
+			//	return alt1 || alt2})
+		always_true()})
 	}
-leaderboards_valueMeasures = {
-	"lb_ClearTimeChapter8": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter7": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter6": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter5": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter4": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter3": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter2": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimeChapter1": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
-	"lb_ClearTimePrologue": () =>
-		leaderboards_generate_ValueMeasure_ClearTimeChapter(),
+leaderboards_valueMeasures = {	
+	// DEV_NOTE: Leaderboards - ValueTrigger/measure
+	// -----------------------------
+	//	- 'Value' can be seen as a special trigger. A trigger like submit, cancel and start. But must have a "measured" flag
+	//	- Use max_of() --> when there's multiple values to measure (refer to https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions#leaderboardtitle-description-start-cancel-submit-value-formatvalue-lower_is_betterfalse-id0)
+	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
+	
+	"lb_ClearTimeChapter8": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter7": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter6": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter5": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter4": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter3": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter2": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimeChapter1": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_ClearTimePrologue": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_ClearTimeChapter(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
 	"lb_TotalClearTime": () {
-		function valueMeasure(enum_releaseRegion) =>
+		function create_valueMeasure(enum_releaseRegion) => 
 			measured(get_Timer_TotalClearTime_InMinutes(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
-		return
-			max_of(
-				valueMeasure(RELEASE_REGION_USA),
-				valueMeasure(RELEASE_REGION_JPN)
-			)}
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = create_valueMeasure(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
 	}
 // =====================
 // • Leaderboards TEXT •
