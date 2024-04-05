@@ -2154,19 +2154,19 @@ achievements_coreData = {
 			"id": 310426, "points": 4,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
 	"c_ExtraCouple": { // Category - Related to the mysterious couple 
-		"a_EnigmaticCouple1": { // VERIFIED
+		"a_EnigmaticCouple1": { // MODIFIED
 			"id": 307495, "points": 3,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
-		"a_EnigmaticCouple2": { // VERIFIED
+		"a_EnigmaticCouple2": { // MODIFIED
 			"id": 310131, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
-		"a_EnigmaticCouple3": { // VERIFIED
+		"a_EnigmaticCouple3": { // MODIFIED
 			"id": 310134, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
-		"a_EnigmaticCouple4": { // VERIFIED
+		"a_EnigmaticCouple4": { // MODIFIED
 			"id": 310135, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
-		"a_EnigmaticCouple5": { // VERIFIED
+		"a_EnigmaticCouple5": { // MODIFIED
 			"id": 315564, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
 		"a_LostYoungCouple1": { // MODIFIED
@@ -2202,22 +2202,22 @@ achievements_coreData = {
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}
 		},
 	"c_ExtraGameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
-		"a_ErasingEike": { // VERIFIED
+		"a_ErasingEike": { // MODIFIED
 			"id": 306883, "points": 2,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
-		"a_ErasingEike2": { // VERIFIED
+		"a_ErasingEike2": { // MODIFIED
 			"id": 314763, "points": 1,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_ExcuseMeMyMy": { // VERIFIED
+		"a_ExcuseMeMyMy": { // MODIFIED
 			"id": 306919, "points": 1,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_MetYouBefore": { // VERIFIED
+		"a_MetYouBefore": { // MODIFIED
 			"id": 306888, "points": 2,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
-		"a_RottenRope": { // VERIFIED
+		"a_RottenRope": { // MODIFIED
 			"id": 315563, "points": 1,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_TimeEgoFlop": { // VERIFIED
+		"a_TimeEgoFlop": { // MODIFIED
 			"id": 313212, "points": 1,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
@@ -4658,141 +4658,133 @@ achievements_triggers = {
 		) &&
 		is_KittenGivenToSibylla(RELEASE_REGION_USA) &&
 		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_ErasingEike": function ErasingEike() { return 
+	"a_ErasingEike": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)						||
-			!is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA)  
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
 		) &&
-		(
-			(
-				unless(
-					!is_LargeCutscene_active(RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Eike wakes himself up
-					is_Cutscene_MasterId(0x9c00, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x9bf0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x9bf0, RELEASE_REGION_USA)	&&
-					is_Cutscene_MinorId(0x9bf0, 0x28, RELEASE_REGION_USA) 	&&
-					is_Cutscene_MinorId(0xea70, 0x8, RELEASE_REGION_USA) 	
-				) && 
-				once(	// Identifies Cutscene => Talking with Homunculus in Limbo after death
-					is_Cutscene_MasterId(0x237c0, RELEASE_REGION_USA)		&& was_Cutscene_MasterId(0x9c00, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x18930, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0xae60, RELEASE_REGION_USA)
-				) && 
-				trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))
-			) || (
-				always_false()
-			)
-		)},
-	"a_ErasingEike2": function ErasingEike2() { return
+		once(	// Identifies Cutscene => Eike wakes himself up
+			is_LargeCutscene_active(enum_releaseRegion)				&&
+			is_Cutscene_MasterId(0x9c00, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x9bf0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x9bf0, enum_releaseRegion)	&&
+			is_Cutscene_MinorId(0x9bf0, 0x28, enum_releaseRegion) 	&&
+			is_Cutscene_MinorId(0xea70, 0x8, enum_releaseRegion) 	
+		) && 
+		once(	// Identifies Cutscene => Talking with Homunculus in Limbo after death
+			is_LargeCutscene_active(enum_releaseRegion)				&&
+			is_Cutscene_MasterId(0x237c0, enum_releaseRegion)		&& was_Cutscene_MasterId(0x9c00, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x18930, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0xae60, enum_releaseRegion)
+		) && 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_ErasingEike2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)				||
-			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)	||
-			is_ExtraMenu_active(RELEASE_REGION_USA)  
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike bumps into himself
-			is_Cutscene_MinorId(0x23ee0, 0x8, RELEASE_REGION_USA) 	&&
-			is_Cutscene_MinorId(0x377e0, 0x28, RELEASE_REGION_USA) 	&&
-			is_Cutscene_MinorId(0x23eb0, 0x2c, RELEASE_REGION_USA)
+			is_Cutscene_MinorId(0x23ee0, 0x8, enum_releaseRegion) 	&&
+			is_Cutscene_MinorId(0x377e0, 0x28, enum_releaseRegion) 	&&
+			is_Cutscene_MinorId(0x23eb0, 0x2c, enum_releaseRegion)
 		) && 
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_RottenRope": function RottenRope() { return
-		never (
-			!is_InGame(RELEASE_REGION_USA) 				||
-			!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA) 	||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_RottenRope": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Holding on to rotten rope
-			is_LargeCutscene_active(RELEASE_REGION_USA)	&&
-			is_Cutscene_MasterId(0x15640, RELEASE_REGION_USA) 		&&
-			is_Cutscene_SectionId_1(0x5, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x6, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x7830, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x2220, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion)	&&
+			is_Cutscene_MasterId(0x15640, enum_releaseRegion) 		&&
+			is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x6, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x7830, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x2220, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Waking up in Limbo after death
-			is_LargeCutscene_active(RELEASE_REGION_USA)	&&
-			is_Cutscene_MasterId(0x237c0, RELEASE_REGION_USA) 		&& was_Cutscene_MasterId(0x15640, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x18930, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0xae60, RELEASE_REGION_USA)
+			is_LargeCutscene_active(enum_releaseRegion)	&&
+			is_Cutscene_MasterId(0x237c0, enum_releaseRegion) 		&& was_Cutscene_MasterId(0x15640, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x18930, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0xae60, enum_releaseRegion)
 		) &&
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_TimeEgoFlop": function TimeEgoFlop() { return
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_TimeEgoFlop": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) 				||
-			is_ExtraMenu_active(RELEASE_REGION_USA) 	|| 
-			!is_Chapter(CHAPTER_Chapter6, RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) || 
+			!is_Chapter(CHAPTER_Chapter6, enum_releaseRegion)
 		) &&
 		once( // Identifies Cutscene => Roadkilled by Time Ego movie
-				is_LargeCutscene_active(RELEASE_REGION_USA) 			&& 
-				is_MovieTimeTravel_chosen(RELEASE_REGION_USA)			&&
-				is_MovieWorldConquest_chosen(RELEASE_REGION_USA) 		&&				
-				is_Cutscene_MasterId(0x77980, RELEASE_REGION_USA)		&&
-				is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-				is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-				is_Cutscene_MasterDataId(0x59240, RELEASE_REGION_USA)	&&
-				is_Cutscene_SectionDataId(0x1e730, RELEASE_REGION_USA)
-			) && 
-			trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_MetYouBefore": function MetYouBefore() { return
+			is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			is_MovieTimeTravel_chosen(enum_releaseRegion)			&&
+			is_MovieWorldConquest_chosen(enum_releaseRegion) 		&&				
+			is_Cutscene_MasterId(0x77980, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x59240, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x1e730, enum_releaseRegion)
+		) && 
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_MetYouBefore": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)						||
-			!is_Chapter(CHAPTER_Chapter2, RELEASE_REGION_USA) 	||
-			is_ExtraMenu_active(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion)	||				
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion) 
 		) &&
 		once(	// Identifies Cutscene => Talk Dana, seeing through clothing hunch
-			is_LargeCutscene_active(RELEASE_REGION_USA)			&&	
-			is_Cutscene_MasterId(0x6e480, RELEASE_REGION_USA) 		&& 
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x45250, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x143f0, RELEASE_REGION_USA)	
+			is_LargeCutscene_active(enum_releaseRegion)				&&	
+			is_Cutscene_MasterId(0x6e480, enum_releaseRegion) 		&& 
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x45250, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x143f0, enum_releaseRegion)	
 		) && 
 		once(	// Identifies Cutscene => Getting stabbed from behind
-			is_LargeCutscene_active(RELEASE_REGION_USA)			&&	
-			is_Cutscene_MasterId(0x1b740, RELEASE_REGION_USA) 		&& was_Cutscene_MasterId(0x6e480, RELEASE_REGION_USA) &&
-			is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-			is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-			is_Cutscene_MasterDataId(0x1d00, RELEASE_REGION_USA)	&&
-			is_Cutscene_SectionDataId(0x19a20, RELEASE_REGION_USA)	
+			is_LargeCutscene_active(enum_releaseRegion)				&&	
+			is_Cutscene_MasterId(0x1b740, enum_releaseRegion) 		&& was_Cutscene_MasterId(0x6e480, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x1d00, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x19a20, enum_releaseRegion)	
 		) && 
-		trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))},
-	"a_ExcuseMeMyMy": function ExcuseMeMyMy() { return
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
+	"a_ExcuseMeMyMy": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA)			||
-			is_ExtraMenu_active(RELEASE_REGION_USA)	||
-			!is_Chapter(CHAPTER_Chapter3, RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)	||
+			!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
 		) &&
-		(
-			(
-				unless(
-					!is_LargeCutscene_active(RELEASE_REGION_USA)
-				) &&
-				once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'					
-					is_Cutscene_MasterId(0xb140, RELEASE_REGION_USA) && was_Cutscene_MasterId(0x5aa80, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x2, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0x5ac0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0x38b0, RELEASE_REGION_USA)	
-				) && 
-				once(	// Identifies Cutscene => Waking up in limbo after dying to vase
-					is_Cutscene_MasterId(0x1a440, RELEASE_REGION_USA) && was_Cutscene_MasterId(0xb140, RELEASE_REGION_USA) &&
-					is_Cutscene_SectionId_1(0x1, RELEASE_REGION_USA)		&&
-					is_Cutscene_SectionId_2(0x0, RELEASE_REGION_USA)		&&
-					is_Cutscene_MasterDataId(0xd9a0, RELEASE_REGION_USA)	&&
-					is_Cutscene_SectionDataId(0xca50, RELEASE_REGION_USA)	
-				) &&
-				trigger_when(on_CutsceneSection_end(RELEASE_REGION_USA))
-			) || (
-				always_false()
-			)
-		)}
+		once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'
+			is_LargeCutscene_active(enum_releaseRegion)				&&
+			is_Cutscene_MasterId(0xb140, enum_releaseRegion) 		&& was_Cutscene_MasterId(0x5aa80, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0x5ac0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0x38b0, enum_releaseRegion)	
+		) && 
+		once(	// Identifies Cutscene => Waking up in limbo after dying to vase
+			is_LargeCutscene_active(enum_releaseRegion)				&&
+			is_Cutscene_MasterId(0x1a440, enum_releaseRegion) 		&& was_Cutscene_MasterId(0xb140, enum_releaseRegion) &&
+			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			is_Cutscene_MasterDataId(0xd9a0, enum_releaseRegion)	&&
+			is_Cutscene_SectionDataId(0xca50, enum_releaseRegion)	
+		) &&
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion)))
 	}
 
 // ********************
