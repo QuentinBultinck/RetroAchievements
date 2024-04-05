@@ -231,7 +231,7 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 	return let_memAddr}
 
-function memory_initialize() { // memory_initialize: is called in initialization code
+function memory_initialize() { // memory_initialize() => is called in initialization code
 	function initialize_OtherRegions() {	// Use this function when ALL memory addresses for a game region are offset
 		let_EUoffset = sNULL
 		let_JPoffset = sNULL
@@ -243,7 +243,7 @@ function memory_initialize() { // memory_initialize: is called in initialization
 		}
 	}
 	// initialize_OtherRegions()
-	memory_initialize_NPCAppearances_gameRegionJPN()} // offset 0x7b50
+	memory_initialize_NPCAppearances_releaseRegionJPN()} // offset 0x7b50
 
 // ******************
 // • Memory UTILITY •
@@ -401,7 +401,7 @@ NPC_Present_BlondeOldWomanOrangeSweater	= 103
 NPC_Present_BrunetteYoungGirl 			= 102
 NPC_Present_BrunetteMother 				= 101
 NPC_Present_BlondeYoungBoy				= 100
-const_NPCs_data = { // RELEASE_REGION_JPN is initialized with memory_initialize_NPCAppearances_gameRegionJPN()
+const_NPCs_data = { // RELEASE_REGION_JPN is initialized with memory_initialize_NPCAppearances_releaseRegionJPN()
 	// "xxxtemplatexxxx": { 
 	// 	"ID": 0x00000, "Appearance": {
 	// 		"xxxxxtemplatexxxxxxx": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0x000000, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 0000}}},
@@ -488,7 +488,7 @@ const_NPCs_data = { // RELEASE_REGION_JPN is initialized with memory_initialize_
 		"ID": 0x5d, "Appearance": {
 			"Chap2_SouthEastGate_Scare": {"memAddr_TalkCount": {RELEASE_REGION_USA: 0xA9EE3F, RELEASE_REGION_JPN: iNULL}, "maxTalkCount": 1}}}}
 
-function memory_initialize_NPCAppearances_gameRegionJPN() { // This function should be called in memory_initialize()
+function memory_initialize_NPCAppearances_releaseRegionJPN() { // This function should be called in memory_initialize()
 	let_offsetToJPN = 0x7b50
 	for NPCkey in const_NPCs_data {
 		if (const_NPCs_data[NPCkey]["Appearance"] != iNULL) {
@@ -4935,129 +4935,127 @@ richPresence_lookupTables = {
 		get_ChapterID(CHAPTER_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
+
 // *************************
 // • RichPresence DISPLAYS •
 // *************************
-//	- Contains logic data for the rich presence script
-function richPresence_callDisplayFunctions() { 
-	function rp_isPaused(enum_releaseRegion) { // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on: re-check other richPresence conditions, some other conditions need changing
-		function condition(enum_releaseRegion) => 
-			is_InGame(enum_releaseRegion) && 
-			is_InGamePauseMenu_active(enum_releaseRegion)
-		rich_presence_conditional_display(
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_isPaused"),
-			richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
-		)}
-	// rp_isPaused(RELEASE_REGION_USA)
-	// rp_isPaused(RELEASE_REGION_JPN)
+function rp_isPaused(enum_releaseRegion) {
+	function condition(enum_releaseRegion) => 
+		is_InGame(enum_releaseRegion) && 
+		is_InGamePauseMenu_active(enum_releaseRegion)
+	rich_presence_conditional_display(
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_isPaused"),
+		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}
 
-	function rp_InGameEXChapterOnly(enum_releaseRegion) { // VERIFIED
-		function condition(enum_releaseRegion) => 
-			is_InGame(enum_releaseRegion) && 
-			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
-			is_PrologueExMode_active(enum_releaseRegion) && 
-			is_ExChapter_unlocked(enum_releaseRegion) &&
-			!is_ExtraMenu_active(enum_releaseRegion) &&
-			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
-			is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
-		rich_presence_conditional_display(
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_InGameEXChapterOnly"),
-			richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
-		)}
-	rp_InGameEXChapterOnly(RELEASE_REGION_USA)
-	rp_InGameEXChapterOnly(RELEASE_REGION_JPN)
-	
-	function rp_InGameChapterOnly(enum_releaseRegion) { // VERIFIED
-		function condition(enum_releaseRegion) =>  
-			is_InGame(enum_releaseRegion) &&
-			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
-			!is_PrologueExMode_active(enum_releaseRegion) && 
-			!is_ExtraMenu_active(enum_releaseRegion) &&
-			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
-			is_ChapterOneOf([
-					CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue
-				], enum_releaseRegion)			
-		rich_presence_conditional_display(	
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_InGameChapterOnly"),
-			richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
-		)}
-	rp_InGameChapterOnly(RELEASE_REGION_USA)
-	rp_InGameChapterOnly(RELEASE_REGION_JPN)
+function rp_InGameEXChapterOnly(enum_releaseRegion) {
+	function condition(enum_releaseRegion) => 
+		is_InGame(enum_releaseRegion) && 
+		// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
+		is_PrologueExMode_active(enum_releaseRegion) && 
+		is_ExChapter_unlocked(enum_releaseRegion) &&
+		!is_ExtraMenu_active(enum_releaseRegion) &&
+		is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
+		is_Chapter(CHAPTER_Prologue, enum_releaseRegion)
+	rich_presence_conditional_display(
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_InGameEXChapterOnly"),
+		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}
 
-	function rp_InGameChapterWithTimePeriod(enum_releaseRegion) { // VERIFIED
-		function condition(enum_releaseRegion) { return
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) && 
-			!is_ExtraMenu_active(enum_releaseRegion) &&
-			// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
-			is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
-			is_ChapterOneOf([
-					CHAPTER_Chapter2, CHAPTER_Chapter3, 
-					CHAPTER_Chapter4, CHAPTER_Chapter5, 
-					CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8
-				], enum_releaseRegion)}		
-		rich_presence_conditional_display(	
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_InGameChapterWithTimePeriod"),
-			richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_TimePeriod", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
-		)}
-	rp_InGameChapterWithTimePeriod(RELEASE_REGION_USA)
-	rp_InGameChapterWithTimePeriod(RELEASE_REGION_JPN)
+function rp_InGameChapterOnly(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>  
+		is_InGame(enum_releaseRegion) &&
+		// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
+		!is_PrologueExMode_active(enum_releaseRegion) && 
+		!is_ExtraMenu_active(enum_releaseRegion) &&
+		is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
+		is_ChapterOneOf([
+				CHAPTER_Prologue, CHAPTER_Chapter1, CHAPTER_Epilogue
+			], enum_releaseRegion)			
+	rich_presence_conditional_display(	
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_InGameChapterOnly"),
+		richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}	
 
-	function rp_AtTitleScreen(enum_releaseRegion) { // VERIFIED
-		function condition(enum_releaseRegion) { return
-			is_ReleaseRegion(enum_releaseRegion) &&
-			(
-				!is_InGame(enum_releaseRegion) || 
-				is_ExtraMenu_active(enum_releaseRegion)
-			)}
-		rich_presence_conditional_display( 
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_AtTitleScreen"),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
-		)}
-	rp_AtTitleScreen(RELEASE_REGION_USA)
-	rp_AtTitleScreen(RELEASE_REGION_JPN)
+function rp_InGameChapterWithTimePeriod(enum_releaseRegion) {
+	function condition(enum_releaseRegion) { return
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_InGame(enum_releaseRegion) && 
+		!is_ExtraMenu_active(enum_releaseRegion) &&
+		// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
+		is_ChapterIdInRangeOfRecordedIds(enum_releaseRegion) && 
+		is_ChapterOneOf([
+				CHAPTER_Chapter2, CHAPTER_Chapter3, 
+				CHAPTER_Chapter4, CHAPTER_Chapter5, 
+				CHAPTER_Chapter6, CHAPTER_Chapter7, CHAPTER_Chapter8
+			], enum_releaseRegion)}		
+	rich_presence_conditional_display(	
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_InGameChapterWithTimePeriod"),
+		richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_TimePeriod", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}
 
-	function rp_DefaultPlus(enum_releaseRegion) { // VERIFIED
-		function condition(enum_releaseRegion) =>
-			is_ReleaseRegion(enum_releaseRegion)
-		rich_presence_conditional_display( 
-			condition(enum_releaseRegion),
-			richPresence_getText("rp_DefaultPlus"),
-			richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+function rp_AtTitleScreen(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) { return
+		is_ReleaseRegion(enum_releaseRegion) &&
+		(
+			!is_InGame(enum_releaseRegion) || 
+			is_ExtraMenu_active(enum_releaseRegion)
 		)}
-	rp_DefaultPlus(RELEASE_REGION_USA)
-	rp_DefaultPlus(RELEASE_REGION_JPN)
+	rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_AtTitleScreen"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}
 
-	function rp_Default() { // VERIFIED
-		rich_presence_display(	
-			richPresence_getText("rp_Default")
-		)}
-	rp_Default() // rp_DefaultPlus => can be used instead when offering multi-region support AND using placeholder in text 
-}
+
+function rp_DefaultPlus(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+	rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlus"),
+		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
+	)}
+
+function rp_Default() {
+	rich_presence_display(	
+		richPresence_getText("rp_Default")
+	)}
+// -------------------------------------
+function richPresence_initializeDisplays() {
+	rp_Default()
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		// rp_isPaused(enum_releaseRegion) // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on: re-check other richPresence conditions, some other conditions need changing
+		rp_InGameEXChapterOnly(enum_releaseRegion) // VERIFIED
+		rp_InGameChapterOnly(enum_releaseRegion) // VERIFIED
+		rp_InGameChapterWithTimePeriod(enum_releaseRegion) // VERIFIED
+		rp_AtTitleScreen(enum_releaseRegion) // VERIFIED
+		rp_DefaultPlus(enum_releaseRegion) // VERIFIED
+	}} 
+
 // **************************
 // • RichPresence PARAMETERS •
 // ************************** 
@@ -5167,7 +5165,9 @@ richPresence_parameterData = {
 		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHour", "LookupFallback")}
 	}
 // -------------------------------------
-function richPresence_createParameterName(string_parameterKey) => substring(string_parameterKey, 4)	// Removes rpp_ 
+function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
+	substring(string_parameterKey, 4)	
+
 function richPresence_callParameterFunction(string_parameterKey, enum_releaseRegion) {	// Checks which rich_presence function to execute/call and gives it the correct parameters with the data stored in richPresence_parameterData
 	function richPresence_callValueFunction(string_parameterKey, dict_paramValueData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(string_parameterKey)
@@ -5192,8 +5192,7 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
-	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))
-	}
+	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 
 // *****************************
 // • RichPresence INITIALIZER •
@@ -5209,7 +5208,7 @@ function richPresence_populateLookupTables() {	// Changes the richPresence_looku
 
 function richPresence_initialize() {
 	richPresence_populateLookupTables()
-	richPresence_callDisplayFunctions()}
+	richPresence_initializeDisplays()}
 
 // ***************************************************************************************************** \\
 //																										 \\
