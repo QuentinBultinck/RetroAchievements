@@ -1981,7 +1981,7 @@ memory_initialize()
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
-	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page
+	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
@@ -2260,7 +2260,7 @@ achievements_coreData = {
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
 achievements_typeByCategory = {
-	// DEV_NOTE: Achievement type property
+	// DEV_NOTE: Achievement property 'type'
 	//		- Possible type keys: "missable" - "progression" - "win_condition"
 	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
@@ -2282,7 +2282,7 @@ achievements_typeByCategory = {
 function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapter, enum_releaseRegion) {
 	// DEV_NOTE: Measure flag with "sum_of() == value" instead of a tally()
 	// ----------------------------------
-	// 	- This function generates a measure with no hit target. But uses Add Source flags generated with sum_of()
+	// 	- This function generates a measure with no hit target. But uses 'Add Source' flags generated with sum_of()
 	//	- Example output of this function: measured((bit0(0xAA1178) + bit1(0xAA1178) + bit2(0xAA1178) + bit3(0xAA1178) + bit4(0xAA1178)) == 5
 	//		-- In this case each bit would count for 20% or 1/5th
 
@@ -2475,6 +2475,13 @@ achievements_triggers = {
 	// 	return always_false()
 	// },
 	"a_PrologueComplete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// DEV_NOTE: Reset + Pause
+		// --------------------------
+		//	- Pauses will be evaluated first => thus when pause if true, all resets in the same group are on hold. If you want to reset => place reset inside another group
+		//	- You can also use ResetNextIf
+
+
+
 		(	// Alt 1 => Normal way of identifying cutscenes
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion) ||					
@@ -4069,7 +4076,7 @@ achievements_triggers = {
 				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
-	"a_BecomeThePerformer": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_BecomeThePerformer": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4087,7 +4094,7 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x3a00, enum_releaseRegion)
 		) &&
 		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
-	"a_GiveMargaretteCake": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_GiveMargaretteCake": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4161,7 +4168,7 @@ achievements_triggers = {
 				on_CutsceneSection_end(enum_releaseRegion)
 			)
 		}), 
-	"a_ScareEveryone": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ScareEveryone": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(9, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
@@ -4230,7 +4237,7 @@ achievements_triggers = {
 			measured(measuredComparison(enum_releaseRegion), is_InGame(enum_releaseRegion)) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
-	"a_FreeMeal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_FreeMeal": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4259,7 +4266,7 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0xf3df0, 0x28, enum_releaseRegion)
 		) &&
 		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
-	"a_NewCakeInvented": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_NewCakeInvented": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4276,7 +4283,7 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0x122b0, 0x2c, enum_releaseRegion)
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_MaxInventory": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_MaxInventory": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_biggestPossibleInventoryCount = 20
 		function deltaItemCount(enum_releaseRegion) =>
 			sum_of(const_Items_data, (item) {	// sum_of(prevItemCount) == 19
@@ -4312,7 +4319,7 @@ achievements_triggers = {
 			measured(measuredComparison(let_biggestPossibleInventoryCount, enum_releaseRegion)) &&	
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),		
-	"a_DrunkenGuys": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_DrunkenGuys": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		function measuredComparison_onMax(enum_releaseRegion) { return
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
@@ -4353,7 +4360,7 @@ achievements_triggers = {
 				measured(measuredComparison_atMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_ShortestChapter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_ShortestChapter": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -4375,10 +4382,11 @@ achievements_triggers = {
 			is_Cutscene_SectionDataId(0x3d500, enum_releaseRegion)	
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_MeetFamousOleg": function MeetFamousOleg(){ return
+	"a_MeetFamousOleg": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(enum_releaseRegion)				||
-			is_ExtraMenu_active(enum_releaseRegion) 	||
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
 			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Talking to Oleg near movie poster
@@ -4391,71 +4399,72 @@ achievements_triggers = {
 			is_Cutscene_MinorId(0x8f8e0, 0x8, enum_releaseRegion)	&&
 			is_Cutscene_MinorId(0x5bb90, 0x28, enum_releaseRegion)
 		) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion))},
-	"a_ArtInspiration1": function ArtInspiration1() { return
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+	"a_ArtInspiration1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
-			!is_InGame(RELEASE_REGION_USA) 		||
-			on_Chapter_change(RELEASE_REGION_USA) ||
-			is_BrumEstate_Library(RELEASE_REGION_USA)
+			!is_InGame(enum_releaseRegion) ||
+			on_Chapter_change(enum_releaseRegion) ||
+			is_BrumEstate_Library(enum_releaseRegion)
 		) && 
 		tally(1, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) && 
-				is_Painting_TowerView_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_TowerView, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) && 
+				is_Painting_TowerView_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_TowerView, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night, RELEASE_REGION_USA) || 
-					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Night, enum_releaseRegion) || 
+					is_Area(AREA_Present_BrumMuseum_Downstairs_Room_Day, enum_releaseRegion)
 				) &&
-				is_InteractionId(0x124, RELEASE_REGION_USA)),			
+				is_InteractionId(0x124, enum_releaseRegion)),			
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) && 	
-				is_Painting_SquireCrest_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_SquireCrest, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) && 	
+				is_Painting_SquireCrest_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_SquireCrest, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, RELEASE_REGION_USA) || 
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, enum_releaseRegion) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, enum_releaseRegion)
 				) &&
-				is_InteractionId(0x125, RELEASE_REGION_USA)),
+				is_InteractionId(0x125, enum_releaseRegion)),
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) &&
-				is_Painting_Marktplatz_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_TownSquare, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) &&
+				is_Painting_Marktplatz_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_TownSquare, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, RELEASE_REGION_USA) ||
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Night, enum_releaseRegion) ||
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room1_Day, enum_releaseRegion)
 				) &&
-				is_InteractionId(0x126, RELEASE_REGION_USA)),
+				is_InteractionId(0x126, enum_releaseRegion)),
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) &&
-				is_Painting_Antidote_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_AlchemyLab, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) &&
+				is_Painting_Antidote_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_AlchemyLab, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, RELEASE_REGION_USA) || 
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_releaseRegion) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_releaseRegion)
 				) &&	
-				is_InteractionId(0x127, RELEASE_REGION_USA)),
+				is_InteractionId(0x127, enum_releaseRegion)),
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) &&
-				is_Painting_Performer_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_Performer, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) &&
+				is_Painting_Performer_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_Performer, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, RELEASE_REGION_USA) || 
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_releaseRegion) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_releaseRegion)
 				) &&	
-				is_InteractionId(0x128, RELEASE_REGION_USA)),
+				is_InteractionId(0x128, enum_releaseRegion)),
 			once(
-				is_SmallCutscene_active(RELEASE_REGION_USA) &&
-				is_Painting_HouseCollapse_inspired(RELEASE_REGION_USA) &&
-				is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse, RELEASE_REGION_USA) && 
+				is_SmallCutscene_active(enum_releaseRegion) &&
+				is_Painting_HouseCollapse_inspired(enum_releaseRegion) &&
+				is_InteractingWith(INTERACTABLE_Painting_CollapsedHouse, enum_releaseRegion) && 
 				(
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, RELEASE_REGION_USA) || 
-					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, RELEASE_REGION_USA)
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Night, enum_releaseRegion) || 
+					is_Area(AREA_Present_BrumMuseum_Upstairs_Room2_Day, enum_releaseRegion)
 				) &&	
-				is_InteractionId(0x129, RELEASE_REGION_USA))
+				is_InteractionId(0x129, enum_releaseRegion))
 		]) &&
-		trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},	// Trigger when cutscene is over
-	"a_ArtInspirationAll": function ArtInspirationAll() {
+		trigger_when(on_Cutscene_end(enum_releaseRegion))}), // Trigger when cutscene is over
+	"a_ArtInspirationAll": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) {
 			tally(6, [	// Tally is necessary to trigger when the cutscene is done, otherwise achievement pops during cutscene
 				once(
@@ -4514,13 +4523,15 @@ achievements_triggers = {
 					is_InteractionId(0x129, enum_releaseRegion))
 			])}
 		return
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(RELEASE_REGION_USA) ||
-				on_Chapter_change(RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				on_Chapter_change(enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA)) &&
-			measured(measuredComparison(RELEASE_REGION_USA), always_true())},
-	"a_ArtAppreciator": function ArtAppreciator() {
+			measured(measuredComparison(enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		}),
+	"a_ArtAppreciator": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) {
 			tally(8, [
 				once(
@@ -4589,42 +4600,56 @@ achievements_triggers = {
 					is_InteractionId(0xffffffff, enum_releaseRegion))
 			])}
 		return
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(RELEASE_REGION_USA) ||
-				on_Chapter_change(RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				on_Chapter_change(enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA)) &&
-			measured(measuredComparison(RELEASE_REGION_USA), always_true())},
-	"a_AntiquesEule": function AntiquesEule() {
+			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
+			measured(measuredComparison(enum_releaseRegion), always_true())}),
+	"a_AntiquesEule": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) {
 			tally(4, [
 				once(
-					is_SmallCutscene_active(RELEASE_REGION_USA) &&
+					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_InteractingWith(INTERACTABLE_Antique_FranssenShopSign, enum_releaseRegion) && 
 					is_InteractionId(0xffffffff, enum_releaseRegion)),
 				once(
-					is_SmallCutscene_active(RELEASE_REGION_USA) &&
+					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_InteractingWith(INTERACTABLE_Antique_Rope, enum_releaseRegion) &&
 					is_InteractionId(0xffffffff, enum_releaseRegion)),
 				once(
-					is_SmallCutscene_active(RELEASE_REGION_USA) &&
+					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_InteractingWith(INTERACTABLE_Antique_Antidote, enum_releaseRegion) &&
 					is_InteractionId(0xffffffff, enum_releaseRegion)),
 				once(
-					is_SmallCutscene_active(RELEASE_REGION_USA) &&
+					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_InteractingWith(INTERACTABLE_Antique_Mask, enum_releaseRegion) &&
 					is_InteractionId(0xffffffff, enum_releaseRegion))
 			])}
-		function measuredIfComparison(enum_releaseRegion) { return
-			is_Area(AREA_80s_AntiquesEule, enum_releaseRegion) ||
-			is_Area(AREA_Present_AntiquesEule, enum_releaseRegion)}
+
+		// DEV_NOTE: Multiple PauseIf flags  
+		// ----------------------------------
+		//	- The top/first pauses are evaluated first; Pauses evaluate from top to bottom (1,2,3...)
+		//	- In below example: if the achievement logic gets past unless(!is_ReleaseRegion()) and is paused on the next unless() => then you can say pauseIf(!is_ReleaseRegion() && !is_Area())
+
+		// DEV_NOTE: MeasureIf + PauseIf with Measured
+		// ----------------------------------
+		//	- Measure if => when measureIf is true => then the measure count will be saved AND 0 will be displayed AND measure will stop counting, until measureIf becomes false => then saved hit count will replace 0 and measure can continue counting
+		//	- Pause if => when pauseIf is true => then the measure count will stop counting, but the original count will be displayed (wont reset to 0). Take care, pause will also stop 'reset' flags to function
+
 		return
-			never(
-				!is_InGame(RELEASE_REGION_USA) ||
-				on_Chapter_change(RELEASE_REGION_USA)
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless( // <-- this 'pause if' needs to be after/lower than is_ReleaseRegion()
+				!is_Area(AREA_80s_AntiquesEule, enum_releaseRegion) &&	// This is not placed inside 'measured if', because otherwise it won't show the count outside this area 
+				!is_Area(AREA_Present_AntiquesEule, enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA)) &&
-			measured(measuredComparison(RELEASE_REGION_USA), measuredIfComparison(RELEASE_REGION_USA))},
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				on_Chapter_change(enum_releaseRegion)
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
+			measured(measuredComparison(enum_releaseRegion), measuredIfComparison(enum_releaseRegion))}),
 	"a_SeenOlegAsWell": function SeenOlegAsWell() { return 
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
