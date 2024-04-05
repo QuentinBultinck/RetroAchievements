@@ -3812,7 +3812,7 @@ achievements_triggers = {
 			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
-	"a_EnigmaticCouple1": function EnigmaticCouple1() {
+	"a_EnigmaticCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
@@ -3827,13 +3827,14 @@ achievements_triggers = {
 					is_InteractionId(0x2c1, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Prologue, RELEASE_REGION_USA) && !is_Chapter(CHAPTER_Chapter1, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) && !is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), always_true()) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_EnigmaticCouple2": function EnigmaticCouple2() {
+			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+	"a_EnigmaticCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_onIncrease(enum_releaseRegion) { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
@@ -3847,7 +3848,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop", enum_releaseRegion) &&
 					is_InteractionId(0x2c4, enum_releaseRegion))
 			])}
-		function measuredComparison_onMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3861,13 +3862,17 @@ achievements_triggers = {
 					is_InteractionId(0x2c4, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter3, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			(measured(measuredComparison_onIncrease(RELEASE_REGION_USA), always_true()) || measured(measuredComparison_onMax(RELEASE_REGION_USA), always_true())) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_EnigmaticCouple3": function EnigmaticCouple3() {
+			(
+				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
+				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+	"a_EnigmaticCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
@@ -3881,7 +3886,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch", enum_releaseRegion) &&
 					is_InteractionId(0x2c5, enum_releaseRegion))
 			])}
-		function measuredComparison_onMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3895,13 +3900,17 @@ achievements_triggers = {
 					is_InteractionId(0x2c5, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter4, RELEASE_REGION_USA)
-			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			(measured(measuredComparison_onIncrease(RELEASE_REGION_USA), always_true()) || measured(measuredComparison_onMax(RELEASE_REGION_USA), always_true())) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
-	"a_EnigmaticCouple4": function EnigmaticCouple4() {
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+			) &&	// 2 Alt groups => measuredComparison_atMax(), achievement is still unlockable when reloading mid-measurement
+			(
+				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
+				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+	"a_EnigmaticCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion) { return
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
@@ -3915,7 +3924,7 @@ achievements_triggers = {
 					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2c9, enum_releaseRegion))
 			])}
-		function measuredComparison_BrumLibrary_onMax(enum_releaseRegion) { return
+		function measuredComparison_BrumLibrary_atMax(enum_releaseRegion) { return
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3941,7 +3950,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2ca, enum_releaseRegion))
 			])}
-		function measuredComparison_BrumMuseum_onMax(enum_releaseRegion) { return
+		function measuredComparison_BrumMuseum_atMax(enum_releaseRegion) { return
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3955,14 +3964,19 @@ achievements_triggers = {
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2ca, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter5, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA)) &&
-			(measured(measuredComparison_BrumMuseum_onIncrease(RELEASE_REGION_USA)) || measured(measuredComparison_BrumMuseum_onMax(RELEASE_REGION_USA)) ||
-			measured(measuredComparison_BrumLibrary_onIncrease(RELEASE_REGION_USA)) || measured(measuredComparison_BrumLibrary_onMax(RELEASE_REGION_USA)))},
-	"a_EnigmaticCouple5": function EnigmaticCouple5() {
+			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
+			(
+				measured(measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
+				measured(measuredComparison_BrumMuseum_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) ||
+				measured(measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
+				measured(measuredComparison_BrumLibrary_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+			)}),
+	"a_EnigmaticCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison_onIncrease(enum_releaseRegion) { return
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
@@ -3976,7 +3990,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
 					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
 			])}
-		function measuredComparison_onMax(enum_releaseRegion) { return
+		function measuredComparison_atMax(enum_releaseRegion) { return
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3990,12 +4004,16 @@ achievements_triggers = {
 					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
 			])}
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(	
-				!is_InGame(RELEASE_REGION_USA) ||
-				!is_Chapter(CHAPTER_Chapter7, RELEASE_REGION_USA)
+				!is_InGame(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) &&
-			(measured(measuredComparison_onIncrease(RELEASE_REGION_USA), always_true()) || measured(measuredComparison_onMax(RELEASE_REGION_USA), always_true())) &&
-			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
+			(
+				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) || 
+				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion))
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_BecomeThePerformer": function BecomeThePerformer() {	return
 		never(
 			!is_InGame(RELEASE_REGION_USA)				||
@@ -4236,7 +4254,22 @@ achievements_triggers = {
 			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))
 		},		
 	"a_DrunkenGuys": function DrunkenGuys(){
-		function measuredComparison(enum_releaseRegion) { return
+		function measuredComparison_onMax(enum_releaseRegion) { return
+			tally(2, [
+				once(	// Identifies Cutscene => talking to slim delinquent
+					is_SmallCutscene_active(enum_releaseRegion) && 
+					is_TalkingToNPC(NPC_Present_SlimDelinquent, enum_releaseRegion) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
+					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionId(0x2f5, enum_releaseRegion)),
+				once(	// Identifies Cutscene => talking to broad delinquent
+					is_SmallCutscene_active(enum_releaseRegion) && 
+					is_TalkingToNPC(NPC_Present_BroadDelinquent, enum_releaseRegion) &&
+					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
+					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionId(0x2f0, enum_releaseRegion))
+			])}
+		function measuredComparison_atMax(enum_releaseRegion) { return
 			tally(2, [
 				once(	// Identifies Cutscene => talking to slim delinquent
 					is_SmallCutscene_active(enum_releaseRegion) && 
@@ -4253,9 +4286,12 @@ achievements_triggers = {
 			])}
 		return 
 			never(
-				!is_Area(AREA_Present_City_NightPM, RELEASE_REGION_USA)
+				!is_InGame(RELEASE_REGION_USA)
 			) &&
-			measured(measuredComparison(RELEASE_REGION_USA), when = is_InGame(RELEASE_REGION_USA)) &&
+			(
+				measured(measuredComparison_onMax(RELEASE_REGION_USA), when = is_Area(AREA_Present_City_NightPM, RELEASE_REGION_USA)) ||
+				measured(measuredComparison_atMax(RELEASE_REGION_USA), when = is_Area(AREA_Present_City_NightPM, RELEASE_REGION_USA))
+			) &&
 			trigger_when(on_Cutscene_end(RELEASE_REGION_USA))},
 	"a_ShortestChapter": function ShortestChapter(){ return
 		never(
