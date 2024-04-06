@@ -1504,7 +1504,7 @@ function on_ChapterCompletionMenu_render(enum_releaseRegion) {
 	return 		
 		let_memAccessor_MenuID == 0x1 && prev(let_memAccessor_MenuID) != 0x1 &&
 		let_memAccessor_IsChapterCompletionScreenActive == 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) != 0x21 &&
-		let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed)}
+		let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed)} // <-- prior check here, because this value changes before the other comparisons
 
 function on_ChapterCompletionMenu_exit(enum_releaseRegion) {
 	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
@@ -1513,7 +1513,7 @@ function on_ChapterCompletionMenu_exit(enum_releaseRegion) {
 	return
 		let_memAccessor_MenuID != 0x1 && prev(let_memAccessor_MenuID) == 0x1 &&
 		let_memAccessor_IsChapterCompletionScreenActive != 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) == 0x21 &&
-		let_memAccessor_IsChapterCompletionMenuDisplayed < prior(let_memAccessor_IsChapterCompletionMenuDisplayed)}
+		let_memAccessor_IsChapterCompletionMenuDisplayed < prior(let_memAccessor_IsChapterCompletionMenuDisplayed)} // <-- prior check here, because this value changes before the other comparisons
 									
 function is_InGame(enum_releaseRegion) =>
 	low4(memory_getAddress(DATATYPE_4Bit, "IsInGame", enum_releaseRegion)) != 0
@@ -5679,29 +5679,34 @@ leaderboards_startTriggers = {
 		),
 	"lb_TotalClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// Below code => alt leaderboard with RAoverlay timer - start when entering game/loading a save
-			//	'''''''''''''''''''''''''''''
-			//	unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
-			//	never(
-			//		!is_InGame(enum_releaseRegion) ||
-			//		is_ExtraMenu_active(enum_releaseRegion)		
-			//	) &&
-			//	!is_PrologueExMode_active(enum_releaseRegion) &&
-			//	once(on_Timer_TotalClearTime_start(enum_releaseRegion)) && // <-- once() here because of delay
-			//	repeated(100, is_InGame(enum_releaseRegion))) // <-- delay popup
+		//	'''''''''''''''''''''''''''''
+		//	unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+		//	never(
+		//		!is_InGame(enum_releaseRegion) ||
+		//		is_ExtraMenu_active(enum_releaseRegion)		
+		//	) &&
+		//	!is_PrologueExMode_active(enum_releaseRegion) &&
+		//	once(on_Timer_TotalClearTime_start(enum_releaseRegion)) && // <-- once() here because of delay
+		//	repeated(100, is_InGame(enum_releaseRegion))) // <-- delay popup
 
 		// DEV_NOTE: __ornext()
 		// --------------------------
 		//	(written with 2 underscores)
-		//	- Will try to make RAtools use 'orNext' Flags instead of creating unnecessary alt groups 
-		//	- Example: __ornext(X || Y || Z) => will generate below logic
+		//	- Will try to make RAtools use 'orNext' Flags instead of creating unnecessary alt groups, !! take care there's a reason RAtools creates alt groups !!
+		//	- Example usage: __ornext(X || Y || Z) => will generate below logic
 		//				orNext: X
 		//				orNext: Y
 		//			 			Z
+		//	- Example in code (just an example, wont work in underlying code): 
+		//			is_ReleaseRegion(enum_releaseRegion) &&
+		//			is_InGame(enum_releaseRegion) &&
+		//			__ornext(is_Chapter(CHAPTER_Epilogue, enum_releaseRegion)) && // <-- __ornext() to force RAtools to use orNext instead of alt groups 
+		//			on_Video_start(enum_releaseRegion)) // <-- Trigger when credits video starts
 
 		is_ReleaseRegion(enum_releaseRegion) &&
-		is_InGame(enum_releaseRegion) &&		
-		__ornext(is_Chapter(CHAPTER_Epilogue, enum_releaseRegion)) && // <-- __ornext() is necessary here because it creates alt groups, when not needed
-		on_Video_start(enum_releaseRegion)) // <-- Trigger when credits video starts
+		is_InGame(enum_releaseRegion) &&
+		is_Chapter(CHAPTER_Epilogue, enum_releaseRegion) &&
+		on_Video_start(enum_releaseRegion)) // <-- This is the last thing to trigger, trigger when credits video starts		
 	}
 
 leaderboards_cancelTriggers = {
