@@ -1,4 +1,4 @@
-# Retro Achievements Guide 🔶 Shadow of Destiny (PSP)
+# Retro Achievements Guide 🔶 Shadow of Destiny/Memories (PSP)
 
 [![Achievement badge icon](https://i.retroachievements.org/Images/093652.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 
@@ -17,7 +17,6 @@ This guide contains information on how to unlock each achievement in the core se
     - [Secret Game Over Cutscenes](#ExtraDeathContent)
 - [Leaderboards Explained](#LeaderboardsExplained)
 
-***
 
 <h1 id=AchievementGuide>
     💎 Achievement Guide
@@ -37,11 +36,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + Fast forwarding with emulator tools is allowed and should still trigger the achievements.
 + Some achievements can be skipped once the triggered popup is shown on screen. The corresponding achievement for the cutscene will unlock once the cutscene is skipped or is done. [^triggered]
 
-***
 
-<h4 id=StoryProgression>
+<h2 id=StoryProgression>
     🏆 Story Progression
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -57,11 +55,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **A Friend's Repentance**<br><sub><i>a_Chapter7Complete</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466023.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
 | **The Whole Picture... Or Is It?**<br><sub><i>a_Chapter8Complete</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466049.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
 
----
 
-<h4 id=Endings>
+<h2 id=Endings>
     🏆 Endings
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -74,11 +71,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **The Philosopher's Legacy**<br><sub><i>a_EndingEXCureHelena</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466036.png "Achievement badge icon") | - In the EX chapter, gift the Philosopher's stone to Dr. Wagner <br><br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Scare the crowd and head to the alchemist's house <br> 6. Finish the rest of this chapter  |
 | **The Philosopher's Destiny**<br><sub><i>a_EndingEXKillHomunculus</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/461652.png "Achievement badge icon") | - In the EX chapter, use the Philosopher's stone to kill Homunculus <br><br> 1. Talk to the fortune teller <br> 2. head back to Cafe Sonné <br> 3. head into the burning bar <br> 4. Once inside the burning bar, travel to the Middle Ages <br> 5. Don't go to the alchemist's house, but time travel back to the present <br> 6. Finish the rest of this chapter |
 
----
 
-<h4 id=AchievementPercentage>
+<h2 id=AchievementPercentage>
     🏆 Achievement Percentage
-</h4>
+</h2>
 
 - These achievements are tracked throughout the whole game. Each chapter has a corresponding achievement, which increments by a percentage whenever certain cutscenes end.
 - You can view your current progress via the RAoverlay. Or once you have achieved one ending, you will unlock the extra menu in the title scren. If you head over there to the results menu, you'll see the percentages as well.
@@ -98,11 +94,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **The Day Of Walpurgis**<br><sub><i>a_MaxAchievementTotal</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466047.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 
 
----
-
-<h4 id=BranchingPaths>
+<h2 id=BranchingPaths>
     🏆 Branching Paths
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -115,12 +109,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **A Performer's Clue**<br><sub id=a_GetOrnamentalEgg><i>a_GetOrnamentalEgg</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465975.png "Achievement badge icon") | 1. In chapter 1, talk to the kid and chose not to save his grandpa. <br> 2. Then go back to the Marktplatz and interact with the performer dressed in white |
 
 
-
----
-
-<h4 id=ExtraContent>
+<h2 id=ExtraContent>
     🏆 Side Content
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -154,11 +145,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Picked Up A Baby The Other Day**<br><sub id=a_SnowyCrimeScene><i>a_SnowyCrimeScene</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466022.png "Achievement badge icon") | - In chapter 6, after speaking to Oleg, head straight to Hauptstreet. <br> - There's 2-3 cutscenes, each one activating the closer you get to Haupstreet|
 | **Nine Lives Across Generations**<br><sub id=a_TimeTravellingCat><i>a_TimeTravellingCat</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466048.png "Achievement badge icon") | 1. Take the picture in 1908 dressed in the white costume (this must be done in chapter 4 or 5) <br> 2. Talk to Sibylla again. Eike now promises her a kitten <br> 3. Talk to Eckart in the present, to receive a kitten (this must be done before chapter 7) <br> 4. Give the kitten to Sibylla in 1908 (in chapters 4 to 8) |
 
----
 
-<h4 id=ExtraCouple>
+<h2 id=ExtraCouple>
     🏆 Yesteryears/Enigmatic Couple
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -175,11 +165,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Yesteryears Couple VI: Never DestineD To Meet**<br><sub><i>a_LostYoungCouple6</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465995.png "Achievement badge icon") | 1. In chapter 5, tell Margarette she's your ANCESTOR <br> 2. In chapter 7, visit the Middle Ages and talk with the woman at the town square. When talking to her a 2nd time, advise her to be TRUTHFUL <br> 3. In chapter 8, head to the Middle Ages after the experiment. Talk with the man outside the church and tell him about LOVERS NEVER DESTINED TO MEET. <br><br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP") <br> <sub>~ *Devnote. Yes, for some reason this is one of the hardest to get dialogues, because it requires a specific setup. But that makes this imho a great achievement*</sub> |
 
 
----
-
-<h4 id=ExtraEnergy>
+<h2 id=ExtraEnergy>
     🏆 Energy Locator
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -189,11 +177,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Energy Locator: Middle Ages**<br><sub><i>a_EnergyOrbLocatorMiddleAges</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465996.png "Achievement badge icon") | - Collect all <b>six</b> unique energy orb locations throughout the city during the Middle Ages. <br> - Make sure you have enough space to pick them all up in one go. <br><br> - View your current progress in the RAoverlay <br><br> 1. Behind the well beside the Alchemists House. <br> 2. Go to where the Bar Zum Ei is and look for the unit on a bench. <br> 3. You'll find another one at the entrance to the Church. <br> 4. Found in-between the wheels of a wheelbarrow,in a small alley to the left of the Atelier. <br> 5. At a small stable opposite the Atelier. <br> 6. (option 1) Inside the church on an alter in chapters 6 & 7 <br> 6. (option 2) Inside the basement labratory, when it's exploded <br><br> - [GameFAQs guide containing locations of energy orbs (E.U.'s)](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255 "Shadow of Memories/Destiny - GameFAQs guide by Oreo") <br> <sub><i>Measured achievement [^measured]</sub></i> |
 
 
----
-
-<h4 id=ExtraDeathContent>
+<h2 id=ExtraDeathContent>
     🏆 Secret Game Over Cutscenes
-</h4>
+</h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -204,7 +190,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **My My, So Eager To Die**<br><sub><i>a_ExcuseMeMyMy</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466003.png "Achievement badge icon") | In chapter 3, when meeting Homunculus for the first time at the Brum Museum, chose to excuse yourself |
 | **Time Ego Flop**<br><sub><i>a_TimeEgoFlop</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466018.png "Achievement badge icon") | - In chapter 6, talk to Oleg in 1980 <br><br> 1. Pick time travel <br> 2. Pick world conquest <br> 3. Return to present |
 
-***
+
 
 <h1 id=LeaderboardsExplained>
     🏅 Leaderboards Explained 
