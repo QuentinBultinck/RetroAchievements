@@ -56,7 +56,7 @@
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
-iNULL = -1
+iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
 sNULL = "-1"
 
 RELEASE_REGION_USA = "NTSC-U/C"	// ULUS-10459 => PSP game identification code for USA release region
@@ -2262,8 +2262,12 @@ achievements_coreData = {
 // -------------------------------------
 achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
-	//		- Possible type keys: "missable" - "progression" - "win_condition"
-	//		- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
+	//	- Possible type keys: "missable" - "progression" - "win_condition" 
+	//	- sNULL => when it's not necessarily a missable achievement <-- will result in type: "standard"
+	//		- Missable is when you would have to play a significant portion of game again to obtain the achievement.
+	//		 	Think about that 40 hour RPG, and something happens where the world state changes, and an area is no longer available, and certain quests are locked out.
+	//		 	But the person making the achievement for that quest didn't tell you that you could miss it.
+	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
 	// "c_template": "xxxxxx",
@@ -2273,7 +2277,7 @@ achievements_typeByCategory = {
 	"c_Branch": 							"missable",
 	"c_Extra":				 				"missable",
 	"c_ExtraCouple":						"missable",
-	"c_ExtraEnergy":						"missable",
+	"c_ExtraEnergy":						sNULL,
 	"c_ExtraGameOver": 						"missable",}
 
 // ===================================
@@ -5110,18 +5114,23 @@ function achievements_initialize() {
 
 	function achievements_getTrigger(string_achievementDevName) => 
 		achievements_triggers[string_achievementDevName]
-
+	
+	function achievements_getType(string_achievementCategory) {
+		let_type = achievements_typeByCategory[string_achievementCategory]
+		if(let_type == sNULL) return "" // <-- will result in type: "standard"
+		return let_type}
+	
 	// This loop generates the achievements
-	for categoryName in achievements_coreData {
-		for cheevmentName in achievements_coreData[categoryName] {
-			let_achievementData = achievements_coreData[categoryName][cheevmentName]
+	for let_categoryName in achievements_coreData {
+		for let_cheevmentName in achievements_coreData[let_categoryName] {
+			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
 			achievement(
 				id = let_achievementData["id"],
-				title = achievements_generateTitle(cheevmentName, categoryName, util_language),
-				type = achievements_typeByCategory[categoryName],
-				description = achievements_generateDescription(cheevmentName, let_achievementData["devInfo"], util_language),
+				title = achievements_generateTitle(let_cheevmentName, let_categoryName, util_language),
+				type = achievements_getType(let_categoryName),
+				description = achievements_generateDescription(let_cheevmentName, let_achievementData["devInfo"], util_language),
 				points = let_achievementData["points"],
-				trigger = achievements_getTrigger(cheevmentName)
+				trigger = achievements_getTrigger(let_cheevmentName)
 			)
 		}}
 	}
