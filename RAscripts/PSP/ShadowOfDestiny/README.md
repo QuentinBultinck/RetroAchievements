@@ -1,6 +1,6 @@
 # Retro Achievements Guide 🔶 Shadow of Destiny (PSP)
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/092240.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
+[![Achievement badge icon](https://i.retroachievements.org/Images/093652.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
 
@@ -207,7 +207,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ***
 
 <h1 id=LeaderboardsExplained>
-     Leaderboards Explained
+    🏅 Leaderboards Explained 
 </h1>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
