@@ -1,9 +1,27 @@
-# Achievement Guide ♦️ Shadow of Destiny (PSP)
+# Retro Achievements Guide 🔶 Shadow of Destiny (PSP)
 
 [![Achievement badge icon](https://i.retroachievements.org/Images/092240.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 
-This guide explains how to unlock each achievement in the core set of the PSP version of Shadow of Destiny.
+This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
 
+**Table of contents**
+
+- [Achievement Guide](#AchievementGuide) (divided by category)
+    - [Story Progression](#StoryProgression) (Progression)
+    - [Endings](#Endings) (Win Condition)
+    - [Achievement Percentage](#AchievementPercentage)
+    - [Branching Paths](#BranchingPaths)
+    - [Side Content](#ExtraContent)
+    - [Yesteryears/Enigmatic Couple](#ExtraCouple)
+    - [Energy Locator](#ExtraEnergy)
+    - [Secret Game Over Cutscenes](#ExtraDeathContent)
+- [Leaderboards Explained](#LeaderboardsExplained)
+
+***
+
+<h1 id=AchievementGuide>
+    💎 Achievement Guide
+</h1>
 
 #### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
@@ -21,22 +39,11 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 ***
 
-### Achievement Categories
-
-- [Story Progression](#StoryProgression)
-- [Endings](#Endings)
-- [Achievement Percentage](#AchievementPercentage)
-- [Branching paths](#BranchingPaths)
-- [Extra & side content](#ExtraContent)
-- [Achievements related to the couple in the past and present](#ExtraCouple)
-- [Energy locator achievements](#ExtraEnergy)
-- [Secret cutscenes that lead to game over](#ExtraDeathContent)
-
 <h4 id=StoryProgression>
-    :gem: Story Progression :gem:
+    🏆 Story Progression
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Defied Fate**<br><sub><i>a_PrologueComplete</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/461667.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
 | **Defied Fate... Again**<br><sub><i>a_Chapter1Complete</sub> <br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465974.png "Achievement badge icon") | Any [walkthrough/gameplay guide](#walkthroughs--resources) |
@@ -53,10 +60,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=Endings>
-    :gem: Endings :gem:
+    🏆 Endings
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **An End To A Strange Experience**<br><sub><i>a_EndingA</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466030.png "Achievement badge icon") | 1. In chapter 5, tell Margarette she's your ancestress <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, visit the fortune teller in the present AND find Homonculus in 1980's near Haupstreet, he's sitting next to a tree in a small park <br> 3. Head back to Hugo in the present <br> 4. In the Epilogue, chose for Margarette to stay in the present |
 | **No Sense Of Finality I**<br><sub><i>a_EndingB1</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466033.png "Achievement badge icon") | 1. In chapter 5, tell Margarette she's your ancestress. <br> 2. In chapter 8, after you've met Hugo at the Marktplatz, go to the fortune teller <br> 3. Head back to Hugo |
@@ -70,13 +77,13 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=AchievementPercentage>
-    :gem: Achievement Percentage :gem:
+    🏆 Achievement Percentage
 </h4>
 
 - These achievements are tracked throughout the whole game. Each chapter has a corresponding achievement, which increments by a percentage whenever certain cutscenes end.
 - You can view your current progress via the RAoverlay. Or once you have achieved one ending, you will unlock the extra menu in the title scren. If you head over there to the results menu, you'll see the percentages as well.
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Homing Instinct**<br><sub id="a_MaxAchievementPrologue"><i>a_MaxAchievementPrologue</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466037.png "Achievement badge icon") | [Shadow of Destiny (PSP) - Walkthrough with percentage guide](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/60376 "Shadow of Destiny, PSP - Walkthrough with percentage guide") |
 | **In The Heat Of Time**<br><sub><i>a_MaxAchievementChapter1</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466038.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
@@ -86,7 +93,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Meddling With Destiny**<br><sub><i>a_MaxAchievementChapter5</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466042.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 | **The Good Samaritan**<br><sub><i>a_MaxAchievementChapter6</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466043.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 | **Vintage Knots**<br><sub><i>a_MaxAchievementChapter7</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466044.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
-| **The Power of Fate**<br><sub><i>a_MaxAchievementChapter8</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466045.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
+| **The Power Of Fate**<br><sub><i>a_MaxAchievementChapter8</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466045.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 | **Eternal Youth**<br><sub><i>a_MaxAchievementEpilogue</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466046.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 | **The Day Of Walpurgis**<br><sub><i>a_MaxAchievementTotal</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466047.png "Achievement badge icon") | <sub> Refer to [a_MaxAchievementPrologue](#a_MaxAchievementPrologue)</sub> |
 
@@ -94,10 +101,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=BranchingPaths>
-    :gem: Branching paths :gem:
+    🏆 Branching Paths
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **There's A Fire!**<br><sub id=a_AlertBarmanOfFire><i>a_AlertBarmanOfFire</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465976.png "Achievement badge icon") | - In chapter 1, warn the young boy's grandpa who's in the basement of the bar during the fire <br><br> 1. Head in to the burning bar <br> 2. After dying, interact with the stairs and the door multiple times. Let's say thrice times with each. To let time pass. <br> 2. Time travel to the past. <br> 3. You should now find yourself inside the bar, but 30 minutes or so in the past <br> 4. Head downstairs <br> |
 | **Even I Can Do That**<br><sub id=a_BecomeThePerformer><i>a_BecomeThePerformer</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466006.png "Achievement badge icon") | - In chapter 4, when you haven't gotten the ornamental egg before this chapter starts <sub>(refer to [a_GetOrnamentalEgg](#a_GetOrnamentalEgg))</sub>, there's only 2 ways to complete the chapter. By using Franssen's Shop Sign or becoming the performer <br><br> 1. Go to 1908 and when you have the costume you can travel back to chapter 1 by interacting with the jugglery or ornamental egg on one of the chairs next to Sibylla <br> 2. Use your jugglery item at the Marktzplatz, just as you've seen in the chapter 1 ending cutscene |
@@ -112,14 +119,14 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=ExtraContent>
-    :gem: Side content & extra cutscenes :gem:
+    🏆 Side Content
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Timeless Antiques**<br><sub><i>a_AntiquesEule</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466002.png "Achievement badge icon") | - Visit Antique Shop Eule and view the relics <br> - It's open during in chapter 3-4 (2001) and 6-7 (1980) <br> <sub><i>Measured achievement [^measured]</sub></i> |
 | **Strokes Of Destiny**<br><sub><i>a_ArtAppreciator</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465999.png "Achievement badge icon") | - Interact with all 8 paintings in the Brum Museum <br> - You can find 7 paintings on the second floor, where your first meet Eckart. 1 painting is on the first/ground floor <br><br> - [Youtube guide - Art Museum](https://www.youtube.com/watch?v=U5hXY6pxJ9M "Lebensbaum Tours - The Brum Art Museum") <br> <sub><i>Measured achievement [^measured]</sub></i> |
-| **Art Muse**<br><sub><i>a_ArtInspiration1</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466014.png "Achievement badge icon") | 1. In the Middle Ages, inspire Karl Franssen with idea's for paintings. His studio is open from chapter 5 onward. <br> 2. Visit the Brum museum in the present and inspect one of the adapted works <br><br> - Brum Museum is open in chapters 3, 4, 5 and 8 <br> - You might have to change the library back to a museum, by talking to Eckart's ancestor in 1900s |
+| **Art Muse**<br><sub><i>a_ArtInspiration1</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/469976.png "Achievement badge icon") | 1. In the Middle Ages, inspire Karl Franssen with idea's for paintings. His studio is open from chapter 5 onward. <br> 2. Visit the Brum museum in the present and inspect one of the adapted works <br><br> - Brum Museum is open in chapters 3, 4, 5 and 8 <br> - You might have to change the library back to a museum, by talking to Eckart's ancestor in 1900s |
 | **Eike Franssen**<br><sub><i>a_ArtInspirationAll</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466015.png "Achievement badge icon") | 1. In the Middle Ages, inspire Karl Franssen with idea's for paintings. His studio is open from chapter 5 onward. <br> 2. You might have to leave/enter his shop a few times to get all 6 unique dialogue options/idea's, as you can give him one that you've already inspired him with. <br> 3. Visit the Brum Museum in the present and interact with all 6 paintings <br><br> - Brum Museum is open in chapters 3, 4, 5 and 8 <br> - You might have to change the library back to a museum, by talking to Eckart's ancestor in 1900s <br> - There's 6 idea's to inspire karl Franssen with: <br> ------------------------- <br> - <b>The Squire's Crest</b><br> - <b>The Marktplatz Tree</b> - you might need to have picked the statue option in chapter 2 for this idea to become available <br> - <b>The Oddly Dressed Man</b> - idea available after completing chapter 4, whilst having become the performer <sub>(refer to [a_BecomeThePerformer](#a_BecomeThePerformer))</sub><br> - <b>House Collapse</b><br> - <b>Alchemist Creates Antidote</b><br> - <b>View of Tower (downstairs)</b> - idea available after completing chapter 7 <br><br> - [Shadow of Memories/Destiny - How to unlock alternative paintings guide](https://www.youtube.com/watch?v=0ctnN4dcup4 "Shadow of Memories/Destiny - How to unlock alternative paintings guide") <br> <sub><i>Measured achievement [^measured]</sub></i> |
 | **The Barman's Mystery Child**<br><sub><i>a_BarmansChildren</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466013.png "Achievement badge icon") | In chapter 5, after your initial death, head back into the bar and have 2 conversations with the barman |
 | **Complexities Of The Fourth Dimension**<br><sub><i>a_DoctorateTimeTraveling</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/464226.png "Achievement badge icon") | - This achievement triggers when seeing an extended cutscene at the ending of chapter 4. There are 3 requirements: <br> ------------------------ <br> 1. Have the ornamental egg in your inventory <sub>(refer to [a_GetOrnamentalEgg](#a_GetOrnamentalEgg))</sub></sub>, whilst talking with Sibylla for the 1st time. <br> 2. Take a photo with Sibylla and Eckart in 1900s. <br> 3. DO NOT acquire the frying pan by becoming a performer <sub>(refer to [a_BecomeThePerformer](#a_BecomeThePerformer))</sub></sub>. <br><br> Walkthrough starting at the start of chapter 4: <br> ------------------------ <br>  1. Meet Alfred & Sibylla Brum in chapter 4 <br> 2. Go and steal Franssen's Shop Sign <sub>(refer to [a_Chapter4CompleteSign](#a_Chapter4CompleteSign))</sub></sub> or find yourself a frying pan <sub>(refer to [a_Chapter4CompletePan](#a_Chapter4CompletePan))</sub></sub> by exchanging the ornamental egg with the barman <br> 3. Once you have an iron plate. Head back to Sibylla to take a picture. <br> 4. Head back to the present and use the iron plate before death. You'll now see an extende ending cutscene for this chapter. |
@@ -132,7 +139,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Stockpiling Across Eras**<br><sub><i>a_MaxInventory</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466000.png "Achievement badge icon") | - This achievement is only achievable when going for ending E, as you will not be able to acquire certain items and some items are automatically lost during the story <br> - Largest achievable inventory is 20 items (including the 5 starter items) <br><br> Missable items (7): <br> -------------------------- <br> - <b>Old map</b>: obtainable from city hall. Before chapter 3, you'll find it inside. After chapter 3 it will be just outside next to the door <br> - <b>Ornamental egg</b>:  in chapter 1 <sub>(refer to [a_GetOrnamentalEgg](#a_GetOrnamentalEgg))</sub>; or have this exchanged for a frying pan, still counts as 1. But you might have a hard time getting Franssen Shop sign if you have the pan. <br> - <b>Cake</b>: in chapter 3 <sub>(refer to [a_GiveMargaretteCake](#a_GiveMargaretteCake))</sub><br> - <b>Scrap of meat</b>: from the butcher from chapter 4 onward, in 1902 or 1582. Even after you've used one meat, you can still get another one from the butcher. <br> - <b>Franssen's Photo shop sign</b>: in chapter 4 <sub>(refer to [a_Chapter4CompleteSign](#a_Chapter4CompleteSign))</sub><br> - <b>Kitten</b>: in chapter 4 or 5 <sub>(refer to [a_TimeTravellingCat](#a_TimeTravellingCat))</sub><br> - <b>Letter to Dana</b>: Go for ending E <sub>(refer to [a_EndingE](#a_EndingE))</sub>, after acquiring the red stone from Dana, don't go to Dr. Wagner but head to Café Sonne and collect the letter <br><br> Key story items (13), which are automatically gathered whilst doing the story: <br> ----------------------------------------- <br> - <b>Z-pad</b> <br> - <b>notebook</b> <br> - <b>city map</b> <br> - <b>cellphone</b> <br> - <b>lighter</b> <br> - <b>medallion</b> <br> - <b>old book</b> <br> - <b>monochrome picture</b> <br> - <b>egg shaped pocket watch</b>, this can be lost when paying for coffee. <sub>(refer to [a_EggPocketWatchForCoffee](#a_EggPocketWatchForCoffee))</sub> <br> - <b>comb</b> <br> - <b>tower key </b> <br> - <b>lab key </b> <br> - <b>red jewel</b> |
 | **The Next Big Thing**<br><sub><i>a_MeetFamousOleg</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466025.png "Achievement badge icon") | - Talk with Oleg the movie director chapter 7 <br><br> 1. Receive the egg-shaped pocket watch from young Oleg in chapter 6 <br> 2. Pay for coffee/tab at the bar in the 1900's, thus getting rid of the watch (do this is chapter 6 or 7) <br> 3. In chapter 7, acquire the tower key <br> 4. Head back to the present (not the night before) <br> 5. Head outside. Old Oleg should be next to the movie post. <br><br> - He only spawns if you got rid of the pocket watch by paying for the coffee |
 | **The Brum's Happily Ever After**<br><sub><i>a_MeetOldMiriam</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466028.png "Achievement badge icon") | - Complete Chapter 7, whilst having saved Miriam Brum in chapter 6 <sub>(refer to [a_SaveMiriamBrum](#a_SaveMiriamBrum) & [a_SnowyCrimeScene](#a_SnowyCrimeScene))</sub> <br> - Achievement unlocks once Miriam Brum is done talking during the last cutscene of chapter 7|
-| **Legacy of Sweetness**<br><sub><i>a_NewCakeInvented</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466005.png "Achievement badge icon") | 1. Acquire a cake sample from the bakery in chapter 3 or 6 <br> 2. Give the cake to Margarette in the Middle Ages, possible from chapter 5 onward <br> 3. Return to the bakery girl in chapter 6 in 1980 <br> 4. Gift the second sample to Margarette as well |
+| **Legacy Of Sweetness**<br><sub><i>a_NewCakeInvented</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466005.png "Achievement badge icon") | 1. Acquire a cake sample from the bakery in chapter 3 or 6 <br> 2. Give the cake to Margarette in the Middle Ages, possible from chapter 5 onward <br> 3. Return to the bakery girl in chapter 6 in 1980 <br> 4. Gift the second sample to Margarette as well |
 | **A Performance Gone The Extra Mile**<br><sub><i>a_PerformerGoingExtraMile</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466007.png "Achievement badge icon") | 1. In chapter 4, equip the performer outfit and interact with the jugglery/ornamental egg on one of the chairs next to Sibylla <br> 2. You will now time travel back to the past as the performer <br> 3. Back in the past. Interact with all the people in the city. <br><br> There's 7 people to interact with: <br> ------------------------- <br> - Blonde boy near church (talk to him twice) <br> - Brunette mother of little girl <br> - Brunette girl <br> - Blonde old woman <br> - Elderly woman inside town hall <br> - Man with glasses inside town hall <br> (Other lady inside town hall doesn't count, she's not happy to see performer) <br> - Finish by giving past Eike a great performance <br> <sub><i>Measured achievement [^measured]</sub></i> |
 | **A Hatchless Replica**<br><sub><i>a_PocketWatchCollection</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466027.png "Achievement badge icon") | In chapter 7, after you have found the towerdoor key. Go back to the present (not 'night before') and go back to the bar whilst you have the egg shaped pocket watch still in your inventory |
 | **The Eggcellent Director's Tale**<br><sub><i>a_PocketWatchReminiscing</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466029.png "Achievement badge icon") | In chapter 8, go back to Eckart in his office, whilst you have the egg shaped pocket watch still in your inventory |
@@ -150,10 +157,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=ExtraCouple>
-    :gem: Achievements related to the couple in the past and present :gem:
+    🏆 Yesteryears/Enigmatic Couple
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Enigmatic Couple I: Prelude**<br><sub><i>a_EnigmaticCouple1</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465978.png "Achievement badge icon") | - Talk to both the coated man and woman multiple times to progress the dialogue <br>- You must find them during the prologue (present) or chapter 1 (past) <br><br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP") <br> <sub><i>Measured achievement [^measured]</sub></i> |
 | **Enigmatic Couple II: Tailing**<br><sub><i>a_EnigmaticCouple2</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465979.png "Achievement badge icon") | - Talk to both the coated man and woman multiple times to progress the dialogue <br> - You must find them during chapter 3 (present) <br><br> - [Youtube guide - Lost Young Couple Sidequest Guide PSP](https://www.youtube.com/watch?v=zL96i0QQLME "Shadow of Destiny / Memories - Lost Young Couple Sidequest Guide PSP") <br> <sub><i>Measured achievement [^measured]</sub></i> |
@@ -171,10 +178,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=ExtraEnergy>
-    :gem: Energy locator achievements :gem:
+    🏆 Energy Locator
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Energy Locator: Present Day**<br><sub><i>a_EnergyOrbLocatorPresentDay</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/461689.png "Achievement badge icon") | - Collect all <b>five</b> unique energy orb locations throughout the city during the present. <br> - Make sure you have enough space to pick them all up in one go. <br><br> - View your current progress in the RAoverlay <br><br> 1. Opposite the Former Alchemists House. <br> 2. In the Carpark opposite Photo Shop Franssen. <br> 3. You'll find under the arch on Ruckagrastr. <br> 4. In front of the South Gate near the Brum Museum/Libary. <br> 5. In the intersection of a small,narrow alley at Newustandstr leading to Haupstr. <br> <sub>BONUS. Inside Bar Zum Ei in chapter 1 (this one won't be counted for the achievement)</sub> <br><br> - [GameFAQs guide containing locations of energy orbs (E.U.'s)](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255 "Shadow of Memories/Destiny - GameFAQs guide by Oreo") <br> <sub><i>Measured achievement [^measured]</sub></i> |
 | **Energy Locator: The Late 20th Century**<br><sub><i>a_EnergyOrbLocator70s80s</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/461687.png "Achievement badge icon") | - Collect all <b>five</b> unique energy orb locations throughout the city in 1979 or 1980. <br> - Make sure you have enough space to pick them all up in one go. <br><br> - View your current progress in the RAoverlay <br><br> 1. Behind the well inbetween the Cafe Sonne and the Former Alchemists House <br> 2. In front of a small gate in-between the Church and Bar Zum Ei. <br> 3. In a small alley to the right of Marie's Bakery. <br> 4. When going down Rudolfstr you'll find this on a small set of steps past Photo Shop Franssen. <br> 5. You'll find this next a tree in the park at the bottom of Haupstr. <br><br> - [GameFAQs guide containing locations of energy orbs (E.U.'s)](https://gamefaqs.gamespot.com/psp/977639-shadow-of-destiny/faqs/14255 "Shadow of Memories/Destiny - GameFAQs guide by Oreo") <br> <sub><i>Measured achievement [^measured]</sub></i> |
@@ -185,10 +192,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ---
 
 <h4 id=ExtraDeathContent>
-    :gem: Hidden/extra cutscenes that lead to death :gem:
+    🏆 Secret Game Over Cutscenes
 </h4>
 
-| :trophy: Title <sub><i>+ (dev_id)</i></sub><br> | Explanation & tips |
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **Met You Before**<br><sub><i>a_MetYouBefore</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465986.png "Achievement badge icon") | Die 4 times to the tree killer while speaking to Dana in chapter 2 |
 | **That's A Big No No**<br><sub><i>a_ErasingEike</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/465973.png "Achievement badge icon") | Talk to yourself at cafe Sonné in the past during the prologue |
@@ -197,9 +204,20 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **My My, So Eager To Die**<br><sub><i>a_ExcuseMeMyMy</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466003.png "Achievement badge icon") | In chapter 3, when meeting Homunculus for the first time at the Brum Museum, chose to excuse yourself |
 | **Time Ego Flop**<br><sub><i>a_TimeEgoFlop</i></sub><br> <br>![Achievement badge icon](https://i.retroachievements.org/Badge/466018.png "Achievement badge icon") | - In chapter 6, talk to Oleg in 1980 <br><br> 1. Pick time travel <br> 2. Pick world conquest <br> 3. Return to present |
 
+***
 
+<h1 id=LeaderboardsExplained>
+     Leaderboards Explained
+</h1>
+
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
+|:---:|---|
+| **Total Clear Time**<br><sub><i>lb_TotalClearTime</i></sub><br> | - This leaderboard hooks on to a timer, which keeps track of the total playtime of the current playthrough. <br><br> - <b>Submit</b>: Leaderboard will submit when the credits video starts playing. The credits achieved through the EX chapter will not. <br><sub><i>Silent leaderboard [^silentLeaderboard]</sub></i> |
+| **Chapter Clear Time**<br><sub><i>lb_ClearTime...Chapter...</i></sub><br> | - These leaderboards hook on to a timer, which keeps track of the total playtime of the current chapter. <br><br> - <b>Submit</b>: Leaderboard will submit when the chapter completion menu is displayed. (The EX chapter is not included in these leaderboards) <br><sub><i>Silent leaderboard [^silentLeaderboard]</sub></i> |
 
 
 [^measured]: **Measured achievement**: This achievement has a measured flag. It will show the measurement popup on screen (e.g. 7/12). It will unlock the achievement once the measurement is maxed (e.g. 12/12). 
 
 [^triggered]: **Triggered achievement**: This achievement has a triggered flag. It will show the triggered popup on screen, when all logic/comparisons are met. It will unlock the achievement once the criteria are met for the trigger.
+
+[^silentLeaderboard]: **Silent leaderboard**: This leaderboard will not show up during gameplay, it will start and submit during the same frame. The reason for this is to reduce the clutter caused by RA overlay and/or the thing to which the leaderboard is hooked on to can be seen through in-game UI/menu's
