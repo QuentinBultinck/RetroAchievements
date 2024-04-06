@@ -13,8 +13,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO add some leaderboards info to achievement guide
-
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -1992,71 +1990,71 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 
 	"c_Completion": { // Category - Completing chapters
-		"a_PrologueComplete": { // MODIFIED 
+		"a_PrologueComplete": { // VERIFIED  
 			"id": 306884, "points": 5,
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // MODIFIED
+		"a_Chapter1Complete": { // VERIFIED 
 			"id": 306886, "points": 5,
 			"devInfo": "Complete chapter 1"},
-		"a_Chapter2Complete": { // MODIFIED
+		"a_Chapter2Complete": { // VERIFIED 
 			"id": 306922, "points": 5,
 			"devInfo": "Complete chapter 2"},
-		"a_Chapter3Complete": { // MODIFIED
+		"a_Chapter3Complete": { // VERIFIED 
 			"id": 306921, "points": 5,
 			"devInfo": "Complete chapter 3"},
-		"a_Chapter4CompletePan": { // MODIFIED
+		"a_Chapter4CompletePan": { // VERIFIED 
 			"id": 308964, "points": 3,
 			"devInfo": "Complete chapter 4, using a frying pan"},
-		"a_Chapter4CompleteSign": { // MODIFIED
+		"a_Chapter4CompleteSign": { // VERIFIED 
 			"id": 310149, "points": 3,
 			"devInfo": "Complete chapter 4, using a sign"},
-		"a_Chapter5Complete": { // MODIFIED
+		"a_Chapter5Complete": { // VERIFIED 
 			"id": 311616, "points": 5,
 			"devInfo": "Complete chapter 5"},
-		"a_Chapter6CompleteThriller": { // MODIFIED
+		"a_Chapter6CompleteThriller": { // VERIFIED 
 			"id": 313211, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a thriller movie"},
-		"a_Chapter6CompleteLove": { // MODIFIED
+		"a_Chapter6CompleteLove": { // VERIFIED 
 			"id": 313210, "points": 3,
 			"devInfo": "Complete chapter 6, by co-directing a love movie"},
-		"a_Chapter7Complete": { // MODIFIED
+		"a_Chapter7Complete": { // VERIFIED 
 			"id": 315565, "points": 5,
 			"devInfo": "Complete chapter 7"},
-		"a_Chapter8Complete": { // MODIFIED 
+		"a_Chapter8Complete": { // VERIFIED  
 			"id": 315571, "points": 5,
 			"devInfo": "Complete chapter 8"}},
 	"c_AchievementPercentage": {
-		"a_MaxAchievementPrologue": { // MODIFIED
+		"a_MaxAchievementPrologue": { // VERIFIED 
 			"id": 405087, "points": 10,
 			"devInfo": "Seen all the important cutscenes in prologue + EX Chapter"},
-		"a_MaxAchievementChapter1": { // MODIFIED
+		"a_MaxAchievementChapter1": { // VERIFIED 
 			"id": 405088, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 1"},
-		"a_MaxAchievementChapter2": { // MODIFIED
+		"a_MaxAchievementChapter2": { // VERIFIED 
 			"id": 405089, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 2"},
-		"a_MaxAchievementChapter3": { // MODIFIED
+		"a_MaxAchievementChapter3": { // VERIFIED 
 			"id": 405090, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 3"},
-		"a_MaxAchievementChapter4": { // MODIFIED
+		"a_MaxAchievementChapter4": { // VERIFIED 
 			"id": 405091, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 4"},
-		"a_MaxAchievementChapter5": { // MODIFIED
+		"a_MaxAchievementChapter5": { // VERIFIED 
 			"id": 405092, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 5"},
-		"a_MaxAchievementChapter6": { // MODIFIED
+		"a_MaxAchievementChapter6": { // VERIFIED 
 			"id": 405093, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 6"},
-		"a_MaxAchievementChapter7": { // MODIFIED
+		"a_MaxAchievementChapter7": { // VERIFIED 
 			"id": 405094, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 7"},
-		"a_MaxAchievementChapter8": { // MODIFIED
+		"a_MaxAchievementChapter8": { // VERIFIED 
 			"id": 405095, "points": 10,
 			"devInfo": "Seen all the important cutscenes in chapter 8"},
-		"a_MaxAchievementEpilogue": { // MODIFIED	
+		"a_MaxAchievementEpilogue": { // VERIFIED 	
 			"id": 405096, "points": 10,
 			"devInfo": "Seen all the important cutscenes in epilogue"},
-		"a_MaxAchievementTotal": { // MODIFIED
+		"a_MaxAchievementTotal": { // VERIFIED 
 			"id": 405097, "points": 50,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
@@ -2082,28 +2080,28 @@ achievements_coreData = {
 			"id": 306885, "points": 2,
 			"devInfo": "Acquire an egg from performer in chapter 1 at marktzplatz. First interact with the kid. Chose not to save his grandpa, then go back to the performer."}},
 	"c_Endings": { // Category - Achieving different endings
-		"a_EndingA": { // MODIFIED
+		"a_EndingA": { // VERIFIED 
 			"id": 315566, "points": 5,
 			"devInfo": "Ending A: Margarette (Ancestress) => Fortuneteller AND Homunculus => Town Square"},
-		"a_EndingB1":{ // MODIFIED
+		"a_EndingB1":{ // VERIFIED 
 			"id": 315573, "points": 5,
 			"devInfo": "Ending B1: Margarette (Ancestress) => Fortuneteller => Town Square"},
-		"a_EndingB2":{ // MODIFIED
+		"a_EndingB2":{ // VERIFIED 
 			"id": 315572, "points": 5,
 			"devInfo": "Ending B2: Margarette (Ancestress) => Homunculus => Town Square"},
-		"a_EndingC": { // MODIFIED
+		"a_EndingC": { // VERIFIED 
 			"id": 317118, "points": 5,
 			"devInfo": "Ending C: Margarette (Ancestress) => Destroyed Lab"},
-		"a_EndingD": { // MODIFIED
+		"a_EndingD": { // VERIFIED 
 			"id": 322230, "points": 5,
 			"devInfo": "Ending D: Margarette (Not an Ancestress) => Do Not Save Dana => Destroyed Lab"},
-		"a_EndingE": { // MODIFIED
+		"a_EndingE": { // VERIFIED 
 			"id": 322231, "points": 5,
 			"devInfo": "Ending E: Margarette (Not an Ancestress) => Save Dana => after talk with dana, go to present and get dana's letter => give letter to dana in middle ages => Destroyed Lab"},
-		"a_EndingEXCureHelena": { // MODIFIED
+		"a_EndingEXCureHelena": { // VERIFIED 
 			"id": 405114, "points": 4,
 			"devInfo": "In EX Chapter: give the stone to Dr. Wagner in the past"},		
-		"a_EndingEXKillHomunculus": { // MODIFIED
+		"a_EndingEXKillHomunculus": { // VERIFIED 
 			"id": 405113, "points": 4,
 			"devInfo": "In EX Chapter: after heading to past, return back to present to die, so you can kill Homunulus in Limbo with the red stone"}},
 	"c_Extra": { // Category - Extra side content & cutscenes
@@ -2195,70 +2193,70 @@ achievements_coreData = {
 			"id": 310426, "points": 4,
 			"devInfo": "Take picture in chapter 4 or 5 => talk to Sibylla => talk to Eckart in present => give kitten before chapter 7"}},
 	"c_ExtraCouple": { // Category - Related to the mysterious couple 
-		"a_EnigmaticCouple1": { // MODIFIED
+		"a_EnigmaticCouple1": { // VERIFIED 
 			"id": 307495, "points": 3,
 			"devInfo": "Find the coated couple in the present during the prologue or chapter 1"},
-		"a_EnigmaticCouple2": { // MODIFIED
+		"a_EnigmaticCouple2": { // VERIFIED 
 			"id": 310131, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 3"},
-		"a_EnigmaticCouple3": { // MODIFIED
+		"a_EnigmaticCouple3": { // VERIFIED 
 			"id": 310134, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 4"},	
-		"a_EnigmaticCouple4": { // MODIFIED
+		"a_EnigmaticCouple4": { // VERIFIED 
 			"id": 310135, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 5"},	
-		"a_EnigmaticCouple5": { // MODIFIED
+		"a_EnigmaticCouple5": { // VERIFIED 
 			"id": 315564, "points": 3,
 			"devInfo": "Find the coated couple in the present during chapter 7"},	
-		"a_LostYoungCouple1": { // MODIFIED
+		"a_LostYoungCouple1": { // VERIFIED 
 			"id": 306984, "points": 3,
 			"devInfo": "Interact with the lost couple in the Middle Ages during chapter 2"},
-		"a_LostYoungCouple2": { // MODIFIED
+		"a_LostYoungCouple2": { // VERIFIED 
 			"id": 310133, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 3"},
-		"a_LostYoungCouple3": { // MODIFIED
+		"a_LostYoungCouple3": { // VERIFIED 
 			"id": 309393, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 4"},
-		"a_LostYoungCouple4": { // MODIFIED
+		"a_LostYoungCouple4": { // VERIFIED 
 			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // MODIFIED
+		"a_LostYoungCouple5": { // VERIFIED 
 			"id": 314753, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
-		"a_LostYoungCouple6": { // MODIFIED
+		"a_LostYoungCouple6": { // VERIFIED 
 			"id": 315568, "points": 5,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 8"}},
 	"c_ExtraEnergy": { // Category - Related to energy orb gathering
-		"a_EnergyOrbLocatorPresentDay": { // MODIFIED
+		"a_EnergyOrbLocatorPresentDay": { // VERIFIED 
 			"id": 399816, "points": 5,
 			"devInfo": "Find all 5 energy orbs in present day"},
-		"a_EnergyOrbLocator70s80s": { // MODIFIED
+		"a_EnergyOrbLocator70s80s": { // VERIFIED 
 			"id": 399817, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 70s/80s"}, 
-		"a_EnergyOrbLocator1900Days": { // MODIFIED
+		"a_EnergyOrbLocator1900Days": { // VERIFIED 
 			"id": 399818, "points": 5,
 			"devInfo": "Find all 5 energy orbs in 1900s"}, 
-		"a_EnergyOrbLocatorMiddleAges": { // MODIFIED
+		"a_EnergyOrbLocatorMiddleAges": { // VERIFIED 
 			"id": 399819, "points": 5,
 			"devInfo": "Find all 6 energy orbs in Middle Ages"}
 		},
 	"c_ExtraGameOver": { // Category - Secret cutscenes that lead to player dying or game over screen
-		"a_ErasingEike": { // MODIFIED
+		"a_ErasingEike": { // VERIFIED 
 			"id": 306883, "points": 2,
 			"devInfo": "Talk to yourself at cafe Sonné in the past during prologue"},
-		"a_ErasingEike2": { // MODIFIED
+		"a_ErasingEike2": { // VERIFIED 
 			"id": 314763, "points": 1,
 			"devInfo": "Meet yourself at the Brum's mansion during chapter 7"},
-		"a_ExcuseMeMyMy": { // MODIFIED
+		"a_ExcuseMeMyMy": { // VERIFIED 
 			"id": 306919, "points": 1,
 			"devInfo": "When meeting Homonculus, chose to excuse yourself, during chapter 3"},
-		"a_MetYouBefore": { // MODIFIED
+		"a_MetYouBefore": { // VERIFIED 
 			"id": 306888, "points": 2,
 			"devInfo": "Die 4 times to the tree killer while speaking to Dana in chapter 2"},
-		"a_RottenRope": { // MODIFIED
+		"a_RottenRope": { // VERIFIED 
 			"id": 315563, "points": 1,
 			"devInfo": "Try to save yourself with an old rope during chapter 7"},
-		"a_TimeEgoFlop": { // MODIFIED
+		"a_TimeEgoFlop": { // VERIFIED 
 			"id": 313212, "points": 1,
 			"devInfo": "During chapter 6, co-direct Time Ego"}}}
 // -------------------------------------
