@@ -53,6 +53,8 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
+// TODO achievement for running around lebensbaum with jogging man?
+
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
@@ -258,10 +260,10 @@ function is_ReleaseRegion(enum_releaseRegion) {
 	}}
 
 // memUtil_floatToInt: will return an integer from the floored float value => refer to https://docs.retroachievements.org/AddSource-Flag/#interaction-with-floats
-	// 	- RAtools will clean => 	```0 + float(0xaa) + 0´´´	 -->	```float(0xa)´´´
-	// 	- Workaround is the following => 	```byte(memAddr_WhereValueNeverChanges) + float(0xa) + byte(memAddr_WhereValueNeverChanges)´´´
-function memUtil_floatToInt(float_value) {
-	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", RELEASE_REGION_USA))
+	// 	- RAtools will clean => 	0 + float(0xaa) + 0	 --to-->	float(0xa)
+	// 	- Workaround is the following => 	byte(memAddr_WhereValueNeverChanges) + float(0xa) + byte(memAddr_WhereValueNeverChanges)
+function memUtil_floatToInt(float_value, enum_releaseRegion) {
+	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
 function memUtil_maskPointer(memAddr_ptr) =>
@@ -453,7 +455,7 @@ const_NPCs_data = {
 			"Chap1Prologue_TownSquare": {
 				"memAddr_TalkCount": {
 					RELEASE_REGION_USA: 0xA9EE28,
-					 RELEASE_REGION_JPN: () => 0xA9EE28 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+					RELEASE_REGION_JPN: () => 0xA9EE28 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 2},
 			"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar": { // <-- Chap3-4 use same memAddr as they use same dialogue
 				"memAddr_TalkCount": {
@@ -875,8 +877,8 @@ const_Area_IDs= {	// list not complete, add as is necessary
 
 	AREA_Present_AntiquesEule: 0x6f,
 	AREA_Present_City_Day: 0x375,
-	AREA_Present_City_NightPM: 0x44,
-	AREA_Present_City_NightAM: 0x3,
+	AREA_Present_City_NightPM: 0x3,
+	AREA_Present_City_NightAM: 0x44,
 	AREA_Present_CafeSonne: 0x10,
 	AREA_Present_TownHall: 0x16,
 	AREA_Present_BrumMuseum_Upstairs_Room1_Night: 0x159,
@@ -3954,29 +3956,60 @@ achievements_triggers = {
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
 	"a_EnigmaticCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(4, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare", enum_releaseRegion) &&
-					is_InteractionId(0x2cc, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap1Prologue_NearBar", enum_releaseRegion) &&
-					is_InteractionId(0x2c1, enum_releaseRegion))
-			])}
+		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already
+			// function measuredComparison(enum_releaseRegion) { return
+			// 	tally(4, [
+			// 		repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap1Prologue_TownSquare"),
+			// 			is_SmallCutscene_active(enum_releaseRegion) &&
+			// 			is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
+			// 			on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare", enum_releaseRegion) &&
+			// 			is_InteractionId(0x2cc, enum_releaseRegion)),
+			// 		repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap1Prologue_NearBar"), 
+			// 			is_SmallCutscene_active(enum_releaseRegion) &&
+			// 			is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
+			// 			on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap1Prologue_NearBar", enum_releaseRegion) &&
+			// 			is_InteractionId(0x2c1, enum_releaseRegion))
+			// 	])}
+			// return 
+			// 	unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			// 	never(	
+			// 		!is_InGame(enum_releaseRegion) ||
+			// 		!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) && !is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			// 	) &&
+			// 	measured(measuredComparison(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
+			// 	trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+
+		// Active code => player can still unlock achievement when loading a save in which he has previously talked to one of the NPCs before
+		let_sumOf_currentNPCtalkCounts = 
+			current_NPCtalkCount(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_Present_CoatedMan, "Chap1Prologue_NearBar", enum_releaseRegion)
+
+		let_sumOf_prevNPCtalkCounts =
+			prev_NPCtalkCount(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_Present_CoatedMan, "Chap1Prologue_NearBar", enum_releaseRegion)
+
+		let_totalTalkCount = 
+			get_NPC_MaxTalkCount(NPC_Present_CoatedWoman, "Chap1Prologue_TownSquare") +
+			get_NPC_MaxTalkCount(NPC_Present_CoatedMan, "Chap1Prologue_NearBar")
+		
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
+			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
+			never(				
 				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) && !is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+				!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) &&
+				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
+			once( // <-- Hit once, so we can use trigger popup
+				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
+			) &&
+			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_EnigmaticCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison_onIncrease(enum_releaseRegion) { return	// Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
+		// We cannot use AddSource like a_EnigmaticCouple1 because meAddr_TalkCount for NPC_Present_CoatedWoman->Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar counts for chapters 3+4
+		// Thus alternative method is active below
+		function measuredComparison_onIncrease(enum_releaseRegion) { return	// Measure comparison => counts up for each seperate dialogue
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"), 
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -3989,7 +4022,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap3_NearAntiqueShop", enum_releaseRegion) &&
 					is_InteractionId(0x2c4, enum_releaseRegion))
 			])}
-		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4004,17 +4037,20 @@ achievements_triggers = {
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
 			never(	
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
 			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 			(
-				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
-				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+				measured(measuredComparison_onIncrease(enum_releaseRegion)) || 
+				measured(measuredComparison_atMax(enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_EnigmaticCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogues with CoatedWoman_Present
+		// We cannot use AddSource like a_EnigmaticCouple1 because meAddr_TalkCount for NPC_Present_CoatedWoman->Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar counts for chapters 3+4
+		// Thus alternative method is active below
+		function measuredComparison_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogue
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4027,7 +4063,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap4_HaupStrUnderArch", enum_releaseRegion) &&
 					is_InteractionId(0x2c5, enum_releaseRegion))
 			])}
-		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up MaxTalkCount on the last dialogue, in case of reloading mid measurement 
+		function measuredComparison_atMax(enum_releaseRegion) { return	// Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(4, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4042,30 +4078,32 @@ achievements_triggers = {
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
 			never(	
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
 			) &&	// 2 Alt groups => measuredComparison_atMax(), achievement is still unlockable when reloading mid-measurement
 			(
-				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
-				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+				measured(measuredComparison_onIncrease(enum_releaseRegion)) || 
+				measured(measuredComparison_atMax(enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_EnigmaticCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion) { return
+		// Need 2x2 seperate measures => 1 onIncrease + 1 atMax * 2 for BrumState (library or museum) => coatedMan has differing dialogue depending on library or museum
+		function measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogue
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
 					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2d5, enum_releaseRegion)),
-				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', both measures must have same count
+				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', all measures must have same count
 					is_SmallCutscene_active(enum_releaseRegion) && is_BrumEstate_Library(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
 					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2c9, enum_releaseRegion))
 			])}
-		function measuredComparison_BrumLibrary_atMax(enum_releaseRegion) { return
+		function measuredComparison_BrumLibrary_atMax(enum_releaseRegion) { return // Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4078,7 +4116,7 @@ achievements_triggers = {
 					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2c9, enum_releaseRegion))
 			])}
-		function measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion) { return
+		function measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogue
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4091,7 +4129,7 @@ achievements_triggers = {
 					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2ca, enum_releaseRegion))
 			])}
-		function measuredComparison_BrumMuseum_atMax(enum_releaseRegion) { return
+		function measuredComparison_BrumMuseum_atMax(enum_releaseRegion) { return // Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
 			tally(3, [
 				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
 					is_SmallCutscene_active(enum_releaseRegion) &&
@@ -4106,55 +4144,84 @@ achievements_triggers = {
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
 			never(	
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
 			(
-				measured(measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
-				measured(measuredComparison_BrumMuseum_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) ||
-				measured(measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion)) || 
-				measured(measuredComparison_BrumLibrary_atMax(enum_releaseRegion), is_Area(AREA_Present_City_Day, enum_releaseRegion))
+				measured(measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion)) || 
+				measured(measuredComparison_BrumMuseum_atMax(enum_releaseRegion)) ||
+				measured(measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion)) || 
+				measured(measuredComparison_BrumLibrary_atMax(enum_releaseRegion))
 			)}),
 	"a_EnigmaticCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison_onIncrease(enum_releaseRegion) { return
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
-			])}
-		function measuredComparison_atMax(enum_releaseRegion) { return
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
-			])}
+		// Commented code => allows loadings mid-measurement
+			//	function measuredComparison_onIncrease(enum_releaseRegion) { return
+			//		tally(3, [
+			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
+			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
+			//		])}
+			//	function measuredComparison_atMax(enum_releaseRegion) { return
+			//		tally(3, [
+			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap7_SouthGate"),
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
+			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
+			//		])}
+			//	return 
+			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			//		unless(!is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) &&
+			//		never(	
+			//			!is_InGame(enum_releaseRegion) ||
+			//			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
+			//		) &&
+			//		(
+			//			measured(measuredComparison_onIncrease(enum_releaseRegion)) || 
+			//			measured(measuredComparison_atMax(enum_releaseRegion))
+			//		) &&
+			//		trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+		// Active code => alternative way with AddSource
+		let_sumOf_currentNPCtalkCounts = 
+			current_NPCtalkCount(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion)
+
+		let_sumOf_prevNPCtalkCounts =
+			prev_NPCtalkCount(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion)
+
+		let_totalTalkCount = 
+			get_NPC_MaxTalkCount(NPC_Present_CoatedWoman, "Chap7_SouthGate") +
+			get_NPC_MaxTalkCount(NPC_Present_CoatedMan, "Chap7_NorthWestGate")
+		
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
+			unless(!is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) &&
+			never(				
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) &&
-			(
-				measured(measuredComparison_onIncrease(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) || 
-				measured(measuredComparison_atMax(enum_releaseRegion), is_Area(AREA_Present_City_NightAM, enum_releaseRegion))
+			once( // <-- Hit once, so we can use trigger popup
+				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),			
 	"a_BecomeThePerformer": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -4435,8 +4502,8 @@ achievements_triggers = {
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) && (
-				measured(measuredComparison_onMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion)) ||
-				measured(measuredComparison_atMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightPM, enum_releaseRegion))
+				measured(measuredComparison_onMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) ||
+				measured(measuredComparison_atMax(enum_releaseRegion), when = is_Area(AREA_Present_City_NightAM, enum_releaseRegion))
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
@@ -5596,11 +5663,8 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// TODO leaderboard for speedrunning => acquiring all energy orbs in a time period 
-//	using Mem>Del Counter => to show CR that I know this
-
 // ==========================
-// • Leaderboards CORE DATA •
+// • Leaderboards CORE DATA • // BUG leaderboard ClearTimeChapter keeps starting when loading/moving to next chapter => find another address to check when in-game?
 // ==========================
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
