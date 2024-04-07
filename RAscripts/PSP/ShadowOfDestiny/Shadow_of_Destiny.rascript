@@ -202,6 +202,7 @@ memory_addresses = {
 		"PlayerPosition_yAxis": {RELEASE_REGION_USA: 0xa8abd8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xa92728},
 	},
 	DATATYPE_32Bit: {
+		"FrameCounter": {RELEASE_REGION_USA: 0xb88ab0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xb905f0},
 		"Timer_ChapterClearTime": {RELEASE_REGION_USA: 0xaa155c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa90ac},
 		"Timer_TotalClearTime": {RELEASE_REGION_USA: 0xaa1560, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa90b0},
 		"BottomScreenTextID": {RELEASE_REGION_USA: 0xac31e4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacad24},
@@ -1454,7 +1455,10 @@ function current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, 
 function prev_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, enum_releaseRegion) =>
 	prev(current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, enum_releaseRegion))
 
-function on_EnergyOrb_Collect(enum_timePeriod, string_locationKey, enum_releaseRegion) => 
+function is_EnergyOrb_collected(enum_timePeriod, string_locationKey, enum_releaseRegion) =>
+	current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, enum_releaseRegion) == 0
+
+function on_EnergyOrb_collect(enum_timePeriod, string_locationKey, enum_releaseRegion) => 
 	current_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, enum_releaseRegion) > prev_EnergyOrb_CollectionState(enum_timePeriod, string_locationKey, enum_releaseRegion)
 // -------------------------------------
 function current_EnergyUnits(enum_releaseRegion) =>
@@ -1944,6 +1948,13 @@ function memUtil_countTotalBitFlagsInBitsetArray(array_bitsets) { // Counts how 
 function current_TotalAchievementRate(enum_releaseRegion) =>
 	byte(memory_getAddress(DATATYPE_8Bit, "AchievementPercentageNumber_Total", enum_releaseRegion))
 
+// ...............
+// ◦ OTHER LOGIC ◦
+// '''''''''''''''
+function on_FrameCount_change(enum_releaseRegion) {
+	let_memAccessor_FrameCounter = dword(memory_getAddress(DATATYPE_32Bit, "FrameCounter", enum_releaseRegion))
+	return let_memAccessor_FrameCounter != prev(let_memAccessor_FrameCounter)}
+
 // =========================
 // • Memory INITIALIZATION •
 // =========================
@@ -2347,10 +2358,10 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				}
 			}
 			if(length(let_areaComparisonArray) == 0) {
-				array_push(let_tallyComparisonArray, once(on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
+				array_push(let_tallyComparisonArray, once(on_EnergyOrb_collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
 			} else {
 				let_areaComparison = any_of(let_areaComparisonArray, (comparison) => comparison)
-				array_push(let_tallyComparisonArray, once(let_areaComparison && on_EnergyOrb_Collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
+				array_push(let_tallyComparisonArray, once(let_areaComparison && on_EnergyOrb_collect(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion)))
 			}			
 		}
 		return tally(get_EnergyOrb_amountToCollect(enum_timePeriod), let_tallyComparisonArray)}
@@ -5077,7 +5088,7 @@ achievements_descriptions = {
 	"a_EndingEXKillHomunculus":						{"en": "Achieve ending EX, by destroying the jewel"},
 	"a_EndingEXCureHelena":							{"en": "Achieve ending EX, by creating a miracle cure"},
 	"a_DoctorateTimeTraveling": 					{"en": "Receive a lecture on time-travel physics within Chapter 4"}, 
-	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man from a bygone era, as well as his present self during Chapter 3, 4 or 5"},
+	"a_RunningAcrossThe90s":						{"en": "Encounter an athletic man from a bygone era, as well as his Present self during Chapter 3, 4 or 5"},
 	"a_GetOrnamentalEgg": 							{"en": "Receive a gift from an entertainer in Chapter 1"},
 	"a_ShowEggTownPlanter": 						{"en": "Present the barman's ancestor with your egg collection in Chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Pay for some coffee with an oval shaped object from Chapter 6 onward"},
@@ -5100,9 +5111,9 @@ achievements_descriptions = {
 	"a_LostYoungCouple6": 							{"en": "Share a piece of wisdom with the young man in the Middle Ages and assess his interpretation within Chapter 8"},
 	"a_EnigmaticCouple1": 							{"en": "Identify the coated man and woman in the modern-day setting during the Prologue or Chapter 1"}, 
 	"a_EnigmaticCouple2": 							{"en": "Discover the coated man and woman in the contemporary setting within Chapter 3"}, 
-	"a_EnigmaticCouple3": 							{"en": "Seek out the coated man and woman in the present during Chapter 4"}, 
+	"a_EnigmaticCouple3": 							{"en": "Seek out the coated man and woman in the Present during Chapter 4"}, 
 	"a_EnigmaticCouple4": 							{"en": "Encounter the coated man and woman in the current timeline during Chapter 5"},	
-	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the present during Chapter 7"},
+	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the Present during Chapter 7"},
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the Prologue"},
 	"a_ErasingEike2": 								{"en": "Stumble upon yourself in Chapter 7"}, 
 	"a_RottenRope": 								{"en": "Employ a worn-out cable to save yourself during Chapter 7"},
@@ -5248,7 +5259,7 @@ richPresence_LookupTablesText = {
 	"rpp_TimePeriod_MiddleAges":						{"en": "in the Middle Ages"},
 	"rpp_TimePeriod_Late20Century":						{"en": "in the late 20th century"},
 	"rpp_TimePeriod_Early20Century":					{"en": "in the early 20th century"},
-	"rpp_TimePeriod_Present":							{"en": "in the present"},
+	"rpp_TimePeriod_Present":							{"en": "in the Present"},
 	"rpp_TimePeriod_LookupFallback":					{"en": ""}}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -5592,10 +5603,25 @@ leaderboards_coreData = {
 
 	// "lb_Template": { // CONCEPT lb_template
 	// 	"id": 000000, "isLowerBetter": false, 
-	// 	"leaderboardValue": always_false(),
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
+	"lb_EnergyOrbSpeedTrial2000s": { // CONCEPT lb_EnergyOrbSpeedTrial2000s
+		"id": 000000, "isLowerBetter": true, 
+		"leaderboardFormat": "FRAMES",
+		"devInfo": "Speed collect 5 energy orbs throughout the city during the Present"},
+	"lb_EnergyOrbSpeedTrial1980s": { // CONCEPT lb_EnergyOrbSpeedTrial1980s
+		"id": 000000, "isLowerBetter": true, 
+		"leaderboardFormat": "FRAMES",
+		"devInfo": "Speed collect 5 energy orbs throughout the city during the late 20th century"},
+	"lb_EnergyOrbSpeedTrial1900s": { // CONCEPT lb_EnergyOrbSpeedTrial1900s
+		"id": 000000, "isLowerBetter": true, 
+		"leaderboardFormat": "FRAMES",
+		"devInfo": "Speed collect 5 energy orbs throughout the city, which are not inside buildings, during the early 20th century"},
+	"lb_EnergyOrbSpeedTrial1500s": { // CONCEPT lb_EnergyOrbSpeedTrial1500s
+		"id": 000000, "isLowerBetter": true, 
+		"leaderboardFormat": "FRAMES",
+		"devInfo": "Speed collect 5 energy orbs throughout the city, which are not inside buildings, during the Medieval era"},
 	"lb_ClearTimeChapter8": { // VERIFIED 
 		"id": 92203, "isLowerBetter": true,
 		"leaderboardFormat": "SECS",
@@ -5648,7 +5674,7 @@ function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter, enum_
 		let_extraComparison_inPrologue = !is_PrologueExMode_active(enum_releaseRegion)
 
 	return 
-		unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other region triggers don't count and don't reset
+		unless(!is_ReleaseRegion(enum_releaseRegion)) && // <-- pause is needed so the other alt group regions won't trigger, count or reset
 		never(
 			!is_InGame(enum_releaseRegion) || 
 			is_ExtraMenu_active(enum_releaseRegion)
@@ -5666,7 +5692,7 @@ function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter, enum
 		let_extraComparison_inPrologue = is_PrologueExMode_active(enum_releaseRegion)
 
 	return 	
-		is_ReleaseRegion(enum_releaseRegion) && // <-- pause is not needed because this trigger doesn't use resets and counts
+		is_ReleaseRegion(enum_releaseRegion) &&
 		(
 			!is_InGame(enum_releaseRegion) || 
 			let_extraComparison_inPrologue || 
@@ -5675,7 +5701,7 @@ function leaderboards_generate_CancelTrigger_ClearTimeChapter(enum_chapter, enum
 		)
 	}
 function leaderboards_generate_SubmitTrigger_ClearTimeChapter(enum_chapter, enum_releaseRegion) =>
-	is_ReleaseRegion(enum_releaseRegion) &&
+	is_ReleaseRegion(enum_releaseRegion) && 
 	is_Chapter(enum_chapter, enum_releaseRegion) &&
 	on_ChapterCompletionMenu_render(enum_releaseRegion)
 
@@ -5694,8 +5720,15 @@ function leaderboards_generate_StartTrigger_ClearTimeChapter_alt(enum_chapter, e
 		let_extraComparison_inPrologue = !is_PrologueExMode_active(enum_releaseRegion)
 
 	return
-		is_ReleaseRegion(enum_releaseRegion) &&
-		is_Chapter(enum_chapter, enum_releaseRegion) &&
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			!is_Chapter(enum_chapter, enum_releaseRegion) 
+		) &&
+		repeated(200, 	// <-- Delay FIX for: leaderboard starting+submitting when moving from one chapter to the next OR when loading a save from chapter completion menu, because on_ChapterCompletionMenu_render() might do some weird stuff at that moment
+			is_InGame(enum_releaseRegion) &&
+			is_Chapter(enum_chapter, enum_releaseRegion) 
+		) &&
 		let_extraComparison_inPrologue &&
 		on_ChapterCompletionMenu_render(enum_releaseRegion)
 	}
@@ -5704,10 +5737,65 @@ function leaderboards_generate_CancelTrigger_ClearTimeChapter_alt() =>
 function leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt() =>
 	always_true()
 
+// ---------------EnergyOrbSpeedTrial-------------------
+function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) {
+	let_sumOf_deltaAmountOfEnergyOrbsCollected = 
+		sum_of(array_energyOrblocationKeys, (string_eneryOrbLocationKey) => prev_EnergyOrb_CollectionState(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion))
+	let_sumOf_currentAmountOfEnergyOrbsCollected = 
+		sum_of(array_energyOrblocationKeys, (string_eneryOrbLocationKey) => current_EnergyOrb_CollectionState(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion))
+
+	return 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_InGame(enum_releaseRegion) &&
+		let_sumOf_deltaAmountOfEnergyOrbsCollected < 2 && 
+		let_sumOf_currentAmountOfEnergyOrbsCollected == 2	// <-- start leaderboard once the 2nd orb is collected => reduce RAoverlay clutter
+	}
+
+function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion) => 
+	is_ReleaseRegion(enum_releaseRegion) &&
+	(
+		!is_InGame(enum_releaseRegion) ||
+		on_Chapter_change(enum_releaseRegion) ||
+		on_EnergyUnits_decrement(enum_releaseRegion) 
+	)
+
+function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, enum_releaseRegion) => 
+	unless(!is_ReleaseRegion(enum_releaseRegion)) && 
+	unless(none_of(array_collectionAreas, (enum_area) => is_Area(enum_area, enum_releaseRegion))) && // <-- pause if tally count when not in the city area
+	never(	// <-- reset is necessary because the cancelTrigger does not reset below tally count
+		!is_InGame(enum_releaseRegion) ||
+		on_Chapter_change(enum_releaseRegion) ||
+		on_EnergyUnits_decrement(enum_releaseRegion) 
+	) &&
+	tally_of(array_energyOrblocationKeys, 5, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here a allows it to count, thus we can count all 5 collections
+		on_EnergyOrb_collect(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion)
+	)
+
+function leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion) => 
+	unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+	never(	// <-- reset is necessary because the cancelTrigger does not reset below measure count
+		!is_InGame(enum_releaseRegion) ||
+		on_Chapter_change(enum_releaseRegion) ||
+		on_EnergyUnits_decrement(enum_releaseRegion) 
+	) &&
+	measured(repeated(0, on_FrameCount_change(enum_releaseRegion))) // <-- repeated 0 => will infinitely count
+
 // =========================
 // • Leaderboards TRIGGERS •
 // =========================
 leaderboards_startTriggers = {
+	"lb_EnergyOrbSpeedTrial2000s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["OutsideFortuneTeller", "AlleyWay", "SouthGate", "UnderArchRuckagrastr", "CarPark"]
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1980s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["NorthGateNearBar", "WellCafeSonne", "Haupstr", "StairsRudolfstr", "AlleyWayBakery"]
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1900s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate"]
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1500s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance"]
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, enum_releaseRegion)}),
 	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter8, enum_releaseRegion)
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)		
@@ -5777,6 +5865,14 @@ leaderboards_startTriggers = {
 	}
 
 leaderboards_cancelTriggers = {
+	"lb_EnergyOrbSpeedTrial2000s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion)),
+	"lb_EnergyOrbSpeedTrial1980s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion)),
+	"lb_EnergyOrbSpeedTrial1900s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion)),
+	"lb_EnergyOrbSpeedTrial1500s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion)),
 	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_CancelTrigger_ClearTimeChapter_alt()
 		// leaderboards_generate_CancelTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)
@@ -5826,6 +5922,22 @@ leaderboards_cancelTriggers = {
 	}
 
 leaderboards_submitTriggers = {
+	"lb_EnergyOrbSpeedTrial2000s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["OutsideFortuneTeller", "AlleyWay", "SouthGate", "UnderArchRuckagrastr", "CarPark"]	
+		let_array_collectionAreas = [AREA_Present_City_Day, AREA_Present_City_NightAM, AREA_Present_City_NightPM]
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1980s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["NorthGateNearBar", "WellCafeSonne", "Haupstr", "StairsRudolfstr", "AlleyWayBakery"]	
+		let_array_collectionAreas = [AREA_80s_City_Snow, AREA_70s_City_Night]
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1900s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate"]	
+		let_array_collectionAreas = [AREA_1900s_City]
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+	"lb_EnergyOrbSpeedTrial1500s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance"]	
+		let_array_collectionAreas = [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night]
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
 	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
 		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)
@@ -5894,6 +6006,34 @@ leaderboards_valueMeasures = {
 	//	- Use max_of() --> when there's multiple values to measure (refer to https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions#leaderboardtitle-description-start-cancel-submit-value-formatvalue-lower_is_betterfalse-id0)
 	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
 	
+	"lb_EnergyOrbSpeedTrial2000s": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_EnergyOrbSpeedTrial1980s": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_EnergyOrbSpeedTrial1900s": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_EnergyOrbSpeedTrial1500s": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
 	"lb_ClearTimeChapter8": () {
 		let_array_valueMeasures = []
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
@@ -5958,11 +6098,11 @@ leaderboards_valueMeasures = {
 		}
 		return max_of(let_array_valueMeasures)},
 	"lb_TotalClearTime": () {
-		function create_valueMeasure(enum_releaseRegion) => 
+		function valueMeasure(enum_releaseRegion) => 
 			measured(get_Timer_TotalClearTime_InMinutes(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
 		let_array_valueMeasures = []
 		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-			let_valueMeasure = create_valueMeasure(enum_releaseRegion)
+			let_valueMeasure = valueMeasure(enum_releaseRegion)
 			array_push(let_array_valueMeasures, let_valueMeasure)
 		}
 		return max_of(let_array_valueMeasures)},
@@ -5972,6 +6112,10 @@ leaderboards_valueMeasures = {
 // =====================
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Agile Energy Orb Seeker: Present"},
+	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Agile Energy Orb Seeker: Late 20th century"},
+	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Agile Energy Orb Seeker: Early 20th century"},
+	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Agile Energy Orb Seeker: Middle Ages"},
 	"lb_ClearTimeChapter8":					{"en": "Chapter 8 Clear Time"},
 	"lb_ClearTimeChapter7":					{"en": "Chapter 7 Clear Time"},
 	"lb_ClearTimeChapter6":					{"en": "Chapter 6 Clear Time"},
@@ -5984,6 +6128,10 @@ leaderboards_titles = {
 	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by conquering Chapter 8 in record time"},
 	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by conquering Chapter 7 in record time"},
 	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by conquering Chapter 6 in record time"},
