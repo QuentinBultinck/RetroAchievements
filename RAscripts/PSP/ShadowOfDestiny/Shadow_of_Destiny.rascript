@@ -216,7 +216,7 @@ memory_addresses = {
 		"TimePeriod": {RELEASE_REGION_USA: 0xAA1268, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa8db8},
 	},
 	DATATYPE_ASCII: {
-		"ReleaseRegionID": {RELEASE_REGION_USA: 0xa5ab44, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xa64c74},
+		"PSPgameID": {RELEASE_REGION_USA: 0xa5ab44, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xa64c74},
 	},
 	DATATYPE_Struct: {
 		"CharacterPrintData_base": {RELEASE_REGION_USA: 0xac31e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacad28},
@@ -245,11 +245,11 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 function is_ReleaseRegion(enum_releaseRegion) {
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		let_string_PSPgameId_USA = "ULUS10459"
-		let_memAddr = memory_getAddress(DATATYPE_ASCII, "ReleaseRegionID", RELEASE_REGION_USA)
+		let_memAddr = memory_getAddress(DATATYPE_ASCII, "PSPgameID", RELEASE_REGION_USA)
 		return ascii_string_equals(let_memAddr, let_string_PSPgameId_USA, length(let_string_PSPgameId_USA))
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
 		let_string_PSPgameId_JPN = "ULJM05512"
-		let_memAddr = memory_getAddress(DATATYPE_ASCII, "ReleaseRegionID", RELEASE_REGION_JPN)
+		let_memAddr = memory_getAddress(DATATYPE_ASCII, "PSPgameID", RELEASE_REGION_JPN)
 		return ascii_string_equals(let_memAddr, let_string_PSPgameId_JPN, length(let_string_PSPgameId_JPN))
 	} else {
 		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
@@ -3374,21 +3374,76 @@ achievements_triggers = {
 		]) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_GetOrnamentalEgg": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-		never(
-			!is_InGame(enum_releaseRegion) ||
-			is_ExtraMenu_active(enum_releaseRegion) ||
-			!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
-		) &&
-		once(	// Identifies Cutscene => Acquiring ornamental egg from performer
-			is_LargeCutscene_active(enum_releaseRegion) 			&& 
-			is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
-			is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-			is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-			is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
-			is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
-		) &&
-		trigger_when(is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && on_Cutscene_end(enum_releaseRegion))),
+		// DEV_NOTE: Pause Lock with alt reset
+		// -------------------------------
+		//	- Pause lock = Pause if with hit count
+		//	- To reset pause lock: 
+		//		- Option 1 => use resetNextIf on the pause with hit count
+		//		- Option 2 => place reset in another (alt) group (not recommended when offering multi-region support as there are already alt groups for each region)
+
+		// Example: infinite pause lock when not in correct releaseRegion; Below code will pause this alt group infinitely as there's no resets in any other group and no resetNextIf hooked on to the pause lock
+			// unless(repeated(50, !is_ReleaseRegion(enum_releaseRegion))) && // <-- repeated for 50 frames, just in case this value initializes later then on game boot; instead of once
+			// unless(	
+			// 	!is_InGame(enum_releaseRegion) ||
+			// 	is_ExtraMenu_active(enum_releaseRegion) ||
+			// 	!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			// ) &&
+			// once(	// Identifies Cutscene => Acquiring ornamental egg from performer	
+			// 	is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			// 	is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
+			// 	is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			// 	is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			// 	is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
+			// 	is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			// ) &&
+			// trigger_when(
+			// 	is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
+			// 	on_Cutscene_end(enum_releaseRegion)
+			// )
+		
+		// Option 1 (example: pause lock when not in correct chapter, with resetNextIf)
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(once(	// <-- Pause lock
+				never(on_Chapter_changeTo(CHAPTER_Chapter1, enum_releaseRegion)) &&	// <-- ResetNextIf for the pause lock
+				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			)) &&
+			unless(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Acquiring ornamental egg from performer
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			) &&
+			trigger_when(
+				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
+				on_Cutscene_end(enum_releaseRegion)
+			)
+
+		// Original code (without pause lock)
+			// unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			// never(
+			// 	!is_InGame(enum_releaseRegion) ||
+			// 	is_ExtraMenu_active(enum_releaseRegion) ||
+			// 	!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			// ) &&
+			// once(	// Identifies Cutscene => Acquiring ornamental egg from performer
+			// 	is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			// 	is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
+			// 	is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			// 	is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			// 	is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
+			// 	is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			// ) &&
+			// trigger_when(
+			// 	is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
+			// 	on_Cutscene_end(enum_releaseRegion)
+			// )
+		),
 	"a_GetExChapterOrnamentalEgg": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -3637,7 +3692,7 @@ achievements_triggers = {
 			is_Cutscene_MasterDataId(0x3d290, enum_releaseRegion)	&&
 			is_Cutscene_SectionDataId(0x92f30, enum_releaseRegion)
 		) &&
-		on_CutsceneSection_end(enum_releaseRegion)),
+		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
 	"a_LostYoungCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(6, [
@@ -4755,8 +4810,10 @@ achievements_triggers = {
 			is_Cutscene_MasterDataId(0x2c00, enum_releaseRegion)	&&
 			is_Cutscene_SectionDataId(0x10930, enum_releaseRegion)
 		) &&
-		is_KittenGivenToSibylla(enum_releaseRegion) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion))),
+		trigger_when(			
+			is_KittenGivenToSibylla(enum_releaseRegion) &&
+			on_Cutscene_end(enum_releaseRegion)
+		)),
 	"a_ErasingEike": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -5519,6 +5576,9 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
+
+// TODO leaderboard for speedrunning => acquiring all energy orbs in a time period 
+//	using Mem>Del Counter => to show CR that I know this
 
 // ==========================
 // • Leaderboards CORE DATA •
