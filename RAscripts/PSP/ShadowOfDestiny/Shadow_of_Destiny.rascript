@@ -3715,171 +3715,304 @@ achievements_triggers = {
 		) &&
 		trigger_when(on_CutsceneSection_end(enum_releaseRegion))),
 	"a_LostYoungCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(6, [
-				once(	// 1st talk with woman
-					is_SmallCutscene_active(enum_releaseRegion) && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
-					(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) && 
-					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_releaseRegion) &&	
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x420, enum_releaseRegion)),
-				once(	// 1st talk with man
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40d, enum_releaseRegion)),
-				once( 	// 2nd talk with woman; is only available when having talked to both at least once
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x421, enum_releaseRegion)),
-				once(	// 2nd talk with man; is only available when having talked to both at least once
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40e, enum_releaseRegion)),
-				once(	// 3rd talk with woman
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x422, enum_releaseRegion)),
-				once(	// 3rd talk with man
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40f, enum_releaseRegion))
-			])}
+		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already/already progresses the side quest
+			// '''''''''''''''''''''''''''''''
+			//	function measuredComparison(enum_releaseRegion) { return
+			//		tally(6, [
+			//			once(	// 1st talk with woman
+			//				is_SmallCutscene_active(enum_releaseRegion) && // Below line --> When having talked to other half of couple already, this isLostYoungCoupleProgressChap2 would become 0x1 at same time on_NPC_TalkCount_hitsMax() counts
+			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) && 
+			//				on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_releaseRegion) &&	
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x420, enum_releaseRegion)),
+			//			once(	// 1st talk with man
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40d, enum_releaseRegion)),
+			//			once( 	// 2nd talk with woman; is only available when having talked to both at least once
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x421, enum_releaseRegion)),
+			//			once(	// 2nd talk with man; is only available when having talked to both at least once
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40e, enum_releaseRegion)),
+			//			once(	// 3rd talk with woman
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x422, enum_releaseRegion)),
+			//			once(	// 3rd talk with man
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40f, enum_releaseRegion))
+			//		])}
+			//	return 
+			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			//		never(
+			//			!is_InGame(enum_releaseRegion) || 
+			//			!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
+			//		) &&
+			//		measured(
+			//			measuredComparison(enum_releaseRegion), 
+			//			when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)
+			//		) &&
+			//		trigger_when(on_Cutscene_end(enum_releaseRegion))
+			//	}),	
+		// Active code => player can still unlock achievement when loading a save in which he has progressed in this side quest + shorter logic
+		let_sumOf_currentNPCtalkCounts = 
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_releaseRegion)
+
+		let_sumOf_prevNPCtalkCounts =
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_releaseRegion)
+
+		let_totalTalkCount = 
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch")
+		
 		return 
+			// Core alt group
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(
-				!is_InGame(enum_releaseRegion) || 
-				!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
+			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			once( // <-- Hit once, so we can use trigger popup
+				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
-			measured(
-				measuredComparison(enum_releaseRegion), 
-				when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)
-			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		}),		
+			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
+			is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion)) 
+			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				(
+					!is_InGame(enum_releaseRegion) ||
+					!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
+				)
+			)}),
 	"a_LostYoungCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(6, [
-				once(	// 1st talk with woman
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x423, enum_releaseRegion)),
-				once(	// 1st talk with man
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x410, enum_releaseRegion)),
-				once(	// 2nd talk with woman; only available when talking to both at least once
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x424, enum_releaseRegion)),
-				once(	// 2nd talk with man; only available when talking to both at least once
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x411, enum_releaseRegion)),
-				once(	// 3rd talk with woman
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x425, enum_releaseRegion)),
-				once(	// 3rd talk with man
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x412, enum_releaseRegion))
-			])}
+		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already/already progresses the side quest
+			// '''''''''''''''''''''''''''''''
+			//	function measuredComparison(enum_releaseRegion) { return
+			//		tally(6, [
+			//			once(	// 1st talk with woman
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x423, enum_releaseRegion)),
+			//			once(	// 1st talk with man
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x410, enum_releaseRegion)),
+			//			once(	// 2nd talk with woman; only available when talking to both at least once
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x424, enum_releaseRegion)),
+			//			once(	// 2nd talk with man; only available when talking to both at least once
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x411, enum_releaseRegion)),
+			//			once(	// 3rd talk with woman
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x425, enum_releaseRegion)),
+			//			once(	// 3rd talk with man
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x412, enum_releaseRegion))
+			//		])}
+			//	return 
+			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			//		never(
+			//			!is_InGame(enum_releaseRegion) || 
+			//			!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
+			//		) &&
+			//		measured(measuredComparison(enum_releaseRegion), when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			//		trigger_when(on_Cutscene_end(enum_releaseRegion))
+			//	}),
+		// Active code => player can still unlock achievement when loading a save in which he has progressed in this side quest + shorter logic
+		let_sumOf_currentNPCtalkCounts = 
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_releaseRegion)
+
+		let_sumOf_prevNPCtalkCounts =
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_releaseRegion)
+
+		let_totalTalkCount = 
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch")
+		
+		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			once( // <-- Hit once, so we can use trigger popup
+				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
+			) &&
+			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
+			is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				(
+					!is_InGame(enum_releaseRegion) ||
+					!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
+				)
+			)}),
+	"a_LostYoungCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already/already progresses the side quest
+			// '''''''''''''''''''''''''''''''
+			//	function measuredComparison(enum_releaseRegion) { return
+			//		tally(6, [
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x426, enum_releaseRegion)),
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x413, enum_releaseRegion)),
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x427, enum_releaseRegion)),
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x414, enum_releaseRegion)),
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
+			//			once(
+			//				is_SmallCutscene_active(enum_releaseRegion) &&
+			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
+			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
+			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x415, enum_releaseRegion))				
+			//		])}
+			//	return 
+			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			//		never(	
+			//			!is_InGame(enum_releaseRegion) ||
+			//			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+			//		) &&
+			//		measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			//		trigger_when(on_Cutscene_end(enum_releaseRegion))
+			//	}),
+		// Active code => player can still unlock achievement when loading a save in which he has progressed in this side quest + shorter logic
+		let_sumOf_currentNPCtalkCounts = 
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_releaseRegion) +
+			current_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion)
+
+		let_sumOf_prevNPCtalkCounts =
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_releaseRegion) +
+			prev_NPCtalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion)
+
+		let_totalTalkCount = 
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth") +
+			get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch")
+
+		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			once( // <-- Hit once, so we can use trigger popup
+				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
+			) &&
+			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
+			is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				(
+					!is_InGame(enum_releaseRegion) ||
+					!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+				)
+			)}),
+	"a_LostYoungCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(enum_releaseRegion) || 
-				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
-			) &&
-			measured(measuredComparison(enum_releaseRegion), when = is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		}),
-	"a_LostYoungCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(6, [
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x426, enum_releaseRegion)),
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x413, enum_releaseRegion)),
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x427, enum_releaseRegion)),
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x414, enum_releaseRegion)),
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
-				once(
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x415, enum_releaseRegion))				
-			])}
-		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
-			) &&
-			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		}),
-	"a_LostYoungCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate"), 
-				repeated(1,
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x416, enum_releaseRegion))
-			)}
-		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(enum_releaseRegion), always_true()) &&
+			once(
+				is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion) &&
+				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate", enum_releaseRegion) &&
+				is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x416, enum_releaseRegion)
+			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
 	"a_LostYoungCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -3899,7 +4032,7 @@ achievements_triggers = {
 			])}
 		function measuredComparison_Ancestor(enum_releaseRegion) { return
 			tally(4, [
-				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman-"Chap7_TownSquare" and NPC_MiddleAges_YoungCoupleWoman-"Chap4_OutsideChurch_AfterTalkingToBoth" use same MemAddrTalkCount
+				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman->Chap7_TownSquare and NPC_MiddleAges_YoungCoupleWoman->Chap4_OutsideChurch_AfterTalkingToBoth use same MemAddrTalkCount
 				// 	is_SmallCutscene_active(enum_releaseRegion) &&
 				// 	is_MargaretteTold_Ancestor(enum_releaseRegion) &&
 				// 	is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
@@ -3918,16 +4051,22 @@ achievements_triggers = {
 					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x418, enum_releaseRegion))
 			])}
 		return 
+			// Core alt group
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(
-				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
-			) &&
+			unless(!is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
 			(
 				measured(measuredComparison_NoAncestor(enum_releaseRegion), when = is_MargaretteTold_NoAncestor(enum_releaseRegion)) || 
 				measured(measuredComparison_Ancestor(enum_releaseRegion), when = is_MargaretteTold_Ancestor(enum_releaseRegion))
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			trigger_when(on_Cutscene_end(enum_releaseRegion)) 
+			|| // Reset alt group
+			never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) &&
+				(
+					!is_InGame(enum_releaseRegion) ||
+					!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
+				)
+			)
 		}),
 	"a_LostYoungCouple6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
@@ -3938,8 +4077,8 @@ achievements_triggers = {
 					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful", enum_releaseRegion) &&
 					is_InteractionChapterId(0x13, enum_releaseRegion) && is_InteractionId(0x41c, enum_releaseRegion)),
-				once(	// 2nd talk with man after telling him about 'lovers never destines to meet'
-						// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
+				repeated(2, // 2nd talk with man after telling him about 'lovers never destines to meet' // Repeated here --> allows player to save/load in between the 2 interactions and still have the achievement unlockable
+					// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
 					is_SmallCutscene_active(enum_releaseRegion) &&		
 					is_WomanAdvisedBeTruthful(enum_releaseRegion) &&
 					is_ManToldLoversNeverDestinedMeet(enum_releaseRegion) &&
@@ -3947,13 +4086,19 @@ achievements_triggers = {
 					is_InteractionChapterId(0x13, enum_releaseRegion) && is_InteractionId(0x433, enum_releaseRegion))
 			])}
 		return 
+			// Core alt group
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter8, enum_releaseRegion)
-			) &&
-			measured(measuredComparison(enum_releaseRegion), is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
+			unless(!is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
+			measured(measuredComparison(enum_releaseRegion)) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			|| // Reset alt group => allows to reset tally measurement when outside of AREA_MiddleAges_City_Day
+			never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) &&
+				(
+					!is_InGame(enum_releaseRegion) ||
+					!is_Chapter(CHAPTER_Chapter8, enum_releaseRegion)
+				)
+			)
 		}),
 	"a_EnigmaticCouple1": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already
@@ -5664,7 +5809,7 @@ function richPresence_initialize() {
 // ***************************************************************************************************** \\
 
 // ==========================
-// • Leaderboards CORE DATA • // BUG leaderboard ClearTimeChapter keeps starting when loading/moving to next chapter => find another address to check when in-game?
+// • Leaderboards CORE DATA • // BUG leaderboard ClearTimeChapter keeps starting when loading/moving to next chapter (something to do with load time) => find another address to check when in-game?
 // ==========================
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
@@ -5752,9 +5897,10 @@ function leaderboards_generate_StartTrigger_ClearTimeChapter(enum_chapter, enum_
 			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
 		once(on_Timer_ChapterClearTime_start(enum_releaseRegion)) && // <-- once() here because of delay
-		repeated(500, 							// <-- Delay FIX for: leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
+		repeated(100, 							// <-- Delay FIX for: leaderboard cancelling immediately after starting when moving to the next chapter OR when loading a save from chapter completion menu, because timer 'Clear Time' resets later
 			is_InGame(enum_releaseRegion) &&	//		+ better visual feedback to indicate minutes timer is for chapter clear time, both Total and chapter clear time pop and same time otherwise
-			is_Chapter(enum_chapter, enum_releaseRegion)
+			is_Chapter(enum_chapter, enum_releaseRegion) &&
+			!is_Loading(enum_releaseRegion)
 		) &&
 		let_extraComparison_inPrologue
 	}	
@@ -5797,9 +5943,10 @@ function leaderboards_generate_StartTrigger_ClearTimeChapter_alt(enum_chapter, e
 			!is_InGame(enum_releaseRegion) ||
 			!is_Chapter(enum_chapter, enum_releaseRegion) 
 		) &&
-		repeated(200, 	// <-- Delay FIX for: leaderboard starting+submitting when moving from one chapter to the next OR when loading a save from chapter completion menu, because on_ChapterCompletionMenu_render() might do some weird stuff at that moment
+		repeated(100, 	// <-- Delay FIX for: leaderboard starting+submitting when moving from one chapter to the next OR when loading a save from chapter completion menu, depending on load time
 			is_InGame(enum_releaseRegion) &&
-			is_Chapter(enum_chapter, enum_releaseRegion) 
+			is_Chapter(enum_chapter, enum_releaseRegion) &&
+			!is_Loading(enum_releaseRegion)
 		) &&
 		let_extraComparison_inPrologue &&
 		on_ChapterCompletionMenu_render(enum_releaseRegion)
