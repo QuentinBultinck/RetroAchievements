@@ -202,6 +202,7 @@ memory_addresses = {
 		"PlayerPosition_yAxis": {RELEASE_REGION_USA: 0xa8abd8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xa92728},
 	},
 	DATATYPE_32Bit: {
+		"NPC_ID_copy": {RELEASE_REGION_USA: 0xa9eff4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b44},
 		"FrameCounter": {RELEASE_REGION_USA: 0xb88ab0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xb905f0},
 		"Timer_ChapterClearTime": {RELEASE_REGION_USA: 0xaa155c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa90ac},
 		"Timer_TotalClearTime": {RELEASE_REGION_USA: 0xaa1560, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa90b0},
@@ -695,6 +696,13 @@ function is_TalkingToNPC(enum_npc, enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
 	return 
 		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}
+
+function is_TalkingToNPC_bis(enum_npc, enum_releaseRegion) { // This has an extra check when using is_TalkingToNPC() without is_InteractionId()
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_npcID = get_NPC_Id(enum_npc)
+	return 
+		dword(let_maskedPointer) == let_npcID && 
+		dword(memory_getAddress(DATATYPE_32Bit, "NPC_ID_copy", enum_releaseRegion)) == let_npcID}
 
 function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance, enum_releaseRegion) => 
 	prior_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) < 0x1 &&
@@ -3535,11 +3543,11 @@ achievements_triggers = {
 						is_Area(AREA_Present_City_NightPM, enum_releaseRegion)	||
 						is_Area(AREA_Present_City_NightAM, enum_releaseRegion)
 					) &&
-					is_TalkingToNPC(NPC_Present_JoggingMan, enum_releaseRegion)),
+					is_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion)), // <-- use is_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
 				once( // Talk to JoggingMan_80s
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_Area(AREA_70s_City_Night, enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_80s_JoggingMan, enum_releaseRegion)),
+					is_TalkingToNPC_bis(NPC_80s_JoggingMan, enum_releaseRegion)), // <-- use is_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -5606,20 +5614,20 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_EnergyOrbSpeedTrial2000s": { // CONCEPT lb_EnergyOrbSpeedTrial2000s
-		"id": 000000, "isLowerBetter": true, 
+	"lb_EnergyOrbSpeedTrial2000s": { // VERIFIED
+		"id": 94367, "isLowerBetter": true, 
 		"leaderboardFormat": "FRAMES",
 		"devInfo": "Speed collect 5 energy orbs throughout the city during the Present"},
-	"lb_EnergyOrbSpeedTrial1980s": { // CONCEPT lb_EnergyOrbSpeedTrial1980s
-		"id": 000000, "isLowerBetter": true, 
+	"lb_EnergyOrbSpeedTrial1980s": { // VERIFIED
+		"id": 94366, "isLowerBetter": true, 
 		"leaderboardFormat": "FRAMES",
 		"devInfo": "Speed collect 5 energy orbs throughout the city during the late 20th century"},
-	"lb_EnergyOrbSpeedTrial1900s": { // CONCEPT lb_EnergyOrbSpeedTrial1900s
-		"id": 000000, "isLowerBetter": true, 
+	"lb_EnergyOrbSpeedTrial1900s": { // VERIFIED
+		"id": 94365, "isLowerBetter": true, 
 		"leaderboardFormat": "FRAMES",
 		"devInfo": "Speed collect 5 energy orbs throughout the city, which are not inside buildings, during the early 20th century"},
-	"lb_EnergyOrbSpeedTrial1500s": { // CONCEPT lb_EnergyOrbSpeedTrial1500s
-		"id": 000000, "isLowerBetter": true, 
+	"lb_EnergyOrbSpeedTrial1500s": { // VERIFIED
+		"id": 94364, "isLowerBetter": true, 
 		"leaderboardFormat": "FRAMES",
 		"devInfo": "Speed collect 5 energy orbs throughout the city, which are not inside buildings, during the Medieval era"},
 	"lb_ClearTimeChapter8": { // VERIFIED 
