@@ -2803,7 +2803,7 @@ achievements_triggers = {
 			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)
 		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion)
 		}),
-	"a_Chapter4CompleteSign": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO missing alt cutscene check here
+	"a_Chapter4CompleteSign": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function alt1(enum_releaseRegion) { return
 			is_ReleaseRegion(enum_releaseRegion) &&
 			is_InGame(enum_releaseRegion) &&
@@ -6369,7 +6369,7 @@ function leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt() =>
 	always_true()
 
 // ---------------EnergyOrbSpeedTrial-------------------
-function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) { // TODO add extra check => only start leaderboard when player has enough space to pickup remaining orbs
+function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) {
 	let_sumOf_deltaAmountOfEnergyOrbsCollected = 
 		sum_of(array_energyOrblocationKeys, (string_eneryOrbLocationKey) => prev_EnergyOrb_CollectionState(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion))
 	let_sumOf_currentAmountOfEnergyOrbsCollected = 
@@ -6378,16 +6378,18 @@ function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod,
 	return 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) &&
-		let_sumOf_deltaAmountOfEnergyOrbsCollected < 2 && 
+		current_EnergyUnits(enum_releaseRegion) <= 10-length(array_energyOrblocationKeys)+1  && // <-- only start leaderboard if player has enough space to pickup the remaining orbs
+		let_sumOf_deltaAmountOfEnergyOrbsCollected == 1 && 
 		let_sumOf_currentAmountOfEnergyOrbsCollected == 2	// <-- start leaderboard once the 2nd orb is collected => reduce RAoverlay clutter
 	}
 
-function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion) => 
+function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion) =>
 	is_ReleaseRegion(enum_releaseRegion) &&
 	(
 		!is_InGame(enum_releaseRegion) ||
 		on_Chapter_change(enum_releaseRegion) ||
-		on_EnergyUnits_decrement(enum_releaseRegion) 
+		on_EnergyUnits_decrement(enum_releaseRegion) ||
+		on_Area_change(enum_releaseRegion)
 	)
 
 function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, enum_releaseRegion) => 
