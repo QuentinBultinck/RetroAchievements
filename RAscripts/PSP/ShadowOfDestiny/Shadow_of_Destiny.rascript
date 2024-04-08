@@ -2336,14 +2336,15 @@ function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapte
 	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
 	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
 
-	let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-	let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+	let_sumOf_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_currentInventoryCount = let_sumOf_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
 
-	let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-	let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+	let_sumOf_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor)) // Example expression stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01))
+	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 	
 
 	return
-		let_comparison_deltaInventoryCount && 
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // <-- deltaSumOf comparisons = save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 
 		measured(let_comparison_currentInventoryCount, 
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) &&
@@ -2358,14 +2359,15 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseR
 	let_array_bitFlagMemoryAccessors = memUtil_bitsetArrayToMemoryAccessorArray(let_array_bitsets)
 	let_int_bitFlagCount = memUtil_countTotalBitFlagsInBitsetArray(let_array_bitsets)
 
-	let_expression_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
-	let_comparison_currentInventoryCount = let_expression_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
+	let_sumOf_currentInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)	// output example of sum_of(): [bit0(0x00), bit1(0x00), bitcount(0x01)] => bit0(0x00) + bit1(0x00) + bitcount(0x01)
+	let_comparison_currentInventoryCount = let_sumOf_currentInventoryCount == let_int_bitFlagCount // Example comparison stored in this variable: bit0(0x00) + bit1(0x00) + bitcount(0x01) == 4
 
-	let_expression_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor))
-	let_comparison_deltaInventoryCount = let_expression_prevInventoryCount < let_int_bitFlagCount 	// Example comparison stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01)) < 4
+	let_sumOf_prevInventoryCount = sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => prev(memoryAccessor)) // Example expression stored in this variable: prev(bit0(0x00)) + prev(bit1(0x00)) + prev(bitcount(0x01))
+	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 
 
 	return 
-		let_comparison_deltaInventoryCount && 
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // <-- deltaSumOf comparisons = save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 
 		measured(let_comparison_currentInventoryCount,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) &&
@@ -2373,6 +2375,7 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseR
 				!is_ExtraMenu_active(enum_releaseRegion),
 			format = "percent")
 	}
+
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum_releaseRegion) {
 	function create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion) {
 		let_tallyComparisonArray = []
@@ -2395,6 +2398,12 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 			}			
 		}
 		return tally(get_EnergyOrb_amountToCollect(enum_timePeriod), let_tallyComparisonArray)}
+	function create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) {
+		let_array_bitFlagMemoryAccessors = []
+		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
+			array_push(let_array_bitFlagMemoryAccessors, prev_EnergyOrb_CollectionState(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion))
+		}
+		return sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)}
 	function create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) {		
 		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
 		let_pauseComparisonArray = []
@@ -2413,11 +2422,13 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 	
 	alt_core = // alt_core => contains measurement for energy orbs
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
+		create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) > (get_EnergyOrb_amountToCollect(enum_timePeriod)/4)*3 && // <-- sumOf comparisons = save protection => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
+		create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) < get_EnergyOrb_amountToCollect(enum_timePeriod) 		&&
 		measured(
 			create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion),
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) && 
-				!is_Loading(enum_releaseRegion)
+				!is_Loading(enum_releaseRegion)	
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))
 	alt_reset = // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
@@ -4811,7 +4822,7 @@ achievements_triggers = {
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
 					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_Present_CafeSonne, enum_releaseRegion) &&
 					is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
-					is_Cutscene_MasterId(0x9000, enum_releaseRegion)		&&
+					is_Cutscene_MasterId(0x9000, enum_releaseRegion)	&&
 					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)	&&
 					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 					is_Cutscene_MasterDataId(0x9000, enum_releaseRegion)	&&
