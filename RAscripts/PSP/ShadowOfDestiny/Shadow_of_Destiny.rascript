@@ -54,6 +54,7 @@
 //#####################################################################################################\\
 
 // TODO achievement for running around lebensbaum with jogging man?
+// TODO update guides online + publish changes
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
@@ -3834,7 +3835,7 @@ achievements_triggers = {
 				// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 				// is_Cutscene_MasterDataId(0x59c0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x5c20, enum_releaseRegion)),
-			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3 //QA test this
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
 				is_LargeCutscene_active(enum_releaseRegion) 						&&
 				is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)  					&&
 				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) 	&&
@@ -3997,9 +3998,8 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Returning back to present, tree changes into pyromancer statue
 			is_LargeCutscene_active(enum_releaseRegion) && 
 			is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
-			is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Lighter(enum_releaseRegion) &&	
-			is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)					&&
+			is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Lighter(enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Lighter(enum_releaseRegion) &&			
@@ -4022,8 +4022,7 @@ achievements_triggers = {
 			is_LargeCutscene_active(enum_releaseRegion) && 
 			is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
 			is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Cellphone(enum_releaseRegion) &&	
-			is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)					&&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_TreeReplacedBy_Statue(enum_releaseRegion) && is_CrowdScaredWith_Cellphone(enum_releaseRegion) &&			
@@ -4046,8 +4045,7 @@ achievements_triggers = {
 			is_LargeCutscene_active(enum_releaseRegion) && 
 			is_SelectedItemInScrollBar(ITEM_Dpad, enum_releaseRegion) &&
 			is_TreeReplacedBy_Flowers(enum_releaseRegion) &&
-			is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x3b240, enum_releaseRegion)					&&
+			is_Cutscene_MasterId(0x3b240, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_TreeReplacedBy_Flowers(enum_releaseRegion) &&
@@ -5784,7 +5782,7 @@ achievements_descriptions = {
 // ===============================
 // • Achievements INITIALIZATION •
 // ===============================
-//	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (const_achievements_coreData)
+//	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (achievements_coreData)
 function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
 		function achievements_createCategoryName(string_achievementCategory, string_achievementDevName) {
