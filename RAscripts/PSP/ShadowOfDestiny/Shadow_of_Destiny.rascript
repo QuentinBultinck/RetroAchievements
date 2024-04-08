@@ -462,7 +462,12 @@ const_NPCs_data = {
 					RELEASE_REGION_USA: 0xA9EE2C, 
 					RELEASE_REGION_JPN: () => 0xA9EE2C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 2}, 
-			"Chap5_NearCafeSonne": {
+			"Chap5_NearCafeSonne_BeforeEatingAtBar": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xa9ee30, 
+					RELEASE_REGION_JPN: () => 0xa9ee30 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 1},
+			"Chap5_NearCafeSonne_AfterEatingAtBar": {
 				"memAddr_TalkCount": {
 					RELEASE_REGION_USA: 0xA9EE31, 
 					RELEASE_REGION_JPN: () => 0xA9EE31 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
@@ -489,12 +494,17 @@ const_NPCs_data = {
 					RELEASE_REGION_USA: 0xA9EE21, 
 					RELEASE_REGION_JPN: () => 0xA9EE21 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 2},
-			"Chap5_NorthEastGate_BrumLibrary": {
+			"Chap5_NorthEastGate_BeforeEatingAtBar": {
+				"memAddr_TalkCount": {
+					RELEASE_REGION_USA: 0xa9ee22, 
+					RELEASE_REGION_JPN: () => 0xa9ee22 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
+				"maxTalkCount": 2},
+			"Chap5_NorthEastGate_AfterEatingAtBar_BrumLibrary": {
 				"memAddr_TalkCount": {
 					RELEASE_REGION_USA: 0xA9EE25, 
 					RELEASE_REGION_JPN: () => 0xA9EE25 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 1},
-			"Chap5_NorthEastGate_BrumMuseum": {
+			"Chap5_NorthEastGate_AfterEatingAtBar_BrumMuseum": {
 				"memAddr_TalkCount": {
 					RELEASE_REGION_USA: 0xA9EE26, 
 					RELEASE_REGION_JPN: () => 0xA9EE26 + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
@@ -706,6 +716,14 @@ function is_TalkingToNPC_bis(enum_npc, enum_releaseRegion) { // This has an extr
 		dword(let_maskedPointer) == let_npcID && 
 		dword(memory_getAddress(DATATYPE_32Bit, "NPC_ID_copy", enum_releaseRegion)) == let_npcID}
 
+function on_TalkingToNPC_bis(enum_npc, enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_npcID = get_NPC_Id(enum_npc)
+	return 
+		dword(let_maskedPointer) == let_npcID && 
+		prev(dword(memory_getAddress(DATATYPE_32Bit, "NPC_ID_copy", enum_releaseRegion))) != let_npcID &&
+		dword(memory_getAddress(DATATYPE_32Bit, "NPC_ID_copy", enum_releaseRegion)) == let_npcID}
+
 function has_startedTalkingToNPC_forFirstTime(enum_npc, string_appearance, enum_releaseRegion) => 
 	prior_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) < 0x1 &&
 	current_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) == 0x1
@@ -832,7 +850,7 @@ function on_Cutscene_SectionId_start(enum_releaseRegion) {
 	let_memAccessor_SectionID1 = word(memory_getAddress(DATATYPE_16Bit, "Cutscene_SectionID_1", enum_releaseRegion))
 	let_memAccessor_SectionID2 = word(memory_getAddress(DATATYPE_16Bit, "Cutscene_SectionID_2", enum_releaseRegion))
 	return 
-		prev(let_memAccessor_SectionID1) == 0xffff && 
+		prev(let_memAccessor_SectionID1) != 0x1 && 
 		let_memAccessor_SectionID1 == 0x1 &&
 		let_memAccessor_SectionID2 == 0x0}
 
@@ -2343,8 +2361,8 @@ function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapte
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 	
 
 	return
-		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // <-- deltaSumOf comparisons = save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
-		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // Block: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
 		measured(let_comparison_currentInventoryCount, 
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) &&
@@ -2366,8 +2384,8 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseR
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 
 
 	return 
-		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // <-- deltaSumOf comparisons = save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
-		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // Block: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
 		measured(let_comparison_currentInventoryCount,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) &&
@@ -2398,12 +2416,12 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 			}			
 		}
 		return tally(get_EnergyOrb_amountToCollect(enum_timePeriod), let_tallyComparisonArray)}
-	function create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) {
-		let_array_bitFlagMemoryAccessors = []
+	function create_array_EnergyOrbCollectionStateMemAccessors(enum_timePeriod, enum_releaseRegion) {
+		let_array_memoryAccessors = []
 		for let_OrbLocationKey in get_EnergyOrb_Locations(enum_timePeriod) {
-			array_push(let_array_bitFlagMemoryAccessors, prev_EnergyOrb_CollectionState(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion))
+			array_push(let_array_memoryAccessors, current_EnergyOrb_CollectionState(enum_timePeriod, let_OrbLocationKey, enum_releaseRegion))
 		}
-		return sum_of(let_array_bitFlagMemoryAccessors, (memoryAccessor) => memoryAccessor)}
+		return let_array_memoryAccessors}
 	function create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) {		
 		let_sharedAreas = get_EnergyOrb_sharedAreas(enum_timePeriod)
 		let_pauseComparisonArray = []
@@ -2419,19 +2437,23 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				none_of(let_pauseComparisonArray, (comparison) => comparison)
 			)
 		}}
-	
-	alt_core = // alt_core => contains measurement for energy orbs
+
+	let_amountOfEnergyOrbsToCollect = get_EnergyOrb_amountToCollect(enum_timePeriod)
+	let_array_energyOrbCollectionStateMemAccessors = create_array_EnergyOrbCollectionStateMemAccessors(enum_timePeriod, enum_releaseRegion)
+	let_sumOf_currentEnergyOrbCollectionStates = sum_of(let_array_energyOrbCollectionStateMemAccessors, (memAccessor) => memAccessor)
+	let_sumOf_deltaEnergyOrbCollectionStates = sum_of(let_array_energyOrbCollectionStateMemAccessors, (memAccessor) => prev(memAccessor))
+
+	return 
+		// alt_core => contains measurement for energy orbs
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
-		create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) > (get_EnergyOrb_amountToCollect(enum_timePeriod)/4)*3 && // <-- sumOf comparisons = save protection => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
-		create_sumOf_deltaEnergyOrbCollectionStates(enum_timePeriod, enum_releaseRegion) < get_EnergyOrb_amountToCollect(enum_timePeriod) 		&&
-		measured(
-			create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion),
-			when = 
-				is_ReleaseRegion(enum_releaseRegion) && 
-				!is_Loading(enum_releaseRegion)	
+		once(
+			let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // Block: save protection => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
+			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time
 		) &&
+		measured(create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion)) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))
-	alt_reset = // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
+		|| // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) &&
 			(
@@ -2439,8 +2461,7 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				on_Chapter_change(enum_releaseRegion) ||
 				on_EnergyUnits_decrement(enum_releaseRegion)
 			)
-		)
-	return alt_core || alt_reset}	
+		)}	
 // -------- Below trigger generators are deprecated -------- 
 function achievements_generate_TextComparison_GotEnergyUnit() {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
@@ -2730,87 +2751,94 @@ achievements_triggers = {
 			on_Chapter_finish(CHAPTER_Chapter3, enum_releaseRegion)
 		return alt1 || alt2}),
 	"a_Chapter4CompletePan": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function alt1(enum_releaseRegion) => // Alt 1 => ending cutscene 1 with pan
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(
-				!is_InGame(enum_releaseRegion) ||
-				is_ExtraMenu_active(enum_releaseRegion) ||
-				on_Cutscene_MasterId_change(enum_releaseRegion)	
-			) &&
-			once(	// Identifies cutscene => protecting yourself with pan WITHOUT having taken the picture in the performer outfit
-				is_LargeCutscene_active(enum_releaseRegion) 					&& 
-				is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) 				&&
-				is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) 	&&
-				is_Cutscene_MasterId(0x4f200, enum_releaseRegion) 				&&
-				on_Cutscene_SectionId_start(enum_releaseRegion)	
-
-				// is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
-				// is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
-				// is_Cutscene_MasterId(0x4f200, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0x11cd0, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0x3d500, enum_releaseRegion)
-			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		function alt2(enum_releaseRegion) => // Alt 2 => ending cutscene 2 with pan
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(
-				!is_InGame(enum_releaseRegion) ||
-				is_ExtraMenu_active(enum_releaseRegion) ||
-				on_Cutscene_MasterId_change(enum_releaseRegion)	
-			) &&
-			once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
-				is_LargeCutscene_active(enum_releaseRegion) 					&& 
-				is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) 				&&
-				is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) 	&&
-				is_Cutscene_MasterId(0x54580, enum_releaseRegion) 				&&
-				on_Cutscene_SectionId_start(enum_releaseRegion)	
-
-				// is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
-				// is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
-				// is_Cutscene_MasterId(0x54580, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0x17060, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0x1390, enum_releaseRegion)
-			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		function alt3(enum_releaseRegion) => // Alt 3 => Failsafe; trigger on chapter change
+		function alt1(enum_releaseRegion) => // Alt 1 
 			is_ReleaseRegion(enum_releaseRegion) &&
 			is_InGame(enum_releaseRegion) &&
 			!is_ExtraMenu_active(enum_releaseRegion) &&
-			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)
-		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion) || alt3(enum_releaseRegion)
-		}),
-	"a_Chapter4CompleteSign": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function alt1(enum_releaseRegion) { return
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(
-				!is_InGame(enum_releaseRegion) ||
-				is_ExtraMenu_active(enum_releaseRegion) ||
-				on_Cutscene_MasterId_change(enum_releaseRegion)	
-			) &&
-			once(	// Identifies cutscene => protecting yourself with sign + info about photo from Homnunculus
-				is_LargeCutscene_active(enum_releaseRegion) 				&& 
-				is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) 			&&
-				is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) 	&&
-				is_Cutscene_MasterId(0x54580, enum_releaseRegion) 			&&
-				on_Cutscene_SectionId_start(enum_releaseRegion)	
+			is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+			is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+			on_ChapterCompletionMenu_render(enum_releaseRegion)
 
-				// is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
-				// is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
-				// is_Cutscene_MasterId(0x54580, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_1(0xd, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0xe, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0xb6e0, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0xae50, enum_releaseRegion)
-			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}
+			// Way too many variations of this cutscene => just use above code
+				// unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+				// never(
+				// 	!is_InGame(enum_releaseRegion) ||
+				// 	is_ExtraMenu_active(enum_releaseRegion) ||
+				// 	on_Cutscene_MasterId_change(enum_releaseRegion)	||
+				// 	!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) ||
+				// 	!is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) 
+				// ) &&
+				// tally(1, [
+				// 	once(	// Identifies cutscene => protecting yourself with pan WITHOUT having taken the picture in the performer outfit
+				// 		is_LargeCutscene_active(enum_releaseRegion) 		&& 					
+				// 		is_Cutscene_MasterId(0x4f200, enum_releaseRegion) 	&&
+				// 		on_Cutscene_SectionId_start(enum_releaseRegion)),
+
+				// 		// is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+				// 		// is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+				// 		// is_Cutscene_MasterId(0x4f200, enum_releaseRegion)		&&
+				// 		// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				// 		// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				// 		// is_Cutscene_MasterDataId(0x11cd0, enum_releaseRegion)	&&
+				// 		// is_Cutscene_SectionDataId(0x3d500, enum_releaseRegion)),
+				// 	once(	// Identifies cutscene => protecting yourself with pan AND having taken the picture in the performer outfit
+				// 		is_LargeCutscene_active(enum_releaseRegion) 		&& 
+				// 		is_Cutscene_MasterId(0x54580, enum_releaseRegion) 	&&
+				// 		on_Cutscene_SectionId_start(enum_releaseRegion))
+
+				// 		// is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+				// 		// is_LargeCutscene_active(enum_releaseRegion) 			&& is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+				// 		// is_Cutscene_MasterId(0x54580, enum_releaseRegion)		&&
+				// 		// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				// 		// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				// 		// is_Cutscene_MasterDataId(0x17060, enum_releaseRegion)	&&
+				// 		// is_Cutscene_SectionDataId(0x1390, enum_releaseRegion))
+				// ]) &&			
+				// trigger_when(on_Cutscene_end(enum_releaseRegion))		
+		function alt2(enum_releaseRegion) => // Alt 2 => Failsafe; trigger on chapter change
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)
+		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion)
+		}),
+	"a_Chapter4CompleteSign": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO missing alt cutscene check here
+		function alt1(enum_releaseRegion) { return
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+			is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
+			on_ChapterCompletionMenu_render(enum_releaseRegion)}
+
+			// Way too many variations of this cutscene => just use above code
+				// unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+				// never(
+				// 	!is_InGame(enum_releaseRegion) ||
+				// 	is_ExtraMenu_active(enum_releaseRegion) ||
+				// 	on_Cutscene_MasterId_change(enum_releaseRegion)	||
+				// 	!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) ||
+				// 	!is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion)
+				// ) &&
+				// tally(1, [
+				// 	once(	// Identifies cutscene => protecting yourself with sign WITHOUT having taken the picture in the performer outfit
+				// 		is_LargeCutscene_active(enum_releaseRegion) 				&& 
+				// 		is_Cutscene_MasterId(0x4f800, enum_releaseRegion) 			&&
+				// 		on_Cutscene_SectionId_start(enum_releaseRegion)),
+				// 	once(	// Identifies cutscene => protecting yourself with sign AND having taken picture in the performer outfit
+				// 		is_LargeCutscene_active(enum_releaseRegion) 				&& 
+				// 		is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) 			&&
+				// 		is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) 	&&
+				// 		is_Cutscene_MasterId(0x547c0, enum_releaseRegion) 			&&
+				// 		on_Cutscene_SectionId_start(enum_releaseRegion))
+				// ]) &&			
+				// trigger_when(on_Cutscene_end(enum_releaseRegion))}
 		function alt2(enum_releaseRegion) { return
 			is_ReleaseRegion(enum_releaseRegion) &&
 			is_InGame(enum_releaseRegion) &&
 			!is_ExtraMenu_active(enum_releaseRegion) &&
+			is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)}
 		return alt1(enum_releaseRegion) || alt2(enum_releaseRegion)}),
 	"a_Chapter5Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -3612,32 +3640,20 @@ achievements_triggers = {
 			is_ExtraMenu_active(enum_releaseRegion) ||
 			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
 		) &&
-		tally(1, [
-			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using frying pan
-				is_LargeCutscene_active(enum_releaseRegion) 					&& 
-				is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) 	&&
-				is_Cutscene_MasterId(0xb0100, enum_releaseRegion)				&&
-				on_Cutscene_SectionId_start(enum_releaseRegion)),
-			
-				// is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
-				// is_Cutscene_MasterId(0xb0100, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_1(0xd, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0xe, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0x1efb0, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0xae70, enum_releaseRegion)),
-			once(	// Identifies Cutscene => Info/lore dump about timetravel and branching paths after using photo shop sign
-				is_LargeCutscene_active(enum_releaseRegion) 				&& 
-				is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) 	&&
-				is_Cutscene_MasterId(0xb0100, enum_releaseRegion)			&&
-				on_Cutscene_SectionId_start(enum_releaseRegion))
-
-				// is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
-				// is_Cutscene_MasterId(0xb0100, enum_releaseRegion)		&& 
-				// is_Cutscene_SectionId_1(0xd, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0xe, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0x1eaa0, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0xae70, enum_releaseRegion))
-		]) &&
+		once(	// Identifies Cutscene => Info/lore dump about timetravel after defending yourself
+			is_LargeCutscene_active(enum_releaseRegion) 					&& 
+			(is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion)) && 
+			is_Cutscene_MasterId(0xb0100, enum_releaseRegion)				&&
+			on_Cutscene_SectionId_start(enum_releaseRegion)
+		
+			// is_LargeCutscene_active(enum_releaseRegion) && 
+			// (is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion)) && 
+			// is_Cutscene_MasterId(0xb0100, enum_releaseRegion)		&&
+			// is_Cutscene_SectionId_1(0xd, enum_releaseRegion)		&&
+			// is_Cutscene_SectionId_2(0xe, enum_releaseRegion)		&&
+			// is_Cutscene_MasterDataId(0x1efb0, enum_releaseRegion)	&&
+			// is_Cutscene_SectionDataId(0xae70, enum_releaseRegion)
+		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_MeetOldMiriam": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -3841,11 +3857,11 @@ achievements_triggers = {
 						is_Area(AREA_Present_City_NightPM, enum_releaseRegion)	||
 						is_Area(AREA_Present_City_NightAM, enum_releaseRegion)
 					) &&
-					is_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion)), // <-- use is_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
+					on_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
 				once( // Talk to JoggingMan_80s
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_Area(AREA_70s_City_Night, enum_releaseRegion) &&
-					is_TalkingToNPC_bis(NPC_80s_JoggingMan, enum_releaseRegion)), // <-- use is_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
+					on_TalkingToNPC_bis(NPC_80s_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -4144,7 +4160,7 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
@@ -4238,7 +4254,7 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
@@ -4332,7 +4348,7 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
@@ -4492,7 +4508,7 @@ achievements_triggers = {
 				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
 			) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
@@ -4580,73 +4596,25 @@ achievements_triggers = {
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_EnigmaticCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// Need 2x2 seperate measures => 1 onIncrease + 1 atMax * 2 for BrumState (library or museum) => coatedMan has differing dialogue depending on library or museum
-		function measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogue
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2d5, enum_releaseRegion)),
-				repeated(2, // --> overwrite of '''get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")''', all measures must have same count
-					is_SmallCutscene_active(enum_releaseRegion) && is_BrumEstate_Library(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2c9, enum_releaseRegion))
-			])}
-		function measuredComparison_BrumLibrary_atMax(enum_releaseRegion) { return // Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2d5, enum_releaseRegion)),
-				repeated(2, // --> overwrite of 'get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumLibrary")', all measures must have same count
-					is_SmallCutscene_active(enum_releaseRegion) && is_BrumEstate_Library(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumLibrary", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2c9, enum_releaseRegion))
-			])}
-		function measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion) { return // Measure comparison => counts up for each seperate dialogue
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2d5, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
-					is_SmallCutscene_active(enum_releaseRegion) && is_BrumEstate_Museum(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2ca, enum_releaseRegion))
-			])}
-		function measuredComparison_BrumMuseum_atMax(enum_releaseRegion) { return // Measure comparison => counts up to MaxTalkCount on the last dialogue, in case of reloading mid measurement 
-			tally(3, [
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedWoman,"Chap5_NearCafeSonne"),
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap5_NearCafeSonne", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2d5, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap5_NorthEastGate_BrumMuseum"), 
-					is_SmallCutscene_active(enum_releaseRegion) && is_BrumEstate_Museum(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap5_NorthEastGate_BrumMuseum", enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x2ca, enum_releaseRegion))
-			])}
+		// Too many variations => just count once for interacting with man and once with woman
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
+			unless(!is_Area(AREA_Present_City_NightPM, enum_releaseRegion)) &&
 			never(	
 				!is_InGame(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion)) &&
-			(
-				measured(measuredComparison_BrumMuseum_onIncrease(enum_releaseRegion)) || 
-				measured(measuredComparison_BrumMuseum_atMax(enum_releaseRegion)) ||
-				measured(measuredComparison_BrumLibrary_onIncrease(enum_releaseRegion)) || 
-				measured(measuredComparison_BrumLibrary_atMax(enum_releaseRegion))
-			)}),
+			measured(tally(2, [
+				once(
+					is_SmallCutscene_active(enum_releaseRegion) &&
+					on_TalkingToNPC_bis(NPC_Present_CoatedWoman, enum_releaseRegion) &&
+					is_InteractionChapterId(0x4b, enum_releaseRegion)),
+				once(
+					is_SmallCutscene_active(enum_releaseRegion) &&
+					on_TalkingToNPC_bis(NPC_Present_CoatedMan, enum_releaseRegion) &&
+					is_InteractionChapterId(0x4b, enum_releaseRegion)),			
+			])) && 			
+			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
 	"a_EnigmaticCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// Commented code => allows loadings mid-measurement
 			//	function measuredComparison_onIncrease(enum_releaseRegion) { return
@@ -4708,7 +4676,7 @@ achievements_triggers = {
 				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts < let_totalTalkCount &&
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
@@ -4961,38 +4929,27 @@ achievements_triggers = {
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_MaxInventory": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_biggestPossibleInventoryCount = 20
-		function deltaItemCount(enum_releaseRegion) =>
-			sum_of(const_Items_data, (item) {	// sum_of(prevItemCount) == 19
+
+		let_sumOf_deltaItemCount = sum_of(const_Items_data, (item) {
 				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
-				return prev(bit0(let_memAddress))
-			})
-		function currentItemCount(enum_releaseRegion) => 
-			sum_of(const_Items_data, (item) {	// sum_of(currentItemCount) == 20
-				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
-				return bit0(let_memAddress)
-			})
-		function measuredComparison(int_tallyCount, enum_releaseRegion) =>
-			// Checks all item_in_inventory_flags => if in inventory => +1 Add hit
-			tally_of(const_Items_data, int_tallyCount, (item) {
-				let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
-				return once(bit0(let_memAddress) == 1)
-			})
+				return prev(bit0(let_memAddress))})
+		let_sumOf_currentItemCount = sum_of(const_Items_data, (item) {
+			let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
+			return bit0(let_memAddress)})
+
 		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
-				is_ExtraMenu_active(enum_releaseRegion)	||
-				
-				any_of(const_Items_data, (item) { // Reset hit counts if any item is removed
-					let_memAddress = const_Items_data[item]["memAddress_Flag_isInInventory"][enum_releaseRegion]
-					return bit0(let_memAddress) < prev(bit0(let_memAddress))
-				})
-			) &&
 			once(
-				deltaItemCount(enum_releaseRegion) < let_biggestPossibleInventoryCount &&
-				currentItemCount(enum_releaseRegion) == let_biggestPossibleInventoryCount
+				let_sumOf_deltaItemCount > (let_biggestPossibleInventoryCount/4)*3 	&& // Block: save protection => loading a savefile which already has 20 items must not unlock achievement
+				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame
+				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount
 			) &&
-			measured(measuredComparison(let_biggestPossibleInventoryCount, enum_releaseRegion)) &&	
+			measured(
+				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount,
+				when = 	
+					is_ReleaseRegion(enum_releaseRegion) &&
+					is_InGame(enum_releaseRegion) &&
+					!is_ExtraMenu_active(enum_releaseRegion)
+			) &&	
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),		
 	"a_DrunkenGuys": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -6412,7 +6369,7 @@ function leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt() =>
 	always_true()
 
 // ---------------EnergyOrbSpeedTrial-------------------
-function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) {
+function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) { // TODO add extra check => only start leaderboard when player has enough space to pickup remaining orbs
 	let_sumOf_deltaAmountOfEnergyOrbsCollected = 
 		sum_of(array_energyOrblocationKeys, (string_eneryOrbLocationKey) => prev_EnergyOrb_CollectionState(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion))
 	let_sumOf_currentAmountOfEnergyOrbsCollected = 
