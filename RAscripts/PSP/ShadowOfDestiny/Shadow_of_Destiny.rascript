@@ -2035,7 +2035,7 @@ achievements_coreData = {
 			"id": 306884, "points": 5,
 			"devInfo": "Complete the prologue"},
 		"a_Chapter1CompleteByEike": { // VERIFIED 
-			"id": 306886, "points": 5,
+			"id": 306886, "points": 3,
 			"devInfo": "Complete chapter 1"},
 		"a_Chapter1CompleteByBarman": { // VERIFIED
 			"id": 306976, "points": 3,
@@ -4807,7 +4807,7 @@ achievements_triggers = {
 		}), 
 	"a_ScareEveryone": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
-			tally(9, [
+			tally(6, [
 				once(	// Identifies cutscene => scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
 					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_Present_CafeSonne, enum_releaseRegion) &&
 					is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
@@ -4818,7 +4818,9 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x9000, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x5f80, 0x8, enum_releaseRegion)	&&
 					is_Cutscene_MinorId(0x9000, 0x28, enum_releaseRegion)),
-				repeated(4,	// Identifies cutscene => scaring crowd with cellphone; Add counts +4 (4 people), instead of below cutscene
+				
+				// Don't do a repeated(4) => because player could skip and is_CrowdScaredWith_Cellphone()+is_CrowdScaredWith_Lighter() use the same bit
+				once(	// Identifies cutscene => scaring crowd with cellphone; instead of below cutscene
 					is_LargeCutscene_active(enum_releaseRegion) 		&&
 					is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion) &&
 					is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
@@ -4833,8 +4835,8 @@ achievements_triggers = {
 					// is_Cutscene_MasterDataId(0x5ad0, enum_releaseRegion)	&&
 					// is_Cutscene_SectionDataId(0x55b0, enum_releaseRegion)	&&
 					// is_Cutscene_MinorId(0x2451a0, 0x8, enum_releaseRegion)	&&
-					// is_Cutscene_MinorId(0x55b0, 0x28, enum_releaseRegion)),
-				repeated(4,	// Identifies cutscene => scaring crowd with lighter; Add counts +4 (4 people), instead of above cutscene
+					// is_Cutscene_MinorId(0x55b0, 0x28, enum_releaseRegion)),				
+				once(	// Identifies cutscene => scaring crowd with lighter; instead of above cutscene
 					is_LargeCutscene_active(enum_releaseRegion) 		&&
 					is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) &&
 					is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
@@ -4850,22 +4852,17 @@ achievements_triggers = {
 					// is_Cutscene_SectionDataId(0xb220, enum_releaseRegion)	&&
 					// is_Cutscene_MinorId(0x2354f0, 0x8, enum_releaseRegion)	&&
 					// is_Cutscene_MinorId(0xb220, 0x28, enum_releaseRegion)),
-				once(	// Identifies cutscene => scaring town planter 
-					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
-					is_LargeCutscene_active(enum_releaseRegion) 			&&
-					is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
-					is_Cutscene_MasterId(0x98c0, enum_releaseRegion)		&&
-					on_Cutscene_SectionId_start(enum_releaseRegion)),
 
-					// is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
-					// (is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
-					// is_Cutscene_MasterId(0x98c0, enum_releaseRegion)		&&
-					// is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)		&&
-					// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-					// is_Cutscene_MasterDataId(0x9890, enum_releaseRegion)	&&
-					// is_Cutscene_SectionDataId(0x9890, enum_releaseRegion)	&&
-					// is_Cutscene_MinorId(0xcd30, 0x8, enum_releaseRegion)	&&
-					// is_Cutscene_MinorId(0x9890, 0x28, enum_releaseRegion)),
+				once(	// Identifies cutscene => scaring town planter 				
+					is_LargeCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
+					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
+					is_Cutscene_MasterId(0x98c0, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_1(0xffff, enum_releaseRegion)		&&
+					is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+					is_Cutscene_MasterDataId(0x9890, enum_releaseRegion)	&&
+					is_Cutscene_SectionDataId(0x9890, enum_releaseRegion)	&&
+					is_Cutscene_MinorId(0xcd30, 0x8, enum_releaseRegion)	&&
+					is_Cutscene_MinorId(0x9890, 0x28, enum_releaseRegion)),
 				once(	// Identifies cutscene => scaring eccentric girl
 					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
@@ -4889,7 +4886,7 @@ achievements_triggers = {
 				is_ExtraMenu_active(enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
 			) &&
-			measured(measuredComparison(enum_releaseRegion), is_InGame(enum_releaseRegion)) &&
+			measured(measuredComparison(enum_releaseRegion)) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
 	"a_FreeMeal": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
