@@ -2034,9 +2034,12 @@ achievements_coreData = {
 		"a_PrologueComplete": { // VERIFIED  
 			"id": 306884, "points": 5,
 			"devInfo": "Complete the prologue"},
-		"a_Chapter1Complete": { // VERIFIED 
+		"a_Chapter1CompleteByEike": { // VERIFIED 
 			"id": 306886, "points": 5,
 			"devInfo": "Complete chapter 1"},
+		"a_Chapter1CompleteByBarman": { // VERIFIED
+			"id": 306976, "points": 3,
+			"devInfo": "Alert the barman of fire in chapter 1"},
 		"a_Chapter2Complete": { // VERIFIED 
 			"id": 306922, "points": 5,
 			"devInfo": "Complete chapter 2"},
@@ -2099,9 +2102,6 @@ achievements_coreData = {
 			"id": 405097, "points": 50,
 			"devInfo": "Seen ALL important the cutscenes"}},
 	"c_Branch": { // Category - Branching path
-		"a_AlertBarmanOfFire": { // VERIFIED
-			"id": 306976, "points": 3,
-			"devInfo": "Alert the barman of fire in chapter 1"},
 		"a_BecomeThePerformer": { // VERIFIED
 			"id": 402284, "points": 3,
 			"devInfo": "In chapter4, use the costume to give yourself a message. Only possible when you haven't acquired the egg in chapter 1??"},
@@ -2570,7 +2570,7 @@ achievements_triggers = {
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Prologue, enum_releaseRegion)
 		)),
-	"a_Chapter1Complete": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { return
+	"a_Chapter1CompleteByEike": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { return
 		(
 			(	// Alt 1 => Normal way of identifying cutscenes	
 				unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -2578,6 +2578,7 @@ achievements_triggers = {
 					!is_InGame(enum_releaseRegion) ||
 					is_ExtraMenu_active(enum_releaseRegion)
 				) &&
+				is_FirePutOutBy_Eike(enum_releaseRegion) &&
 				once(	// Identifies Cutscene => burning bar changes into non-burning
 					is_LargeCutscene_active(enum_releaseRegion) 		&& 
 					is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) 	&&
@@ -2597,9 +2598,40 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) &&
 				is_InGame(enum_releaseRegion) &&
 				!is_ExtraMenu_active(enum_releaseRegion) &&
+				is_FirePutOutBy_Eike(enum_releaseRegion) &&
 				on_Chapter_finish(CHAPTER_Chapter1, enum_releaseRegion)
 			)
 		)}),
+	"a_Chapter1CompleteByBarman": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
+		(	// Alt 1 => Normal way of identifying cutscenes	
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) &&
+			is_FirePutOutBy_Barman(enum_releaseRegion) &&
+			once(	// Identifies Cutscene => burning bar changes into non-burning
+				is_LargeCutscene_active(enum_releaseRegion) 		&& 
+				is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) 	&&
+				is_Cutscene_MasterId(0x11a40, enum_releaseRegion) 	&&
+				on_Cutscene_SectionId_start(enum_releaseRegion)	
+
+				// OG Cutscene ID code
+					// is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) &&
+					// is_Cutscene_MasterId(0x11a40, enum_releaseRegion)		&&
+					// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+					// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+					// is_Cutscene_MasterDataId(0xbea0, enum_releaseRegion)	&&
+					// is_Cutscene_SectionDataId(0x5b80, enum_releaseRegion)
+			) &&
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+		) || (	// Alt 2 => Failsafe; trigger on chapter change
+			is_ReleaseRegion(enum_releaseRegion) &&
+			is_InGame(enum_releaseRegion) &&
+			!is_ExtraMenu_active(enum_releaseRegion) &&
+			is_FirePutOutBy_Barman(enum_releaseRegion) &&
+			on_Chapter_finish(CHAPTER_Chapter1, enum_releaseRegion)
+		)),
 	"a_Chapter2Complete": function a_Chapter2Complete() { return
 		any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 			(	// Alt 1 => Normal way of identifying cutscenes
@@ -3744,27 +3776,6 @@ achievements_triggers = {
 			is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
 			is_NoCutscene_active(enum_releaseRegion)
 		)),
-	"a_AlertBarmanOfFire": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-		never(
-			!is_InGame(enum_releaseRegion) ||
-			is_ExtraMenu_active(enum_releaseRegion)
-		) &&
-		once(	// Identifies Cutscene => Warning barman of fire 
-			is_LargeCutscene_active(enum_releaseRegion) 						&&
-			is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)  					&&
-			is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x32200, enum_releaseRegion)					&&
-			on_Cutscene_SectionId_start(enum_releaseRegion)
-
-			// is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) &&
-			// is_Cutscene_MasterId(0x32200, enum_releaseRegion)		&& 
-			// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-			// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-			// is_Cutscene_MasterDataId(0x70e0, enum_releaseRegion)	&&
-			// is_Cutscene_SectionDataId(0x24cb0, enum_releaseRegion)
-		) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion))),
 	"a_EggCollection": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -3793,7 +3804,7 @@ achievements_triggers = {
 				// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 				// is_Cutscene_MasterDataId(0x59c0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x5c20, enum_releaseRegion)),
-			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 3 //QA test this
 				is_LargeCutscene_active(enum_releaseRegion) 						&&
 				is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)  					&&
 				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) 	&&
@@ -5620,9 +5631,10 @@ achievements_titles = {
 	"a_PrologueComplete": 							{"en": "Defied Fate",															
 													"nl": "Lot getrotseerd",
 													"fr": "Défié le destine"},
-	"a_Chapter1Complete": 							{"en": "Defied Fate... Again",
+	"a_Chapter1CompleteByEike": 					{"en": "Defied Fate... Again",
 													"nl": "Lot getrotseerd... nogmaals",
 													"fr": "Défié le destin... encore"},
+	"a_Chapter1CompleteByBarman": 					{"en": "There's A Fire!"}, 
 	"a_Chapter2Complete": 							{"en": "Left In The Past"},
 	"a_Chapter3Complete": 							{"en": "An Alchemist, A Jewel And A Homunculus"},
 	"a_Chapter4CompletePan": 						{"en": "Pan-tastic Resilience"},
@@ -5656,7 +5668,6 @@ achievements_titles = {
 	"a_DoctorateTimeTraveling": 					{"en": "Complexities Of The Fourth Dimension"}, 
 	"a_GetOrnamentalEgg": 							{"en": "A Performer's Clue"}, 
 	"a_EggCollection": 								{"en": "A Jovial Exchange"},
-	"a_AlertBarmanOfFire": 							{"en": "There's A Fire!"}, 
 	"a_BarmansChildren":							{"en": "The Barman's Mystery Child"},
 	"a_ShowEggTownPlanter": 						{"en": "Cracking Open The Past: Middle Ages"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Cracking Open The Past: The Old Century"},
@@ -5711,19 +5722,18 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_PrologueComplete": {							"en": "Complete the Prologue",
+	"a_PrologueComplete": 							{"en": "Complete the Prologue",
 													"nl": "Proloog voltooid",
 													"fr": "Prologue terminé"},
-	"a_Chapter1Complete": {							"en": "Complete Chapter 1",
-													"nl": "Hoofdstuk 1 voltooid",
-													"fr": "Chapitre 1 terminé"},													
+	"a_Chapter1CompleteByEike":						{"en": "Complete Chapter 1 by personally quelling the looming danger"},
+	"a_Chapter1CompleteByBarman": 					{"en": "Complete Chapter 1 by notifying the young boy's grandpa of an approaching threat"},
 	"a_Chapter2Complete": 							{"en": "Complete Chapter 2"},
 	"a_Chapter3Complete": 							{"en": "Complete Chapter 3"},
-	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4, using a frying pan"},
-	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4, using a sign"},	
+	"a_Chapter4CompletePan": 						{"en": "Complete Chapter 4 using a frying pan"},
+	"a_Chapter4CompleteSign": 						{"en": "Complete Chapter 4 using a sign"},	
 	"a_Chapter5Complete": 							{"en": "Complete Chapter 5"}, 
-	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6, by co-directing a thriller picture"},
-	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6, by co-directing a love picture"},
+	"a_Chapter6CompleteThriller":					{"en": "Complete Chapter 6 by co-directing a thriller picture"},
+	"a_Chapter6CompleteLove":						{"en": "Complete Chapter 6 by co-directing a love picture"},
 	"a_Chapter7Complete":							{"en": "Complete Chapter 7"},
 	"a_Chapter8Complete":							{"en": "Complete Chapter 8"},
 	"a_MaxAchievementPrologue":						{"en": "Reach 100% achievement rate for the Prologue, including the EX Chapter"},
@@ -5754,7 +5764,6 @@ achievements_descriptions = {
 	"a_PocketWatchCollection": 						{"en": "Share your egg collection with a younger barman during Chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Share stories about your newly acquired pocket watch with Eckart in Chapter 8"},
 	"a_EggCollection": 								{"en": "Exchange an egg for a pan during Chapter 1, 3 or 4"},
-	"a_AlertBarmanOfFire": 							{"en": "Notify the young boy's grandpa of an approaching threat during Chapter 1"},
 	"a_GetExChapterOrnamentalEgg" :					{"en": "Obtain one final message during the EX Chapter"},	
 	"a_ShowPocketWatchToPhotographer":				{"en": "Kindle the joy of watchmaking to an ancestor of the Franssen's"},
 	"a_EikeThePyromancer": 							{"en": "Ascend to reverence as a pyrokinetic in Chapter 2"},
