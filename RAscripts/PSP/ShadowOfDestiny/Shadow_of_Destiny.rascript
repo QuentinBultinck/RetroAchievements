@@ -285,13 +285,13 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // '''''''''''''''''''
 PLAYERPOSITION_NEAR_THRESHOLD = 2100.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
 function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
-	let_memAccessor_playerXpos = memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion)
+	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
 	return
 		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerXpos &&	
 		let_memAccessor_playerXpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
 
 function is_PlayerPosition_Yaxis_Near(float_value, enum_releaseRegion) {
-	let_memAccessor_playerYpos = memory_getAddress(DATATYPE_Float, "PlayerPosition_yAxis", enum_releaseRegion)
+	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
 	return
 		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerYpos &&	
 		let_memAccessor_playerYpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
@@ -930,6 +930,9 @@ const_Area_IDs= {	// list not complete, add as is necessary
 function is_Area(enum_area, enum_releaseRegion) => 
 	dword(memory_getAddress(DATATYPE_32Bit, "AreaID", enum_releaseRegion)) == const_Area_IDs[enum_area]	
 
+function on_Area_change(enum_releaseRegion) {
+	let_memAccessor = dword(memory_getAddress(DATATYPE_32Bit, "AreaID", enum_releaseRegion))
+	return let_memAccessor != prev(let_memAccessor)}
 
 // .................
 // ◦ CHAPTER LOGIC ◦
@@ -2279,7 +2282,7 @@ achievements_coreData = {
 		"a_LostYoungCouple4": { // VERIFIED 
 			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // VERIFIED 
+		"a_LostYoungCouple5": { // VERIFIED // BUG Ancestor path => talking to woman doesn't increase measure count Perhaps when not interacted with them before?
 			"id": 314753, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // VERIFIED 
@@ -2361,7 +2364,7 @@ function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapte
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 	
 
 	return
-		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // Block: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // <-- 2 lines: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
 		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
 		measured(let_comparison_currentInventoryCount, 
 			when = 
@@ -2384,7 +2387,7 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseR
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 
 
 	return 
-		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // Block: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
+		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // <-- 2 lines: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
 		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
 		measured(let_comparison_currentInventoryCount,
 			when = 
@@ -2448,7 +2451,7 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
 		once(
-			let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // Block: save protection => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
+			let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // <-- 2 lines: save protection  => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
 			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time
 		) &&
 		measured(create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion)) &&
@@ -4160,8 +4163,8 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
-				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 && // <-- 2 lines save protection => when loading a savefile that has already talked to these NPCs must not unlock achievement
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount		// Inside once so we can use trigger_when()
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
@@ -4254,8 +4257,8 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
 			once( // <-- Hit once, so we can use trigger popup
-				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
-				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
+				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 && // <-- 2 lines save protection => when loading a savefile that has already talked to these NPCs must not unlock achievement
+				let_sumOf_currentNPCtalkCounts == let_totalTalkCount		// Inside once so we can use trigger_when()
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
@@ -4939,7 +4942,7 @@ achievements_triggers = {
 
 		return 
 			once(
-				let_sumOf_deltaItemCount > (let_biggestPossibleInventoryCount/4)*3 	&& // Block: save protection => loading a savefile which already has 20 items must not unlock achievement
+				let_sumOf_deltaItemCount > (let_biggestPossibleInventoryCount/4)*3 	&& // <-- 3 lines: save protection  => loading a savefile which already has 20 items must not unlock achievement
 				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame
 				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount
 			) &&
@@ -6393,16 +6396,21 @@ function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseReg
 	)
 
 function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, enum_releaseRegion) => 
+	// Core alt group
 	unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 	unless(none_of(array_collectionAreas, (enum_area) => is_Area(enum_area, enum_releaseRegion))) && // <-- pause if tally count when not in the city area
-	never(	// <-- reset is necessary because the cancelTrigger does not reset below tally count
-		!is_InGame(enum_releaseRegion) ||
-		on_Chapter_change(enum_releaseRegion) ||
-		on_EnergyUnits_decrement(enum_releaseRegion) 
-	) &&
-	tally_of(array_energyOrblocationKeys, 5, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here a allows it to count, thus we can count all 5 collections
+	tally_of(array_energyOrblocationKeys, 5, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all 5 collections
 		on_EnergyOrb_collect(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion)
-	)
+	) 
+	|| // Reset alt group => so tally hit count can reset when second unless is active in core group // <-- reset is necessary because the cancelTrigger does not reset below tally count
+	never_toAlt( 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		(
+			!is_InGame(enum_releaseRegion) ||
+			on_Chapter_change(enum_releaseRegion) ||
+			on_EnergyUnits_decrement(enum_releaseRegion) 
+		)
+	)	
 
 function leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion) => 
 	unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -6485,11 +6493,11 @@ leaderboards_startTriggers = {
 		//				orNext: X
 		//				orNext: Y
 		//			 			Z
-		//	- Example in code (just an example, wont work in underlying code): 
+		//	- Example in code (just an example, wont work as an alternative for below/active code for this trigger): 
 		//			is_ReleaseRegion(enum_releaseRegion) &&
 		//			is_InGame(enum_releaseRegion) &&
 		//			__ornext(is_Chapter(CHAPTER_Epilogue, enum_releaseRegion)) && // <-- __ornext() to force RAtools to use orNext instead of alt groups 
-		//			on_Video_start(enum_releaseRegion)) // <-- Trigger when credits video starts
+		//			on_Video_start(enum_releaseRegion))
 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) &&
@@ -6745,10 +6753,10 @@ leaderboards_valueMeasures = {
 // =====================
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Agile Energy Orb Seeker: Present"},
-	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Agile Energy Orb Seeker: Late 20th century"},
-	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Agile Energy Orb Seeker: Early 20th century"},
-	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Agile Energy Orb Seeker: Middle Ages"},
+	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Agile Energy Hunter: Present"},
+	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Agile Energy Hunter: Late 20th century"},
+	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Agile Energy Hunter: Early 20th century"},
+	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Agile Energy Hunter: Middle Ages"},
 	"lb_ClearTimeChapter8":					{"en": "Chapter 8 Clear Time"},
 	"lb_ClearTimeChapter7":					{"en": "Chapter 7 Clear Time"},
 	"lb_ClearTimeChapter6":					{"en": "Chapter 6 Clear Time"},
