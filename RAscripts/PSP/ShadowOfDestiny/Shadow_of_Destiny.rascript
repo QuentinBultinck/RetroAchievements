@@ -2283,7 +2283,7 @@ achievements_coreData = {
 		"a_LostYoungCouple4": { // VERIFIED 
 			"id": 310162, "points": 1,
 			"devInfo": "Interact with the lost man in Middle Ages during chapter 5"},
-		"a_LostYoungCouple5": { // VERIFIED // BUG Ancestor path => talking to woman doesn't increase measure count Perhaps when not interacted with them before?
+		"a_LostYoungCouple5": { // VERIFIED
 			"id": 314753, "points": 3,
 			"devInfo": "Interact with the lost couple in Middle Ages during chapter 7"},
 		"a_LostYoungCouple6": { // VERIFIED 
@@ -2326,7 +2326,7 @@ achievements_coreData = {
 achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
-	//	- sNULL => when it's not necessarily a missable achievement <-- will result in type: "standard"
+	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
 	//		- Missable is when you would have to play a significant portion of game again to obtain the achievement.
 	//		 	Think about that 40 hour RPG, and something happens where the world state changes, and an area is no longer available, and certain quests are locked out.
 	//		 	But the person making the achievement for that quest didn't tell you that you could miss it.
@@ -2336,7 +2336,7 @@ achievements_typeByCategory = {
 	// "c_template": "xxxxxx",
 	"c_Completion": 						"progression",
 	"c_Endings": 							"win_condition",
-	"c_AchievementPercentage": 				"missable",
+	"c_AchievementPercentage": 				sNULL,
 	"c_Branch": 							"missable",
 	"c_Extra":				 				"missable",
 	"c_ExtraCouple":						"missable",
@@ -4379,50 +4379,24 @@ achievements_triggers = {
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
 	"a_LostYoungCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison_NoAncestor(enum_releaseRegion) { return
-			tally(4, [
-				repeated(2,	// NoAncestor path has less dialogue => count up 2, when at max talkCount => both measures are using same count (4)
-					is_SmallCutscene_active(enum_releaseRegion) && 
-					is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare", enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x429, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x418, enum_releaseRegion))
-			])}
-		function measuredComparison_Ancestor(enum_releaseRegion) { return
-			tally(4, [
-				// once(	// 1st talk with woman		// Commented block FIXfor --> NPC_MiddleAges_YoungCoupleWoman->Chap7_TownSquare and NPC_MiddleAges_YoungCoupleWoman->Chap4_OutsideChurch_AfterTalkingToBoth use same MemAddrTalkCount
-				// 	is_SmallCutscene_active(enum_releaseRegion) &&
-				// 	is_MargaretteTold_Ancestor(enum_releaseRegion) &&
-				// 	is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-				// 	on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare", enum_releaseRegion) &&
-				// 	is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
-				repeated(2,	// 2nd talk with woman, with dialogue option		// repeated Fixfor --> mentioned above
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_MargaretteTold_Ancestor(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap7_TownSquare_Choice", enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x429, enum_releaseRegion)),
-				repeated(get_NPC_MaxTalkCount(NPC_MiddleAges_YoungCoupleMan,"Chap7_OutsideChurch"), 
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap7_OutsideChurch", enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion) && is_InteractionId(0x418, enum_releaseRegion))
-			])}
-		return 
-			// Core alt group
+		// When having talked twice to the man in Chapter 5 => 2nd talk to woman in this chapter unlocks dialogue option
+		// Too many variations here => just count twice, once for talking with man and once with woman
+		alt_core = 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion)) &&
-			(
-				measured(measuredComparison_NoAncestor(enum_releaseRegion), when = is_MargaretteTold_NoAncestor(enum_releaseRegion)) || 
-				measured(measuredComparison_Ancestor(enum_releaseRegion), when = is_MargaretteTold_Ancestor(enum_releaseRegion))
-			) &&
+			measured(tally(2, [
+				once(
+					is_SmallCutscene_active(enum_releaseRegion) && 
+					on_TalkingToNPC_bis(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
+					is_InteractionChapterId(0x3b, enum_releaseRegion)),
+				once(
+					is_SmallCutscene_active(enum_releaseRegion) && 
+					on_TalkingToNPC_bis(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
+					is_InteractionChapterId(0x3b, enum_releaseRegion))			
+			])) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion)) 
-			|| // Reset alt group
+		
+		alt_reset = 
 			never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) &&
 				(
@@ -4430,7 +4404,8 @@ achievements_triggers = {
 					!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 				)
 			)
-		}),
+
+		return alt_core || alt_reset}),
 	"a_LostYoungCouple6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		function measuredComparison(enum_releaseRegion) { return
 			tally(2, [
@@ -5736,16 +5711,16 @@ achievements_descriptions = {
 	"a_EikeTheMagician": 							{"en": "Ascend to renown as a magician in Chapter 2"},
 	"a_EikeTheFlorist": 							{"en": "Set up a floral display in Chapter 2"},
 	"a_MeetOldMiriam":								{"en": "Meet Eckart's wife in Chapter 7, after your valiant act"},
-	"a_LostYoungCouple1": 							{"en": "Aid a bewildered young couple in their reunion amidst the medieval era within Chapter 2"}, 
-	"a_LostYoungCouple2": 							{"en": "Weave the threads of fate into another chance at reunion for a lost young couple in Chapter 3"},
-	"a_LostYoungCouple3": 							{"en": "Successfully orchestrate the reunion of the lost young couple in the Middle Ages during Chapter 4"},
-	"a_LostYoungCouple4": 							{"en": "Assess the developments surrounding the young man amidst the Medieval period in Chapter 5"},
-	"a_LostYoungCouple5": 							{"en": "Offer guidance to the young couple in the Middle Ages during Chapter 7"},
-	"a_LostYoungCouple6": 							{"en": "Share a piece of wisdom with the young man in the Middle Ages and assess his interpretation within Chapter 8"},
-	"a_EnigmaticCouple1": 							{"en": "Identify the coated man and woman in the modern-day setting during the Prologue or Chapter 1"}, 
-	"a_EnigmaticCouple2": 							{"en": "Discover the coated man and woman in the contemporary setting within Chapter 3"}, 
+	"a_LostYoungCouple1": 							{"en": "Aid a bewildered young couple in their reunion amidst the Medieval era during Chapter 2"}, 
+	"a_LostYoungCouple2": 							{"en": "Weave the threads of fate into another chance at reunion for a lost young couple amidst the Medieval era during Chapter 3"},
+	"a_LostYoungCouple3": 							{"en": "Successfully orchestrate the reunion of the lost young couple amidst the Medieval era during Chapter 4"},
+	"a_LostYoungCouple4": 							{"en": "Assess the developments surrounding the young man amidst the Medieval era during Chapter 5"},
+	"a_LostYoungCouple5": 							{"en": "Review the latest occurrences involving the young couple amidst the Medieval era during Chapter 7"},
+	"a_LostYoungCouple6": 							{"en": "Share a piece of wisdom with the young man and assess his interpretation amidst the Medieval era during Chapter 8"},
+	"a_EnigmaticCouple1": 							{"en": "Identify the coated man and woman in the Present during the Prologue or Chapter 1"}, 
+	"a_EnigmaticCouple2": 							{"en": "Discover the coated man and woman in the Present during Chapter 3"}, 
 	"a_EnigmaticCouple3": 							{"en": "Seek out the coated man and woman in the Present during Chapter 4"}, 
-	"a_EnigmaticCouple4": 							{"en": "Encounter the coated man and woman in the current timeline during Chapter 5"},	
+	"a_EnigmaticCouple4": 							{"en": "Encounter the coated man and woman in the Present during Chapter 5"},	
 	"a_EnigmaticCouple5": 							{"en": "Find the coated man and woman in the Present during Chapter 7"},
 	"a_ErasingEike": 								{"en": "Warn yourself of your impending demise during the Prologue"},
 	"a_ErasingEike2": 								{"en": "Stumble upon yourself in Chapter 7"}, 
@@ -5773,7 +5748,7 @@ achievements_descriptions = {
 	"a_GiveMargaretteCake": 						{"en": "Gift a delectable sweet to a cherished individual in your life"},
 	"a_NewCakeInvented": 							{"en": "Establish a new line of pastries"},
 	"a_ShortestChapter": 							{"en": "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary"}, 
-	"a_MaxInventory": 								{"en": "Accrue the largest arsenal of items during a singular playthrough"},
+	"a_MaxInventory": 								{"en": "Accrue the largest arsenal of items within a single playthrough"},
 	"a_PerformerGoingExtraMile": 					{"en": "Highlight the significance of going above and beyond, especially for those, including yourself, who would truly value the performer's effort"}, 	
 	"a_ArtInspiration1": 							{"en": "Inspire a renowned artist and appraise his work"}, 
 	"a_ArtInspirationAll": 							{"en": "Become a beacon of inspiration for a prominent artist and assess all his works"}}
