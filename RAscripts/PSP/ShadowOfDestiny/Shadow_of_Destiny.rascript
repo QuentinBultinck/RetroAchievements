@@ -55,6 +55,7 @@
 
 // TODO achievement for running around lebensbaum with jogging man?
 // TODO update guides online + publish changes
+// TODO if measured popups show at weird moments when it's not supposed to => try using measureIf or PauseIf the hide the popup
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
@@ -117,6 +118,12 @@ memory_dataStructures = {
 			"8Bit_ImageUnmask_Width": 0xc,
 			"8Bit_Print_Yaxis": 0xd,
 			"8Bit_CharacterSetId": 0xe
+		}},
+	"Struct_NPCModelData": {
+		"offsets": {
+			"Float_xPos": 0x40,
+			"Float_yPos": 0x48,
+			"BitFlag_IsRunningAnimationActive": 0xAC
 		}},
 	}
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -183,6 +190,7 @@ memory_addresses = {
 		"Cutscene_SectionID_2": {RELEASE_REGION_USA: 0xa9ecc2, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6812},
 	},
 	DATATYPE_25BitPointer: {
+		"LoadedNPCModel_JoggingMan1980": {RELEASE_REGION_USA: 0xa9dc24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 		"InteractionID": {RELEASE_REGION_USA: 0xa9efe4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b34},
 		"InteractionChapterID": {RELEASE_REGION_USA: 0xa9efe0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b30},
 		"NPCinteractionID": {RELEASE_REGION_USA: 0xa9efdc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b2c},
@@ -281,10 +289,10 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// ...................
-// ◦ PLAYER POSITION ◦
-// '''''''''''''''''''
-PLAYERPOSITION_NEAR_THRESHOLD = 2100.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
+// ..............
+// ◦ MODEL DATA ◦
+// ''''''''''''''
+PLAYERPOSITION_NEAR_THRESHOLD = 4000.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
 function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
 	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
 	return
@@ -292,10 +300,56 @@ function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
 		let_memAccessor_playerXpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
 
 function is_PlayerPosition_Yaxis_Near(float_value, enum_releaseRegion) {
-	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_yAxis", enum_releaseRegion))
 	return
 		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerYpos &&	
 		let_memAccessor_playerYpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
+
+// function is_PlayerPosition_Xaxis_NotNear(float_value, enum_releaseRegion) {
+// 	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+// 	return
+// 		let_memAccessor_playerXpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
+// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerXpos}
+
+// function is_PlayerPosition_Yaxis_NotNear(float_value, enum_releaseRegion) {
+// 	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+// 	return
+// 		let_memAccessor_playerYpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
+// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerYpos}
+
+// -------JoggingMan1980---------
+function current_JoggingMan_Xpos(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return float(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "Float_xPos"))}
+	
+function current_JoggingMan_Ypos(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return float(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "Float_yPos"))}
+
+function prev_JoggingMan_Xpos(enum_releaseRegion) =>
+	prev(current_JoggingMan_Xpos(enum_releaseRegion))
+
+function prev_JoggingMan_Ypos(enum_releaseRegion) =>
+	prev(current_JoggingMan_Ypos(enum_releaseRegion))
+
+function on_JoggingMan_Position_change(enum_releaseRegion) =>
+	current_JoggingMan_Xpos(enum_releaseRegion) != prev_JoggingMan_Xpos(enum_releaseRegion) &&
+	current_JoggingMan_Ypos(enum_releaseRegion) != prev_JoggingMan_Ypos(enum_releaseRegion)
+
+function current_JoggingMan1980_RunningState(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return bit5(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "BitFlag_IsRunningAnimationActive"))}
+
+function prev_JoggingMan1980_RunningState(enum_releaseRegion) =>
+	prev(current_JoggingMan1980_RunningState(enum_releaseRegion))
+
+function is_JoggingMan_Running(enum_releaseRegion) =>
+	current_JoggingMan1980_RunningState(enum_releaseRegion) == 1
+
+function on_JoggingMan_startsRunning(enum_releaseRegion) =>
+	current_JoggingMan1980_RunningState(enum_releaseRegion) == 1 &&
+	prev_JoggingMan1980_RunningState(enum_releaseRegion) == 0
+
 
 // .................
 // ◦ TIME AND DATE ◦
@@ -3850,34 +3904,69 @@ achievements_triggers = {
 				// is_Cutscene_MasterDataId(0x59c0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x5c20, enum_releaseRegion))
 		]) &&
-		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_RunningAcrossThe90s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		function measuredComparison(enum_releaseRegion) { return
-			tally(2, [
-				once( // Talk to JoggingMan_Present
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					(
-						is_Area(AREA_Present_City_Day, enum_releaseRegion) 		|| 
-						is_Area(AREA_Present_City_NightPM, enum_releaseRegion)	||
-						is_Area(AREA_Present_City_NightAM, enum_releaseRegion)
-					) &&
-					on_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
-				once( // Talk to JoggingMan_80s
-					is_SmallCutscene_active(enum_releaseRegion) &&
-					is_Area(AREA_70s_City_Night, enum_releaseRegion) &&
-					on_TalkingToNPC_bis(NPC_80s_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
-			])}
-		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			never(	
+		trigger_when(on_Cutscene_end(enum_releaseRegion))),	
+	"a_RunningAcrossThe90s": () => any_of([RELEASE_REGION_USA], (enum_releaseRegion) => // TODO implement for other regions // WIP a_RunningAcrossThe90s
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		unless(
+			is_Area(AREA_70s_City_Night, enum_releaseRegion) && 
+			(
+				!is_PlayerPosition_Xaxis_Near(current_JoggingMan_Xpos(enum_releaseRegion), enum_releaseRegion) ||
+				!is_PlayerPosition_Yaxis_Near(current_JoggingMan_Ypos(enum_releaseRegion), enum_releaseRegion) 
+			)
+		) &&
+		measured(			
+			repeated(1000, // <-- 4500 would be a whole run across Lebensbaum, put this lower, since it's kinda tedious because player runs faster than joggingMan
+				is_Area(AREA_70s_City_Night, enum_releaseRegion) &&
+				is_JoggingMan_Running(enum_releaseRegion) &&
+				on_JoggingMan_Position_change(enum_releaseRegion)),
+			format = "percent"
+		) &&
+		trigger_when(
+			repeated(2, 
+				is_SmallCutscene_active(enum_releaseRegion) &&
+				is_Area(AREA_Present_City_Day, enum_releaseRegion) &&
+				on_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion) // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
+			)			
+		) || // Alt reset group => necessary so it can reset the measure hit count when the second unless is active
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) &&
+			(
 				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) && 
-				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) && 
-				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
-			) &&
-			measured(measuredComparison(enum_releaseRegion)) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))
-		}),
+				(
+					!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) &&
+					!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) &&
+					!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
+				)
+			)
+		)),
+	
+	// "a_RunningAcrossThe90s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	// 	function measuredComparison(enum_releaseRegion) { return
+	// 		tally(2, [
+	// 			once( // Talk to JoggingMan_Present
+	// 				is_SmallCutscene_active(enum_releaseRegion) &&
+	// 				(
+	// 					is_Area(AREA_Present_City_Day, enum_releaseRegion) 		|| 
+	// 					is_Area(AREA_Present_City_NightPM, enum_releaseRegion)	||
+	// 					is_Area(AREA_Present_City_NightAM, enum_releaseRegion)
+	// 				) &&
+	// 				on_TalkingToNPC_bis(NPC_Present_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
+	// 			once( // Talk to JoggingMan_80s
+	// 				is_SmallCutscene_active(enum_releaseRegion) &&
+	// 				is_Area(AREA_70s_City_Night, enum_releaseRegion) &&
+	// 				on_TalkingToNPC_bis(NPC_80s_JoggingMan, enum_releaseRegion)), // <-- use on_TalkingToNPC_bis() version, because we are not checking is_InteractionId(); Fix for talking to NPC => quitting game without getting another cutscene => re-entering same chapter => measure will add another hit count
+	// 		])}
+	// 	return 
+	// 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+	// 		never(	
+	// 			!is_InGame(enum_releaseRegion) ||
+	// 			!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) && 
+	// 			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) && 
+	// 			!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
+	// 		) &&
+	// 		measured(measuredComparison(enum_releaseRegion)) &&
+	// 		trigger_when(on_Cutscene_end(enum_releaseRegion))
+	// 	}),
 	"a_ShowEggTownPlanter": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -5256,8 +5345,13 @@ achievements_triggers = {
 
 		// DEV_NOTE: MeasureIf + PauseIf with Measured
 		// ----------------------------------
-		//	- Measure if => when measureIf is true => then the measure count will be saved AND 0 will be displayed AND measure will stop counting, until measureIf becomes false => then saved hit count will replace 0 and measure can continue counting
-		//	- Pause if => when pauseIf is true => then the measure count will stop counting, but the original count will be displayed (wont reset to 0). Take care, pause will also stop 'reset' flags to function
+		//	MeasuredIf  => is purely to control the visual feedback (UI) through the RAoverlay (measured hit count will always evaluate/continue counting, regardless of MeasuredIf-state) 
+		//		- MeasuredIf is false => 0 will be displayed in RAoverlay, but the measured hit count will still evaluate/will continue counting behind the scenes, even when MeasuredIf-false) + the measured popup will not been shown
+		//		- MeasuredIf is true => the current measured hit count will be shown (the one that kept evaluating/counting behind the scenes) + popup is able to be displayed whenever the measured hit count changes (the popup will also briefly be displayed once MeasuredIf becomes true)
+		//
+		//	PauseIf  => is purely to stop evaluation, so the current measured progress is still visible in RAoverlay
+		//		- PauseIf is true => the measured hit count will be put on hold (hit count cannot change) + the hit count will still be displayed (won't display 0 in RAoverlay). Take care, pause will also stop 'reset' flags in same group + Pauses are evaluated from top to bottom
+		//		- PauseIf is false => continue evaluating other logic (measured hit count will continue evaluating)
 
 		return
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
