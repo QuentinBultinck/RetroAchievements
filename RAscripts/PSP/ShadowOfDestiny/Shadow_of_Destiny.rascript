@@ -55,6 +55,7 @@
 
 // TODO achievement for running around lebensbaum with jogging man?
 // TODO update guides online + publish changes
+// TODO if measured popups show at weird moments when it's not supposed to => try using measureIf or PauseIf the hide the popup => recheck where pause if vs measured if needed
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
@@ -117,6 +118,12 @@ memory_dataStructures = {
 			"8Bit_ImageUnmask_Width": 0xc,
 			"8Bit_Print_Yaxis": 0xd,
 			"8Bit_CharacterSetId": 0xe
+		}},
+	"Struct_NPCModelData": {
+		"offsets": {
+			"Float_xPos": 0x40,
+			"Float_yPos": 0x48,
+			"BitFlag_IsRunningAnimationActive": 0xAC
 		}},
 	}
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -183,6 +190,7 @@ memory_addresses = {
 		"Cutscene_SectionID_2": {RELEASE_REGION_USA: 0xa9ecc2, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6812},
 	},
 	DATATYPE_25BitPointer: {
+		"LoadedNPCModel_JoggingMan1980": {RELEASE_REGION_USA: 0xa9dc24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 		"InteractionID": {RELEASE_REGION_USA: 0xa9efe4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b34},
 		"InteractionChapterID": {RELEASE_REGION_USA: 0xa9efe0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b30},
 		"NPCinteractionID": {RELEASE_REGION_USA: 0xa9efdc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b2c},
@@ -281,10 +289,10 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// ...................
-// ◦ PLAYER POSITION ◦
-// '''''''''''''''''''
-PLAYERPOSITION_NEAR_THRESHOLD = 2100.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
+// ..............
+// ◦ MODEL DATA ◦
+// ''''''''''''''
+PLAYERPOSITION_NEAR_THRESHOLD = 4000.0 // <-- 1.0, using a dot tells RAtools that this should be a datatype 'float'
 function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
 	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
 	return
@@ -292,10 +300,56 @@ function is_PlayerPosition_Xaxis_Near(float_value, enum_releaseRegion) {
 		let_memAccessor_playerXpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
 
 function is_PlayerPosition_Yaxis_Near(float_value, enum_releaseRegion) {
-	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_yAxis", enum_releaseRegion))
 	return
 		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerYpos &&	
 		let_memAccessor_playerYpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
+
+// function is_PlayerPosition_Xaxis_NotNear(float_value, enum_releaseRegion) {
+// 	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+// 	return
+// 		let_memAccessor_playerXpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
+// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerXpos}
+
+// function is_PlayerPosition_Yaxis_NotNear(float_value, enum_releaseRegion) {
+// 	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
+// 	return
+// 		let_memAccessor_playerYpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
+// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerYpos}
+
+// -------JoggingMan1980---------
+function current_JoggingMan_Xpos(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return float(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "Float_xPos"))}
+	
+function current_JoggingMan_Ypos(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return float(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "Float_yPos"))}
+
+function prev_JoggingMan_Xpos(enum_releaseRegion) =>
+	prev(current_JoggingMan_Xpos(enum_releaseRegion))
+
+function prev_JoggingMan_Ypos(enum_releaseRegion) =>
+	prev(current_JoggingMan_Ypos(enum_releaseRegion))
+
+function on_JoggingMan_Position_change(enum_releaseRegion) =>
+	current_JoggingMan_Xpos(enum_releaseRegion) != prev_JoggingMan_Xpos(enum_releaseRegion) &&
+	current_JoggingMan_Ypos(enum_releaseRegion) != prev_JoggingMan_Ypos(enum_releaseRegion)
+
+function current_JoggingMan1980_RunningState(enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
+	return bit5(let_maskedPointer + memory_getDataStructOffset("Struct_NPCModelData", "BitFlag_IsRunningAnimationActive"))}
+
+function prev_JoggingMan1980_RunningState(enum_releaseRegion) =>
+	prev(current_JoggingMan1980_RunningState(enum_releaseRegion))
+
+function is_JoggingMan_Running(enum_releaseRegion) =>
+	current_JoggingMan1980_RunningState(enum_releaseRegion) == 1
+
+function on_JoggingMan_startsRunning(enum_releaseRegion) =>
+	current_JoggingMan1980_RunningState(enum_releaseRegion) == 1 &&
+	prev_JoggingMan1980_RunningState(enum_releaseRegion) == 0
+
 
 // .................
 // ◦ TIME AND DATE ◦
@@ -2562,8 +2616,6 @@ achievements_triggers = {
 		//	- Pauses will be evaluated first => thus when pause if true, all resets in the same group are on hold. If you want to reset => place reset inside another group
 		//	- You can also use ResetNextIf
 
-
-
 		(	// Alt 1 => Normal way of identifying cutscenes
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion) ||					
@@ -2601,8 +2653,11 @@ achievements_triggers = {
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		) || (	// Alt 2 => Failsafe; trigger on chapter change
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&	
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Prologue, enum_releaseRegion)
 		)),
@@ -2631,8 +2686,11 @@ achievements_triggers = {
 				) &&
 				trigger_when(on_Cutscene_end(enum_releaseRegion))
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) &&
+				is_ReleaseRegion(enum_releaseRegion) &&				
+				repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+					never(!is_InGame(enum_releaseRegion)) &&
+					is_InGame(enum_releaseRegion)
+				) && 
 				!is_ExtraMenu_active(enum_releaseRegion) &&
 				is_FirePutOutBy_Eike(enum_releaseRegion) &&
 				on_Chapter_finish(CHAPTER_Chapter1, enum_releaseRegion)
@@ -2662,8 +2720,11 @@ achievements_triggers = {
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		) || (	// Alt 2 => Failsafe; trigger on chapter change
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&			
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_FirePutOutBy_Barman(enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter1, enum_releaseRegion)
@@ -2693,8 +2754,11 @@ achievements_triggers = {
 				) &&
 				trigger_when(on_Cutscene_end(enum_releaseRegion))
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) &&
+				is_ReleaseRegion(enum_releaseRegion) &&				
+				repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+					never(!is_InGame(enum_releaseRegion)) &&
+					is_InGame(enum_releaseRegion)
+				) && 
 				!is_ExtraMenu_active(enum_releaseRegion) &&
 				on_Chapter_finish(CHAPTER_Chapter2, enum_releaseRegion)
 			)
@@ -2750,7 +2814,10 @@ achievements_triggers = {
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		alt2 = // Alt 2 => Failsafe; trigger on chapter change
 			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter3, enum_releaseRegion)
 		return alt1 || alt2}),
@@ -2801,7 +2868,10 @@ achievements_triggers = {
 				// trigger_when(on_Cutscene_end(enum_releaseRegion))		
 		function alt2(enum_releaseRegion) => // Alt 2 => Failsafe; trigger on chapter change
 			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_SelectedItemInScrollBar(ITEM_FryingPan, enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)
@@ -2839,8 +2909,11 @@ achievements_triggers = {
 				// ]) &&			
 				// trigger_when(on_Cutscene_end(enum_releaseRegion))}
 		function alt2(enum_releaseRegion) { return
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&			
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_SelectedItemInScrollBar(ITEM_Sign, enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter4, enum_releaseRegion)}
@@ -2866,7 +2939,10 @@ achievements_triggers = {
 				trigger_when(on_Cutscene_end(enum_releaseRegion))
 			) || (	// Alt 2 => Failsafe; trigger on chapter change
 				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) &&
+				repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+					never(!is_InGame(enum_releaseRegion)) &&
+					is_InGame(enum_releaseRegion)
+				) && 
 				!is_ExtraMenu_active(enum_releaseRegion) &&
 				on_Chapter_finish(CHAPTER_Chapter5, enum_releaseRegion)
 			)
@@ -2896,8 +2972,11 @@ achievements_triggers = {
 				) && 
 				trigger_when(on_Cutscene_end(enum_releaseRegion))
 			) || (	// Alt 2 => Failsafe
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) &&
+				is_ReleaseRegion(enum_releaseRegion) &&				
+				repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+					never(!is_InGame(enum_releaseRegion)) &&
+					is_InGame(enum_releaseRegion)
+				) && 
 				!is_ExtraMenu_active(enum_releaseRegion) &&
 				is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
 				is_MovieThriller_chosen(enum_releaseRegion) 	&&
@@ -2928,8 +3007,11 @@ achievements_triggers = {
 			) && 
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		) || (	// Alt 2 => Failsafe
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&			
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
 			is_MovieLove_chosen(enum_releaseRegion) 		&&
@@ -2999,8 +3081,11 @@ achievements_triggers = {
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		alt2 = // Alt 2 => Failsafe
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&			
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			on_Chapter_finish(CHAPTER_Chapter7, enum_releaseRegion)
 		return alt1 || alt2}),
@@ -3239,8 +3324,11 @@ achievements_triggers = {
 			is_Dana_Saved_FromPast(enum_releaseRegion) && is_MargaretteTold_NoAncestor(enum_releaseRegion) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		alts[7+8] = // Alt 7+8 => Failsafe; triggers on chapter change
-			is_ReleaseRegion(enum_releaseRegion) &&
-			is_InGame(enum_releaseRegion) &&
+			is_ReleaseRegion(enum_releaseRegion) &&			
+			repeated(500, // <-- delay necessary, on_chapter_finish() triggers when loading a savefile from chapter start whilst the previously played chapter was the previous chapter.	(eg. load chapter-2 then load chapter-3-start => would unlock this achievement)
+				never(!is_InGame(enum_releaseRegion)) &&
+				is_InGame(enum_releaseRegion)
+			) && 
 			!is_ExtraMenu_active(enum_releaseRegion) &&
 			(
 				on_Chapter_finish(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) ||
@@ -5254,15 +5342,20 @@ achievements_triggers = {
 		//	- The top/first pauses are evaluated first; Pauses evaluate from top to bottom (1,2,3...)
 		//	- In below example: if the achievement logic gets past unless(!is_ReleaseRegion()) and is paused on the next unless() => then you can say pauseIf(!is_ReleaseRegion() && !is_Area())
 
-		// DEV_NOTE: MeasureIf + PauseIf with Measured
+		// DEV_NOTE: Measured with: MeasuredIf or PauseIf 
 		// ----------------------------------
-		//	- Measure if => when measureIf is true => then the measure count will be saved AND 0 will be displayed AND measure will stop counting, until measureIf becomes false => then saved hit count will replace 0 and measure can continue counting
-		//	- Pause if => when pauseIf is true => then the measure count will stop counting, but the original count will be displayed (wont reset to 0). Take care, pause will also stop 'reset' flags to function
+		//	MeasuredIf  => is purely to control the visual feedback (UI) through the RAoverlay (measured hit count will always evaluate/continue counting, regardless of MeasuredIf-state) 
+		//		- MeasuredIf is false => 0 will be displayed in RAoverlay, but the measured hit count will still evaluate/will continue counting behind the scenes, even when MeasuredIf-false) + the measured popup will not been shown
+		//		- MeasuredIf is true => the current measured hit count will be shown (the one that kept evaluating/counting behind the scenes) + the popup is able to be displayed whenever the measured hit count changes (the popup will also be briefly displayed once MeasuredIf becomes true, even when the measured hit count didn't change)
+		//
+		//	PauseIf  => is purely to stop evaluation, the current measured progress is still visible in RAoverlay
+		//		- PauseIf is true => the measured hit count will be put on hold (hit count cannot change) + the hit count will still be displayed (won't display 0 in RAoverlay). Take care, pause will also stop 'reset' flags in same group + Pauses are evaluated from top to bottom
+		//		- PauseIf is false => continue evaluating other logic (measured hit count will continue evaluating)
 
 		return
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless( // <-- this 'pause if' needs to be after/lower than is_ReleaseRegion()
-				!is_Area(AREA_80s_AntiquesEule, enum_releaseRegion) &&	// This is not placed inside 'measured if', because otherwise it won't show the count outside this area 
+				!is_Area(AREA_80s_AntiquesEule, enum_releaseRegion) &&	// This is not placed inside 'measured if', because otherwise it won't show the count outside this area and it may count outside this area as well
 				!is_Area(AREA_Present_AntiquesEule, enum_releaseRegion)
 			) &&
 			never(
