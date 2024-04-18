@@ -5900,8 +5900,6 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// TODO update rich presence on RAweb with is_releaseregion() check
-
 // =====================
 // • RichPresence TEXT •
 // =====================
