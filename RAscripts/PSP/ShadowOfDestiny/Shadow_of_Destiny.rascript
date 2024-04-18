@@ -303,18 +303,6 @@ function is_PlayerPosition_Yaxis_Near(float_value, enum_releaseRegion) {
 		float_value + PLAYERPOSITION_NEAR_THRESHOLD >= let_memAccessor_playerYpos &&	
 		let_memAccessor_playerYpos >= float_value - PLAYERPOSITION_NEAR_THRESHOLD}
 
-// function is_PlayerPosition_Xaxis_NotNear(float_value, enum_releaseRegion) {
-// 	let_memAccessor_playerXpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
-// 	return
-// 		let_memAccessor_playerXpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
-// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerXpos}
-
-// function is_PlayerPosition_Yaxis_NotNear(float_value, enum_releaseRegion) {
-// 	let_memAccessor_playerYpos = float(memory_getAddress(DATATYPE_Float, "PlayerPosition_xAxis", enum_releaseRegion))
-// 	return
-// 		let_memAccessor_playerYpos <= float_value - PLAYERPOSITION_NEAR_THRESHOLD ||
-// 		float_value + PLAYERPOSITION_NEAR_THRESHOLD <= let_memAccessor_playerYpos}
-
 // -------JoggingMan1980---------
 function current_JoggingMan_Xpos(enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "LoadedNPCModel_JoggingMan1980", enum_releaseRegion))
@@ -5002,7 +4990,7 @@ achievements_triggers = {
 		return 
 			once(
 				let_sumOf_deltaItemCount > (let_biggestPossibleInventoryCount/4)*3 	&& // <-- 3 lines: save protection  => loading a savefile which already has 20 items must not unlock achievement
-				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame
+				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame, although this shouldn't be possible
 				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount
 			) &&
 			measured(
@@ -5885,10 +5873,9 @@ function achievements_initialize() {
 	function achievements_getType(string_achievementCategory) {
 		let_type = achievements_typeByCategory[string_achievementCategory]
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
-		return let_type}
+		return let_type}	
 	
-	// This loop generates the achievements
-	for let_categoryName in achievements_coreData {
+	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
 			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
 			achievement(
@@ -5912,6 +5899,8 @@ function achievements_initialize() {
 //   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
+
+// TODO update rich presence on RAweb with is_releaseregion() check
 
 // =====================
 // • RichPresence TEXT •
@@ -5973,6 +5962,7 @@ richPresence_LookupTablesText = {
 	"rpp_TimePeriod_LookupFallback":					{"en": ""}}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
+
 function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
 	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
 	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
@@ -6072,6 +6062,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 function rp_isPaused(enum_releaseRegion) {
 	function condition(enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) && 
 		is_InGamePauseMenu_active(enum_releaseRegion)
 	rich_presence_conditional_display(
@@ -6086,6 +6077,7 @@ function rp_isPaused(enum_releaseRegion) {
 
 function rp_InGameEXChapterOnly(enum_releaseRegion) {
 	function condition(enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) && 
 		// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
 		is_PrologueExMode_active(enum_releaseRegion) && 
@@ -6106,6 +6098,7 @@ function rp_InGameEXChapterOnly(enum_releaseRegion) {
 
 function rp_InGameChapterOnly(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>  
+		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) &&
 		// !is_InGamePauseMenu_active(enum_releaseRegion) &&	// <-- commented as long as rp_isPaused is disabled
 		!is_PrologueExMode_active(enum_releaseRegion) && 
@@ -6163,7 +6156,6 @@ function rp_AtTitleScreen(enum_releaseRegion) {
 		richPresence_getText("rp_AtTitleScreen"),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
 	)}
-
 
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
@@ -6243,7 +6235,7 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: () => rpp_Chapter(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_Chapter(RELEASE_REGION_JPN)},
 		"LookupFallback": richPresence_getLookupTableText("rpp_Chapter", "LookupFallback")},
-	"rpp_TimePeriod": {	
+	"rpp_TimePeriod": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_TimePeriod(RELEASE_REGION_USA), 
@@ -6267,13 +6259,13 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: () => rpp_PresentTimeMinutes(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeMinutes(RELEASE_REGION_JPN)},
 		"LookupFallback": "0"}, // This "0" + "0" from rpp_PresentTimeMinutes => will show "00"
-	"rpp_PresentTimeMinutes": {	
+	"rpp_PresentTimeMinutes": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_PresentTimeMinutes(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeMinutes(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},	
-	"rpp_PresentTimeHourMinutes": {	
+	"rpp_PresentTimeHourMinutes": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_PresentTimeHourMinutes(RELEASE_REGION_USA), 
@@ -6285,13 +6277,13 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: () => rpp_PresentTimeHours(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeHours(RELEASE_REGION_JPN)},
 		"LookupFallback": "0"},
-	"rpp_PresentTimeHours": {	
+	"rpp_PresentTimeHours": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_PresentTimeHours(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeHours(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},
-	"rpp_PresentTimeYears": {	
+	"rpp_PresentTimeYears": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_PresentTimeYears(RELEASE_REGION_USA), 
@@ -6979,7 +6971,6 @@ function leaderboards_initialize() {
 			format = let_leaderboardData["leaderboardFormat"], 
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
-
 
 // ====================================================================== \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
