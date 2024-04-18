@@ -171,7 +171,7 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // ==================
 // • Memory UTILITY •
 // ==================
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement multi-region support
+function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
@@ -532,6 +532,8 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
+// TODO implement Rich Presence
+
 // =====================
 // • RichPresence TEXT •
 // =====================
@@ -542,7 +544,7 @@ richPresence_text = {
 	"rp_TemplateB":										{"en": "xxxxxxxx"},
 	"rp_TemplateA":										{"en": "Current time {0}{1}:{2}{3}"},
 
-	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default
+	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default + rp_DefaultPlus
 
 richPresence_LookupTablesText = {
 	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
@@ -798,6 +800,8 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\                                                                                                 
 //																										 \\
 // ***************************************************************************************************** \\
+
+// TODO implement leaderboards
 
 // ==========================
 // • Leaderboards CORE DATA •

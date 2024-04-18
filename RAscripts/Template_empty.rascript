@@ -118,7 +118,7 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // ==================
 // • Memory UTILITY •
 // ==================
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement multi-region support
+function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
@@ -209,7 +209,7 @@ achievements_coreData = {
 
 	}}
 // -------------------------------------
-achievements_typeByCategory = {
+achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -314,13 +314,15 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
+// TODO implement Rich Presence
+
 // =====================
 // • RichPresence TEXT •
 // =====================
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	}
+	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
@@ -394,6 +396,13 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+	rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_DefaultPlus")
+	)}
 function rp_Default() {
 	rich_presence_display(	
 		richPresence_getText("rp_Default")
@@ -402,12 +411,7 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		// rp_isPaused(enum_releaseRegion) // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on => re-check other richPresence conditions, some other conditions need changing
-		rp_InGameEXChapterOnly(enum_releaseRegion) // VERIFIED
-		rp_InGameChapterOnly(enum_releaseRegion) // VERIFIED
-		rp_InGameChapterWithTimePeriod(enum_releaseRegion) // VERIFIED
-		rp_AtTitleScreen(enum_releaseRegion) // VERIFIED
-		rp_DefaultPlus(enum_releaseRegion) // VERIFIED
+
 	}} 
 
 // ===========================
@@ -512,6 +516,8 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
+
+// TODO implement leaderboards
 
 // ==========================
 // • Leaderboards CORE DATA •
