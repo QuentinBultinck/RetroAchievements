@@ -53,8 +53,6 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO achievement for running around lebensbaum with jogging man?
-// TODO update guides online + publish changes
 // TODO if measured popups show at weird moments when it's not supposed to => try using measureIf or PauseIf the hide the popup => recheck where pause if vs measured if needed
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
@@ -5923,9 +5921,9 @@ richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 
 	"rp_isPaused":										{"en": "Paused ⏸️ time  | The Fated 🕑 {0} | Current 📆 {1} April {2} 🕑 {3} | Completion: {4}%"},
-	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 📆 {1} April {2} 🕑 {3} | Completion: {4}%"},
-	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 📆 {2} April {3} 🕑 {4} | Completion: {5}%"},
-	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 📆 {3} April {4} 🕑 {5} | Completion: {6}%"},
+	"rp_InGameEXChapterOnly":							{"en": "Ending the cycle | The Fated 🕑 {0} | Current 🕑 {1}:{2} | Completion: {3}%"},
+	"rp_InGameChapterOnly":								{"en": "{0} | The Fated 🕑 {1} | Current 🕑 {2}{3}:{4}{5} | Completion: {6}%"},
+	"rp_InGameChapterWithTimePeriod": 					{"en": "{0} {1} | The Fated 🕑 {2} | Current 🕑 {3}{4}:{5}{6} | Completion: {7}%"},
 	"rp_AtTitleScreen":									{"en": "Title Screen | Completion {0}%"},
 
 	"rp_DefaultPlus":									{"en": "Wandering Lebensbaum | Completion {0}%"},	
@@ -5934,15 +5932,26 @@ richPresence_LookupTablesText = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
 
-	"rpp_FatedHour_Prologue": 							{"en": "14h30"},
-	"rpp_FatedHour_Chapter1": 							{"en": "15h00"},
-	"rpp_FatedHour_Chapter2": 							{"en": "15h30"},
-	"rpp_FatedHour_Chapter3": 							{"en": "17h50"},
-	"rpp_FatedHour_Chapter4": 							{"en": "20h30"},
-	"rpp_FatedHour_Chapter5": 							{"en": "22h30"},
-	"rpp_FatedHour_Chapter6": 							{"en": "23h55"},
-	"rpp_FatedHour_Chapter7": 							{"en": "01h30"},
-	"rpp_FatedHour_Chapter8": 							{"en": "04h30"},
+	"rpp_FatedHourBis_Prologue": 						{"en": "14h30"},
+	"rpp_FatedHourBis_Chapter1": 						{"en": "15h00"},
+	"rpp_FatedHourBis_Chapter2": 						{"en": "15h30"},
+	"rpp_FatedHourBis_Chapter3": 						{"en": "17h50"},
+	"rpp_FatedHourBis_Chapter4": 						{"en": "20h30"},
+	"rpp_FatedHourBis_Chapter5": 						{"en": "22h30"},
+	"rpp_FatedHourBis_Chapter6": 						{"en": "23h55"},
+	"rpp_FatedHourBis_Chapter7": 						{"en": "01h30"},
+	"rpp_FatedHourBis_Chapter8": 						{"en": "04h30"},
+	"rpp_FatedHourBis_LookupFallback":					{"en": "a mystery"},
+
+	"rpp_FatedHour_Prologue": 							{"en": "14:30"},
+	"rpp_FatedHour_Chapter1": 							{"en": "15:00"},
+	"rpp_FatedHour_Chapter2": 							{"en": "15:30"},
+	"rpp_FatedHour_Chapter3": 							{"en": "17:50"},
+	"rpp_FatedHour_Chapter4": 							{"en": "20:30"},
+	"rpp_FatedHour_Chapter5": 							{"en": "22:30"},
+	"rpp_FatedHour_Chapter6": 							{"en": "23:55"},
+	"rpp_FatedHour_Chapter7": 							{"en": "01:30"},
+	"rpp_FatedHour_Chapter8": 							{"en": "04:30"},
 	"rpp_FatedHour_LookupFallback":						{"en": "a mystery"},
 
 	"rpp_Chapter_Prologue":								{"en": "Defying destiny"},
@@ -5967,7 +5976,7 @@ function richPresence_getText(string_textKey) =>
 function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
 	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
 	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
-// -------------------------------------
+// -----------------LookupTables--------------------
 richPresence_lookupTables = {
 	"rpp_FatedHour": { // Each chapter has a fated hour
 		get_ChapterID(CHAPTER_Prologue): "Prologue", 
@@ -6003,6 +6012,60 @@ richPresence_lookupTables = {
 		get_ChapterID(CHAPTER_Epilogue_Ancestress): "Epilogue"}}
 function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
+// ------------------CustomZeroPadding-------------------
+function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
+	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
+		// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+		//	"rpp_DateTime_ZeroPadding": {
+		//		0: "0",
+		//		1: "0",
+		//		2: "0",
+		//		3: "0",
+		//		4: "0",
+		//		5: "0",
+		//		6: "0",
+		//		7: "0",
+		//		8: "0",
+		//		9: "0",
+		//		10: "",
+		//		11: "",
+		//		12: "",
+		//		13: "",
+		//		14: "",
+		//		15: "",
+		//		16: "",
+		//		17: "",
+		//		18: "",
+		//		19: "",
+		//		20: "",
+		//		21: "",
+		//		22: "",
+		//		23: "",
+		//		24: "",
+		//		""
+		//	},
+
+	let_string_zeros = ""
+	if (int_numberOfZerosToPad < 1) util_throwError("Number of zeros to pad must be bigger than 0")
+	for let_i in range(0, int_numberOfZerosToPad-1) let_string_zeros = let_string_zeros + "0"
+
+	let_dict_lookupTable = {}
+	for let_i in range(0, int_maxLookupValueKey) {
+		if (let_i < 10) let_dict_lookupTable[let_i] = let_string_zeros
+		else if (let_i < 100) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 1) // <-- substring() will return let_string_zeros minus 1 "0" 	=> eg. "000" -> "00"
+		else if (let_i < 1000) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 2)
+		else if (let_i < 10000) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 3)
+		else if (let_i < 100000) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 4)
+		else if (let_i < 1000000) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 5)
+		else if (let_i < 10000000) let_dict_lookupTable[let_i] = substring(let_string_zeros, 0, length(let_string_zeros) - 6)
+		else util_throwError("Support for higher values is not implemented")
+	}
+
+	richPresence_lookupTables[string_lookupTableName] = let_dict_lookupTable}
+
+function richPresence_initializeZeroPaddingLookupTables() { // Function is called in richPresence_initialize()
+	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeMinutes_ZeroPadding", 1, 59)
+	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeHours_ZeroPadding", 1, 23)}
 
 // =========================
 // • RichPresence DISPLAYS •
@@ -6014,10 +6077,10 @@ function rp_isPaused(enum_releaseRegion) {
 	rich_presence_conditional_display(
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_isPaused"),
-		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_FatedHourBis", enum_releaseRegion), // eg. 4h30 instead of 04:30
 		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion), // eg. 4h30
 		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
 	)}
 
@@ -6033,10 +6096,11 @@ function rp_InGameEXChapterOnly(enum_releaseRegion) {
 	rich_presence_conditional_display(
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_InGameEXChapterOnly"),
-		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion), // eg. 04:30
+		richPresence_callParameterFunction("rpp_PresentTimeHours_ZeroPadding", enum_releaseRegion), // Adds "0" when rpp_PresentTimeHours is < 10
+		richPresence_callParameterFunction("rpp_PresentTimeHours", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
 	)}
 
@@ -6055,9 +6119,10 @@ function rp_InGameChapterOnly(enum_releaseRegion) {
 		richPresence_getText("rp_InGameChapterOnly"),
 		richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHours_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHours", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
 	)}	
 
@@ -6079,13 +6144,14 @@ function rp_InGameChapterWithTimePeriod(enum_releaseRegion) {
 		richPresence_callParameterFunction("rpp_Chapter", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_TimePeriod", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_FatedHour", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeDays", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeYears", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_PresentTimeHourMinutes", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHours_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeHours", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_PresentTimeMinutes", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_TotalCompletionRate", enum_releaseRegion)
 	)}
 
-function rp_AtTitleScreen(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+function rp_AtTitleScreen(enum_releaseRegion) {
 	function condition(enum_releaseRegion) { return
 		is_ReleaseRegion(enum_releaseRegion) &&
 		(
@@ -6099,7 +6165,7 @@ function rp_AtTitleScreen(enum_releaseRegion) { // rp_DefaultPlus => is rp_Defau
 	)}
 
 
-function rp_DefaultPlus(enum_releaseRegion) {
+function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 	rich_presence_conditional_display( 
@@ -6116,7 +6182,7 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		// rp_isPaused(enum_releaseRegion) // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on: re-check other richPresence conditions, some other conditions need changing
+		// rp_isPaused(enum_releaseRegion) // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on => re-check other richPresence conditions, some other conditions need changing
 		rp_InGameEXChapterOnly(enum_releaseRegion) // VERIFIED
 		rp_InGameChapterOnly(enum_releaseRegion) // VERIFIED
 		rp_InGameChapterWithTimePeriod(enum_releaseRegion) // VERIFIED
@@ -6195,6 +6261,12 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: () => rpp_PresentTimeSeconds(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeSeconds(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},
+	"rpp_PresentTimeMinutes_ZeroPadding": { // Use in combination with a DateTime. eg. rpp_PresentTimeMinutes => to prepend an extra 0 when the minutes would only evaluate to 1 number 	=> eg. "7" --> "07"
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: () => rpp_PresentTimeMinutes(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: () => rpp_PresentTimeMinutes(RELEASE_REGION_JPN)},
+		"LookupFallback": "0"}, // This "0" + "0" from rpp_PresentTimeMinutes => will show "00"
 	"rpp_PresentTimeMinutes": {	
 		"RPtype": richPresence_MACRO,
 		"Expression": {
@@ -6206,7 +6278,13 @@ richPresence_parameterData = {
 		"Expression": {
 			RELEASE_REGION_USA: () => rpp_PresentTimeHourMinutes(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeHourMinutes(RELEASE_REGION_JPN)},
-		"MacroFormat": "Minutes"},
+		"MacroFormat": "Minutes"},	// --> would result in: 4h21, 11h30
+	"rpp_PresentTimeHours_ZeroPadding": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: () => rpp_PresentTimeHours(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: () => rpp_PresentTimeHours(RELEASE_REGION_JPN)},
+		"LookupFallback": "0"},
 	"rpp_PresentTimeHours": {	
 		"RPtype": richPresence_MACRO,
 		"Expression": {
@@ -6225,6 +6303,12 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: () => rpp_PresentTimeDays(RELEASE_REGION_USA), 
 			RELEASE_REGION_JPN: () => rpp_PresentTimeDays(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},
+	"rpp_FatedHourBis": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: () => rpp_FatedHour(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: () => rpp_FatedHour(RELEASE_REGION_JPN)},
+		"LookupFallback": richPresence_getLookupTableText("rpp_FatedHourBis", "LookupFallback")},
 	"rpp_FatedHour": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
@@ -6276,6 +6360,7 @@ function richPresence_populateLookupTables() {	// Changes the richPresence_looku
 
 function richPresence_initialize() {
 	richPresence_populateLookupTables()
+	richPresence_initializeZeroPaddingLookupTables() // <-- should be called after richPresence_populateLookupTables() as ZeroPaddingLookupTables don't need to be populated AND before richPresence_initializeDisplays()
 	richPresence_initializeDisplays()}
 
 // ***************************************************************************************************** \\
