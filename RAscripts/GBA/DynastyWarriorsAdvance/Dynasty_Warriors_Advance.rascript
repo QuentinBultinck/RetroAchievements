@@ -36,9 +36,9 @@
 //	General Info regarding GBA system
 // ---------------------------------------------
 //	- Pointer usually start with 02, 03 or 08
-// 	- 02 pointers need to be offset by 0x8000 => refers to System RAM, which start at 0x8000 in RALibretro)
-//	- 03 pointers => refers to cartridge RAM, 0x0-0x7fff in RALibretro
-//	- 08 pointer => refers to ASM instruction stack?
+//	- 02 pointers need to be offset by 0x8000 => points to System RAM, which start at 0x8000 in RALibretro
+//	- 03 pointers => points to cartridge RAM, 0x0-0x7fff in RALibretro
+//	- 08 pointer => points to Game Pak (the game's ROM)??
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
