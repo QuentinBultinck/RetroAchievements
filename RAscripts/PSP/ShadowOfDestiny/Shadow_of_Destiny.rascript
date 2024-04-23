@@ -13,7 +13,6 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO implement agile orb hunters for all orbs, with timer only ticking outside loading screens
 // TODO check title cases => small words like 'the, a' should not be capitalized
 
 // Info regarding usage/reading this RAScript
@@ -6935,10 +6934,10 @@ leaderboards_titles = {
 	"lb_TotalClearTime":					{"en": "Total Clear Time"}}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
-	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Collect all five energy orbs scattered throughout Lebenbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout Lebenbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all six energy orbs scattered throughout Lebenbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect six energy orbs scattered throughout Lebenbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by conquering Chapter 8 in record time"},
 	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by conquering Chapter 7 in record time"},
 	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by conquering Chapter 6 in record time"},
