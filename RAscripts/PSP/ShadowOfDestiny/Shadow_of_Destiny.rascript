@@ -13,6 +13,9 @@
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
+// TODO implement agile orb hunters for all orbs, with timer only ticking outside loading screens
+// TODO check title cases => small words like 'the, a' should not be capitalized
+
 // Info regarding usage/reading this RAScript
 // ---------------------------------------------
 //	- Set indent mode => Tabs			
@@ -171,6 +174,7 @@ memory_addresses = {
 		"AlwaysNull_Or_ValueNeverChanges": {RELEASE_REGION_USA: 0x1fffff0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x1fffff0},
 	},
 	DATATYPE_8Bit: {
+		"IsPlayerCharacterMoveable": {RELEASE_REGION_USA: 0x00a9eb2e, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0x00aa667e},
 		"YoungCoupleState_Chapter2": {RELEASE_REGION_USA: 0xa9ef89, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6ad9},
 		"YoungCoupleState_Chapter3": {RELEASE_REGION_USA: 0xa9ef8a, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6ada},
 		"YoungCoupleState_Chapter4": {RELEASE_REGION_USA: 0xa9ef8b, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6adb},
@@ -2046,6 +2050,12 @@ function current_TotalAchievementRate(enum_releaseRegion) =>
 function on_FrameCount_change(enum_releaseRegion) {
 	let_memAccessor_FrameCounter = dword(memory_getAddress(DATATYPE_32Bit, "FrameCounter", enum_releaseRegion))
 	return let_memAccessor_FrameCounter != prev(let_memAccessor_FrameCounter)}
+
+function is_PlayerCharacter_moveable(enum_releaseRegion) {
+	let_memAccessor_flag = byte(memory_getAddress(DATATYPE_8Bit, "IsPlayerCharacterMoveable", enum_releaseRegion))
+	return let_memAccessor_flag == 0x8
+}
+
 
 // =========================
 // • Memory INITIALIZATION •
@@ -6513,7 +6523,7 @@ function leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt() =>
 	always_true()
 
 // ---------------EnergyOrbSpeedTrial-------------------
-function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, enum_releaseRegion) {
+function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, int_amountToCollect, enum_releaseRegion) {
 	let_sumOf_deltaAmountOfEnergyOrbsCollected = 
 		sum_of(array_energyOrblocationKeys, (string_eneryOrbLocationKey) => prev_EnergyOrb_CollectionState(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion))
 	let_sumOf_currentAmountOfEnergyOrbsCollected = 
@@ -6522,9 +6532,10 @@ function leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(enum_timePeriod,
 	return 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		is_InGame(enum_releaseRegion) &&
-		current_EnergyUnits(enum_releaseRegion) <= 10-length(array_energyOrblocationKeys)+1  && // <-- only start leaderboard if player has enough space to pickup the remaining orbs
-		let_sumOf_deltaAmountOfEnergyOrbsCollected == 1 && 
-		let_sumOf_currentAmountOfEnergyOrbsCollected == 2	// <-- start leaderboard once the 2nd orb is collected => reduce RAoverlay clutter
+		current_EnergyUnits(enum_releaseRegion) <= (10 - int_amountToCollect + 1) && // <-- only start leaderboard if player has enough space to pickup the remaining orbs; add +1 because we start the leaderboard on the 2 second orb pickup, so 1 has already been picked up
+		
+		let_sumOf_deltaAmountOfEnergyOrbsCollected == 1 && // Code Block <-- start leaderboard once the 2nd orb is collected => reduce RAoverlay clutter
+		let_sumOf_currentAmountOfEnergyOrbsCollected == 2
 	}
 
 function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseRegion) =>
@@ -6532,15 +6543,14 @@ function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseReg
 	(
 		!is_InGame(enum_releaseRegion) ||
 		on_Chapter_change(enum_releaseRegion) ||
-		on_EnergyUnits_decrement(enum_releaseRegion) ||
-		on_Area_change(enum_releaseRegion)
+		on_EnergyUnits_decrement(enum_releaseRegion)
 	)
 
-function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, enum_releaseRegion) => 
+function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, int_amountToCollect, enum_releaseRegion) => 
 	// Core alt group
 	unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 	unless(none_of(array_collectionAreas, (enum_area) => is_Area(enum_area, enum_releaseRegion))) && // <-- pause if tally count when not in the city area
-	tally_of(array_energyOrblocationKeys, 5, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all 5 collections
+	tally_of(array_energyOrblocationKeys, int_amountToCollect, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all 5 collections
 		on_EnergyOrb_collect(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion)
 	) 
 	|| // Reset alt group => so tally hit count can reset when second unless is active in core group // <-- reset is necessary because the cancelTrigger does not reset below tally count
@@ -6555,6 +6565,13 @@ function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod
 
 function leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegion) => 
 	unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+	unless(
+		is_InGame(enum_releaseRegion) && // <-- is_InGame() is neccesary so reset below can still hit
+		(
+			!is_PlayerCharacter_moveable(enum_releaseRegion) || 
+			is_InGamePauseMenu_active(enum_releaseRegion)
+		)
+	) &&
 	never(	// <-- reset is necessary because the cancelTrigger does not reset below measure count
 		!is_InGame(enum_releaseRegion) ||
 		on_Chapter_change(enum_releaseRegion) ||
@@ -6568,16 +6585,20 @@ function leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegi
 leaderboards_startTriggers = {
 	"lb_EnergyOrbSpeedTrial2000s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_array_energyOrblocationKeys = ["OutsideFortuneTeller", "AlleyWay", "SouthGate", "UnderArchRuckagrastr", "CarPark"]
-		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+		let_int_amountToCollect = 5
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1980s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_array_energyOrblocationKeys = ["NorthGateNearBar", "WellCafeSonne", "Haupstr", "StairsRudolfstr", "AlleyWayBakery"]
-		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+		let_int_amountToCollect = 5
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1900s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate"]
-		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate", "InsideBrumMansion"]
+		let_int_amountToCollect = 6
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1500s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance"]
-		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, enum_releaseRegion)}),
+		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance", "InsideChurch", "AlchemistBasement"]
+		let_int_amountToCollect = 6 // 7 locations, but only 6 available to pick up at one given time (depending on chapter)
+		return leaderboards_generate_StartTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter8, enum_releaseRegion)
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)		
@@ -6705,21 +6726,25 @@ leaderboards_cancelTriggers = {
 
 leaderboards_submitTriggers = {
 	"lb_EnergyOrbSpeedTrial2000s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["OutsideFortuneTeller", "AlleyWay", "SouthGate", "UnderArchRuckagrastr", "CarPark"]	
+		let_array_energyOrblocationKeys = ["OutsideFortuneTeller", "AlleyWay", "SouthGate", "UnderArchRuckagrastr", "CarPark"]
 		let_array_collectionAreas = [AREA_Present_City_Day, AREA_Present_City_NightAM, AREA_Present_City_NightPM]
-		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+		let_int_amountToCollect = 5
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Present, let_array_energyOrblocationKeys, let_array_collectionAreas, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1980s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["NorthGateNearBar", "WellCafeSonne", "Haupstr", "StairsRudolfstr", "AlleyWayBakery"]	
+		let_array_energyOrblocationKeys = ["NorthGateNearBar", "WellCafeSonne", "Haupstr", "StairsRudolfstr", "AlleyWayBakery"]
 		let_array_collectionAreas = [AREA_80s_City_Snow, AREA_70s_City_Night]
-		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+		let_int_amountToCollect = 5
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Late20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1900s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate"]	
-		let_array_collectionAreas = [AREA_1900s_City]
-		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+		let_array_energyOrblocationKeys = ["TreeNearBar", "StairsOppositeCafeSonne", "NearNewsPost", "ParkRudolfStr", "NorthEastgate", "InsideBrumMansion"]
+		let_array_collectionAreas = [AREA_1900s_City, AREA_1900s_BrumMansion]
+		let_int_amountToCollect = 6
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_Early20thCentury, let_array_energyOrblocationKeys, let_array_collectionAreas, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_EnergyOrbSpeedTrial1500s": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance"]	
-		let_array_collectionAreas = [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night]
-		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, let_array_collectionAreas, enum_releaseRegion)}),
+		let_array_energyOrblocationKeys = ["onBench", "EastWell", "AlleyWayCart", "EastNearHay", "ChurchEntrance", "InsideChurch", "AlchemistBasement"]
+		let_array_collectionAreas = [AREA_MiddleAges_City_Day, AREA_MiddleAges_City_Night, AREA_MiddleAges_AlchemistHouse_Exploded_Basement, AREA_MiddleAges_Church]
+		let_int_amountToCollect = 6
+		return leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(TIMEPERIOD_MiddleAges, let_array_energyOrblocationKeys, let_array_collectionAreas, let_int_amountToCollect, enum_releaseRegion)}),
 	"lb_ClearTimeChapter8": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_SubmitTrigger_ClearTimeChapter_alt()
 		// leaderboards_generate_SubmitTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)
