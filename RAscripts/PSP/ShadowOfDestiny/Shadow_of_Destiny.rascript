@@ -6544,19 +6544,24 @@ function leaderboards_generate_CancelTrigger_EnergyOrbSpeedTrial(enum_releaseReg
 	)
 
 function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod, array_energyOrblocationKeys, array_collectionAreas, int_amountToCollect, enum_releaseRegion) => 
+	// DEV_NOTE: Leaderboard triggers with hit counts REQUIRE ResetIf
+	// --------------------------
+	//	- When using hit counts (measures) in any of the leaderboardTriggers (start,cancel,submit,value) always consider adding ResetIf
+	//	- eg. When a cancelTrigger is triggered it won't reset the hit counts in the other leaderboardTriggers (same goes for submitTrigger) => thus implement the other leaderboardTriggers with ResetIf => so player can retry leaderboard gracefully
+
 	// Core alt group
 	unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 	unless(none_of(array_collectionAreas, (enum_area) => is_Area(enum_area, enum_releaseRegion))) && // <-- pause if tally count when not in the city area
 	tally_of(array_energyOrblocationKeys, int_amountToCollect, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all 5 collections
 		on_EnergyOrb_collect(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion)
 	) 
-	|| // Reset alt group => so tally hit count can reset when second unless is active in core group // <-- reset is necessary because the cancelTrigger does not reset below tally count
+	|| // Reset alt group => so tally hit count can reset when second unless is active in core group // <-- reset is necessary because the cancelTrigger does not reset below tally count + we also have to reset this even when submitting, so player can retry the leaderboard
 	never_toAlt( 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		(
 			!is_InGame(enum_releaseRegion) ||
 			on_Chapter_change(enum_releaseRegion) ||
-			on_EnergyUnits_decrement(enum_releaseRegion) 
+			on_EnergyUnits_decrement(enum_releaseRegion)
 		)
 	)	
 
@@ -6569,7 +6574,7 @@ function leaderboards_generate_ValueMeasure_EnergyOrbSpeedTrial(enum_releaseRegi
 			is_InGamePauseMenu_active(enum_releaseRegion)
 		)
 	) &&
-	never(	// <-- reset is necessary because the cancelTrigger does not reset below measure count
+	never(	// <-- reset is necessary because the cancelTrigger + SubmitTrigger does not reset below measure count
 		!is_InGame(enum_releaseRegion) ||
 		on_Chapter_change(enum_releaseRegion) ||
 		on_EnergyUnits_decrement(enum_releaseRegion) 
@@ -6807,6 +6812,7 @@ leaderboards_valueMeasures = {
 	// DEV_NOTE: Leaderboards - ValueTrigger/measure
 	// -----------------------------
 	//	- 'Value' can be seen as a special trigger. A trigger like submit, cancel and start. But must have a "measured" flag
+	//	- When using custom timers => the measured value in the ValueTrigger will only start evaluating/counting/processing from 0when the leaderboard starts.
 	//	- Use max_of() --> when there's multiple values to measure (refer to https://github.com/Jamiras/RATools/wiki/Leaderboard-Functions#leaderboardtitle-description-start-cancel-submit-value-formatvalue-lower_is_betterfalse-id0)
 	//	- Be wary of timers or values that reset to 0x0 when the bytes overflow => refer to score wrapping to fix https://docs.retroachievements.org/Leaderboards/#score-wrapping
 	
