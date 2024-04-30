@@ -4829,13 +4829,13 @@ achievements_triggers = {
 					is_Cutscene_SectionDataId(0x3a00, enum_releaseRegion))
 			])}
 		return 
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 			never(	
 				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) || 
 				repeated(300, !is_WearingPerformerOutfit(enum_releaseRegion))	// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() changes to 0 for a few frames when loading from/into townhall/city 
 			) &&																// 			=> we don't want the measure count to reset in here 		
-			measured(measuredComparison(enum_releaseRegion)) &&			
+			measured(measuredComparison(enum_releaseRegion)) &&					// 			=> without repeated: loading from/into townhall will reset hit count
 			trigger_when( // Can only trigger after the cutscene when giving egg to past Eike
 				on_Cutscene_end(enum_releaseRegion) || 
 				on_CutsceneSection_end(enum_releaseRegion)
