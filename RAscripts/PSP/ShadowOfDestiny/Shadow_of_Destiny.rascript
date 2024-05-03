@@ -6009,35 +6009,34 @@ function richPresence_getLookupTable(string_lookupParameterKey) =>
 	richPresence_lookupTables[string_lookupParameterKey]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
-	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
+	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 2, 24) => adds below table to richPresence_lookupTables
 		// '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 		//	"rpp_DateTime_ZeroPadding": {
-		//		0: "0",
-		//		1: "0",
-		//		2: "0",
-		//		3: "0",
-		//		4: "0",
-		//		5: "0",
-		//		6: "0",
-		//		7: "0",
-		//		8: "0",
-		//		9: "0",
-		//		10: "",
-		//		11: "",
-		//		12: "",
-		//		13: "",
-		//		14: "",
-		//		15: "",
-		//		16: "",
-		//		17: "",
-		//		18: "",
-		//		19: "",
-		//		20: "",
-		//		21: "",
-		//		22: "",
-		//		23: "",
-		//		24: "",
-		//		""
+		//		0: "00",
+		//		1: "00",
+		//		2: "00",
+		//		3: "00",
+		//		4: "00",
+		//		5: "00",
+		//		6: "00",
+		//		7: "00",
+		//		8: "00",
+		//		9: "00",
+		//		10: "0",
+		//		11: "0",
+		//		12: "0",
+		//		13: "0",
+		//		14: "0",
+		//		15: "0",
+		//		16: "0",
+		//		17: "0",
+		//		18: "0",
+		//		19: "0",
+		//		20: "0",
+		//		21: "0",
+		//		22: "0",
+		//		23: "0",
+		//		24: "0"
 		//	},
 
 	let_string_zeros = ""
