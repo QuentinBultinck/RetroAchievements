@@ -4247,7 +4247,10 @@ achievements_triggers = {
 		return 
 			// Core alt group
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			unless(
+				!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
+			) &&
 			once( // <-- Hit once, so we can use trigger popup
 				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 && // <-- 2 lines save protection => when loading a savefile that has already talked to these NPCs must not unlock achievement
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount		// Inside once so we can use trigger_when()
@@ -4255,13 +4258,10 @@ achievements_triggers = {
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion)) 
-			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			|| // Reset alt group => so we can reset when 2nd pause is true (in above group)
 			never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) &&
-				(
-					!is_InGame(enum_releaseRegion) ||
-					!is_Chapter(CHAPTER_Chapter2, enum_releaseRegion)
-				)
+				!is_InGame(enum_releaseRegion)
 			)}),
 	"a_LostYoungCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already/already progresses the side quest
@@ -4341,7 +4341,10 @@ achievements_triggers = {
 		
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			unless(
+				!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
+			) &&
 			once( // <-- Hit once, so we can use trigger popup
 				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 && // <-- 2 lines save protection => when loading a savefile that has already talked to these NPCs must not unlock achievement
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount		// Inside once so we can use trigger_when()
@@ -4349,13 +4352,10 @@ achievements_triggers = {
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
-			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			|| // Reset alt group => so we can reset when 2nd pause is true (in above group)
 			never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) &&
-				(
-					!is_InGame(enum_releaseRegion) ||
-					!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
-				)
+				!is_InGame(enum_releaseRegion)
 			)}),
 	"a_LostYoungCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// OG code => player has to restart chapter when loading a save in which player has talked to one NPC already/already progresses the side quest
@@ -4435,7 +4435,10 @@ achievements_triggers = {
 
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion)) &&
+			unless(
+				!is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+			) &&
 			once( // <-- Hit once, so we can use trigger popup
 				let_sumOf_prevNPCtalkCounts == let_totalTalkCount-1 &&
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
@@ -4443,13 +4446,10 @@ achievements_triggers = {
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
 			is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
-			|| // Reset alt group => otherwise hit once, might not reset when going to title screen from an area not mentioned in unless(!is_Area()) below
+			|| // Reset alt group => so we can reset when 2nd pause is true (in above group)
 			never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) &&
-				(
-					!is_InGame(enum_releaseRegion) ||
-					!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
-				)
+				!is_InGame(enum_releaseRegion)
 			)}),
 	"a_LostYoungCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		return 
