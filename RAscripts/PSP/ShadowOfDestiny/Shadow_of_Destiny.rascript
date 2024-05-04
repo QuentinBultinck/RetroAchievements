@@ -2412,15 +2412,22 @@ function achievements_generate_FullTrigger_ChapterMaxAchievementRate(enum_chapte
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 	
 
 	return
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		unless( // <-- PauseIf instead of MeasuredIf => otherwise MeasuredIf keeps toggling true/false when loading new area's, showing measured popup when there's no bitflag changes, thus bad UX
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion) ||
+			!is_Chapter(enum_chapter, enum_releaseRegion)
+		) &&
 		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/4)*3 	&& // <-- 2 lines: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
 		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
-		measured(let_comparison_currentInventoryCount, 
-			when = 
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) && 
-				!is_ExtraMenu_active(enum_releaseRegion) &&
-				is_Chapter(enum_chapter, enum_releaseRegion), 
-			format = "percent")
+		// measured(let_comparison_currentInventoryCount, 
+		// 	when = 
+		// 		is_ReleaseRegion(enum_releaseRegion) &&
+		// 		is_InGame(enum_releaseRegion) && 
+		// 		!is_ExtraMenu_active(enum_releaseRegion) &&
+		// 		is_Chapter(enum_chapter, enum_releaseRegion), 
+		// 	format = "percent")
+		measured(let_comparison_currentInventoryCount, format = "percent")
 	}
 
 function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseRegion) {
@@ -2435,14 +2442,14 @@ function achievements_generate_FullTrigger_TotalMaxAchievementRate(enum_releaseR
 	let_comparison_deltaInventoryCount = let_sumOf_prevInventoryCount < let_int_bitFlagCount 
 
 	return 
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		unless( // <-- PauseIf instead of MeasuredIf => otherwise MeasuredIf keeps toggling true/false when loading new area's, showing measured popup when there's no bitflag changes, thus bad UX
+			!is_InGame(enum_releaseRegion) ||
+			is_ExtraMenu_active(enum_releaseRegion)
+		) &&
 		let_sumOf_prevInventoryCount > (let_int_bitFlagCount/10)*9 	&& // <-- 2 lines: save protection => loading a savefile which already has all bitflags set to 1, must not unlock the achievement
 		let_sumOf_prevInventoryCount < let_int_bitFlagCount 		&& 		// Two delta comparisons needed in case more than 1 bitflag turns on in one frame
-		measured(let_comparison_currentInventoryCount,
-			when = 
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_InGame(enum_releaseRegion) &&
-				!is_ExtraMenu_active(enum_releaseRegion),
-			format = "percent")
+		measured(let_comparison_currentInventoryCount, format = "percent")
 	}
 
 function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum_releaseRegion) {
@@ -2500,7 +2507,7 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
 		once(
 			let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // <-- 2 lines: save protection  => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
-			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time
+			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time/can only increment by 1
 		) &&
 		measured(create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion)) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))
@@ -4559,8 +4566,7 @@ achievements_triggers = {
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
-			never(				
-				!is_InGame(enum_releaseRegion) ||
+			unless(
 				!is_Chapter(CHAPTER_Prologue, enum_releaseRegion) &&
 				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
 			) &&
@@ -4569,7 +4575,12 @@ achievements_triggers = {
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			||
+			never_toAlt( // Alt reset => so logic is able to reset hit count when 2nd or 3rd pause is true (in above group)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				!is_InGame(enum_releaseRegion)
+			)}),
 	"a_EnigmaticCouple2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// We cannot use AddSource like a_EnigmaticCouple1 because meAddr_TalkCount for NPC_Present_CoatedWoman->Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar counts for chapters 3+4
 		// Thus alternative method is active below
@@ -4601,16 +4612,20 @@ achievements_triggers = {
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
+			unless(
+				!is_Area(AREA_Present_City_Day, enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion)
-			) &&	// 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
-			(
+			) &&
+			( // 2 Alt groups => measuredComparison_onMax(), achievement is still unlockable when reloading mid-measurement
 				measured(measuredComparison_onIncrease(enum_releaseRegion)) || 
 				measured(measuredComparison_atMax(enum_releaseRegion))
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			||
+			never_toAlt( // Alt reset => so logic is able to reset hit count when 2nd or 3rd pause is true (in above group)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				!is_InGame(enum_releaseRegion)
+			)}),
 	"a_EnigmaticCouple3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// We cannot use AddSource like a_EnigmaticCouple1 because meAddr_TalkCount for NPC_Present_CoatedWoman->Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar counts for chapters 3+4
 		// Thus alternative method is active below
@@ -4642,23 +4657,25 @@ achievements_triggers = {
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_Present_City_Day, enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
+			unless(
+				!is_Area(AREA_Present_City_Day, enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
-			) &&	// 2 Alt groups => measuredComparison_atMax(), achievement is still unlockable when reloading mid-measurement
-			(
+			) &&
+			( // 2 Alt groups => measuredComparison_atMax(), achievement is still unlockable when reloading mid-measurement
 				measured(measuredComparison_onIncrease(enum_releaseRegion)) || 
 				measured(measuredComparison_atMax(enum_releaseRegion))
 			) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			||
+			never_toAlt( // Alt reset => so logic is able to reset hit count when 2nd or 3rd pause is true (in above group)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				!is_InGame(enum_releaseRegion)
+			)}),
 	"a_EnigmaticCouple4": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// Too many variations => just count once for interacting with man and once with woman
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_Present_City_NightPM, enum_releaseRegion)) &&
-			never(	
-				!is_InGame(enum_releaseRegion) ||
+			unless(!is_Area(AREA_Present_City_NightPM, enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)
 			) &&
 			measured(tally(2, [
@@ -4671,7 +4688,12 @@ achievements_triggers = {
 					on_TalkingToNPC_bis(NPC_Present_CoatedMan, enum_releaseRegion) &&
 					is_InteractionChapterId(0x4b, enum_releaseRegion)),			
 			])) && 			
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			||
+			never_toAlt( // Alt reset => so logic is able to reset hit count when 2nd or 3rd pause is true (in above group)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				!is_InGame(enum_releaseRegion)
+			)}),
 	"a_EnigmaticCouple5": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// Commented code => allows loadings mid-measurement
 			//	function measuredComparison_onIncrease(enum_releaseRegion) { return
@@ -4727,9 +4749,8 @@ achievements_triggers = {
 		
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(!is_Area(AREA_Present_City_NightAM, enum_releaseRegion)) &&
-			never(				
-				!is_InGame(enum_releaseRegion) ||
+			unless(
+				!is_Area(AREA_Present_City_NightAM, enum_releaseRegion) ||
 				!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion)
 			) &&
 			once( // <-- Hit once, so we can use trigger popup
@@ -4737,7 +4758,12 @@ achievements_triggers = {
 				let_sumOf_currentNPCtalkCounts == let_totalTalkCount
 			) &&
 			measured(let_sumOf_currentNPCtalkCounts == let_totalTalkCount) &&
-			trigger_when(on_Cutscene_end(enum_releaseRegion))}),			
+			trigger_when(on_Cutscene_end(enum_releaseRegion))
+			||
+			never_toAlt( // Alt reset => so logic is able to reset hit count when 2nd or 3rd pause is true (in above group)
+				is_ReleaseRegion(enum_releaseRegion) &&
+				!is_InGame(enum_releaseRegion)
+			)}),			
 	"a_BecomeThePerformer": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
@@ -4832,12 +4858,15 @@ achievements_triggers = {
 			unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 			never(	
 				!is_InGame(enum_releaseRegion) ||
-				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) || 
-				repeated(300, !is_WearingPerformerOutfit(enum_releaseRegion))	// ---> Repeat is necessary, because bit flag for is_WearingPerformerOutfit() changes to 0 for a few frames when loading from/into townhall/city 
-			) &&																// 			=> we don't want the measure count to reset in here 		
-			measured(measuredComparison(enum_releaseRegion)) &&					// 			=> without repeated: loading from/into townhall will reset hit count
+				!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)
+			) &&
+			never(
+				repeated(150, 												// ---> Repeated is necessary, because bit flag for is_WearingPerformerOutfit() changes to 0 for a few frames when loading from/into townhall/city 
+					never(is_WearingPerformerOutfit(enum_releaseRegion)) && // 		=> we don't want the measure count to reset in this case 		
+					!is_WearingPerformerOutfit(enum_releaseRegion))			// 		=> without repeated: loading from/into townhall will reset measured hit count
+			) &&												
+			measured(measuredComparison(enum_releaseRegion)) &&					
 			trigger_when( // Can only trigger after the cutscene when giving egg to past Eike
-				on_Cutscene_end(enum_releaseRegion) || 
 				on_CutsceneSection_end(enum_releaseRegion)
 			)
 		}), 
@@ -4996,7 +5025,7 @@ achievements_triggers = {
 
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(
+			unless( // <-- PauseIf instead of MeasuredIf => otherwise MeasuredIf keeps toggling true/false when loading new area's, thus showing popup when there's no inventory count changes, thus bad UX
 				!is_InGame(enum_releaseRegion) ||
 				is_ExtraMenu_active(enum_releaseRegion)
 			) &&
@@ -5005,13 +5034,6 @@ achievements_triggers = {
 				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame, although this shouldn't be possible
 				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount
 			) &&
-			// measured(
-			// 	let_sumOf_currentItemCount == let_biggestPossibleInventoryCount,
-			// 	when = 	
-			// 		is_ReleaseRegion(enum_releaseRegion) &&
-			// 		is_InGame(enum_releaseRegion) &&
-			// 		!is_ExtraMenu_active(enum_releaseRegion)
-			// ) &&			
 			measured(let_sumOf_currentItemCount == let_biggestPossibleInventoryCount) &&	
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),		
