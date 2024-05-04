@@ -4995,18 +4995,24 @@ achievements_triggers = {
 			return bit0(let_memAddress)})
 
 		return 
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			unless(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion)
+			) &&
 			once(
 				let_sumOf_deltaItemCount > (let_biggestPossibleInventoryCount/4)*3 	&& // <-- 3 lines: save protection  => loading a savefile which already has 20 items must not unlock achievement
 				let_sumOf_deltaItemCount < let_biggestPossibleInventoryCount 		&&		// Two delta comparisons needed in case more than 1 item is acquired in one frame, although this shouldn't be possible
 				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount
 			) &&
-			measured(
-				let_sumOf_currentItemCount == let_biggestPossibleInventoryCount,
-				when = 	
-					is_ReleaseRegion(enum_releaseRegion) &&
-					is_InGame(enum_releaseRegion) &&
-					!is_ExtraMenu_active(enum_releaseRegion)
-			) &&	
+			// measured(
+			// 	let_sumOf_currentItemCount == let_biggestPossibleInventoryCount,
+			// 	when = 	
+			// 		is_ReleaseRegion(enum_releaseRegion) &&
+			// 		is_InGame(enum_releaseRegion) &&
+			// 		!is_ExtraMenu_active(enum_releaseRegion)
+			// ) &&			
+			measured(let_sumOf_currentItemCount == let_biggestPossibleInventoryCount) &&	
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),		
 	"a_DrunkenGuys": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
