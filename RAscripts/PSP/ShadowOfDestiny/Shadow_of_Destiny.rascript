@@ -2004,36 +2004,60 @@ function memUtil_allPercentageBitsetsToOneArray(enum_releaseRegion) {
 	return let_array_bitsets}
 
 function memUtil_bitsetArrayToMemoryAccessorArray(array_bitsets) { // Return an array [bit0(0x00), bit1(0x00), bitcount(0x01)] from dict with percentagebitflags
-	let_bitFlagMemoryAccessors = []	
+	function memUtil_calculateBitFlagCount(array_bits) {
+		let_int_bitFlagCount = 0
+		if (length(array_bits) == 1) 
+			let_int_bitFlagCount = 1
+		else if (array_bits[0] < array_bits[1]) 
+			let_int_bitFlagCount = array_bits[1] - array_bits[0] + 1
+		else 
+			let_int_bitFlagCount = array_bits[0] - array_bits[1] + 1		
+		return let_int_bitFlagCount
+	}
+	
+	let_array_bitFlagMemAccessors = []	
 	for bitset in array_bitsets {
-		let_memAddr_bitset = bitset["memAddr"]
-		let_array_BitsToCheck = bitset["bits"]
-		if (length(let_array_BitsToCheck) == 1) {	// If only one bitflag on this memAddr => add only one memory accessor
-			let_bitIndex = let_array_BitsToCheck[0]
-			array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, let_memAddr_bitset))
-		} else if ( // If all bits => add "bitcount" memory accessor
-			(let_array_BitsToCheck[0] == 0 && let_array_BitsToCheck[1] == 7) || 
-			(let_array_BitsToCheck[0] == 7 && let_array_BitsToCheck[1] == 0)) { 
-				array_push(let_bitFlagMemoryAccessors, bitcount(let_memAddr_bitset))
-		} else { // If not all bits, but more than 1 => memory accessor per bit flag
+		let_memAddr_byte = bitset["memAddr"]
+		let_array_bits = bitset["bits"]
+		let_int_bitFlagCount = memUtil_calculateBitFlagCount(let_array_bits)
+		if (let_int_bitFlagCount == 1) { // If only 1 bitflag on this byte/memAddr --> add only 1 memory accessor (1 logic line)
+			let_bitIndex = let_array_bits[0]
+			array_push(let_array_bitFlagMemAccessors, bit(let_bitIndex, let_memAddr_byte))
+		} else if (let_int_bitFlagCount == 8) { // If all bitsflags --> add "bitcount" memory accessor (1 logic line)
+				array_push(let_array_bitFlagMemAccessors, bitcount(let_memAddr_byte))
+		} else if (let_int_bitFlagCount < 5) { // If less than 5 bitflags --> memory accessor per bit flag (max 4 logic lines)
 			let_step = 1
-			if (let_array_BitsToCheck[0] > let_array_BitsToCheck[1]) let_step = -1
-			for let_bitIndex in range(let_array_BitsToCheck[0], let_array_BitsToCheck[1], let_step) {	// Example let_array_BitsToCheck = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
-				array_push(let_bitFlagMemoryAccessors, bit(let_bitIndex, let_memAddr_bitset))
+			if (let_array_bits[0] > let_array_bits[1]) let_step = -1
+			for let_bitIndex in range(let_array_bits[0], let_array_bits[1], let_step)	{// Example let_array_bits = [5,7]; this line [5,6,7]; let_bitIndex 1st loop = 5; let_bitIndex 2nd loop = 6; let_bitIndex 3rd loop = 7;
+				array_push(let_array_bitFlagMemAccessors, bit(let_bitIndex, let_memAddr_byte))
 			}
+		} else { // If more than 4 bitflags --> bitcount + subsource bits which should not be evaluated (max 4 logic lines)
+			let_array_bitsToSubsource = [0,1,2,3,4,5,6,7]
+			let_step = 1
+			if (let_array_bits[0] > let_array_bits[1]) let_step = -1
+			for let_bitIndex in range(let_array_bits[0], let_array_bits[1], let_step) {
+				let_array_bitsToSubsource[let_bitIndex] = iNULL
+			}
+			
+			let_bitcountWithSubsource = bitcount(let_memAddr_byte)
+			for let_bitIndex in let_array_bitsToSubsource {
+				if (let_bitIndex != iNULL) 
+					let_bitcountWithSubsource = let_bitcountWithSubsource - bit(let_bitIndex, let_memAddr_byte)
+			}
+			array_push(let_array_bitFlagMemAccessors, let_bitcountWithSubsource)
 		}
 	}
-	return let_bitFlagMemoryAccessors}
+	return let_array_bitFlagMemAccessors}
 function memUtil_countTotalBitFlagsInBitsetArray(array_bitsets) { // Counts how many bitflags are in the dict with percentagebitflags
 	let_bitFlagCount = 0
 	for bitset in array_bitsets {
-		let_array_BitsToCheck = bitset["bits"]
-		if (length(let_array_BitsToCheck) == 1) {
+		let_array_bits = bitset["bits"]
+		if (length(let_array_bits) == 1) {
 			let_bitFlagCount = let_bitFlagCount + 1	
-		} else if (let_array_BitsToCheck[0] > let_array_BitsToCheck[1]) {
-			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_BitsToCheck[0] - let_array_BitsToCheck[1])
+		} else if (let_array_bits[0] > let_array_bits[1]) {
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_bits[0] - let_array_bits[1])
 		} else {
-			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_BitsToCheck[1] - let_array_BitsToCheck[0])
+			let_bitFlagCount = let_bitFlagCount + 1 + (let_array_bits[1] - let_array_bits[0])
 		}
 	}
 	return let_bitFlagCount}
