@@ -2074,8 +2074,7 @@ function on_FrameCount_change(enum_releaseRegion) {
 
 function is_PlayerCharacter_moveable(enum_releaseRegion) {
 	let_memAccessor_flag = byte(memory_getAddress(DATATYPE_8Bit, "IsPlayerCharacterMoveable", enum_releaseRegion))
-	return let_memAccessor_flag == 0x8
-}
+	return let_memAccessor_flag == 0x8}
 
 
 // =========================
@@ -6993,14 +6992,14 @@ leaderboards_descriptions = {
 	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout Lebensbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all six energy orbs scattered throughout Lebensbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by conquering Chapter 8 in record time"},
-	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by conquering Chapter 7 in record time"},
-	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by conquering Chapter 6 in record time"},
-	"lb_ClearTimeChapter5":					{"en": "Prove your mastery over time by conquering Chapter 5 in record time"},
-	"lb_ClearTimeChapter4":					{"en": "Prove your mastery over time by conquering Chapter 4 in record time"},
-	"lb_ClearTimeChapter3":					{"en": "Prove your mastery over time by conquering Chapter 3 in record time"},
-	"lb_ClearTimeChapter2":					{"en": "Prove your mastery over time by conquering Chapter 2 in record time"},
-	"lb_ClearTimeChapter1":					{"en": "Prove your mastery over time by conquering Chapter 1 in record time"},
+	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by completing Chapter 8 in record time"},
+	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by completing Chapter 7 in record time"},
+	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by completing Chapter 6 in record time"},
+	"lb_ClearTimeChapter5":					{"en": "Prove your mastery over time by completing Chapter 5 in record time"},
+	"lb_ClearTimeChapter4":					{"en": "Prove your mastery over time by completing Chapter 4 in record time"},
+	"lb_ClearTimeChapter3":					{"en": "Prove your mastery over time by completing Chapter 3 in record time"},
+	"lb_ClearTimeChapter2":					{"en": "Prove your mastery over time by completing Chapter 2 in record time"},
+	"lb_ClearTimeChapter1":					{"en": "Prove your mastery over time by completing Chapter 1 in record time"},
 	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter excluded)"},
 	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter excluded)"}}
 
