@@ -52,9 +52,13 @@
 //          - Identical to 0xa442ec
 //          
 //          [NTSC-J][25-bit Pointer] Energy Orbs - Present - City
+//          - Explanation @ 0xa442ec
 // $A450C0: [NTSC-J][25-bit Pointer] Energy Orbs - Late 20th Century - City
+//          - Explanation @ 0xa442f0
 // $A450C4: [NTSC-J][25-bit Pointer] Energy Orbs - Early 20th Century - City
+//          - Explanation @ 0xa442f4
 // $A450C8: [NTSC-J][25-bit Pointer] Energy Orbs - Middle Ages - City
+//          - Explanation @ 0xa442f8
 // $A450D0: [NTSC-J][25-bit Pointer] Energy Orbs - Middle Ages
 //          +0x4 - [Bit Flag] bit 0 => Orb - Exploded Alchemy Lab
 // $A450D4: [NTSC-J][25-bit Pointer] Energy Orbs - Early 20th Century
@@ -136,11 +140,14 @@
 // $A9EB2A: [NTSC-U/C][8-bit] Energy Units (visual)
 //          - This value only corresponds with the UI (refer to 0xa9daa8 for functional value)
 //          - Value range [0x0-0xa]
+// $A9EB2E: [NTSC-U/C][8-bit Flag] Is Player Character Moveable
+//          - 0x8 => Player can move Eike
+//          - [0x0-0x7] => Player can not move Eike (when loading, during cutscenes...)
 // $A9ECBC: [NTSC-U/C][124-byte]
 //          //===========§ Cutscene Data §===========\\
 //          
 //          [32-bit] Cutscene Master ID
-//          - Identifies a cutscene sequence; changes on a new cutscene sequence
+//          - Identifies a cutscene sequence
 //          - Does not reset to a default value
 // $A9ECC0: [16-bit] Cutscene Section ID_1
 //          - Identifies a section from the current cutscene
@@ -533,12 +540,12 @@
 //          - Currently only the IDs which are used in achievement logic are documented in this list
 //          - ID corresponds to the index of the Inventory_Item_Object in the list described @ 0xa9f034
 //          
-//          ID list
-//          '''''''
+//          # ID list
+//          ''''''''''''''
 //          0x0 = d-pad/z-pad
 //          0x1 = cellphone
 //          0x2 = ornamental egg
-//          0x3 --> empty entry
+//          (0x3 --> empty entry)
 //          0x4 = frying pan
 //          0x5 = sign
 //          0x6 = lighter
@@ -740,7 +747,7 @@
 //          \\=========================================//
 // $AA1258: [NTSC-U/C][Bit Flag] bit 0 => is current cutscene skippable
 // $AA1268: [NTSC-U/C][32-bit] Time Period
-//          - This value can be a little unstable (certain small areas, might have undocumented values)
+//          - Certain small areas, might have undocumented values
 //          0x80 => Middle ages 1500s
 //          0x81 => Late 20th Century 1900s
 //          0x82 => Early 20th Century 1980
@@ -762,17 +769,24 @@
 //          | - +0x14 - [32-bit] Seconds
 //          
 //          [DateTime_Object] Present
+//          - Struct Defintion above
 // $AA12A8: [32-bit] Present - month
 // $AA12AC: [32-bit] Present - day
 // $AA12B0: [32-bit] Present - hours
 // $AA12B4: [32-bit] Present - minutes
 // $AA12B8: [32-bit] Present - seconds
 // $AA12EC: [DateTime_Object] Date & Time - Night Before - chapter 7
+//          - Struct Defintion @ 0xaa12a4
 // $AA1304: [DateTime_Object] Date & Time - 1980s (cold day)
+//          - Struct Defintion @ 0xaa12a4
 // $AA131C: [DateTime_Object] Date & Time - 1979
+//          - Struct Defintion @ 0xaa12a4
 // $AA134C: [DateTime_Object]  Date & Time -  1902
+//          - Struct Defintion @ 0xaa12a4
 // $AA1394: [DateTime_Object]  Date & Time - 1584 (daytime - chapter 5 - after experiment)
+//          - Struct Defintion @ 0xaa12a4
 // $AA13C4: [DateTime_Object]  Date & Time - 1582 (daytime - before experiment)
+//          - Struct Defintion @ 0xaa12a4
 // $AA1540: \\====================================//
 // $AA155C: [NTSC-U/C][32-bit] Current Playthrough Timer - Chapter Clear Time
 //          - Time in seconds = [32-bit] decimal value / 60
@@ -789,6 +803,8 @@
 // $AA4C10: [NTSC-U/C][25-bit Pointer] Same pointer @ 0xa9ecd4 (see notes)
 // $AA55F8: [NTSC-J][8-bit] Energy Units (functional)
 //          - Explanation @ 0xa9daa8
+// $AA667E: [NTSC-J][8-bit Flag] Is Player Character Moveable
+//          - Explanation @ 0xa9eb2e
 // $AA680C: [NTSC-J][124-byte]
 //          //==========§ Cutscene Data §==========\\
 //          - Explanation @ 0xa9ecbc
@@ -1097,24 +1113,25 @@
 //          | - Size is dependent on the amount of characters on the bottom screen (1 character == 1 object)
 //          | - A space doesn't count as an object; Special characters (eg .?!') do
 //          | - 1st character corresponds to the first letter on the first line; the last char corresponds to the last letter in the last line
-//          >>>[Struct Definition][16-byte] Character_Print_Data_Object
-//          >>>| '''''''''''''''''''''''''''''''''''''''''''''''''
-//          >>>| +0x0 - [16-bit] Some control data (unknown usage)
-//          >>>| +0x2 - [8-bit] Height of character
-//          >>>| ¨¨¨¨¨¨¨¨ [Lower4] Sub height (in-between lines)
-//          >>>| ¨¨¨¨¨¨¨¨ [Upper4] Main height
-//          >>>| ¨¨¨¨¨¨¨¨¨¨¨¨ 4 => prints to first line
-//          >>>| ¨¨¨¨¨¨¨¨¨¨¨¨ 5 => prints to second line
-//          >>>| +0x6 - [8-bit] Print location x-axis
-//          >>>| +0xa - [8-bit] Image offset x-axis
-//          >>>| +0xb - [8-bit] Image offset y-axis
-//          >>>| +0xc - [8-bit] Unmask width
-//          >>>| ¨¨¨¨¨¨¨¨ Higher value => more of the image is visible
-//          >>>| +0xd - [8-bit] Print location y-axis
-//          >>>| +0xe - [8-bit] Character set ID
-//          >>>| ¨¨¨¨¨¨¨¨ Default for USA version is 0x8 = latin characters
-//          >>>| ¨¨¨¨¨¨¨¨ There seems to be 15 characters sets; starting from 0x0 up to 0x14; higher than this value defaults to latin characters
-//          >>>| ¨¨¨¨¨¨¨¨ All characters sets are presumably on one big character set image, so this value here might just be another offset
+//          |
+//          | [Struct Definition][16-byte] Character_Print_Data_Object
+//          | | '''''''''''''''''''''''''''''''''''''''''''''''''
+//          | | +0x0 - [16-bit] Some control data (unknown usage)
+//          | | +0x2 - [8-bit] Height of character
+//          | | ¨¨¨¨¨¨¨¨ [Lower4] Sub height (in-between lines)
+//          | | ¨¨¨¨¨¨¨¨ [Upper4] Main height
+//          | | ¨¨¨¨¨¨¨¨¨¨¨¨ 4 => prints to first line
+//          | | ¨¨¨¨¨¨¨¨¨¨¨¨ 5 => prints to second line
+//          | | +0x6 - [8-bit] Print location x-axis
+//          | | +0xa - [8-bit] Image offset x-axis
+//          | | +0xb - [8-bit] Image offset y-axis
+//          | | +0xc - [8-bit] Unmask width
+//          | | ¨¨¨¨¨¨¨¨ Higher value => more of the image is visible
+//          | | +0xd - [8-bit] Print location y-axis
+//          | | +0xe - [8-bit] Character set ID
+//          | | ¨¨¨¨¨¨¨¨ Default for USA version is 0x8 = latin characters
+//          | | ¨¨¨¨¨¨¨¨ There seems to be 15 characters sets; starting from 0x0 up to 0x14; higher than this value defaults to latin characters
+//          | | ¨¨¨¨¨¨¨¨ All characters sets are presumably on one big character set image, so this value here might just be another offset
 // $AC49F4: [NTSC-U/C][32-bit] Extra Menu State
 //          - 0x0 => not inside extra menu; --> thus: value > 0 => extra menu is active
 //          - 0x4 => extra menu is displayed
@@ -1158,9 +1175,9 @@
 //          - 0xa = Epilogue -> when in Chapter 5, player told Margarette she's an ancestor
 //          - 0xb = Chapter 8 -> when in Chapter 5, player told Margarette she's NOT an ancestor
 //          - 0xc = Epilogue -> when in Chapter 5, player told Margarette she's NOT an ancestor
-// $B99094: [NTSC-J][Bit Flag] bit 0 => Is In-Game Pause Menu Displayed
+// $B99094: [NTSC-J][Bit Flag] Is In-Game Pause Menu Displayed
 //          +0x4 - [Bit Flag] bit 0 => Is In-Game Pause Menu Displayed (identical bitflag)
-// $B99098: [NTSC-J][Bit Flag] Identical to 0xb99094
+// $B99098: [NTSC-J][Bit Flag] Identical @ 0xb99094
 // $B9D284: [NTSC-J][8-bit] Chapter ID
 //          - Explanation @ 0xb95704
 // $1FFF0E8: [NTSC-U/C][NTSC-J][8-bit] Event viewer: Highlighted chapter
@@ -1198,6 +1215,121 @@
 // $1FFFFF0: [NTSC-U/C][NTSC-J][Upper4] Always_Null || Value_Never_Changes
 //           - This is used for converting floats to floored integers via RAtools
 
+ChapterLookup = {
+    1: "Defying destiny",
+    2: "Extinguishing the heat",
+    3: "Exploring Lebensbaum",
+    4: "Visiting the art museum",
+    5: "Searching for an iron plate",
+    6: "Amalgamating an antidote",
+    7: "Producing a film",
+    8: "Examining a tower",
+    9: "Seeking the red stone",
+    10: "Cheating death",
+    11: "Seeking the red stone",
+    12: "Cheating death",
+}
+
+FatedHourLookup = {
+    1: "14:30",
+    2: "15:00",
+    3: "15:30",
+    4: "17:50",
+    5: "20:30",
+    6: "22:30",
+    7: "23:55",
+    8: "01:30",
+    9: "04:30",
+    10: "04:30",
+    11: "04:30",
+    12: "04:30",
+}
+
+PresentTimeHours_ZeroPaddingLookup = {
+    10: "",
+    11: "",
+    12: "",
+    13: "",
+    14: "",
+    15: "",
+    16: "",
+    17: "",
+    18: "",
+    19: "",
+    20: "",
+    21: "",
+    22: "",
+    23: "",
+}
+
+PresentTimeMinutes_ZeroPaddingLookup = {
+    10: "",
+    11: "",
+    12: "",
+    13: "",
+    14: "",
+    15: "",
+    16: "",
+    17: "",
+    18: "",
+    19: "",
+    20: "",
+    21: "",
+    22: "",
+    23: "",
+    24: "",
+    25: "",
+    26: "",
+    27: "",
+    28: "",
+    29: "",
+    30: "",
+    31: "",
+    32: "",
+    33: "",
+    34: "",
+    35: "",
+    36: "",
+    37: "",
+    38: "",
+    39: "",
+    40: "",
+    41: "",
+    42: "",
+    43: "",
+    44: "",
+    45: "",
+    46: "",
+    47: "",
+    48: "",
+    49: "",
+    50: "",
+    51: "",
+    52: "",
+    53: "",
+    54: "",
+    55: "",
+    56: "",
+    57: "",
+    58: "",
+    59: "",
+}
+
+TimePeriodLookup = {
+    128: "in the Middle Ages",
+    129: "in the early 20th century",
+    130: "in the late 20th century",
+    131: "in the Present",
+    136: "in the late 20th century",
+}
+
+achievement(
+    title = "[VOID]", points = 0,
+    description = "VOID",
+    id = 420266, badge = "00000", published = "23/04/2024 8:16:40", modified = "23/04/2024 8:17:27",
+    trigger = dword(0xA8CC54) != prev(dword(0xA8CC54))
+)
+
 achievement(
     title = "Defied Fate", points = 5, type="progression",
     description = "Complete the Prologue",
@@ -1230,9 +1362,9 @@ achievement(
 )
 
 achievement(
-    title = "That's A Big No No", points = 2, type="missable",
+    title = "That's a Big No No", points = 2, type="missable",
     description = "Warn yourself of your impending demise during the Prologue",
-    id = 306883, badge = "465973", published = "5/04/2023 15:44:04", modified = "17/04/2024 14:52:46",
+    id = 306883, badge = "465973", published = "5/04/2023 15:44:04", modified = "23/04/2024 8:16:18",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1282,9 +1414,9 @@ achievement(
 )
 
 achievement(
-    title = "There's A Fire!", points = 3, type="progression",
+    title = "There's a Fire!", points = 3, type="progression",
     description = "Complete Chapter 1 by notifying the young boy's grandpa of an approaching threat",
-    id = 306976, badge = "470256", published = "6/04/2023 11:45:22", modified = "17/04/2024 14:52:37",
+    id = 306976, badge = "470256", published = "6/04/2023 11:45:22", modified = "23/04/2024 8:16:18",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1357,30 +1489,35 @@ achievement(
 achievement(
     title = "Enigmatic Couple I: Prelude", points = 3, type="missable",
     description = "Identify the coated man and woman in the Present during the Prologue or Chapter 1",
-    id = 307495, badge = "465978", published = "9/04/2023 8:08:50", modified = "17/04/2024 14:53:03",
+    id = 307495, badge = "465978", published = "9/04/2023 8:08:50", modified = "4/05/2024 12:40:55",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && never(low4(0xA9EDDC) == 0) &&
-                never((byte(0xB95704) != 1 && byte(0xB95704) != 2)) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) &&
+                unless((byte(0xB95704) != 1 && byte(0xB95704) != 2)) &&
                 once(((prev(byte(0xA9EE28)) + prev(byte(0xA9EE1D))) == 3) && (byte(0xA9EE28) + byte(0xA9EE1D)) == 4) &&
                 measured((byte(0xA9EE28) + byte(0xA9EE1D)) == 4) && trigger_when(prev(byte(0xA9ED26)) != 0) &&
                 trigger_when(byte(0xA9ED26) == 0)) ||
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
+                ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && never(low4(0xAA692C) == 0) &&
-                never((byte(0xB9D284) != 1 && byte(0xB9D284) != 2)) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) &&
+                unless((byte(0xB9D284) != 1 && byte(0xB9D284) != 2)) &&
                 once(((prev(byte(0xAA6978)) + prev(byte(0xAA696D))) == 3) && (byte(0xAA6978) + byte(0xAA696D)) == 4) &&
                 measured((byte(0xAA6978) + byte(0xAA696D)) == 4) && trigger_when(prev(byte(0xAA6876)) != 0) &&
-                trigger_when(byte(0xAA6876) == 0)))
+                trigger_when(byte(0xAA6876) == 0)) ||
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
+                ) && always_false()))
 )
 
 achievement(
     title = "Enigmatic Couple II: Tailing", points = 3, type="missable",
     description = "Discover the coated man and woman in the Present during Chapter 3",
-    id = 310131, badge = "465979", published = "19/04/2023 11:41:41", modified = "17/04/2024 14:53:03",
+    id = 310131, badge = "465979", published = "19/04/2023 11:41:41", modified = "4/05/2024 12:40:54",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 4) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 4) &&
                 measured(tally(4, repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 87 &&
                     byte(0xA9EE2C) > prev(byte(0xA9EE2C)) && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 720), repeated(2,
@@ -1388,17 +1525,18 @@ achievement(
                     byte(0xA9EE20) > prev(byte(0xA9EE20)) && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 708))
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 4) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 4) &&
                 measured(tally(4, repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 87 && byte(0xA9EE2C) == 2 &&
                     dword(dword(0xA9EFE4) & 0x1FFFFFF) == 720), repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 86 && byte(0xA9EE20) == 2 &&
                     dword(dword(0xA9EFE4) & 0x1FFFFFF) == 708))
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
+                ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 4) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && unless(byte(0xB9D284) != 4) &&
                 measured(tally(4, repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 87 &&
                     byte(0xAA697C) > prev(byte(0xAA697C)) && dword(dword(0xAA6B34) & 0x1FFFFFF) == 720), repeated(2,
@@ -1406,24 +1544,25 @@ achievement(
                     byte(0xAA6970) > prev(byte(0xAA6970)) && dword(dword(0xAA6B34) & 0x1FFFFFF) == 708))
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 4) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && unless(byte(0xB9D284) != 4) &&
                 measured(tally(4, repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 87 && byte(0xAA697C) == 2 &&
                     dword(dword(0xAA6B34) & 0x1FFFFFF) == 720), repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 86 && byte(0xAA6970) == 2 &&
                     dword(dword(0xAA6B34) & 0x1FFFFFF) == 708))
-                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
+                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
+                ) && always_false()))
 )
 
 achievement(
     title = "Enigmatic Couple III: Wandering Once More", points = 3, type="missable",
     description = "Seek out the coated man and woman in the Present during Chapter 4",
-    id = 310134, badge = "465980", published = "19/04/2023 12:50:26", modified = "7/04/2024 21:45:56",
+    id = 310134, badge = "465980", published = "19/04/2023 12:50:26", modified = "4/05/2024 12:40:54",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 5) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 5) &&
                 measured(tally(4, repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 87 &&
                     byte(0xA9EE2C) > prev(byte(0xA9EE2C)) && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 720), repeated(2,
@@ -1431,17 +1570,18 @@ achievement(
                     byte(0xA9EE21) > prev(byte(0xA9EE21)) && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 709))
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 5) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 5) &&
                 measured(tally(4, repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 87 && byte(0xA9EE2C) == 2 &&
                     dword(dword(0xA9EFE4) & 0x1FFFFFF) == 720), repeated(2,
                     byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 86 && byte(0xA9EE21) == 2 &&
                     dword(dword(0xA9EFE4) & 0x1FFFFFF) == 709))
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
+                ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 5) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && unless(byte(0xB9D284) != 5) &&
                 measured(tally(4, repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 87 &&
                     byte(0xAA697C) > prev(byte(0xAA697C)) && dword(dword(0xAA6B34) & 0x1FFFFFF) == 720), repeated(2,
@@ -1449,64 +1589,74 @@ achievement(
                     byte(0xAA6971) > prev(byte(0xAA6971)) && dword(dword(0xAA6B34) & 0x1FFFFFF) == 709))
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 5) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 885) && unless(byte(0xB9D284) != 5) &&
                 measured(tally(4, repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 87 && byte(0xAA697C) == 2 &&
                     dword(dword(0xAA6B34) & 0x1FFFFFF) == 720), repeated(2,
                     byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 86 && byte(0xAA6971) == 2 &&
                     dword(dword(0xAA6B34) & 0x1FFFFFF) == 709))
-                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
+                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
+                ) && always_false()))
 )
 
 achievement(
     title = "Enigmatic Couple IV: Origins", points = 3, type="missable",
     description = "Encounter the coated man and woman in the Present during Chapter 5",
-    id = 310135, badge = "465981", published = "19/04/2023 15:36:31", modified = "17/04/2024 14:52:31",
+    id = 310135, badge = "465981", published = "19/04/2023 15:36:31", modified = "4/05/2024 12:40:54",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 3) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 6) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 3) && unless(byte(0xB95704) != 6) &&
                 measured(tally(2,
                     once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 87 && prev(dword(0xA9EFF4)) != 87 &&
                     dword(0xA9EFF4) == 87 && dword(dword(0xA9EFE0) & 0x1FFFFFF) == 75),
                     once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 86 && prev(dword(0xA9EFF4)) != 86 &&
                     dword(0xA9EFF4) == 86 && dword(dword(0xA9EFE0) & 0x1FFFFFF) == 75))
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
+                ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 3) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 6) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 3) && unless(byte(0xB9D284) != 6) &&
                 measured(tally(2,
                     once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 87 && prev(dword(0xAA6B44)) != 87 &&
                     dword(0xAA6B44) == 87 && dword(dword(0xAA6B30) & 0x1FFFFFF) == 75),
                     once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 86 && prev(dword(0xAA6B44)) != 86 &&
                     dword(0xAA6B44) == 86 && dword(dword(0xAA6B30) & 0x1FFFFFF) == 75))
-                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
+                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
+                ) && always_false()))
 )
 
 achievement(
     title = "Enigmatic Couple V: Epilogue", points = 3, type="missable",
     description = "Find the coated man and woman in the Present during Chapter 7",
-    id = 315564, badge = "465982", published = "7/05/2023 18:08:32", modified = "17/04/2024 14:52:30",
+    id = 315564, badge = "465982", published = "7/05/2023 18:08:32", modified = "4/05/2024 12:40:54",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 68) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != 8) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 68) && unless(byte(0xB95704) != 8) &&
                 once(((prev(byte(0xA9EE2F)) + prev(byte(0xA9EE24))) == 2) && (byte(0xA9EE2F) + byte(0xA9EE24)) == 3) &&
                 measured((byte(0xA9EE2F) + byte(0xA9EE24)) == 3) && trigger_when(prev(byte(0xA9ED26)) != 0) &&
                 trigger_when(byte(0xA9ED26) == 0)) ||
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
+                ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 68) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != 8) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 68) && unless(byte(0xB9D284) != 8) &&
                 once(((prev(byte(0xAA697F)) + prev(byte(0xAA6974))) == 2) && (byte(0xAA697F) + byte(0xAA6974)) == 3) &&
                 measured((byte(0xAA697F) + byte(0xAA6974)) == 3) && trigger_when(prev(byte(0xAA6876)) != 0) &&
-                trigger_when(byte(0xAA6876) == 0)))
+                trigger_when(byte(0xAA6876) == 0)) ||
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
+                ) && always_false()))
 )
 
 achievement(
-    title = "Left In The Past", points = 5, type="progression",
+    title = "Left in the Past", points = 5, type="progression",
     description = "Complete Chapter 2",
-    id = 306922, badge = "465983", published = "5/04/2023 22:42:49", modified = "17/04/2024 14:52:57",
+    id = 306922, badge = "465983", published = "5/04/2023 22:42:49", modified = "23/04/2024 8:16:19",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1527,9 +1677,9 @@ achievement(
 )
 
 achievement(
-    title = "Cracking Open The Past: Middle Ages", points = 3, type="missable",
+    title = "Cracking Open the Past: Middle Ages", points = 3, type="missable",
     description = "Present the barman's ancestor with your egg collection in Chapter 2",
-    id = 307023, badge = "468296", published = "6/04/2023 20:16:21", modified = "17/04/2024 14:53:12",
+    id = 307023, badge = "468296", published = "6/04/2023 20:16:21", modified = "23/04/2024 8:16:19",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1546,9 +1696,9 @@ achievement(
 )
 
 achievement(
-    title = "Terror Of Destinies", points = 3, type="missable",
+    title = "Terror of Destinies", points = 3, type="missable",
     description = "Attempt to sow fear among numerous individuals within Chapter 2",
-    id = 404046, badge = "465985", published = "2/03/2024 21:18:08", modified = "17/04/2024 14:52:48",
+    id = 404046, badge = "465985", published = "2/03/2024 21:18:08", modified = "23/04/2024 8:16:19",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1703,12 +1853,12 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple I: Destined To Miss", points = 3, type="missable",
+    title = "Yesteryears Couple I: Destined to Miss", points = 3, type="missable",
     description = "Aid a bewildered young couple in their reunion amidst the Medieval era during Chapter 2",
-    id = 306984, badge = "465990", published = "6/04/2023 16:26:09", modified = "17/04/2024 14:52:34",
+    id = 306984, badge = "465990", published = "6/04/2023 16:26:09", modified = "4/05/2024 12:40:45",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 3) &&
                 once(((prev(byte(0xA9EF7C)) + prev(byte(0xA9EF7D)) + prev(byte(0xA9EF7E)) + prev(byte(0xA9EF69)) +
                     prev(byte(0xA9EF6A)) + prev(byte(0xA9EF6B))) == 5) &&
                     (byte(0xA9EF7C) + byte(0xA9EF7D) + byte(0xA9EF7E) + byte(0xA9EF69) + byte(0xA9EF6A) + byte(0xA9EF6B)) == 6
@@ -1716,11 +1866,11 @@ achievement(
                 measured((byte(0xA9EF7C) + byte(0xA9EF7D) + byte(0xA9EF7E) + byte(0xA9EF69) + byte(0xA9EF6A) +
                     byte(0xA9EF6B)) == 6
                 ) && byte(0xA9EF89) == 3 && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
-               (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != 3) && dword(0xA5AB44) == 1398099029 &&
-                    dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
                 ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) && unless(byte(0xB9D284) != 3) &&
                 once(((prev(byte(0xAA6ACC)) + prev(byte(0xAA6ACD)) + prev(byte(0xAA6ACE)) + prev(byte(0xAA6AB9)) +
                     prev(byte(0xAA6ABA)) + prev(byte(0xAA6ABB))) == 5) &&
                     (byte(0xAA6ACC) + byte(0xAA6ACD) + byte(0xAA6ACE) + byte(0xAA6AB9) + byte(0xAA6ABA) + byte(0xAA6ABB)) == 6
@@ -1728,18 +1878,18 @@ achievement(
                 measured((byte(0xAA6ACC) + byte(0xAA6ACD) + byte(0xAA6ACE) + byte(0xAA6AB9) + byte(0xAA6ABA) +
                     byte(0xAA6ABB)) == 6
                 ) && byte(0xAA6AD9) == 3 && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
-               (never((low4(0xAA692C) == 0 || byte(0xB9D284) != 3) && dword(0xA64C74) == 1296714837 &&
-                    dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
                 ) && always_false()))
 )
 
 achievement(
     title = "Yesteryears Couple II: The Place Where We Nigh Met", points = 3, type="missable",
     description = "Weave the threads of fate into another chance at reunion for a lost young couple amidst the Medieval era during Chapter 3",
-    id = 310133, badge = "465991", published = "19/04/2023 12:50:26", modified = "17/04/2024 14:52:34",
+    id = 310133, badge = "465991", published = "19/04/2023 12:50:26", modified = "4/05/2024 12:40:45",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 4) &&
                 once(((prev(byte(0xA9EF7F)) + prev(byte(0xA9EF80)) + prev(byte(0xA9EF81)) + prev(byte(0xA9EF6C)) +
                     prev(byte(0xA9EF6D)) + prev(byte(0xA9EF6E))) == 5) &&
                     (byte(0xA9EF7F) + byte(0xA9EF80) + byte(0xA9EF81) + byte(0xA9EF6C) + byte(0xA9EF6D) + byte(0xA9EF6E)) == 6
@@ -1747,11 +1897,11 @@ achievement(
                 measured((byte(0xA9EF7F) + byte(0xA9EF80) + byte(0xA9EF81) + byte(0xA9EF6C) + byte(0xA9EF6D) +
                     byte(0xA9EF6E)) == 6
                 ) && byte(0xA9EF8A) == 3 && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
-               (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != 4) && dword(0xA5AB44) == 1398099029 &&
-                    dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
                 ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) && unless(byte(0xB9D284) != 4) &&
                 once(((prev(byte(0xAA6ACF)) + prev(byte(0xAA6AD0)) + prev(byte(0xAA6AD1)) + prev(byte(0xAA6ABC)) +
                     prev(byte(0xAA6ABD)) + prev(byte(0xAA6ABE))) == 5) &&
                     (byte(0xAA6ACF) + byte(0xAA6AD0) + byte(0xAA6AD1) + byte(0xAA6ABC) + byte(0xAA6ABD) + byte(0xAA6ABE)) == 6
@@ -1759,18 +1909,18 @@ achievement(
                 measured((byte(0xAA6ACF) + byte(0xAA6AD0) + byte(0xAA6AD1) + byte(0xAA6ABC) + byte(0xAA6ABD) +
                     byte(0xAA6ABE)) == 6
                 ) && byte(0xAA6ADA) == 3 && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
-               (never((low4(0xAA692C) == 0 || byte(0xB9D284) != 4) && dword(0xA64C74) == 1296714837 &&
-                    dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
                 ) && always_false()))
 )
 
 achievement(
     title = "Yesteryears Couple III: Destiny's Promise Fulfilled", points = 3, type="missable",
     description = "Successfully orchestrate the reunion of the lost young couple amidst the Medieval era during Chapter 4",
-    id = 309393, badge = "465992", published = "17/04/2023 19:03:08", modified = "17/04/2024 14:52:31",
+    id = 309393, badge = "465992", published = "17/04/2023 19:03:08", modified = "4/05/2024 12:40:45",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) &&
+                unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 5) &&
                 once(((prev(byte(0xA9EF82)) + prev(byte(0xA9EF83)) + prev(byte(0xA9EF84)) + prev(byte(0xA9EF6F)) +
                     prev(byte(0xA9EF70)) + prev(byte(0xA9EF71))) == 5) &&
                     (byte(0xA9EF82) + byte(0xA9EF83) + byte(0xA9EF84) + byte(0xA9EF6F) + byte(0xA9EF70) + byte(0xA9EF71)) == 6
@@ -1778,11 +1928,11 @@ achievement(
                 measured((byte(0xA9EF82) + byte(0xA9EF83) + byte(0xA9EF84) + byte(0xA9EF6F) + byte(0xA9EF70) +
                     byte(0xA9EF71)) == 6
                 ) && byte(0xA9EF8B) == 3 && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
-               (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != 5) && dword(0xA5AB44) == 1398099029 &&
-                    dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57
+               (never((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+                    low4(0xA9EDDC) == 0)
                 ) && always_false()) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) &&
+                unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 828) && unless(byte(0xB9D284) != 5) &&
                 once(((prev(byte(0xAA6AD2)) + prev(byte(0xAA6AD3)) + prev(byte(0xAA6AD4)) + prev(byte(0xAA6ABF)) +
                     prev(byte(0xAA6AC0)) + prev(byte(0xAA6AC1))) == 5) &&
                     (byte(0xAA6AD2) + byte(0xAA6AD3) + byte(0xAA6AD4) + byte(0xAA6ABF) + byte(0xAA6AC0) + byte(0xAA6AC1)) == 6
@@ -1790,8 +1940,8 @@ achievement(
                 measured((byte(0xAA6AD2) + byte(0xAA6AD3) + byte(0xAA6AD4) + byte(0xAA6ABF) + byte(0xAA6AC0) +
                     byte(0xAA6AC1)) == 6
                 ) && byte(0xAA6ADB) == 3 && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
-               (never((low4(0xAA692C) == 0 || byte(0xB9D284) != 5) && dword(0xA64C74) == 1296714837 &&
-                    dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50
+               (never((dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+                    low4(0xAA692C) == 0)
                 ) && always_false()))
 )
 
@@ -1844,9 +1994,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple VI: Never Destined To Meet", points = 5, type="missable",
+    title = "Yesteryears Couple VI: Never Destined to Meet", points = 5, type="missable",
     description = "Share a piece of wisdom with the young man and assess his interpretation amidst the Medieval era during Chapter 8",
-    id = 315568, badge = "465995", published = "7/05/2023 18:08:33", modified = "17/04/2024 14:52:31",
+    id = 315568, badge = "465995", published = "7/05/2023 18:08:33", modified = "23/04/2024 8:16:19",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 1011) &&
@@ -2129,9 +2279,11 @@ achievement(
 achievement(
     title = "Stockpiling Across Eras", points = 10, type="missable",
     description = "Accrue the largest arsenal of items within a single playthrough",
-    id = 402404, badge = "468297", published = "25/02/2024 19:47:49", modified = "17/04/2024 14:52:48",
+    id = 402404, badge = "468297", published = "25/02/2024 19:47:49", modified = "4/05/2024 11:40:47",
     trigger = always_true() &&
-              ((once(((prev(bit0(0xA9F042)) + prev(bit0(0xA9F045)) + prev(bit0(0xA9F03B)) + prev(bit0(0xA9F03C)) +
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                once(((prev(bit0(0xA9F042)) + prev(bit0(0xA9F045)) + prev(bit0(0xA9F03B)) + prev(bit0(0xA9F03C)) +
                     prev(bit0(0xA9F047)) + prev(bit0(0xA9F035)) + prev(bit0(0xA9F041)) + prev(bit0(0xA9F034)) +
                     prev(bit0(0xA9F044)) + prev(bit0(0xA9F038)) + prev(bit0(0xA9F040)) + prev(bit0(0xA9F04B)) +
                     prev(bit0(0xA9F048)) + prev(bit0(0xA9F04D)) + prev(bit0(0xA9F050)) + prev(bit0(0xA9F03A)) +
@@ -2155,12 +2307,11 @@ achievement(
                     bit0(0xA9F035) + bit0(0xA9F041) + bit0(0xA9F034) + bit0(0xA9F044) + bit0(0xA9F038) + bit0(0xA9F040) +
                     bit0(0xA9F04B) + bit0(0xA9F048) + bit0(0xA9F04D) + bit0(0xA9F050) + bit0(0xA9F03A) + bit0(0xA9F04C) +
                     bit0(0xA9F046) + bit0(0xA9F03E) + bit0(0xA9F04F) + bit0(0xA9F04E) + bit0(0xA9F03F) + bit0(0xA9F036) +
-                    bit0(0xA9F03D) + bit0(0xA9F04A) + bit0(0xA9F039) + bit0(0xA9F043) + bit0(0xA9F049)) == 20,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0
+                    bit0(0xA9F03D) + bit0(0xA9F04A) + bit0(0xA9F039) + bit0(0xA9F043) + bit0(0xA9F049)) == 20
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
-               (once(((prev(bit0(0xAA6B92)) + prev(bit0(0xAA6B95)) + prev(bit0(0xAA6B8B)) + prev(bit0(0xAA6B8C)) +
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                once(((prev(bit0(0xAA6B92)) + prev(bit0(0xAA6B95)) + prev(bit0(0xAA6B8B)) + prev(bit0(0xAA6B8C)) +
                     prev(bit0(0xAA6B97)) + prev(bit0(0xAA6B85)) + prev(bit0(0xAA6B91)) + prev(bit0(0xAA6B84)) +
                     prev(bit0(0xAA6B94)) + prev(bit0(0xAA6B88)) + prev(bit0(0xAA6B90)) + prev(bit0(0xAA6B9B)) +
                     prev(bit0(0xAA6B98)) + prev(bit0(0xAA6B9D)) + prev(bit0(0xAA6B9A)) + prev(bit0(0xAA6B8A)) +
@@ -2184,17 +2335,14 @@ achievement(
                     bit0(0xAA6B85) + bit0(0xAA6B91) + bit0(0xAA6B84) + bit0(0xAA6B94) + bit0(0xAA6B88) + bit0(0xAA6B90) +
                     bit0(0xAA6B9B) + bit0(0xAA6B98) + bit0(0xAA6B9D) + bit0(0xAA6B9A) + bit0(0xAA6B8A) + bit0(0xAA6B9C) +
                     bit0(0xAA6B96) + bit0(0xAA6B8E) + bit0(0xAA6B9F) + bit0(0xAA6B9E) + bit0(0xAA6B8F) + bit0(0xAA6B86) +
-                    bit0(0xAA6B8D) + bit0(0xAA6BA0) + bit0(0xAA6B89) + bit0(0xAA6B93) + bit0(0xAA6B99)) == 20,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0
+                    bit0(0xAA6B8D) + bit0(0xAA6BA0) + bit0(0xAA6B89) + bit0(0xAA6B93) + bit0(0xAA6B99)) == 20
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
 )
 
 achievement(
-    title = "An Alchemist, A Jewel And A Homunculus", points = 5, type="progression",
+    title = "An Alchemist, a Jewel and a Homunculus", points = 5, type="progression",
     description = "Complete Chapter 3",
-    id = 306921, badge = "465997", published = "5/04/2023 22:23:24", modified = "17/04/2024 14:53:15",
+    id = 306921, badge = "465997", published = "5/04/2023 22:23:24", modified = "23/04/2024 8:16:22",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(byte(0xB95704) != 4) && unless(byte(0xA9F111) != 0) &&
@@ -2229,9 +2377,9 @@ achievement(
 )
 
 achievement(
-    title = "Running Beyond The 90's... And 80's", points = 2, type="missable",
+    title = "Running Beyond the 90's... And 80's", points = 2, type="missable",
     description = "Encounter an athletic man from a bygone era, as well as his Present self during Chapter 3, 4 or 5",
-    id = 405086, badge = "465998", published = "5/03/2024 14:02:24", modified = "17/04/2024 14:52:48",
+    id = 405086, badge = "465998", published = "5/03/2024 14:02:24", modified = "23/04/2024 8:16:23",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
@@ -2254,9 +2402,9 @@ achievement(
 )
 
 achievement(
-    title = "Strokes Of Destiny", points = 1, type="missable",
+    title = "Strokes of Destiny", points = 1, type="missable",
     description = "Marvel at the beauty of each unique painting on display at the Brum Museum",
-    id = 307499, badge = "465999", published = "9/04/2023 11:10:41", modified = "5/04/2024 18:13:34",
+    id = 307499, badge = "465999", published = "9/04/2023 11:10:41", modified = "23/04/2024 8:16:23",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
@@ -2355,9 +2503,9 @@ achievement(
 )
 
 achievement(
-    title = "My My, So Eager To Die", points = 1, type="missable",
+    title = "My My, So Eager to Die", points = 1, type="missable",
     description = "Firmly excuse yourself from the apparition's company in Chapter 3",
-    id = 306919, badge = "466003", published = "5/04/2023 22:23:23", modified = "17/04/2024 14:52:51",
+    id = 306919, badge = "466003", published = "5/04/2023 22:23:23", modified = "23/04/2024 8:16:23",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2399,9 +2547,9 @@ achievement(
 )
 
 achievement(
-    title = "Legacy Of Sweetness", points = 3, type="missable",
+    title = "Legacy of Sweetness", points = 3, type="missable",
     description = "Establish a new line of pastries",
-    id = 402297, badge = "466005", published = "25/02/2024 12:43:23", modified = "17/04/2024 14:52:52",
+    id = 402297, badge = "466005", published = "25/02/2024 12:43:23", modified = "23/04/2024 8:16:23",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2437,9 +2585,9 @@ achievement(
 )
 
 achievement(
-    title = "Through The Lens Of Survival", points = 3, type="progression",
+    title = "Through the Lens of Survival", points = 3, type="progression",
     description = "Complete Chapter 4 using a sign",
-    id = 310149, badge = "461658", published = "19/04/2023 16:09:53", modified = "17/04/2024 14:52:35",
+    id = 310149, badge = "461658", published = "19/04/2023 16:09:53", modified = "23/04/2024 8:16:23",
     trigger = always_true() &&
               ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                 low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 && byte(0xB95704) == 5 && byte(0xA9F111) == 5 &&
@@ -2498,33 +2646,13 @@ achievement(
 )
 
 achievement(
-    title = "A Performance Gone The Extra Mile", points = 3, type="missable",
+    title = "A Performance Gone the Extra Mile", points = 3, type="missable",
     description = "Highlight the significance of going above and beyond, especially for those, including yourself, who would truly value the performer's effort",
-    id = 403575, badge = "466007", published = "29/02/2024 15:31:22", modified = "5/04/2024 18:13:40",
+    id = 403575, badge = "466007", published = "29/02/2024 15:31:22", modified = "4/05/2024 12:40:54",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 5) &&
-                never(repeated(300, bit2(0xA9EDA5) == 0)) &&
-                measured(tally(7,
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 391 && dword(0xA82E48) == 885 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 68 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 924),
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 70 && dword(0xA82E48) == 885 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 68 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 822),
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 66 && dword(0xA82E48) == 885 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 68 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 803),
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 68 && dword(0xA82E48) == 885 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 68 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 812),
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 405 && dword(0xA82E48) == 22 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 41 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 966),
-                    once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 387 && dword(0xA82E48) == 22 &&
-                    dword(dword(0xA9EFE0) & 0x1FFFFFF) == 41 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 972),
-                    once(byte(0xA9ED26) == 5 && byte(0xA9F111) == 12 && dword(0xA9ECBC) == 107264 && word(0xA9ECC0) == 1 &&
-                    word(0xA9ECC2) == 0 && dword((dword(0xA9ECC8) & 0x1FFFFFF) + 0x000008) == 54336 &&
-                    dword((dword(0xA9ECCC) & 0x1FFFFFF) + 0x000008) == 14848))
-                ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
-               (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 5) &&
-                never(repeated(300, bit2(0xA9EDA5) == 0)) &&
+                never(repeated(150, bit2(0xA9EDA5) == 0 && never(bit2(0xA9EDA5) == 1))) &&
                 measured(tally(7,
                     once(byte(0xA9ED26) == 1 && dword(dword(0xA9EFDC) & 0x1FFFFFF) == 391 && dword(0xA82E48) == 885 &&
                     dword(dword(0xA9EFE0) & 0x1FFFFFF) == 68 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 924),
@@ -2545,27 +2673,7 @@ achievement(
                 trigger_when(byte(0xA9ED26) != 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 5) &&
-                never(repeated(300, bit2(0xAA68F5) == 0)) &&
-                measured(tally(7,
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 391 && dword(0xA8A998) == 885 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 68 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 924),
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 70 && dword(0xA8A998) == 885 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 68 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 822),
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 66 && dword(0xA8A998) == 885 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 68 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 803),
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 68 && dword(0xA8A998) == 885 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 68 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 812),
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 405 && dword(0xA8A998) == 22 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 41 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 966),
-                    once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 387 && dword(0xA8A998) == 22 &&
-                    dword(dword(0xAA6B30) & 0x1FFFFFF) == 41 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 972),
-                    once(byte(0xAA6876) == 5 && byte(0xAA6C61) == 12 && dword(0xAA680C) == 107264 && word(0xAA6810) == 1 &&
-                    word(0xAA6812) == 0 && dword((dword(0xAA6818) & 0x1FFFFFF) + 0x000008) == 54336 &&
-                    dword((dword(0xAA681C) & 0x1FFFFFF) + 0x000008) == 14848))
-                ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
-               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 5) &&
-                never(repeated(300, bit2(0xAA68F5) == 0)) &&
+                never(repeated(150, bit2(0xAA68F5) == 0 && never(bit2(0xAA68F5) == 1))) &&
                 measured(tally(7,
                     once(byte(0xAA6876) == 1 && dword(dword(0xAA6B2C) & 0x1FFFFFF) == 391 && dword(0xA8A998) == 885 &&
                     dword(dword(0xAA6B30) & 0x1FFFFFF) == 68 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 924),
@@ -2587,9 +2695,9 @@ achievement(
 )
 
 achievement(
-    title = "Complexities Of The Fourth Dimension", points = 3, type="missable",
+    title = "Complexities of the Fourth Dimension", points = 3, type="missable",
     description = "Receive a lecture on time-travel physics within Chapter 4",
-    id = 310163, badge = "464226", published = "19/04/2023 19:40:38", modified = "17/04/2024 14:53:12",
+    id = 310163, badge = "464226", published = "19/04/2023 19:40:38", modified = "23/04/2024 8:16:27",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2633,9 +2741,9 @@ achievement(
 )
 
 achievement(
-    title = "Pan In Advance", points = 3, type="missable",
+    title = "Pan in Advance", points = 3, type="missable",
     description = "Secure an iron plate prior to Chapter 4, deploying it judiciously when its utility becomes necessary",
-    id = 403823, badge = "466009", published = "2/03/2024 0:38:26", modified = "17/04/2024 14:52:48",
+    id = 403823, badge = "466009", published = "2/03/2024 0:38:26", modified = "23/04/2024 8:16:27",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2826,9 +2934,9 @@ achievement(
 )
 
 achievement(
-    title = "Director's Cut: Trip For Two", points = 3, type="progression",
+    title = "Director's Cut: Trip for Two", points = 3, type="progression",
     description = "Complete Chapter 6 by co-directing a love picture",
-    id = 313210, badge = "466017", published = "1/05/2023 15:18:03", modified = "17/04/2024 14:53:08",
+    id = 313210, badge = "466017", published = "1/05/2023 15:18:03", modified = "23/04/2024 8:16:27",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2853,9 +2961,9 @@ achievement(
 )
 
 achievement(
-    title = "Director's Cut: The Time Of Reckoning", points = 3, type="progression",
+    title = "Director's Cut: The Time of Reckoning", points = 3, type="progression",
     description = "Complete Chapter 6 by co-directing a thriller picture",
-    id = 313211, badge = "466016", published = "1/05/2023 15:18:03", modified = "17/04/2024 14:53:08",
+    id = 313211, badge = "466016", published = "1/05/2023 15:18:03", modified = "23/04/2024 8:16:27",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2901,9 +3009,9 @@ achievement(
 )
 
 achievement(
-    title = "Cracking Open The Past: The Old Century", points = 3, type="missable",
+    title = "Cracking Open the Past: The Old Century", points = 3, type="missable",
     description = "Pay for some coffee with an oval shaped object from Chapter 6 onward",
-    id = 313213, badge = "466019", published = "1/05/2023 15:18:04", modified = "17/04/2024 14:53:11",
+    id = 313213, badge = "466019", published = "1/05/2023 15:18:04", modified = "23/04/2024 8:16:27",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2928,9 +3036,9 @@ achievement(
 )
 
 achievement(
-    title = "Illusive Guardian Of The Brums", points = 3, type="missable",
+    title = "Illusive Guardian of the Brums", points = 3, type="missable",
     description = "Navigate the labyrinths of fate to shield a member of the Brum family from their destined demise during the events of Chapter 6",
-    id = 315569, badge = "466020", published = "7/05/2023 18:08:33", modified = "17/04/2024 14:52:57",
+    id = 315569, badge = "466020", published = "7/05/2023 18:08:33", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2966,9 +3074,9 @@ achievement(
 )
 
 achievement(
-    title = "Picked Up A Baby The Other Day", points = 2, type="missable",
+    title = "Picked Up a Baby the Other Day", points = 2, type="missable",
     description = "Witness a chilling crime scene revealed amidst the snowy terrain during Chapter 6",
-    id = 313209, badge = "466022", published = "1/05/2023 15:18:03", modified = "17/04/2024 14:52:48",
+    id = 313209, badge = "466022", published = "1/05/2023 15:18:03", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3032,9 +3140,9 @@ achievement(
 )
 
 achievement(
-    title = "Fated To Plunge", points = 1, type="missable",
+    title = "Fated to Plunge", points = 1, type="missable",
     description = "Employ a worn-out cable to save yourself during Chapter 7",
-    id = 315563, badge = "466024", published = "7/05/2023 18:08:32", modified = "17/04/2024 14:52:58",
+    id = 315563, badge = "466024", published = "7/05/2023 18:08:32", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3078,9 +3186,9 @@ achievement(
 )
 
 achievement(
-    title = "A Pair Of Delinquents", points = 2, type="missable",
+    title = "A Pair of Delinquents", points = 2, type="missable",
     description = "Encounter some mischievous rascals in Chapter 7",
-    id = 404048, badge = "466031", published = "2/03/2024 22:13:05", modified = "5/04/2024 18:13:48",
+    id = 404048, badge = "466031", published = "2/03/2024 22:13:05", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) &&
                 unless(dword(0xA5AB48) != 892612657) && unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
@@ -3198,9 +3306,9 @@ achievement(
 )
 
 achievement(
-    title = "The Whole Picture... Or Is It?", points = 5, type="progression",
+    title = "The Whole Picture... Or is it?", points = 5, type="progression",
     description = "Complete Chapter 8",
-    id = 315571, badge = "466049", published = "7/05/2023 18:08:34", modified = "17/04/2024 14:52:37",
+    id = 315571, badge = "466049", published = "7/05/2023 18:08:34", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(byte(0xB95704) != 9) && never(low4(0xA9EDDC) == 0) &&
@@ -3366,9 +3474,9 @@ achievement(
 )
 
 achievement(
-    title = "An End To A Strange Experience", points = 5, type="win_condition",
+    title = "An End to a Strange Experience", points = 5, type="win_condition",
     description = "Achieve ending A",
-    id = 315566, badge = "466030", published = "7/05/2023 18:08:33", modified = "17/04/2024 14:53:12",
+    id = 315566, badge = "466030", published = "7/05/2023 18:08:33", modified = "23/04/2024 8:16:32",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3405,9 +3513,9 @@ achievement(
 )
 
 achievement(
-    title = "No Sense Of Finality I", points = 5, type="win_condition",
+    title = "No Sense of Finality I", points = 5, type="win_condition",
     description = "Achieve ending B1",
-    id = 315573, badge = "466033", published = "7/05/2023 18:08:34", modified = "17/04/2024 14:52:51",
+    id = 315573, badge = "466033", published = "7/05/2023 18:08:34", modified = "23/04/2024 8:16:35",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3444,9 +3552,9 @@ achievement(
 )
 
 achievement(
-    title = "No Sense Of Finality II", points = 5, type="win_condition",
+    title = "No Sense of Finality II", points = 5, type="win_condition",
     description = "Achieve ending B2",
-    id = 315572, badge = "466032", published = "7/05/2023 18:08:34", modified = "17/04/2024 14:52:50",
+    id = 315572, badge = "466032", published = "7/05/2023 18:08:34", modified = "23/04/2024 8:16:35",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3727,333 +3835,320 @@ achievement(
 achievement(
     title = "Homing Instinct", points = 10,
     description = "Reach 100% achievement rate for the Prologue, including the EX Chapter",
-    id = 405087, badge = "466037", published = "5/03/2024 14:02:24", modified = "17/04/2024 14:52:58",
+    id = 405087, badge = "466037", published = "5/03/2024 14:02:24", modified = "4/05/2024 22:10:11",
     trigger = always_true() &&
-              (((prev(bit1(0xA9ED3C)) + prev(bit2(0xA9ED3C)) + prev(bit3(0xA9ED3C)) + prev(bit4(0xA9ED3C)) +
-                prev(bit5(0xA9ED3C)) + prev(bit6(0xA9ED3C)) + prev(bit7(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) +
-                prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) +
-                prev(bitcount(0xA9ED41)) + prev(bit0(0xA9ED42)) + prev(bit1(0xA9ED42)) + prev(bit2(0xA9ED42)) +
-                prev(bit3(0xA9ED42)) + prev(bit4(0xA9ED42)) + prev(bit5(0xA9ED42))) > 39 &&
-                (prev(bit1(0xA9ED3C)) + prev(bit2(0xA9ED3C)) + prev(bit3(0xA9ED3C)) + prev(bit4(0xA9ED3C)) +
-                prev(bit5(0xA9ED3C)) + prev(bit6(0xA9ED3C)) + prev(bit7(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) +
-                prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) +
-                prev(bitcount(0xA9ED41)) + prev(bit0(0xA9ED42)) + prev(bit1(0xA9ED42)) + prev(bit2(0xA9ED42)) +
-                prev(bit3(0xA9ED42)) + prev(bit4(0xA9ED42)) + prev(bit5(0xA9ED42))) < 53 &&
-                measured((bit1(0xA9ED3C) + bit2(0xA9ED3C) + bit3(0xA9ED3C) + bit4(0xA9ED3C) + bit5(0xA9ED3C) +
-                    bit6(0xA9ED3C) + bit7(0xA9ED3C) + bitcount(0xA9ED3D) + bitcount(0xA9ED3E) + bitcount(0xA9ED3F) +
-                    bitcount(0xA9ED40) + bitcount(0xA9ED41) + bit0(0xA9ED42) + bit1(0xA9ED42) + bit2(0xA9ED42) +
-                    bit3(0xA9ED42) + bit4(0xA9ED42) + bit5(0xA9ED42)) == 53,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 1, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 1) &&
+                (3 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) +
+                prev(bitcount(0xA9ED42)) - prev(bit0(0xA9ED3C)) - prev(bit6(0xA9ED42)) - prev(bit7(0xA9ED42))) > 42 &&
+                (3 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) + 3 +
+                prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) +
+                prev(bitcount(0xA9ED42)) - prev(bit0(0xA9ED3C)) - prev(bit6(0xA9ED42)) - prev(bit7(0xA9ED42))) < 56 &&
+                measured((3 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                    prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) + 3 +
+                    prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                    prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) + bitcount(0xA9ED3C) +
+                    bitcount(0xA9ED3D) + bitcount(0xA9ED3E) + bitcount(0xA9ED3F) + bitcount(0xA9ED40) + bitcount(0xA9ED41) +
+                    bitcount(0xA9ED42) - bit0(0xA9ED3C) - bit6(0xA9ED42) - bit7(0xA9ED42)) == 53, format="percent"
                 )) ||
-               ((prev(bit1(0xAA688C)) + prev(bit2(0xAA688C)) + prev(bit3(0xAA688C)) + prev(bit4(0xAA688C)) +
-                prev(bit5(0xAA688C)) + prev(bit6(0xAA688C)) + prev(bit7(0xAA688C)) + prev(bitcount(0xAA688D)) +
-                prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) +
-                prev(bitcount(0xAA6891)) + prev(bit0(0xAA6892)) + prev(bit1(0xAA6892)) + prev(bit2(0xAA6892)) +
-                prev(bit3(0xAA6892)) + prev(bit4(0xAA6892)) + prev(bit5(0xAA6892))) > 39 &&
-                (prev(bit1(0xAA688C)) + prev(bit2(0xAA688C)) + prev(bit3(0xAA688C)) + prev(bit4(0xAA688C)) +
-                prev(bit5(0xAA688C)) + prev(bit6(0xAA688C)) + prev(bit7(0xAA688C)) + prev(bitcount(0xAA688D)) +
-                prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) +
-                prev(bitcount(0xAA6891)) + prev(bit0(0xAA6892)) + prev(bit1(0xAA6892)) + prev(bit2(0xAA6892)) +
-                prev(bit3(0xAA6892)) + prev(bit4(0xAA6892)) + prev(bit5(0xAA6892))) < 53 &&
-                measured((bit1(0xAA688C) + bit2(0xAA688C) + bit3(0xAA688C) + bit4(0xAA688C) + bit5(0xAA688C) +
-                    bit6(0xAA688C) + bit7(0xAA688C) + bitcount(0xAA688D) + bitcount(0xAA688E) + bitcount(0xAA688F) +
-                    bitcount(0xAA6890) + bitcount(0xAA6891) + bit0(0xAA6892) + bit1(0xAA6892) + bit2(0xAA6892) +
-                    bit3(0xAA6892) + bit4(0xAA6892) + bit5(0xAA6892)) == 53,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 1, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 1) &&
+                (3 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) +
+                prev(bitcount(0xAA6892)) - prev(bit0(0xAA688C)) - prev(bit6(0xAA6892)) - prev(bit7(0xAA6892))) > 42 &&
+                (3 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) + 3 +
+                prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) +
+                prev(bitcount(0xAA6892)) - prev(bit0(0xAA688C)) - prev(bit6(0xAA6892)) - prev(bit7(0xAA6892))) < 56 &&
+                measured((3 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                    prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) + 3 +
+                    prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                    prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) + bitcount(0xAA688C) +
+                    bitcount(0xAA688D) + bitcount(0xAA688E) + bitcount(0xAA688F) + bitcount(0xAA6890) + bitcount(0xAA6891) +
+                    bitcount(0xAA6892) - bit0(0xAA688C) - bit6(0xAA6892) - bit7(0xAA6892)) == 53, format="percent"
                 )))
 )
 
 achievement(
-    title = "In The Heat Of Time", points = 10,
+    title = "In the Heat of Time", points = 10,
     description = "Reach 100% achievement rate for Chapter 1",
-    id = 405088, badge = "466038", published = "5/03/2024 14:02:24", modified = "17/04/2024 14:52:57",
+    id = 405088, badge = "466038", published = "5/03/2024 14:02:24", modified = "4/05/2024 22:10:11",
     trigger = always_true() &&
-              (((prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) +
-                prev(bit0(0xA9ED46)) + prev(bit1(0xA9ED46)) + prev(bit2(0xA9ED46)) + prev(bit3(0xA9ED46)) +
-                prev(bit4(0xA9ED46)) + prev(bit5(0xA9ED46))) > 18 &&
-                (prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) +
-                prev(bit0(0xA9ED46)) + prev(bit1(0xA9ED46)) + prev(bit2(0xA9ED46)) + prev(bit3(0xA9ED46)) +
-                prev(bit4(0xA9ED46)) + prev(bit5(0xA9ED46))) < 24 &&
-                measured((bit6(0xA9ED43) + bit7(0xA9ED43) + bitcount(0xA9ED44) + bitcount(0xA9ED45) + bit0(0xA9ED46) +
-                    bit1(0xA9ED46) + bit2(0xA9ED46) + bit3(0xA9ED46) + bit4(0xA9ED46) + bit5(0xA9ED46)) == 24,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 2, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 2) &&
+                (2 + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) +
+                prev(bitcount(0xA9ED46)) - prev(bit6(0xA9ED46)) - prev(bit7(0xA9ED46))) > 20 &&
+                (2 + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) +
+                2 + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) +
+                prev(bitcount(0xA9ED46)) - prev(bit6(0xA9ED46)) - prev(bit7(0xA9ED46))) < 26 &&
+                measured((2 + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) +
+                    prev(bitcount(0xA9ED45)) + 2 + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) +
+                    prev(bitcount(0xA9ED45)) + bit6(0xA9ED43) + bit7(0xA9ED43) + bitcount(0xA9ED44) + bitcount(0xA9ED45) +
+                    bitcount(0xA9ED46) - bit6(0xA9ED46) - bit7(0xA9ED46)) == 24, format="percent"
                 )) ||
-               ((prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) +
-                prev(bit0(0xAA6896)) + prev(bit1(0xAA6896)) + prev(bit2(0xAA6896)) + prev(bit3(0xAA6896)) +
-                prev(bit4(0xAA6896)) + prev(bit5(0xAA6896))) > 18 &&
-                (prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) +
-                prev(bit0(0xAA6896)) + prev(bit1(0xAA6896)) + prev(bit2(0xAA6896)) + prev(bit3(0xAA6896)) +
-                prev(bit4(0xAA6896)) + prev(bit5(0xAA6896))) < 24 &&
-                measured((bit6(0xAA6893) + bit7(0xAA6893) + bitcount(0xAA6894) + bitcount(0xAA6895) + bit0(0xAA6896) +
-                    bit1(0xAA6896) + bit2(0xAA6896) + bit3(0xAA6896) + bit4(0xAA6896) + bit5(0xAA6896)) == 24,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 2, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 2) &&
+                (2 + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) +
+                prev(bitcount(0xAA6896)) - prev(bit6(0xAA6896)) - prev(bit7(0xAA6896))) > 20 &&
+                (2 + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) +
+                2 + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) +
+                prev(bitcount(0xAA6896)) - prev(bit6(0xAA6896)) - prev(bit7(0xAA6896))) < 26 &&
+                measured((2 + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) +
+                    prev(bitcount(0xAA6895)) + 2 + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) +
+                    prev(bitcount(0xAA6895)) + bit6(0xAA6893) + bit7(0xAA6893) + bitcount(0xAA6894) + bitcount(0xAA6895) +
+                    bitcount(0xAA6896) - bit6(0xAA6896) - bit7(0xAA6896)) == 24, format="percent"
                 )))
 )
 
 achievement(
     title = "Dana Kusch", points = 10,
     description = "Reach 100% achievement rate for Chapter 2",
-    id = 405089, badge = "466039", published = "5/03/2024 14:02:24", modified = "17/04/2024 14:53:11",
+    id = 405089, badge = "466039", published = "5/03/2024 14:02:24", modified = "4/05/2024 22:10:10",
     trigger = always_true() &&
-              (((prev(bit3(0xA9ED47)) + prev(bit4(0xA9ED47)) + prev(bit5(0xA9ED47)) + prev(bit6(0xA9ED47)) +
-                prev(bit7(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) +
-                prev(bit0(0xA9ED4B)) + prev(bit1(0xA9ED4B)) + prev(bit2(0xA9ED4B)) + prev(bit3(0xA9ED4B)) +
-                prev(bit4(0xA9ED4B)) + prev(bit5(0xA9ED4B)) + prev(bit6(0xA9ED4B))) > 27 &&
-                (prev(bit3(0xA9ED47)) + prev(bit4(0xA9ED47)) + prev(bit5(0xA9ED47)) + prev(bit6(0xA9ED47)) +
-                prev(bit7(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) +
-                prev(bit0(0xA9ED4B)) + prev(bit1(0xA9ED4B)) + prev(bit2(0xA9ED4B)) + prev(bit3(0xA9ED4B)) +
-                prev(bit4(0xA9ED4B)) + prev(bit5(0xA9ED4B)) + prev(bit6(0xA9ED4B))) < 36 &&
-                measured((bit3(0xA9ED47) + bit4(0xA9ED47) + bit5(0xA9ED47) + bit6(0xA9ED47) + bit7(0xA9ED47) +
-                    bitcount(0xA9ED48) + bitcount(0xA9ED49) + bitcount(0xA9ED4A) + bit0(0xA9ED4B) + bit1(0xA9ED4B) +
-                    bit2(0xA9ED4B) + bit3(0xA9ED4B) + bit4(0xA9ED4B) + bit5(0xA9ED4B) + bit6(0xA9ED4B)) == 36,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 3, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 3) &&
+                (4 + prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
+                prev(bitcount(0xA9ED4A)) + prev(bitcount(0xA9ED4B)) - prev(bit0(0xA9ED47)) - prev(bit1(0xA9ED47)) -
+                prev(bit2(0xA9ED47)) - prev(bit7(0xA9ED4B))) > 31 &&
+                (4 + prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
+                prev(bitcount(0xA9ED4A)) + 4 + prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) +
+                prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) + prev(bitcount(0xA9ED4B)) - prev(bit0(0xA9ED47)) -
+                prev(bit1(0xA9ED47)) - prev(bit2(0xA9ED47)) - prev(bit7(0xA9ED4B))) < 40 &&
+                measured((4 + prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
+                    prev(bitcount(0xA9ED4A)) + 4 + prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) +
+                    prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) + bitcount(0xA9ED47) + bitcount(0xA9ED48) +
+                    bitcount(0xA9ED49) + bitcount(0xA9ED4A) + bitcount(0xA9ED4B) - bit0(0xA9ED47) - bit1(0xA9ED47) -
+                    bit2(0xA9ED47) - bit7(0xA9ED4B)) == 36, format="percent"
                 )) ||
-               ((prev(bit3(0xAA6897)) + prev(bit4(0xAA6897)) + prev(bit5(0xAA6897)) + prev(bit6(0xAA6897)) +
-                prev(bit7(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) +
-                prev(bit0(0xAA689B)) + prev(bit1(0xAA689B)) + prev(bit2(0xAA689B)) + prev(bit3(0xAA689B)) +
-                prev(bit4(0xAA689B)) + prev(bit5(0xAA689B)) + prev(bit6(0xAA689B))) > 27 &&
-                (prev(bit3(0xAA6897)) + prev(bit4(0xAA6897)) + prev(bit5(0xAA6897)) + prev(bit6(0xAA6897)) +
-                prev(bit7(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) +
-                prev(bit0(0xAA689B)) + prev(bit1(0xAA689B)) + prev(bit2(0xAA689B)) + prev(bit3(0xAA689B)) +
-                prev(bit4(0xAA689B)) + prev(bit5(0xAA689B)) + prev(bit6(0xAA689B))) < 36 &&
-                measured((bit3(0xAA6897) + bit4(0xAA6897) + bit5(0xAA6897) + bit6(0xAA6897) + bit7(0xAA6897) +
-                    bitcount(0xAA6898) + bitcount(0xAA6899) + bitcount(0xAA689A) + bit0(0xAA689B) + bit1(0xAA689B) +
-                    bit2(0xAA689B) + bit3(0xAA689B) + bit4(0xAA689B) + bit5(0xAA689B) + bit6(0xAA689B)) == 36,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 3, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 3) &&
+                (4 + prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
+                prev(bitcount(0xAA689A)) + prev(bitcount(0xAA689B)) - prev(bit0(0xAA6897)) - prev(bit1(0xAA6897)) -
+                prev(bit2(0xAA6897)) - prev(bit7(0xAA689B))) > 31 &&
+                (4 + prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
+                prev(bitcount(0xAA689A)) + 4 + prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) +
+                prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) + prev(bitcount(0xAA689B)) - prev(bit0(0xAA6897)) -
+                prev(bit1(0xAA6897)) - prev(bit2(0xAA6897)) - prev(bit7(0xAA689B))) < 40 &&
+                measured((4 + prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
+                    prev(bitcount(0xAA689A)) + 4 + prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) +
+                    prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) + bitcount(0xAA6897) + bitcount(0xAA6898) +
+                    bitcount(0xAA6899) + bitcount(0xAA689A) + bitcount(0xAA689B) - bit0(0xAA6897) - bit1(0xAA6897) -
+                    bit2(0xAA6897) - bit7(0xAA689B)) == 36, format="percent"
                 )))
 )
 
 achievement(
-    title = "The Root Of The Problem", points = 10,
+    title = "The Root of the Problem", points = 10,
     description = "Reach 100% achievement rate for Chapter 3",
-    id = 405090, badge = "466040", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:38",
+    id = 405090, badge = "466040", published = "5/03/2024 14:02:25", modified = "4/05/2024 22:10:10",
     trigger = always_true() &&
-              (((prev(bit2(0xA9ED58)) + prev(bit3(0xA9ED58)) + prev(bit4(0xA9ED58)) + prev(bit5(0xA9ED58)) +
-                prev(bit6(0xA9ED58)) + prev(bit7(0xA9ED58)) + prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A))) > 15 &&
-                (prev(bit2(0xA9ED58)) + prev(bit3(0xA9ED58)) + prev(bit4(0xA9ED58)) + prev(bit5(0xA9ED58)) +
-                prev(bit6(0xA9ED58)) + prev(bit7(0xA9ED58)) + prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A))) < 22 &&
-                measured((bit2(0xA9ED58) + bit3(0xA9ED58) + bit4(0xA9ED58) + bit5(0xA9ED58) + bit6(0xA9ED58) +
-                    bit7(0xA9ED58) + bitcount(0xA9ED59) + bitcount(0xA9ED5A)) == 22,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 4, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 4) &&
+                (2 + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) -
+                prev(bit0(0xA9ED58)) - prev(bit1(0xA9ED58))) > 17 &&
+                (2 + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) + 2 + prev(bitcount(0xA9ED58)) +
+                prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) - prev(bit0(0xA9ED58)) - prev(bit1(0xA9ED58))) < 24 &&
+                measured((2 + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) + 2 + prev(bitcount(0xA9ED58)) +
+                    prev(bitcount(0xA9ED59)) + bitcount(0xA9ED58) + bitcount(0xA9ED59) + bitcount(0xA9ED5A) - bit0(0xA9ED58)
+                    - bit1(0xA9ED58)) == 22, format="percent"
                 )) ||
-               ((prev(bit2(0xAA68A8)) + prev(bit3(0xAA68A8)) + prev(bit4(0xAA68A8)) + prev(bit5(0xAA68A8)) +
-                prev(bit6(0xAA68A8)) + prev(bit7(0xAA68A8)) + prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA))) > 15 &&
-                (prev(bit2(0xAA68A8)) + prev(bit3(0xAA68A8)) + prev(bit4(0xAA68A8)) + prev(bit5(0xAA68A8)) +
-                prev(bit6(0xAA68A8)) + prev(bit7(0xAA68A8)) + prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA))) < 22 &&
-                measured((bit2(0xAA68A8) + bit3(0xAA68A8) + bit4(0xAA68A8) + bit5(0xAA68A8) + bit6(0xAA68A8) +
-                    bit7(0xAA68A8) + bitcount(0xAA68A9) + bitcount(0xAA68AA)) == 22,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 4, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 4) &&
+                (2 + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) -
+                prev(bit0(0xAA68A8)) - prev(bit1(0xAA68A8))) > 17 &&
+                (2 + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) + 2 + prev(bitcount(0xAA68A8)) +
+                prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) - prev(bit0(0xAA68A8)) - prev(bit1(0xAA68A8))) < 24 &&
+                measured((2 + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) + 2 + prev(bitcount(0xAA68A8)) +
+                    prev(bitcount(0xAA68A9)) + bitcount(0xAA68A8) + bitcount(0xAA68A9) + bitcount(0xAA68AA) - bit0(0xAA68A8)
+                    - bit1(0xAA68A8)) == 22, format="percent"
                 )))
 )
 
 achievement(
     title = "The Monochrome Era", points = 10,
     description = "Reach 100% achievement rate for Chapter 4",
-    id = 405091, badge = "466041", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:42",
+    id = 405091, badge = "466041", published = "5/03/2024 14:02:25", modified = "4/05/2024 22:10:10",
     trigger = always_true() &&
-              (((prev(bit1(0xA9ED4D)) + prev(bit2(0xA9ED4D)) + prev(bit3(0xA9ED4D)) + prev(bit4(0xA9ED4D)) +
-                prev(bit5(0xA9ED4D)) + prev(bit6(0xA9ED4D)) + prev(bit7(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
-                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bit0(0xA9ED51)) + prev(bit1(0xA9ED51)) +
-                prev(bit2(0xA9ED51)) + prev(bit3(0xA9ED51)) + prev(bit4(0xA9ED51))) > 27 &&
-                (prev(bit1(0xA9ED4D)) + prev(bit2(0xA9ED4D)) + prev(bit3(0xA9ED4D)) + prev(bit4(0xA9ED4D)) +
-                prev(bit5(0xA9ED4D)) + prev(bit6(0xA9ED4D)) + prev(bit7(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
-                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bit0(0xA9ED51)) + prev(bit1(0xA9ED51)) +
-                prev(bit2(0xA9ED51)) + prev(bit3(0xA9ED51)) + prev(bit4(0xA9ED51))) < 36 &&
-                measured((bit1(0xA9ED4D) + bit2(0xA9ED4D) + bit3(0xA9ED4D) + bit4(0xA9ED4D) + bit5(0xA9ED4D) +
-                    bit6(0xA9ED4D) + bit7(0xA9ED4D) + bitcount(0xA9ED4E) + bitcount(0xA9ED4F) + bitcount(0xA9ED50) +
-                    bit0(0xA9ED51) + bit1(0xA9ED51) + bit2(0xA9ED51) + bit3(0xA9ED51) + bit4(0xA9ED51)) == 36,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 5, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 5) &&
+                (4 + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) + prev(bitcount(0xA9ED4F)) +
+                prev(bitcount(0xA9ED50)) + prev(bitcount(0xA9ED51)) - prev(bit0(0xA9ED4D)) - prev(bit5(0xA9ED51)) -
+                prev(bit6(0xA9ED51)) - prev(bit7(0xA9ED51))) > 31 &&
+                (4 + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) + prev(bitcount(0xA9ED4F)) +
+                prev(bitcount(0xA9ED50)) + 4 + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
+                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bitcount(0xA9ED51)) - prev(bit0(0xA9ED4D)) -
+                prev(bit5(0xA9ED51)) - prev(bit6(0xA9ED51)) - prev(bit7(0xA9ED51))) < 40 &&
+                measured((4 + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) + prev(bitcount(0xA9ED4F)) +
+                    prev(bitcount(0xA9ED50)) + 4 + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
+                    prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + bitcount(0xA9ED4D) + bitcount(0xA9ED4E) +
+                    bitcount(0xA9ED4F) + bitcount(0xA9ED50) + bitcount(0xA9ED51) - bit0(0xA9ED4D) - bit5(0xA9ED51) -
+                    bit6(0xA9ED51) - bit7(0xA9ED51)) == 36, format="percent"
                 )) ||
-               ((prev(bit1(0xAA689D)) + prev(bit2(0xAA689D)) + prev(bit3(0xAA689D)) + prev(bit4(0xAA689D)) +
-                prev(bit5(0xAA689D)) + prev(bit6(0xAA689D)) + prev(bit7(0xAA689D)) + prev(bitcount(0xAA689E)) +
-                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bit0(0xAA68A1)) + prev(bit1(0xAA68A1)) +
-                prev(bit2(0xAA68A1)) + prev(bit3(0xAA68A1)) + prev(bit4(0xAA68A1))) > 27 &&
-                (prev(bit1(0xAA689D)) + prev(bit2(0xAA689D)) + prev(bit3(0xAA689D)) + prev(bit4(0xAA689D)) +
-                prev(bit5(0xAA689D)) + prev(bit6(0xAA689D)) + prev(bit7(0xAA689D)) + prev(bitcount(0xAA689E)) +
-                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bit0(0xAA68A1)) + prev(bit1(0xAA68A1)) +
-                prev(bit2(0xAA68A1)) + prev(bit3(0xAA68A1)) + prev(bit4(0xAA68A1))) < 36 &&
-                measured((bit1(0xAA689D) + bit2(0xAA689D) + bit3(0xAA689D) + bit4(0xAA689D) + bit5(0xAA689D) +
-                    bit6(0xAA689D) + bit7(0xAA689D) + bitcount(0xAA689E) + bitcount(0xAA689F) + bitcount(0xAA68A0) +
-                    bit0(0xAA68A1) + bit1(0xAA68A1) + bit2(0xAA68A1) + bit3(0xAA68A1) + bit4(0xAA68A1)) == 36,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 5, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 5) &&
+                (4 + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) + prev(bitcount(0xAA689F)) +
+                prev(bitcount(0xAA68A0)) + prev(bitcount(0xAA68A1)) - prev(bit0(0xAA689D)) - prev(bit5(0xAA68A1)) -
+                prev(bit6(0xAA68A1)) - prev(bit7(0xAA68A1))) > 31 &&
+                (4 + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) + prev(bitcount(0xAA689F)) +
+                prev(bitcount(0xAA68A0)) + 4 + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) +
+                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bitcount(0xAA68A1)) - prev(bit0(0xAA689D)) -
+                prev(bit5(0xAA68A1)) - prev(bit6(0xAA68A1)) - prev(bit7(0xAA68A1))) < 40 &&
+                measured((4 + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) + prev(bitcount(0xAA689F)) +
+                    prev(bitcount(0xAA68A0)) + 4 + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) +
+                    prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + bitcount(0xAA689D) + bitcount(0xAA689E) +
+                    bitcount(0xAA689F) + bitcount(0xAA68A0) + bitcount(0xAA68A1) - bit0(0xAA689D) - bit5(0xAA68A1) -
+                    bit6(0xAA68A1) - bit7(0xAA68A1)) == 36, format="percent"
                 )))
 )
 
 achievement(
-    title = "Meddling With Destiny", points = 10,
+    title = "Meddling with Destiny", points = 10,
     description = "Reach 100% achievement rate for Chapter 5",
-    id = 405092, badge = "466042", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:52",
+    id = 405092, badge = "466042", published = "5/03/2024 14:02:25", modified = "4/05/2024 22:10:10",
     trigger = always_true() &&
-              (((prev(bit1(0xA9ED52)) + prev(bit2(0xA9ED52)) + prev(bit3(0xA9ED52)) + prev(bit4(0xA9ED52)) +
-                prev(bit5(0xA9ED52)) + prev(bit6(0xA9ED52)) + prev(bit7(0xA9ED52)) + prev(bitcount(0xA9ED53)) +
-                prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bit0(0xA9ED57)) +
-                prev(bit1(0xA9ED57)) + prev(bit2(0xA9ED57)) + prev(bit3(0xA9ED57)) + prev(bit4(0xA9ED57)) +
-                prev(bit5(0xA9ED57)) + prev(bit6(0xA9ED57))) > 33 &&
-                (prev(bit1(0xA9ED52)) + prev(bit2(0xA9ED52)) + prev(bit3(0xA9ED52)) + prev(bit4(0xA9ED52)) +
-                prev(bit5(0xA9ED52)) + prev(bit6(0xA9ED52)) + prev(bit7(0xA9ED52)) + prev(bitcount(0xA9ED53)) +
-                prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bit0(0xA9ED57)) +
-                prev(bit1(0xA9ED57)) + prev(bit2(0xA9ED57)) + prev(bit3(0xA9ED57)) + prev(bit4(0xA9ED57)) +
-                prev(bit5(0xA9ED57)) + prev(bit6(0xA9ED57))) < 46 &&
-                measured((bit1(0xA9ED52) + bit2(0xA9ED52) + bit3(0xA9ED52) + bit4(0xA9ED52) + bit5(0xA9ED52) +
-                    bit6(0xA9ED52) + bit7(0xA9ED52) + bitcount(0xA9ED53) + bitcount(0xA9ED54) + bitcount(0xA9ED55) +
-                    bitcount(0xA9ED56) + bit0(0xA9ED57) + bit1(0xA9ED57) + bit2(0xA9ED57) + bit3(0xA9ED57) + bit4(0xA9ED57)
-                    + bit5(0xA9ED57) + bit6(0xA9ED57)) == 46,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 6, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 6) &&
+                (2 + prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bitcount(0xA9ED57)) - prev(bit0(0xA9ED52)) -
+                prev(bit7(0xA9ED57))) > 35 &&
+                (2 + prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + 2 + prev(bitcount(0xA9ED52)) +
+                prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) +
+                prev(bitcount(0xA9ED56)) + prev(bitcount(0xA9ED57)) - prev(bit0(0xA9ED52)) - prev(bit7(0xA9ED57))) < 48 &&
+                measured((2 + prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                    prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + 2 + prev(bitcount(0xA9ED52)) +
+                    prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) +
+                    prev(bitcount(0xA9ED56)) + bitcount(0xA9ED52) + bitcount(0xA9ED53) + bitcount(0xA9ED54) +
+                    bitcount(0xA9ED55) + bitcount(0xA9ED56) + bitcount(0xA9ED57) - bit0(0xA9ED52) - bit7(0xA9ED57)) == 46,
+                    format="percent"
                 )) ||
-               ((prev(bit1(0xAA68A2)) + prev(bit2(0xAA68A2)) + prev(bit3(0xAA68A2)) + prev(bit4(0xAA68A2)) +
-                prev(bit5(0xAA68A2)) + prev(bit6(0xAA68A2)) + prev(bit7(0xAA68A2)) + prev(bitcount(0xAA68A3)) +
-                prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bit0(0xAA68A7)) +
-                prev(bit1(0xAA68A7)) + prev(bit2(0xAA68A7)) + prev(bit3(0xAA68A7)) + prev(bit4(0xAA68A7)) +
-                prev(bit5(0xAA68A7)) + prev(bit6(0xAA68A7))) > 33 &&
-                (prev(bit1(0xAA68A2)) + prev(bit2(0xAA68A2)) + prev(bit3(0xAA68A2)) + prev(bit4(0xAA68A2)) +
-                prev(bit5(0xAA68A2)) + prev(bit6(0xAA68A2)) + prev(bit7(0xAA68A2)) + prev(bitcount(0xAA68A3)) +
-                prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bit0(0xAA68A7)) +
-                prev(bit1(0xAA68A7)) + prev(bit2(0xAA68A7)) + prev(bit3(0xAA68A7)) + prev(bit4(0xAA68A7)) +
-                prev(bit5(0xAA68A7)) + prev(bit6(0xAA68A7))) < 46 &&
-                measured((bit1(0xAA68A2) + bit2(0xAA68A2) + bit3(0xAA68A2) + bit4(0xAA68A2) + bit5(0xAA68A2) +
-                    bit6(0xAA68A2) + bit7(0xAA68A2) + bitcount(0xAA68A3) + bitcount(0xAA68A4) + bitcount(0xAA68A5) +
-                    bitcount(0xAA68A6) + bit0(0xAA68A7) + bit1(0xAA68A7) + bit2(0xAA68A7) + bit3(0xAA68A7) + bit4(0xAA68A7)
-                    + bit5(0xAA68A7) + bit6(0xAA68A7)) == 46,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 6, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 6) &&
+                (2 + prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bitcount(0xAA68A7)) - prev(bit0(0xAA68A2)) -
+                prev(bit7(0xAA68A7))) > 35 &&
+                (2 + prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + 2 + prev(bitcount(0xAA68A2)) +
+                prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) +
+                prev(bitcount(0xAA68A6)) + prev(bitcount(0xAA68A7)) - prev(bit0(0xAA68A2)) - prev(bit7(0xAA68A7))) < 48 &&
+                measured((2 + prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                    prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + 2 + prev(bitcount(0xAA68A2)) +
+                    prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) +
+                    prev(bitcount(0xAA68A6)) + bitcount(0xAA68A2) + bitcount(0xAA68A3) + bitcount(0xAA68A4) +
+                    bitcount(0xAA68A5) + bitcount(0xAA68A6) + bitcount(0xAA68A7) - bit0(0xAA68A2) - bit7(0xAA68A7)) == 46,
+                    format="percent"
                 )))
 )
 
 achievement(
     title = "The Good Samaritan", points = 10,
     description = "Reach 100% achievement rate for Chapter 6",
-    id = 405093, badge = "466043", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:45",
+    id = 405093, badge = "466043", published = "5/03/2024 14:02:25", modified = "4/05/2024 22:10:04",
     trigger = always_true() &&
-              (((prev(bit2(0xA9ED5B)) + prev(bit3(0xA9ED5B)) + prev(bit4(0xA9ED5B)) + prev(bit5(0xA9ED5B)) +
-                prev(bit6(0xA9ED5B)) + prev(bit7(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
-                prev(bitcount(0xA9ED5E)) + prev(bit0(0xA9ED5F)) + prev(bit1(0xA9ED5F)) + prev(bit2(0xA9ED5F)) +
-                prev(bit3(0xA9ED5F)) + prev(bit4(0xA9ED5F))) > 24 &&
-                (prev(bit2(0xA9ED5B)) + prev(bit3(0xA9ED5B)) + prev(bit4(0xA9ED5B)) + prev(bit5(0xA9ED5B)) +
-                prev(bit6(0xA9ED5B)) + prev(bit7(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
-                prev(bitcount(0xA9ED5E)) + prev(bit0(0xA9ED5F)) + prev(bit1(0xA9ED5F)) + prev(bit2(0xA9ED5F)) +
-                prev(bit3(0xA9ED5F)) + prev(bit4(0xA9ED5F))) < 35 &&
-                measured((bit2(0xA9ED5B) + bit3(0xA9ED5B) + bit4(0xA9ED5B) + bit5(0xA9ED5B) + bit6(0xA9ED5B) +
-                    bit7(0xA9ED5B) + bitcount(0xA9ED5C) + bitcount(0xA9ED5D) + bitcount(0xA9ED5E) + bit0(0xA9ED5F) +
-                    bit1(0xA9ED5F) + bit2(0xA9ED5F) + bit3(0xA9ED5F) + bit4(0xA9ED5F)) == 35,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 7, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 7) &&
+                (5 + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) - prev(bit0(0xA9ED5B)) - prev(bit1(0xA9ED5B)) -
+                prev(bit5(0xA9ED5F)) - prev(bit6(0xA9ED5F)) - prev(bit7(0xA9ED5F))) > 29 &&
+                (5 + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                prev(bitcount(0xA9ED5E)) + 5 + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
+                prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) - prev(bit0(0xA9ED5B)) -
+                prev(bit1(0xA9ED5B)) - prev(bit5(0xA9ED5F)) - prev(bit6(0xA9ED5F)) - prev(bit7(0xA9ED5F))) < 40 &&
+                measured((5 + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                    prev(bitcount(0xA9ED5E)) + 5 + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
+                    prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + bitcount(0xA9ED5B) + bitcount(0xA9ED5C) +
+                    bitcount(0xA9ED5D) + bitcount(0xA9ED5E) + bitcount(0xA9ED5F) - bit0(0xA9ED5B) - bit1(0xA9ED5B) -
+                    bit5(0xA9ED5F) - bit6(0xA9ED5F) - bit7(0xA9ED5F)) == 35, format="percent"
                 )) ||
-               ((prev(bit2(0xAA68AB)) + prev(bit3(0xAA68AB)) + prev(bit4(0xAA68AB)) + prev(bit5(0xAA68AB)) +
-                prev(bit6(0xAA68AB)) + prev(bit7(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
-                prev(bitcount(0xAA68AE)) + prev(bit0(0xAA68AF)) + prev(bit1(0xAA68AF)) + prev(bit2(0xAA68AF)) +
-                prev(bit3(0xAA68AF)) + prev(bit4(0xAA68AF))) > 24 &&
-                (prev(bit2(0xAA68AB)) + prev(bit3(0xAA68AB)) + prev(bit4(0xAA68AB)) + prev(bit5(0xAA68AB)) +
-                prev(bit6(0xAA68AB)) + prev(bit7(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
-                prev(bitcount(0xAA68AE)) + prev(bit0(0xAA68AF)) + prev(bit1(0xAA68AF)) + prev(bit2(0xAA68AF)) +
-                prev(bit3(0xAA68AF)) + prev(bit4(0xAA68AF))) < 35 &&
-                measured((bit2(0xAA68AB) + bit3(0xAA68AB) + bit4(0xAA68AB) + bit5(0xAA68AB) + bit6(0xAA68AB) +
-                    bit7(0xAA68AB) + bitcount(0xAA68AC) + bitcount(0xAA68AD) + bitcount(0xAA68AE) + bit0(0xAA68AF) +
-                    bit1(0xAA68AF) + bit2(0xAA68AF) + bit3(0xAA68AF) + bit4(0xAA68AF)) == 35,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 7, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 7) &&
+                (5 + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) - prev(bit0(0xAA68AB)) - prev(bit1(0xAA68AB)) -
+                prev(bit5(0xAA68AF)) - prev(bit6(0xAA68AF)) - prev(bit7(0xAA68AF))) > 29 &&
+                (5 + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                prev(bitcount(0xAA68AE)) + 5 + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
+                prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) - prev(bit0(0xAA68AB)) -
+                prev(bit1(0xAA68AB)) - prev(bit5(0xAA68AF)) - prev(bit6(0xAA68AF)) - prev(bit7(0xAA68AF))) < 40 &&
+                measured((5 + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                    prev(bitcount(0xAA68AE)) + 5 + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
+                    prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + bitcount(0xAA68AB) + bitcount(0xAA68AC) +
+                    bitcount(0xAA68AD) + bitcount(0xAA68AE) + bitcount(0xAA68AF) - bit0(0xAA68AB) - bit1(0xAA68AB) -
+                    bit5(0xAA68AF) - bit6(0xAA68AF) - bit7(0xAA68AF)) == 35, format="percent"
                 )))
 )
 
 achievement(
     title = "Vintage Knots", points = 10,
     description = "Reach 100% achievement rate for Chapter 7",
-    id = 405094, badge = "466044", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:34",
+    id = 405094, badge = "466044", published = "5/03/2024 14:02:25", modified = "4/05/2024 22:10:03",
     trigger = always_true() &&
-              (((prev(bit2(0xA9ED60)) + prev(bit3(0xA9ED60)) + prev(bit4(0xA9ED60)) + prev(bit5(0xA9ED60)) +
-                prev(bit6(0xA9ED60)) + prev(bit7(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless(byte(0xB95704) != 8) &&
+                (2 + prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
                 prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) +
-                prev(bit3(0xA9ED64))) > 24 &&
-                (prev(bit2(0xA9ED60)) + prev(bit3(0xA9ED60)) + prev(bit4(0xA9ED60)) + prev(bit5(0xA9ED60)) +
-                prev(bit6(0xA9ED60)) + prev(bit7(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                prev(bit3(0xA9ED64)) - prev(bit0(0xA9ED60)) - prev(bit1(0xA9ED60))) > 26 &&
+                (2 + prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + 2 +
+                prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
                 prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) +
-                prev(bit3(0xA9ED64))) < 34 &&
-                measured((bit2(0xA9ED60) + bit3(0xA9ED60) + bit4(0xA9ED60) + bit5(0xA9ED60) + bit6(0xA9ED60) +
-                    bit7(0xA9ED60) + bitcount(0xA9ED61) + bitcount(0xA9ED62) + bitcount(0xA9ED63) + bit0(0xA9ED64) +
-                    bit1(0xA9ED64) + bit2(0xA9ED64) + bit3(0xA9ED64)) == 34,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if(byte(0xB95704) == 8, format="percent"
+                prev(bit3(0xA9ED64)) - prev(bit0(0xA9ED60)) - prev(bit1(0xA9ED60))) < 36 &&
+                measured((2 + prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                    prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + 2 +
+                    prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                    prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) +
+                    bitcount(0xA9ED60) + bitcount(0xA9ED61) + bitcount(0xA9ED62) + bitcount(0xA9ED63) + bit0(0xA9ED64) +
+                    bit1(0xA9ED64) + bit2(0xA9ED64) + bit3(0xA9ED64) - bit0(0xA9ED60) - bit1(0xA9ED60)) == 34,
+                    format="percent"
                 )) ||
-               ((prev(bit2(0xAA68B0)) + prev(bit3(0xAA68B0)) + prev(bit4(0xAA68B0)) + prev(bit5(0xAA68B0)) +
-                prev(bit6(0xAA68B0)) + prev(bit7(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless(byte(0xB9D284) != 8) &&
+                (2 + prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
                 prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) +
-                prev(bit3(0xAA68B4))) > 24 &&
-                (prev(bit2(0xAA68B0)) + prev(bit3(0xAA68B0)) + prev(bit4(0xAA68B0)) + prev(bit5(0xAA68B0)) +
-                prev(bit6(0xAA68B0)) + prev(bit7(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                prev(bit3(0xAA68B4)) - prev(bit0(0xAA68B0)) - prev(bit1(0xAA68B0))) > 26 &&
+                (2 + prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + 2 +
+                prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
                 prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) +
-                prev(bit3(0xAA68B4))) < 34 &&
-                measured((bit2(0xAA68B0) + bit3(0xAA68B0) + bit4(0xAA68B0) + bit5(0xAA68B0) + bit6(0xAA68B0) +
-                    bit7(0xAA68B0) + bitcount(0xAA68B1) + bitcount(0xAA68B2) + bitcount(0xAA68B3) + bit0(0xAA68B4) +
-                    bit1(0xAA68B4) + bit2(0xAA68B4) + bit3(0xAA68B4)) == 34,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if(byte(0xB9D284) == 8, format="percent"
+                prev(bit3(0xAA68B4)) - prev(bit0(0xAA68B0)) - prev(bit1(0xAA68B0))) < 36 &&
+                measured((2 + prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                    prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + 2 +
+                    prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                    prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) +
+                    bitcount(0xAA68B0) + bitcount(0xAA68B1) + bitcount(0xAA68B2) + bitcount(0xAA68B3) + bit0(0xAA68B4) +
+                    bit1(0xAA68B4) + bit2(0xAA68B4) + bit3(0xAA68B4) - bit0(0xAA68B0) - bit1(0xAA68B0)) == 34,
+                    format="percent"
                 )))
 )
 
 achievement(
-    title = "The Power Of Fate", points = 10,
+    title = "The Power of Fate", points = 10,
     description = "Reach 100% achievement rate for Chapter 8",
-    id = 405095, badge = "466045", published = "5/03/2024 14:02:25", modified = "17/04/2024 14:52:38",
+    id = 405095, badge = "466045", published = "5/03/2024 14:02:25", modified = "4/05/2024 12:40:45",
     trigger = always_true() &&
-              (((prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) +
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless((byte(0xB95704) != 11 && byte(0xB95704) != 9)) &&
+                (prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) +
                 prev(bitcount(0xA9ED67)) + prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) +
                 prev(bitcount(0xA9ED6A)) + prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) +
                 prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) + prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) +
@@ -4066,13 +4161,12 @@ achievement(
                 measured((bit5(0xA9ED65) + bit6(0xA9ED65) + bit7(0xA9ED65) + bitcount(0xA9ED66) + bitcount(0xA9ED67) +
                     bitcount(0xA9ED68) + bitcount(0xA9ED69) + bitcount(0xA9ED6A) + bitcount(0xA9ED6B) + bitcount(0xA9ED6C) +
                     bitcount(0xA9ED6D) + bit0(0xA9ED6E) + bit1(0xA9ED6E) + bit2(0xA9ED6E) + bit3(0xA9ED6E)) == 71,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if((byte(0xB95704) == 11 || byte(0xB95704) == 9), format="percent"
+                    format="percent"
                 )) ||
-               ((prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) +
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless((byte(0xB9D284) != 11 && byte(0xB9D284) != 9)) &&
+                (prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) +
                 prev(bitcount(0xAA68B7)) + prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) +
                 prev(bitcount(0xAA68BA)) + prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) +
                 prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) + prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) +
@@ -4085,253 +4179,303 @@ achievement(
                 measured((bit5(0xAA68B5) + bit6(0xAA68B5) + bit7(0xAA68B5) + bitcount(0xAA68B6) + bitcount(0xAA68B7) +
                     bitcount(0xAA68B8) + bitcount(0xAA68B9) + bitcount(0xAA68BA) + bitcount(0xAA68BB) + bitcount(0xAA68BC) +
                     bitcount(0xAA68BD) + bit0(0xAA68BE) + bit1(0xAA68BE) + bit2(0xAA68BE) + bit3(0xAA68BE)) == 71,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if((byte(0xB9D284) == 11 || byte(0xB9D284) == 9), format="percent"
+                    format="percent"
                 )))
 )
 
 achievement(
     title = "Eternal Youth", points = 10,
     description = "Reach 100% achievement rate for the Epilogue",
-    id = 405096, badge = "466046", published = "5/03/2024 14:02:34", modified = "17/04/2024 14:53:03",
+    id = 405096, badge = "466046", published = "5/03/2024 14:02:34", modified = "4/05/2024 22:10:03",
     trigger = always_true() &&
-              (((prev(bit2(0xA9ED71)) + prev(bit3(0xA9ED71)) + prev(bit4(0xA9ED71)) + prev(bit5(0xA9ED71)) +
-                prev(bit6(0xA9ED71)) + prev(bit7(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) +
-                prev(bit0(0xA9ED74))) > 15 &&
-                (prev(bit2(0xA9ED71)) + prev(bit3(0xA9ED71)) + prev(bit4(0xA9ED71)) + prev(bit5(0xA9ED71)) +
-                prev(bit6(0xA9ED71)) + prev(bit7(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) +
-                prev(bit0(0xA9ED74))) < 23 &&
-                measured((bit2(0xA9ED71) + bit3(0xA9ED71) + bit4(0xA9ED71) + bit5(0xA9ED71) + bit6(0xA9ED71) +
-                    bit7(0xA9ED71) + bitcount(0xA9ED72) + bitcount(0xA9ED73) + bit0(0xA9ED74)) == 23,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0 &&
-                    
-     measured_if((byte(0xB95704) == 12 || byte(0xB95704) == 10), format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                unless((byte(0xB95704) != 12 && byte(0xB95704) != 10)) &&
+                (2 + prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) +
+                prev(bit0(0xA9ED74)) - prev(bit0(0xA9ED71)) - prev(bit1(0xA9ED71))) > 17 &&
+                (2 + prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + 2 +
+                prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + prev(bit0(0xA9ED74)) -
+                prev(bit0(0xA9ED71)) - prev(bit1(0xA9ED71))) < 25 &&
+                measured((2 + prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + 2 +
+                    prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + bitcount(0xA9ED71) +
+                    bitcount(0xA9ED72) + bitcount(0xA9ED73) + bit0(0xA9ED74) - bit0(0xA9ED71) - bit1(0xA9ED71)) == 23,
+                    format="percent"
                 )) ||
-               ((prev(bit2(0xAA68C1)) + prev(bit3(0xAA68C1)) + prev(bit4(0xAA68C1)) + prev(bit5(0xAA68C1)) +
-                prev(bit6(0xAA68C1)) + prev(bit7(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) +
-                prev(bit0(0xAA68C4))) > 15 &&
-                (prev(bit2(0xAA68C1)) + prev(bit3(0xAA68C1)) + prev(bit4(0xAA68C1)) + prev(bit5(0xAA68C1)) +
-                prev(bit6(0xAA68C1)) + prev(bit7(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) +
-                prev(bit0(0xAA68C4))) < 23 &&
-                measured((bit2(0xAA68C1) + bit3(0xAA68C1) + bit4(0xAA68C1) + bit5(0xAA68C1) + bit6(0xAA68C1) +
-                    bit7(0xAA68C1) + bitcount(0xAA68C2) + bitcount(0xAA68C3) + bit0(0xAA68C4)) == 23,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0 &&
-                    
-     measured_if((byte(0xB9D284) == 12 || byte(0xB9D284) == 10), format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                unless((byte(0xB9D284) != 12 && byte(0xB9D284) != 10)) &&
+                (2 + prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) +
+                prev(bit0(0xAA68C4)) - prev(bit0(0xAA68C1)) - prev(bit1(0xAA68C1))) > 17 &&
+                (2 + prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + 2 +
+                prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + prev(bit0(0xAA68C4)) -
+                prev(bit0(0xAA68C1)) - prev(bit1(0xAA68C1))) < 25 &&
+                measured((2 + prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + 2 +
+                    prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + bitcount(0xAA68C1) +
+                    bitcount(0xAA68C2) + bitcount(0xAA68C3) + bit0(0xAA68C4) - bit0(0xAA68C1) - bit1(0xAA68C1)) == 23,
+                    format="percent"
                 )))
 )
 
 achievement(
-    title = "The Day Of Walpurgis", points = 50,
+    title = "The Day of Walpurgis", points = 50,
     description = "Reach 100% total achievement rate",
-    id = 405097, badge = "466047", published = "5/03/2024 14:02:34", modified = "17/04/2024 14:52:45",
+    id = 405097, badge = "466047", published = "5/03/2024 14:02:34", modified = "4/05/2024 22:10:03",
     trigger = always_true() &&
-              (((prev(bit1(0xA9ED3C)) + prev(bit2(0xA9ED3C)) + prev(bit3(0xA9ED3C)) + prev(bit4(0xA9ED3C)) +
-                prev(bit5(0xA9ED3C)) + prev(bit6(0xA9ED3C)) + prev(bit7(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) +
-                prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) +
-                prev(bitcount(0xA9ED41)) + prev(bit0(0xA9ED42)) + prev(bit1(0xA9ED42)) + prev(bit2(0xA9ED42)) +
-                prev(bit3(0xA9ED42)) + prev(bit4(0xA9ED42)) + prev(bit5(0xA9ED42)) + prev(bit6(0xA9ED43)) +
-                prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) + prev(bit0(0xA9ED46)) +
-                prev(bit1(0xA9ED46)) + prev(bit2(0xA9ED46)) + prev(bit3(0xA9ED46)) + prev(bit4(0xA9ED46)) +
-                prev(bit5(0xA9ED46)) + prev(bit3(0xA9ED47)) + prev(bit4(0xA9ED47)) + prev(bit5(0xA9ED47)) +
-                prev(bit6(0xA9ED47)) + prev(bit7(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
-                prev(bitcount(0xA9ED4A)) + prev(bit0(0xA9ED4B)) + prev(bit1(0xA9ED4B)) + prev(bit2(0xA9ED4B)) +
-                prev(bit3(0xA9ED4B)) + prev(bit4(0xA9ED4B)) + prev(bit5(0xA9ED4B)) + prev(bit6(0xA9ED4B)) +
-                prev(bit2(0xA9ED58)) + prev(bit3(0xA9ED58)) + prev(bit4(0xA9ED58)) + prev(bit5(0xA9ED58)) +
-                prev(bit6(0xA9ED58)) + prev(bit7(0xA9ED58)) + prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) +
-                prev(bit1(0xA9ED4D)) + prev(bit2(0xA9ED4D)) + prev(bit3(0xA9ED4D)) + prev(bit4(0xA9ED4D)) +
-                prev(bit5(0xA9ED4D)) + prev(bit6(0xA9ED4D)) + prev(bit7(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
-                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bit0(0xA9ED51)) + prev(bit1(0xA9ED51)) +
-                prev(bit2(0xA9ED51)) + prev(bit3(0xA9ED51)) + prev(bit4(0xA9ED51)) + prev(bit1(0xA9ED52)) +
-                prev(bit2(0xA9ED52)) + prev(bit3(0xA9ED52)) + prev(bit4(0xA9ED52)) + prev(bit5(0xA9ED52)) +
-                prev(bit6(0xA9ED52)) + prev(bit7(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
-                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bit0(0xA9ED57)) + prev(bit1(0xA9ED57)) +
-                prev(bit2(0xA9ED57)) + prev(bit3(0xA9ED57)) + prev(bit4(0xA9ED57)) + prev(bit5(0xA9ED57)) +
-                prev(bit6(0xA9ED57)) + prev(bit2(0xA9ED5B)) + prev(bit3(0xA9ED5B)) + prev(bit4(0xA9ED5B)) +
-                prev(bit5(0xA9ED5B)) + prev(bit6(0xA9ED5B)) + prev(bit7(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
-                prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + prev(bit0(0xA9ED5F)) + prev(bit1(0xA9ED5F)) +
-                prev(bit2(0xA9ED5F)) + prev(bit3(0xA9ED5F)) + prev(bit4(0xA9ED5F)) + prev(bit2(0xA9ED60)) +
-                prev(bit3(0xA9ED60)) + prev(bit4(0xA9ED60)) + prev(bit5(0xA9ED60)) + prev(bit6(0xA9ED60)) +
-                prev(bit7(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) + prev(bitcount(0xA9ED63)) +
-                prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + prev(bit3(0xA9ED64)) +
-                prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) +
-                prev(bitcount(0xA9ED67)) + prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) +
-                prev(bitcount(0xA9ED6A)) + prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) +
-                prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) + prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) +
-                prev(bit3(0xA9ED6E)) + prev(bit2(0xA9ED71)) + prev(bit3(0xA9ED71)) + prev(bit4(0xA9ED71)) +
-                prev(bit5(0xA9ED71)) + prev(bit6(0xA9ED71)) + prev(bit7(0xA9ED71)) + prev(bitcount(0xA9ED72)) +
-                prev(bitcount(0xA9ED73)) + prev(bit0(0xA9ED74))) > 342 &&
-                (prev(bit1(0xA9ED3C)) + prev(bit2(0xA9ED3C)) + prev(bit3(0xA9ED3C)) + prev(bit4(0xA9ED3C)) +
-                prev(bit5(0xA9ED3C)) + prev(bit6(0xA9ED3C)) + prev(bit7(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) +
-                prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) +
-                prev(bitcount(0xA9ED41)) + prev(bit0(0xA9ED42)) + prev(bit1(0xA9ED42)) + prev(bit2(0xA9ED42)) +
-                prev(bit3(0xA9ED42)) + prev(bit4(0xA9ED42)) + prev(bit5(0xA9ED42)) + prev(bit6(0xA9ED43)) +
-                prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) + prev(bit0(0xA9ED46)) +
-                prev(bit1(0xA9ED46)) + prev(bit2(0xA9ED46)) + prev(bit3(0xA9ED46)) + prev(bit4(0xA9ED46)) +
-                prev(bit5(0xA9ED46)) + prev(bit3(0xA9ED47)) + prev(bit4(0xA9ED47)) + prev(bit5(0xA9ED47)) +
-                prev(bit6(0xA9ED47)) + prev(bit7(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
-                prev(bitcount(0xA9ED4A)) + prev(bit0(0xA9ED4B)) + prev(bit1(0xA9ED4B)) + prev(bit2(0xA9ED4B)) +
-                prev(bit3(0xA9ED4B)) + prev(bit4(0xA9ED4B)) + prev(bit5(0xA9ED4B)) + prev(bit6(0xA9ED4B)) +
-                prev(bit2(0xA9ED58)) + prev(bit3(0xA9ED58)) + prev(bit4(0xA9ED58)) + prev(bit5(0xA9ED58)) +
-                prev(bit6(0xA9ED58)) + prev(bit7(0xA9ED58)) + prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) +
-                prev(bit1(0xA9ED4D)) + prev(bit2(0xA9ED4D)) + prev(bit3(0xA9ED4D)) + prev(bit4(0xA9ED4D)) +
-                prev(bit5(0xA9ED4D)) + prev(bit6(0xA9ED4D)) + prev(bit7(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
-                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bit0(0xA9ED51)) + prev(bit1(0xA9ED51)) +
-                prev(bit2(0xA9ED51)) + prev(bit3(0xA9ED51)) + prev(bit4(0xA9ED51)) + prev(bit1(0xA9ED52)) +
-                prev(bit2(0xA9ED52)) + prev(bit3(0xA9ED52)) + prev(bit4(0xA9ED52)) + prev(bit5(0xA9ED52)) +
-                prev(bit6(0xA9ED52)) + prev(bit7(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
-                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bit0(0xA9ED57)) + prev(bit1(0xA9ED57)) +
-                prev(bit2(0xA9ED57)) + prev(bit3(0xA9ED57)) + prev(bit4(0xA9ED57)) + prev(bit5(0xA9ED57)) +
-                prev(bit6(0xA9ED57)) + prev(bit2(0xA9ED5B)) + prev(bit3(0xA9ED5B)) + prev(bit4(0xA9ED5B)) +
-                prev(bit5(0xA9ED5B)) + prev(bit6(0xA9ED5B)) + prev(bit7(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
-                prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + prev(bit0(0xA9ED5F)) + prev(bit1(0xA9ED5F)) +
-                prev(bit2(0xA9ED5F)) + prev(bit3(0xA9ED5F)) + prev(bit4(0xA9ED5F)) + prev(bit2(0xA9ED60)) +
-                prev(bit3(0xA9ED60)) + prev(bit4(0xA9ED60)) + prev(bit5(0xA9ED60)) + prev(bit6(0xA9ED60)) +
-                prev(bit7(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) + prev(bitcount(0xA9ED63)) +
-                prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + prev(bit3(0xA9ED64)) +
-                prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) +
-                prev(bitcount(0xA9ED67)) + prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) +
-                prev(bitcount(0xA9ED6A)) + prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) +
-                prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) + prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) +
-                prev(bit3(0xA9ED6E)) + prev(bit2(0xA9ED71)) + prev(bit3(0xA9ED71)) + prev(bit4(0xA9ED71)) +
-                prev(bit5(0xA9ED71)) + prev(bit6(0xA9ED71)) + prev(bit7(0xA9ED71)) + prev(bitcount(0xA9ED72)) +
-                prev(bitcount(0xA9ED73)) + prev(bit0(0xA9ED74))) < 380 &&
-                measured((bit1(0xA9ED3C) + bit2(0xA9ED3C) + bit3(0xA9ED3C) + bit4(0xA9ED3C) + bit5(0xA9ED3C) +
-                    bit6(0xA9ED3C) + bit7(0xA9ED3C) + bitcount(0xA9ED3D) + bitcount(0xA9ED3E) + bitcount(0xA9ED3F) +
-                    bitcount(0xA9ED40) + bitcount(0xA9ED41) + bit0(0xA9ED42) + bit1(0xA9ED42) + bit2(0xA9ED42) +
-                    bit3(0xA9ED42) + bit4(0xA9ED42) + bit5(0xA9ED42) + bit6(0xA9ED43) + bit7(0xA9ED43) + bitcount(0xA9ED44)
-                    + bitcount(0xA9ED45) + bit0(0xA9ED46) + bit1(0xA9ED46) + bit2(0xA9ED46) + bit3(0xA9ED46) +
-                    bit4(0xA9ED46) + bit5(0xA9ED46) + bit3(0xA9ED47) + bit4(0xA9ED47) + bit5(0xA9ED47) + bit6(0xA9ED47) +
-                    bit7(0xA9ED47) + bitcount(0xA9ED48) + bitcount(0xA9ED49) + bitcount(0xA9ED4A) + bit0(0xA9ED4B) +
-                    bit1(0xA9ED4B) + bit2(0xA9ED4B) + bit3(0xA9ED4B) + bit4(0xA9ED4B) + bit5(0xA9ED4B) + bit6(0xA9ED4B) +
-                    bit2(0xA9ED58) + bit3(0xA9ED58) + bit4(0xA9ED58) + bit5(0xA9ED58) + bit6(0xA9ED58) + bit7(0xA9ED58) +
-                    bitcount(0xA9ED59) + bitcount(0xA9ED5A) + bit1(0xA9ED4D) + bit2(0xA9ED4D) + bit3(0xA9ED4D) +
-                    bit4(0xA9ED4D) + bit5(0xA9ED4D) + bit6(0xA9ED4D) + bit7(0xA9ED4D) + bitcount(0xA9ED4E) +
-                    bitcount(0xA9ED4F) + bitcount(0xA9ED50) + bit0(0xA9ED51) + bit1(0xA9ED51) + bit2(0xA9ED51) +
-                    bit3(0xA9ED51) + bit4(0xA9ED51) + bit1(0xA9ED52) + bit2(0xA9ED52) + bit3(0xA9ED52) + bit4(0xA9ED52) +
-                    bit5(0xA9ED52) + bit6(0xA9ED52) + bit7(0xA9ED52) + bitcount(0xA9ED53) + bitcount(0xA9ED54) +
-                    bitcount(0xA9ED55) + bitcount(0xA9ED56) + bit0(0xA9ED57) + bit1(0xA9ED57) + bit2(0xA9ED57) +
-                    bit3(0xA9ED57) + bit4(0xA9ED57) + bit5(0xA9ED57) + bit6(0xA9ED57) + bit2(0xA9ED5B) + bit3(0xA9ED5B) +
-                    bit4(0xA9ED5B) + bit5(0xA9ED5B) + bit6(0xA9ED5B) + bit7(0xA9ED5B) + bitcount(0xA9ED5C) +
-                    bitcount(0xA9ED5D) + bitcount(0xA9ED5E) + bit0(0xA9ED5F) + bit1(0xA9ED5F) + bit2(0xA9ED5F) +
-                    bit3(0xA9ED5F) + bit4(0xA9ED5F) + bit2(0xA9ED60) + bit3(0xA9ED60) + bit4(0xA9ED60) + bit5(0xA9ED60) +
-                    bit6(0xA9ED60) + bit7(0xA9ED60) + bitcount(0xA9ED61) + bitcount(0xA9ED62) + bitcount(0xA9ED63) +
-                    bit0(0xA9ED64) + bit1(0xA9ED64) + bit2(0xA9ED64) + bit3(0xA9ED64) + bit5(0xA9ED65) + bit6(0xA9ED65) +
-                    bit7(0xA9ED65) + bitcount(0xA9ED66) + bitcount(0xA9ED67) + bitcount(0xA9ED68) + bitcount(0xA9ED69) +
-                    bitcount(0xA9ED6A) + bitcount(0xA9ED6B) + bitcount(0xA9ED6C) + bitcount(0xA9ED6D) + bit0(0xA9ED6E) +
-                    bit1(0xA9ED6E) + bit2(0xA9ED6E) + bit3(0xA9ED6E) + bit2(0xA9ED71) + bit3(0xA9ED71) + bit4(0xA9ED71) +
-                    bit5(0xA9ED71) + bit6(0xA9ED71) + bit7(0xA9ED71) + bitcount(0xA9ED72) + bitcount(0xA9ED73) +
-                    bit0(0xA9ED74)) == 380,
-                    when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 && dword(0xAC49F4) == 0, format="percent"
+              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+                unless(byte(0xA5AB4C) != 57) && unless(low4(0xA9EDDC) == 0) && unless(dword(0xAC49F4) != 0) &&
+                (26 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) +
+                prev(bitcount(0xA9ED42)) + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) +
+                prev(bitcount(0xA9ED45)) + prev(bitcount(0xA9ED46)) + prev(bitcount(0xA9ED47)) +
+                prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) +
+                prev(bitcount(0xA9ED4B)) + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) +
+                prev(bitcount(0xA9ED5A)) + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
+                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bitcount(0xA9ED51)) +
+                prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bitcount(0xA9ED57)) +
+                prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) + prev(bitcount(0xA9ED60)) +
+                prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) + prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) +
+                prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + prev(bit3(0xA9ED64)) + prev(bit5(0xA9ED65)) +
+                prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) + prev(bitcount(0xA9ED67)) +
+                prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) + prev(bitcount(0xA9ED6A)) +
+                prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) + prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) +
+                prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) + prev(bit3(0xA9ED6E)) + prev(bitcount(0xA9ED71)) +
+                prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + prev(bit0(0xA9ED74)) - prev(bit0(0xA9ED3C)) -
+                prev(bit6(0xA9ED42)) - prev(bit7(0xA9ED42)) - prev(bit6(0xA9ED46)) - prev(bit7(0xA9ED46)) -
+                prev(bit0(0xA9ED47)) - prev(bit1(0xA9ED47)) - prev(bit2(0xA9ED47)) - prev(bit7(0xA9ED4B)) -
+                prev(bit0(0xA9ED58)) - prev(bit1(0xA9ED58)) - prev(bit0(0xA9ED4D)) - prev(bit5(0xA9ED51)) -
+                prev(bit6(0xA9ED51)) - prev(bit7(0xA9ED51)) - prev(bit0(0xA9ED52)) - prev(bit7(0xA9ED57)) -
+                prev(bit0(0xA9ED5B)) - prev(bit1(0xA9ED5B)) - prev(bit5(0xA9ED5F)) - prev(bit6(0xA9ED5F)) -
+                prev(bit7(0xA9ED5F)) - prev(bit0(0xA9ED60)) - prev(bit1(0xA9ED60)) - prev(bit0(0xA9ED71)) -
+                prev(bit1(0xA9ED71))) > 368 &&
+                (26 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) +
+                prev(bitcount(0xA9ED42)) + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) +
+                prev(bitcount(0xA9ED45)) + prev(bitcount(0xA9ED46)) + prev(bitcount(0xA9ED47)) +
+                prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) +
+                prev(bitcount(0xA9ED4B)) + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) +
+                prev(bitcount(0xA9ED5A)) + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
+                prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bitcount(0xA9ED51)) +
+                prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bitcount(0xA9ED57)) +
+                prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) + prev(bitcount(0xA9ED60)) +
+                prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) + prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) +
+                prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + prev(bit3(0xA9ED64)) + prev(bit5(0xA9ED65)) +
+                prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) + prev(bitcount(0xA9ED67)) +
+                prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) + prev(bitcount(0xA9ED6A)) +
+                prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) + prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) +
+                prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) + prev(bit3(0xA9ED6E)) + prev(bitcount(0xA9ED71)) +
+                prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + 26 + prev(bitcount(0xA9ED3C)) +
+                prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) +
+                prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) + prev(bitcount(0xA9ED42)) + prev(bit6(0xA9ED43)) +
+                prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) + prev(bitcount(0xA9ED46)) +
+                prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
+                prev(bitcount(0xA9ED4A)) + prev(bitcount(0xA9ED4B)) + prev(bitcount(0xA9ED58)) +
+                prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) + prev(bitcount(0xA9ED4D)) +
+                prev(bitcount(0xA9ED4E)) + prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) +
+                prev(bitcount(0xA9ED51)) + prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) +
+                prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) +
+                prev(bitcount(0xA9ED57)) + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
+                prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) +
+                prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) +
+                prev(bit3(0xA9ED64)) + prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) +
+                prev(bitcount(0xA9ED66)) + prev(bitcount(0xA9ED67)) + prev(bitcount(0xA9ED68)) +
+                prev(bitcount(0xA9ED69)) + prev(bitcount(0xA9ED6A)) + prev(bitcount(0xA9ED6B)) +
+                prev(bitcount(0xA9ED6C)) + prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) + prev(bit1(0xA9ED6E)) +
+                prev(bit2(0xA9ED6E)) + prev(bit3(0xA9ED6E)) + prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) +
+                prev(bitcount(0xA9ED73)) + prev(bit0(0xA9ED74)) - prev(bit0(0xA9ED3C)) - prev(bit6(0xA9ED42)) -
+                prev(bit7(0xA9ED42)) - prev(bit6(0xA9ED46)) - prev(bit7(0xA9ED46)) - prev(bit0(0xA9ED47)) -
+                prev(bit1(0xA9ED47)) - prev(bit2(0xA9ED47)) - prev(bit7(0xA9ED4B)) - prev(bit0(0xA9ED58)) -
+                prev(bit1(0xA9ED58)) - prev(bit0(0xA9ED4D)) - prev(bit5(0xA9ED51)) - prev(bit6(0xA9ED51)) -
+                prev(bit7(0xA9ED51)) - prev(bit0(0xA9ED52)) - prev(bit7(0xA9ED57)) - prev(bit0(0xA9ED5B)) -
+                prev(bit1(0xA9ED5B)) - prev(bit5(0xA9ED5F)) - prev(bit6(0xA9ED5F)) - prev(bit7(0xA9ED5F)) -
+                prev(bit0(0xA9ED60)) - prev(bit1(0xA9ED60)) - prev(bit0(0xA9ED71)) - prev(bit1(0xA9ED71))) < 406 &&
+                measured((26 + prev(bitcount(0xA9ED3C)) + prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) +
+                    prev(bitcount(0xA9ED3F)) + prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) +
+                    prev(bitcount(0xA9ED42)) + prev(bit6(0xA9ED43)) + prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) +
+                    prev(bitcount(0xA9ED45)) + prev(bitcount(0xA9ED46)) + prev(bitcount(0xA9ED47)) +
+                    prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) + prev(bitcount(0xA9ED4A)) +
+                    prev(bitcount(0xA9ED4B)) + prev(bitcount(0xA9ED58)) + prev(bitcount(0xA9ED59)) +
+                    prev(bitcount(0xA9ED5A)) + prev(bitcount(0xA9ED4D)) + prev(bitcount(0xA9ED4E)) +
+                    prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) + prev(bitcount(0xA9ED51)) +
+                    prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) + prev(bitcount(0xA9ED54)) +
+                    prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) + prev(bitcount(0xA9ED57)) +
+                    prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) + prev(bitcount(0xA9ED5D)) +
+                    prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) + prev(bitcount(0xA9ED60)) +
+                    prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) + prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) +
+                    prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) + prev(bit3(0xA9ED64)) + prev(bit5(0xA9ED65)) +
+                    prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) + prev(bitcount(0xA9ED66)) + prev(bitcount(0xA9ED67)) +
+                    prev(bitcount(0xA9ED68)) + prev(bitcount(0xA9ED69)) + prev(bitcount(0xA9ED6A)) +
+                    prev(bitcount(0xA9ED6B)) + prev(bitcount(0xA9ED6C)) + prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) +
+                    prev(bit1(0xA9ED6E)) + prev(bit2(0xA9ED6E)) + prev(bit3(0xA9ED6E)) + prev(bitcount(0xA9ED71)) +
+                    prev(bitcount(0xA9ED72)) + prev(bitcount(0xA9ED73)) + 26 + prev(bitcount(0xA9ED3C)) +
+                    prev(bitcount(0xA9ED3D)) + prev(bitcount(0xA9ED3E)) + prev(bitcount(0xA9ED3F)) +
+                    prev(bitcount(0xA9ED40)) + prev(bitcount(0xA9ED41)) + prev(bitcount(0xA9ED42)) + prev(bit6(0xA9ED43)) +
+                    prev(bit7(0xA9ED43)) + prev(bitcount(0xA9ED44)) + prev(bitcount(0xA9ED45)) + prev(bitcount(0xA9ED46)) +
+                    prev(bitcount(0xA9ED47)) + prev(bitcount(0xA9ED48)) + prev(bitcount(0xA9ED49)) +
+                    prev(bitcount(0xA9ED4A)) + prev(bitcount(0xA9ED4B)) + prev(bitcount(0xA9ED58)) +
+                    prev(bitcount(0xA9ED59)) + prev(bitcount(0xA9ED5A)) + prev(bitcount(0xA9ED4D)) +
+                    prev(bitcount(0xA9ED4E)) + prev(bitcount(0xA9ED4F)) + prev(bitcount(0xA9ED50)) +
+                    prev(bitcount(0xA9ED51)) + prev(bitcount(0xA9ED52)) + prev(bitcount(0xA9ED53)) +
+                    prev(bitcount(0xA9ED54)) + prev(bitcount(0xA9ED55)) + prev(bitcount(0xA9ED56)) +
+                    prev(bitcount(0xA9ED57)) + prev(bitcount(0xA9ED5B)) + prev(bitcount(0xA9ED5C)) +
+                    prev(bitcount(0xA9ED5D)) + prev(bitcount(0xA9ED5E)) + prev(bitcount(0xA9ED5F)) +
+                    prev(bitcount(0xA9ED60)) + prev(bitcount(0xA9ED61)) + prev(bitcount(0xA9ED62)) +
+                    prev(bitcount(0xA9ED63)) + prev(bit0(0xA9ED64)) + prev(bit1(0xA9ED64)) + prev(bit2(0xA9ED64)) +
+                    prev(bit3(0xA9ED64)) + prev(bit5(0xA9ED65)) + prev(bit6(0xA9ED65)) + prev(bit7(0xA9ED65)) +
+                    prev(bitcount(0xA9ED66)) + prev(bitcount(0xA9ED67)) + prev(bitcount(0xA9ED68)) +
+                    prev(bitcount(0xA9ED69)) + prev(bitcount(0xA9ED6A)) + prev(bitcount(0xA9ED6B)) +
+                    prev(bitcount(0xA9ED6C)) + prev(bitcount(0xA9ED6D)) + prev(bit0(0xA9ED6E)) + prev(bit1(0xA9ED6E)) +
+                    prev(bit2(0xA9ED6E)) + prev(bit3(0xA9ED6E)) + prev(bitcount(0xA9ED71)) + prev(bitcount(0xA9ED72)) +
+                    prev(bitcount(0xA9ED73)) + bitcount(0xA9ED3C) + bitcount(0xA9ED3D) + bitcount(0xA9ED3E) +
+                    bitcount(0xA9ED3F) + bitcount(0xA9ED40) + bitcount(0xA9ED41) + bitcount(0xA9ED42) + bit6(0xA9ED43) +
+                    bit7(0xA9ED43) + bitcount(0xA9ED44) + bitcount(0xA9ED45) + bitcount(0xA9ED46) + bitcount(0xA9ED47) +
+                    bitcount(0xA9ED48) + bitcount(0xA9ED49) + bitcount(0xA9ED4A) + bitcount(0xA9ED4B) + bitcount(0xA9ED58) +
+                    bitcount(0xA9ED59) + bitcount(0xA9ED5A) + bitcount(0xA9ED4D) + bitcount(0xA9ED4E) + bitcount(0xA9ED4F) +
+                    bitcount(0xA9ED50) + bitcount(0xA9ED51) + bitcount(0xA9ED52) + bitcount(0xA9ED53) + bitcount(0xA9ED54) +
+                    bitcount(0xA9ED55) + bitcount(0xA9ED56) + bitcount(0xA9ED57) + bitcount(0xA9ED5B) + bitcount(0xA9ED5C) +
+                    bitcount(0xA9ED5D) + bitcount(0xA9ED5E) + bitcount(0xA9ED5F) + bitcount(0xA9ED60) + bitcount(0xA9ED61) +
+                    bitcount(0xA9ED62) + bitcount(0xA9ED63) + bit0(0xA9ED64) + bit1(0xA9ED64) + bit2(0xA9ED64) +
+                    bit3(0xA9ED64) + bit5(0xA9ED65) + bit6(0xA9ED65) + bit7(0xA9ED65) + bitcount(0xA9ED66) +
+                    bitcount(0xA9ED67) + bitcount(0xA9ED68) + bitcount(0xA9ED69) + bitcount(0xA9ED6A) + bitcount(0xA9ED6B) +
+                    bitcount(0xA9ED6C) + bitcount(0xA9ED6D) + bit0(0xA9ED6E) + bit1(0xA9ED6E) + bit2(0xA9ED6E) +
+                    bit3(0xA9ED6E) + bitcount(0xA9ED71) + bitcount(0xA9ED72) + bitcount(0xA9ED73) + bit0(0xA9ED74) -
+                    bit0(0xA9ED3C) - bit6(0xA9ED42) - bit7(0xA9ED42) - bit6(0xA9ED46) - bit7(0xA9ED46) - bit0(0xA9ED47) -
+                    bit1(0xA9ED47) - bit2(0xA9ED47) - bit7(0xA9ED4B) - bit0(0xA9ED58) - bit1(0xA9ED58) - bit0(0xA9ED4D) -
+                    bit5(0xA9ED51) - bit6(0xA9ED51) - bit7(0xA9ED51) - bit0(0xA9ED52) - bit7(0xA9ED57) - bit0(0xA9ED5B) -
+                    bit1(0xA9ED5B) - bit5(0xA9ED5F) - bit6(0xA9ED5F) - bit7(0xA9ED5F) - bit0(0xA9ED60) - bit1(0xA9ED60) -
+                    bit0(0xA9ED71) - bit1(0xA9ED71)) == 380, format="percent"
                 )) ||
-               ((prev(bit1(0xAA688C)) + prev(bit2(0xAA688C)) + prev(bit3(0xAA688C)) + prev(bit4(0xAA688C)) +
-                prev(bit5(0xAA688C)) + prev(bit6(0xAA688C)) + prev(bit7(0xAA688C)) + prev(bitcount(0xAA688D)) +
-                prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) +
-                prev(bitcount(0xAA6891)) + prev(bit0(0xAA6892)) + prev(bit1(0xAA6892)) + prev(bit2(0xAA6892)) +
-                prev(bit3(0xAA6892)) + prev(bit4(0xAA6892)) + prev(bit5(0xAA6892)) + prev(bit6(0xAA6893)) +
-                prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) + prev(bit0(0xAA6896)) +
-                prev(bit1(0xAA6896)) + prev(bit2(0xAA6896)) + prev(bit3(0xAA6896)) + prev(bit4(0xAA6896)) +
-                prev(bit5(0xAA6896)) + prev(bit3(0xAA6897)) + prev(bit4(0xAA6897)) + prev(bit5(0xAA6897)) +
-                prev(bit6(0xAA6897)) + prev(bit7(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
-                prev(bitcount(0xAA689A)) + prev(bit0(0xAA689B)) + prev(bit1(0xAA689B)) + prev(bit2(0xAA689B)) +
-                prev(bit3(0xAA689B)) + prev(bit4(0xAA689B)) + prev(bit5(0xAA689B)) + prev(bit6(0xAA689B)) +
-                prev(bit2(0xAA68A8)) + prev(bit3(0xAA68A8)) + prev(bit4(0xAA68A8)) + prev(bit5(0xAA68A8)) +
-                prev(bit6(0xAA68A8)) + prev(bit7(0xAA68A8)) + prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) +
-                prev(bit1(0xAA689D)) + prev(bit2(0xAA689D)) + prev(bit3(0xAA689D)) + prev(bit4(0xAA689D)) +
-                prev(bit5(0xAA689D)) + prev(bit6(0xAA689D)) + prev(bit7(0xAA689D)) + prev(bitcount(0xAA689E)) +
-                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bit0(0xAA68A1)) + prev(bit1(0xAA68A1)) +
-                prev(bit2(0xAA68A1)) + prev(bit3(0xAA68A1)) + prev(bit4(0xAA68A1)) + prev(bit1(0xAA68A2)) +
-                prev(bit2(0xAA68A2)) + prev(bit3(0xAA68A2)) + prev(bit4(0xAA68A2)) + prev(bit5(0xAA68A2)) +
-                prev(bit6(0xAA68A2)) + prev(bit7(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
-                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bit0(0xAA68A7)) + prev(bit1(0xAA68A7)) +
-                prev(bit2(0xAA68A7)) + prev(bit3(0xAA68A7)) + prev(bit4(0xAA68A7)) + prev(bit5(0xAA68A7)) +
-                prev(bit6(0xAA68A7)) + prev(bit2(0xAA68AB)) + prev(bit3(0xAA68AB)) + prev(bit4(0xAA68AB)) +
-                prev(bit5(0xAA68AB)) + prev(bit6(0xAA68AB)) + prev(bit7(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
-                prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + prev(bit0(0xAA68AF)) + prev(bit1(0xAA68AF)) +
-                prev(bit2(0xAA68AF)) + prev(bit3(0xAA68AF)) + prev(bit4(0xAA68AF)) + prev(bit2(0xAA68B0)) +
-                prev(bit3(0xAA68B0)) + prev(bit4(0xAA68B0)) + prev(bit5(0xAA68B0)) + prev(bit6(0xAA68B0)) +
-                prev(bit7(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) + prev(bitcount(0xAA68B3)) +
-                prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + prev(bit3(0xAA68B4)) +
-                prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) +
-                prev(bitcount(0xAA68B7)) + prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) +
-                prev(bitcount(0xAA68BA)) + prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) +
-                prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) + prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) +
-                prev(bit3(0xAA68BE)) + prev(bit2(0xAA68C1)) + prev(bit3(0xAA68C1)) + prev(bit4(0xAA68C1)) +
-                prev(bit5(0xAA68C1)) + prev(bit6(0xAA68C1)) + prev(bit7(0xAA68C1)) + prev(bitcount(0xAA68C2)) +
-                prev(bitcount(0xAA68C3)) + prev(bit0(0xAA68C4))) > 342 &&
-                (prev(bit1(0xAA688C)) + prev(bit2(0xAA688C)) + prev(bit3(0xAA688C)) + prev(bit4(0xAA688C)) +
-                prev(bit5(0xAA688C)) + prev(bit6(0xAA688C)) + prev(bit7(0xAA688C)) + prev(bitcount(0xAA688D)) +
-                prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) +
-                prev(bitcount(0xAA6891)) + prev(bit0(0xAA6892)) + prev(bit1(0xAA6892)) + prev(bit2(0xAA6892)) +
-                prev(bit3(0xAA6892)) + prev(bit4(0xAA6892)) + prev(bit5(0xAA6892)) + prev(bit6(0xAA6893)) +
-                prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) + prev(bit0(0xAA6896)) +
-                prev(bit1(0xAA6896)) + prev(bit2(0xAA6896)) + prev(bit3(0xAA6896)) + prev(bit4(0xAA6896)) +
-                prev(bit5(0xAA6896)) + prev(bit3(0xAA6897)) + prev(bit4(0xAA6897)) + prev(bit5(0xAA6897)) +
-                prev(bit6(0xAA6897)) + prev(bit7(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
-                prev(bitcount(0xAA689A)) + prev(bit0(0xAA689B)) + prev(bit1(0xAA689B)) + prev(bit2(0xAA689B)) +
-                prev(bit3(0xAA689B)) + prev(bit4(0xAA689B)) + prev(bit5(0xAA689B)) + prev(bit6(0xAA689B)) +
-                prev(bit2(0xAA68A8)) + prev(bit3(0xAA68A8)) + prev(bit4(0xAA68A8)) + prev(bit5(0xAA68A8)) +
-                prev(bit6(0xAA68A8)) + prev(bit7(0xAA68A8)) + prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) +
-                prev(bit1(0xAA689D)) + prev(bit2(0xAA689D)) + prev(bit3(0xAA689D)) + prev(bit4(0xAA689D)) +
-                prev(bit5(0xAA689D)) + prev(bit6(0xAA689D)) + prev(bit7(0xAA689D)) + prev(bitcount(0xAA689E)) +
-                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bit0(0xAA68A1)) + prev(bit1(0xAA68A1)) +
-                prev(bit2(0xAA68A1)) + prev(bit3(0xAA68A1)) + prev(bit4(0xAA68A1)) + prev(bit1(0xAA68A2)) +
-                prev(bit2(0xAA68A2)) + prev(bit3(0xAA68A2)) + prev(bit4(0xAA68A2)) + prev(bit5(0xAA68A2)) +
-                prev(bit6(0xAA68A2)) + prev(bit7(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
-                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bit0(0xAA68A7)) + prev(bit1(0xAA68A7)) +
-                prev(bit2(0xAA68A7)) + prev(bit3(0xAA68A7)) + prev(bit4(0xAA68A7)) + prev(bit5(0xAA68A7)) +
-                prev(bit6(0xAA68A7)) + prev(bit2(0xAA68AB)) + prev(bit3(0xAA68AB)) + prev(bit4(0xAA68AB)) +
-                prev(bit5(0xAA68AB)) + prev(bit6(0xAA68AB)) + prev(bit7(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
-                prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + prev(bit0(0xAA68AF)) + prev(bit1(0xAA68AF)) +
-                prev(bit2(0xAA68AF)) + prev(bit3(0xAA68AF)) + prev(bit4(0xAA68AF)) + prev(bit2(0xAA68B0)) +
-                prev(bit3(0xAA68B0)) + prev(bit4(0xAA68B0)) + prev(bit5(0xAA68B0)) + prev(bit6(0xAA68B0)) +
-                prev(bit7(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) + prev(bitcount(0xAA68B3)) +
-                prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + prev(bit3(0xAA68B4)) +
-                prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) +
-                prev(bitcount(0xAA68B7)) + prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) +
-                prev(bitcount(0xAA68BA)) + prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) +
-                prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) + prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) +
-                prev(bit3(0xAA68BE)) + prev(bit2(0xAA68C1)) + prev(bit3(0xAA68C1)) + prev(bit4(0xAA68C1)) +
-                prev(bit5(0xAA68C1)) + prev(bit6(0xAA68C1)) + prev(bit7(0xAA68C1)) + prev(bitcount(0xAA68C2)) +
-                prev(bitcount(0xAA68C3)) + prev(bit0(0xAA68C4))) < 380 &&
-                measured((bit1(0xAA688C) + bit2(0xAA688C) + bit3(0xAA688C) + bit4(0xAA688C) + bit5(0xAA688C) +
-                    bit6(0xAA688C) + bit7(0xAA688C) + bitcount(0xAA688D) + bitcount(0xAA688E) + bitcount(0xAA688F) +
-                    bitcount(0xAA6890) + bitcount(0xAA6891) + bit0(0xAA6892) + bit1(0xAA6892) + bit2(0xAA6892) +
-                    bit3(0xAA6892) + bit4(0xAA6892) + bit5(0xAA6892) + bit6(0xAA6893) + bit7(0xAA6893) + bitcount(0xAA6894)
-                    + bitcount(0xAA6895) + bit0(0xAA6896) + bit1(0xAA6896) + bit2(0xAA6896) + bit3(0xAA6896) +
-                    bit4(0xAA6896) + bit5(0xAA6896) + bit3(0xAA6897) + bit4(0xAA6897) + bit5(0xAA6897) + bit6(0xAA6897) +
-                    bit7(0xAA6897) + bitcount(0xAA6898) + bitcount(0xAA6899) + bitcount(0xAA689A) + bit0(0xAA689B) +
-                    bit1(0xAA689B) + bit2(0xAA689B) + bit3(0xAA689B) + bit4(0xAA689B) + bit5(0xAA689B) + bit6(0xAA689B) +
-                    bit2(0xAA68A8) + bit3(0xAA68A8) + bit4(0xAA68A8) + bit5(0xAA68A8) + bit6(0xAA68A8) + bit7(0xAA68A8) +
-                    bitcount(0xAA68A9) + bitcount(0xAA68AA) + bit1(0xAA689D) + bit2(0xAA689D) + bit3(0xAA689D) +
-                    bit4(0xAA689D) + bit5(0xAA689D) + bit6(0xAA689D) + bit7(0xAA689D) + bitcount(0xAA689E) +
-                    bitcount(0xAA689F) + bitcount(0xAA68A0) + bit0(0xAA68A1) + bit1(0xAA68A1) + bit2(0xAA68A1) +
-                    bit3(0xAA68A1) + bit4(0xAA68A1) + bit1(0xAA68A2) + bit2(0xAA68A2) + bit3(0xAA68A2) + bit4(0xAA68A2) +
-                    bit5(0xAA68A2) + bit6(0xAA68A2) + bit7(0xAA68A2) + bitcount(0xAA68A3) + bitcount(0xAA68A4) +
-                    bitcount(0xAA68A5) + bitcount(0xAA68A6) + bit0(0xAA68A7) + bit1(0xAA68A7) + bit2(0xAA68A7) +
-                    bit3(0xAA68A7) + bit4(0xAA68A7) + bit5(0xAA68A7) + bit6(0xAA68A7) + bit2(0xAA68AB) + bit3(0xAA68AB) +
-                    bit4(0xAA68AB) + bit5(0xAA68AB) + bit6(0xAA68AB) + bit7(0xAA68AB) + bitcount(0xAA68AC) +
-                    bitcount(0xAA68AD) + bitcount(0xAA68AE) + bit0(0xAA68AF) + bit1(0xAA68AF) + bit2(0xAA68AF) +
-                    bit3(0xAA68AF) + bit4(0xAA68AF) + bit2(0xAA68B0) + bit3(0xAA68B0) + bit4(0xAA68B0) + bit5(0xAA68B0) +
-                    bit6(0xAA68B0) + bit7(0xAA68B0) + bitcount(0xAA68B1) + bitcount(0xAA68B2) + bitcount(0xAA68B3) +
-                    bit0(0xAA68B4) + bit1(0xAA68B4) + bit2(0xAA68B4) + bit3(0xAA68B4) + bit5(0xAA68B5) + bit6(0xAA68B5) +
-                    bit7(0xAA68B5) + bitcount(0xAA68B6) + bitcount(0xAA68B7) + bitcount(0xAA68B8) + bitcount(0xAA68B9) +
-                    bitcount(0xAA68BA) + bitcount(0xAA68BB) + bitcount(0xAA68BC) + bitcount(0xAA68BD) + bit0(0xAA68BE) +
-                    bit1(0xAA68BE) + bit2(0xAA68BE) + bit3(0xAA68BE) + bit2(0xAA68C1) + bit3(0xAA68C1) + bit4(0xAA68C1) +
-                    bit5(0xAA68C1) + bit6(0xAA68C1) + bit7(0xAA68C1) + bitcount(0xAA68C2) + bitcount(0xAA68C3) +
-                    bit0(0xAA68C4)) == 380,
-                    when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 && dword(0xACC534) == 0, format="percent"
+               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+                unless(byte(0xA64C7C) != 50) && unless(low4(0xAA692C) == 0) && unless(dword(0xACC534) != 0) &&
+                (26 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) +
+                prev(bitcount(0xAA6892)) + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) +
+                prev(bitcount(0xAA6895)) + prev(bitcount(0xAA6896)) + prev(bitcount(0xAA6897)) +
+                prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) +
+                prev(bitcount(0xAA689B)) + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) +
+                prev(bitcount(0xAA68AA)) + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) +
+                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bitcount(0xAA68A1)) +
+                prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bitcount(0xAA68A7)) +
+                prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) + prev(bitcount(0xAA68B0)) +
+                prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) + prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) +
+                prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + prev(bit3(0xAA68B4)) + prev(bit5(0xAA68B5)) +
+                prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) + prev(bitcount(0xAA68B7)) +
+                prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) + prev(bitcount(0xAA68BA)) +
+                prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) + prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) +
+                prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) + prev(bit3(0xAA68BE)) + prev(bitcount(0xAA68C1)) +
+                prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + prev(bit0(0xAA68C4)) - prev(bit0(0xAA688C)) -
+                prev(bit6(0xAA6892)) - prev(bit7(0xAA6892)) - prev(bit6(0xAA6896)) - prev(bit7(0xAA6896)) -
+                prev(bit0(0xAA6897)) - prev(bit1(0xAA6897)) - prev(bit2(0xAA6897)) - prev(bit7(0xAA689B)) -
+                prev(bit0(0xAA68A8)) - prev(bit1(0xAA68A8)) - prev(bit0(0xAA689D)) - prev(bit5(0xAA68A1)) -
+                prev(bit6(0xAA68A1)) - prev(bit7(0xAA68A1)) - prev(bit0(0xAA68A2)) - prev(bit7(0xAA68A7)) -
+                prev(bit0(0xAA68AB)) - prev(bit1(0xAA68AB)) - prev(bit5(0xAA68AF)) - prev(bit6(0xAA68AF)) -
+                prev(bit7(0xAA68AF)) - prev(bit0(0xAA68B0)) - prev(bit1(0xAA68B0)) - prev(bit0(0xAA68C1)) -
+                prev(bit1(0xAA68C1))) > 368 &&
+                (26 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) +
+                prev(bitcount(0xAA6892)) + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) +
+                prev(bitcount(0xAA6895)) + prev(bitcount(0xAA6896)) + prev(bitcount(0xAA6897)) +
+                prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) +
+                prev(bitcount(0xAA689B)) + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) +
+                prev(bitcount(0xAA68AA)) + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) +
+                prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bitcount(0xAA68A1)) +
+                prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bitcount(0xAA68A7)) +
+                prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) + prev(bitcount(0xAA68B0)) +
+                prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) + prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) +
+                prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + prev(bit3(0xAA68B4)) + prev(bit5(0xAA68B5)) +
+                prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) + prev(bitcount(0xAA68B7)) +
+                prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) + prev(bitcount(0xAA68BA)) +
+                prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) + prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) +
+                prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) + prev(bit3(0xAA68BE)) + prev(bitcount(0xAA68C1)) +
+                prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + 26 + prev(bitcount(0xAA688C)) +
+                prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) +
+                prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) + prev(bitcount(0xAA6892)) + prev(bit6(0xAA6893)) +
+                prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) + prev(bitcount(0xAA6896)) +
+                prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
+                prev(bitcount(0xAA689A)) + prev(bitcount(0xAA689B)) + prev(bitcount(0xAA68A8)) +
+                prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) + prev(bitcount(0xAA689D)) +
+                prev(bitcount(0xAA689E)) + prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) +
+                prev(bitcount(0xAA68A1)) + prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) +
+                prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) +
+                prev(bitcount(0xAA68A7)) + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
+                prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) +
+                prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) +
+                prev(bit3(0xAA68B4)) + prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) +
+                prev(bitcount(0xAA68B6)) + prev(bitcount(0xAA68B7)) + prev(bitcount(0xAA68B8)) +
+                prev(bitcount(0xAA68B9)) + prev(bitcount(0xAA68BA)) + prev(bitcount(0xAA68BB)) +
+                prev(bitcount(0xAA68BC)) + prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) + prev(bit1(0xAA68BE)) +
+                prev(bit2(0xAA68BE)) + prev(bit3(0xAA68BE)) + prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) +
+                prev(bitcount(0xAA68C3)) + prev(bit0(0xAA68C4)) - prev(bit0(0xAA688C)) - prev(bit6(0xAA6892)) -
+                prev(bit7(0xAA6892)) - prev(bit6(0xAA6896)) - prev(bit7(0xAA6896)) - prev(bit0(0xAA6897)) -
+                prev(bit1(0xAA6897)) - prev(bit2(0xAA6897)) - prev(bit7(0xAA689B)) - prev(bit0(0xAA68A8)) -
+                prev(bit1(0xAA68A8)) - prev(bit0(0xAA689D)) - prev(bit5(0xAA68A1)) - prev(bit6(0xAA68A1)) -
+                prev(bit7(0xAA68A1)) - prev(bit0(0xAA68A2)) - prev(bit7(0xAA68A7)) - prev(bit0(0xAA68AB)) -
+                prev(bit1(0xAA68AB)) - prev(bit5(0xAA68AF)) - prev(bit6(0xAA68AF)) - prev(bit7(0xAA68AF)) -
+                prev(bit0(0xAA68B0)) - prev(bit1(0xAA68B0)) - prev(bit0(0xAA68C1)) - prev(bit1(0xAA68C1))) < 406 &&
+                measured((26 + prev(bitcount(0xAA688C)) + prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) +
+                    prev(bitcount(0xAA688F)) + prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) +
+                    prev(bitcount(0xAA6892)) + prev(bit6(0xAA6893)) + prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) +
+                    prev(bitcount(0xAA6895)) + prev(bitcount(0xAA6896)) + prev(bitcount(0xAA6897)) +
+                    prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) + prev(bitcount(0xAA689A)) +
+                    prev(bitcount(0xAA689B)) + prev(bitcount(0xAA68A8)) + prev(bitcount(0xAA68A9)) +
+                    prev(bitcount(0xAA68AA)) + prev(bitcount(0xAA689D)) + prev(bitcount(0xAA689E)) +
+                    prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) + prev(bitcount(0xAA68A1)) +
+                    prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) + prev(bitcount(0xAA68A4)) +
+                    prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) + prev(bitcount(0xAA68A7)) +
+                    prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) + prev(bitcount(0xAA68AD)) +
+                    prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) + prev(bitcount(0xAA68B0)) +
+                    prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) + prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) +
+                    prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) + prev(bit3(0xAA68B4)) + prev(bit5(0xAA68B5)) +
+                    prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) + prev(bitcount(0xAA68B6)) + prev(bitcount(0xAA68B7)) +
+                    prev(bitcount(0xAA68B8)) + prev(bitcount(0xAA68B9)) + prev(bitcount(0xAA68BA)) +
+                    prev(bitcount(0xAA68BB)) + prev(bitcount(0xAA68BC)) + prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) +
+                    prev(bit1(0xAA68BE)) + prev(bit2(0xAA68BE)) + prev(bit3(0xAA68BE)) + prev(bitcount(0xAA68C1)) +
+                    prev(bitcount(0xAA68C2)) + prev(bitcount(0xAA68C3)) + 26 + prev(bitcount(0xAA688C)) +
+                    prev(bitcount(0xAA688D)) + prev(bitcount(0xAA688E)) + prev(bitcount(0xAA688F)) +
+                    prev(bitcount(0xAA6890)) + prev(bitcount(0xAA6891)) + prev(bitcount(0xAA6892)) + prev(bit6(0xAA6893)) +
+                    prev(bit7(0xAA6893)) + prev(bitcount(0xAA6894)) + prev(bitcount(0xAA6895)) + prev(bitcount(0xAA6896)) +
+                    prev(bitcount(0xAA6897)) + prev(bitcount(0xAA6898)) + prev(bitcount(0xAA6899)) +
+                    prev(bitcount(0xAA689A)) + prev(bitcount(0xAA689B)) + prev(bitcount(0xAA68A8)) +
+                    prev(bitcount(0xAA68A9)) + prev(bitcount(0xAA68AA)) + prev(bitcount(0xAA689D)) +
+                    prev(bitcount(0xAA689E)) + prev(bitcount(0xAA689F)) + prev(bitcount(0xAA68A0)) +
+                    prev(bitcount(0xAA68A1)) + prev(bitcount(0xAA68A2)) + prev(bitcount(0xAA68A3)) +
+                    prev(bitcount(0xAA68A4)) + prev(bitcount(0xAA68A5)) + prev(bitcount(0xAA68A6)) +
+                    prev(bitcount(0xAA68A7)) + prev(bitcount(0xAA68AB)) + prev(bitcount(0xAA68AC)) +
+                    prev(bitcount(0xAA68AD)) + prev(bitcount(0xAA68AE)) + prev(bitcount(0xAA68AF)) +
+                    prev(bitcount(0xAA68B0)) + prev(bitcount(0xAA68B1)) + prev(bitcount(0xAA68B2)) +
+                    prev(bitcount(0xAA68B3)) + prev(bit0(0xAA68B4)) + prev(bit1(0xAA68B4)) + prev(bit2(0xAA68B4)) +
+                    prev(bit3(0xAA68B4)) + prev(bit5(0xAA68B5)) + prev(bit6(0xAA68B5)) + prev(bit7(0xAA68B5)) +
+                    prev(bitcount(0xAA68B6)) + prev(bitcount(0xAA68B7)) + prev(bitcount(0xAA68B8)) +
+                    prev(bitcount(0xAA68B9)) + prev(bitcount(0xAA68BA)) + prev(bitcount(0xAA68BB)) +
+                    prev(bitcount(0xAA68BC)) + prev(bitcount(0xAA68BD)) + prev(bit0(0xAA68BE)) + prev(bit1(0xAA68BE)) +
+                    prev(bit2(0xAA68BE)) + prev(bit3(0xAA68BE)) + prev(bitcount(0xAA68C1)) + prev(bitcount(0xAA68C2)) +
+                    prev(bitcount(0xAA68C3)) + bitcount(0xAA688C) + bitcount(0xAA688D) + bitcount(0xAA688E) +
+                    bitcount(0xAA688F) + bitcount(0xAA6890) + bitcount(0xAA6891) + bitcount(0xAA6892) + bit6(0xAA6893) +
+                    bit7(0xAA6893) + bitcount(0xAA6894) + bitcount(0xAA6895) + bitcount(0xAA6896) + bitcount(0xAA6897) +
+                    bitcount(0xAA6898) + bitcount(0xAA6899) + bitcount(0xAA689A) + bitcount(0xAA689B) + bitcount(0xAA68A8) +
+                    bitcount(0xAA68A9) + bitcount(0xAA68AA) + bitcount(0xAA689D) + bitcount(0xAA689E) + bitcount(0xAA689F) +
+                    bitcount(0xAA68A0) + bitcount(0xAA68A1) + bitcount(0xAA68A2) + bitcount(0xAA68A3) + bitcount(0xAA68A4) +
+                    bitcount(0xAA68A5) + bitcount(0xAA68A6) + bitcount(0xAA68A7) + bitcount(0xAA68AB) + bitcount(0xAA68AC) +
+                    bitcount(0xAA68AD) + bitcount(0xAA68AE) + bitcount(0xAA68AF) + bitcount(0xAA68B0) + bitcount(0xAA68B1) +
+                    bitcount(0xAA68B2) + bitcount(0xAA68B3) + bit0(0xAA68B4) + bit1(0xAA68B4) + bit2(0xAA68B4) +
+                    bit3(0xAA68B4) + bit5(0xAA68B5) + bit6(0xAA68B5) + bit7(0xAA68B5) + bitcount(0xAA68B6) +
+                    bitcount(0xAA68B7) + bitcount(0xAA68B8) + bitcount(0xAA68B9) + bitcount(0xAA68BA) + bitcount(0xAA68BB) +
+                    bitcount(0xAA68BC) + bitcount(0xAA68BD) + bit0(0xAA68BE) + bit1(0xAA68BE) + bit2(0xAA68BE) +
+                    bit3(0xAA68BE) + bitcount(0xAA68C1) + bitcount(0xAA68C2) + bitcount(0xAA68C3) + bit0(0xAA68C4) -
+                    bit0(0xAA688C) - bit6(0xAA6892) - bit7(0xAA6892) - bit6(0xAA6896) - bit7(0xAA6896) - bit0(0xAA6897) -
+                    bit1(0xAA6897) - bit2(0xAA6897) - bit7(0xAA689B) - bit0(0xAA68A8) - bit1(0xAA68A8) - bit0(0xAA689D) -
+                    bit5(0xAA68A1) - bit6(0xAA68A1) - bit7(0xAA68A1) - bit0(0xAA68A2) - bit7(0xAA68A7) - bit0(0xAA68AB) -
+                    bit1(0xAA68AB) - bit5(0xAA68AF) - bit6(0xAA68AF) - bit7(0xAA68AF) - bit0(0xAA68B0) - bit1(0xAA68B0) -
+                    bit0(0xAA68C1) - bit1(0xAA68C1)) == 380, format="percent"
                 )))
 )
 
@@ -4368,13 +4512,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA1560) / 3600),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90B0) / 3600),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "MINUTES"
@@ -4398,13 +4540,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4412,7 +4552,7 @@ leaderboard(
 
 leaderboard(
     id = 92196, title = "Chapter 1 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 1 in record time",
+    description = "Prove your mastery over time by completing Chapter 1 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4428,13 +4568,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4442,7 +4580,7 @@ leaderboard(
 
 leaderboard(
     id = 92197, title = "Chapter 2 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 2 in record time",
+    description = "Prove your mastery over time by completing Chapter 2 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4458,13 +4596,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4472,7 +4608,7 @@ leaderboard(
 
 leaderboard(
     id = 92198, title = "Chapter 3 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 3 in record time",
+    description = "Prove your mastery over time by completing Chapter 3 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4488,13 +4624,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4502,7 +4636,7 @@ leaderboard(
 
 leaderboard(
     id = 92199, title = "Chapter 4 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 4 in record time",
+    description = "Prove your mastery over time by completing Chapter 4 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4518,13 +4652,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4532,7 +4664,7 @@ leaderboard(
 
 leaderboard(
     id = 92200, title = "Chapter 5 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 5 in record time",
+    description = "Prove your mastery over time by completing Chapter 5 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4548,13 +4680,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4562,7 +4692,7 @@ leaderboard(
 
 leaderboard(
     id = 92201, title = "Chapter 6 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 6 in record time",
+    description = "Prove your mastery over time by completing Chapter 6 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4578,13 +4708,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4592,7 +4720,7 @@ leaderboard(
 
 leaderboard(
     id = 92202, title = "Chapter 7 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 7 in record time",
+    description = "Prove your mastery over time by completing Chapter 7 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4608,13 +4736,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4622,7 +4748,7 @@ leaderboard(
 
 leaderboard(
     id = 92203, title = "Chapter 8 Clear Time",
-    description = "Prove your mastery over time by conquering Chapter 8 in record time",
+    description = "Prove your mastery over time by completing Chapter 8 in record time",
     start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
              prev(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -4640,13 +4766,11 @@ leaderboard(
     value = max_of(
                 measured(tally(0, dword(0xAA155C) / 60),
                     when=dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 &&
-                    
-     measured_if(byte(0xA5AB4C) == 57
+                         measured_if(byte(0xA5AB4C) == 57
                 ),
                 measured(tally(0, dword(0xAA90AC) / 60),
                     when=dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 &&
-                    
-     measured_if(byte(0xA64C7C) == 50
+                         measured_if(byte(0xA64C7C) == 50
                 )
             ),
     format = "SECS"
@@ -4654,7 +4778,7 @@ leaderboard(
 
 leaderboard(
     id = 94367, title = "Agile Energy Hunter: Present",
-    description = "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
+    description = "Collect all five energy orbs scattered throughout Lebensbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
     start  = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 6 &&
@@ -4679,16 +4803,12 @@ leaderboard(
                byte(0xB95704) != prev(byte(0xB95704))) ||
               (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                byte(0xA9DAA8) < prev(byte(0xA9DAA8))) ||
-              (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               dword(0xA82E48) != prev(dword(0xA82E48))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                low4(0xAA692C) == 0) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                byte(0xB9D284) != prev(byte(0xB9D284))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               byte(0xAA55F8) < prev(byte(0xAA55F8))) ||
-              (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               dword(0xA8A998) != prev(dword(0xA8A998)))),
+               byte(0xAA55F8) < prev(byte(0xAA55F8)))),
     submit = always_true() &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                unless(byte(0xA5AB4C) != 57) &&
@@ -4720,12 +4840,16 @@ leaderboard(
                ) && always_false())),
     value = max_of(
                 unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != prev(byte(0xB95704))) && never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
+                unless(byte(0xA5AB4C) != 57) &&
+                unless(((bit0(0xB91514) == 1 && bit0(0xB91518) == 1) || byte(0xA9EB2E) != 8) && low4(0xA9EDDC) != 0) &&
+                never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != prev(byte(0xB95704))) &&
+                never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
                 measured(tally(0, dword(0xB88AB0) != prev(dword(0xB88AB0)))),
                 unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != prev(byte(0xB9D284))) && never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
+                unless(byte(0xA64C7C) != 50) &&
+                unless(((bit0(0xB99094) == 1 && bit0(0xB99098) == 1) || byte(0xAA667E) != 8) && low4(0xAA692C) != 0) &&
+                never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != prev(byte(0xB9D284))) &&
+                never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
                 measured(tally(0, dword(0xB905F0) != prev(dword(0xB905F0))))
             ),
     format = "FRAMES"
@@ -4733,24 +4857,30 @@ leaderboard(
 
 leaderboard(
     id = 94364, title = "Agile Energy Hunter: Middle Ages",
-    description = "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
+    description = "Collect six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
     start  = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 6 &&
+               low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 5 &&
                ((prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004))) + (prev(bit0((dword(0xA442F8) & 0x1FFFFFF) +
                0x000005))) + (prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006))) + (prev(bit0((dword(0xA442F8) &
-               0x1FFFFFF) + 0x000007))) + prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008))) == 1 &&
+               0x1FFFFFF) + 0x000007))) + (prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008))) +
+               (prev(bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004))) + prev(bit0((dword(0xA44300) & 0x1FFFFFF) +
+               0x000004))) == 1 &&
                ((bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005)) +
                (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000007)) +
-               bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008)) == 2) ||
+               (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004)) +
+               bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004)) == 2) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               low4(0xAA692C) != 0 && byte(0xAA55F8) <= 6 &&
+               low4(0xAA692C) != 0 && byte(0xAA55F8) <= 5 &&
                ((prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004))) + (prev(bit0((dword(0xA450C8) & 0x1FFFFFF) +
                0x000005))) + (prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006))) + (prev(bit0((dword(0xA450C8) &
-               0x1FFFFFF) + 0x000007))) + prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008))) == 1 &&
+               0x1FFFFFF) + 0x000007))) + (prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008))) +
+               (prev(bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004))) + prev(bit0((dword(0xA450D0) & 0x1FFFFFF) +
+               0x000004))) == 1 &&
                ((bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005)) +
                (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000007)) +
-               bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008)) == 2)),
+               (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004)) +
+               bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004)) == 2)),
     cancel = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                low4(0xA9EDDC) == 0) ||
@@ -4758,38 +4888,44 @@ leaderboard(
                byte(0xB95704) != prev(byte(0xB95704))) ||
               (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                byte(0xA9DAA8) < prev(byte(0xA9DAA8))) ||
-              (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               dword(0xA82E48) != prev(dword(0xA82E48))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                low4(0xAA692C) == 0) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                byte(0xB9D284) != prev(byte(0xB9D284))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               byte(0xAA55F8) < prev(byte(0xAA55F8))) ||
-              (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               dword(0xA8A998) != prev(dword(0xA8A998)))),
+               byte(0xAA55F8) < prev(byte(0xAA55F8)))),
     submit = always_true() &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-               unless(byte(0xA5AB4C) != 57) && unless((dword(0xA82E48) != 1011 && dword(0xA82E48) != 828)) &&
-               tally(5,
+               unless(byte(0xA5AB4C) != 57) &&
+               unless((dword(0xA82E48) != 1011 && dword(0xA82E48) != 828 && dword(0xA82E48) != 535 &&
+                   dword(0xA82E48) != 142)
+               ) &&
+               tally(6,
                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004)),
                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005)),
                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006)),
                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000007)),
-                   bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008))
+                   bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008)),
+                   bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004)),
+                   bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004))
                )) ||
               (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                    byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
                    dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57
                ) && always_false()) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-               unless(byte(0xA64C7C) != 50) && unless((dword(0xA8A998) != 1011 && dword(0xA8A998) != 828)) &&
-               tally(5,
+               unless(byte(0xA64C7C) != 50) &&
+               unless((dword(0xA8A998) != 1011 && dword(0xA8A998) != 828 && dword(0xA8A998) != 535 &&
+                   dword(0xA8A998) != 142)
+               ) &&
+               tally(6,
                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004)),
                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005)),
                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006)),
                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000007)),
-                   bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008))
+                   bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008)),
+                   bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004)),
+                   bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004))
                )) ||
               (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                    byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -4797,12 +4933,16 @@ leaderboard(
                ) && always_false())),
     value = max_of(
                 unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != prev(byte(0xB95704))) && never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
+                unless(byte(0xA5AB4C) != 57) &&
+                unless(((bit0(0xB91514) == 1 && bit0(0xB91518) == 1) || byte(0xA9EB2E) != 8) && low4(0xA9EDDC) != 0) &&
+                never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != prev(byte(0xB95704))) &&
+                never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
                 measured(tally(0, dword(0xB88AB0) != prev(dword(0xB88AB0)))),
                 unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != prev(byte(0xB9D284))) && never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
+                unless(byte(0xA64C7C) != 50) &&
+                unless(((bit0(0xB99094) == 1 && bit0(0xB99098) == 1) || byte(0xAA667E) != 8) && low4(0xAA692C) != 0) &&
+                never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != prev(byte(0xB9D284))) &&
+                never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
                 measured(tally(0, dword(0xB905F0) != prev(dword(0xB905F0))))
             ),
     format = "FRAMES"
@@ -4810,7 +4950,7 @@ leaderboard(
 
 leaderboard(
     id = 94366, title = "Agile Energy Hunter: Late 20th century",
-    description = "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
+    description = "Collect all five energy orbs scattered throughout Lebensbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
     start  = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 6 &&
@@ -4835,16 +4975,12 @@ leaderboard(
                byte(0xB95704) != prev(byte(0xB95704))) ||
               (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                byte(0xA9DAA8) < prev(byte(0xA9DAA8))) ||
-              (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               dword(0xA82E48) != prev(dword(0xA82E48))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                low4(0xAA692C) == 0) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                byte(0xB9D284) != prev(byte(0xB9D284))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               byte(0xAA55F8) < prev(byte(0xAA55F8))) ||
-              (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               dword(0xA8A998) != prev(dword(0xA8A998)))),
+               byte(0xAA55F8) < prev(byte(0xAA55F8)))),
     submit = always_true() &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                unless(byte(0xA5AB4C) != 57) && unless((dword(0xA82E48) != 1125 && dword(0xA82E48) != 797)) &&
@@ -4874,12 +5010,16 @@ leaderboard(
                ) && always_false())),
     value = max_of(
                 unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != prev(byte(0xB95704))) && never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
+                unless(byte(0xA5AB4C) != 57) &&
+                unless(((bit0(0xB91514) == 1 && bit0(0xB91518) == 1) || byte(0xA9EB2E) != 8) && low4(0xA9EDDC) != 0) &&
+                never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != prev(byte(0xB95704))) &&
+                never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
                 measured(tally(0, dword(0xB88AB0) != prev(dword(0xB88AB0)))),
                 unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != prev(byte(0xB9D284))) && never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
+                unless(byte(0xA64C7C) != 50) &&
+                unless(((bit0(0xB99094) == 1 && bit0(0xB99098) == 1) || byte(0xAA667E) != 8) && low4(0xAA692C) != 0) &&
+                never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != prev(byte(0xB9D284))) &&
+                never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
                 measured(tally(0, dword(0xB905F0) != prev(dword(0xB905F0))))
             ),
     format = "FRAMES"
@@ -4887,24 +5027,26 @@ leaderboard(
 
 leaderboard(
     id = 94365, title = "Agile Energy Hunter: Early 20th century",
-    description = "Collect all five energy orbs scattered throughout the outdoor area of Lebenbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
+    description = "Collect all six energy orbs scattered throughout Lebensbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
     start  = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 6 &&
+               low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 5 &&
                ((prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004))) + (prev(bit0((dword(0xA442F4) & 0x1FFFFFF) +
                0x000005))) + (prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006))) + (prev(bit0((dword(0xA442F4) &
-               0x1FFFFFF) + 0x000007))) + prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008))) == 1 &&
+               0x1FFFFFF) + 0x000007))) + (prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008))) +
+               prev(bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004))) == 1 &&
                ((bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005)) +
                (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007)) +
-               bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008)) == 2) ||
+               (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008)) + bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004)) == 2) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               low4(0xAA692C) != 0 && byte(0xAA55F8) <= 6 &&
+               low4(0xAA692C) != 0 && byte(0xAA55F8) <= 5 &&
                ((prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004))) + (prev(bit0((dword(0xA450C4) & 0x1FFFFFF) +
                0x000005))) + (prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006))) + (prev(bit0((dword(0xA450C4) &
-               0x1FFFFFF) + 0x000007))) + prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008))) == 1 &&
+               0x1FFFFFF) + 0x000007))) + (prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008))) +
+               prev(bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004))) == 1 &&
                ((bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005)) +
                (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007)) +
-               bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008)) == 2)),
+               (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008)) + bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004)) == 2)),
     cancel = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                low4(0xA9EDDC) == 0) ||
@@ -4912,38 +5054,36 @@ leaderboard(
                byte(0xB95704) != prev(byte(0xB95704))) ||
               (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                byte(0xA9DAA8) < prev(byte(0xA9DAA8))) ||
-              (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-               dword(0xA82E48) != prev(dword(0xA82E48))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                low4(0xAA692C) == 0) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                byte(0xB9D284) != prev(byte(0xB9D284))) ||
               (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               byte(0xAA55F8) < prev(byte(0xAA55F8))) ||
-              (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-               dword(0xA8A998) != prev(dword(0xA8A998)))),
+               byte(0xAA55F8) < prev(byte(0xAA55F8)))),
     submit = always_true() &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-               unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 569) &&
-               tally(5,
+               unless(byte(0xA5AB4C) != 57) && unless((dword(0xA82E48) != 569 && dword(0xA82E48) != 1539)) &&
+               tally(6,
                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004)),
                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005)),
                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006)),
                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007)),
-                   bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008))
+                   bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008)),
+                   bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004))
                )) ||
               (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                    byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
                    dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57
                ) && always_false()) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-               unless(byte(0xA64C7C) != 50) && unless(dword(0xA8A998) != 569) &&
-               tally(5,
+               unless(byte(0xA64C7C) != 50) && unless((dword(0xA8A998) != 569 && dword(0xA8A998) != 1539)) &&
+               tally(6,
                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004)),
                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005)),
                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006)),
                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007)),
-                   bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008))
+                   bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008)),
+                   bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004))
                )) ||
               (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                    byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -4951,13 +5091,127 @@ leaderboard(
                ) && always_false())),
     value = max_of(
                 unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != prev(byte(0xB95704))) && never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
+                unless(byte(0xA5AB4C) != 57) &&
+                unless(((bit0(0xB91514) == 1 && bit0(0xB91518) == 1) || byte(0xA9EB2E) != 8) && low4(0xA9EDDC) != 0) &&
+                never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != prev(byte(0xB95704))) &&
+                never(byte(0xA9DAA8) < prev(byte(0xA9DAA8))) &&
                 measured(tally(0, dword(0xB88AB0) != prev(dword(0xB88AB0)))),
                 unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != prev(byte(0xB9D284))) && never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
+                unless(byte(0xA64C7C) != 50) &&
+                unless(((bit0(0xB99094) == 1 && bit0(0xB99098) == 1) || byte(0xAA667E) != 8) && low4(0xAA692C) != 0) &&
+                never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != prev(byte(0xB9D284))) &&
+                never(byte(0xAA55F8) < prev(byte(0xAA55F8))) &&
                 measured(tally(0, dword(0xB905F0) != prev(dword(0xB905F0))))
             ),
     format = "FRAMES"
 )
+
+rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
+    bit7(0xA9ED98) == 1 && bit0(0xAA1158) == 1 && bit0(0xAA1157) == 1 && bit0(0xAA1156) == 1 && bit0(0xAA1155) == 1 &&
+    bit0(0xAA1154) == 1 && dword(0xAC49F4) == 0 && byte(0xB95704) == 1, "Ending the cycle | The Fated 🕑 {0} | Current 🕑 {1}:{2} | Completion: {3}%",
+    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA12B0)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0")
+)
+
+rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
+    bit7(0xA9ED98) == 0 && dword(0xAC49F4) == 0 && byte(0xB95704) != 0 && byte(0xB95704) <= 11 &&
+    ((byte(0xB95704) == 1) ||
+     (byte(0xB95704) == 2) ||
+     (byte(0xB95704) == 12) ||
+     (byte(0xB95704) == 10)), "{0} | The Fated 🕑 {1} | Current 🕑 {2}{3}:{4}{5} | Completion: {6}%",
+    rich_presence_lookup("Chapter", byte(0xB95704), ChapterLookup, fallback="Roaming Lebensbaum"),
+    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA12B0)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA12B4)),
+    rich_presence_value("Number", byte(0xAA1152))
+)
+
+rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
+    dword(0xAC49F4) == 0 && byte(0xB95704) != 0 && byte(0xB95704) <= 11 &&
+    ((byte(0xB95704) == 3) ||
+     (byte(0xB95704) == 4) ||
+     (byte(0xB95704) == 5) ||
+     (byte(0xB95704) == 6) ||
+     (byte(0xB95704) == 7) ||
+     (byte(0xB95704) == 8) ||
+     (byte(0xB95704) == 11) ||
+     (byte(0xB95704) == 9)), "{0} {1} | The Fated 🕑 {2} | Current 🕑 {3}{4}:{5}{6} | Completion: {7}%",
+    rich_presence_lookup("Chapter", byte(0xB95704), ChapterLookup, fallback="Roaming Lebensbaum"),
+    rich_presence_lookup("TimePeriod", dword(0xAA1268), TimePeriodLookup),
+    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA12B0)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA12B4)),
+    rich_presence_value("Number", byte(0xAA1152))
+)
+
+rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
+    ((low4(0xA9EDDC) == 0) ||
+     (dword(0xAC49F4) != 0)), "Title Screen | Completion {0}%",
+    rich_presence_value("Number", byte(0xAA1152))
+)
+
+rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57, "Wandering Lebensbaum | Completion {0}%",
+    rich_presence_value("Number", byte(0xAA1152))
+)
+
+rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
+    bit7(0xAA68E8) == 1 && bit0(0xAA8CA8) == 1 && bit0(0xAA8CA7) == 1 && bit0(0xAA8CA6) == 1 && bit0(0xAA8CA5) == 1 &&
+    bit0(0xAA8CA4) == 1 && dword(0xACC534) == 0 && byte(0xB9D284) == 1, "Ending the cycle | The Fated 🕑 {0} | Current 🕑 {1}:{2} | Completion: {3}%",
+    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA8E00)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0")
+)
+
+rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
+    bit7(0xAA68E8) == 0 && dword(0xACC534) == 0 && byte(0xB9D284) != 0 && byte(0xB9D284) <= 11 &&
+    ((byte(0xB9D284) == 1) ||
+     (byte(0xB9D284) == 2) ||
+     (byte(0xB9D284) == 12) ||
+     (byte(0xB9D284) == 10)), "{0} | The Fated 🕑 {1} | Current 🕑 {2}{3}:{4}{5} | Completion: {6}%",
+    rich_presence_lookup("Chapter", byte(0xB9D284), ChapterLookup, fallback="Roaming Lebensbaum"),
+    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA8E00)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA8E04)),
+    rich_presence_value("Number", byte(0xAA8CA2))
+)
+
+rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
+    dword(0xACC534) == 0 && byte(0xB9D284) != 0 && byte(0xB9D284) <= 11 &&
+    ((byte(0xB9D284) == 3) ||
+     (byte(0xB9D284) == 4) ||
+     (byte(0xB9D284) == 5) ||
+     (byte(0xB9D284) == 6) ||
+     (byte(0xB9D284) == 7) ||
+     (byte(0xB9D284) == 8) ||
+     (byte(0xB9D284) == 11) ||
+     (byte(0xB9D284) == 9)), "{0} {1} | The Fated 🕑 {2} | Current 🕑 {3}{4}:{5}{6} | Completion: {7}%",
+    rich_presence_lookup("Chapter", byte(0xB9D284), ChapterLookup, fallback="Roaming Lebensbaum"),
+    rich_presence_lookup("TimePeriod", dword(0xAA8DB8), TimePeriodLookup),
+    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
+    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA8E00)),
+    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
+    rich_presence_value("Number", dword(0xAA8E04)),
+    rich_presence_value("Number", byte(0xAA8CA2))
+)
+
+rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
+    ((low4(0xAA692C) == 0) ||
+     (dword(0xACC534) != 0)), "Title Screen | Completion {0}%",
+    rich_presence_value("Number", byte(0xAA8CA2))
+)
+
+rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50, "Wandering Lebensbaum | Completion {0}%",
+    rich_presence_value("Number", byte(0xAA8CA2))
+)
+
+rich_presence_display("Wandering Lebensbaum")
