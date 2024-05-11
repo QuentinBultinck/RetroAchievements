@@ -5,74 +5,73 @@
 //          '''''''''''''''''''''''''''''''''''''''
 //          - https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PSP/ShadowOfDestiny
 // $8FBEF0: [NTSC-J][25-bit Pointer] Video data (intro and credits)
-//          - Explanation @ 0x8ffef0
-// $8FFEF0: [NTSC-U/C][25-bit Pointer] Video data (intro and credits)
+//          - Regional equivalent of $0x8ffef0 (USA)
+// $8FFEF0: [NTSC-U][25-bit Pointer] Video data (intro and credits)
 //          +0x18 - [32-bit Flag] 0x101 => video is active
 //          +0x2c - [32-bit Flag] 0x41 => video is active
 //          +0x40 - [32-bit] Video timer
-// $A442EC: [NTSC-U/C][36-byte Array]
-//          //=====§ List of 9 Pointers to EnergyOrbs_Data_Objects §=====\\
-//          [Struct Definition][12-byte] EnergyOrbs_Data_Object
-//          | ''''''''''''''''''''''''''''''''''''''''''
-//          | +0x0 - [8-bit] Amount of Energy Orbs in the Area
-//          | +0x4 - [8-byte Array] List of 8-bit Flags => Is Energy Orb Collected
+// $A442EC: [NTSC-U][36-byte Array] List of [(9x) Pointer] --> EnergyOrbs_Data_Objects
 //          
-//          [25-bit Pointer] Energy Orbs - Present - City
+//          [Struct Definition][12-byte] EnergyOrbs_Data_Object
+//          |'''''''''''''''''''''''''''''''''''''''''''
+//          | +0x0 - [8-bit] Amount of Energy Orbs in the Area
+//          | +0x4 - [8-byte Array] List of [Bit Flags {8-bit}] => Is Energy Orb Collected
+//          
+//          [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Present - City
 //          +0x4 - [Bit Flag] bit 0 => Orb - Outside Fortune Teller
 //          +0x5 - [Bit Flag] bit 0 => Orb - Alley Way Between Haup Street & Neuwand Street
 //          +0x6 - [Bit Flag] bit 0 => Orb - South Gate
 //          +0x7 - [Bit Flag] bit 0 => Orb - Under Arch Ruckagrat Street
 //          +0x8 - [Bit Flag] bit 0 => Orb - Car Park
-// $A442F0: [25-bit Pointer] Energy Orbs - Late 20th Century - City
+// $A442F0: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Late 20th Century - City
 //          +0x4 - [Bit Flag] bit 0 => Orb - Gate North of Bar
 //          +0x5 - [Bit Flag] bit 0 => Orb - Cafe Sonne Well
 //          +0x6 - [Bit Flag] bit 0 => Orb - Haupt Street
 //          +0x7 - [Bit Flag] bit 0 => Orb - Rudolf Street Stairs
 //          +0x8 - [Bit Flag] bit 0 => Orb - Alley Way Behind Bakery
-// $A442F4: [25-bit Pointer] Energy Orbs - Early 20th Century - City
+// $A442F4: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Early 20th Century - City
 //          +0x4 - [Bit Flag] bit 0 => Orb - Tree Near Bar
 //          +0x5 - [Bit Flag] bit 0 => Orb - Stairs Opposite Cafe Sonne
 //          +0x6 - [Bit Flag] bit 0 => Orb - Near News Post
 //          +0x7 - [Bit Flag] bit 0 => Orb - Rudolf Street Park
 //          +0x8 - [Bit Flag] bit 0 => Orb - North East Gate
-// $A442F8: [25-bit Pointer] Energy Orbs - Middle Ages - City
+// $A442F8: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - City
 //          +0x4 - [Bit Flag] bit 0 => Orb - North East On Bench
 //          +0x5 - [Bit Flag] bit 0 => Orb - West Near Well
 //          +0x6 - [Bit Flag] bit 0 => Orb - Alley Way Behind Atelier Franssen
 //          +0x7 - [Bit Flag] bit 0 => Orb - East Near Hay
 //          +0x8 - [Bit Flag] bit 0 => Orb - Outside Church
-// $A44300: [25-bit Pointer] Energy Orbs - Middle Ages
+// $A44300: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - Lab
 //          +0x4 - [Bit Flag] bit 0 => Orb - Exploded Alchemy Lab
-// $A44304: [25-bit Pointer] Energy Orbs - Early 20th Century
+// $A44304: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Early 20th Century - Brum Mansion
 //          +0x4 - [Bit Flag] bit 0 => Orb - Inside Brum Mansion
-// $A4430C: [25-bit Pointer] Energy Orbs - Middle Ages
-//          +0x4 - [Bit Flag] bit 0 => Orb - Inside Church
-//          \\=========================================//
-// $A450BC: [NTSC-J][36-byte Array] List of 9 Pointers to EnergyOrbs_Data_Objects
-//          - Identical to 0xa442ec
+// $A4430C: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - Church
+//          +0x4 - [Bit Flag] bit 0 =&gt; Orb - Inside Church
+// $A450BC: [NTSC-J][36-byte Array] List of [(9x) Pointer] --> EnergyOrbs_Data_Objects
+//          - Regional equivalent of $0xa442ec (USA)
 //          
-//          [NTSC-J][25-bit Pointer] Energy Orbs - Present - City
-//          - Explanation @ 0xa442ec
-// $A450C0: [NTSC-J][25-bit Pointer] Energy Orbs - Late 20th Century - City
-//          - Explanation @ 0xa442f0
-// $A450C4: [NTSC-J][25-bit Pointer] Energy Orbs - Early 20th Century - City
-//          - Explanation @ 0xa442f4
-// $A450C8: [NTSC-J][25-bit Pointer] Energy Orbs - Middle Ages - City
-//          - Explanation @ 0xa442f8
-// $A450D0: [NTSC-J][25-bit Pointer] Energy Orbs - Middle Ages
-//          +0x4 - [Bit Flag] bit 0 => Orb - Exploded Alchemy Lab
-// $A450D4: [NTSC-J][25-bit Pointer] Energy Orbs - Early 20th Century
-//          +0x4 - [Bit Flag] bit 0 => Orb - Inside Brum Mansion
-// $A450DC: [NTSC-J][25-bit Pointer] Energy Orbs - Middle Ages
-//          +0x4 - [Bit Flag] bit 0 => Orb - Inside Church
-// $A5AB44: [NTSC-U/C][9-byte ASCII Text] PSP Game ID - USA
-//          - ASCII Text = ULUS10459 --> PSP game identification code for region NTSC-U
+//          [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Present - City
+//          - Regional equivalent of $0xa442ec (USA)
+// $A450C0: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Late 20th Century - City
+//          - Regional equivalent of $0xa442f0 (USA)
+// $A450C4: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Early 20th Century - City
+//          - Regional equivalent of $0xa442f4 (USA)
+// $A450C8: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - City
+//          - Regional equivalent of $0xa442f8 (USA)
+// $A450D0: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - Lab
+//          - Regional equivalent of $0xa44300 (USA)
+// $A450D4: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Early 20th Century - Brum Mansion
+//          - Regional equivalent of $0xa44304 (USA)
+// $A450DC: [NTSC-J][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Middle Ages - Church
+//          - Regional equivalent of $0xa4430c (USA)
+// $A5AB44: [NTSC-U][9-byte ASCII Text] PSP Game ID - USA
+//          - ASCII Text = ULUS10459 --> PSP game identification code for region USA
 // $A64C74: [NTSC-J][9-byte ASCII Text] PSP Game ID - JPN
-//          - ASCII Text = ULJM05512 --> PSP game identification code for region NTSC-J
+//          - ASCII Text = ULJM05512 --> PSP game identification code for region JPN
 // $A82E2C: [NTSC-U/C][Bit Flag] bit 0 => Is Chapter Completion Menu Displayed || Is Loading
 //          - bit 0 = 1 => when chapter complete screen is displayed, when the ending video credits + ending file are played, when loading (+during time travel)
 //          - bit 0 = 0 => when in-game AND nothing is loading
-// $A82E48: [NTSC-U/C][32-bit] Area Identification
+// $A82E48: [NTSC-U][32-bit] Area Identification
 //          - This list is not complete; Currently only IDs used in achievement logic are documented
 //          
 //          0x10 => Present_CafeSonne
@@ -101,34 +100,34 @@
 //          0xcd => Present_BrumMuseum_Upstairs_Room3_Day
 //          0xf => 80s_Bar
 // $A8A97C: [NTSC-J][Bit Flag] bit 0 => Is Chapter Completion Menu Displayed || Is Loading
-//          - Explanation @ 0xa82e2c
+//          - Regional equivalent of $0xa82e2c (USA)
 // $A8A998: [NTSC-J][32-bit] Area Identification
-//          - Explanation @ 0xa82e48
-// $A8AB74: [NTSC-U/C][32-bit] Misc Player Model Data - Is Idle
+//          - Regional equivalent of $0xa82e48 (USA)
+// $A8AB74: [NTSC-U][32-bit] Misc Player Model Data - Is Idle
 //          - Changes each 2 frames, when idle
 //          - 0x0 => when moving
-// $A8ABD0: [NTSC-U/C][Float] Player Position - x-Axis
+// $A8ABD0: [NTSC-U][Float] Player Position - x-Axis
 //          - Heading west => value decreases
 //          - Heading east => value increases
 //          - Prime Meridian (vertical mid-line cutting area in two) => value is 0 on this mid-line
 //          - West from mid-line => value is positive
 //          - East from mid-line => value is negative
-// $A8ABD8: [NTSC-U/C][Float] Player Position - y-Axis
+// $A8ABD8: [NTSC-U][Float] Player Position - y-Axis
 //          - Heading north => value increases
 //          - Heading south => value decreases
 //          - Equator (horizontal mid-line cutting area in two) => value is 0 on this mid-line
 //          - North from mid-line => value is positive
 //          - South from mid-line => value is negative
-// $A8ABE4: [NTSC-U/C][Float] Player Model Rotation
+// $A8ABE4: [NTSC-U][Float] Player Model Rotation
 //          - North => 0.0
 //          - East => 1.522...
 //          - South => 3.119... OR -3.119...
 //          - West => -1.522...
 // $A92720: [NTSC-J][Float] Player Position - x-Axis
-//          - Explanation @ 0xa8abd0
+//          - Regional equivalent of $0xa8abd0 (USA)
 // $A92728: [NTSC-J][Float] Player Position - y-Axis
-//          - Explanation @ 0xa8abd8
-// $A9DAA8: [NTSC-U/C][8-bit] Energy Units (functional)
+//          - Regional equivalent of $0xa8abd8 (USA)
+// $A9DAA8: [NTSC-U][8-bit] Energy Units (functional)
 //          - This is the internal/functional value, if this is 0x0 => player can't time-travel
 //          - Values range [0x0-0xa]
 // $A9DC24: [NTSC-U][25-bit pointer] Model Data - Jogging Man 1980s
@@ -137,45 +136,44 @@
 //          +0x40 - [Float] Position - xAxis
 //          +0x48 - [Float] Position - yAxis
 //          +0xAC - [Bit Flag] bit 5 => Is Running Animation Active
-// $A9EB2A: [NTSC-U/C][8-bit] Energy Units (visual)
+// $A9EB2A: [NTSC-U][8-bit] Energy Units (visual)
 //          - This value only corresponds with the UI (refer to 0xa9daa8 for functional value)
 //          - Value range [0x0-0xa]
-// $A9EB2E: [NTSC-U/C][8-bit Flag] Is Player Character Moveable
+// $A9EB2E: [NTSC-U][8-bit Flag] Is Player Character Moveable
 //          - 0x8 => Player can move Eike
 //          - [0x0-0x7] => Player can not move Eike (when loading, during cutscenes...)
-// $A9ECBC: [NTSC-U/C][124-byte]
-//          //===========§ Cutscene Data §===========\\
+// $A9ECBC: [NTSC-U][124-byte] Cutscene Data
+//          ===========================
 //          
-//          [32-bit] Cutscene Master ID
+//          [NTSC-U][32-bit] Cutscene Master ID
 //          - Identifies a cutscene sequence
 //          - Does not reset to a default value
-// $A9ECC0: [16-bit] Cutscene Section ID_1
+// $A9ECC0: [NTSC-U][16-bit] Cutscene Section ID_1
 //          - Identifies a section from the current cutscene
 //          - Resets to 0xffff when no cutscene active OR when switching cutscene sections
 //          - First section of a cutscene always start at 0x1; goes up from there depending on camera switches
-// $A9ECC2: [16-bit] Cutscene Section ID_2
+// $A9ECC2: [NTSC-U][16-bit] Cutscene Section ID_2
 //          - First section of a cutscene always start at 0x0; goes up from there depending on camera switches
-// $A9ECC8: [25-bit Pointer] Cutscene Identification - Master Data
+// $A9ECC8: [NTSC-U][25-bit Pointer] Cutscene Identification - Master Data
 //          +0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
 //          +0x8 - [32-bit] Cutscene Master Data ID
-// $A9ECCC: [25-bit Pointer] Cutscene Identification - Section Data
+// $A9ECCC: [NTSC-U][25-bit Pointer] Cutscene Identification - Section Data
 //          +0x0 - Data lower than this hex address changes when the next section in the cutscene starts
 //          +0x8 - [32-bit] Cutscene Section Data ID
-// $A9ECD0: [25-bit Pointer] Cutscene Misc Data
+// $A9ECD0: [NTSC-U][25-bit Pointer] Cutscene Misc Data
 //          +0x0 - Refers to end of dynamic cutscene memory data block??
-// $A9ECD4: [25-bit Pointer] Cutscene Identification - Minor IDs
+// $A9ECD4: [NTSC-U][25-bit Pointer] Cutscene Identification - Minor IDs
 //          - Pointer active when a cutscene is active
 //          +0x0 - Data lower than this point can be used as Minor Cutscene IDs
 //          +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
-// $A9ED26: [8-bit Flag] Is Cutscene Active (preferred)
+// $A9ED26: [NTSC-U][8-bit Flag] Is Cutscene Active (preferred)
 //          0x0 => no cutscene active
 //          0x1 => Small cutscene active (without fancy camera work) || transitional value between active-inactive state
 //          ... => transitional values
 //          0x5 => Large cutscene active
-// $A9ED38: [32-bit] Cutscene Timer
-//          \\=======================================//
-// $A9ED3C: [NTSC-U/C][57-bytes Bitset]
-//          //=======§ Achievement Percentage Flags §=======\\
+// $A9ED38: [NTSC-U][32-bit] Cutscene Timer
+// $A9ED3C: [NTSC-U][57-bytes Bitset] Achievement Percentage Flags
+//          ===========================================
 //          - Each flag corresponds to 1 cutscene and counts toward the achievement percentage
 //          - At end of a cutscene one of these flags will become true
 //          - Flags are grouped per chapter
@@ -184,7 +182,7 @@
 //          - Flags further than 57-bytes do not count toward achievement percentage
 //          - Some side content/cutscenes do not have any corresponding flags which count toward the achievement percentage
 //          
-//          [NTSC-U/C][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
+//          [NTSC-U][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
 //          bits 1-7 => 13+%
 // $A9ED3D: [Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
 //          all bits => 15+%
@@ -198,7 +196,7 @@
 //          all bits => 15+%
 // $A9ED42: [Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
 //          bits 0-5 => 11+%
-// $A9ED43: [NTSC-U/C][4-bytes - Bit Flags] Achievement Percentage Flags - Chapter 1
+// $A9ED43: [NTSC-U][4-bytes - Bit Flags] Achievement Percentage Flags - Chapter 1
 //          bits 6-7 => 8+%
 // $A9ED44: [Bit Flags] Achievement Percentage Flags - Chapter 1
 //          all bits => 33+%
@@ -206,7 +204,7 @@
 //          all bits => 33+%
 // $A9ED46: [Bit Flags] Achievement Percentage Flags - Chapter 1
 //          bits 0-5 => 25+%
-// $A9ED47: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 2
+// $A9ED47: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 2
 //          bits 3-7 => 13+%
 // $A9ED48: [Bit Flags] Achievement Percentage Flags - Chapter 2
 //          all bits => 22+%
@@ -216,7 +214,7 @@
 //          all bits => 22+%
 // $A9ED4B: [Bit Flags] Achievement Percentage Flags - Chapter 2
 //          bits 0-6 => 19+%
-// $A9ED4D: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 4
+// $A9ED4D: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 4
 //          bits 1-7 => 19+%
 // $A9ED4E: [Bit Flags] Achievement Percentage Flags - Chapter 4
 //          all bits => 22+%
@@ -226,7 +224,7 @@
 //          all bits => 22+%
 // $A9ED51: [Bit Flags] Achievement Percentage Flags - Chapter 4
 //          bits 0-4 => 13+%
-// $A9ED52: [NTSC-U/C][6-bytes - Bit Flags] Achievement Percentage Flags - Chapter 5
+// $A9ED52: [NTSC-U][6-bytes - Bit Flags] Achievement Percentage Flags - Chapter 5
 //          bits 1-7 => 15+%
 // $A9ED53: [Bit Flags] Achievement Percentage Flags - Chapter 5
 //          all bits => 17+%
@@ -238,7 +236,7 @@
 //          all bits => 17+%
 // $A9ED57: [Bit Flags] Achievement Percentage Flags - Chapter 5
 //          bits 0-6 => 15+%
-// $A9ED58: [NTSC-U/C][3-bytes - Bit Flags] Achievement Percentage Flags - Chapter 3
+// $A9ED58: [NTSC-U][3-bytes - Bit Flags] Achievement Percentage Flags - Chapter 3
 //          bits 2-7 => 27+%
 // $A9ED59: [Bit Flags] Achievement Percentage Flags - Chapter 3
 //          all bits => 36+%
@@ -254,7 +252,7 @@
 //          all bits => 22+%
 // $A9ED5F: [Bit Flags] Achievement Percentage Flags - Chapter 6
 //          bits 0-4 => 14+%
-// $A9ED60: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 7
+// $A9ED60: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 7
 //          bits 2-7 => 17+%
 // $A9ED61: [Bit Flags] Achievement Percentage Flags - Chapter 7
 //          all bits => 23+%
@@ -264,7 +262,7 @@
 //          all bits => 23+%
 // $A9ED64: [Bit Flags] Achievement Percentage Flags - Chapter 7
 //          bits 0-3 => 11+%
-// $A9ED65: [NTSC-U/C][10-bytes - Bit Flags] Achievement Percentage Flags - Chapter 8
+// $A9ED65: [NTSC-U][10-bytes - Bit Flags] Achievement Percentage Flags - Chapter 8
 //          bits 5-7 => 4+%
 // $A9ED66: [Bit Flags] Achievement Percentage Flags - Chapter 8
 //          all bits => 11+%
@@ -284,7 +282,7 @@
 //          all bits => 11+%
 // $A9ED6E: [Bit Flags] Achievement Percentage Flags - Chapter 8
 //          bits 0-3 => 5+%
-// $A9ED71: [NTSC-U/C][4-bytes - Bit Flags] Achievement Percentage Flags - Epilogue
+// $A9ED71: [NTSC-U][4-bytes - Bit Flags] Achievement Percentage Flags - Epilogue
 //          bits 2-7 => 26+%
 // $A9ED72: [Bit Flags] Achievement Percentage Flags - Epilogue
 //          all bits => 34+%
@@ -292,79 +290,77 @@
 //          all bits => 34+%
 // $A9ED74: [Bit Flags] Achievement Percentage Flags - Epilogue
 //          bit 0 => 4+%
-//          \\========================================//
-// $A9ED76: [NTSC-U/C][102-byte Bitset]
-//          //=====§ Current Playthrough Bit Flags §=====\\
+// $A9ED76: [NTSC-U][102-byte Bitset] Current Playthrough Bit Flags
+//          ================================================
 //          - Mostly contains bitflags for certain events in the current playthrough
 //          - List is not complete. Currently only bitflags which are used in achievement logic are documented
 //          
-//          [Bit Flags] Current Playthrough - Multi-chapter
+//          [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 0 => talked to Oleg 2nd time in chapter 3
 //          bit 7 => gave kitten to Sibylla
-// $A9ED98: [Bit Flags] Current Playthrough - EX Chapter
+// $A9ED98: [NTSC-U][Bit Flags] Current Playthrough - EX Chapter
 //          bit 7 => is prologue in EX mode - Actually a bitflag for 2nd dialogue option at start of game when all other endings have been achieved: "Oh, Homunculus", which activates EX chapter
-// $A9ED9D: [Bit Flags] Current Playthrough - Chapter 1
+// $A9ED9D: [NTSC-U][Bit Flags] Current Playthrough - Chapter 1
 //          bit 5 => put out fire yourself
 //          bit 7 => Saved bar from fire by warning barman
-// $A9EDA0: [Bit Flags] Current Playthrough - Chapter 2
+// $A9EDA0: [NTSC-U][Bit Flags] Current Playthrough - Chapter 2
 //          bit 0 => is ladder acquired
 //          bit 1 = 0 => LIGHTER used to scare crowd
 //          bit 1 = 1 => TELEPHONE used to scare crowd
 //          bit 2 = 0 => Chosen to plant STATUE instead of flowers
 //          bit 2 = 1 => Chosen to plant FLOWERS instead of statue
-// $A9EDA5: [Bit Flags] Current Playthrough - Chapter 4
+// $A9EDA5: [NTSC-U][Bit Flags] Current Playthrough - Chapter 4
 //          bit 2 => is wearing performer outfit
 //          bit 3 => died once without using an iron plate
-// $A9EDAA: [Bit Flags] Current Playthrough - Brum Estate Choice
+// $A9EDAA: [NTSC-U][Bit Flags] Current Playthrough - Brum Estate Choice
 //          bit 5 = 0 => Brum Estate is museum
 //          bit 5 = 1 => Brum Estate is library
-// $A9EDAD: [Bit Flags] Current Playthrough - Ancestor Choice - Chapter 5
+// $A9EDAD: [NTSC-U][Bit Flags] Current Playthrough - Ancestor Choice - Chapter 5
 //          bit 1-3 => walk with margarette
 //          bit 4 => 1st ancestor choice
 //          bit 5 => cutscene inbetween choices
 //          bit 6 => confirm choice: Margarette is NO ancestor, sets on choice (refer to 0xa9edae)
 //          bit 7 => confirm choice: Margarette is ancestor, sets on choice, (refer to 0xa9edae)
-// $A9EDAE: [Bit Flags] Current Playthrough - Ancestor Choice - Chapter 5
+// $A9EDAE: [NTSC-U][Bit Flags] Current Playthrough - Ancestor Choice - Chapter 5
 //          bit 6 => Margarette is ancestor, sets after leaving alchemist house (refer to 0xa9edad)
 //          bit 7 => Margarette is NOT an ancestor, sets after leaving alchemist house (refer to 0xa9edad)
-// $A9EDB0: [Bit Flags] Current Playthrough - Inspired Karl Franssen's Art
+// $A9EDB0: [NTSC-U][Bit Flags] Current Playthrough - Inspired Karl Franssen's Art
 //          - 8 paintings viewable at Brum museum, 6 can altered by inspiring Karl Franssen
 //          bit 7 => Antidote painting
 //          bit 6 => Marktplatz painting (insinuating removing the tree)
 //          bit 5 => Squire's crest painting
 //          bit 4 => Tower view painting (downstairs)
-// $A9EDB1: [Bit Flags] Current Playthrough - Inspired Karl Franssen's Art
+// $A9EDB1: [NTSC-U][Bit Flags] Current Playthrough - Inspired Karl Franssen's Art
 //          bit 0 => Performer painting (only possible when player became performer in chapter 4)
 //          bit 1 => Achemist house collapse painting
-// $A9EDB7: [Bit Flags] Current Playthrough - Movie Choice - Chapter 6
+// $A9EDB7: [NTSC-U][Bit Flags] Current Playthrough - Movie Choice - Chapter 6
 //          bit 5 => Movie choice 1: Meditating Man
 //          bit 6 => Movie choice 1: Time Travel
 //          bit 7 => Movie choice 2: Take over the world
-// $A9EDB8: [Bit Flags] Current Playthrough - Movie Choice - Chapter 6
+// $A9EDB8: [NTSC-U][Bit Flags] Current Playthrough - Movie Choice - Chapter 6
 //          bit 0 => Movie Choice 2: Find cause of own death
 //          bit 1 => Movie Choice 3: Thriller story
 //          bit 2 => Movie Choice 3: Love story
-// $A9EDC0: [Bit Flags] Current Playthrough - Dana's choice
+// $A9EDC0: [NTSC-U][Bit Flags] Current Playthrough - Dana's choice
 //          bit 2 = 0 => Take Dana back to present
 //          bit 2 = 1 => Leave Dana in the past (is set after cutscene ends)
-// $A9EDC4: [Bit Flags] Current Playthrough - Saved Dana from Past
+// $A9EDC4: [NTSC-U][Bit Flags] Current Playthrough - Saved Dana from Past
 //          bit 1 => Gave letter to Dana
 //          bit 3-4 => Took Dana back to present
-// $A9EDCA: [Bit Flags] Current Playthrough - Multi-chapter
+// $A9EDCA: [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 6 => payed TAB with egg shaped pocket watch
 //          bit 7 => payed COFFEE with egg shaped pocket watch
-// $A9EDCB: [Bit Flags] Current Playthrough - Multi-chapter
+// $A9EDCB: [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 2 => talked with Oleg 1st time in Chapter 3
 //          bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ xa9edcc == 1
 //          bit 6 => gave kitten to Sibylla
-// $A9EDCC: [Bit Flags] Current Playthrough - Multi-chapter
+// $A9EDCC: [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
-//          \\========================================//
-// $A9EDDC: [NTSC-U/C][Lower4 Flag] Is In-Game
+// $A9EDDC: [NTSC-U][Lower4 Flag] Is In-Game
 //          Lower4 = 0 => at title screen
 //          Lower4 > 0 => in-game
-// $A9EE08: [NTSC-U/C][436-byte Bitfield]
-//          //=========§ NPC Interaction Data §=========\\
+// $A9EE08: [NTSC-U][436-byte Bitfield] NPC Interaction Data
+//          ======================================
 //          - 8-bit blocks that count how many times player has talked to an NPC
 //          - Max count usually 0x2, talking more than this equals same dialogue + is skippable
 //          - These counts are saved to the current playthrough
@@ -477,27 +473,27 @@
 // $A9EF8F: [8-bit] Young Couple Side Quest - Chapter 8
 //          bit 0 => told the man about the lovers never destined to meet
 //          bit 1 => told the man to get over it
-//          \\========================================//
-// $A9EFDC: [NTSC-U/C][25-bit Pointer] --> NPC Interaction ID
-//          +0x0 - [NTSC-U/C][32-bit] NPC ID
+// $A9EFDC: [NTSC-U][25-bit Pointer] --> NPC Interaction ID
+//          +0x0 - [32-bit] NPC ID
 //          | - This value changes when interacting with something
 //          | - Unique per interactable NPC or interactable item
 //          | - This value is copied to 0xa9eff4 (refer to notes)
-// $A9EFE0: [NTSC-U/C][25-bit Pointer] --> Interaction Chapter ID
+// $A9EFE0: [NTSC-U][25-bit Pointer] --> Interaction Chapter ID
 //          +0x0 - [32-bit] Interaction Chapter ID
 //          | - This is a value which is active during an interaction
 //          | - Interactions in the same chapter, have the same value; Interactions in different chapters have differing values
-// $A9EFE4: [NTSC-U/C][25-bit Pointer] --> Interaction ID
-//          - Pointer resets to 0x0 when interaction is done
+// $A9EFE4: [NTSC-U][25-bit Pointer] --> Interaction ID
+//          - Pointer is only operational during the interaction
 //          
 //          +0x0 - [32-bit] Interaction ID
 //          | - Each interaction has a unique ID
-// $A9EFF4: [NTSC-U/C][32-bit] NPC ID copy
-//          - Value set here is a copy of NPC ID from 0xa9efdc
+// $A9EFF4: [NTSC-U][32-bit] NPC ID (copy)
+//          - Value set here is a copy of NPC ID from $0xa9efdc
 //          - This value is only active during the interaction
 //          - Resets to 0x0 when interaction is done
-// $A9F034: [NTSC-U/C][29-byte Array]
-//          //=======§ List of Inventory_Item_Objects §=======\\
+// $A9F034: [NTSC-U][29-byte Array] List of [Inventory_Item_Objects]
+//          ===================================
+//          
 //          [Struct Defintion][8-bit] Inventory_Item_Object
 //          |''''''''''''''''''''''''''''''''''''''''
 //          | - Upper4 => correlates to current chapter or the chapter in which item was acquired??
@@ -534,11 +530,11 @@
 // $A9F04F: [Inventory_Item_Object] Notebook
 // $A9F050: [Inventory_Item_Object] Postcard
 //          \\========================================//
-// $A9F074: [NTSC-U/C][29-bytes] List of Inventory_Item_Objects (copy of 0xa9f034)
+// $A9F074: [NTSC-U][29-bytes] List of [Inventory_Item_Objects] (copy of $0xa9f034)
 //          - Values here might only update on save or chapter change
-// $A9F111: [NTSC-U/C][8-bit] Highlighted Inventory Item
+// $A9F111: [NTSC-U][8-bit] Highlighted Inventory Item
 //          - Currently only the IDs which are used in achievement logic are documented in this list
-//          - ID corresponds to the index of the Inventory_Item_Object in the list described @ 0xa9f034
+//          - ID corresponds to the index of the Inventory_Item_Object in the list described $0xa9f034
 //          
 //          # ID list
 //          ''''''''''''''
@@ -571,8 +567,8 @@
 //          0x1a = old map
 //          0x1b = notebook
 //          0x1c = postcard
-// $AA1118: [NTSC-U/C][44-bytes]
-//          //=======§ Best Clear Time Data §=======\\
+// $AA1118: [NTSC-U][44-bytes] Best Clear Time Data
+//          ============================
 //          - Stored in seconds
 //          - These values are set when finishing a chapter OR booting up the game (loading previous best clear times)
 //          - Will overwrite when the new clear time is better
@@ -589,9 +585,8 @@
 // $AA113C: [32-bit] Best clear time - Epilogue
 //          - This is also used for EX Chapter
 // $AA1140: [32-bit] Best clear time - Total
-//          \\=====================================//
-// $AA1148: [NTSC-U/C][11-bytes]
-//          //=======§  Achievement Percentage Number §=======\\
+// $AA1148: [NTSC-U][11-bytes] Achievement Percentage Number
+//          ======================================
 //          - These 8-bit values correspond to the rounded number shown in the results menu (e.g. 42% => 8-bit value: 0x2a)
 //          - These bytes change when entering the extra menu or the title screen
 //          - These bytes are calculated based on the bitset @ 0xa9ed3c
@@ -607,9 +602,8 @@
 // $AA1150: [8-bit] Achievement Percentage: Chapter 8
 // $AA1151: [8-bit] Achievement Percentage: Epilogue
 // $AA1152: [8-bit] Achievement Percentage: Total
-//          \\=============================================//
-// $AA1154: [NTSC-U/C][7-bytes]
-//          //===========§ Ending Data §===========\\
+// $AA1154: [NTSC-U][7-bytes] Ending Data
+//          ===========================
 //          - Flags will make the corresponding ending file viewable in the extra menu
 //          - Once one of these is achieved, it will unlock the extra menu at the title screen
 //          
@@ -621,22 +615,20 @@
 // $AA1159: [Bit Flag] bit 0 => Ending EX unlocked
 // $AA115A: [8-bit] Current ending File being watched via the extra menu
 //          - Does not reset to a default value after ending file is over
-//          
-//          - 0x0 = A
-//          - 0x1 = B
-//          - ...
-//          - 0x4 = E
-//          - 0x5 = EX
-//          \\==================================//
-// $AA115B: [NTSC-U/C][57-byte Bitset]
-//          //=======§ Achievement Percentage Flags (disfavored) §=======\\
-//          - prefer using bitset @ 0xa9ed3c => since the bitset at this location only updates when saving or at game startup
+//          0x0 = A
+//          0x1 = B
+//          0x...
+//          0x4 = E
+//          0x5 = EX
+// $AA115B: [NTSC-U][57-byte Bitset] Achievement Percentage Flags (disfavored)
+//          =====================================
+//          - prefer using bitset at $0xa9ed3c => since the bitset at this location only updates when saving or at game startup
 //          
 //          - Each flag corresponds to at least 1 cutscene and counts toward the achievement percentage
 //          - Each flag accounts for a float percentage. These numbers are rounded up or down in the extra menu
 //          - This is the bitset which is used to calculate the percentages in the results menu
 //          
-//          [NTSC-U/C][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue + EX Chapter
+//          [NTSC-U][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue + EX Chapter
 //          bits 1-7 => 13+%
 // $AA115C: [Bit Flags] Prologue + EX Chapter
 //          all bits => 15+%
@@ -650,7 +642,7 @@
 //          all bits => 15+%
 // $AA1161: [Bit Flags] Prologue + EX Chapter
 //          bits 0-5 => 11+%
-// $AA1162: [NTSC-U/C][4-bytes - Bit Flags] Achievement Percentage Flags - Chapter 1
+// $AA1162: [NTSC-U][4-bytes - Bit Flags] Achievement Percentage Flags - Chapter 1
 //          bits 6-7 => 8+%
 // $AA1163: [Bit Flags] Chapter 1
 //          all bits => 33+%
@@ -668,7 +660,7 @@
 //          all bits => 22+%
 // $AA116A: [Bit Flags] Chapter 2
 //          bits 0-6 => 19+%
-// $AA116C: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 4
+// $AA116C: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 4
 //          bits 1-7 => 19+%
 // $AA116D: [Bit Flags] Chapter 4
 //          all bits => 22+%
@@ -690,7 +682,7 @@
 //          all bits => 17+%
 // $AA1176: [Bit Flags] Chapter 5
 //          bits 0-6 => 15+%
-// $AA1177: [NTSC-U/C][3-bytes - Bit Flags] Achievement Percentage Flags - Chapter 3
+// $AA1177: [NTSC-U][3-bytes - Bit Flags] Achievement Percentage Flags - Chapter 3
 //          bits 2-7 => 27+%
 // $AA1178: [Bit Flags] Chapter 3
 //          all bits => 36+%
@@ -706,7 +698,7 @@
 //          all bits => 22+%
 // $AA117E: [Bit Flags] Chapter 6
 //          bits 0-4 => 14+%
-// $AA117F: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 7
+// $AA117F: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 7
 //          bits 2-7 => 17+%
 // $AA1180: [Bit Flags] Chapter 7
 //          all bits => 23+%
@@ -716,7 +708,7 @@
 //          all bits => 23+%
 // $AA1183: [Bit Flags] Chapter 7
 //          bits 0-3 => 11+%
-// $AA1184: [NTSC-U/C][10-bytes - Bit Flags]Achievement Percentage Flags - Chapter 8
+// $AA1184: [NTSC-U][10-bytes - Bit Flags]Achievement Percentage Flags - Chapter 8
 //          bits 5-7 => 4+%
 // $AA1185: [Bit Flags] Chapter 8
 //          all bits => 11+%
@@ -736,7 +728,7 @@
 //          all bits => 11+%
 // $AA118D: [Bit Flags] Chapter 8
 //          bits 0-3 => 5+%
-// $AA1190: [NTSC-U/C][4-bytes - Bit Flags] Achievement Percentage Flags - Epilogue
+// $AA1190: [NTSC-U][4-bytes - Bit Flags] Achievement Percentage Flags - Epilogue
 //          bits 2-7 => 26+%
 // $AA1191: [Bit Flags] Epilogue
 //          all bits => 34+%
@@ -744,17 +736,16 @@
 //          all bits => 34+%
 // $AA1193: [Bit Flags] Epilogue
 //          bit 0 => 4+%
-//          \\=========================================//
-// $AA1258: [NTSC-U/C][Bit Flag] bit 0 => is current cutscene skippable
-// $AA1268: [NTSC-U/C][32-bit] Time Period
+// $AA1258: [NTSC-U][Bit Flag] bit 0 => is current cutscene skippable
+// $AA1268: [NTSC-U][32-bit] Time Period
 //          - Certain small areas, might have undocumented values
 //          0x80 => Middle ages 1500s
 //          0x81 => Late 20th Century 1900s
 //          0x82 => Early 20th Century 1980
 //          0x88 => Early 20th Century 1979
 //          0x83 => Present 2000s
-// $AA12A4: [NTSC-U/C][672-byte Array]
-//          //==========§ List of DateTime_Objects §==========\\
+// $AA12A4: [NTSC-U][672-byte Array] List of [DateTime_Objects]
+//          =============================
 //          - Time in present always ticks
 //          - Time in other time periods only ticks/changes when in that time period
 //          - Some time periods have multiple entries, they correspond to different dates in that time periods
@@ -769,26 +760,18 @@
 //          | - +0x14 - [32-bit] Seconds
 //          
 //          [DateTime_Object] Present
-//          - Struct Defintion above
 // $AA12A8: [32-bit] Present - month
 // $AA12AC: [32-bit] Present - day
 // $AA12B0: [32-bit] Present - hours
 // $AA12B4: [32-bit] Present - minutes
 // $AA12B8: [32-bit] Present - seconds
 // $AA12EC: [DateTime_Object] Date & Time - Night Before - chapter 7
-//          - Struct Defintion @ 0xaa12a4
 // $AA1304: [DateTime_Object] Date & Time - 1980s (cold day)
-//          - Struct Defintion @ 0xaa12a4
 // $AA131C: [DateTime_Object] Date & Time - 1979
-//          - Struct Defintion @ 0xaa12a4
 // $AA134C: [DateTime_Object]  Date & Time -  1902
-//          - Struct Defintion @ 0xaa12a4
 // $AA1394: [DateTime_Object]  Date & Time - 1584 (daytime - chapter 5 - after experiment)
-//          - Struct Defintion @ 0xaa12a4
 // $AA13C4: [DateTime_Object]  Date & Time - 1582 (daytime - before experiment)
-//          - Struct Defintion @ 0xaa12a4
-// $AA1540: \\====================================//
-// $AA155C: [NTSC-U/C][32-bit] Current Playthrough Timer - Chapter Clear Time
+// $AA155C: [NTSC-U][32-bit] Current Playthrough Timer - Chapter Clear Time
 //          - Time in seconds = [32-bit] decimal value / 60
 //          - Time in minutes = [32-bit] decimal value / 3600
 //          - Value range [0x0-0x57e3f] = [00-99h:59m:59s]; Halts at max (value does not wrap back around to 0)
@@ -796,35 +779,30 @@
 //          - Timer stops when credits video starts playing
 //          - Timer does not pause when the inventory is open OR when a cutscene is active
 //          - Timer pauses in pause menu or when loading
-// $AA1560: [NTSC-U/C][32-bit] Current Playthrough Timer - Total Clear Time
-//          - Explanation @ 0xaa155c
-// $AA156C: [NTSC-U/C][32-bit] Prologue: Countdown timer
+// $AA1560: [NTSC-U][32-bit] Current Playthrough Timer - Total Clear Time
+//          - Explanation at $0xaa155c
+// $AA156C: [NTSC-U][32-bit] Prologue: Countdown timer
 //          - When timer hits 0 => plays "Sneaking Feeling" cutscene
-// $AA4C10: [NTSC-U/C][25-bit Pointer] Same pointer @ 0xa9ecd4 (see notes)
+// $AA4C10: [NTSC-U][25-bit Pointer] Same pointer @ 0xa9ecd4 (see notes)
 // $AA55F8: [NTSC-J][8-bit] Energy Units (functional)
-//          - Explanation @ 0xa9daa8
+//          - Regional equivalent of $0xa9daa8 (USA)
 // $AA667E: [NTSC-J][8-bit Flag] Is Player Character Moveable
-//          - Explanation @ 0xa9eb2e
-// $AA680C: [NTSC-J][124-byte]
-//          //==========§ Cutscene Data §==========\\
-//          - Explanation @ 0xa9ecbc
+//          - Regional equivalent of $0xa9eb2e (USA)
+// $AA680C: [NTSC-J][124-byte] Cutscene Data
+//          =======================
+//          - Regional equivalent of $0xa9ecbc (USA)
 //          
 //          [NTSC-J][32-bit] Cutscene Master ID
 // $AA6810: [NTSC-J][16-bit] Cutscene Section ID_1
 // $AA6812: [NTSC-J][16-bit] Cutscene Section ID_2
 // $AA6818: [NTSC-J][25-bit Pointer] Cutscene Identification - Master Data
-//          - Explanation @ 0xa9ecc8
 // $AA681C: [NTSC-J][25-bit Pointer] Cutscene Identification - Section Data
-//          - Explanation @ 0xa9eccc
 // $AA6824: [NTSC-J][25-bit Pointer] Cutscene Identification - Minor IDs
-//          - Explanation @ 0xa9ecd4
 // $AA6876: [NTSC-J][8-bit Flag] Is Cutscene Active (preferred)
-//          - Explanation @ 0xa9ed26
 // $AA6888: [NTSC-J][32-bit] Cutscene Timer
-//          \\==============================//
-// $AA688C: [NTSC-J][57-bytes Bitset]
-//          //========= § Achievement Percentage Flags §=========\\
-//          - Explanation @ 0xa9ed3c
+// $AA688C: [NTSC-J][57-bytes Bitset] Achievement Percentage Flags
+//          ==============================
+//          - Regional equivalent of $0xa9ed3c (USA)
 //          
 //          [NTSC-J][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
 // $AA6893: [NTSC-J][4-bytes - Bit Flags] Achievement Percentage Flags - Chapter 1
@@ -836,10 +814,9 @@
 // $AA68B0: [NTSC-J][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 7
 // $AA68B5: [NTSC-J][10-bytes - Bit Flags] Achievement Percentage Flags - Chapter 8
 // $AA68C1: [NTSC-J][3-bytes - Bit Flags] Achievement Percentage Flags - Epilogue
-//          \\==========================================//
-// $AA68C6: [NTSC-J][102-byte Bitset]
-//          //=====§ Current Playthrough Bit Flags §=====\\
-//          - Explanation @ 0xa9ed76
+// $AA68C6: [NTSC-J][102-byte Bitset] Current Playthrough Bit Flags
+//          ===========================
+//          - Regional equivalent of $0xa9ed76 (USA)
 //          
 //          [Bit Flags] Current Playthrough - Multi-chapter
 //          bit 0 => talked to Oleg 2nd time in chapter 3
@@ -902,12 +879,11 @@
 //          bit 6 => gave kitten to Sibylla
 // $AA691C: [Bit Flags] Current Playthrough - Multi-chapter
 //          bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
-//          \\========================================//
 // $AA692C: [NTSC-J][Lower4 Flag] Is In-Game
-//          - Explanation @ 0xa9eddc
-// $AA6958: [NTSC-J][436-byte Bitfield]
-//          //========§ NPC Interaction Data § ========\\
-//          - Identical @ 00xa9ee08
+//          - Regional equivalent of $0xa9eddc (USA)
+// $AA6958: [NTSC-J][436-byte Bitfield] NPC Interaction Data
+//          ===================================
+//          - Regional equivalent of $00xa9ee08 (USA)
 // $AA696D: [8-bit] NPC Talk Count - Coated man - Present - Chapter 1/Prologue - Town Square
 // $AA6970: [8-bit] NPC Talk Count - Coated man- Present - Chapter 3 - Near Antique Shop
 // $AA6971: [8-bit] NPC Talk Count - Coated man - Present - Chapter 4 - Haup str. under arch
@@ -990,29 +966,28 @@
 //          - In Ancestor and NoAncestor path
 // $AA6AD5: [8-bit] NPC Talk Count - Young couple woman - Middle Ages - Chapter 7 - Town square
 //          - Only in Ancestor path
-//          - Explanation @ 0xa9ef85
+//          - Regional equivalent of $0xa9ef85 (USA)
 // $AA6AD9: [8-bit] State Of Young Couple Side Quest - Chapter 2
-//          - Explanation @ 0xa9ef89
+//          - Regional equivalent of $0xa9ef89 (USA)
 // $AA6ADA: [8-bit] State Of Young Couple Side Quest - Chapter 3
-//          - Explanation @ 0xa9ef8a
+//          - Regional equivalent of $0xa9ef8a (USA)
 // $AA6ADB: [8-bit] State Of Young Couple Side Quest - Chapter 4
-//          - Explanation @ 0xa9ef8b
+//          - Regional equivalent of $0xa9ef8b (USA)
 // $AA6ADE: [8-bit] State Of Young Couple Side Quest - Chapter 7
-//          - Explanation @ 0xa9ef8e
+//          - Regional equivalent of $0xa9ef8e (USA)
 // $AA6ADF: [8-bit] State Of Young Couple Side Quest - Chapter 8
-//          - Explanation @ 0xa9ef8f
-//          \\==============================================//
+//          - Regional equivalent of $0xa9ef8f (USA)
 // $AA6B2C: [NTSC-J][25-bit Pointer] --> NPC Interaction ID
-//          - Explanation @ 0xa9efdc
+//          - Regional equivalent of $0xa9efdc (USA)
 // $AA6B30: [NTSC-J][25-bit Pointer] --> Interaction Chapter ID
-//          - Explanation @ 0xa9efe0
+//          - Regional equivalent of $0xa9efe0 (USA)
 // $AA6B34: [NTSC-J][25-bit Pointer] --> Interaction ID
-//          - Explanation @ 0xa9efe4
+//          - Regional equivalent of $0xa9efe4 (USA)
 // $AA6B44: [NTSC-J][32-bit] NPC ID copy
-//          - Explanation @ 0xa9eff4
-// $AA6B84: [NTSC-J][29-byte Array]
-//          //===========§ List of Inventory_Item_Objects §===========\\
-//          - Explanation @ 0xa9f034
+//          - Regional equivalent of $0xa9eff4 (USA)
+// $AA6B84: [NTSC-J][29-byte Array] List of [Inventory_Item_Objects]
+//          ====================================
+//          - Regional equivalent of $0xa9f034 (USA)
 //          
 //          [Inventory_Item_Object] Z-pad/D-pad
 // $AA6B85: [Inventory_Item_Object] Cellphone
@@ -1042,26 +1017,25 @@
 // $AA6B9E: [Inventory_Item_Object] Old city map
 // $AA6B9F: [Inventory_Item_Object] Notebook
 // $AA6BA0: [Inventory_Item_Object] Postcard
-//          \\========================================//
 // $AA6C61: [NTSC-J][8-bit] Highlighted Inventory Item
-//          - Explanation @ 0xa9f111
+//          - Regional equivalent of $0xa9f111 (USA)
 // $AA8C68: [NTSC-J][44-bytes] Best Clear Time Data
-//          - Explanation @ 0xaa1118
+//          - Regional equivalent of $0xaa1118 (USA)
 // $AA8C98: [NTSC-J][11-bytes] Achievement Percentage Number
-//          - Explanation @ 0xaa1148
+//          - Regional equivalent of $0xaa1148 (USA)
 // $AA8CA2: [NTSC-J][8-bit] Achievement Percentage: Total
 // $AA8CA4: [NTSC-J][7-bytes] Ending Data
-//          - Explanation @ 0xaa1154
+//          - Regional equivalent of $0xaa1154 (USA)
 // $AA8DA8: [NTSC-J][Bit Flag] bit 0 => is current cutscene skippable
 // $AA8DB8: [NTSC-J][32-bit] Time Period
-//          - Explanation @ 0xaa1268
-// $AA8DF4: [NTSC-J][672-byte Array] List of DateTime_Objects
-//          - Explanation @  0xaa12a4
+//          - Regional equivalent of $0xaa1268 (USA)
+// $AA8DF4: [NTSC-J][672-byte Array] List of [DateTime_Objects]
+//          - Regional equivalent of $0xaa12a4 (USA)
 // $AA90AC: [NTSC-J][32-bit] Current Playthrough Timer - Chapter Clear Time
-//          - Explanation @ 0xaa155c
+//          - Regional equivalent of $0xaa155c (USA)
 // $AA90B0: [NTSC-J][32-bit] Current Playthrough Timer - Total Clear Time
-//          - Explanation @ 0xaa1560
-// $AC3170: [NTSC-U/C][25-bit Pointer] Extra Menu Navigation
+//          - Regional equivalent of $0xaa1560 (USA)
+// $AC3170: [NTSC-U][25-bit Pointer] Extra Menu Navigation
 //          - Pointer is active when in the extra menu
 //          - Extra menu is only visible once at least one is ending is achieved
 //          
@@ -1088,7 +1062,7 @@
 //          | - 0x9 => Epilogue
 //          | - 0xa => Total
 //          | - 0xb => Exit
-// $AC3178: [NTSC-U/C][25-bit Pointer] Ending File Data
+// $AC3178: [NTSC-U][25-bit Pointer] Ending File Data
 //          - Pointer is active when an ending file is being viewed via extra menu
 //          
 //          +0x8 - [32-bit] Ending file timer
@@ -1101,21 +1075,21 @@
 //          | - ...
 //          | - 0x4 => ending file E
 //          | - 0x5 => ending file EX
-// $AC31E4: [NTSC-U/C][32-bit] Bottom screen text ID
+// $AC31E4: [NTSC-U][32-bit] Bottom screen text ID
 //          - Identifies a series of text lines at the bottom of the screen (subtitles or in a menu)
 //          - This ID does not change on every text change, only sometimes
 // $AC31E8: [INFO] Bottom Screen Text Character Print System
 //          ==========================================
 //          - The text at the bottom of the screen (subtitles & info in menu's) is printed on the screen via a transparent character set image, which is masked to show only 1 character at a time. Functional with offset and different character sets (ex. latin, chinese) (more info below)
 //          
-//          [NTSC-U/C][Variable Length Array] List of Character_Print_Data_Objects
+//          [NTSC-U][Variable Length Array] List of [Character_Print_Data_Objects]
 //          |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
 //          | - Size is dependent on the amount of characters on the bottom screen (1 character == 1 object)
 //          | - A space doesn't count as an object; Special characters (eg .?!') do
 //          | - 1st character corresponds to the first letter on the first line; the last char corresponds to the last letter in the last line
 //          |
 //          | [Struct Definition][16-byte] Character_Print_Data_Object
-//          | | '''''''''''''''''''''''''''''''''''''''''''''''''
+//          | |'''''''''''''''''''''''''''''''''''''''''''''''''
 //          | | +0x0 - [16-bit] Some control data (unknown usage)
 //          | | +0x2 - [8-bit] Height of character
 //          | | ¨¨¨¨¨¨¨¨ [Lower4] Sub height (in-between lines)
@@ -1132,7 +1106,7 @@
 //          | | ¨¨¨¨¨¨¨¨ Default for USA version is 0x8 = latin characters
 //          | | ¨¨¨¨¨¨¨¨ There seems to be 15 characters sets; starting from 0x0 up to 0x14; higher than this value defaults to latin characters
 //          | | ¨¨¨¨¨¨¨¨ All characters sets are presumably on one big character set image, so this value here might just be another offset
-// $AC49F4: [NTSC-U/C][32-bit] Extra Menu State
+// $AC49F4: [NTSC-U][32-bit] Extra Menu State
 //          - 0x0 => not inside extra menu; --> thus: value > 0 => extra menu is active
 //          - 0x4 => extra menu is displayed
 //          - 0xb => viewing ending file
@@ -1145,24 +1119,24 @@
 //          - 0x3 => event viewer menu is displayed
 //          - 0x8 => viewing cutscene via event viewer
 // $ACACB0: [NTSC-J][25-bit Pointer] Extra Menu Navigation
-//          - Explanation @ 0xac3170
+//          - Regional equivalent of $0xac3170 (USA)
 // $ACACB8: [NTSC-J][25-bit Pointer] Ending File Data
-//          - Explanation @ 0xac3178
+//          - Regional equivalent of $0xac3178 (USA)
 // $ACAD24: [NTSC-J][32-bit] Bottom screen text ID
-//          - Explanation @ 0xac31e4
-// $ACAD28: [NTSC-J][Variable Length Array] List of Character_Print_Data_Objects
-//          - Explanation @ 0xac31e8
+//          - Regional equivalent of $0xac31e4 (USA)
+// $ACAD28: [NTSC-J][Variable Length Array] List of [Character_Print_Data_Objects]
+//          - Regional equivalent of $0xac31e8 (USA)
 // $ACC534: [NTSC-J][32-bit] Extra Menu State
-//          - Explanation @ 0xac49f4
+//          - Regional equivalent of $0xac49f4 (USA)
 // $AD1E48: [NTSC-J][Bit Flag] bit 0 => Is Map Open
 // $B1EB08: [NTSC-U/C][Bit Flag] bit 0 => Is Map Open
 // $B26648: [NTSC-J][Bit Flag] bit 0 => Is Map Open
-//          - Identical to 0xad1e48
+//          - Identical to $0xad1e48
 // $B88AB0: [NTSC-U/C][32-bit] Frame Timer
 // $B905F0: [NTSC-J][32-bit] Frame Timer
-// $B91514: [NTSC-U/C][Bit Flag] bit 0 => Is In-Game Pause Menu Displayed
+// $B91514: [NTSC-U][Bit Flag] bit 0 => Is In-Game Pause Menu Displayed
 //          +0x4 - [Bit Flag] bit 0 => Is In-Game Pause Menu Displayed (identical bitflag)
-// $B95704: [NTSC-U/C][8-bit] Chapter ID
+// $B95704: [NTSC-U][8-bit] Chapter ID
 //          - 0x1 = Prologue/EX Chapter
 //          - 0x2 = Chapter 1
 //          - 0x3 = Chapter 2
@@ -1177,42 +1151,41 @@
 //          - 0xc = Epilogue -> when in Chapter 5, player told Margarette she's NOT an ancestor
 // $B99094: [NTSC-J][Bit Flag] Is In-Game Pause Menu Displayed
 //          +0x4 - [Bit Flag] bit 0 => Is In-Game Pause Menu Displayed (identical bitflag)
-// $B99098: [NTSC-J][Bit Flag] Identical @ 0xb99094
+// $B99098: [NTSC-J][Bit Flag] Identical at $0xb99094
 // $B9D284: [NTSC-J][8-bit] Chapter ID
 //          - Explanation @ 0xb95704
-// $1FFF0E8: [NTSC-U/C][NTSC-J][8-bit] Event viewer: Highlighted chapter
+// $1FFF0E8: [NTSC-U][NTSC-J][8-bit] Event viewer: Highlighted chapter
 //           - 0x0 = Prologue
 //           - 0x1 = Chapter 1
 //           - 0x2 = Chapter 2
 //           - ...
 //           - 0x8 = Chapter 8
 //           - 0x9 = Epilogue
-// $1FFF114: [NTSC-U/C][NTSC-J][16-bit] Selected cutscene in the event viewer
+// $1FFF114: [NTSC-U][NTSC-J][16-bit] Selected cutscene in the event viewer
 //           - Event viewer is unlocked after completing one ending
 //           - Starts from 0x0
-// $1FFF130: [NTSC-U/C][NTSC-J][32-bit Flag] Is Event Viewer Active (preferred)
+// $1FFF130: [NTSC-U][NTSC-J][32-bit Flag] Is Event Viewer Active (preferred)
 //           - 0x21 => event viewer menu is displayed OR a cutscene is being watched via this menu
 //           - other values => not in event viewer
 //           
-//           !! WARNING !!
-//           - Do not use this as a solo condition to check if event viewer is active. --> Use with 0xac3170
-// $1FFF3C0: [NTSC-U/C][NTSC-J][25-bit Pointer]
+//           ⚠ Do not use this as a solo condition to check if event viewer is active. --> Use with $0xac3170
+// $1FFF3C0: [NTSC-U][NTSC-J][25-bit Pointer]
 //           - Pointer is active when in extra menu
-//           - Same pointer @ 0xac3170
-// $1FFF5F4: [NTSC-U/C][NTSC-J][32-bit Flag] Is Chapter Complete Screen Active
+//           - Same pointer at $0xac3170
+// $1FFF5F4: [NTSC-U][NTSC-J][32-bit Flag] Is Chapter Complete Screen Active
 //           0x21 => chapter completion screen OR in-game pause menu is active
-// $1FFF5F8: [NTSC-U/C][NTSC-J][32-bit] Menu ID
+// $1FFF5F8: [NTSC-U][NTSC-J][32-bit] Menu ID
 //           - 0x1 => chapter completed screen OR in-game pause menu
 //           - 0x3 => extra menu
 //           - 0x11 => title screen
 //           - 0x114 => options menu
 //           - any other value => other menu OR something else on screen
-// $1FFF604: [NTSC-U/C][NTSC-J][8-bit] Highlighted Button At Title Screen
+// $1FFF604: [NTSC-U][NTSC-J][8-bit] Highlighted Button At Title Screen
 //           - 0x1 => Start
 //           - 0x2 => Continue
 //           - 0x3 => Option
 //           - 0x4 => Extra
-// $1FFFFF0: [NTSC-U/C][NTSC-J][Upper4] Always_Null || Value_Never_Changes
+// $1FFFFF0: [NTSC-U][NTSC-J][Upper4] Always_Null || Value_Never_Changes
 //           - This is used for converting floats to floored integers via RAtools
 
 ChapterLookup = {
