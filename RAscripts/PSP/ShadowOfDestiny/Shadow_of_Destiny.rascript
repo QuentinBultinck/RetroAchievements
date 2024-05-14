@@ -191,8 +191,8 @@ memory_addresses = {
 	DATATYPE_25BitPointer: {
 		"LoadedNPCModel_JoggingMan1980": {RELEASE_REGION_USA: 0xa9dc24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 		"InteractionID": {RELEASE_REGION_USA: 0xa9efe4, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b34},
-		"InteractionChapterID": {RELEASE_REGION_USA: 0xa9efe0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b30},
-		"NPCinteractionID": {RELEASE_REGION_USA: 0xa9efdc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b2c},
+		"InteractionChapterAreaID": {RELEASE_REGION_USA: 0xa9efe0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b30},
+		"InteractableID": {RELEASE_REGION_USA: 0xa9efdc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6b2c},
 		"ExtraMenuNavigation": {RELEASE_REGION_USA: 0xac3170, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacacb0},
 		"EndingFileData": {RELEASE_REGION_USA: 0xac3178, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacacb8},
 		"Cutscene_MasterData": {RELEASE_REGION_USA: 0xa9ecc8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6818},
@@ -485,7 +485,7 @@ const_NPCs_data = {
 					RELEASE_REGION_USA: 0xA9EE4C, 
 					RELEASE_REGION_JPN: () => 0xA9EE4C + memory_getRegionOffset("Struct_NPCInteractionData", "offset_USA_to_JPN")}, 
 				"maxTalkCount": 1}}},
-		NPC_Present_SlimDelinquent: { 
+	NPC_Present_SlimDelinquent: { 
 		"ID": 0x13, "Appearance": {
 			"Chap7_CarPark": {
 				"memAddr_TalkCount": {
@@ -747,19 +747,19 @@ function is_NPCtalkCount_atMax(enum_npc, string_appearance, enum_releaseRegion) 
 	current_NPCtalkCount(enum_npc, string_appearance, enum_releaseRegion) == get_NPC_MaxTalkCount(enum_npc, string_appearance)
 
 function is_TalkingToNPC(enum_npc, enum_releaseRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractableID", enum_releaseRegion))
 	return 
 		get_NPC_Id(enum_npc) == dword(let_maskedPointer)}
 
 function is_TalkingToNPC_bis(enum_npc, enum_releaseRegion) { // This has an extra check when using is_TalkingToNPC() without is_InteractionId()
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractableID", enum_releaseRegion))
 	let_npcID = get_NPC_Id(enum_npc)
 	return 
 		dword(let_maskedPointer) == let_npcID && 
 		dword(memory_getAddress(DATATYPE_32Bit, "NPC_ID_copy", enum_releaseRegion)) == let_npcID}
 
 function on_TalkingToNPC_bis(enum_npc, enum_releaseRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractableID", enum_releaseRegion))
 	let_npcID = get_NPC_Id(enum_npc)
 	return 
 		dword(let_maskedPointer) == let_npcID && 
@@ -806,11 +806,11 @@ const_InteractableItem_IDs = {
 	INTERACTABLE_Painting_Alchemist: 0x167}
 
 function is_InteractingWith(enum_interactableItem, enum_releaseRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "NPCinteractionID", enum_releaseRegion))
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractableID", enum_releaseRegion))
 	return const_InteractableItem_IDs[enum_interactableItem] == dword(let_maskedPointer)}
 
-function is_InteractionChapterId(int_id, enum_releaseRegion) {
-	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractionChapterID", enum_releaseRegion))
+function is_InteractionChapterAreaId(int_id, enum_releaseRegion) {
+	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "InteractionChapterAreaID", enum_releaseRegion))
 	return dword(let_maskedPointer) == int_id}
 
 function is_InteractionId(int_id, enum_releaseRegion) {
@@ -2798,7 +2798,7 @@ achievements_triggers = {
 				!is_InGame(enum_releaseRegion) ||
 				is_ExtraMenu_active(enum_releaseRegion)
 			) &&
-			once(	// Identifies Cutscene => Time travel back to Brum Museum  
+			once(	// Identifies Cutscene => Eike travels back to Brum Museum with Homunculus talking to him at stairs 
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
 				is_Cutscene_MasterId(0x19d80, enum_releaseRegion) 	&&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
@@ -2810,7 +2810,7 @@ achievements_triggers = {
 				// is_Cutscene_MasterDataId(0x82a0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x11ac0, enum_releaseRegion)
 			) &&
-			once(	// Identifies Cutscene => Back to Eckart and breaking vase
+			once(	// Identifies Cutscene => Eike goes back to Eckart upstairs + Eckart breaks vase
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
 				is_Cutscene_MasterId(0xcfb40, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x19d80, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
@@ -2822,7 +2822,7 @@ achievements_triggers = {
 				// is_Cutscene_MasterDataId(0x39f0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x387a0, enum_releaseRegion)
 			) &&
-			once(	// Identifies Cutscene => Back downstairs and talk to Homunculus
+			once(	// Identifies Cutscene => Eike goes back downstairs to Homunculus
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
 				is_Cutscene_MasterId(0x39680, enum_releaseRegion)	&& was_Cutscene_MasterId(0xcfb40, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
@@ -2949,7 +2949,7 @@ achievements_triggers = {
 					!is_InGame(enum_releaseRegion) ||
 					is_ExtraMenu_active(enum_releaseRegion)
 				) &&
-				once(	// Identifies Cutscene => drinking antidote
+				once(	// Identifies Cutscene => Eike drinks antidote
 					// ID cutscene via old method/without delta check, because is_Cutscene_SectionId_1() stays at 0xffff
 					is_LargeCutscene_active(enum_releaseRegion) && is_Chapter(CHAPTER_Chapter5, enum_releaseRegion) &&
 					is_SelectedItemInScrollBar(ITEM_Antidote, enum_releaseRegion) &&
@@ -2980,7 +2980,7 @@ achievements_triggers = {
 				) &&
 				is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
 				is_MovieThriller_chosen(enum_releaseRegion) 	&&
-				once( // Identifies Cutscene => Saved by love story movie
+				once( // Identifies Cutscene => Saved by altering movie
 					is_LargeCutscene_active(enum_releaseRegion) 		&& 
 					is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 	&&
 					is_Cutscene_MasterId(0x9db40, enum_releaseRegion) 	&&
@@ -3015,7 +3015,7 @@ achievements_triggers = {
 			) &&
 			is_MovieTimeTravel_chosen(enum_releaseRegion) 	&&
 			is_MovieLove_chosen(enum_releaseRegion) 		&&
-			once( // Identifies Cutscene => Saved by love story movie
+			once( // Identifies Cutscene => Saved by altering movie
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
 				is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 	&&
 				is_Cutscene_MasterId(0x9db40, enum_releaseRegion) 	&&
@@ -3050,7 +3050,7 @@ achievements_triggers = {
 				!is_InGame(enum_releaseRegion) ||
 				is_ExtraMenu_active(enum_releaseRegion)	
 			) &&
-			once(	// Identifies Cutscene => Holding onto rope 
+			once(	// Identifies Cutscene => Eike holds onto rope on top of tower 
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
 				is_Cutscene_MasterId(0x43040, enum_releaseRegion) 	&&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
@@ -3063,7 +3063,7 @@ achievements_triggers = {
 				// is_Cutscene_SectionDataId(0xd940, enum_releaseRegion)
 			) &&
 			tally(1,[	// One of these is true, depending on ancestress or no ancestress choice
-				once(	// Identifies Cutscene => Talking to Eckart, Ancestress path 
+				once(	// Identifies Cutscene => Talking to Eckart in office, Ancestress path 
 					is_LargeCutscene_active(enum_releaseRegion) 		&& 
 					is_MargaretteTold_Ancestor(enum_releaseRegion) 		&&
 					is_Cutscene_MasterId(0xc6800, enum_releaseRegion) 	&&
@@ -3831,7 +3831,7 @@ achievements_triggers = {
 			// 	is_ExtraMenu_active(enum_releaseRegion) ||
 			// 	!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
 			// ) &&
-			// once(	// Identifies Cutscene => Acquiring ornamental egg from performer	
+			// once(	// Identifies Cutscene => Acquiring ornamental egg from performer
 			// 	is_LargeCutscene_active(enum_releaseRegion) 			&& 
 			// 	is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
 			// 	is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
@@ -3930,7 +3930,7 @@ achievements_triggers = {
 			!is_Chapter(CHAPTER_Chapter4, enum_releaseRegion) 
 		) &&
 		tally(1, [
-			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4	
+			once(	// Identifies Cutscene => Exchanging egg for frying pan in chapter 1 OR 4
 				(is_Chapter(CHAPTER_Chapter1, enum_releaseRegion) || is_Chapter(CHAPTER_Chapter4, enum_releaseRegion)) &&			
 				is_LargeCutscene_active(enum_releaseRegion) 						&&
 				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) 	&&
@@ -4198,37 +4198,37 @@ achievements_triggers = {
 			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) && 
 			//				on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_BeforeTalkingToBoth", enum_releaseRegion) &&	
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x420, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x420, enum_releaseRegion)),
 			//			once(	// 1st talk with man
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_BeforeTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40d, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x40d, enum_releaseRegion)),
 			//			once( 	// 2nd talk with woman; is only available when having talked to both at least once
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_WestGate_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x421, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x421, enum_releaseRegion)),
 			//			once(	// 2nd talk with man; is only available when having talked to both at least once
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_EastNearHay_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40e, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x40e, enum_releaseRegion)),
 			//			once(	// 3rd talk with woman
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap2_EastNearHay_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x422, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x422, enum_releaseRegion)),
 			//			once(	// 3rd talk with man
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_LostYoungCoupleState_Chapter2(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap2_WestGate_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x40f, enum_releaseRegion))
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x40f, enum_releaseRegion))
 			//		])}
 			//	return 
 			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -4296,37 +4296,37 @@ achievements_triggers = {
 			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_BeforeTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x423, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x423, enum_releaseRegion)),
 			//			once(	// 1st talk with man
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_BeforeTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x410, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x410, enum_releaseRegion)),
 			//			once(	// 2nd talk with woman; only available when talking to both at least once
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_NearNorthEastGate_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x424, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x424, enum_releaseRegion)),
 			//			once(	// 2nd talk with man; only available when talking to both at least once
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_NearWell_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x411, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x411, enum_releaseRegion)),
 			//			once(	// 3rd talk with woman
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleWoman, "Chap3_OutsideChurch_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x425, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x425, enum_releaseRegion)),
 			//			once(	// 3rd talk with man
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_LostYoungCoupleState_Chapter3(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap3_TownSquare_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x412, enum_releaseRegion))
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x412, enum_releaseRegion))
 			//		])}
 			//	return 
 			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -4390,37 +4390,37 @@ achievements_triggers = {
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_BeforeTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x426, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x426, enum_releaseRegion)),
 			//			once(
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToNone, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_BeforeTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x413, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x413, enum_releaseRegion)),
 			//			once(
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_OutsideChurch_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x427, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x427, enum_releaseRegion)),
 			//			once(
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothOnce, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_TownSquare_AfterTalkingToBoth", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x414, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x414, enum_releaseRegion)),
 			//			once(
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleWoman, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x428, enum_releaseRegion)),
 			//			once(
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				(is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_talkedToBothTwice, enum_releaseRegion) || is_LostYoungCoupleState_Chapter4(STATE_YOUNGCOUPLE_bothHaveRespawned, enum_releaseRegion)) &&	
 			//				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_MiddleAges_YoungCoupleMan, "Chap4_NearBakery_AfterLocationSwitch", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x415, enum_releaseRegion))				
+			//				is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x415, enum_releaseRegion))				
 			//		])}
 			//	return 
 			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -4485,7 +4485,7 @@ achievements_triggers = {
 				is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion) &&
 				is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 				on_NPC_TalkCount_increase(NPC_MiddleAges_YoungCoupleMan, "Chap5_NearSouthEastGate", enum_releaseRegion) &&
-				is_InteractionChapterId(0x4b, enum_releaseRegion) && is_InteractionId(0x416, enum_releaseRegion)
+				is_InteractionChapterAreaId(0x4b, enum_releaseRegion) && is_InteractionId(0x416, enum_releaseRegion)
 			) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 		}),
@@ -4499,11 +4499,11 @@ achievements_triggers = {
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					on_TalkingToNPC_bis(NPC_MiddleAges_YoungCoupleWoman, enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x3b, enum_releaseRegion)),
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					on_TalkingToNPC_bis(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
-					is_InteractionChapterId(0x3b, enum_releaseRegion))			
+					is_InteractionChapterAreaId(0x3b, enum_releaseRegion))			
 			])) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion)) 
 		
@@ -4525,14 +4525,14 @@ achievements_triggers = {
 					is_WomanAdvisedBeTruthful(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&
 					on_NPC_TalkCount_hitsMax(NPC_MiddleAges_YoungCoupleMan, "Chap8_OutsideChurch_AfterExperiment_WomanTruthful", enum_releaseRegion) &&
-					is_InteractionChapterId(0x13, enum_releaseRegion) && is_InteractionId(0x41c, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x13, enum_releaseRegion) && is_InteractionId(0x41c, enum_releaseRegion)),
 				repeated(2, // 2nd talk with man after telling him about 'lovers never destines to meet' // Repeated here --> allows player to save/load in between the 2 interactions and still have the achievement unlockable
 					// There's no TalkCount for the dialogue that comes after the dialogue choice => count this one differently
 					is_SmallCutscene_active(enum_releaseRegion) &&		
 					is_WomanAdvisedBeTruthful(enum_releaseRegion) &&
 					is_ManToldLoversNeverDestinedMeet(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_MiddleAges_YoungCoupleMan, enum_releaseRegion) &&					
-					is_InteractionChapterId(0x13, enum_releaseRegion) && is_InteractionId(0x433, enum_releaseRegion))
+					is_InteractionChapterAreaId(0x13, enum_releaseRegion) && is_InteractionId(0x433, enum_releaseRegion))
 			])}
 		return 
 			// Core alt group
@@ -4705,11 +4705,11 @@ achievements_triggers = {
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					on_TalkingToNPC_bis(NPC_Present_CoatedWoman, enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x4b, enum_releaseRegion)),
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					on_TalkingToNPC_bis(NPC_Present_CoatedMan, enum_releaseRegion) &&
-					is_InteractionChapterId(0x4b, enum_releaseRegion)),			
+					is_InteractionChapterAreaId(0x4b, enum_releaseRegion)),			
 			])) && 			
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
 			||
@@ -4725,12 +4725,12 @@ achievements_triggers = {
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
 			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
 			//				on_NPC_TalkCount_increase(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
+			//				is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
 			//		])}
 			//	function measuredComparison_atMax(enum_releaseRegion) { return
 			//		tally(3, [
@@ -4738,12 +4738,12 @@ achievements_triggers = {
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_Present_CoatedWoman, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_Present_CoatedWoman, "Chap7_SouthGate", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
+			//				is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && is_InteractionId(0x2d3, enum_releaseRegion)),
 			//			repeated(get_NPC_MaxTalkCount(NPC_Present_CoatedMan,"Chap7_NorthWestGate"), 
 			//				is_SmallCutscene_active(enum_releaseRegion) &&
 			//				is_TalkingToNPC(NPC_Present_CoatedMan, enum_releaseRegion) &&
 			//				is_NPCtalkCount_atMax(NPC_Present_CoatedMan, "Chap7_NorthWestGate", enum_releaseRegion) &&
-			//				is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
+			//				is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && is_InteractionId(0x2c8, enum_releaseRegion))
 			//		])}
 			//	return 
 			//		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -4839,35 +4839,35 @@ achievements_triggers = {
 					is_TalkingToNPC(NPC_Present_BlondeYoungBoy, enum_releaseRegion) &&
 					is_Area(AREA_Present_City_Day, enum_releaseRegion) &&
 					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeYoungBoy, "Chap4_WearingPerformerOutfit", enum_releaseRegion) &&
-					is_InteractionChapterId(0x44, enum_releaseRegion) && is_InteractionId(0x39c, enum_releaseRegion)),	// IDs last dialogue sequence on this NPC's appearance
+					is_InteractionChapterAreaId(0x44, enum_releaseRegion) && is_InteractionId(0x39c, enum_releaseRegion)),	// IDs last dialogue sequence on this NPC's appearance
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_BrunetteMother, enum_releaseRegion) &&
 					is_Area(AREA_Present_City_Day, enum_releaseRegion) &&
 					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteMother, "Chap4_WearingPerformerOutfit", enum_releaseRegion) &&
-					is_InteractionChapterId(0x44, enum_releaseRegion) && is_InteractionId(0x336, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x44, enum_releaseRegion) && is_InteractionId(0x336, enum_releaseRegion)),
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_BrunetteYoungGirl, enum_releaseRegion) &&
 					is_Area(AREA_Present_City_Day, enum_releaseRegion) &&
 					// on_NPC_TalkCount_hitsMax(NPC_Present_BrunetteYoungGirl, "Chap4_WearingPerformerOutfit", enum_releaseRegion) &&
-					is_InteractionChapterId(0x44, enum_releaseRegion) && is_InteractionId(0x323, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x44, enum_releaseRegion) && is_InteractionId(0x323, enum_releaseRegion)),
 				once(
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_BlondeOldWomanOrangeSweater, enum_releaseRegion) &&
 					is_Area(AREA_Present_City_Day, enum_releaseRegion) &&
 					// on_NPC_TalkCount_hitsMax(NPC_Present_BlondeOldWomanOrangeSweater, "Chap4_WearingPerformerOutfit", enum_releaseRegion) &&
-					is_InteractionChapterId(0x44, enum_releaseRegion) && is_InteractionId(0x32c, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x44, enum_releaseRegion) && is_InteractionId(0x32c, enum_releaseRegion)),
 				once(	// This appearance does not have a memory address for talk count
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_BrunetteAdultManGlasses, enum_releaseRegion) &&
 					is_Area(AREA_Present_TownHall, enum_releaseRegion) &&
-					is_InteractionChapterId(0x29, enum_releaseRegion) && is_InteractionId(0x3c6, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x29, enum_releaseRegion) && is_InteractionId(0x3c6, enum_releaseRegion)),
 				once(	// This appearance does not have a memory address for talk count
 					is_SmallCutscene_active(enum_releaseRegion) &&
 					is_TalkingToNPC(NPC_Present_BlondeElderlyWoman, enum_releaseRegion) &&
 					is_Area(AREA_Present_TownHall, enum_releaseRegion) &&
-					is_InteractionChapterId(0x29, enum_releaseRegion) && is_InteractionId(0x3cc, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x29, enum_releaseRegion) && is_InteractionId(0x3cc, enum_releaseRegion)),
 				once(	// This counts Eike, giving egg to Eike/yourself
 					is_LargeCutscene_active(enum_releaseRegion) &&
 					is_SelectedItemInScrollBar(ITEM_Jugglery, enum_releaseRegion) &&
@@ -4955,17 +4955,17 @@ achievements_triggers = {
 					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_EccentricGirl, "Chap2_TownSquare_Scare", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x314, enum_releaseRegion)),				
+					is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x314, enum_releaseRegion)),				
 				once(	// Identifies cutscene => scaring straw hat man
 					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_StrawHatMan, "Chap2_Streets_Scare", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x2da, enum_releaseRegion)),
+					is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x2da, enum_releaseRegion)),
 				once(	// Identifies cutscene => scaring aspiring apprentice
 					is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_MiddleAges_City_Night, enum_releaseRegion) &&
 					(is_SelectedItemInScrollBar(ITEM_Lighter, enum_releaseRegion) || is_SelectedItemInScrollBar(ITEM_Cellphone, enum_releaseRegion)) &&
 					is_NPCtalkCount_atMax(NPC_MiddleAges_AspiringApprentice, "Chap2_SouthEastGate_Scare", enum_releaseRegion) &&
-					is_InteractionChapterId(0x163, enum_releaseRegion) && is_InteractionId(0x2e3, enum_releaseRegion))
+					is_InteractionChapterAreaId(0x163, enum_releaseRegion) && is_InteractionId(0x2e3, enum_releaseRegion))
 			])}
 		return 
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -5067,13 +5067,13 @@ achievements_triggers = {
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_SlimDelinquent, enum_releaseRegion) &&
 					on_NPC_TalkCount_hitsMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f5, enum_releaseRegion)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_BroadDelinquent, enum_releaseRegion) &&
 					on_NPC_TalkCount_hitsMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f0, enum_releaseRegion))
 			])}
 		function measuredComparison_atMax(enum_releaseRegion) { return // AtMax => failsafe when player has loaded a save where he has already talked to them
@@ -5082,13 +5082,13 @@ achievements_triggers = {
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_SlimDelinquent, enum_releaseRegion) &&
 					is_NPCtalkCount_atMax(NPC_Present_SlimDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f5, enum_releaseRegion)),
 				once(	// Identifies Cutscene => talking to broad delinquent
 					is_SmallCutscene_active(enum_releaseRegion) && 
 					is_TalkingToNPC(NPC_Present_BroadDelinquent, enum_releaseRegion) &&
 					is_NPCtalkCount_atMax(NPC_Present_BroadDelinquent, "Chap7_CarPark", enum_releaseRegion) &&
-					is_InteractionChapterId(0xb2, enum_releaseRegion) && 
+					is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && 
 					is_InteractionId(0x2f0, enum_releaseRegion))
 			])}
 		return 
@@ -5419,11 +5419,11 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Talking with man inside Cafe Sonne for 1st time, only in chapter 6
 			is_SmallCutscene_active(enum_releaseRegion) && is_Area(AREA_80s_CafeSonne, enum_releaseRegion) &&
 			is_TalkingToNPC(NPC_80s_OlderMan, enum_releaseRegion) && 
-			is_InteractionChapterId(0xb2, enum_releaseRegion) && is_InteractionId(0x3e7, enum_releaseRegion) && 
+			is_InteractionChapterAreaId(0xb2, enum_releaseRegion) && is_InteractionId(0x3e7, enum_releaseRegion) && 
 			has_startedTalkingToNPC_forFirstTime(NPC_80s_OlderMan, "Chap6_CafeSonne", enum_releaseRegion)
 		) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))),
-	"a_PocketWatchTo80sBarman": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_PocketWatchTo80sBarman": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // QA => NPC_ID correct?
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -5491,7 +5491,7 @@ achievements_triggers = {
 			!is_InGame(enum_releaseRegion) ||
 			is_ExtraMenu_active(enum_releaseRegion)
 		) &&
-		once(	// Identifies Cutscene => Hugo gets bullied
+		once(	// Identifies Cutscene => Hugo gets bullied at square
 			is_LargeCutscene_active(enum_releaseRegion) 			&& 
 			is_Area(AREA_MiddleAges_City_Day, enum_releaseRegion) 	&&
 			is_Chapter(CHAPTER_Chapter5, enum_releaseRegion)		&&

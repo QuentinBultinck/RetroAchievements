@@ -10,19 +10,19 @@
 //          +0x18 - [32-bit Flag] 0x101 => video is active
 //          +0x2c - [32-bit Flag] 0x41 => video is active
 //          +0x40 - [32-bit] Video timer
-// $A442EC: [NTSC-U][36-byte Array] List of [(9x) Pointer] --> EnergyOrbs_Data_Objects
+// $A442EC: [NTSC-U][36-byte Array] List of [(9x) Pointer] ----> EnergyOrbs_Data_Objects
 //          
 //          [Struct Definition][12-byte] EnergyOrbs_Data_Object
 //          |'''''''''''''''''''''''''''''''''''''''''''
 //          | +0x0 - [8-bit] Amount of Energy Orbs in the Area
-//          | +0x4 - [8-byte Array] List of [Bit Flags {8-bit}] => Is Energy Orb Collected
+//          | +0x4 - [8-byte Array] List of [Bit Flags {8-bit}] =&gt; Is Energy Orb Collected
 //          
-//          [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Present - City
-//          +0x4 - [Bit Flag] bit 0 => Orb - Outside Fortune Teller
-//          +0x5 - [Bit Flag] bit 0 => Orb - Alley Way Between Haup Street & Neuwand Street
-//          +0x6 - [Bit Flag] bit 0 => Orb - South Gate
-//          +0x7 - [Bit Flag] bit 0 => Orb - Under Arch Ruckagrat Street
-//          +0x8 - [Bit Flag] bit 0 => Orb - Car Park
+//          [NTSC-U][25-bit Pointer] --&gt; [EnergyOrbs_Data_Object] Energy Orbs | Present - City
+//          +0x4 - [Bit Flag] bit 0 =&gt; Orb - Outside Fortune Teller
+//          +0x5 - [Bit Flag] bit 0 =&gt; Orb - Alley Way Between Haup Street &amp; Neuwand Street
+//          +0x6 - [Bit Flag] bit 0 =&gt; Orb - South Gate
+//          +0x7 - [Bit Flag] bit 0 =&gt; Orb - Under Arch Ruckagrat Street
+//          +0x8 - [Bit Flag] bit 0 =&gt; Orb - Car Park
 // $A442F0: [NTSC-U][25-bit Pointer] --> [EnergyOrbs_Data_Object] Energy Orbs | Late 20th Century - City
 //          +0x4 - [Bit Flag] bit 0 => Orb - Gate North of Bar
 //          +0x5 - [Bit Flag] bit 0 => Orb - Cafe Sonne Well
@@ -144,10 +144,99 @@
 //          - [0x0-0x7] => Player can not move Eike (when loading, during cutscenes...)
 // $A9ECBC: [NTSC-U][124-byte] Cutscene Data
 //          ===========================
+//          - To ID a cutscene make usage of one or multiple IDs mentioned in this 124-byte
 //          
 //          [NTSC-U][32-bit] Cutscene Master ID
 //          - Identifies a cutscene sequence
 //          - Does not reset to a default value
+//          
+//          # Cutscene_MasterIDs
+//          (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''
+//          | - 0x22480 => Prologue: Eike spectating performer (part1)
+//          | - 0x90bc0 => Prologue: Eike spectating performer (part2) - Killer/shadow walking behind Eike
+//          | - 0x11a40 => Chapter1: Burning bar transform into non-burning bar (last cutscene of chapter 1)
+//          | - 0x3b240 => Chapter2: Eike reminiscing about Dana + tree dissappearing (last cutscene of chapter 2)
+//          | - 0x19d80 => Chapter3 Eike travels back to Brum Museum with Homunculus talking to him at stairs
+//          | - 0xcfb40 => Chapter3: Eike goes back to Eckart upstairs + Eckart breaks vase
+//          | - 0x39680 => Chapter3: Eike goes back downstairs to Homunculus
+//          | - 0x3f980 => Chapter5: Eike drinks antidote
+//          | - 0x9db40 => Chapter6: Saved by altering movie
+//          | - 0x43040 => Chapter7: Eike holds onto rope on top of tower
+//          | - 0xc6800 => Chapter7: Talking to Eckart in office, Ancestress path
+//          | - 0xd1bc0 => Chapter7: Talking to Eckart in office, No Ancestress path
+//          | - 0x12040 => Chapter7: Looking at painting of Dana
+//          | - 0x8b640 => Chapter8: Leading up to ending A: Talk to Homunculus
+//          | - 0x10ef00 => Chapter8: Leading up to ending A: Summon Dr. Wagner with Homunculus
+//          | - 0xe4800 => Chapter8: Leading up to ending A: Dr. Wagner confronts Hugo
+//          | - 0xd5440 => Chapter8: Leading up to ending B1: Talk to Hugo and Margarette
+//          | - 0x716c0 => Chapter8: Leading up to ending B1: Hugo inside old Alchemist house collapsing
+//          | - 0xf3c80 => Chapter8: Leading up to ending B1: Eike consoling Margarette
+//          | - 0xfbd00 => Chapter8: Leading up to ending B2: Talk to Hugo and Margarette
+//          | - 0xc4e40 => Chapter8: Leading up to ending B2: Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
+//          | - 0x1cbc0 => Chapter8: Leading up to ending C: Talk to Homunculus at square after seeing young Hugo erase old Hugo
+//          | - 0x77a40 => Chapter8: Leading up to ending D: Flashback to Hugo trying to read burnt documents
+//          | - 0x4b140 => Chapter8: Leading up to ending D: Eike confronts Hugo at square
+//          | - 0xc9440 => Chapter8: Leading up to ending D: Margarette dissapears after Hugo dissappeared
+//          | - 0x101bc0 => Chapter8: Leading up to ending E: Brought Margarette to present
+//          | - 0x137500 => Chapter8: Leading up to ending E: Margarette confronts Hugo in square
+//          | - 0xdb780 => Epilogue: Ending A: Chosen to have Margarette stay in present + Z-pad breaks
+//          | - 0x77f80 => Epilogue: Ending A: Finding red jewel in tree at square
+//          | - 0x613c0 => Epilogue: Ending B1: Eike returns from sending Margarette back to past
+//          | - 0x56240 => Epilogue: Ending B1: Eike goes to the bar
+//          | - 0x91240 => Epilogue: Ending B2: Eike talks with Homunculus
+//          | - 0x5d2c0 => Epilogue: Ending B2: Eike gives z-pad back to Homunculus
+//          | - 0x56240 => Epilogue: Ending B2: Eike goes to the bar
+//          | - 0x8cf00 => Epilogue: Ending C: Giving z-pad back to Homunculus
+//          | - 0x7b140 => Epilogue: Ending C: Homunculus has bad feeling
+//          | - 0xcb700 => Epilogue: Ending C: Eike getting roadkilled
+//          | - 0x709c0 => Epilogue: Ending D: Talk to Homunculus at square
+//          | - 0xc5b40 => Epilogue: Ending D: Flashback. Dr. Wagner summons Homunculus and becomes youthfull
+//          | - 0x88dc0 => Epilogue: Ending E: Eike and Dana talk with Homunculus
+//          | - 0xbef80 => Epilogue: Ending E: Flashback. Dr. Wagner summons Homunculus and Dr. Wagner is killed
+//          | - 0xcdcc0 => Epilogue: Ending E: Eike and Dana talk with Homunculus some more
+//          | - 0xa7a80 => PrologueEX: waking up in limbo with Philosopher Stone and destroy Homunculus
+//          | - 0x67940 => PrologueEX: Immortal Dr. Wagner // Eike lookalike in present talking with delinquents
+//          | - 0x58c00 => PrologueEX: Helena Wagner is cured
+//          | - 0x114c0 => Multi-Chapter: Showing Franssen in 1902 the pocket watch
+//          | - 0xb0100 => Chapter4: Info/lore dump about timetravel after defending yourself
+//          | - 0xc7940 => Chapter7: Ancestor path => Old Miriam walks into conversation with Eckart and Eike
+//          | - 0xb2540 => Chapter7: No Ancestor path => Old Miriam walks into conversation with Eckart and Eike
+//          | - 0x19380 => Chapter1: Acquiring ornamental egg from performer
+//          | - 0x30780 => PrologueEX: EX Chapter, performer throws egg
+//          | - 0x2f9c0 => Multi-Chapter: Exchanging egg for frying pan in chapter 1 OR 4
+//          | - 0x32200 => Multi-Chapter: Exchanging egg for frying pan in chapter 3
+//          | - 0xde00 => Chapter2: Show off egg to town planter
+//          | - 0x8b440 => Multi-Chapter: Instantly pay for the coffee with egg shaped pocket watch
+//          | - 0xac4c0 => Multi-Chapter: Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
+//          | - 0x8ce80 => Chapter7: Show off egg pocket watch to barman in present
+//          | - 0x8dcc0 => Chapter8: Eike and Eckart talk about film director and his pocket watches
+//          | - 0xd0200 => Chapter5: Talk to barman about grandchildren
+//          | - 0x1a300 => Chapter4: Eike gives himself a message as performer
+//          | - 0x10b000 => Multi-Chapter: Eike gives Margarette Cake for 1st time
+//          | - 0x1a300 => Chapter4: Giving egg to Eike/yourself as performer
+//          | - 0x9000 => Chapter2: scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
+//          | - 0xc6e00 => Chapter:2 scaring crowd with cellphone; instead of below cutscene
+//          | - 0xa84c0 => Chapter2: scaring crowd with lighter; instead of above cutscene
+//          | - 0x98c0 => Chapter2: scaring town planter
+//          | - 0x62840 => Chapter5: Barman gives Eike free meal
+//          | - 0xf9cc0 => Chapter5: Reading book whilst barman gets Eike his meal + poison
+//          | - 0x1fd80 => Multi-Chapter: Eike gives Margarette Cake for 2nd time
+//          | - 0x4f200 => Chapter4: Using frying pan for defence
+//          | - 0xa0f40 => Chapter7: Talking to Oleg near movie poster
+//          | - 0x756c0 => Chapter6: Miriam shot and dying
+//          | - 0xebac0 => Chapter6: Eike save Miriam, after running after her
+//          | - 0x3ed00 => Chapter5: Hugo gets bullied at square
+//          | - 0x25200 => Multi-Chapter: Giving kitten to Sibylla
+//          | - 0x9c00 => Prologue: Eike wakes himself up (part1)
+//          | - 0x237c0 => Prologue: Eike wakes himself up (part2) - Talking with Homunculus in Limbo after death
+//          | - 0x15640 => Chapter7: Holding on to rotten rope (part1)
+//          | - 0x237c0 => Chapter7: Holding on to rotten rope (part2) - Waking up in Limbo after death
+//          | - 0x77980 => Chapter6: Roadkilled by Time Ego movie
+//          | - 0x6e480 => Chapter2: Talk Dana, seeing through clothing hunch
+//          | - 0x1b740 => Chapter2: Getting stabbed from behind
+//          | - 0xb140 => Chapter3: Picking dialogue option with Homunculus: 'excuse me' (part1)
+//          | - 0x1a440 => Chapter3: Picking dialogue option with Homunculus: 'excuse me' (part2) - Waking up in limbo after dying to vase
 // $A9ECC0: [NTSC-U][16-bit] Cutscene Section ID_1
 //          - Identifies a section from the current cutscene
 //          - Resets to 0xffff when no cutscene active OR when switching cutscene sections
@@ -157,15 +246,42 @@
 // $A9ECC8: [NTSC-U][25-bit Pointer] Cutscene Identification - Master Data
 //          +0x0 - Refers to start of dynamic cutscene memory data block - Data higher than this hex address changes on new cutscene loaded in
 //          +0x8 - [32-bit] Cutscene Master Data ID
+//          
+//          # Cutscene_MasterData_IDs
+//          (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''
+//          | - 0x3f980 => Chapter5: Eike drinks antidote
+//          | - 0x114a0 => Multi-Chapter: Showing Franssen in 1902 the pocket watch
+//          | - 0xd440 => Chapter4: giving egg to Eike/yourself as performer
+//          | - 0x9000 => Chapter2: scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
+//          | - 0x9890 => Chapter2: scaring town planter
 // $A9ECCC: [NTSC-U][25-bit Pointer] Cutscene Identification - Section Data
 //          +0x0 - Data lower than this hex address changes when the next section in the cutscene starts
 //          +0x8 - [32-bit] Cutscene Section Data ID
+//          
+//          # Cutscene_SectionData_IDs
+//          (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''
+//          | - 0x3f980 => Chapter5: Eike drinks antidote
+//          | - 0x114a0 => Multi-Chapter: Showing Franssen in 1902 the pocket watch
+//          | - 0x3a00 => Chapter4: giving egg to Eike/yourself as performer
+//          | - 0x9000 => Chapter2: scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
+//          | - 0x9890 => Chapter2: scaring town planter
 // $A9ECD0: [NTSC-U][25-bit Pointer] Cutscene Misc Data
 //          +0x0 - Refers to end of dynamic cutscene memory data block??
 // $A9ECD4: [NTSC-U][25-bit Pointer] Cutscene Identification - Minor IDs
 //          - Pointer active when a cutscene is active
 //          +0x0 - Data lower than this point can be used as Minor Cutscene IDs
 //          +0x34 - [Bit Flag] bit 0 => is cutscene active, only on (optional/cutscenes started by pressing interaction button) - Otherwise usable as a Cutscene ID
+//          
+//          # Cutscene_Minor_IDs
+//          (list only contains IDs used in achievement logic)
+//          [ID (offset), ID (offset)... => Chapter: cutscene description]
+//          |''''''''''''''''''''''''''''''''
+//          | - 0xad50 (+0x8), 0x114a0 (+0x28) => Multi-Chapter: Showing Franssen in 1902 the pocket watch
+//          | - 0x5f80 (+0x8), 0x9000 (+0x28) =>  Chapter2: scaring spaghetti man in present with cellphone; lighter can't be used in this case, since Dana hasn't given it yet
+//          | - 0xcd30 (+0x8), 0x9890 (+0x28) => Chapter2: scaring town planter
+//          | - 0x23ee0 (+0x8), 0x377e0 (+0x28), 0x23eb0 (+0x2C) => Chapter7: Eike bumps into himself
 // $A9ED26: [NTSC-U][8-bit Flag] Is Cutscene Active (preferred)
 //          0x0 => no cutscene active
 //          0x1 => Small cutscene active (without fancy camera work) || transitional value between active-inactive state
@@ -175,12 +291,12 @@
 // $A9ED3C: [NTSC-U][57-bytes Bitset] Achievement Percentage Flags
 //          ===========================================
 //          - Each flag corresponds to 1 cutscene and counts toward the achievement percentage
-//          - At end of a cutscene one of these flags will become true
+//          - Flags become true on cutscene end
 //          - Flags are grouped per chapter
 //          - These flags are loaded when loading a save OR when starting a new game whilst having played the game before
 //          
 //          - Flags further than 57-bytes do not count toward achievement percentage
-//          - Some side content/cutscenes do not have any corresponding flags which count toward the achievement percentage
+//          - Some side content/cutscenes do not have any corresponding flags, thus they do not count toward the achievement percentage
 //          
 //          [NTSC-U][7-bytes - Bit Flags] Achievement Percentage Flags - Prologue & EX Chapter
 //          bits 1-7 => 13+%
@@ -242,7 +358,7 @@
 //          all bits => 36+%
 // $A9ED5A: [Bit Flags] Achievement Percentage Flags - Chapter 3
 //          all bits => 36+%
-// $A9ED5B: [NTSC-U/C][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 6
+// $A9ED5B: [NTSC-U][5-bytes - Bit Flags] Achievement Percentage Flags - Chapter 6
 //          bits 2-7 => 17+%
 // $A9ED5C: [Bit Flags] Achievement Percentage Flags - Chapter 6
 //          all bits => 22+%
@@ -473,24 +589,97 @@
 // $A9EF8F: [8-bit] Young Couple Side Quest - Chapter 8
 //          bit 0 => told the man about the lovers never destined to meet
 //          bit 1 => told the man to get over it
-// $A9EFDC: [NTSC-U][25-bit Pointer] --> NPC Interaction ID
-//          +0x0 - [32-bit] NPC ID
+// $A9EFDC: [NTSC-U][25-bit Pointer] --> Interactable ID
+//          +0x0 - [32-bit] Interactable ID
 //          | - This value changes when interacting with something
 //          | - Unique per interactable NPC or interactable item
-//          | - This value is copied to 0xa9eff4 (refer to notes)
-// $A9EFE0: [NTSC-U][25-bit Pointer] --> Interaction Chapter ID
-//          +0x0 - [32-bit] Interaction Chapter ID
+//          | - This value is copied to $0xa9eff4
+//          
+//          # Interactable_IDs (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''
+//          | - 0x10 => NPC_Present_BroadDelinquent
+//          | - 0x13 => NPC_Present_SlimDelinquent
+//          | - 0x183 => NPC_Present_BlondeElderlyWoman
+//          | - 0x187 => NPC_Present_BlondeYoungBoy
+//          | - 0x18D => NPC_80s_OlderMan
+//          | - 0x195 => NPC_Present_BrunetteAdultManGlasses
+//          | - 0x197 => NPC_MiddleAges_YoungCoupleWoman
+//          | - 0x198 => NPC_MiddleAges_YoungCoupleMan
+//          | - 0x2E => NPC_MiddleAges_EccentricGirl
+//          | - 0x42 => NPC_Present_BrunetteYoungGirl
+//          | - 0x44 => NPC_Present_BlondeOldWomanOrangeSweater
+//          | - 0x46 => NPC_Present_BrunetteMother
+//          | - 0x56 => NPC_Present_CoatedMan
+//          | - 0x57 => NPC_Present_CoatedWoman
+//          | - 0x58 => NPC_Present_JoggingMan
+//          | - 0x59 => NPC_80s_JoggingMan
+//          | - 0x5C => NPC_MiddleAges_StrawHatMan
+//          | - 0x5D => NPC_MiddleAges_AspiringApprentice
+//          | - 0xC => NPC_80s_Barman
+//          |
+//          | - 0x8E => INTERACTABLE_Antique_FranssenShopSign
+//          | - 0x98 => INTERACTABLE_Antique_Rope
+//          | - 0x79 => INTERACTABLE_Antique_Antidote
+//          | - 0xC6 => INTERACTABLE_Antique_Mask
+//          | - 0x164 => INTERACTABLE_Painting_SquireCrest
+//          | - 0x165 => INTERACTABLE_Painting_TownSquare
+//          | - 0x16A => INTERACTABLE_Painting_AlchemyLab
+//          | - 0x166 => INTERACTABLE_Painting_Performer
+//          | - 0x168 => INTERACTABLE_Painting_CollapsedHouse
+//          | - 0x163 => INTERACTABLE_Painting_TowerView
+//          | - 0x169 => INTERACTABLE_Painting_LandscapeTown
+//          | - 0x167 => INTERACTABLE_Painting_Alchemist
+// $A9EFE0: [NTSC-U][25-bit Pointer] --> Interaction Chapter Area ID
+//          +0x0 - [32-bit] Interaction Chapter Area ID
+//          | - This seems to be a unique value per chapter and area combined, that correlates to interactions
 //          | - This is a value which is active during an interaction
 //          | - Interactions in the same chapter, have the same value; Interactions in different chapters have differing values
-// $A9EFE4: [NTSC-U][25-bit Pointer] --> Interaction ID
+//          
+//          # InteractionChapterArea_IDs (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''''
+//          | - 0x4b => Chapter5 - AREA_Present_City_NightPM
+//          | - 0x3b => Chapter7 - AREA_MiddleAges_City_Day
+//          | - 0x13 => Chapter8 - AREA_MiddleAges_City_Day
+//          | - 0x44 => Chapter4 - AREA_Present_City_Day
+//          | - 0x29 => Chapter4 - AREA_Present_TownHall
+//          | - 0x163 => Chapter2 - AREA_MiddleAges_City_Night
+//          | - 0xb2 => Chapter7 - AREA_Present_City_NightAM
+// $A9EFE4: [NTSC-U][25-bit Pointer] --&gt; Interaction ID
 //          - Pointer is only operational during the interaction
 //          
 //          +0x0 - [32-bit] Interaction ID
 //          | - Each interaction has a unique ID
+//          
+//          # Interaction_IDs (list only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''''
+//          | - 0x416 => NPC_MiddleAges_YoungCoupleMan - Chap5_NearSouthEastGate
+//          | - 0x41c => NPC_MiddleAges_YoungCoupleMan - Chap8_OutsideChurch_AfterExperiment_WomanTruthful
+//          | - 0x433 => NPC_MiddleAges_YoungCoupleMan - Chap8_OutsideChurch_AfterExperiment_WomanTruthful (2nd talk with man)
+//          | - 0x2d0 => NPC_Present_CoatedWoman - Chap3_OutsideAntiqueShop_Chap4_KirchenStrBar
+//          | - 0x2c4 => NPC_Present_CoatedMan - Chap3_NearAntiqueShop
+//          | - 0x2c5 => NPC_Present_CoatedMan - Chap4_HaupStrUnderArch
+//          | - 0x39c => NPC_Present_BlondeYoungBoy - Chap4_WearingPerformerOutfit
+//          | - 0x336 => NPC_Present_BrunetteMother - Chap4_WearingPerformerOutfit
+//          | - 0x323 => NPC_Present_BrunetteYoungGirl - Chap4_WearingPerformerOutfit
+//          | - 0x32c => NPC_Present_BlondeOldWomanOrangeSweater - Chap4_WearingPerformerOutfit
+//          | - 0x3c6 => NPC_Present_BrunetteAdultManGlasses - Chap4_WearingPerformerOutfit
+//          | - 0x3cc => NPC_Present_BlondeElderlyWoman - Chap4_WearingPerformerOutfit
+//          | - 0x314 => NPC_MiddleAges_EccentricGirl - Chap2_TownSquare_Scare
+//          | - 0x2da => NPC_MiddleAges_StrawHatMan - Chap2_Streets_Scare
+//          | - 0x2e3 => NPC_MiddleAges_AspiringApprentice - Chap2_SouthEastGate_Scare
+//          | - 0x2f5 => NPC_Present_SlimDelinquent - Chap7_CarPark
+//          | - 0x2f0 => NPC_Present_BroadDelinquent - Chap7_CarPark
+//          | - 0x124 => INTERACTABLE_Painting_TowerView
+//          | - 0x125 => INTERACTABLE_Painting_SquireCrest
+//          | - 0x126 => INTERACTABLE_Painting_TownSquare
+//          | - 0x127 => INTERACTABLE_Painting_AlchemyLab
+//          | - 0x128 => INTERACTABLE_Painting_Performer
+//          | - 0x129 => INTERACTABLE_Painting_CollapsedHouse
 // $A9EFF4: [NTSC-U][32-bit] NPC ID (copy)
 //          - Value set here is a copy of NPC ID from $0xa9efdc
 //          - This value is only active during the interaction
 //          - Resets to 0x0 when interaction is done
+//          - List of IDs at $0xa9efdc
 // $A9F034: [NTSC-U][29-byte Array] List of [Inventory_Item_Objects]
 //          ===================================
 //          
@@ -977,9 +1166,9 @@
 //          - Regional equivalent of $0xa9ef8e (USA)
 // $AA6ADF: [8-bit] State Of Young Couple Side Quest - Chapter 8
 //          - Regional equivalent of $0xa9ef8f (USA)
-// $AA6B2C: [NTSC-J][25-bit Pointer] --> NPC Interaction ID
+// $AA6B2C: [NTSC-J][25-bit Pointer] --> Interactable ID
 //          - Regional equivalent of $0xa9efdc (USA)
-// $AA6B30: [NTSC-J][25-bit Pointer] --> Interaction Chapter ID
+// $AA6B30: [NTSC-J][25-bit Pointer] --> Interaction Chapter Area ID
 //          - Regional equivalent of $0xa9efe0 (USA)
 // $AA6B34: [NTSC-J][25-bit Pointer] --> Interaction ID
 //          - Regional equivalent of $0xa9efe4 (USA)

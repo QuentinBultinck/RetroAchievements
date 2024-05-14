@@ -42,39 +42,12 @@
 //          0x00204000 > Movie is playing
 // $6388E8: [32 Bit] Proper MovieID
 //          0x00137580 == Game Over
-// $7B7CC0: [PAL][32-bit Pointer] Game_Controller_Object (Possibly)
-//          - This pointerValue is sprinkled all over RAM
+// $7B7CC0: [PAL][32-bit Pointer] Game Controller Object (Possibly)
 //          
 //          +0x18 - [32-bit Pointer{2}]
 //          .+0x4 - [32-bit Pointer{3}]
-//          ..+0x48 - [32-bit Pointer{4}]
-//          .. |'''''''''''''''''''''''
-//          .. |
-//          .. | +0x1328 - [2-byte Bitset] HP Upgrades Acquired (9 total)
-//          .. | |'''''''''''''''''''''''''''''''''''''''''''''''
-//          .. | | - All locations are in the past
-//          .. | | +0x0 - [Bit Flags]
-//          .. | | ¨¨¨¨ bit 0 => Fortress Entrance (can also be achieved without EyeOfTheStorm power)
-//          .. | | ¨¨¨¨ bit 1 => TBD
-//          .. | | ¨¨¨¨ bit 2 => TBD
-//          .. | | ¨¨¨¨ bit 3 => Sacrificial Chamber (behind stone, after 2nd Shahdee boss fight)
-//          .. | | ¨¨¨¨ bit 4 => TBD
-//          .. | | ¨¨¨¨ bit 5 => TBD
-//          .. | | ¨¨¨¨ bit 6 => TBD
-//          .. | | ¨¨¨¨ bit 7 => TBD
-//          .. | | +0x1 - [Bit Flags]
-//          .. | | ¨¨¨¨ bit 0 OR 7 => TBD
-//          .. |
-//          .. | +0x1358 - [32-bit Pointer{5}] Secondary Weapon Durability
-//          .. | |'''''''''''''''''''''''''''''''''''''''''''''''
-//          .. | | - Identical pointer as pointer{2} documented at $0x10c1178
-//          .. |
-//          .. | +0x1490 - [32-bit] Prince Max HP (Functional)
-//          .. | |'''''''''''''''''''''''''''''''''''''''''''''''
-//          .. | | - Dependent on game difficulty (refer to $0xb9f594)
-//          .. | | ¨¨¨ Easy => +0x19 (health increase for 1 HP upgrade)
-//          .. | | ¨¨¨ Normal => +0x11
-//          .. | | ¨¨¨ Hard => +0xC
+//          ..+0x48 - [32-bit Pointer{4}] --(+0x0)--> [5868-byte Struct] Prince_Data_Object
+//          ..| - Struct documentation at $0x10c1178
 // $7B94AC: (unverified) - recheck
 //          [PAL][32-bit Pointer] --> Enemy Data A
 //          +0xD0 - [56-byte Array] List of EnemyDataA_Pointers
@@ -98,17 +71,17 @@
 //          
 //          +0x0 - [32-bit Pointer{2}]
 //          .+0x14 - [32-bit Pointer{3}]
-//          . | +0x34 - [176-byte?? Array] List of Pointers{4} --> HUD_Element_Object
-//          . | { [Struct Definition][80-byte] HUD_Element_Object
-//          . | | +0x10 - [Float] Image X Coordinate
-//          . | | +0x14 - [Float] Image Y Coordinate
-//          . | | +0x18 - [Float] Image Width
-//          . | | +0x1c - [Float] Image Height
-//          . | | +0x44 - [8-bit] Image/Icon ID (ID list see below)
-//          . |
-//          . | +0xDC - [32-bit Pointer{4}] --> [HUD_Element_Object] Secondary Weapon Icon
-//          . | | - This is the second-to-last pointer in the list mentioned above
-//          . | | - It's responsible for secondary weapon icon, +0x44 can be used to ID which type of secondary weapon is equipped (refer to struct definition above)
+//          .| +0x34 - [176-byte?? Array] List of Pointers{4} --> HUD_Element_Object
+//          .| { [Struct Definition][80-byte] HUD_Element_Object
+//          .| | +0x10 - [Float] Image X Coordinate
+//          .| | +0x14 - [Float] Image Y Coordinate
+//          .| | +0x18 - [Float] Image Width
+//          .| | +0x1c - [Float] Image Height
+//          .| | +0x44 - [8-bit] Image/Icon ID (ID list see below)
+//          .|
+//          .| +0xDC - [32-bit Pointer{4}] --> [HUD_Element_Object] Secondary Weapon Icon
+//          .| | - This is the second-to-last pointer in the list mentioned above
+//          .| | - It's responsible for secondary weapon icon, +0x44 can be used to ID which type of secondary weapon is equipped (refer to struct definition above)
 //          
 //          # Image/Icon IDs
 //          '''''''''''''
@@ -348,6 +321,20 @@
 //          Bit 5 | Main Weapons - Water Sword
 //          Bit 6 |
 //          Bit 7 |
+// $7E4954: [PAL][32-bit Pointer{1}]  Misc Frame Counters
+//          +0x4954 - [32-bit Pointer{2}]
+//          | +0x498 - [32-bit] Frame Counter - GameplayA
+//          | | - Increments by 1, each 2 frames
+//          | | - Freezing this value halts enemies and the Prince repeats the action he was doing before freeze
+//          |
+//          | +0x49c - [32-bit] Frame Counter - GameplayB
+//          | | - Value is identical to frame counter above/before
+//          | | - Increments by 1, each 2 frames
+//          | | - Freezing this value halts Prince movement, but can still attack and interact with surroundings
+//          |
+//          | +0x4a0 - [32-bit] Frame Counter
+//          | | - Increments by 3, each 2 frames
+//          | | - Freezing this value seems to do nothing
 // $7FF93C: [32 Bit] Health pointer
 //          +0x1de Actual Health
 // $82B96C: [PAL][32-bit Flag] Is Top-Left HUD hidden
@@ -386,7 +373,7 @@
 //          0x1 => normal (EnemyHP x 1.5; PrinceMaxHP x 0.66 (= 100 at new game))
 //          0x2 => hard (EnemyHP x 2; PrinceMaxHP x 0.44 (= 66 at new game))
 // $B9F598: [PAL][32-bit] MainArea (Checkpoint) ID
-//          - Needs to be combined with ($0xb9f4d0) to ID the effective checkpoint (freezing only this value and not the other, results in respawning off-map)
+//          - Needs to be combined with ($0xb9f4d0) to ID the effective checkpoint (freezing only this value and not the other, results in respawning out-of-bounds)
 //          - This IDs the location where the player respawns when selecting retry from the Game Over menu or loading a game
 //          - Changing and freezing both MainArea_ID and SubArea_ID to appropriate IDs, as listed below, before activating a loading screen => will load/spawn the Prince at that location/checkpoint. This can be used to skip to whatever story section/area you want.
 //          
@@ -454,6 +441,8 @@
 //          0x0e > Press circle to throw weapon
 //          0x2f > Run Along Wall
 //          0x0d > Press Circle to pick up weapon
+// $EA9144: [PAL][32-bit] Spawned Number of Enemies
+//          - Only counts enemies in the current loaded area
 // $EA9480: [32 Bit] Current Health (before combo damage taken)
 // $EA94A0: [32 Bit] Max Health
 // $EA94C4: [32 Bit] Sand Charges (Display)
@@ -478,20 +467,21 @@
 //           
 //           +0x118C - [56-byte Array] List of EnemyDataA_Pointer{2} - Spawned
 //           | - Lists EnemyDataA_Pointers of enemies which are in the current area AND are spawned
-//           | - Some area's indicate to have extra enemies outside of playable area?? Possible leftovers from development??
+//           | - Some area's indicate to have extra enemies outside of playable area?? Possibly out-of-bounds??
 //           
 //           +0x11E4 - [56-byte Array] List of EnemyDataA_Pointer{2}
 //           | - Identical to above list, but entries might be rearranged
 //           
 //           { [Struct Definition][32-bit] EnemyDataA_Pointer{2}
-//           | '''''''''''''''''''''''''
+//           |'''''''''''''''''''''''''''''''''''''''''''''''
 //           | +0x18 - [32-bit Pointer {3}]
 //           | .+0x4 - [32-bit Pointer {4}]
-//           | ..+0x48 - [32-bit Pointer {5}]
-//           | .. | +0xfffffffc(-4) - [32-bit] Enemy Type ID (IDs listed below)
-//           | .. | +0x0 - [Variable Size] EnemyDataA_Object OR EnemyDataB_Object
+//           | .| +0x5C - [32-bit] Enemy Type ID (IDs listed below)
+//           | .| +0x48 - [32-bit Pointer {5}]
+//           | .| | +0x0 - [Variable Size] EnemyDataA_Object OR EnemyDataB_Object
 //           
 //           { [Struct Definition][32-bit] EnemyDataA_Object (By Enemy Type)
+//           |'''''''''''''''''''''''''''''''''''''''''''''''
 //           | - Only documented difference is the Crows data
 //           |
 //           | | ---- Crow ----
@@ -513,14 +503,15 @@
 //           | - List only contains EnemyDataB_Pointer of enemies which are alive AND in vicinity of camera/prince
 //           
 //           { [Struct Definition][32-bit] EnemyDataB_Pointer{2}
-//           | '''''''''''''''''''''''''
+//           |'''''''''''''''''''''''''''''''''''''''''''''''
 //           | +0x18 - [32-bit Pointer {3}]
 //           | .+0x4 - [32-bit Pointer {4}]
-//           | ..+0x48 - [32-bit Pointer {5}]
-//           | .. | +0xfffffffc(-4) - [32-bit] Enemy Type ID (IDs listed below)
-//           | .. | +0x0 - [Variable Size] EnemyDataB_Object
+//           | .| +0x5C - [32-bit] Enemy Type ID (IDs listed below)
+//           | .| +0x48 - [32-bit Pointer {5}]
+//           | .| | +0x0 - [Variable Size] EnemyData_Object
 //           
 //           { [Struct Definition][Variable Size] EnemyDataB_Object (By Enemy Type)
+//           |'''''''''''''''''''''''''''''''''''''''''''''''
 //           | - Structure size is dependent on enemy type
 //           |
 //           | | ---- Crow (ID = 0x551) ----
@@ -550,23 +541,25 @@
 //           | - Weapons dropped are added to this list
 //           | - Some Interactable_IDs are replaced by another Interactable_ID instead of removed (eg. on breaking artwork chest 0xa => becomes 0x12)
 //           |
-//           | Interactable_IDs (may be incomplete)
-//           | '''''''''''''''''''
+//           
+//           +0x4E4 - [Dynamic Array] List of [32-bit Pointers{2}] --> [352-byte Struct ] Interactable_Model_Data
+//           | - List works same as list documented above, BUT filled with different data
+//           
+//           { [Struct Definition][352-byte??] Interactable_Model_Data
+//           |'''''''''''''''''''''''''''''''''''''''''''''''
+//           | +0x40,+0x44,+0x50,+x054 - [(4x) Float] Model Size and Rotation
+//           | +0x60 - [Float] Model X Coordinate
+//           | +0x64 - [Float] Model Y Coordinate
+//           | +0x68 - [Float] Model Z Coordinate
+//           
+//           # Interactable_IDs (list may be incomplete)
+//           |'''''''''''''''''''
 //           | 0x1 => ???
 //           | 0xa => breakable container, also counts for artwork box (breaking artwork box => becomes 0x12) (some boxes drop SoT charges, weapon racks drop weapons)
 //           | 0xb => ???
 //           | 0x4 => ???
 //           | 0x10 => secondary weapon pickup
 //           | 0x12 => unbreakable box???
-//           
-//           +0x4E4 - [Dynamic Array] List of [32-bit Pointers{2}] --> Interactable_Model_Data
-//           | - List works same as list documented above, BUT filled with different data
-//           |
-//           | [Struct Definition][352-byte??] Interactable_Model_Data
-//           | +0x40,+0x44,+0x50,+x054 - [(4x) Float] Model Size and Rotation
-//           | +0x60 - [Float] Model X Coordinate
-//           | +0x64 - [Float] Model Y Coordinate
-//           | +0x68 - [Float] Model Z Coordinate
 // $10BE580: [PAL][Float] Prince Model - Yaw
 //           - Rotation along vertical/z-Axis
 //           +0x4, +0x10, +0x14 - [3 Floats] also correspond with yaw
@@ -590,51 +583,99 @@
 // $10BF338: [32 Bit] Float Prince Z coordinate (manipulable)
 // $10BF3D8: [32 Bit] Float Prince Z coordinate (manipulable)
 //           Clone value
-// $10C1178: [PAL][32-bit Pointer{1}] Weapon & Time Power Data
+// $10C1178: [PAL][32-bit Pointer{1}] --(+0x0)--> [5868-byte Struct] Prince_Data_Object
 //           
-//           +0x1400 - [32-bit Pointer{2}] PrimaryWeapon_Pointer
-//           | - Higher tiers of primary weapons, increase the length of attack/combo strings (refer to $0x0x1367af0)
-//           | - Each primary weapon has a unique pointerValue, game keeps a list of these PrimaryWeapon_Pointers in RAM at $0xc5c3a0
-//           | - PrimaryWeapon_Pointers can be used to ID the weapon, see list below (different release regions might have different pointerValues)
+//           { [Struct Definition][5868-byte] Prince_Data_Object
+//           |''''''''''''''''''''''''''''''''''''''''''''''''''''''
+//           | +0x11C4 - [Bit Flags {32-bit}] Sands of Time Powers Unlocked
+//           | | - Check in-game combo list menu: how to activate each power
+//           | | - Powers are functional after intro section on ship
+//           | | bit 0 => Recall (redo/rewind)
+//           | | bit 1 => Eye of the Storm (slow down time)
+//           | | bit 2 => Breath of Fate (ground slam)
+//           | | bit 3 => Wind of Fate (upgraded/replaces 'Breath of Fate')
+//           | | bit 4 => Cyclone of Fate (upgraded/replaces 'Wind of Fate')
+//           | | bit 5 => Ravages of Time (superspeed/quickness)
 //           |
-//           | +0x0 - [30-byte??] PrimaryWeapon_Data
-//           | | - Data here may be used to ID primary weapon, but not encouraged as data here may be volatile, also contains more pointers
+//           | +0x1328 - [2-byte Bitset] HP Upgrades Acquired (9 total)
+//           | | - All locations are in the past
+//           | | - 1 HP upgrade: easy => +0x19; normal => +0x11; hard => +0xC
+//           | | +0x0 - [Bit Flags]
+//           | | ¨¨¨¨ bit 0 => Fortress Entrance (can also be achieved without EyeOfTheStorm power)
+//           | | ¨¨¨¨ bit 1 => TBD
+//           | | ¨¨¨¨ bit 2 => TBD
+//           | | ¨¨¨¨ bit 3 => Sacrificial Chamber (behind stone, after 2nd Shahdee boss fight)
+//           | | ¨¨¨¨ bit 4 => TBD
+//           | | ¨¨¨¨ bit 5 => TBD
+//           | | ¨¨¨¨ bit 6 => TBD
+//           | | ¨¨¨¨ bit 7 => TBD
+//           | | +0x1 - [Bit Flags]
+//           | | ¨¨¨¨ bit 0 OR 7 => TBD
 //           |
-//           | { [Struct Definition][30-byte??] PrimaryWeapon_Data
-//           | | +0x0 - [64-bit] Might be related to attack logic and which combo strings/attack animations are allowed (refer to $0x1367af0), game breaks on manual value changes
+//           | +0x1358 - [32-bit Pointer{2}] --(+0x0)--> [48-byte Struct] Secondary_Weapon_Data
+//           | | - This pointer is only operational when secondary weapon is equipped (Refer to $0xcb783c)
+//           | | - Struct definition for Secondary_Weapon_Data below
+//           | | 0x0 => no secondary weapon equipped
+//           | | OtherValue = Pointer{2} => secondary weapon is equipped
 //           |
-//           | | IDs (= PrimaryWeapon_Pointers)
-//           | | ''''''''''''''''
-//           | | 0xb39ad0 => Eagle Sword (starter weapon on ship)
-//           | | 0xb48030 => Wooden Stick
-//           | | 0xb41db0 => Spider Sword
-//           | | TBD => Serpent Sword
-//           | | TBD => Lion Sword
-//           | | TBD => Scorpion Sword
-//           | | TBD => Water Sword
+//           | +0x1400 - [32-bit Pointer{2}] --(+0x0)--> [30-byte?? Struct] Primary_Weapon_Data
+//           | | - Higher tiers of primary weapons, increase the length of attack/combo strings (refer to $0x1367af0)
+//           | | - Data in this 30-byte block may be used to ID the primary weapon, but not encouraged as data here may be volatile, also contains more pointers
+//           | | - Each primary weapon has a unique pointerValue, game keeps a list of these PrimaryWeapon_Pointers in RAM at $0xc5c3a0
+//           | | - The pointers to Primary_Weapon_Data can be used to ID the weapon, see list below (different release regions may have different pointerValues)
+//           | |
+//           | | { [Struct Definition][30-byte??] Primary_Weapon_Data
+//           | | |''''''''''''''''''''''''''''''''''''''''''''''''''''''
+//           | | | +0x0 - [64-bit] Might be related to attack logic and which combo strings/attack animations are allowed (refer to $0x1367af0), game breaks on manual value changes
+//           |
+//           | +0x1490 - [32-bit] Prince Max HP (Functional)
+//           | - Dependent on game difficulty (refer to $0xb9f594)
 //           
-//           +0x11C4 - [Bit Flags {32-bit}] Sands of Time Powers Unlocked
-//           | - Check in-game combo list menu: how to activate each power
-//           | - Powers are functional after intro section on ship
-//           | bit 0 => Recall (redo/rewind)
-//           | bit 1 => Eye of the Storm (slow down time)
-//           | bit 2 => Breath of Fate (ground slam)
-//           | bit 3 => Wind of Fate (upgraded/replaces 'Breath of Fate')
-//           | bit 4 => Cyclone of Fate (upgraded/replaces 'Wind of Fate')
-//           | bit 5 => Ravages of Time (superspeed/quickness)
-//           
-//           +0x1358 - [32-bit Pointer{2}] --> Secondary Weapon Durability
-//           | - This pointer is only operational when secondary weapon is equipped (Refer to $0xcb783c)
-//           | 0x0 => no secondary weapon equipped
-//           | OtherValue = Pointer{2} => secondary weapon is equipped
+//           { [Struct Definition][48-byte] Secondary_Weapon_Data
+//           |'''''''''''''''''''''''''''''''''''''''''''''''''''''
+//           | +0x10 - [32-bit Pointer{3}] --(+0x0)--> [60-byte Struct] Secondary_Weapon_Model_Data
+//           | { [Struct Definition][60-byte] Secondary_Weapon_Model_Data_A
+//           | |''''''''''''''''''''''''''''''''''''''''''''''''''''''
+//           | | +0x0 - [48-byte] Model/Texture Data?
+//           | | ¨¨¨¨ This 48-byte block is unique per weapon, thus can be used to ID the currently equipped secondary weapon (prefer using Secondary_Weapon_Model_Data_B to ID secondary weapon)
 //           |
-//           | +0x18 - [32-bit Pointer{3}]
-//           | .+0x4 - [32-bit Pointer{4}]
-//           | ..+0x48 - [32-bit Pointer{5}]
-//           | ...+0x18 - [32-bit] Secondary Weapon Durability (Functional)
-//           | ... | - Durability is dependent on weapon ID
+//           | +0x14 - [32-bit Pointer{3}]
+//           | .+0x0 - [32-bit Pointer{4}] --(+0x0)--> [12-byte Struct] Secondary_Weapon_ID
+//           | .{ [Struct Definition][60-byte] Secondary_Weapon_ID
+//           | .|''''''''''''''''''''''''''''''''''''''''''''
+//           | .| +0x0 - [32-bit {64-bit}] ID - Part 1
+//           | .| ¨¨¨¨ This 64-bit block IDs the currently equipped secondary weapon (IDs listed below)
+//           | .| ¨¨¨¨ These IDs are actually pointers going deeper
+//           | .| ¨¨¨¨ Changing these values to valid IDs changes the model to the corresponding weapon (be warned, some invalid values can cause crashes)
+//           | .| +0x4 - [32-bit] ID - Part 2
+//           |
+//           | +0x18 - [32-bit Pointer{3}] --> Secondary Weapon Durability
+//           | | +0x4 - [32-bit Pointer{4}]
+//           | | .+0x48 - [32-bit Pointer{5}]
+//           | | ..+0x18 - [32-bit] Secondary Weapon Durability (Functional)
+//           | | ..| - Durability is dependent on weapon ID
+//           
+//           # PrimaryWeapon_IDs (= Pointers --> Primary_Weapon_Data)
+//           |'''''''''''''''''
+//           | 0xb39ad0 => Eagle Sword (starter weapon on ship)
+//           | 0xb48030 => Wooden Stick
+//           | 0xb41db0 => Spider Sword
+//           | TBD => Serpent Sword
+//           | TBD => Lion Sword
+//           | TBD => Scorpion Sword
+//           | TBD => Water Sword
+//           
+//           # SecondaryWeapon_IDs ([ID_part1] + [ID_part2] => weapon name) (list incomplete)
+//           |''''''''''''''''''''''
+//           |---- Swords ----
+//           | 0x19ddd20 + 0x1b64eb0 => Kerena (one-hit kills)
+//           |---- Axes ----
+//           | 0x01aed9f0 + 0x00d7a640 => Airyaman
+//           | 0x0176c980 + 0x0176dac0 => Ahura
+//           |---- Mace ----
+//           | 0x0156f2a0 + 0x016c6470 => Peris
 // $135ADB0: [PAL][32-bit Flag] Is Loading (unverified)
-//           0x0 =< not loading
+//           0x0 => not loading
 //           0x1 => loading screen is displayed
 // $1364AEC: [32 Bit] Nb of enemies killed
 //           tbc for pointer
