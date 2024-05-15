@@ -35,7 +35,7 @@
 // $006B6A: [PAL][16-bit] Copy of 0x3fe0, when in Challenge Mode
 //          - This is a constant value, not changeable
 // $007DC8: [PAL][Bit Flag] bit 0 => is in Free Mode
-// $008360: [PAL][24-bit Pointer] --> In-Battle Timer
+// $008360: [PAL][24-bit Pointer] --> Musou/Free Mode | In-Battle Timer (alt 1)
 //          
 //          +0xB0BC - [32-bit] In-Battle Timer (UI control)
 //          | - Value range [0x0-0xFFFFFFFF]
@@ -44,42 +44,34 @@
 //          +0xB0C0 - [32-bit] In-Battle Timer (functional timer)
 //          | - Value range [0x0-0x57e40] (= 0-360000)
 //          | - Does not overflow
-// $008560: [PAL][24-bit Pointer] Musou/Free Mode Data
-//          +0x7FF8 - [Variable Length Object] Overworld_Stage_Data
-//          | ==================================================
-//          | - Size is dependent on the stage
-//          | - Contains information about all the characters on the overworld map, as well as event bitflags
+// $008560: [PAL][24-bit Pointer] --(+0x8000)--> [Variable Size] Overworld_Stage_Data
+//          
+//          +0x8012 - [Variable Length Array] List of [44-byte] Overworld_Character_Objects
+//          { [Struct Definition][44-byte] Overworld_Character_Object
+//          | ''''''''''''''''''''''''''''''''''''''''''''''''
+//          | - Size and contents is dependent on the Stage ID (refer to $0xC0DC)
+//          | - Contains information about all the characters on the overworld map, as well as stage event bitflags
+//          | - First Overworld_Character_Object in the list is always player character/officer
+//          | - Some Overworld_Character_Objects contain bitflags, which corresponds to a specific event
+//          | - Some characters/officers spawn in later during the stage; corresponding bitflags should be present
 //          |
-//          | +0x14 - [Variable Length Array] List of Overworld_Character_Objects
-//          | { [Struct Definition][44-byte] Overworld_Character_Object
-//          | | ''''''''''''''''''''''''''''''''''''''''''''''''
-//          | | - Some character objects contain bitflags, which corresponds to a specific event
-//          | | - Some characters spawn in later during the stage; corresponding bitflags should be present
-//          | |
-//          | | +0x20 - [Bit Flag] bit 0 => is character sprite visible (on overworld map)
-//          | |
-//          | | +0x28 - [16-bit] Character Sprite Location - x-Axis
-//          | | ¨¨¨ - This value corresponds to the 2d character sprite/artwork
-//          | | ¨¨¨ - This serves only a visual purpose
-//          | |
-//          | | +0x2a - [16-bit] Character Sprite Location - y-Axis
-//          | |
-//          | | +0x30 - [Bit Flag] bit 0 => is character alive (on overworld map)
-//          | | ¨¨¨ - Doesn't work as a player has died flag (unverified)
-//          | |
-//          | | +0x34 - [8-bit] Character Name & ID
-//          | | ¨¨¨ - This controls the name above the character sprite
-//          | | ¨¨¨ - Uses same IDs as noted @ 0xb170
-//          | |
-//          | | +0x38 - [16-bit] Character Area ID
-//          | | ¨¨¨ - Each movable area on the map has a unique ID (may also correspond to the visuals in-battle??)
-//          
-//          
-//          +0xA680 - [32-bit Timer] Time Spent In Overworld Map
-//          | - Only counts when in the overworld map
-//          
-//          +0xA6B4 - [24-bit Pointer] --> Node #?? of linked list
-//          | - Can be used as a shortcut into the middle of the linked list
+//          | +0x4 - [Bit Flag] bit 0 => is character sprite visible (on overworld map)
+//          |
+//          | +0xC - [16-bit] Character Sprite Location - x-Axis
+//          | | - This value corresponds to the 2d character sprite/artwork
+//          | | - This serves only a visual purpose
+//          |
+//          | +0xE - [16-bit] Character Sprite Location - y-Axis
+//          |
+//          | +0x16 - [Bit Flag] bit 0 => is character alive (on overworld map)
+//          | | - Doesn't work as a player has died flag (unverified)
+//          |
+//          | +0x1A - [8-bit] Overworld_Character_ID
+//          | | - This controls the name above the character sprite
+//          | | - IDs documented at $0xb170
+//          |
+//          | +0x1E- [16-bit] Area ID
+//          | | - Each movable area on the map has a unique ID
 // $0085A4: [NTSC-J][32-bit] Region Identifier --> JPN
 //          - 0x1 => NTSC-J
 //          - 0x0 => PAL
@@ -163,14 +155,15 @@
 //          | | +0x18 - [16-bit] Enemy Attack
 //          | | +0x1a - [16-bit] Enemy Defense
 //          | | +0x1b - [16-bit] Enemy Movement
-// $00AD50: [PAL][29-byte Bitset] Weapons Unlocked (+ Weapon IDs)
+// $00AD50: [PAL][29-byte Bitset] Weapons_Unlocked (+ Weapon IDs)
 //          ======================================
 //          - This data is contained inside LinkedList_Node #1, but is always at this memory location (refer to notes @ 0xad1c)
 //          - Each bit corresponds to a weapon
 //          - Bitflags are grouped per weapon type
 //          - Weapon IDs are also documented (corresponds to the index of the bit inside the bitset)
 //          
-//          [Bit Flags] Weapons Unlocked | Sword
+//          [PAL][Bit Flags] @Byte1 in Bitset: Weapons_Unlocked
+//          ---- Sword ----
 //          bit 0 => Board Sword - 0x0 <-- Weapon ID
 //          bit 1 => Gen. Sword - 0x1
 //          bit 2 => Heaven Sword - 0x2
@@ -179,7 +172,8 @@
 //          bit 5 => King of Wei - 0x5
 //          bit 6 => Tiger Sword - 0x6
 //          bit 7 => Tiger Claw - 0x7
-// $00AD51: [Bit Flags] Weapons Unlocked | Sword
+// $00AD51: [PAL][Bit Flags] @Byte2 in Bitset: Weapons_Unlocked
+//          ---- Sword ----
 //          bit 0 => Lone Tiger - 0x8
 //          bit 1 => Savage Tiger - 0x9
 //          bit 2 => Wolf Blade - 0xa
@@ -188,7 +182,8 @@
 //          bit 5 => Imp. Sword - 0xd
 //          bit 6 => Gold Dragon - 0xe
 //          bit 7 => Pure Dragon - 0xf
-// $00AD52: [Bit Flags] Weapons Unlocked | Sword
+// $00AD52: [PAL][Bit Flags] @Byte3 in Bitset: Weapons_Unlocked
+//          ---- Sword ----
 //          bit 0 => Dragon Star - 0x10
 //          bit 1 => King of Shu - 0x11
 //          bit 2 => Wolf Sword - 0x12
@@ -197,7 +192,8 @@
 //          bit 5 => Master Wolf - 0x15
 //          bit 6 => Legacy - 0x16
 //          bit 7 => Wolf Fang - 0x17
-// $00AD53: [Bit Flags] Weapons Unlocked | Sword
+// $00AD53: [PAL][Bit Flags] @Byte4 in Bitset: Weapons_Unlocked
+//          ---- Sword ----
 //          bit 0 => Wolf Fury - 0x18
 //          bit 1 => Wolf Strike - 0x19
 //          bit 2 => Noble Sword - 0x1a
@@ -206,11 +202,11 @@
 //          bit 5 => King's Sword - 0x1d
 //          bit 6 => Imp Saber - 0x1e
 //          bit 7 => Majesty - 0x1f
-// $00AD54: [Bit Flags] Weapons Unlocked | Sword + Rod
-//          --- Sword ---
+// $00AD54: [PAL][Bit Flags] @Byte5 in Bitset: Weapons_Unlocked
+//          ---- Sword ----
 //          bit 0 => Prism Sword - 0x20
 //          
-//          --- Rod ---
+//          ---- Rod ----
 //          bit 1 => Iron Rod - 0x21
 //          bit 2 => Great Rod - 0x22
 //          bit 3 => Shadow Rod - 0x23
@@ -218,20 +214,20 @@
 //          bit 5 => Spiked Mace - 0x25
 //          bit 6 => Shade - 0x26
 //          bit 7 => Battle rod - 0x27
-// $00AD55: [Bit Flags] Weapons Unlocked | Rod + Fan
-//          --- Rod ---
+// $00AD55: [PAL][Bit Flags] @Byte6 in Bitset: Weapons_Unlocked
+//          ---- Rod ----
 //          bit 0 => Strike Rod - 0x28
 //          bit 1 => Power Rod - 0x29
 //          bit 2 => Enforcer Rod - 0x2a
 //          bit 3 => Ogre Rod - 0x2b
 //          
-//          --- Fan ---
+//          ---- Fan ----
 //          bit 4 => Wisdom Fan - 0x2c
 //          bit 5 => Command Fan - 0x2d
 //          bit 6 => Black Fan - 0x2e
 //          bit 7 => Dark Feather - 0x2f
-// $00AD56: [Bit Flags] Weapons Unlocked | Fan + Staff
-//          --- Fan ---
+// $00AD56: [PAL][Bit Flags] @Byte7 in Bitset: Weapons_Unlocked
+//          ---- Fan ----
 //          bit 0 => Abyssal Fan - 0x30
 //          bit 1 => War Fan - 0x31
 //          bit 2 => Warlord Fan - 0x32
@@ -240,9 +236,10 @@
 //          bit 5 => Griffin Fan - 0x35
 //          bit 6 => Divine Fan - 0x36
 //          
-//          --- Staff ---
+//          ---- Staff ----
 //          bit 7 => Vision Staff - 0x37
-// $00AD57: [Bit Flags] Weapons Unlocked | Staff
+// $00AD57: [PAL][Bit Flags] @Byte8 in Bitset: Weapons_Unlocked
+//          ---- Staff ----
 //          bit 0 => Mirage Staff - 0x38
 //          bit 1 => Wind Staff - 0x39
 //          bit 2 => Storm Staff - 0x3a
@@ -251,19 +248,20 @@
 //          bit 5 => Magic Staff - 0x3d
 //          bit 6 => Mystic Staff - 0x3e
 //          bit 7 => Fire Staff - 0x3f
-// $00AD58: [Bit Flags] Weapons Unlocked | Staff + Flute
-//          --- Staff ---
+// $00AD58: [PAL][Bit Flags] @Byte9 in Bitset: Weapons_Unlocked
+//          ---- Staff ----
 //          bit 0 => Flame Staff - 0x40
 //          bit 1 => Thunder Rod - 0x41
 //          bit 2 => Peace Staff - 0x42
 //          
-//          --- Flute ---
+//          ---- Flute ----
 //          bit 3 => Flute - 0x43
 //          bit 4 => Iron Flute - 0x44
 //          bit 5 => Moon Flute - 0x45
 //          bit 6 => Dark Flute - 0x46
 //          bit 7 => Dawn Flute - 0x47
-// $00AD59: [Bit Flags] Weapons Unlocked | Axe
+// $00AD59: [PAL][Bit Flags] @Byte10 in Bitset: Weapons_Unlocked
+//          ---- Axe ----
 //          bit 0 => Battle Axe - 0x48
 //          bit 1 => Great Axe - 0x49
 //          bit 2 => Destroyer - 0x4a
@@ -272,19 +270,20 @@
 //          bit 5 => Annihilator - 0x4d
 //          bit 6 => Hand Axe - 0x4e
 //          bit 7 => Strike Axe - 0x4f
-// $00AD5A: [Bit Flags] Weapons Unlocked | Axe - Dao
-//          --- Axe ---
+// $00AD5A: [PAL][Bit Flags] @Byte11 in Bitset: Weapons_Unlocked
+//          ---- Axe ----
 //          bit 0 => Bull - 0x50
 //          bit 1 => Mad Bull - 0x51
 //          bit 2 => Beast Axe - 0x52
 //          bit 3 => Bull Rampage - 0x53
 //          
-//          --- Dao ---
+//          ---- Dao ----
 //          bit 4 => Scimitar - 0x54
 //          bit 5 => Wu Scimitar - 0x55
 //          bit 6 => Kirin Blade - 0x56
 //          bit 7 => Kirin Fang - 0x57
-// $00AD5B: [Bit Flags] Weapons Unlocked | Dao
+// $00AD5B: [PAL][Bit Flags] @Byte12 in Bitset: Weapons_Unlocked
+//          ---- Dao ----
 //          bit 0 => Storm Sword - 0x58
 //          bit 1 => Kirin Blaze - 0x59
 //          bit 2 => Hound Fang - 0x5a
@@ -293,7 +292,8 @@
 //          bit 5 => War Sword - 0x5d
 //          bit 6 => Master Sword - 0x5e
 //          bit 7 => Sage Sword - 0x5f
-// $00AD5C: [Bit Flags] Weapons Unlocked | Dao
+// $00AD5C: [PAL][Bit Flags] @Byte13 in Bitset: Weapons_Unlocked
+//          ---- Dao ----
 //          bit 0 => Oracle Sword - 0x60
 //          bit 1 => Master Blade - 0x61
 //          bit 3 => Sage's Blade - 0x62
@@ -301,19 +301,20 @@
 //          bit 5 => Tyrant Sword - 0x64
 //          bit 6 => Great Tyrant - 0x65
 //          bit 7 => Fear - 0x66
-// $00AD5D: [Bit Flags] Weapons Unlocked | Dao - Fencing Sword
-//          --- Dao ---
+// $00AD5D: [PAL][Bit Flags] @Byte14 in Bitset: Weapons_Unlocked
+//          ---- Dao ----
 //          bit 0 => Pandemonium - 0x67
 //          bit 1 => Star Blade - 0x68
 //          bit 2 => Sun Blade - 0x69
 //          bit 3 => Black Steel - 0x6a
 //          
-//          --- Fencing Sword ---
+//          ---- Fencing Sword ----
 //          bit 4 => Iron Blade - 0x6b
 //          bit 5 => Iron Sword - 0x6c
 //          bit 6 => Elder Sword - 0x6d
 //          bit 7 => Elder Blade - 0x6e
-// $00AD5E: [Bit Flags] Weapons Unlocked | Fencing Sword
+// $00AD5E: [PAL][Bit Flags] @Byte15 in Bitset: Weapons_Unlocked
+//          ---- Fencing Sword ----
 //          bit 0 => Elder Moon - 0x70
 //          bit 1 => Scion Sword - 0x71
 //          bit 2 => Rapier - 0x72
@@ -322,35 +323,35 @@
 //          bit 5 => Nu Wa Rapier - 0x75
 //          bit 6 => Wyrm Rapier - 0x76
 //          bit 7 => Feng Rapier - 0x77
-// $00AD5F: [Bit Flags] Weapons Unlocked | Fencing Sword - Large Sword
-//          --- Fencing Sword ---
+// $00AD5F: [PAL][Bit Flags] @Byte16 in Bitset: Weapons_Unlocked
+//          ---- Fencing Sword ---
 //          bit 0 => Short Katana - 0x78
 //          bit 1 => Katana - 0x79
 //          bit 2 => Dawn - 0x7a
 //          bit 3 => Dusk - 0x7b
 //          bit 4 => Setsuna - 0x7c
 //          
-//          -- Large Sword ---
+//          ---- Large Sword ----
 //          bit 5 => Great Sword - 0x7d
 //          bit 6 => Titan Sword - 0x7e
 //          bit 7 => Holy Avenger - 0x7f
-// $00AD60: [Bit Flags] Weapons Unlocked | Large Sword - Pirate Sword
-//          --- Large Sword ---
+// $00AD60: [PAL][Bit Flags] @Byte17 in Bitset: Weapons_Unlocked
+//          ---- Large Sword ----
 //          bit 0 => Fu Xi Sword - 0x80
 //          bit 1 => Wyrm Slayer - 0x81
 //          bit 2 => Feng Sword - 0x82
 //          
-//          --- Pirate Sword ---
+//          ---- Pirate Sword ----
 //          bit 3 => Pirate Sword - 0x83
 //          bit 4 => River Sword - 0x84
 //          bit 5 => River Master - 0x85
 //          bit 6 => Sea Master - 0x86
 //          bit 7 => Leviathan - 0x87
-// $00AD61: [Bit Flags] Weapons Unlocked | Pirate Sword - Halberd
-//          --- Pirate Sword ---
+// $00AD61: [PAL][Bit Flags] @Byte18 in Bitset: Weapons_Unlocked
+//          ---- Pirate Sword ----
 //          bit 0 => Seven Oceans - 0x88
 //          
-//          --- Halberd ---
+//          ---- Halberd ----
 //          bit 1 => Glaive - 0x89
 //          bit 2 => Great Glaive - 0x8a
 //          bit 3 => Tiger Hook - 0x8b
@@ -358,20 +359,20 @@
 //          bit 5 => Mystic Tiger - 0x8d
 //          bit 6 => Halberd - 0x8e
 //          bit 7 => War Halberd - 0x8f
-// $00AD62: [Bit Flags] Weapons Unlocked | Halberd - Crescent Blade
-//          --- Halberd ---
+// $00AD62: [PAL][Bit Flags] @Byte19 in Bitset: Weapons_Unlocked
+//          ---- Halberd ----
 //          bit 0 => Sky Piercer - 0x90
 //          bit 1 => Sky Scorcher - 0x91
 //          bit 2 => Demon Slicer - 0x92
 //          bit 3 => Maelstrom - 0x93
 //          
-//          --- Crescent Blade ---
+//          ---- Crescent Blade ----
 //          bit 4 => Crescent - 0x94
 //          bit 5 => Moon Blade - 0x95
 //          bit 6 => Blue Dragon - 0x96
 //          bit 7 => Topaz Dragon - 0x97
-// $00AD63: [Bit Flags] Weapons Unlocked | Crescent Blade - Club
-//          --- Crescent Blade ---
+// $00AD63: [PAL][Bit Flags] @Byte20 in Bitset: Weapons_Unlocked
+//          ---- Crescent Blade ----
 //          bit 0 => Holy Dragon - 0x98
 //          bit 1 => Pole Blade - 0x99
 //          bit 2 => Great Blade - 0x9a
@@ -379,34 +380,35 @@
 //          bit 4 => Gold Wyvern - 0x9c
 //          bit 5 => Blaze Wyvern - 0x9d
 //          
-//          --- Club ---
+//          ---- Club ----
 //          bit 6 => Club - 0x9e
 //          bit 7 => Spiked Club - 0x9f
-// $00AD64: [Bit Flags] Weapons Unlocked | Club - Pike
-//          --- Club ---
-//          bit 0 => Bone Crusher - 0xa0
+// $00AD64: [PAL][Bit Flags] @Byte21 in Bitset: Weapons_Unlocked
+//          --- Club ----
+//          bi-t 0 => Bone Crusher - 0xa0
 //          bit 1 => Rock Crusher - 0xa1
 //          bit 2 => Earthly Mace - 0xa2
 //          bit 3 => Earth Shaker - 0xa3
 //          
-//          --- Pike ---
+//          ---- Pike ----
 //          bit 4 => Bronze Pike - 0xa4
 //          bit 5 => Iron Pike - 0xa5
 //          bit 6 => Poison Fang - 0xa6
 //          bit 7 => Viper Blade - 0xa7
-// $00AD65: [Bit Flags] Weapons Unlocked | Pike - Spear
-//          --- Pike ---
+// $00AD65: [PAL][Bit Flags] @Byte22 in Bitset: Weapons_Unlocked
+//          ---- Pike ----
 //          bit 0 => Cobra Blade - 0xa8
 //          bit 1 => Venom  - 0xa9
 //          
-//          --- Spear ---
+//          ---- Spear ----
 //          bit 2 => Bronze Spear - 0xaa
 //          bit 3 => Great Spear - 0xab
 //          bit 4 => Dragon Spear - 0xac
 //          bit 5 => Dragon Fury - 0xad
 //          bit 6 => Dragon Lash - 0xae
 //          bit 7 => Dragon Rage - 0xaf
-// $00AD66: [Bit Flags] Weapons Unlocked | Spear
+// $00AD66: [PAL][Bit Flags] @Byte23 in Bitset: Weapons_Unlocked
+//          ---- Spear ----
 //          bit 0 => Iron Spear - 0xb0
 //          bit 1 => Steed Spear - 0xb1
 //          bit 2 => Silver Steed - 0xb2
@@ -415,8 +417,8 @@
 //          bit 5 => Last Steed - 0xb5
 //          bit 6 => Trident  - 0xb6
 //          bit 7 => War Trident - 0xb7
-// $00AD67: [Bit Flags] Weapons Unlocked | Spear - War Spear
-//          --- Spear ---
+// $00AD67: [PAL][Bit Flags] @Byte24 in Bitset: Weapons_Unlocked
+//          ---- Spear ----
 //          bit 0 => Vapor - 0xb8
 //          bit 1 => Blink - 0xb9
 //          bit 2 => Flash Spike - 0xba
@@ -424,62 +426,63 @@
 //          bit 4 => Divine Pike - 0xbc
 //          bit 5 => Prodigal - 0xbd
 //          
-//          --- War Spear ---
+//          ---- War Spear ----
 //          bit 6 => War Spear - 0xbe
 //          bit 7 => Battle Spear - 0xbf
-// $00AD68: [Bit Flags] Weapons Unlocked | War Spear - Twin Saber
-//          --- War Spear ---
+// $00AD68: [PAL][Bit Flags] @Byte25 in Bitset: Weapons_Unlocked
+//          ---- War Spear ----
 //          bit 0 => Horizon - 0xc0
 //          bit 1 => Oblivion - 0xc1
 //          bit 2 => Nether Realm - 0xc2
 //          
-//          --- Twin Saber ---
+//          ---- Twin Saber ----
 //          bit 3 => Twin Sabers - 0xc3
 //          bit 4 => Wing Sabers - 0xc4
 //          bit 5 => Eagle - 0xc5
 //          bit 6 => Falcon - 0xc6
 //          bit 7 => Flash Blade - 0xc7
-// $00AD69: [Bit Flags] Weapons Unlocked | Twin Saber - Tonfa - Mace
-//          --- Twin Saber ---
+// $00AD69: [PAL][Bit Flags] @Byte26 in Bitset: Weapons_Unlocked
+//          ---- Twin Saber ----
 //          bit 0 => Raptor - 0xc8
 //          
-//          --- Tonfa ---
+//          ---- Tonfa ----
 //          bit 1 => Tonfa - 0xc9
 //          bit 2 => Padded Tonfa - 0xca
 //          bit 3 => Conqueror - 0xcb
 //          bit 4 => Overlord - 0xcc
 //          bit 5 => Hierophant - 0xcd
 //          
-//          --- Mace ---
+//          ---- Mace ----
 //          bit 6 => Mace - 0xce
 //          bit 7 => Great Mace - 0xcf
-// $00AD6A: [Bit Flags] Weapons Unlocked | Mace - Chakram
-//          --- Mace ---
-//          bit 0 => Enchantress - 0xd0
+// $00AD6A: [PAL][Bit Flags] @Byte27 in Bitset: Weapons_Unlocked
+//          --- Mace ----
+//          b-it 0 => Enchantress - 0xd0
 //          bit 1 => Diva - 0xd1
 //          bit 2 => Sorceress - 0xd2
 //          bit 3 => Muse - 0xd3
 //          
-//          --- Chakram ---
+//          ---- Chakram ----
 //          bit 4 => Chakram - 0xd4
 //          bit 5 => Moon Chakram - 0xd5
 //          bit 6 => Luna Chakram - 0xd6
 //          bit 7 => Sol Chakram - 0xd7
-// $00AD6B: [Bit Flags] Weapons Unlocked | Chakram - Twin Rod - Claw
-//          --- Chakram ---
+// $00AD6B: [PAL][Bit Flags] @Byte28 in Bitset: Weapons_Unlocked
+//          ---- Chakram ----
 //          bit 0 => Wyrm Chakram - 0xd8
 //          bit 1 => Star Chakram - 0xd9
 //          
-//          --- Twin Rod ---
+//          ---- Twin Rod ----
 //          bit 2 => Twin Rods - 0xda
 //          bit 3 => Spiral Rods - 0xdb
 //          bit 4 => Wolf Slayer - 0xdc
 //          bit 5 => Tiger Slayer - 0xdd
 //          bit 6 => Demon Slayer - 0xde
 //          
-//          --- Claw ---
+//          ---- Claw ----
 //          bit 7 => Iron Claw - 0xdf
-// $00AD6C: [Bit Flags] Weapons Unlocked | Claw
+// $00AD6C: [PAL][Bit Flags] @Byte29 in Bitset: Weapons_Unlocked
+//          ---- Claw ----
 //          bit 0 => Falcon Claw - 0xe0
 //          bit 1 => Phoenix Claw - 0xe1
 //          bit 2 => Phoenix Tail - 0xe2
@@ -506,7 +509,7 @@
 //          02 = German
 //          03 = Italian
 //          04 = Spanish
-// $00B16A: [NTSC-U/C][16-bit] Musou/Free Mode | Character Stat - Equipped Weapon
+// $00B16A: [NTSC-U][16-bit] Musou/Free Mode | Character Stat - Equipped Weapon
 // $00B170: [PAL][112-bytes] Musou/Free Mode | Character Data
 //          =================================================
 //          - This data is contained in LinkedList_Node #2, but is always at this memory location (refer to notes @ 0xad1c)
@@ -514,8 +517,8 @@
 //          [PAL][16-bit] Musou/Free Mode | Overworld Character ID
 //          - This value corresponds to the sprite seen on the overworld map
 //          
-//          { Overworld Character ID List (defers from list @ 0xb175)
-//          | '''''''''''''''''''''''''''
+//          # Overworld_Character_IDs (defers from list at $0xb175)
+//          |'''''''''''''''''''''''''''
 //          | - 0x0 => Xiahou Dun
 //          | - 0x1 => Xu Zhu
 //          | - 0x2 => Zhen Ji
@@ -542,8 +545,8 @@
 //          - This effectivly controls the character you are in-battle and also uses that character's attack moveset
 //          - Some visual clutter is happening when using a weapon the character shouldn't be using
 //          
-//          { Battle Character ID List (defers from list @ 0xb170)
-//          | ''''''''''''''''''''''''''
+//          # Battle_Character_IDs (defers from list at $0xb170)
+//          |'''''''''''''''''''''''''''
 //          | - 0x0 => Xiahou Dun
 //          | - 0x1 => Sun Ce
 //          | - 0x2 => Zhao Yun
@@ -590,10 +593,9 @@
 //          - Value 0xff => No highlighted ability (= inactive)
 //          - Player can activate highlighted ability to power it up one level => on activate this will become 0xff
 //          
-//          { Ability Gauge States
-//          | ''''''''''''''''''
+//          # Ability Gauge States
+//          |''''''''''''''''''
 //          | - 0xff => inactive (nothing highlighted)
-//          |
 //          | - 0x0 => ability 1 highlighted (clockwise, starting from top)
 //          | - 0x1 => ability 2
 //          | - ...
@@ -610,6 +612,23 @@
 // $00B1CE: [PAL][8-bit] Musou/Free Mode | Character Stat - Ability Level: Chain (Darkblue)
 // $00B1CF: [PAL][8-bit] Musou/Free Mode | Character Stat - Ability Level: Stun (Yellow)
 // $00B1D0: [PAL][8-bit] Musou/Free Mode | Character Stat - Ability Level: Reach (Green)
+// $00C0DC: [PAL][32-bit] Musuo/Free Mode | Stage ID
+//          - This ID determines which Overworld_Stage_Data is loaded when a new stage is loaded (refer to $0x8560)
+//          - The first 24-bit of this 32-bit value => correlates to the stage
+//          - The last 8-bit of this 32-bit value => is equal to the Overworld_Character_ID of the selected player character/officer (refer to $0xb170)
+//          
+//          # Stage_IDs (list incomplete)
+//          | [Stage ID] => [Stage Name] | [Allegiance] | [Overworld_Character_ID]
+//          |'''''''''''''''''''''''
+//          | - 0x31000002 => Yellow Turban Rebellion | Wei Forces | Zhen Ji
+//          |
+//          | - 0x31070109 => Hu Lao Gate | Shu Forces | Guan Yu
+//          | - 0x31070108 => Hu Lao Gate | Shu Forces | Zhao Yun
+//          |
+//          | - 0x310e0409 => Chang Ban | Shu Forces | Guan Yu
+//          | - 0x310e0408 => Chang Ban | Shu Forces | Zhao Yun
+//          |
+//          | - 0x31230905 => Xia Kou | Sun Forces | Sun ShangXiang
 // $00C118: [PAL][16-bit] Musou/Free Mode | Allied Force Morale
 //          - Corresponds with UI in top right when in overworld map
 //          - Also counts for player character's morale
@@ -618,8 +637,8 @@
 //          - Formula: enemy force morale % =  enemyMorale / (alliedMorale + enemyMorale)
 // $00D3F8: [PAL][32-bit] Musou/Free Mode | In-battle Player Character Location x-Axis
 // $00D3FC: [PAL][32-bit] Musou/Free Mode | In-battle Player Character Location y-Axis
-// $00D404: [PAL][24-bit Pointer] --> In-Battle Timer
-//          - Identical pointer @ 0x8360
+// $00D404: [PAL][24-bit Pointer] --> Musou/Free Mode | In-Battle Timer
+//          - Identical pointer at $0x8360
 //          +0x11278 - [32-bit] In-Battle Timer (UI control)
 //          +0x1127C - [32-bit] In-Battle Timer (functional timer)
 // $00D938: [PAL][32-bit] Battle Result State
@@ -643,16 +662,17 @@
 //          .+0x8000 - Node containing In-battle Enemy Data
 // $00DD0A: [PAL][16-bit]Copy of 0xb180, when in Musou/Free Mode
 //          - This is a constant value, not changeable
-// $00DD14: [PAL][24-bit Pointer] Musou/Free Mode | Battle Data
+// $00DD14: [PAL][24-bit Pointer] Musou/Free Mode | In-battle Data
 //          
-//          +0x8158 - [PAL][8-bit] Battle - KO Count
+//          +0x8158 - [8-bit] In-battle - KO Count
 //          | - Each kill increases this value by 1
 //          
-//          +0x8159 - [PAL][8-bit] Battle - Required KO Count
+//          +0x8159 - [8-bit] In-battle - Required KO Count
 //          | - The amount of enemies to kill in the current battle
 // $00EA7C: [PAL][Linked List] Node #5
 //          - This the last node which has a stable memory location, thus can be used as the start of an 'Add Address' chain in achievement logic
 // $0157DC: [PAL][8-bit] Main Menu Navigation - Highlighted Button
+//          - This value is only viable during the title screen menu's
 //          - Value range [0x0 - amountOfButtons-1]
 // $0157F1: [PAL][8-bit] Encyclopedia - Selected officer
 //          - Same IDs as noted @ 0xb170
@@ -662,34 +682,6 @@
 //          0x5 => Battle Luck
 // $01746C: [PAL][8-bit] Challenge Mode - Frame Counter
 //          - Value range [0x0-0x3c], increases by 1 each frame
-// $01C534: [Variable Length Object] Overworld_Stage_Data
-//          | ==================================================
-//          | - Size is dependent on the stage
-//          | - Contains information about all the characters on the overworld map, as well as event bitflags
-//          |
-//          | +0x14 - [Variable Length Array] List of Overworld_Character_Objects
-//          | { [Struct Definition][44-byte] Overworld_Character_Object
-//          | | ''''''''''''''''''''''''''''''''''''''''''''''''
-//          | | - Some character objects contain bitflags, which corresponds to a specific event
-//          | | - Some characters spawn in later during the stage; corresponding bitflags should be present
-//          | |
-//          | | +0x20 - [Bit Flag] bit 0 => is character sprite visible (on overworld map)
-//          | |
-//          | | +0x28 - [16-bit] Character Sprite Location - x-Axis
-//          | | ¨¨¨ - This value corresponds to the 2d character sprite/artwork
-//          | | ¨¨¨ - This serves only a visual purpose
-//          | |
-//          | | +0x2a - [16-bit] Character Sprite Location - y-Axis
-//          | |
-//          | | +0x30 - [Bit Flag] bit 0 => is character alive (on overworld map)
-//          | | ¨¨¨ - Doesn't work as a player has died flag (unverified)
-//          | |
-//          | | +0x34 - [8-bit] Character Name & ID
-//          | | ¨¨¨ - This controls the name above the character sprite
-//          | | ¨¨¨ - Uses same IDs as noted @ 0xb170
-//          | |
-//          | | +0x38 - [16-bit] Character Area ID
-//          | | ¨¨¨ - Each movable area (circle) on the map has a unique ID (may also correspond to the visuals in-battle??)
 // $01F6D4: [PAL][8-bit] Musou/Free Mode - Frame Counter
 //          - Value range [0x0-0x3c], increases by 1 each frame
 //          - 0x3c + 1 => resets this value back to 0 AND 0xafb4 increases by 1
