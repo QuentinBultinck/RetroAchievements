@@ -2,7 +2,7 @@
     Retro Achievements Guide <br> 🔶 Shadow of Destiny/Memories (PSP)
 </h1>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/093652.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
+[![Achievement badge icon](https://i.retroachievements.org/Images/096524.png "Mastery badge icon")](https://retroachievements.org/game/3945 "Retro Achievements game page - Shadow of Destiny (PSP)") 
 
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
 
