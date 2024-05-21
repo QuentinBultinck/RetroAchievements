@@ -1,13 +1,15 @@
 // Red Dead Revolver
 // #ID = 11094
 
+// $093390: [PAL][11-byte ASCII] Game ID - PS2 Product ID
+//          - SLES_528.78 --> EUR
 // $4F6FD8: [8bit] Player is in a cutscene?
 // $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
 //          - Identical to $0x562a0c
 // $4FD3A8: [PAL][8-bit {32-bit}] Refresh Rate
 //          - Game offers the option to chose refresh rate on game boot
-//          0x32 (= 50) => PAL 50Hz mode
-//          0x3C (= 60) => NTSC 60Hz mode
+//          0x32 (=50) => PAL 50Hz mode
+//          0x3C (=60) => NTSC 60Hz mode
 // $5602A0: [32-bit] Pointer
 //          +0x58a4 [32-bit] Money
 //          +0x5904  [32-bit] Key 1
@@ -22,12 +24,140 @@
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
 //          bit 0 = 0 => In-game
 //          bit 0 = 1 => Title Menu
-// $562A20: [PAL][32-bit Pointer{1}] --> Showdown Mode | Equipped Weapon Loaded Ammunition (Preferred)
+// $562A20: [PAL][32-bit Pointer{1}] --> [??-byte Struct] Main_HUDController
 //          - Identical pointer{1} at $0x7a0778 (Prefer using this one as it is closer to the Global Pointer)
-//          +0x2C - [32-bit Pointer{2}]
-//          | +0x1C, +0x28 - [(2x) 8-bit {32-bit}] Equipped Weapon Loaded Ammunition (Display)
+//          
+//          +0x2C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] AmmoCounter_HUDController
+//          [Struct Definition]][??-byte] AmmoCounter_HUDController
+//          |''''''''''''''''''''''''''''''''''''''''''''''''''
+//          | - Controls only ammo HUD display in the bottom-left
+//          |
+//          | +0x14 - [32-bit] Equipped Weapon - Reserve Ammo
+//          | | - Max properly displayable value on UI is 0x3e7 (=999)
+//          | | - This value counts the ammo inside the gun as well
+//          | | - Functional values on ammunition at $0x7638b8
+//          |
+//          | +0x8 - [8-bit {32-bit}] Equipped Secondary Pistol - Loaded Ammunition
+//          | | - This value is only functional when dual wielding pistols, this controls the ammo counter behind the main ammo counter
+//          |
+//          | +0x1C - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition
 //          | | - Both of these values control the UI display
 //          | | - Functional ammunition per gun is stored in an array (refer to $...)
+//          |
+//          | +0x28 - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition (copy of abpve)
+//          
+//          +0x587C - [32-bit] Cash/Bounty
+//          | - Stored as a signed integer, max properly displayable value on the HUD is 0xF423F (=999 999)
+//          
+//          +0x5880 - [32-bit] Cash Awarded for Kills
+//          +0x5884 - [32-bit] Combo (= Cash Awarded for Hitting Targets)
+//          
+//          +0x5E0C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] SpecialMeterGauge_Controller
+//          [Struct Definition]][??-byte] SpecialMeterGauge_Controller
+//          |''''''''''''''''''''''''''''''''''''''''''''''''''
+//          | - Controls both the HUD display and the underlying logic for the special meter
+//          |
+//          | +0x0 - [32-bit Float] Special Meter Gauge
+//          | | - Special actions such as deadeye or a special move depending on selected showdown character
+//          |
+//          | +0x4 - [32-bit Float] Special Meter Max Gauge
+//          | | - This value, rounded down to the nearest whole number, equals the number of special meter bars displayed (e.g., 3.456 --> 3 bars)
+//          | | - Each special action costs 1 full bar
+// $6B0808: [PAL][7-byte+ ASCII {Variable Size}] Area_ID
+//          - This value stores the Area_ID for the current map/level
+//          - Be wary to check only the necessary bytes to check the Area_ID, don't count the following bytes as there's some filler data stored (eg. )
+//          
+//          # Area_IDs (list incomplete)
+//          |''''''''''''''''''''''''''
+//          | default => Intermittent loading screen (= screen before the MAIN Loading screen, where the protagonist twirls his pistols around) -> some sort of value between switching Area_IDs
+//          | lvl_perf => Chapter 1 - Bull's Eye - Intro with Red Jr.
+//          | lvl_hng => Chapter 2 - Bounty Hunter - Bounty for Bloody Tom
+//          | lvl_sher => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
+//          | lvl_traincar => Chapter 4 - The Traincar - Red has showdown with train robber inside traincar
+//          | lvl_traingood => Chapter 5 - Railroaded - Red fighting bandits on top of moving train
+// $6B18B4: [PAL][1024-byte ASCII Field] ShowdownMode_ScoreboardDisplay_Text
+//          =========================================
+//          @Fixed Memory Location
+//          - The data stored in this ASCII Field is used in the display of the showdown mode scoreboard
+//          - ASCII Field only updates/should be used when the scoreboard is displayed, otherwise these 1024-bytes may in use by other data
+//          - Dynamic number values (eg. Bounty, Shots missed) are calculated or copied from data stored at $0x7638b8
+//          - Changing these values will update the corresponding text on the scoreboard
+// $6B1A30: [PAL][96-byte ASCII Field] Player_Stats - Player 1
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b18b4)
+//          
+//          [ASCII Field Definition][96-byte] Player_Stats
+//          |'''''''''''''''''''''''''''''''''''''''''
+//          | +0x5 - [7-byte ASCII] Bounty/Cash
+//          | | - Documentation at $0x6b1a35
+//          |
+//          | +0xC - [7-byte ASCII] Death Toll (Enemy kill count)
+//          | | - Documentation at $0x6b1a3c
+//          |
+//          | +0x14 - [7-byte ASCII] Damage Taken
+//          | | - Documentation at $0x6b1a44
+//          |
+//          | +0x1C - [3-byte ASCII] Shots Fired
+//          | | - Documentation at $0x6b1a4c
+//          |
+//          | +0x24 - [3-byte ASCII] Shots Missed
+//          | | - Documentation at $0x6b1a54
+//          |
+//          | +0x2D - [7-byte ASCII] Best Combo
+//          | | - Documentation at $0x6b1a5d
+//          |
+//          | +0x34 - [3-byte ASCII] Head Shots
+//          | | - Documentation at $0x6b1a64
+//          |
+//          | +0x3C - [3-byte ASCII] Body Shots
+//          | | - Documentation at $0x6b1a6c
+//          |
+//          | +0x44 - [3-byte ASCII] Arm Shots
+//          | | - Documentation at $0x6b1a74
+//          |
+//          | +0x4C - [3-byte ASCII] Leg Shots
+//          | | - Documentation at $0x6b1a7c
+//          |
+//          | +0x54 - [3-byte ASCII] Back Shots
+//          | | - Documentation at $0x6b1a87
+//          |
+//          | +0x5C - [3-byte ASCII] Melee Hits
+//          | | - Documentation at $0x6b1a8c
+// $6B1A35: [PAL][7-byte ASCII] Player 1 - Bounty/Cash
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+//          - Preceding [1-byte ASCII] = "$"
+// $6B1A3C: [PAL][3-byte ASCII] Player 1 - Death Toll (Enemy kill count)
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A44: [PAL][7-byte ASCII] Player 1 - Damage Taken
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+//          - Succeeding [1-byte ASCII] = "%"
+// $6B1A4C: [PAL][3-byte ASCII] Player 1 - Shots Fired
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A54: [PAL][3-byte ASCII] Player 1 - Shots Missed
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A5D: [PAL][7-byte ASCII] Player 1 - Best Combo
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+//          - Preceding [1-byte ASCII] = "$"
+// $6B1A64: [PAL][3-byte ASCII] Player 1 - Head Shots
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A6C: [PAL][3-byte ASCII] Player 1 - Body Shots
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A74: [PAL][3-byte ASCII] Player 1 - Arm Shots
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A7C: [PAL][3-byte ASCII] Player 1 - Leg Shots
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A87: [PAL][3-byte ASCII] Player 1 - Back Shots
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A8C: [PAL][3-byte ASCII] Player 1 - Melee Hits
+//          @Member of Struct: Player_Stats - Player 1 ($0x6b1a30)
+// $6B1A90: [PAL][96-byte ASCII Field] Player_Stats - Player 2
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b18b4)
+//          - ASCII Field Definition at $0x6b1a30
+// $6B1AF0: [PAL][96-byte ASCII Field] Player_Stats - Player 3
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b18b4)
+//          - ASCII Field Definition at $0x6b1a30
+// $6B1B50: [PAL][96-byte ASCII Field] Player_Stats - Player 4
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b18b4)
+//          - ASCII Field Definition at $0x6b1a30
 // $7405CD: [PAL][27-byte Bitset] Shared_Unlocks
 //          @Fixed Memory Location. Although pointed to by $0x7448a0
 //          - This bitset handles unlocks for showdown characters, showdown maps and journal pages
@@ -295,6 +425,10 @@
 //          bit 3 => Colonel Daren
 //          bit 4 => Gabriel Navarro
 //          bits [5-7] => /
+// $740844: [PAL][7-byte ASCII {Variable Size}] Previous Area_ID
+//          - Area_ID from the previous area/map/zone is stored here
+//          - This value changes on new area load
+//          - IDs listed at $0x6b0808
 // $742118: [8bit] save file id
 // $742158: [32bit] pointer to progress stats
 //          
@@ -308,17 +442,29 @@
 //          | - Documentation at $0x7405cd
 // $7448D8: [PAL][32-bit Pointer]
 //          +0x0 - [2840-byte Struct] Player_Profile_Data
-//          - This data correlates to various actions/flags that need to saved in a playthrough
+//          - This data correlates to various actions/flags that is saved throughout the story campaign
 //          - This data is only updated when the save menu is displayed in-game OR loaded on game startup (specifically: loading screen after selecting language)
 //          - This is data stored to a specific Player_Profile
 //          
-//          { [Struct Definition][2840-byte] Player_Profile_Data
+//          [Struct Definition][2840-byte] Player_Profile_Data
 //          |''''''''''''''''''''''''''''''''''''''''''''
 //          | +0xC - [32-byte Bitset] Player_Profile_Unlocks
 //          | | - This bitset is only updated when the save menu is shown in-game, it copies the bitset Player_Profile_Unlocks ($0x763070) on update
 //          | | - This bitset handles unlocks of bought items, weapons, unlocked showdown characters, showdown maps and journal pages
 //          | | - Unlocks are achieved by buying certain items, achieving certain goals in specific missions (eg. achieve excellent rating) or just completion of a mission
 //          | | - Once some of these unlocks have been achieved for the first time, they will update the Shared_Unlocks bitset ($0x7405cd) on save
+// $74A34D: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - NTSC Mode
+//          - Preceding [15-byte ASCII] = "cdrom0:\/pss/"
+//          - VideoFileName_IDs and further documentation at $0x74a34f
+// $74A34F: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - PAL Mode
+//          - Identifies the current/last PRE-RENDERED video played
+//          - Preceding [15-byte ASCII] = "cdrom0:\/pss50/" -> pss files are ps2 video/image files; There's a folder on the ROM "pss50" which stores 50Hz video's for PAL mode and a folder "pss" for NTSC mode
+//          
+//          # VideoFileName_IDs (list incomplete)
+//          |'''''''''''''''''''''''''
+//          | rslogo.pss => Rockstar Logo on game boot
+//          | titles.pss => Game Title Intro Video (plays after selecting language)
+//          | sher7001.pss => Chapter 3 (Ugly Streetfight) - Intro video: Red talks with sheriff about bounty reward + bandit shoots dog
 // $763070: [PAL][32-bit Pointer]
 //          +0x5C8 - [32-byte Bitset] Player_Profile_Unlocks (Preferred)
 //          | - This bitset handles unlocks for journal pages, showdown characters and showdown stages for the current Player_Profile
@@ -331,24 +477,95 @@
 //          
 //          { [Struct Definition][16-byte] Showdown_Player_Data
 //          |'''''''''''''''''''''''''''''
-//          | +0x0 - [32-bit Pointer{1}] Showdown_Player_Data_A
+//          | +0x0 - [32-bit Pointer{1}] --(+0x0)--> [2512-byte Struct] Showdown_Player_Data_A
 //          |
-//          | +0x4 - [32-bit Pointer{1}] Showdown_Player_Data_B
+//          | +0x4 - [32-bit Pointer{1}] --(+0x0)--> [1312-byte Struct] Showdown_Player_Data_B
+//          | { [Struct Definition][1312-byte] Showdown_Player_Data_B
+//          | |'''''''''''''''''''''''''''''''''''''
 //          | | +0x18 - [32-bit Pointer{2}]
-//          | | .+0x80 - [32-bit Pointer{3}]
-//          | | ..+0x48 - [8-bit {32-bit}] Equipped_Weapon_ID
-//          | | ..| - IDs listed below
+//          | | .+0x80 - [32-bit Pointer{3}] --(+0x0)--> [176-byte Struct] Weapon_Handler_Object
+//          | | .| - Struct Definition below
+//          | |
+//          | | +0x28C - [32-byte Bitset] Might be correlated to weapon pickups or power ups?
+//          | |
+//          | | +0x30 - [32-bit Pointer{2}] --(+0x0)--> [3696-byte Struct] Showdown_Player_Stats
+//          | | | - Contains stats used for the scoreboard as well as some other misc unused stats
+//          | | | - Struct Definition below
 //          |
-//          | +0x8 - [32-bit Pointer{1}] Showdown_Player_Data_C
+//          | +0x8 - [32-bit Pointer{1}] --(+0x0)--> [464-byte Struct] Showdown_Player_Data_C
+//          | { [Struct Definition][464-byte] Showdown_Player_Data_C
+//          | |'''''''''''''''''''''''''''''''''''''
 //          | | +0x18 - [32-bit Pointer{2}]
 //          | | | +0x10 - [32-bit Float] Player HP
 //          | | | +0x14 - [32-bit Float] Player Max HP
 //          | |
 //          | | +0x94 - [32-bit Pointer{2}]
 //          | | .+0x10 - [8-bit {32-bit}] Amount of Guns in Inventory
+//          | |
+//          | | +0x168 - [32-bit Pointer{2}]
+//          | | .+0xF4 - [32-bit Pointer{3}] --(+0x0)--> [688-byte Struct] Ammunition_Inventory
+//          | | .| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, this data does not
 //          |
 //          | +0xC - [32-bit Pointer{1}] Showdown_Player_Data_D
 //          | | - This pointer is only functional for Player 1; This pointer is non-existent (= 0x0) for other Players
+//          
+//          { [Struct Definition][176-byte] Weapon_Handler_Object
+//          |'''''''''''''''''''''''''''''''''''''
+//          | +0x44 - [8-bit {32-bit}] Spawn Weapon_ID
+//          | | - This value decides which weapon is equipped by default on (re)spawn
+//          | | - Weapon_IDs listed below
+//          |
+//          | +0x48 - [8-bit {32-bit}] Equipped Weapon_ID
+//          | | - Weapon_IDs are equal to the index of the weapon inside the Weapon_Data array (see pointer chain below)
+//          |
+//          | +0x20 - [32-bit Pointer{1}]
+//          | .+0x0 - [32-bit Pointer{2}]
+//          | ..+0x4 - [32-bit Pointer{3}]
+//          | ...+0x0 - [440-byte Array] List of [(55x) 32-bit Pointer{4}] --(+0x0)--> [64-byte Struct] Weapon_Data
+//          | ...| - Struct Definition Weapon_Data below
+//          
+//          { [Struct Definition][64-byte] Weapon_Data
+//          |'''''''''''''''''''''''''''''''''''''
+//          | - Each weapon has [Weapon_Data] structure inside this array
+//          | - There's about 55 weapons in the list
+//          | - Changing ammunition stats here work, although UI needs to be handled through $0x562a20
+//          |
+//          | +0x18 - [8-bit Bitfield] Weapon State
+//          | | 0x1 => Idle
+//          | | 0x3 => Firing
+//          | | 0x4 => Reloading
+//          |
+//          | +0x20 - [8-bit {32-bit}] Maximum Ammunition Capacity (functional)
+//          | +0x24 - [8-bit {32-bit}] Current Loaded Ammunition (functional)
+//          |
+//          | +0x28 - [32-bit Pointer] --(+0x0)--> [12-byte?? Struct] Weapon_Ammunition
+//          | { [Struct Definition][12-byte??] Weapon_Ammunition
+//          | |'''''''''''''''''''''''''''''''''''''
+//          | | - Some ammunition might be shared between weapons
+//          | | - Ammunition values here don't count the ammo loaded inside the gun, ammunition count on HUD does (refer to $0x562a20)
+//          | |
+//          | | +0x4 - [8-bit {32-bit}] Reserve Ammuniton on Spawn
+//          | | | - Ammunition shown on the HUD always has counts
+//          | | +0x8 - [8-bit {32-bit}] Current Reserve Ammuniton
+//          
+//          { [Struct Definition][3696-byte] Showdown_Player_Stats
+//          |''''''''''''''''''''''''''''''''''''''
+//          | - Data stored here is dynamically updated during gameplay
+//          | - Most 32-bit values stored are signed integers, but the scoreboard only displays a limited amount of characters (refer to $0x6b18b4)
+//          |
+//          | +0x0,+0x494 - [(2x) 32-bit] Shots Fired
+//          | | - Depending on weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
+//          |
+//          | +0x418 - [32-bit] Death Count
+//          | +0x490 - [32-bit] Bounty/Cash
+//          | | - Copies value stored via pointer at $0x562a20
+//          |
+//          | +0x49C - [32-bit] Arm Shots
+//          | +0x4A0 - [32-bit] Body Shots
+//          | +0x4A4 - [32-bit] Head Shots
+//          | +0x4A8 - [32-bit] Leg Shots
+//          | +0x4B4 - [32-bit] Melee Hits
+//          | +0x4B8 - [32-bit] Back Shots
 //          
 //          # Equipped_Weapon_IDs (list incomplete)
 //          |''''''''''''''''
@@ -371,6 +588,9 @@
 //          | 0x31 => Sacred Bow
 // $7638F8: [PAL][8-bit {32-bit}] Showdown Mode Playercount
 //          - Value range [0x2-0x4], minimum 2 players, max 4 players
+// $7A0620: [PAL][7-byte ASCII {Variable Size}] Area_ID to Load
+//          - The Area_ID that needs to be loaded is stored here
+//          - IDs listed at $0x6b0808
 // $7A0664: [PAL][8-bit {32-bit}] Display Language
 //          - Changing this value at runtime, will change the display language on loading
 //          0x0 => en
@@ -378,8 +598,8 @@
 //          0x2 => fr
 //          0x3 => de
 //          0x4 => it
-// $7A0778: [PAL][32-bit Pointer{1}] --> Showdown Mode | Equipped Weapon Loaded Ammunition (alt)
-//          - Identical pointer{1} at $0x562a20
+// $7A0778: [PAL][32-bit Pointer] --> Main HUD Controller
+//          - Identical to pointer{1} at $0x562a20
 // $7A09C0: [PAL][32-bit Pointer] --> [32-byte Bitset] Player_Profile_Unlocks (alt)
 //          - Identical pointer at $0x763070
 // $D17E8D: [8-bit] Main Menu Check
