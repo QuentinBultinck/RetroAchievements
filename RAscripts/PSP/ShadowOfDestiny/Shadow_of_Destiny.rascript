@@ -53,7 +53,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO if measured popups show at weird moments when it's not supposed to => try using measureIf or PauseIf the hide the popup => recheck where pause if vs measured if needed
+// TODO EnergyLocator achievements may still show their measured popup when switching area_IDS to one's which are checked in those triggers
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
