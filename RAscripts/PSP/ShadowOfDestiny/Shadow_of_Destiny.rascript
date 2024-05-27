@@ -2407,9 +2407,9 @@ achievements_typeByCategory = {
 	"c_Completion": 						"progression",
 	"c_Endings": 							"win_condition",
 	"c_AchievementPercentage": 				sNULL,
-	"c_Branch": 							"missable",
+	"c_Branch": 							sNULL,
 	"c_Extra":				 				"missable",
-	"c_ExtraCouple":						"missable",
+	"c_ExtraCouple":						sNULL,
 	"c_ExtraEnergy":						sNULL,
 	"c_ExtraGameOver": 						"missable",}
 
@@ -2812,7 +2812,7 @@ achievements_triggers = {
 			) &&
 			once(	// Identifies Cutscene => Eike goes back to Eckart upstairs + Eckart breaks vase
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0xcfb40, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x19d80, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0xcfb40, enum_releaseRegion) 	&&  // line may be redundant --> was_Cutscene_MasterId(0x19d80, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
@@ -2824,7 +2824,7 @@ achievements_triggers = {
 			) &&
 			once(	// Identifies Cutscene => Eike goes back downstairs to Homunculus
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0x39680, enum_releaseRegion)	&& was_Cutscene_MasterId(0xcfb40, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x39680, enum_releaseRegion)	&&  // line may be redundant -->  was_Cutscene_MasterId(0xcfb40, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
@@ -3231,7 +3231,7 @@ achievements_triggers = {
 			) &&
 			once(	// Identifies Cutscene => Eike and Eckart talk, whilst Hugo and Margarette travel back to their time period
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0xc4e40, enum_releaseRegion)	&& was_Cutscene_MasterId(0xfbd00, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0xc4e40, enum_releaseRegion)	&&  // line may be redundant -->  was_Cutscene_MasterId(0xfbd00, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
@@ -3275,7 +3275,7 @@ achievements_triggers = {
 			) && 
 			once(	// Identifies Cutscene => Flashback to Hugo trying to read burnt documents
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0x77a40, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x29700, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x77a40, enum_releaseRegion) 	&& // line may be redundant --> was_Cutscene_MasterId(0x29700, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion)			&&
@@ -3287,11 +3287,11 @@ achievements_triggers = {
 			) &&
 			once(	// Identifies Cutscene => Eike confronts Hugo at square
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0x4b140, enum_releaseRegion)	&& was_Cutscene_MasterId(0x77a40, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x4b140, enum_releaseRegion)	&& // line may be redundant --> was_Cutscene_MasterId(0x77a40, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion)			&&
-				// is_Cutscene_MasterId(0x4b140, enum_releaseRegion)		&& was_Cutscene_MasterId(0x77a40, enum_releaseRegion) &&
+				// is_Cutscene_MasterId(0x4b140, enum_releaseRegion)	&& was_Cutscene_MasterId(0x77a40, enum_releaseRegion) &&
 				// is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
 				// is_Cutscene_SectionId_2(0x4, enum_releaseRegion)		&&
 				// is_Cutscene_MasterDataId(0x122b0, enum_releaseRegion)	&&
@@ -3299,13 +3299,13 @@ achievements_triggers = {
 			) &&
 			once(	// Identifies Cutscene => Margarette dissapears after Hugo dissappeared
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0xc9440, enum_releaseRegion)	&& was_Cutscene_MasterId(0xa00c0, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0xc9440, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0xa00c0, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
-				// is_LargeCutscene_active(enum_releaseRegion)			&&
+				// is_LargeCutscene_active(enum_releaseRegion)				&&
 				// is_Cutscene_MasterId(0xc9440, enum_releaseRegion)		&& was_Cutscene_MasterId(0xa00c0, enum_releaseRegion) &&
-				// is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
+				// is_Cutscene_SectionId_1(0x3, enum_releaseRegion)			&&
+				// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)			&&
 				// is_Cutscene_MasterDataId(0x46b50, enum_releaseRegion)	&&
 				// is_Cutscene_SectionDataId(0x828a0, enum_releaseRegion)
 			) &&
@@ -3326,19 +3326,19 @@ achievements_triggers = {
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
-				// is_Cutscene_MasterId(0x101bc0, enum_releaseRegion)		&&
+				// is_Cutscene_MasterId(0x101bc0, enum_releaseRegion)	&&
 				// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 				// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0x77920, enum_releaseRegion)	&&
+				// is_Cutscene_MasterDataId(0x77920, enum_releaseRegion)&&
 				// is_Cutscene_SectionDataId(0x725d0, enum_releaseRegion)
 			) &&
 			once(	// Identifies Cutscene => Margarette confronts Hugo in square
 				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0x137500, enum_releaseRegion)	&& was_Cutscene_MasterId(0x101bc0, enum_releaseRegion) &&
+				is_Cutscene_MasterId(0x137500, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0x101bc0, enum_releaseRegion) &&
 				on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
-				// is_Cutscene_MasterId(0x137500, enum_releaseRegion)		&& was_Cutscene_MasterId(0x101bc0, enum_releaseRegion) &&
+				// is_Cutscene_MasterId(0x137500, enum_releaseRegion)	&& was_Cutscene_MasterId(0x101bc0, enum_releaseRegion) &&
 				// is_Cutscene_SectionId_1(0xc, enum_releaseRegion)		&&
 				// is_Cutscene_SectionId_2(0xd, enum_releaseRegion)		&&
 				// is_Cutscene_MasterDataId(0x7bdf0, enum_releaseRegion)	&&
@@ -3393,7 +3393,7 @@ achievements_triggers = {
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 			// is_LargeCutscene_active(enum_releaseRegion) 			&& 
-			// is_Cutscene_MasterId(0xdb780, enum_releaseRegion)		&&
+			// is_Cutscene_MasterId(0xdb780, enum_releaseRegion)	&&
 			// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 			// is_Cutscene_MasterDataId(0x1bb0, enum_releaseRegion)	&&
@@ -3401,14 +3401,14 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Finding red jewel in tree at square
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x77f80, enum_releaseRegion)	&& was_Cutscene_MasterId(0xdb780, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x77f80, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0xdb780, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 
 			// is_LargeCutscene_active(enum_releaseRegion) && 
-			// is_Cutscene_MasterId(0x77f80, enum_releaseRegion)		&& was_Cutscene_MasterId(0xdb780, enum_releaseRegion) &&
+			// is_Cutscene_MasterId(0x77f80, enum_releaseRegion)	&& was_Cutscene_MasterId(0xdb780, enum_releaseRegion) &&
 			// is_Cutscene_SectionId_1(0x3, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-			// is_Cutscene_MasterDataId(0x25c50, enum_releaseRegion)	&&
+			// is_Cutscene_MasterDataId(0x25c50, enum_releaseRegion)&&
 			// is_Cutscene_SectionDataId(0x1ac90, enum_releaseRegion)
 		) &&		
 		is_MargaretteTold_Ancestor(enum_releaseRegion) &&
@@ -3466,23 +3466,23 @@ achievements_triggers = {
 			is_Cutscene_MasterId(0x91240, enum_releaseRegion)	&& 
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 
-			// is_LargeCutscene_active(enum_releaseRegion)  			&&
-			// is_Cutscene_MasterId(0x91240, enum_releaseRegion)		&& 
+			// is_LargeCutscene_active(enum_releaseRegion)  		&&
+			// is_Cutscene_MasterId(0x91240, enum_releaseRegion)	&& 
 			// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-			// is_Cutscene_MasterDataId(0x44340, enum_releaseRegion)	&&
+			// is_Cutscene_MasterDataId(0x44340, enum_releaseRegion)&&
 			// is_Cutscene_SectionDataId(0x41cd0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike gives z-pad back to Homunculus
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x5d2c0, enum_releaseRegion)	&& was_Cutscene_MasterId(0x91240, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x5d2c0, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0x91240, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 			
 			// is_LargeCutscene_active(enum_releaseRegion) 			&&
-			// is_Cutscene_MasterId(0x5d2c0, enum_releaseRegion)		&& was_Cutscene_MasterId(0x91240, enum_releaseRegion) &&
+			// is_Cutscene_MasterId(0x5d2c0, enum_releaseRegion)	&& was_Cutscene_MasterId(0x91240, enum_releaseRegion) &&
 			// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x2, enum_releaseRegion)		&&
-			// is_Cutscene_MasterDataId(0x1efd0, enum_releaseRegion)	&&
+			// is_Cutscene_MasterDataId(0x1efd0, enum_releaseRegion)&&
 			// is_Cutscene_SectionDataId(0x2f6d0, enum_releaseRegion)
 		) &&
 		once(	// Identifies Cutscene => Eike goes to the bar
@@ -3524,7 +3524,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Homunculus has bad feeling
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x7b140, enum_releaseRegion)	&& was_Cutscene_MasterId(0x8cf00, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x7b140, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0x8cf00, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 			
 			// is_LargeCutscene_active(enum_releaseRegion) 			&&
@@ -3536,7 +3536,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Eike getting roadkilled
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0xcb700, enum_releaseRegion)	&& was_Cutscene_MasterId(0x7b140, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0xcb700, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0x7b140, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 			
 			// is_LargeCutscene_active(enum_releaseRegion) 			&&
@@ -3622,7 +3622,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Eike and Dana talk with Homunculus some more
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0xcdcc0, enum_releaseRegion)	&& was_Cutscene_MasterId(0xbef80, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0xcdcc0, enum_releaseRegion)	&&  // line may be redundant --> was_Cutscene_MasterId(0xbef80, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)	
 			
 			// is_LargeCutscene_active(enum_releaseRegion) 			&&
@@ -3845,51 +3845,51 @@ achievements_triggers = {
 			// )
 		
 		// Option 1 (example: pause lock when not in correct chapter, with resetNextIf)
-			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			unless(once(	// <-- Pause lock
-				never(on_Chapter_changeTo(CHAPTER_Chapter1, enum_releaseRegion)) &&	// <-- ResetNextIf for the pause lock
-				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
-			)) &&
-			unless(
-				!is_InGame(enum_releaseRegion) ||
-				is_ExtraMenu_active(enum_releaseRegion)
-			) &&
-			once(	// Identifies Cutscene => Acquiring ornamental egg from performer
-				is_LargeCutscene_active(enum_releaseRegion) 		&& 
-				is_Cutscene_MasterId(0x19380, enum_releaseRegion)	&&
-				on_Cutscene_SectionId_start(enum_releaseRegion)
-
-				// is_LargeCutscene_active(enum_releaseRegion) 			&& 
-				// is_Cutscene_MasterId(0x19380, enum_releaseRegion)	&& 
-				// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-				// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-				// is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
-				// is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
-			) &&
-			trigger_when(
-				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
-				on_Cutscene_end(enum_releaseRegion)
-			)
-
-		// Original code (without pause lock)
 			// unless(!is_ReleaseRegion(enum_releaseRegion)) &&
-			// never(
-			// 	!is_InGame(enum_releaseRegion) ||
-			// 	is_ExtraMenu_active(enum_releaseRegion) ||
+			// unless(once(	// <-- Pause lock
+			// 	never(on_Chapter_changeTo(CHAPTER_Chapter1, enum_releaseRegion)) &&	// <-- ResetNextIf for the pause lock
 			// 	!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			// )) &&
+			// unless(
+			// 	!is_InGame(enum_releaseRegion) ||
+			// 	is_ExtraMenu_active(enum_releaseRegion)
 			// ) &&
 			// once(	// Identifies Cutscene => Acquiring ornamental egg from performer
-			// 	is_LargeCutscene_active(enum_releaseRegion) 			&& 
-			// 	is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
-			// 	is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
-			// 	is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
-			// 	is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
-			// 	is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			// 	is_LargeCutscene_active(enum_releaseRegion) 		&& 
+			// 	is_Cutscene_MasterId(0x19380, enum_releaseRegion)	&&
+			// 	on_Cutscene_SectionId_start(enum_releaseRegion)
+
+			// 	// is_LargeCutscene_active(enum_releaseRegion) 			&& 
+			// 	// is_Cutscene_MasterId(0x19380, enum_releaseRegion)	&& 
+			// 	// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+			// 	// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+			// 	// is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
+			// 	// is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
 			// ) &&
 			// trigger_when(
 			// 	is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
 			// 	on_Cutscene_end(enum_releaseRegion)
 			// )
+
+		// Original code (without pause lock)
+			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+			never(
+				!is_InGame(enum_releaseRegion) ||
+				is_ExtraMenu_active(enum_releaseRegion) ||
+				!is_Chapter(CHAPTER_Chapter1, enum_releaseRegion)
+			) &&
+			once(	// Identifies Cutscene => Acquiring ornamental egg from performer
+				is_LargeCutscene_active(enum_releaseRegion) 			&& 
+				is_Cutscene_MasterId(0x19380, enum_releaseRegion)		&& 
+				is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
+				is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
+				is_Cutscene_MasterDataId(0xd5f0, enum_releaseRegion)	&&
+				is_Cutscene_SectionDataId(0xe10, enum_releaseRegion)
+			) &&
+			trigger_when(
+				is_ItemPresentInInventory(ITEM_OrnamentalEgg, enum_releaseRegion) && 
+				on_Cutscene_end(enum_releaseRegion)
+			)
 		),
 	"a_GetExChapterOrnamentalEgg": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
@@ -5554,7 +5554,7 @@ achievements_triggers = {
 		) && 
 		once(	// Identifies Cutscene => Talking with Homunculus in Limbo after death
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x237c0, enum_releaseRegion)	&& was_Cutscene_MasterId(0x9c00, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x237c0, enum_releaseRegion)	&& // line may be redundant -->  was_Cutscene_MasterId(0x9c00, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)				&&
@@ -5592,7 +5592,7 @@ achievements_triggers = {
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)	&&
-			// is_Cutscene_MasterId(0x15640, enum_releaseRegion) 		&&
+			// is_Cutscene_MasterId(0x15640, enum_releaseRegion) 	&&
 			// is_Cutscene_SectionId_1(0x5, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x6, enum_releaseRegion)		&&
 			// is_Cutscene_MasterDataId(0x7830, enum_releaseRegion)	&&
@@ -5600,7 +5600,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Waking up in Limbo after death
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x237c0, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x15640, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x237c0, enum_releaseRegion) 	&& // line may be redundant --> was_Cutscene_MasterId(0x15640, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)	&&
@@ -5656,7 +5656,7 @@ achievements_triggers = {
 		) && 
 		once(	// Identifies Cutscene => Getting stabbed from behind
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x1b740, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x6e480, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x1b740, enum_releaseRegion) 	&&  // line may be redundant --> was_Cutscene_MasterId(0x6e480, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)				&&	
@@ -5676,7 +5676,7 @@ achievements_triggers = {
 		) &&
 		once(	// Identifies Cutscene => Picking dialogue option with Homunculus: 'excuse me'
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0xb140, enum_releaseRegion) 	&& was_Cutscene_MasterId(0x5aa80, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0xb140, enum_releaseRegion) 	&&  // line may be redundant --> was_Cutscene_MasterId(0x5aa80, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)			&&
@@ -5688,7 +5688,7 @@ achievements_triggers = {
 		) && 
 		once(	// Identifies Cutscene => Waking up in limbo after dying to vase
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
-			is_Cutscene_MasterId(0x1a440, enum_releaseRegion) 	&& was_Cutscene_MasterId(0xb140, enum_releaseRegion) &&
+			is_Cutscene_MasterId(0x1a440, enum_releaseRegion) 	&&  // line may be redundant --> was_Cutscene_MasterId(0xb140, enum_releaseRegion) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)			&&
