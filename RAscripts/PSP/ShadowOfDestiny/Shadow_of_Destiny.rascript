@@ -896,6 +896,17 @@ function on_Cutscene_SectionId_start(enum_releaseRegion) {
 		let_memAccessor_SectionID1 == 0x1 &&
 		let_memAccessor_SectionID2 == 0x0}
 
+function on_Cutscene_SectionId_start_bis(enum_releaseRegion) {
+	let_memAccessor_SectionID1 = word(memory_getAddress(DATATYPE_16Bit, "Cutscene_SectionID_1", enum_releaseRegion))
+	let_memAccessor_SectionID2 = word(memory_getAddress(DATATYPE_16Bit, "Cutscene_SectionID_2", enum_releaseRegion))
+	return 
+		prev(let_memAccessor_SectionID1) != 0x1 && 
+		(
+			let_memAccessor_SectionID1 == 0x1 || 
+			let_memAccessor_SectionID1 == 0xffff // --> there are some instances where cutscenes with only 1 section where Cutscene_SectionID_1 stays at 0xffff
+		) &&
+		let_memAccessor_SectionID2 == 0x0}
+
 function is_Cutscene_MasterDataId(int_id, enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "Cutscene_MasterData", enum_releaseRegion))
 	return dword(let_maskedPointer + 0x8) == int_id}
@@ -5277,8 +5288,8 @@ achievements_triggers = {
 		return
 			unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 			never(
-				!is_InGame(enum_releaseRegion) ||
-				on_Chapter_change(enum_releaseRegion)
+				!is_InGame(enum_releaseRegion) 
+				// Removed this line to make this achievement easier to unlock, by making it save measured progression cross-chapter --> || on_Chapter_change(enum_releaseRegion)
 			) &&
 			measured(measuredComparison(enum_releaseRegion)) &&
 			trigger_when(on_Cutscene_end(enum_releaseRegion))
@@ -5543,7 +5554,7 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Eike wakes himself up
 			is_LargeCutscene_active(enum_releaseRegion) 		&& 
 			is_Cutscene_MasterId(0x9c00, enum_releaseRegion)	&& 
-			on_Cutscene_SectionId_start(enum_releaseRegion)
+			on_Cutscene_SectionId_start_bis(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion)				&&
 			// is_Cutscene_MasterId(0x9c00, enum_releaseRegion)		&&
