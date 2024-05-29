@@ -4096,7 +4096,7 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
 			is_LargeCutscene_active(enum_releaseRegion) 						&& 
 			is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x8cf00, enum_releaseRegion)					&&
+			(is_Cutscene_MasterId(0x8cf00, enum_releaseRegion) || is_Cutscene_MasterId(0x8dcc0, enum_releaseRegion)) &&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
