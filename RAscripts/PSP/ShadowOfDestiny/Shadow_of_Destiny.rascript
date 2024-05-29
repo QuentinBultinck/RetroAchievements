@@ -4026,7 +4026,6 @@ achievements_triggers = {
 		never(
 			!is_InGame(enum_releaseRegion) ||
 			is_ExtraMenu_active(enum_releaseRegion)	||
-			!is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) ||
 			!is_Chapter(CHAPTER_Chapter6, enum_releaseRegion) 				&& 
 			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion) 				&& 
 			!is_Chapter(CHAPTER_Chapter8_Ancestress, enum_releaseRegion) 	&& 
@@ -4034,7 +4033,7 @@ achievements_triggers = {
 		) &&
 		tally(1, [
 			once(	// Identifies Cutscene => Instantly pay for the coffee with egg shaped pocket watch
-				is_LargeCutscene_active(enum_releaseRegion) 		&& 
+				is_LargeCutscene_active(enum_releaseRegion) 		&& is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
 				is_Area(AREA_1900s_City, enum_releaseRegion)	 	&& 
 				is_Cutscene_MasterId(0x8b440, enum_releaseRegion)	&&
 				on_Cutscene_SectionId_start(enum_releaseRegion)),
@@ -4048,7 +4047,7 @@ achievements_triggers = {
 				// is_Cutscene_MinorId(0xdefe0, 0x8, enum_releaseRegion)	&&
 				// is_Cutscene_MinorId(0x50080, 0x28, enum_releaseRegion)),
 			once(	// Identifies Cutscene => Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
-				is_LargeCutscene_active(enum_releaseRegion) 		&& 
+				is_LargeCutscene_active(enum_releaseRegion) 		&& is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
 				is_Area(AREA_1900s_City, enum_releaseRegion)	 	&& 
 				is_Cutscene_MasterId(0xac4c0, enum_releaseRegion)	&&
 				on_Cutscene_SectionId_start(enum_releaseRegion))
@@ -4097,11 +4096,11 @@ achievements_triggers = {
 		once(	// Identifies Cutscene => Eike and Eckart talk about film director and his pocket watches
 			is_LargeCutscene_active(enum_releaseRegion) 						&& 
 			is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) 	&&
-			is_Cutscene_MasterId(0x8dcc0, enum_releaseRegion)					&&
+			is_Cutscene_MasterId(0x8cf00, enum_releaseRegion)					&&
 			on_Cutscene_SectionId_start(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion) && is_ItemPresentInInventory(ITEM_EggPocketWatch, enum_releaseRegion) &&
-			// is_Cutscene_MasterId(0x8dcc0, enum_releaseRegion) 		&&
+			// is_Cutscene_MasterId(0x8cf00, enum_releaseRegion) 		&&
 			// is_Cutscene_SectionId_1(0x1, enum_releaseRegion)		&&
 			// is_Cutscene_SectionId_2(0x0, enum_releaseRegion)		&&
 			// is_Cutscene_MasterDataId(0x31a90, enum_releaseRegion)	&&
@@ -5035,7 +5034,7 @@ achievements_triggers = {
 			is_LargeCutscene_active(enum_releaseRegion) 				&&
 			is_SelectedItemInScrollBar(ITEM_Cake, enum_releaseRegion) 	&&
 			is_Cutscene_MasterId(0x1fd80, enum_releaseRegion)			&&
-			on_Cutscene_SectionId_start(enum_releaseRegion)
+			on_Cutscene_SectionId_start_bis(enum_releaseRegion)
 
 			// is_LargeCutscene_active(enum_releaseRegion) && is_SelectedItemInScrollBar(ITEM_Cake, enum_releaseRegion) &&
 			// is_Cutscene_MasterId(0x1fd80, enum_releaseRegion)		&&
