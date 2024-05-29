@@ -5849,7 +5849,7 @@ achievements_descriptions = {
 	"a_ShowEggTownPlanter": 						{"en": "Present the barman's ancestor with your egg collection in Chapter 2"},
 	"a_EggPocketWatchForCoffee": 					{"en": "Pay for some coffee with an oval shaped object from Chapter 6 onward"},
 	"a_BarmansChildren":							{"en": "Uncover the truth about the barman's grandchildren in Chapter 5"},
-	"a_PocketWatchCollection": 						{"en": "Share your egg collection with a younger barman during Chapter 7"},
+	"a_PocketWatchCollection": 						{"en": "Share your egg collection with the barman during Chapter 7"},
 	"a_PocketWatchReminiscing": 					{"en": "Share stories about your newly acquired pocket watch with Eckart in Chapter 8"},
 	"a_EggCollection": 								{"en": "Exchange an egg for a pan during Chapter 1, 3 or 4"},
 	"a_GetExChapterOrnamentalEgg" :					{"en": "Obtain one final message during the EX Chapter"},	
