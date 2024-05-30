@@ -1595,6 +1595,13 @@ GAMESTATE_A_ChapterCompletionMenu = 0x4
 GAMESTATE_A_IntroVideo = 0x6
 function is_GameStateA(enum_gameStateA, enum_releaseRegion) => 
 	byte(memory_getAddress(DATATYPE_8Bit, "GameStateA", enum_releaseRegion)) == enum_gameStateA
+
+function prev_GameStateA(enum_gameStateA, enum_releaseRegion) => 
+	prev(byte(memory_getAddress(DATATYPE_8Bit, "GameStateA", enum_releaseRegion))) == enum_gameStateA
+
+function on_GameStateA_changeTo(enum_gameStateA, enum_releaseRegion) => 
+	is_GameStateA(enum_gameStateA, enum_releaseRegion) && 
+	!prev_GameStateA(enum_gameStateA, enum_releaseRegion)
 // -------------------------------------
 
 function is_InGamePauseMenu_active(enum_releaseRegion) {
@@ -1617,6 +1624,16 @@ function on_ChapterCompletionMenu_render(enum_releaseRegion) {
 			let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed) || // <-- prior check here, because this value changes before the other comparisons
 			is_GameStateA(GAMESTATE_A_ChapterCompletionMenu, enum_releaseRegion) // <-- This is fix for Chapter 3 & Chapter 7: Chapter Completion Menu's not registering with above line 
 		)} 
+
+function on_ChapterCompletionMenu_render_Chapter7(enum_releaseRegion) {	//  For Chapter 7: as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2 for Chapter 7; should be prior check first true then delta check last true
+
+	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
+	let_memAccessor_IsChapterCompletionScreenActive = dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion))
+	let_memAccessor_IsChapterCompletionMenuDisplayed = bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion))	
+	return 		
+		let_memAccessor_MenuID == 0x1 && prior(let_memAccessor_MenuID) != 0x1 &&
+		let_memAccessor_IsChapterCompletionScreenActive == 0x21 && prior(let_memAccessor_IsChapterCompletionScreenActive) != 0x21 &&		
+		on_GameStateA_changeTo(GAMESTATE_A_ChapterCompletionMenu, enum_releaseRegion)}  // <-- This is fix for Chapter 3 & Chapter 7: Chapter Completion Menu's not registering with above line 
 
 function on_ChapterCompletionMenu_exit(enum_releaseRegion) {
 	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
@@ -6692,9 +6709,18 @@ leaderboards_startTriggers = {
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)		
 		),		
 	"lb_ClearTimeChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter7, enum_releaseRegion)
-		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter7, enum_releaseRegion)
-		),
+		// This one needs a custom trigger as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter7, enum_releaseRegion) 
+		) &&
+		repeated(100, 	// <-- Delay FIX for: leaderboard starting+submitting when moving from one chapter to the next OR when loading a save from chapter completion menu, depending on load time
+			is_InGame(enum_releaseRegion) &&
+			is_Chapter(CHAPTER_Chapter7, enum_releaseRegion) &&
+			!is_Loading(enum_releaseRegion)
+		) &&
+		on_ChapterCompletionMenu_render_Chapter7(enum_releaseRegion)),
 	"lb_ClearTimeChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter6, enum_releaseRegion)
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter6, enum_releaseRegion)
@@ -7028,14 +7054,14 @@ leaderboards_descriptions = {
 	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout Lebensbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all six energy orbs scattered throughout Lebensbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect all six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by completing Chapter 8 in record time"},
-	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by completing Chapter 7 in record time"},
-	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by completing Chapter 6 in record time"},
-	"lb_ClearTimeChapter5":					{"en": "Prove your mastery over time by completing Chapter 5 in record time"},
-	"lb_ClearTimeChapter4":					{"en": "Prove your mastery over time by completing Chapter 4 in record time"},
-	"lb_ClearTimeChapter3":					{"en": "Prove your mastery over time by completing Chapter 3 in record time"},
-	"lb_ClearTimeChapter2":					{"en": "Prove your mastery over time by completing Chapter 2 in record time"},
-	"lb_ClearTimeChapter1":					{"en": "Prove your mastery over time by completing Chapter 1 in record time"},
+	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by completing Chapter 8 in record speed"},
+	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by completing Chapter 7 in record speed"},
+	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by completing Chapter 6 in record speed"},
+	"lb_ClearTimeChapter5":					{"en": "Prove your mastery over time by completing Chapter 5 in record speed"},
+	"lb_ClearTimeChapter4":					{"en": "Prove your mastery over time by completing Chapter 4 in record speed"},
+	"lb_ClearTimeChapter3":					{"en": "Prove your mastery over time by completing Chapter 3 in record speed"},
+	"lb_ClearTimeChapter2":					{"en": "Prove your mastery over time by completing Chapter 2 in record speed"},
+	"lb_ClearTimeChapter1":					{"en": "Prove your mastery over time by completing Chapter 1 in record speed"},
 	"lb_ClearTimePrologue":					{"en": "Race through time to achieve the fastest clear time for the prologue (EX chapter excluded)"},
 	"lb_TotalClearTime": 					{"en": "Race through time to achieve the fastest total clear time (EX chapter excluded)"}}
 
