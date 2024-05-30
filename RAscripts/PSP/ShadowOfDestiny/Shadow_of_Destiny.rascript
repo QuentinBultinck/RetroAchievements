@@ -183,7 +183,7 @@ memory_addresses = {
 		"EnergyUnits": {RELEASE_REGION_USA: 0xa9daa8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa55f8},
 		"IsCutsceneActive": {RELEASE_REGION_USA: 0xa9ed26, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6876},
 		"ChapterID": {RELEASE_REGION_USA: 0xb95704, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xb9d284},
-		"GameStateA": {RELEASE_REGION_USA: 0xac2f90, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacaad0}, // TODO get JPN
+		"GameStateA": {RELEASE_REGION_USA: 0xac2f90, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacaad0},
 	},
 	DATATYPE_16Bit: {
 		"Cutscene_SectionID_1": {RELEASE_REGION_USA: 0xa9ecc0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6810},
@@ -6638,7 +6638,7 @@ function leaderboards_generate_SubmitTrigger_EnergyOrbSpeedTrial(enum_timePeriod
 	// Core alt group
 	unless(!is_ReleaseRegion(enum_releaseRegion)) && 
 	unless(none_of(array_collectionAreas, (enum_area) => is_Area(enum_area, enum_releaseRegion))) && // <-- pause if tally count when not in the city area
-	tally_of(array_energyOrblocationKeys, int_amountToCollect, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all 5 collections
+	tally_of(array_energyOrblocationKeys, int_amountToCollect, (string_eneryOrbLocationKey) => // <-- Tally does not start counting on leaderboard start, but whenever the comparisons here allows it to count, thus we can count all collections
 		on_EnergyOrb_collect(enum_timePeriod, string_eneryOrbLocationKey, enum_releaseRegion)
 	) 
 	|| // Reset alt group => so tally hit count can reset when second unless is active in core group // <-- reset is necessary because the cancelTrigger does not reset below tally count + we also have to reset this even when submitting, so player can retry the leaderboard
@@ -7027,7 +7027,7 @@ leaderboards_descriptions = {
 	"lb_EnergyOrbSpeedTrial2000s":			{"en": "Collect all five energy orbs scattered throughout Lebensbaum in the present time, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1980s":			{"en": "Collect all five energy orbs scattered throughout Lebensbaum in the late 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_EnergyOrbSpeedTrial1900s":			{"en": "Collect all six energy orbs scattered throughout Lebensbaum in the early 20th century, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
-	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
+	"lb_EnergyOrbSpeedTrial1500s":			{"en": "Collect all six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)"},
 	"lb_ClearTimeChapter8":					{"en": "Prove your mastery over time by completing Chapter 8 in record time"},
 	"lb_ClearTimeChapter7":					{"en": "Prove your mastery over time by completing Chapter 7 in record time"},
 	"lb_ClearTimeChapter6":					{"en": "Prove your mastery over time by completing Chapter 6 in record time"},
