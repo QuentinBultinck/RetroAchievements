@@ -183,6 +183,7 @@ memory_addresses = {
 		"EnergyUnits": {RELEASE_REGION_USA: 0xa9daa8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa55f8},
 		"IsCutsceneActive": {RELEASE_REGION_USA: 0xa9ed26, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6876},
 		"ChapterID": {RELEASE_REGION_USA: 0xb95704, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xb9d284},
+		"GameStateA": {RELEASE_REGION_USA: 0xac2f90, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xacaad0}, // TODO get JPN
 	},
 	DATATYPE_16Bit: {
 		"Cutscene_SectionID_1": {RELEASE_REGION_USA: 0xa9ecc0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: 0xaa6810},
@@ -1589,16 +1590,18 @@ function is_ExtraMenu_active(enum_releaseRegion) {
 	let_memAddr = memory_getAddress(DATATYPE_32Bit, "ExtraMenuState", enum_releaseRegion)
 	return dword(let_memAddr) > 0}	
 // -------------------------------------
+GAMESTATE_A_InGame = 0x1
+GAMESTATE_A_ChapterCompletionMenu = 0x4
+GAMESTATE_A_IntroVideo = 0x6
+function is_GameStateA(enum_gameStateA, enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "GameStateA", enum_releaseRegion)) == enum_gameStateA
+// -------------------------------------
+
 function is_InGamePauseMenu_active(enum_releaseRegion) {
 	let_memAddr_IsInGamePauseMenuDisplayed = memory_getAddress(DATATYPE_BitFlag, "IsInGamePauseMenuDisplayed", enum_releaseRegion)
 	return 
 		bit0(let_memAddr_IsInGamePauseMenuDisplayed) == 1 &&
 		bit0(let_memAddr_IsInGamePauseMenuDisplayed + 0x4) == 1}
-
-function is_ChapterCompletionMenu_active(enum_releaseRegion) =>
-	dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion)) == 0x1 	&&
-	dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion)) == 0x21 &&	
-	bit0(memory_getAddress(DATATYPE_32Bit, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion)) == 1	
 
 function is_Loading(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion)) == 1
@@ -1606,11 +1609,14 @@ function is_Loading(enum_releaseRegion) =>
 function on_ChapterCompletionMenu_render(enum_releaseRegion) {	
 	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionScreenActive = dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion))
-	let_memAccessor_IsChapterCompletionMenuDisplayed = bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion))
+	let_memAccessor_IsChapterCompletionMenuDisplayed = bit0(memory_getAddress(DATATYPE_BitFlag, "IsLoading_OR_IsChapterCompletionMenuDisplayed", enum_releaseRegion))	
 	return 		
 		let_memAccessor_MenuID == 0x1 && prev(let_memAccessor_MenuID) != 0x1 &&
 		let_memAccessor_IsChapterCompletionScreenActive == 0x21 && prev(let_memAccessor_IsChapterCompletionScreenActive) != 0x21 &&
-		let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed)} // <-- prior check here, because this value changes before the other comparisons
+		(
+			let_memAccessor_IsChapterCompletionMenuDisplayed > prior(let_memAccessor_IsChapterCompletionMenuDisplayed) || // <-- prior check here, because this value changes before the other comparisons
+			is_GameStateA(GAMESTATE_A_ChapterCompletionMenu, enum_releaseRegion) // <-- This is fix for Chapter 3 & Chapter 7: Chapter Completion Menu's not registering with above line 
+		)} 
 
 function on_ChapterCompletionMenu_exit(enum_releaseRegion) {
 	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
@@ -2541,9 +2547,9 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 		create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
 		once(
 			let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // <-- 2 lines: save protection  => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
-			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time/can only increment by 1
+			let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect // Only 1 delta sumOfCount necessary because you can only pick up one orb at a time/can only increment by 1
 		) &&
-		measured(create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion)) &&
+		measured(let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect) &&
 		trigger_when(on_Cutscene_end(enum_releaseRegion))
 		|| // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
 		never_toAlt(
@@ -2553,7 +2559,27 @@ function achievements_generate_FullTrigger_EnergyCollector(enum_timePeriod, enum
 				on_Chapter_change(enum_releaseRegion) ||
 				on_EnergyUnits_decrement(enum_releaseRegion)
 			)
-		)}	
+		)
+
+		// // alt_core => contains measurement for energy orbs
+		// unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		// create_Pause_WhenNotInSharedAreas(enum_timePeriod, enum_releaseRegion) &&
+		// once(
+		// 	let_sumOf_deltaEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect-1 && // <-- 2 lines: save protection  => loading a savefile which has already picked up enough energy orbs must not unlock the achievement
+		// 	let_sumOf_currentEnergyOrbCollectionStates == let_amountOfEnergyOrbsToCollect		// Only 1 delta sumOfCount necessary because you can only pick up one orb at a time/can only increment by 1
+		// ) &&
+		// measured(create_Tally_EnergyOrbs(enum_timePeriod, enum_releaseRegion)) &&
+		// trigger_when(on_Cutscene_end(enum_releaseRegion))
+		// || // alt_reset => place reset in alt, so count can reset outside of pause in alt_core
+		// never_toAlt(
+		// 	is_ReleaseRegion(enum_releaseRegion) &&
+		// 	(
+		// 		!is_InGame(enum_releaseRegion) ||
+		// 		on_Chapter_change(enum_releaseRegion) ||
+		// 		on_EnergyUnits_decrement(enum_releaseRegion)
+		// 	)
+		// )
+		}	
 // -------- Below trigger generators are deprecated -------- 
 function achievements_generate_TextComparison_GotEnergyUnit() {
 	let_charactersToCheck = {	// (G)ot (E)nerg(Y) un(I)t.
