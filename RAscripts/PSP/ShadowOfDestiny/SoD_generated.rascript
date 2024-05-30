@@ -1,4 +1,4 @@
-// Shadow of Destiny
+// Shadow of Destiny | Shadow of Memories
 // #ID = 3945
 
 // $000000: [INFO] Link to RAscript + Achievement Guide (github)
@@ -68,37 +68,38 @@
 //          - ASCII Text = ULUS10459 --> PSP game identification code for region USA
 // $A64C74: [NTSC-J][9-byte ASCII Text] PSP Game ID - JPN
 //          - ASCII Text = ULJM05512 --> PSP game identification code for region JPN
-// $A82E2C: [NTSC-U/C][Bit Flag] bit 0 => Is Chapter Completion Menu Displayed || Is Loading
+// $A82E2C: [NTSC-U][Bit Flag] bit 0 => Is Chapter Completion Menu Displayed || Is Loading
 //          - bit 0 = 1 => when chapter complete screen is displayed, when the ending video credits + ending file are played, when loading (+during time travel)
 //          - bit 0 = 0 => when in-game AND nothing is loading
 // $A82E48: [NTSC-U][32-bit] Area Identification
-//          - This list is not complete; Currently only IDs used in achievement logic are documented
 //          
-//          0x10 => Present_CafeSonne
-//          0x140 => Present_BrumMuseum_Upstairs_Room3_Night
-//          0x15 => 80s_CafeSonne
-//          0x159 => Present_BrumMuseum_Upstairs_Room1_Night
-//          0x16 => Present_TownHall
-//          0x1bd => Present_BrumMuseum_Upstairs_Room2_Day
-//          0x217 => MiddleAges_AlchemistHouse_Exploded_Basement
-//          0x224 => Present_BrumMuseum_Upstairs_Room2_Night
-//          0x239 => 1900s_City
-//          0x2ed => Present_BrumMuseum_Downstairs_Room_Day
-//          0x3 => Present_City_NightPM
-//          0x31d => 70s_City_Night
-//          0x32 => Present_BrumMuseum_Downstairs_Room_Night
-//          0x33c => MiddleAges_City_Night
-//          0x375 => Present_City_Day
-//          0x38 => Present_BrumMuseum_Upstairs_Room1_Day
-//          0x3f3 => MiddleAges_City_Day
-//          0x44 => Present_City_NightAM
-//          0x465 => 80s_City_Snow
-//          0x603 => 1900s_BrumMansion
-//          0x6f => Present_AntiquesEule
-//          0x7a => 80s_AntiquesEule
-//          0x8e => MiddleAges_Church
-//          0xcd => Present_BrumMuseum_Upstairs_Room3_Day
-//          0xf => 80s_Bar
+//          # Area_IDs (list incomplete, only contains IDs used in achievement logic)
+//          |''''''''''''''''''''''''''''''''''
+//          | 0x3 => Present_City_NightPM
+//          | 0xF => 80s_Bar
+//          | 0x10 => Present_CafeSonne
+//          | 0x15 => 80s_CafeSonne
+//          | 0x16 => Present_TownHall
+//          | 0x32 => Present_BrumMuseum_Downstairs_Room_Night
+//          | 0x38 => Present_BrumMuseum_Upstairs_Room1_Day
+//          | 0x44 => Present_City_NightAM
+//          | 0x6F => Present_AntiquesEule
+//          | 0x7A => 80s_AntiquesEule
+//          | 0x8E => MiddleAges_Church
+//          | 0xCD => Present_BrumMuseum_Upstairs_Room3_Day
+//          | 0x140 => Present_BrumMuseum_Upstairs_Room3_Night
+//          | 0x159 => Present_BrumMuseum_Upstairs_Room1_Night
+//          | 0x1BD => Present_BrumMuseum_Upstairs_Room2_Day
+//          | 0x217 => MiddleAges_AlchemistHouse_Exploded_Basement
+//          | 0x224 => Present_BrumMuseum_Upstairs_Room2_Night
+//          | 0x239 => 1900s_City
+//          | 0x2ED => Present_BrumMuseum_Downstairs_Room_Day
+//          | 0x31D => 70s_City_Night
+//          | 0x33C => MiddleAges_City_Night
+//          | 0x375 => Present_City_Day
+//          | 0x3F3 => MiddleAges_City_Day
+//          | 0x465 => 80s_City_Snow
+//          | 0x603 => 1900s_BrumMansion
 // $A8A97C: [NTSC-J][Bit Flag] bit 0 => Is Chapter Completion Menu Displayed || Is Loading
 //          - Regional equivalent of $0xa82e2c (USA)
 // $A8A998: [NTSC-J][32-bit] Area Identification
@@ -210,7 +211,7 @@
 //          | - 0x8b440 => Multi-Chapter: Instantly pay for the coffee with egg shaped pocket watch
 //          | - 0xac4c0 => Multi-Chapter: Drank coffee before acquiring pocket watch egg, now coming back to pay for coffee with the pocket watch egg
 //          | - 0x8ce80 => Chapter7: Show off egg pocket watch to barman in present
-//          | - 0x8dcc0 => Chapter8: Eike and Eckart talk about film director and his pocket watches
+//          | - 0x8dcc0,0x8cf00 (1st ID unconfirmed) => Chapter8: Eike and Eckart talk about film director and his pocket watches
 //          | - 0xd0200 => Chapter5: Talk to barman about grandchildren
 //          | - 0x1a300 => Chapter4: Eike gives himself a message as performer
 //          | - 0x10b000 => Multi-Chapter: Eike gives Margarette Cake for 1st time
@@ -468,7 +469,7 @@
 //          bit 7 => payed COFFEE with egg shaped pocket watch
 // $A9EDCB: [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 2 => talked with Oleg 1st time in Chapter 3
-//          bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ xa9edcc == 1
+//          bit 3 => talked with Oleg in Chapter 7 - Oleg spawns when bit 0 @ 0xa9edcc == 1
 //          bit 6 => gave kitten to Sibylla
 // $A9EDCC: [NTSC-U][Bit Flags] Current Playthrough - Multi-chapter
 //          bit 3 => Oleg spawns in chapter 7 near movie post, present (not night before) - becomes true when coffee/tab has been payed with egg shaped pocket watch
@@ -480,7 +481,7 @@
 //          - 8-bit blocks that count how many times player has talked to an NPC
 //          - Max count usually 0x2, talking more than this equals same dialogue + is skippable
 //          - These counts are saved to the current playthrough
-//          - If the interaction is not counted in this data block, it's a cutscene
+//          - If the interaction is not counted in this data block, it's a cutscene (refer to $0xa9ecbc)
 // $A9EE1D: [8-bit] NPC Talk Count - Coated man - Present - Chapter 1/Prologue - Town Square
 // $A9EE20: [8-bit] NPC Talk Count - Coated man- Present - Chapter 3 - Near Antique Shop
 // $A9EE21: [8-bit] NPC Talk Count - Coated man - Present - Chapter 4 - Haup str. under arch
@@ -711,51 +712,49 @@
 // $A9F047: [Inventory_Item_Object] Cake
 // $A9F048: [Inventory_Item_Object] Lab key
 // $A9F049: [Inventory_Item_Object] Tower key
-// $A9F04A: [Inventory_Item_Object]> Letter to Dana
+// $A9F04A: [Inventory_Item_Object] Letter to Dana
 // $A9F04B: [Inventory_Item_Object] Kitten
 // $A9F04C: [Inventory_Item_Object] City map
 // $A9F04D: [Inventory_Item_Object] Ladder
 // $A9F04E: [Inventory_Item_Object] Old city map
 // $A9F04F: [Inventory_Item_Object] Notebook
 // $A9F050: [Inventory_Item_Object] Postcard
-//          \\========================================//
 // $A9F074: [NTSC-U][29-bytes] List of [Inventory_Item_Objects] (copy of $0xa9f034)
 //          - Values here might only update on save or chapter change
 // $A9F111: [NTSC-U][8-bit] Highlighted Inventory Item
-//          - Currently only the IDs which are used in achievement logic are documented in this list
 //          - ID corresponds to the index of the Inventory_Item_Object in the list described $0xa9f034
 //          
-//          # ID list
-//          ''''''''''''''
-//          0x0 = d-pad/z-pad
-//          0x1 = cellphone
-//          0x2 = ornamental egg
-//          (0x3 --> empty entry)
-//          0x4 = frying pan
-//          0x5 = sign
-//          0x6 = lighter
-//          0x7 = black and white photo without performer
-//          0x8 = black and white photo with performer
-//          0x9 = philosopher's stone
-//          0xa = new rope
-//          0xb = old rope
-//          0xc = jugglery
-//          0xd = comb
-//          0xe = alchemist book
-//          0xf = squire's crest
-//          0x10 = egg pocket watch
-//          0x11 = antidote
-//          0x12 = meat
-//          0x13 = cake
-//          0x14 = lab key
-//          0x15 = tower key
-//          0x16 = letter to dana
-//          0x17 = kitten
-//          0x18 = city map
-//          0x19 = ladder
-//          0x1a = old map
-//          0x1b = notebook
-//          0x1c = postcard
+//          # InventoryItem_IDs (list complete)
+//          |'''''''''''''''
+//          | 0x0 = d-pad/z-pad
+//          | 0x1 = cellphone
+//          | 0x2 = ornamental egg
+//          | 0x3 = /
+//          | 0x4 = frying pan
+//          | 0x5 = sign
+//          | 0x6 = lighter
+//          | 0x7 = black and white photo without performer
+//          | 0x8 = black and white photo with performer
+//          | 0x9 = philosopher's stone
+//          | 0xa = new rope
+//          | 0xb = old rope
+//          | 0xc = jugglery
+//          | 0xd = comb
+//          | 0xe = alchemist book
+//          | 0xf = squire's crest
+//          | 0x10 = egg pocket watch
+//          | 0x11 = antidote
+//          | 0x12 = meat
+//          | 0x13 = cake
+//          | 0x14 = lab key
+//          | 0x15 = tower key
+//          | 0x16 = letter to dana
+//          | 0x17 = kitten
+//          | 0x18 = city map
+//          | 0x19 = ladder
+//          | 0x1a = old map
+//          | 0x1b = notebook
+//          | 0x1c = postcard
 // $AA1118: [NTSC-U][44-bytes] Best Clear Time Data
 //          ============================
 //          - Stored in seconds
@@ -972,7 +971,7 @@
 //          - Explanation at $0xaa155c
 // $AA156C: [NTSC-U][32-bit] Prologue: Countdown timer
 //          - When timer hits 0 => plays "Sneaking Feeling" cutscene
-// $AA4C10: [NTSC-U][25-bit Pointer] Same pointer @ 0xa9ecd4 (see notes)
+// $AA4C10: [NTSC-U][25-bit Pointer] Same pointer at $0xa9ecd4
 // $AA55F8: [NTSC-J][8-bit] Energy Units (functional)
 //          - Regional equivalent of $0xa9daa8 (USA)
 // $AA667E: [NTSC-J][8-bit Flag] Is Player Character Moveable
@@ -1224,6 +1223,10 @@
 //          - Regional equivalent of $0xaa155c (USA)
 // $AA90B0: [NTSC-J][32-bit] Current Playthrough Timer - Total Clear Time
 //          - Regional equivalent of $0xaa1560 (USA)
+// $AC2F90: [PAL][8-bit {32-bit}] Game State A
+//          0x1 => In-game
+//          0x4 => Chapter Completion Menu (also at Title Screen + also between some loading screens)
+//          0x6 => Intro Video
 // $AC3170: [NTSC-U][25-bit Pointer] Extra Menu Navigation
 //          - Pointer is active when in the extra menu
 //          - Extra menu is only visible once at least one is ending is achieved
@@ -1307,6 +1310,10 @@
 //          - 0x1 => viewing ending file via extra menu
 //          - 0x3 => event viewer menu is displayed
 //          - 0x8 => viewing cutscene via event viewer
+// $ACAAD0: [NTSC-J][8-bit {32-bit}] Game State A
+//          0x1 => In-game
+//          0x4 => Chapter Completion Menu (also at Title Screen + also between some loading screens)
+//          0x6 => Intro Video
 // $ACACB0: [NTSC-J][25-bit Pointer] Extra Menu Navigation
 //          - Regional equivalent of $0xac3170 (USA)
 // $ACACB8: [NTSC-J][25-bit Pointer] Ending File Data
@@ -1359,7 +1366,7 @@
 //           
 //           ⚠ Do not use this as a solo condition to check if event viewer is active. --> Use with $0xac3170
 // $1FFF3C0: [NTSC-U][NTSC-J][25-bit Pointer]
-//           - Pointer is active when in extra menu
+//           - Pointer is only functional when the extra menu is in use
 //           - Same pointer at $0xac3170
 // $1FFF5F4: [NTSC-U][NTSC-J][32-bit Flag] Is Chapter Complete Screen Active
 //           0x21 => chapter completion screen OR in-game pause menu is active
@@ -1376,121 +1383,6 @@
 //           - 0x4 => Extra
 // $1FFFFF0: [NTSC-U][NTSC-J][Upper4] Always_Null || Value_Never_Changes
 //           - This is used for converting floats to floored integers via RAtools
-
-ChapterLookup = {
-    1: "Defying destiny",
-    2: "Extinguishing the heat",
-    3: "Exploring Lebensbaum",
-    4: "Visiting the art museum",
-    5: "Searching for an iron plate",
-    6: "Amalgamating an antidote",
-    7: "Producing a film",
-    8: "Examining a tower",
-    9: "Seeking the red stone",
-    10: "Cheating death",
-    11: "Seeking the red stone",
-    12: "Cheating death",
-}
-
-FatedHourLookup = {
-    1: "14:30",
-    2: "15:00",
-    3: "15:30",
-    4: "17:50",
-    5: "20:30",
-    6: "22:30",
-    7: "23:55",
-    8: "01:30",
-    9: "04:30",
-    10: "04:30",
-    11: "04:30",
-    12: "04:30",
-}
-
-PresentTimeHours_ZeroPaddingLookup = {
-    10: "",
-    11: "",
-    12: "",
-    13: "",
-    14: "",
-    15: "",
-    16: "",
-    17: "",
-    18: "",
-    19: "",
-    20: "",
-    21: "",
-    22: "",
-    23: "",
-}
-
-PresentTimeMinutes_ZeroPaddingLookup = {
-    10: "",
-    11: "",
-    12: "",
-    13: "",
-    14: "",
-    15: "",
-    16: "",
-    17: "",
-    18: "",
-    19: "",
-    20: "",
-    21: "",
-    22: "",
-    23: "",
-    24: "",
-    25: "",
-    26: "",
-    27: "",
-    28: "",
-    29: "",
-    30: "",
-    31: "",
-    32: "",
-    33: "",
-    34: "",
-    35: "",
-    36: "",
-    37: "",
-    38: "",
-    39: "",
-    40: "",
-    41: "",
-    42: "",
-    43: "",
-    44: "",
-    45: "",
-    46: "",
-    47: "",
-    48: "",
-    49: "",
-    50: "",
-    51: "",
-    52: "",
-    53: "",
-    54: "",
-    55: "",
-    56: "",
-    57: "",
-    58: "",
-    59: "",
-}
-
-TimePeriodLookup = {
-    128: "in the Middle Ages",
-    129: "in the early 20th century",
-    130: "in the late 20th century",
-    131: "in the Present",
-    136: "in the late 20th century",
-}
-
-achievement(
-    title = "[VOID]", points = 0,
-    description = "VOID",
-    id = 420266, badge = "00000", published = "23/04/2024 8:16:40", modified = "23/04/2024 8:17:27",
-    trigger = dword(0xA8CC54) != prev(dword(0xA8CC54))
-)
 
 achievement(
     title = "Defied Fate", points = 5, type="progression",
@@ -1526,26 +1418,26 @@ achievement(
 achievement(
     title = "That's a Big No No", points = 2, type="missable",
     description = "Warn yourself of your impending demise during the Prologue",
-    id = 306883, badge = "465973", published = "5/04/2023 15:44:04", modified = "23/04/2024 8:16:18",
+    id = 306883, badge = "465973", published = "5/04/2023 15:44:04", modified = "27/05/2024 6:37:04",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
                 never(byte(0xB95704) != 1) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 39936 && prev(word(0xA9ECC0)) != 1 &&
-                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once((word(0xA9ECC0) == 1 || word(0xA9ECC0) == 65535) && byte(0xA9ED26) == 5 &&
+                    dword(0xA9ECBC) == 39936 && prev(word(0xA9ECC0)) != 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 145344 && prior(dword(0xA9ECBC)) == 39936 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 145344 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) > 3) && trigger_when(byte(0xA9ED26) <= 3) &&
                 trigger_when(byte(0xA9ED26) != 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
                 never(byte(0xB9D284) != 1) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 39936 && prev(word(0xAA6810)) != 1 &&
-                    word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once((word(0xAA6810) == 1 || word(0xAA6810) == 65535) && byte(0xAA6876) == 5 &&
+                    dword(0xAA680C) == 39936 && prev(word(0xAA6810)) != 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 145344 && prior(dword(0xAA680C)) == 39936 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 145344 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) > 3) && trigger_when(byte(0xAA6876) <= 3) &&
                 trigger_when(byte(0xAA6876) != 0)))
 )
@@ -1601,32 +1493,32 @@ achievement(
 )
 
 achievement(
-    title = "A Performer's Clue", points = 2, type="missable",
+    title = "A Performer's Clue", points = 2,
     description = "Receive a gift from an entertainer in Chapter 1",
-    id = 306885, badge = "465975", published = "5/04/2023 15:44:04", modified = "17/04/2024 14:52:31",
+    id = 306885, badge = "465975", published = "5/04/2023 15:44:04", modified = "27/05/2024 5:54:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
-                unless(byte(0xA5AB4C) != 57) &&
-                disable_when(byte(0xB95704) != 2, until=(prev(byte(0xB95704)) != 2 && byte(0xB95704) == 2)) &&
-                disable_when(low4(0xA9EDDC) == 0, until=) && disable_when(dword(0xAC49F4) != 0, until=) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 103296 && prev(word(0xA9ECC0)) != 1 &&
-                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
+                never(byte(0xB95704) != 2) &&
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 103296 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0 &&
+                    dword((dword(0xA9ECC8) & 0x1FFFFFF) + 0x000008) == 54768 &&
+                    dword((dword(0xA9ECCC) & 0x1FFFFFF) + 0x000008) == 3600
                 ) && trigger_when(bit0(0xA9F036) == 1) && trigger_when(prev(byte(0xA9ED26)) != 0) &&
                 trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
-                unless(byte(0xA64C7C) != 50) &&
-                disable_when(byte(0xB9D284) != 2, until=(prev(byte(0xB9D284)) != 2 && byte(0xB9D284) == 2)) &&
-                disable_when(low4(0xAA692C) == 0, until=) && disable_when(dword(0xACC534) != 0, until=) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 103296 && prev(word(0xAA6810)) != 1 &&
-                    word(0xAA6810) == 1 && word(0xAA6812) == 0
+                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
+                never(byte(0xB9D284) != 2) &&
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 103296 && word(0xAA6810) == 1 && word(0xAA6812) == 0 &&
+                    dword((dword(0xAA6818) & 0x1FFFFFF) + 0x000008) == 54768 &&
+                    dword((dword(0xAA681C) & 0x1FFFFFF) + 0x000008) == 3600
                 ) && trigger_when(bit0(0xAA6B86) == 1) && trigger_when(prev(byte(0xAA6876)) != 0) &&
                 trigger_when(byte(0xAA6876) == 0)))
 )
 
 achievement(
-    title = "A Jovial Exchange", points = 3, type="missable",
+    title = "A Jovial Exchange", points = 3,
     description = "Exchange an egg for a pan during Chapter 1, 3 or 4",
-    id = 306977, badge = "465977", published = "6/04/2023 11:45:22", modified = "17/04/2024 14:53:15",
+    id = 306977, badge = "465977", published = "6/04/2023 11:45:22", modified = "27/05/2024 5:54:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1649,9 +1541,9 @@ achievement(
 )
 
 achievement(
-    title = "Enigmatic Couple I: Prelude", points = 3, type="missable",
+    title = "Enigmatic Couple I: Prelude", points = 3,
     description = "Identify the coated man and woman in the Present during the Prologue or Chapter 1",
-    id = 307495, badge = "465978", published = "9/04/2023 8:08:50", modified = "4/05/2024 12:40:55",
+    id = 307495, badge = "465978", published = "9/04/2023 8:08:50", modified = "27/05/2024 5:54:56",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) &&
@@ -1674,9 +1566,9 @@ achievement(
 )
 
 achievement(
-    title = "Enigmatic Couple II: Tailing", points = 3, type="missable",
+    title = "Enigmatic Couple II: Tailing", points = 3,
     description = "Discover the coated man and woman in the Present during Chapter 3",
-    id = 310131, badge = "465979", published = "19/04/2023 11:41:41", modified = "4/05/2024 12:40:54",
+    id = 310131, badge = "465979", published = "19/04/2023 11:41:41", modified = "27/05/2024 5:54:56",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 4) &&
@@ -1719,9 +1611,9 @@ achievement(
 )
 
 achievement(
-    title = "Enigmatic Couple III: Wandering Once More", points = 3, type="missable",
+    title = "Enigmatic Couple III: Wandering Once More", points = 3,
     description = "Seek out the coated man and woman in the Present during Chapter 4",
-    id = 310134, badge = "465980", published = "19/04/2023 12:50:26", modified = "4/05/2024 12:40:54",
+    id = 310134, badge = "465980", published = "19/04/2023 12:50:26", modified = "27/05/2024 5:54:57",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 885) && unless(byte(0xB95704) != 5) &&
@@ -1764,9 +1656,9 @@ achievement(
 )
 
 achievement(
-    title = "Enigmatic Couple IV: Origins", points = 3, type="missable",
+    title = "Enigmatic Couple IV: Origins", points = 3,
     description = "Encounter the coated man and woman in the Present during Chapter 5",
-    id = 310135, badge = "465981", published = "19/04/2023 15:36:31", modified = "4/05/2024 12:40:54",
+    id = 310135, badge = "465981", published = "19/04/2023 15:36:31", modified = "27/05/2024 5:54:57",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 3) && unless(byte(0xB95704) != 6) &&
@@ -1793,9 +1685,9 @@ achievement(
 )
 
 achievement(
-    title = "Enigmatic Couple V: Epilogue", points = 3, type="missable",
+    title = "Enigmatic Couple V: Epilogue", points = 3,
     description = "Find the coated man and woman in the Present during Chapter 7",
-    id = 315564, badge = "465982", published = "7/05/2023 18:08:32", modified = "4/05/2024 12:40:54",
+    id = 315564, badge = "465982", published = "7/05/2023 18:08:32", modified = "27/05/2024 5:54:57",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 68) && unless(byte(0xB95704) != 8) &&
@@ -1927,7 +1819,7 @@ achievement(
 achievement(
     title = "Met You Before", points = 2, type="missable",
     description = "Keep chatting with Dana under the Marktplatz tree during Chapter 2, even as whispers of fate gently caress the periphery of your dialogue",
-    id = 306888, badge = "465986", published = "5/04/2023 18:19:09", modified = "17/04/2024 14:52:51",
+    id = 306888, badge = "465986", published = "5/04/2023 18:19:09", modified = "27/05/2024 5:54:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1935,8 +1827,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 451712 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 112448 && prior(dword(0xA9ECBC)) == 451712 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 112448 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) > 3) && trigger_when(byte(0xA9ED26) <= 3) &&
                 trigger_when(byte(0xA9ED26) != 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
@@ -1945,16 +1837,16 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 451712 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 112448 && prior(dword(0xAA680C)) == 451712 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 112448 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) > 3) && trigger_when(byte(0xAA6876) <= 3) &&
                 trigger_when(byte(0xAA6876) != 0)))
 )
 
 achievement(
-    title = "A Blossoming Plan", points = 1, type="missable",
+    title = "A Blossoming Plan", points = 1,
     description = "Set up a floral display in Chapter 2",
-    id = 306920, badge = "465987", published = "5/04/2023 22:23:23", modified = "17/04/2024 14:53:16",
+    id = 306920, badge = "465987", published = "5/04/2023 22:23:23", modified = "27/05/2024 5:54:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1973,9 +1865,9 @@ achievement(
 )
 
 achievement(
-    title = "The Pyromancer's Legacy", points = 1, type="missable",
+    title = "The Pyromancer's Legacy", points = 1,
     description = "Ascend to reverence as a pyrokinetic in Chapter 2",
-    id = 306911, badge = "465988", published = "5/04/2023 19:43:29", modified = "17/04/2024 14:52:38",
+    id = 306911, badge = "465988", published = "5/04/2023 19:43:29", modified = "27/05/2024 5:54:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -1994,9 +1886,9 @@ achievement(
 )
 
 achievement(
-    title = "The Magician's Legacy", points = 1, type="missable",
+    title = "The Magician's Legacy", points = 1,
     description = "Ascend to renown as a magician in Chapter 2",
-    id = 306906, badge = "465989", published = "5/04/2023 19:28:48", modified = "17/04/2024 14:52:44",
+    id = 306906, badge = "465989", published = "5/04/2023 19:28:48", modified = "27/05/2024 5:54:52",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -2015,9 +1907,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple I: Destined to Miss", points = 3, type="missable",
+    title = "Yesteryears Couple I: Destined to Miss", points = 3,
     description = "Aid a bewildered young couple in their reunion amidst the Medieval era during Chapter 2",
-    id = 306984, badge = "465990", published = "6/04/2023 16:26:09", modified = "4/05/2024 12:40:45",
+    id = 306984, badge = "465990", published = "6/04/2023 16:26:09", modified = "27/05/2024 5:54:59",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 3) &&
@@ -2046,9 +1938,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple II: The Place Where We Nigh Met", points = 3, type="missable",
+    title = "Yesteryears Couple II: The Place Where We Nigh Met", points = 3,
     description = "Weave the threads of fate into another chance at reunion for a lost young couple amidst the Medieval era during Chapter 3",
-    id = 310133, badge = "465991", published = "19/04/2023 12:50:26", modified = "4/05/2024 12:40:45",
+    id = 310133, badge = "465991", published = "19/04/2023 12:50:26", modified = "27/05/2024 5:55:00",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 4) &&
@@ -2077,9 +1969,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple III: Destiny's Promise Fulfilled", points = 3, type="missable",
+    title = "Yesteryears Couple III: Destiny's Promise Fulfilled", points = 3,
     description = "Successfully orchestrate the reunion of the lost young couple amidst the Medieval era during Chapter 4",
-    id = 309393, badge = "465992", published = "17/04/2023 19:03:08", modified = "4/05/2024 12:40:45",
+    id = 309393, badge = "465992", published = "17/04/2023 19:03:08", modified = "27/05/2024 5:55:00",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 828) && unless(byte(0xB95704) != 5) &&
@@ -2108,9 +2000,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple IV: Man-in-waiting", points = 1, type="missable",
+    title = "Yesteryears Couple IV: Man-in-waiting", points = 1,
     description = "Assess the developments surrounding the young man amidst the Medieval era during Chapter 5",
-    id = 310162, badge = "465993", published = "19/04/2023 19:39:22", modified = "17/04/2024 14:52:31",
+    id = 310162, badge = "465993", published = "19/04/2023 19:39:22", modified = "27/05/2024 5:55:00",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 6) &&
@@ -2127,9 +2019,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple V: Parting", points = 3, type="missable",
+    title = "Yesteryears Couple V: Parting", points = 3,
     description = "Review the latest occurrences involving the young couple amidst the Medieval era during Chapter 7",
-    id = 314753, badge = "465994", published = "5/05/2023 8:33:58", modified = "17/04/2024 14:52:31",
+    id = 314753, badge = "465994", published = "5/05/2023 8:33:58", modified = "27/05/2024 5:55:02",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 1011) &&
@@ -2156,9 +2048,9 @@ achievement(
 )
 
 achievement(
-    title = "Yesteryears Couple VI: Never Destined to Meet", points = 5, type="missable",
+    title = "Yesteryears Couple VI: Never Destined to Meet", points = 5,
     description = "Share a piece of wisdom with the young man and assess his interpretation amidst the Medieval era during Chapter 8",
-    id = 315568, badge = "465995", published = "7/05/2023 18:08:33", modified = "23/04/2024 8:16:19",
+    id = 315568, badge = "465995", published = "7/05/2023 18:08:33", modified = "27/05/2024 5:55:02",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(dword(0xA82E48) != 1011) &&
@@ -2191,7 +2083,7 @@ achievement(
 achievement(
     title = "Energy Locator: Present Day", points = 5,
     description = "Locate five unique energy orbs scattered across present-day Lebensbaum",
-    id = 399816, badge = "461689", published = "19/02/2024 14:12:16", modified = "17/04/2024 14:53:04",
+    id = 399816, badge = "461689", published = "19/02/2024 14:12:16", modified = "30/05/2024 8:45:01",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) &&
@@ -2203,17 +2095,9 @@ achievement(
                     (bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000006)) +
                     bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000007)) == 5
                 ) &&
-                measured(tally(5,
-                    once(bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442EC) & 0x1FFFFFF) +
-                    0x000005))),
-                    once(bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442EC) & 0x1FFFFFF) +
-                    0x000008))),
-                    once(bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442EC) & 0x1FFFFFF) +
-                    0x000004))),
-                    once(bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442EC) & 0x1FFFFFF) +
-                    0x000006))),
-                    once(bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442EC) & 0x1FFFFFF) +
-                    0x000007))))
+                measured(((bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA442EC) & 0x1FFFFFF) +
+                    0x000008)) + (bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442EC) & 0x1FFFFFF) +
+                    0x000006)) + bit0((dword(0xA442EC) & 0x1FFFFFF) + 0x000007)) == 5
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                     byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
@@ -2229,17 +2113,9 @@ achievement(
                     (bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000006)) +
                     bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000007)) == 5
                 ) &&
-                measured(tally(5,
-                    once(bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450BC) & 0x1FFFFFF) +
-                    0x000005))),
-                    once(bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450BC) & 0x1FFFFFF) +
-                    0x000008))),
-                    once(bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450BC) & 0x1FFFFFF) +
-                    0x000004))),
-                    once(bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450BC) & 0x1FFFFFF) +
-                    0x000006))),
-                    once(bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450BC) & 0x1FFFFFF) +
-                    0x000007))))
+                measured(((bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA450BC) & 0x1FFFFFF) +
+                    0x000008)) + (bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450BC) & 0x1FFFFFF) +
+                    0x000006)) + bit0((dword(0xA450BC) & 0x1FFFFFF) + 0x000007)) == 5
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                     byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -2250,7 +2126,7 @@ achievement(
 achievement(
     title = "Energy Locator: Middle Ages", points = 5,
     description = "Locate six unique energy orbs scattered across Medieval Lebensbaum",
-    id = 399819, badge = "465996", published = "19/02/2024 14:12:17", modified = "17/04/2024 14:53:08",
+    id = 399819, badge = "465996", published = "19/02/2024 14:12:17", modified = "30/05/2024 8:45:01",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) &&
@@ -2264,21 +2140,10 @@ achievement(
                     (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004)) +
                     bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004)) == 6
                 ) &&
-                measured(tally(6,
-                    once(dword(0xA82E48) == 535 &&
-                    bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004))),
-                    once((dword(0xA82E48) == 1011 || dword(0xA82E48) == 828) &&
-                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000006))),
-                    once((dword(0xA82E48) == 1011 || dword(0xA82E48) == 828) &&
-                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008))),
-                    once((dword(0xA82E48) == 1011 || dword(0xA82E48) == 828) &&
-                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000007))),
-                    once((dword(0xA82E48) == 1011 || dword(0xA82E48) == 828) &&
-                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005))),
-                    once(dword(0xA82E48) == 142 &&
-                    bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA4430C) & 0x1FFFFFF) + 0x000004))),
-                    once((dword(0xA82E48) == 1011 || dword(0xA82E48) == 828) &&
-                    bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004))))
+                measured(((bit0((dword(0xA44300) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) +
+                    0x000007)) + (bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA4430C) & 0x1FFFFFF) +
+                    0x000004)) + bit0((dword(0xA442F8) & 0x1FFFFFF) + 0x000004)) == 6
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                     byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
@@ -2296,21 +2161,10 @@ achievement(
                     (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004)) +
                     bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004)) == 6
                 ) &&
-                measured(tally(6,
-                    once(dword(0xA8A998) == 535 &&
-                    bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004))),
-                    once((dword(0xA8A998) == 1011 || dword(0xA8A998) == 828) &&
-                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000006))),
-                    once((dword(0xA8A998) == 1011 || dword(0xA8A998) == 828) &&
-                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008))),
-                    once((dword(0xA8A998) == 1011 || dword(0xA8A998) == 828) &&
-                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000007))),
-                    once((dword(0xA8A998) == 1011 || dword(0xA8A998) == 828) &&
-                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005))),
-                    once(dword(0xA8A998) == 142 &&
-                    bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450DC) & 0x1FFFFFF) + 0x000004))),
-                    once((dword(0xA8A998) == 1011 || dword(0xA8A998) == 828) &&
-                    bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004))))
+                measured(((bit0((dword(0xA450D0) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) +
+                    0x000007)) + (bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000005)) + (bit0((dword(0xA450DC) & 0x1FFFFFF) +
+                    0x000004)) + bit0((dword(0xA450C8) & 0x1FFFFFF) + 0x000004)) == 6
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                     byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -2321,7 +2175,7 @@ achievement(
 achievement(
     title = "Energy Locator: The Late 20th Century", points = 5,
     description = "Locate five unique energy orbs scattered across Lebensbaum during the late 20th century",
-    id = 399817, badge = "461687", published = "19/02/2024 14:12:16", modified = "17/04/2024 14:53:03",
+    id = 399817, badge = "461687", published = "19/02/2024 14:12:16", modified = "30/05/2024 8:45:01",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless((dword(0xA82E48) != 1125 && dword(0xA82E48) != 797)) &&
@@ -2332,17 +2186,9 @@ achievement(
                     (bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000007)) +
                     bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000005)) == 5
                 ) &&
-                measured(tally(5,
-                    once(bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F0) & 0x1FFFFFF) +
-                    0x000008))),
-                    once(bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442F0) & 0x1FFFFFF) +
-                    0x000006))),
-                    once(bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442F0) & 0x1FFFFFF) +
-                    0x000004))),
-                    once(bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442F0) & 0x1FFFFFF) +
-                    0x000007))),
-                    once(bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442F0) & 0x1FFFFFF) +
-                    0x000005))))
+                measured(((bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA442F0) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F0) & 0x1FFFFFF) +
+                    0x000007)) + bit0((dword(0xA442F0) & 0x1FFFFFF) + 0x000005)) == 5
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                     byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
@@ -2357,17 +2203,9 @@ achievement(
                     (bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000007)) +
                     bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000005)) == 5
                 ) &&
-                measured(tally(5,
-                    once(bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C0) & 0x1FFFFFF) +
-                    0x000008))),
-                    once(bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450C0) & 0x1FFFFFF) +
-                    0x000006))),
-                    once(bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450C0) & 0x1FFFFFF) +
-                    0x000004))),
-                    once(bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450C0) & 0x1FFFFFF) +
-                    0x000007))),
-                    once(bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450C0) & 0x1FFFFFF) +
-                    0x000005))))
+                measured(((bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA450C0) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C0) & 0x1FFFFFF) +
+                    0x000007)) + bit0((dword(0xA450C0) & 0x1FFFFFF) + 0x000005)) == 5
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                     byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -2378,7 +2216,7 @@ achievement(
 achievement(
     title = "Energy Locator: The Early 20th Century", points = 5,
     description = "Locate six unique energy orbs scattered across Lebensbaum during the early 20th century",
-    id = 399818, badge = "461686", published = "19/02/2024 14:12:16", modified = "17/04/2024 14:53:04",
+    id = 399818, badge = "461686", published = "19/02/2024 14:12:16", modified = "30/05/2024 8:45:01",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) &&
@@ -2390,19 +2228,10 @@ achievement(
                     (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007)) +
                     (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005)) + bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004)) == 6
                 ) &&
-                measured(tally(6,
-                    once(dword(0xA82E48) == 1539 &&
-                    bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004))),
-                    once(dword(0xA82E48) == 569 &&
-                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000006))),
-                    once(dword(0xA82E48) == 569 &&
-                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008))),
-                    once(dword(0xA82E48) == 569 &&
-                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000007))),
-                    once(dword(0xA82E48) == 569 &&
-                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005))),
-                    once(dword(0xA82E48) == 569 &&
-                    bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000004))))
+                measured(((bit0((dword(0xA44304) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) +
+                    0x000007)) + (bit0((dword(0xA442F4) & 0x1FFFFFF) + 0x000005)) + bit0((dword(0xA442F4) & 0x1FFFFFF) +
+                    0x000004)) == 6
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (never((low4(0xA9EDDC) == 0 || byte(0xB95704) != prev(byte(0xB95704)) ||
                     byte(0xA9DAA8) < prev(byte(0xA9DAA8))) && dword(0xA5AB44) == 1398099029 &&
@@ -2418,19 +2247,10 @@ achievement(
                     (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007)) +
                     (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005)) + bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004)) == 6
                 ) &&
-                measured(tally(6,
-                    once(dword(0xA8A998) == 1539 &&
-                    bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004))),
-                    once(dword(0xA8A998) == 569 &&
-                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000006))),
-                    once(dword(0xA8A998) == 569 &&
-                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008))),
-                    once(dword(0xA8A998) == 569 &&
-                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000007))),
-                    once(dword(0xA8A998) == 569 &&
-                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005))),
-                    once(dword(0xA8A998) == 569 &&
-                    bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004) > prev(bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000004))))
+                measured(((bit0((dword(0xA450D4) & 0x1FFFFFF) + 0x000004)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) +
+                    0x000006)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000008)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) +
+                    0x000007)) + (bit0((dword(0xA450C4) & 0x1FFFFFF) + 0x000005)) + bit0((dword(0xA450C4) & 0x1FFFFFF) +
+                    0x000004)) == 6
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (never((low4(0xAA692C) == 0 || byte(0xB9D284) != prev(byte(0xB9D284)) ||
                     byte(0xAA55F8) < prev(byte(0xAA55F8))) && dword(0xA64C74) == 1296714837 &&
@@ -2504,7 +2324,7 @@ achievement(
 achievement(
     title = "An Alchemist, a Jewel and a Homunculus", points = 5, type="progression",
     description = "Complete Chapter 3",
-    id = 306921, badge = "465997", published = "5/04/2023 22:23:24", modified = "23/04/2024 8:16:22",
+    id = 306921, badge = "465997", published = "5/04/2023 22:23:24", modified = "27/05/2024 5:54:49",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(byte(0xB95704) != 4) && unless(byte(0xA9F111) != 0) &&
@@ -2512,11 +2332,11 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 105856 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 850752 && prior(dword(0xA9ECBC)) == 105856 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 850752 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 235136 && prior(dword(0xA9ECBC)) == 850752 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 235136 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                 repeated(500, low4(0xA9EDDC) != 0 && never(low4(0xA9EDDC) == 0)) && dword(0xAC49F4) == 0 &&
@@ -2527,11 +2347,11 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 105856 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 850752 && prior(dword(0xAA680C)) == 105856 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 850752 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 235136 && prior(dword(0xAA680C)) == 850752 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 235136 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
                 repeated(500, low4(0xAA692C) != 0 && never(low4(0xAA692C) == 0)) && dword(0xACC534) == 0 &&
@@ -2667,26 +2487,26 @@ achievement(
 achievement(
     title = "My My, So Eager to Die", points = 1, type="missable",
     description = "Firmly excuse yourself from the apparition's company in Chapter 3",
-    id = 306919, badge = "466003", published = "5/04/2023 22:23:23", modified = "23/04/2024 8:16:23",
+    id = 306919, badge = "466003", published = "5/04/2023 22:23:23", modified = "27/05/2024 5:54:49",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
                 never(byte(0xB95704) != 4) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 45376 && prior(dword(0xA9ECBC)) == 371328 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 45376 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 107584 && prior(dword(0xA9ECBC)) == 45376 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 107584 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) > 3) && trigger_when(byte(0xA9ED26) <= 3) &&
                 trigger_when(byte(0xA9ED26) != 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
                 never(byte(0xB9D284) != 4) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 45376 && prior(dword(0xAA680C)) == 371328 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 45376 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 107584 && prior(dword(0xAA680C)) == 45376 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 107584 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) > 3) && trigger_when(byte(0xAA6876) <= 3) &&
                 trigger_when(byte(0xAA6876) != 0)))
 )
@@ -2708,20 +2528,28 @@ achievement(
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
 )
 
+// Ticket 72866: I got the cake "Margarete" in 1980 in chapter 7 and the achievement didn't trigger. I tried giving it
+//               to Margarete, but it didn't work either. I didn't find anything to progress this side quest.
+//               I think that either the reason it didn't trigger was that I got the cake on chapter 7 rather than
+//               chapter 6 which seems to be the earliest point to get it, or there is something other than those two
+//               events that triggers it, but the description doesn't make it clear.
+//               RetroAchievements Hash: 2991ecdb4d9a22dc40511b241bfb59a4
+//               Emulator: RetroArch (ppsspp)
+//               Emulator Version: 1.17.0
 achievement(
     title = "Legacy of Sweetness", points = 3, type="missable",
     description = "Establish a new line of pastries",
-    id = 402297, badge = "466005", published = "25/02/2024 12:43:23", modified = "23/04/2024 8:16:23",
+    id = 402297, badge = "466005", published = "25/02/2024 12:43:23", modified = "29/05/2024 21:32:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
-                once(byte(0xA9ED26) == 5 && byte(0xA9F111) == 19 && dword(0xA9ECBC) == 130432 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once((word(0xA9ECC0) == 1 || word(0xA9ECC0) == 65535) && byte(0xA9ED26) == 5 && byte(0xA9F111) == 19 &&
+                    dword(0xA9ECBC) == 130432 && prev(word(0xA9ECC0)) != 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
-                once(byte(0xAA6876) == 5 && byte(0xAA6C61) == 19 && dword(0xAA680C) == 130432 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once((word(0xAA6810) == 1 || word(0xAA6810) == 65535) && byte(0xAA6876) == 5 && byte(0xAA6C61) == 19 &&
+                    dword(0xAA680C) == 130432 && prev(word(0xAA6810)) != 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
 )
 
@@ -2787,9 +2615,9 @@ achievement(
 )
 
 achievement(
-    title = "Even I Can Do That", points = 3, type="missable",
+    title = "Even I Can Do That", points = 3,
     description = "Step into the shoes of a performer and clandestinely transmit a message to yourself during Chapter 4",
-    id = 402284, badge = "466006", published = "25/02/2024 11:33:55", modified = "17/04/2024 14:53:03",
+    id = 402284, badge = "466006", published = "25/02/2024 11:33:55", modified = "27/05/2024 5:54:48",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3057,11 +2885,10 @@ achievement(
 achievement(
     title = "Eike Franssen", points = 5, type="missable",
     description = "Become a beacon of inspiration for a prominent artist and assess all his works",
-    id = 403825, badge = "466015", published = "2/03/2024 0:38:26", modified = "5/04/2024 18:13:43",
+    id = 403825, badge = "466015", published = "2/03/2024 0:38:26", modified = "27/05/2024 6:37:04",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
-                never(byte(0xB95704) != prev(byte(0xB95704))) &&
                 measured(tally(6,
                     once((dword(0xA82E48) == 50 || dword(0xA82E48) == 749) && byte(0xA9ED26) == 1 && bit4(0xA9EDB0) == 1 &&
                     dword(dword(0xA9EFDC) & 0x1FFFFFF) == 355 && dword(dword(0xA9EFE4) & 0x1FFFFFF) == 292),
@@ -3078,7 +2905,6 @@ achievement(
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
-                never(byte(0xB9D284) != prev(byte(0xB9D284))) &&
                 measured(tally(6,
                     once((dword(0xA8A998) == 50 || dword(0xA8A998) == 749) && byte(0xAA6876) == 1 && bit4(0xAA6900) == 1 &&
                     dword(dword(0xAA6B2C) & 0x1FFFFFF) == 355 && dword(dword(0xAA6B34) & 0x1FFFFFF) == 292),
@@ -3170,30 +2996,35 @@ achievement(
                 trigger_when(byte(0xAA6876) != 0)))
 )
 
+// Ticket 72873: I payed the tab and the achievement trigger was in the corner to show that it worked during the
+//               cutscene, but after it ended, the achievement didn't pop. I got the one for Oleg that requires to have
+//               given the watch just after, but this one didn't pop even when I retried. I didn't start the tab
+//               before, so I only had one cutscene.
+//               RetroAchievements Hash: 2991ecdb4d9a22dc40511b241bfb59a4
+//               Emulator: RetroArch (ppsspp)
+//               Emulator Version: 1.17.0
 achievement(
     title = "Cracking Open the Past: The Old Century", points = 3, type="missable",
     description = "Pay for some coffee with an oval shaped object from Chapter 6 onward",
-    id = 313213, badge = "466019", published = "1/05/2023 15:18:04", modified = "23/04/2024 8:16:27",
+    id = 313213, badge = "466019", published = "1/05/2023 15:18:04", modified = "29/05/2024 21:32:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
-                never(bit0(0xA9F044) == 0) &&
                 never((byte(0xB95704) != 7 && byte(0xB95704) != 8 && byte(0xB95704) != 9 && byte(0xB95704) != 11)) &&
                 tally(1,
-                    once(byte(0xA9ED26) == 5 && dword(0xA82E48) == 569 && dword(0xA9ECBC) == 570432 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0),
-                    once(byte(0xA9ED26) == 5 && dword(0xA82E48) == 569 && dword(0xA9ECBC) == 705728 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0)
+                    once(byte(0xA9ED26) == 5 && bit0(0xA9F044) == 1 && dword(0xA82E48) == 569 &&
+                    dword(0xA9ECBC) == 570432 && prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0),
+                    once(byte(0xA9ED26) == 5 && bit0(0xA9F044) == 1 && dword(0xA82E48) == 569 &&
+                    dword(0xA9ECBC) == 705728 && prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0)
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
-                never(bit0(0xAA6B94) == 0) &&
                 never((byte(0xB9D284) != 7 && byte(0xB9D284) != 8 && byte(0xB9D284) != 9 && byte(0xB9D284) != 11)) &&
                 tally(1,
-                    once(byte(0xAA6876) == 5 && dword(0xA8A998) == 569 && dword(0xAA680C) == 570432 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0),
-                    once(byte(0xAA6876) == 5 && dword(0xA8A998) == 569 && dword(0xAA680C) == 705728 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0)
+                    once(byte(0xAA6876) == 5 && bit0(0xAA6B94) == 1 && dword(0xA8A998) == 569 &&
+                    dword(0xAA680C) == 570432 && prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0),
+                    once(byte(0xAA6876) == 5 && bit0(0xAA6B94) == 1 && dword(0xA8A998) == 569 &&
+                    dword(0xAA680C) == 705728 && prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0)
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
 )
 
@@ -3304,7 +3135,7 @@ achievement(
 achievement(
     title = "Fated to Plunge", points = 1, type="missable",
     description = "Employ a worn-out cable to save yourself during Chapter 7",
-    id = 315563, badge = "466024", published = "7/05/2023 18:08:32", modified = "23/04/2024 8:16:32",
+    id = 315563, badge = "466024", published = "7/05/2023 18:08:32", modified = "27/05/2024 5:54:48",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3312,8 +3143,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 87616 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 145344 && prior(dword(0xA9ECBC)) == 87616 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 145344 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) > 3) && trigger_when(byte(0xA9ED26) <= 3) &&
                 trigger_when(byte(0xA9ED26) != 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
@@ -3322,8 +3153,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 87616 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 145344 && prior(dword(0xAA680C)) == 87616 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 145344 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) > 3) && trigger_when(byte(0xAA6876) <= 3) &&
                 trigger_when(byte(0xAA6876) != 0)))
 )
@@ -3419,8 +3250,8 @@ achievement(
 
 achievement(
     title = "A Hatchless Replica", points = 3, type="missable",
-    description = "Share your egg collection with a younger barman during Chapter 7",
-    id = 315561, badge = "466027", published = "7/05/2023 18:08:31", modified = "17/04/2024 14:53:15",
+    description = "Share your egg collection with the barman during Chapter 7",
+    id = 315561, badge = "466027", published = "7/05/2023 18:08:31", modified = "30/05/2024 8:30:33",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3470,7 +3301,7 @@ achievement(
 achievement(
     title = "The Whole Picture... Or is it?", points = 5, type="progression",
     description = "Complete Chapter 8",
-    id = 315571, badge = "466049", published = "7/05/2023 18:08:34", modified = "23/04/2024 8:16:32",
+    id = 315571, badge = "466049", published = "7/05/2023 18:08:34", modified = "27/05/2024 5:54:46",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(byte(0xB95704) != 9) && never(low4(0xA9EDDC) == 0) &&
@@ -3504,8 +3335,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 1031424 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 806464 && prior(dword(0xA9ECBC)) == 1031424 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 806464 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0 && trigger_when(prev(byte(0xA9ED26)) != 0) &&
                 trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -3517,14 +3348,14 @@ achievement(
                (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && unless(byte(0xB95704) != 11) && never(low4(0xA9EDDC) == 0) &&
                 never(dword(0xAC49F4) != 0) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 490048 && prior(dword(0xA9ECBC)) == 169728 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 490048 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 307520 && prior(dword(0xA9ECBC)) == 490048 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 307520 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 824384 && prior(dword(0xA9ECBC)) == 655552 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 824384 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit1(0xA9EDC4) == 0 && bit3(0xA9EDC4) == 0 && bit4(0xA9EDC4) == 0 && bit6(0xA9EDAE) == 0 &&
                 bit7(0xA9EDAE) == 1 && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
@@ -3533,8 +3364,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 1055680 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 1275136 && prior(dword(0xA9ECBC)) == 1055680 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 1275136 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit1(0xA9EDC4) == 1 && bit3(0xA9EDC4) == 1 && bit4(0xA9EDC4) == 1 && bit6(0xA9EDAE) == 0 &&
                 bit7(0xA9EDAE) == 1 && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
@@ -3575,8 +3406,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 1031424 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 806464 && prior(dword(0xAA680C)) == 1031424 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 806464 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit6(0xAA68FE) == 1 && bit7(0xAA68FE) == 0 && trigger_when(prev(byte(0xAA6876)) != 0) &&
                 trigger_when(byte(0xAA6876) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
@@ -3588,14 +3419,14 @@ achievement(
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && unless(byte(0xB9D284) != 11) && never(low4(0xAA692C) == 0) &&
                 never(dword(0xACC534) != 0) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 490048 && prior(dword(0xAA680C)) == 169728 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 490048 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 307520 && prior(dword(0xAA680C)) == 490048 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 307520 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 824384 && prior(dword(0xAA680C)) == 655552 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 824384 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit1(0xAA6914) == 0 && bit3(0xAA6914) == 0 && bit4(0xAA6914) == 0 && bit6(0xAA68FE) == 0 &&
                 bit7(0xAA68FE) == 1 && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
@@ -3604,8 +3435,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 1055680 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 1275136 && prior(dword(0xAA680C)) == 1055680 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 1275136 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit1(0xAA6914) == 1 && bit3(0xAA6914) == 1 && bit4(0xAA6914) == 1 && bit6(0xAA68FE) == 0 &&
                 bit7(0xAA68FE) == 1 && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)) ||
                (dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
@@ -3616,29 +3447,35 @@ achievement(
                 prev(byte(0xB9D284)) == 11 && byte(0xB9D284) == 12))
 )
 
+// Ticket 72868: I talked to Eckart at the start of Chapter 8 with the watch and the cutscene where he talks about
+//               Oleg's past happened, but the achievement didn't trigger. I was on the path where I didn't tell
+//               Margarete if that changes this cutscene.
+//               RetroAchievements Hash: 2991ecdb4d9a22dc40511b241bfb59a4
+//               Emulator: RetroArch (ppsspp)
+//               Emulator Version: 1.17.0
 achievement(
     title = "The Eggcellent Director's Tale", points = 3, type="missable",
     description = "Share stories about your newly acquired pocket watch with Eckart in Chapter 8",
-    id = 315562, badge = "466029", published = "7/05/2023 18:08:32", modified = "17/04/2024 14:52:45",
+    id = 315562, badge = "466029", published = "7/05/2023 18:08:32", modified = "29/05/2024 21:32:53",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
                 never((byte(0xB95704) != 9 && byte(0xB95704) != 11)) &&
-                once(byte(0xA9ED26) == 5 && bit0(0xA9F044) == 1 && dword(0xA9ECBC) == 580800 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once((dword(0xA9ECBC) == 577280 || dword(0xA9ECBC) == 580800) && byte(0xA9ED26) == 5 &&
+                    bit0(0xA9F044) == 1 && prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && trigger_when(prev(byte(0xA9ED26)) != 0) && trigger_when(byte(0xA9ED26) == 0)) ||
                (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                 unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(dword(0xACC534) != 0) &&
                 never((byte(0xB9D284) != 9 && byte(0xB9D284) != 11)) &&
-                once(byte(0xAA6876) == 5 && bit0(0xAA6B94) == 1 && dword(0xAA680C) == 580800 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once((dword(0xAA680C) == 577280 || dword(0xAA680C) == 580800) && byte(0xAA6876) == 5 &&
+                    bit0(0xAA6B94) == 1 && prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && trigger_when(prev(byte(0xAA6876)) != 0) && trigger_when(byte(0xAA6876) == 0)))
 )
 
 achievement(
     title = "An End to a Strange Experience", points = 5, type="win_condition",
     description = "Achieve ending A",
-    id = 315566, badge = "466030", published = "7/05/2023 18:08:33", modified = "23/04/2024 8:16:32",
+    id = 315566, badge = "466030", published = "7/05/2023 18:08:33", modified = "27/05/2024 5:54:46",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3646,8 +3483,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 898944 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 491392 && prior(dword(0xA9ECBC)) == 898944 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 491392 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0 &&
                 once((dword((dword(0x8FFEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
                     dword((dword(0x8FFEF0) & 0x1FFFFFF) + 0x00002C) == 65
@@ -3662,8 +3499,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 898944 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 491392 && prior(dword(0xAA680C)) == 898944 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 491392 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit6(0xAA68FE) == 1 && bit7(0xAA68FE) == 0 &&
                 once((dword((dword(0x8FBEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
                     dword((dword(0x8FBEF0) & 0x1FFFFFF) + 0x00002C) == 65
@@ -3716,7 +3553,7 @@ achievement(
 achievement(
     title = "No Sense of Finality II", points = 5, type="win_condition",
     description = "Achieve ending B2",
-    id = 315572, badge = "466032", published = "7/05/2023 18:08:34", modified = "23/04/2024 8:16:35",
+    id = 315572, badge = "466032", published = "7/05/2023 18:08:34", modified = "27/05/2024 5:54:46",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3724,8 +3561,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 594496 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 381632 && prior(dword(0xA9ECBC)) == 594496 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 381632 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 352832 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
@@ -3743,8 +3580,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 594496 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 381632 && prior(dword(0xAA680C)) == 594496 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 381632 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 352832 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
@@ -3761,7 +3598,7 @@ achievement(
 achievement(
     title = "If Only... I Had One More Attempt", points = 5, type="win_condition",
     description = "Achieve ending C",
-    id = 317118, badge = "461671", published = "14/05/2023 10:33:35", modified = "17/04/2024 14:52:57",
+    id = 317118, badge = "461671", published = "14/05/2023 10:33:35", modified = "27/05/2024 5:54:46",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3769,11 +3606,11 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 577280 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 504128 && prior(dword(0xA9ECBC)) == 577280 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 504128 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 833280 && prior(dword(0xA9ECBC)) == 504128 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 833280 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit6(0xA9EDAE) == 1 && bit7(0xA9EDAE) == 0 &&
                 once((dword((dword(0x8FFEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
                     dword((dword(0x8FFEF0) & 0x1FFFFFF) + 0x00002C) == 65
@@ -3788,11 +3625,11 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 577280 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 504128 && prior(dword(0xAA680C)) == 577280 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 504128 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 833280 && prior(dword(0xAA680C)) == 504128 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 833280 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit6(0xAA68FE) == 1 && bit7(0xAA68FE) == 0 &&
                 once((dword((dword(0x8FBEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
                     dword((dword(0x8FBEF0) & 0x1FFFFFF) + 0x00002C) == 65
@@ -3847,7 +3684,7 @@ achievement(
 achievement(
     title = "The Future Is What We Make It", points = 5, type="win_condition",
     description = "Achieve ending E",
-    id = 322231, badge = "461673", published = "28/05/2023 11:34:26", modified = "17/04/2024 14:52:45",
+    id = 322231, badge = "461673", published = "28/05/2023 11:34:26", modified = "27/05/2024 5:54:46",
     trigger = always_true() &&
               ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                 unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(dword(0xAC49F4) != 0) &&
@@ -3858,8 +3695,8 @@ achievement(
                 once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 782208 && prev(word(0xA9ECC0)) != 1 &&
                     word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) &&
-                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 842944 && prior(dword(0xA9ECBC)) == 782208 &&
-                    prev(word(0xA9ECC0)) != 1 && word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
+                once(byte(0xA9ED26) == 5 && dword(0xA9ECBC) == 842944 && prev(word(0xA9ECC0)) != 1 &&
+                    word(0xA9ECC0) == 1 && word(0xA9ECC2) == 0
                 ) && bit1(0xA9EDC4) == 1 && bit3(0xA9EDC4) == 1 && bit4(0xA9EDC4) == 1 && bit6(0xA9EDAE) == 0 &&
                 bit7(0xA9EDAE) == 1 &&
                 once((dword((dword(0x8FFEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
@@ -3878,8 +3715,8 @@ achievement(
                 once(byte(0xAA6876) == 5 && dword(0xAA680C) == 782208 && prev(word(0xAA6810)) != 1 &&
                     word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) &&
-                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 842944 && prior(dword(0xAA680C)) == 782208 &&
-                    prev(word(0xAA6810)) != 1 && word(0xAA6810) == 1 && word(0xAA6812) == 0
+                once(byte(0xAA6876) == 5 && dword(0xAA680C) == 842944 && prev(word(0xAA6810)) != 1 &&
+                    word(0xAA6810) == 1 && word(0xAA6812) == 0
                 ) && bit1(0xAA6914) == 1 && bit3(0xAA6914) == 1 && bit4(0xAA6914) == 1 && bit6(0xAA68FE) == 0 &&
                 bit7(0xAA68FE) == 1 &&
                 once((dword((dword(0x8FBEF0) & 0x1FFFFFF) + 0x000018) == 257) &&
@@ -4641,6 +4478,13 @@ achievement(
                 )))
 )
 
+achievement(
+    title = "[VOID]", points = 0,
+    description = "VOID",
+    id = 420266, badge = "00000", published = "23/04/2024 8:16:40", modified = "23/04/2024 8:17:27",
+    trigger = dword(0xA8CC54) != prev(dword(0xA8CC54))
+)
+
 leaderboard(
     id = 92194, title = "Total Clear Time",
     description = "Race through time to achieve the fastest total clear time (EX chapter excluded)",
@@ -4693,10 +4537,18 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 1) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 1 && bit0(0xA82E2C) == 0) && bit7(0xA9ED98) == 0 &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 1) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 1 && bit0(0xA82E2C) == 0) && bit7(0xA9ED98) == 0 &&
+               byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 1) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 1 && bit0(0xA8A97C) == 0) && bit7(0xAA68E8) == 0 &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 1) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 1 && bit0(0xA8A97C) == 0) && bit7(0xAA68E8) == 0 &&
+               byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4721,10 +4573,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 2) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 2 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 2) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 2 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 2) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 2 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 2) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 2 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4749,10 +4607,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 3) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 3 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 3) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 3 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 3) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 3 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 3) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 3 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4777,10 +4641,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 4) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 4 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 4) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 4 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 4) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 4 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 4) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 4 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4805,10 +4675,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 5) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 5 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 5) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 5 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 5) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 5 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 5) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 5 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4833,10 +4709,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 6) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 6 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 6) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 6 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 6) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 6 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 6) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 6 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4861,10 +4743,16 @@ leaderboard(
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 7) &&
                repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 7 && bit0(0xA82E2C) == 0) &&
                bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 7) &&
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 7 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 7) &&
                repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 7 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 7) &&
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 7 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4883,16 +4771,16 @@ leaderboard(
 leaderboard(
     id = 92202, title = "Chapter 7 Clear Time",
     description = "Prove your mastery over time by completing Chapter 7 in record time",
-    start  = dword(0x1FFF5F8) == 1 && prev(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
-             prev(dword(0x1FFF5F4)) != 33 &&
+    start  = dword(0x1FFF5F8) == 1 && prior(dword(0x1FFF5F8)) != 1 && dword(0x1FFF5F4) == 33 &&
+             prior(dword(0x1FFF5F4)) != 33 &&
              ((unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
                unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) && never(byte(0xB95704) != 8) &&
-               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 8 && bit0(0xA82E2C) == 0) &&
-               bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+               repeated(100, low4(0xA9EDDC) != 0 && byte(0xB95704) == 8 && bit0(0xA82E2C) == 0) && byte(0xAC2F90) == 4 &&
+               prev(byte(0xAC2F90)) != 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) && never(byte(0xB9D284) != 8) &&
-               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 8 && bit0(0xA8A97C) == 0) &&
-               bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               repeated(100, low4(0xAA692C) != 0 && byte(0xB9D284) == 8 && bit0(0xA8A97C) == 0) && byte(0xACAAD0) == 4 &&
+               prev(byte(0xACAAD0)) != 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -4918,11 +4806,21 @@ leaderboard(
                never((byte(0xB95704) != 11 && byte(0xB95704) != 9)) &&
                repeated(100, (byte(0xB95704) == 11 || byte(0xB95704) == 9) && low4(0xA9EDDC) != 0 && bit0(0xA82E2C) == 0
                ) && bit0(0xA82E2C) > prior(bit0(0xA82E2C))) ||
+              (unless(dword(0xA5AB44) != 1398099029) && unless(dword(0xA5AB48) != 892612657) &&
+               unless(byte(0xA5AB4C) != 57) && never(low4(0xA9EDDC) == 0) &&
+               never((byte(0xB95704) != 11 && byte(0xB95704) != 9)) &&
+               repeated(100, (byte(0xB95704) == 11 || byte(0xB95704) == 9) && low4(0xA9EDDC) != 0 && bit0(0xA82E2C) == 0
+               ) && byte(0xAC2F90) == 4) ||
               (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
                unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
                never((byte(0xB9D284) != 11 && byte(0xB9D284) != 9)) &&
                repeated(100, (byte(0xB9D284) == 11 || byte(0xB9D284) == 9) && low4(0xAA692C) != 0 && bit0(0xA8A97C) == 0
-               ) && bit0(0xA8A97C) > prior(bit0(0xA8A97C)))),
+               ) && bit0(0xA8A97C) > prior(bit0(0xA8A97C))) ||
+              (unless(dword(0xA64C74) != 1296714837) && unless(dword(0xA64C78) != 825570608) &&
+               unless(byte(0xA64C7C) != 50) && never(low4(0xAA692C) == 0) &&
+               never((byte(0xB9D284) != 11 && byte(0xB9D284) != 9)) &&
+               repeated(100, (byte(0xB9D284) == 11 || byte(0xB9D284) == 9) && low4(0xAA692C) != 0 && bit0(0xA8A97C) == 0
+               ) && byte(0xACAAD0) == 4)),
     cancel = always_false(),
     submit = always_true(),
     value = max_of(
@@ -5019,7 +4917,7 @@ leaderboard(
 
 leaderboard(
     id = 94364, title = "Agile Energy Hunter: Middle Ages",
-    description = "Collect six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
+    description = "Collect all six energy orbs scattered throughout Lebensbaum in the Middle Ages, as quickly as possible (leaderboard starts when 2 orbs have been picked up)",
     start  = always_true() &&
              ((dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
                low4(0xA9EDDC) != 0 && byte(0xA9DAA8) <= 5 &&
@@ -5267,113 +5165,3 @@ leaderboard(
             ),
     format = "FRAMES"
 )
-
-rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
-    bit7(0xA9ED98) == 1 && bit0(0xAA1158) == 1 && bit0(0xAA1157) == 1 && bit0(0xAA1156) == 1 && bit0(0xAA1155) == 1 &&
-    bit0(0xAA1154) == 1 && dword(0xAC49F4) == 0 && byte(0xB95704) == 1, "Ending the cycle | The Fated 🕑 {0} | Current 🕑 {1}:{2} | Completion: {3}%",
-    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA12B0)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0")
-)
-
-rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
-    bit7(0xA9ED98) == 0 && dword(0xAC49F4) == 0 && byte(0xB95704) != 0 && byte(0xB95704) <= 11 &&
-    ((byte(0xB95704) == 1) ||
-     (byte(0xB95704) == 2) ||
-     (byte(0xB95704) == 12) ||
-     (byte(0xB95704) == 10)), "{0} | The Fated 🕑 {1} | Current 🕑 {2}{3}:{4}{5} | Completion: {6}%",
-    rich_presence_lookup("Chapter", byte(0xB95704), ChapterLookup, fallback="Roaming Lebensbaum"),
-    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA12B0)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA12B4)),
-    rich_presence_value("Number", byte(0xAA1152))
-)
-
-rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 && low4(0xA9EDDC) != 0 &&
-    dword(0xAC49F4) == 0 && byte(0xB95704) != 0 && byte(0xB95704) <= 11 &&
-    ((byte(0xB95704) == 3) ||
-     (byte(0xB95704) == 4) ||
-     (byte(0xB95704) == 5) ||
-     (byte(0xB95704) == 6) ||
-     (byte(0xB95704) == 7) ||
-     (byte(0xB95704) == 8) ||
-     (byte(0xB95704) == 11) ||
-     (byte(0xB95704) == 9)), "{0} {1} | The Fated 🕑 {2} | Current 🕑 {3}{4}:{5}{6} | Completion: {7}%",
-    rich_presence_lookup("Chapter", byte(0xB95704), ChapterLookup, fallback="Roaming Lebensbaum"),
-    rich_presence_lookup("TimePeriod", dword(0xAA1268), TimePeriodLookup),
-    rich_presence_lookup("FatedHour", byte(0xB95704), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA12B0), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA12B0)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA12B4), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA12B4)),
-    rich_presence_value("Number", byte(0xAA1152))
-)
-
-rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57 &&
-    ((low4(0xA9EDDC) == 0) ||
-     (dword(0xAC49F4) != 0)), "Title Screen | Completion {0}%",
-    rich_presence_value("Number", byte(0xAA1152))
-)
-
-rich_presence_conditional_display(dword(0xA5AB44) == 1398099029 && dword(0xA5AB48) == 892612657 && byte(0xA5AB4C) == 57, "Wandering Lebensbaum | Completion {0}%",
-    rich_presence_value("Number", byte(0xAA1152))
-)
-
-rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
-    bit7(0xAA68E8) == 1 && bit0(0xAA8CA8) == 1 && bit0(0xAA8CA7) == 1 && bit0(0xAA8CA6) == 1 && bit0(0xAA8CA5) == 1 &&
-    bit0(0xAA8CA4) == 1 && dword(0xACC534) == 0 && byte(0xB9D284) == 1, "Ending the cycle | The Fated 🕑 {0} | Current 🕑 {1}:{2} | Completion: {3}%",
-    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA8E00)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0")
-)
-
-rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
-    bit7(0xAA68E8) == 0 && dword(0xACC534) == 0 && byte(0xB9D284) != 0 && byte(0xB9D284) <= 11 &&
-    ((byte(0xB9D284) == 1) ||
-     (byte(0xB9D284) == 2) ||
-     (byte(0xB9D284) == 12) ||
-     (byte(0xB9D284) == 10)), "{0} | The Fated 🕑 {1} | Current 🕑 {2}{3}:{4}{5} | Completion: {6}%",
-    rich_presence_lookup("Chapter", byte(0xB9D284), ChapterLookup, fallback="Roaming Lebensbaum"),
-    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA8E00)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA8E04)),
-    rich_presence_value("Number", byte(0xAA8CA2))
-)
-
-rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 && low4(0xAA692C) != 0 &&
-    dword(0xACC534) == 0 && byte(0xB9D284) != 0 && byte(0xB9D284) <= 11 &&
-    ((byte(0xB9D284) == 3) ||
-     (byte(0xB9D284) == 4) ||
-     (byte(0xB9D284) == 5) ||
-     (byte(0xB9D284) == 6) ||
-     (byte(0xB9D284) == 7) ||
-     (byte(0xB9D284) == 8) ||
-     (byte(0xB9D284) == 11) ||
-     (byte(0xB9D284) == 9)), "{0} {1} | The Fated 🕑 {2} | Current 🕑 {3}{4}:{5}{6} | Completion: {7}%",
-    rich_presence_lookup("Chapter", byte(0xB9D284), ChapterLookup, fallback="Roaming Lebensbaum"),
-    rich_presence_lookup("TimePeriod", dword(0xAA8DB8), TimePeriodLookup),
-    rich_presence_lookup("FatedHour", byte(0xB9D284), FatedHourLookup, fallback="a mystery"),
-    rich_presence_lookup("PresentTimeHours_ZeroPadding", dword(0xAA8E00), PresentTimeHours_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA8E00)),
-    rich_presence_lookup("PresentTimeMinutes_ZeroPadding", dword(0xAA8E04), PresentTimeMinutes_ZeroPaddingLookup, fallback="0"),
-    rich_presence_value("Number", dword(0xAA8E04)),
-    rich_presence_value("Number", byte(0xAA8CA2))
-)
-
-rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50 &&
-    ((low4(0xAA692C) == 0) ||
-     (dword(0xACC534) != 0)), "Title Screen | Completion {0}%",
-    rich_presence_value("Number", byte(0xAA8CA2))
-)
-
-rich_presence_conditional_display(dword(0xA64C74) == 1296714837 && dword(0xA64C78) == 825570608 && byte(0xA64C7C) == 50, "Wandering Lebensbaum | Completion {0}%",
-    rich_presence_value("Number", byte(0xAA8CA2))
-)
-
-rich_presence_display("Wandering Lebensbaum")
