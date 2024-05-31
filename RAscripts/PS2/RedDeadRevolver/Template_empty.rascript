@@ -1,12 +1,12 @@
-// ****************************************** \\
-//   █▀▀ ▄▀█ █▀▄▀█ █▀▀    ▀█▀ █ ▀█▀ █░░ █▀▀   \\
-//   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
-// ****************************************** \\
-// #ID = [game_ID_here]	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
-// md5: [hash_here] - [region_here]
-// Platform: [platform_here]
+// ***************************************************************** \\
+// █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█ \\
+// █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
+// ***************************************************************** \\
+// #ID = 11094
+// md5: c06c59490d239fb56ace0388ac2b2842 - PAL/EUR
+// Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
-// RA Game Page: [link_to_game_page]
+// RA Game Page: https://retroachievements.org/game/11094
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -57,7 +57,7 @@ sNULL = "-1"
 RELEASE_REGION_USA = "NTSC-U"
 RELEASE_REGION_JPN = "NTSC-J"
 RELEASE_REGION_EUR = "PAL"
-RELEASE_REGIONS_SUPPORTED = [] // TODO add regions
+RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_EUR] // TODO add regions
 
 function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -208,7 +208,21 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000,
 	//	"devInfo": "xxxxxxx"},
 	
-	"c_Template": { // Category - info_here
+	"c_Story": { // Category - 
+		// "a_": { // CONCEPT a_template
+		//	"id": 000000, "points": 0000000,
+		//	"devInfo": "xxxxxxx"},
+	},
+	"c_Showdown": { // Category - Showdown related achievements
+
+	},
+	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
+
+	},
+	"c_Challenge": { // Category -  Story related challenge achievements
+
+	},	
+	"c_Template": { // Category - 
 
 	}}
 // -------------------------------------

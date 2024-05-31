@@ -130,12 +130,15 @@ function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 // • Memory ADDRESS STORAGE •
 // ==========================
 DATATYPE_BitFlag 				= 700
-DATATYPE_4Bit 					= 600
+DATATYPE_Upper4 				= 600
+DATATYPE_Lower4 				= 600
 DATATYPE_8Bit 					= 500
+DATATYPE_16BitBE 				= 401
 DATATYPE_16Bit 					= 400
-DATATYPE_25BitPointer 			= 300
-DATATYPE_Float					= 201
+DATATYPE_24Bit 					= 350
+DATATYPE_32BitPointer 			= 300
 DATATYPE_32Bit 					= 200
+DATATYPE_Float					= 201
 DATATYPE_ASCII					= 150
 DATATYPE_Struct 				= 100
 memory_addresses = {
