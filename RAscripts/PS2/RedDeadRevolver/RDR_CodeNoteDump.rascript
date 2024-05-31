@@ -6,6 +6,9 @@
 // $4F6FD8: [8bit] Player is in a cutscene?
 // $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
 //          - Identical to $0x562a0c
+// $4FA558: [PAL][32-bit Timer] Time Spent In Control of Character
+//          - Increments by 3, each 2 frames (same for NTSC, PAL mode)
+//          - Only increments when player can control a character (campaign and showdown mode)
 // $4FD3A8: [PAL][8-bit {32-bit}] Refresh Rate
 //          - Game offers the option to chose refresh rate on game boot
 //          0x32 (=50) => PAL 50Hz mode
@@ -27,12 +30,12 @@
 // $562A20: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] Main_HUDController (Preferred)
 //          - Identical pointer{1} at $0x7a0778 (Prefer using this one as it is closer to the Global Pointer)
 //          
-//          [Struct Definition]][??-byte] Main_HUDController
+//          [Struct Definition][??-byte] Main_HUDController
 //          |===============================================
 //          |
 //          |+0x1C - [32-bit Pointer{2}]
 //          |.+0x48 - [32-bit Ponter{3}] --(+0x0)--> [116-byte Struct] HealthBar_HUDController
-//          |..[Struct Definition]][116-byte] HealthBar_HUDController
+//          |..[Struct Definition][116-byte] HealthBar_HUDController
 //          |..|''''''''''''''''''''''''''''''''''''''''''''''''''
 //          |..|+0x0 - [32-bit] Max HP (Display)
 //          |..|"| - This determines the size of the HP bar
@@ -41,7 +44,7 @@
 //          |/
 //          |
 //          |+0x2C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] AmmoCounter_HUDController
-//          |.[Struct Definition]][??-byte] AmmoCounter_HUDController
+//          |.[Struct Definition][??-byte] AmmoCounter_HUDController
 //          |.|''''''''''''''''''''''''''''''''''''''''''''''''''
 //          |.| - Controls ammo HUD display in the bottom-left
 //          |.|
@@ -55,13 +58,37 @@
 //          |.|
 //          |.|+0x1C - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition
 //          |.|"| - Both of these values control the UI display
-//          |.|"| - Functional ammunition per gun is stored in an array (refer to $...)
+//          |.|"| - Functional ammunition per gun is stored via $0x763070 (refer to Struct: Ammunition_Inventory)
 //          |.|
 //          |.|+0x28 - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition (copy of abpve)
 //          |/
 //          |
+//          |+0x5C - [32-bit Pointer{2}] --(+0x0)--> [1916-byte Struct] Showdown_Menu_Data
+//          |.[Struct Definition][1916-byte??] Showdown_Menu_Data
+//          |.|''''''''''''''''''''''''''''''''''''''''''''''''''
+//          |.|+0x46C - [32-bit Ponter{3}]
+//          |.|.+0x164 - [16-byte Array] List of [(4x) 8-bit {32-bit}] Showdown_Character_Select_IDs
+//          |.|..[Array Definition] Showdown_Character_Select_IDs
+//          |.|..|''''''''''''''''''''''''''''''
+//          |.|..| - IDs listed below
+//          |.|..|+0x0 - [8-bit {32-bit}] Showdown_Character_Select_ID - Player 1
+//          |.|..|+0x4 - [8-bit {32-bit}] Showdown_Character_Select_ID - Player 2
+//          |.|..|+0x8 - [8-bit {32-bit}] Showdown_Character_Select_ID - Player 3
+//          |.|..|+0xC - [8-bit {32-bit}] Showdown_Character_Select_ID - Player 4
+//          |.|/
+//          |.|
+//          |.|+0x53C - [8-bit {32-bit}] Showdown_Player_Team_ID - Player 1
+//          |.|¨| 0 => Team Red
+//          |.|¨| 1 => Team White
+//          |.|¨| 2 => Team Blue
+//          |.|¨| 3 => Team Yellow
+//          |.|+0x588 - [8-bit {32-bit}] Showdown_Player_Team_ID - Player 2
+//          |.|+0x5D4 - [8-bit {32-bit}] Showdown_Player_Team_ID - Player 3
+//          |.|+0x620 - [8-bit {32-bit}] Showdown_Player_Team_ID - Player 4
+//          |/
+//          |
 //          |+0x5874 - [140-byte Struct] Cash_HUDController
-//          |.[Struct Definition]][140-byte] Cash_HUDController
+//          |.[Struct Definition][140-byte] Cash_HUDController
 //          |.|''''''''''''''''''''''''''''''''''''''''''''''''''
 //          |.| - Controls cash HUD display in the bottom-right
 //          |.|
@@ -82,7 +109,7 @@
 //          |/
 //          |
 //          |+0x5E0C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] SpecialMeterGauge_Controller
-//          |.[Struct Definition]][??-byte] SpecialMeterGauge_Controller
+//          |.[Struct Definition][??-byte] SpecialMeterGauge_Controller
 //          |.|''''''''''''''''''''''''''''''''''''''''''''''''''
 //          |.| - Controls both the HUD display and the underlying logic for the special meter (below HP bar)
 //          |.|
@@ -92,16 +119,29 @@
 //          |.|+0x4 - [32-bit Float] Special Meter Max Gauge
 //          |.|"| - This value, rounded down to the nearest whole number, equals the number of special meter bars displayed (e.g., 3.456 --> 3 bars)
 //          |.|"| - Each special action costs 1 full bar
-// $562A30: [PAL][32-bit Pointer] --(+0x1C)--> [32-bit Float] Showdown Sundown Mode - Fight Time Countdown Timer (Preferred)
-//          - Pointer is only functional during a match of Showdown Sundown Mode
+//          
+//          # Showdown_Character_Select_IDs (list incomplete)
+//          |''''''''''''''''''''''''''
+//          | - 0x0 => "Hedghehog" Thornton
+//          | - 0x1 => "Whiskey" Treadwell
+//          | - 0x2 => "Gigolo" Hancock
+//          | - 0x3 => Jack Swift
+//          | - 0x4 => Chicken
+//          | - 0x5 => Red
+//          | - 0x6 => Annie Stoakes
+//          | - 0x7 => "Big Oaf" Whitney
+//          | - 0x8 => "Bloody" Tom
+//          | - 0x9 => Christina
+//          | - 0x...
 // $6B03F4: [PAL][32-bit Pointer{1}] --> Puppetshow Active Soundtrack File
 //          +0xC - [32-bit Pointer{2}]
 //          | - Pointer{2} is only functional during a Puppetshow
+//          |
 //          |+0x0 - [Variable Size ASCII] - Active Soundtrack File
 //          |"| - Currently playing soundtrack file
 // $6B0808: [PAL][Variable Size ASCII] Area_ID
 //          - This value stores the Area_ID for the current map/level
-//          - Be wary to check only the necessary bytes to identify the Area_ID, don't count the following bytes as there's some bogus data
+//          - Be wary to check only the necessary bytes to identify the Area_ID, don't count the succeeding bytes as there's some bogus data
 //          - Changing this value to a valid ID does not work to cheat/load the map
 //          
 //          # Area_IDs (list incomplete)
@@ -627,7 +667,7 @@
 //          - Minimum 2 players (Player 1 + another); Maximum 4 players
 //          - Player 1 is always the first [ShowdownPlayer_Data] struct in the array
 //          
-//          { [Struct Definition][16-byte] ShowdownPlayer_Data
+//          [Struct Definition][16-byte] ShowdownPlayer_Data
 //          |'''''''''''''''''''''''''''''
 //          |+0x0 - [32-bit Pointer{1}] --(+0x0)--> [2512-byte Struct] ShowdownPlayer_Data_A
 //          |
@@ -643,6 +683,9 @@
 //          |.|+0x30 - [32-bit Pointer{2}] --(+0x0)--> [1224-byte Struct] ShowdownPlayer_Stats
 //          |.|.| - Contains stats used for the scoreboard as well as some other misc unused stats
 //          |.|.| - Struct Definition below
+//          |.|
+//          |.|+0x2B4 - [32-bit Pointer{2}]
+//          |.|.+0xC - [32-bit] Bounty/Cash Collected
 //          |/
 //          |
 //          |+0x8 - [32-bit Pointer{1}] --(+0x0)--> [3008-byte Struct] ShowdownPlayer_Data_C
@@ -723,6 +766,8 @@
 //          |
 //          |+0x418 - [32-bit] Death Count (own deaths)
 //          |
+//          |+0x430 - [32-bit] High Noon Rounds Won
+//          |
 //          |+0x490 - [32-bit] Bounty/Cash Collected
 //          | | - Copies value stored via pointer at $0x562a20
 //          |
@@ -780,8 +825,23 @@
 //          0x4 => it
 // $7A0778: [PAL][32-bit Pointer] --(+0x0)--> Main HUD Controller
 //          - Identical to pointer{1} at $0x562a20
-// $7A0788: [PAL][32-bit Pointer] --(+0x1C)--> [32-bit Float] Showdown Sundown Mode - Fight Time Countdown Timer (alt)
-//          - Identical at $0x562a30
+// $7A0788: [PAL][32-bit Pointer] --> Mission/Level Timers
+//          - These timers behave differently based on game mode
+//          
+//          {Campaign Mode || Showdown: Bounty Hunter Mode || Showdown: High Noon Mode
+//          |'''''''''''''''''''''
+//          |+0x1C - [32-bit Float] Time Spent in Mission/Level (copy)
+//          |
+//          |+0x20 - [32-bit Float] Time Spent in Mission/Level (functional)
+//          |¨| - This is the value which is shown on the mission end review (campaign)
+//          
+//          {Showdown: Sundown Mode
+//          |''''''''''''''''''''''''
+//          |+0x1C - [32-bit Float] Countdown timer (functional)
+//          |¨| - This value IS responsible for ending sundown mode (When this value hits 0.0 --> triggers end of sundown mode)
+//          |
+//          |+0x20 - [32-bit Float] Time Spent in Mission/Level
+//          |¨| - This value is NOT responsible for ending sundown mode
 // $7A09C0: [PAL][32-bit Pointer] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data (alt)
 //          - Identical pointer at $0x763070
 // $7A2A00: [PAL][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
@@ -789,7 +849,7 @@
 //          
 //          [Struct Definition][160-byte] Puppetshow_Manager
 //          |'''''''''''''''''''''''''''''''''''''''
-//          | - This struct controls different aspect of a Puppetshow = a cutscene which is not a pre-rendered video file (refer to $0x74a34f), it's in-engine cutscene
+//          | - This struct controls different aspect of a Puppetshow = a cutscene which is not a pre-rendered video file (refer to $0x74a34f), it's an in-engine cutscene
 //          | - Probably named like this as these types of cutscenes involve more detailed animation work
 //          |
 //          | +0x4 - [32-bit] Last CameraAction_ID of Puppetshow
@@ -807,6 +867,22 @@
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
 // $E36118: could be important
+// $11E54C0: [PAL][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
+//           - Use this field only when the showdown mode scoreboard is displayed, otherwise these 64 bytes may be in use by other data
+//           
+//           [ASCII Field Definition][64-byte] ShowdownMode_ScoreboardWinnerDisplay_Text
+//           |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+//           |+0x0 - [12-byte ASCII] Winner_Text - Player 1
+//           |¨[ASCII Definition][12-byte] Winner_Text
+//           |¨|'''''''''''''''''''''''''''
+//           |¨| - ASCII = "Winner" => Player is a winner
+//           |¨| - ASCII = " okLable" => Player is not a winner
+//           |
+//           |+0x10 - [12-byte ASCII] Winner_Text - Player 2
+//           |
+//           |+0x20 - [12-byte ASCII] Winner_Text - Player 3
+//           |
+//           |+0x30 - [12-byte ASCII] Winner_Text - Player 4
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $198B014: [8bit] makes a key appear in chapter 2
 // $198B018: [8bit] makes a key appear in chapter 2
