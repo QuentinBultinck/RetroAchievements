@@ -44,17 +44,17 @@
 //          |¨|¨| - RewardMenu_UI_Element_ID = "pulseOn_combo"
 //          |/
 //          |
-//          |+0xA70 - [48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_ID]
+//          |+0xA70 - [48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_Data]
 //          |¨[Array Definition][48-byte]
 //          |¨|'''''''''''''''''''''''''
-//          |¨| - Struct Definition ItemUnlock_UI_Element_ID below
-//          |¨|+0x0 - [16-byte Struct:ItemUnlock_UI_Element_ID] Item Unlock - Good Rating
+//          |¨| - Struct Definition ItemUnlock_UI_Element_Databelow
+//          |¨|+0x0 - [16-byte Struct:ItemUnlock_UI_Element_Data] Item Unlock - Good Rating
 //          |¨|¨| - RewardMenu_UI_Element_ID = "rankNormal"
 //          |¨|/
-//          |¨|+0x10 - [16-byte Struct:ItemUnlock_UI_Element_ID] Item Unlock - Excellent Rating
+//          |¨|+0x10 - [16-byte Struct:ItemUnlock_UI_Element_Data] Item Unlock - Excellent Rating
 //          |¨|¨| - RewardMenu_UI_Element_ID = "rankGreat"
 //          |¨|/
-//          |¨|+0x20 - [16-byte Struct:ItemUnlock_UI_Element_ID] Item Unlock - Bounty Rating
+//          |¨|+0x20 - [16-byte Struct:ItemUnlock_UI_Element_Data] Item Unlock - Bounty Rating
 //          |¨|¨| - RewardMenu_UI_Element_ID = "rankBounty"
 //          |/
 //          '
@@ -73,11 +73,11 @@
 //          |/
 //          '
 //          
-//          [Struct Definition][16-byte] ItemUnlock_UI_Element_ID
+//          [Struct Definition][16-byte] ItemUnlock_UI_Element_Data
 //          |'''''''''''''''''''''''''''''''''''''''''''''
 //          |+0x0 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] RewardMenu_UI_Element_ID
-//          |¨| - IDs are noted next to the elements in this code note
 //          |¨| - IDs are in English in RAM, regardless of Selected Display Language
+//          |¨| - IDs are noted next to the elements in this code note
 //          |/
 //          |+0x4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] ItemUnlock_UI_Element_ID
 //          |¨| - IDs are in English in RAM, regardless of Selected Display Language
@@ -130,7 +130,7 @@
 //          +0x5ae8  [32-bit] Shots Left
 //          +0x5a90  [32-bit] Hits Taken
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
-//          bit 0 = 0 => In-game
+//          bit 0 = 0 => In-game || Game  Is Booting Up
 //          bit 0 = 1 => Title Menu
 // $562A20: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] Game_Controller
 //          
@@ -141,10 +141,10 @@
 //          |++0x48 - [32-bit Ponter{3}] --(+0x0)--> [116-byte Struct] HealthBar_HUDController
 //          |++[Struct Definition][116-byte] HealthBar_HUDController
 //          |++|''''''''''''''''''''''''''''''''''''''''''''''''''
-//          |++|+0x0 - [32-bit] Max HP (Display)
+//          |++|+0x10 - [32-bit] Max HP (Display)
 //          |++|¨| - This determines the size of the HP bar
 //          |++|/
-//          |++|+0x4 - [32-bit] HP (Display)
+//          |++|+0x14 - [32-bit] HP (Display)
 //          |/
 //          |
 //          |+0x2C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] AmmoCounter_HUDController
@@ -168,10 +168,12 @@
 //          |/
 //          |
 //          |+0x5C - [32-bit Pointer{2}] --(+0x0)--> [1916-byte Struct] Showdown_PosterMenu_Controller
+//          |+| - Thus Pointer{2} is only functional at the Main Menu
 //          |+| - Struct Definition below
 //          |/
 //          |
-//          |+0x2CA - [1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
+//          |+0x2C9 - [1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
+//          |+| - This Array is only functional during a Showdown match
 //          |¨| - Documentation at $0x73d819
 //          |/
 //          |
@@ -180,6 +182,8 @@
 //          |/
 //          |
 //          |+0x8FC - [32-bit Pointer{2}]
+//          |+| - This Pointer{2} is only functional during a Showdown match
+//          |+|
 //          |+|+0x50 - [584-byte Array] List of [(4x) 92-byte Struct:ShowdownPlayer_Settings_B]
 //          |+|¨| - Documentation at $0x740438
 //          |+|/
@@ -497,7 +501,7 @@
 //          |¨| - ShowdownAI_Settings listed at $0x73d819
 //          °
 // $7405B0: [PAL][28-byte Struct] ShowdownMode_Settings
-//          @Fixed Memory Location. Although pointed to by $0x562a20
+//          @Fixed Memory Location. Although pointed to by $0x562a20 AND $0x7448a0
 //          
 //          [Struct Defintion][28-byte] ShowdownMode_Settings
 //          |''''''''''''''''''''''''''''''''''''''
@@ -802,13 +806,63 @@
 //          bit 3 => Colonel Daren
 //          bit 4 => Gabriel Navarro
 //          bits [5-7] => /
-// $740844: (unverified) This might actually be the furthest progressed area_id // mission saved to the player profile data
+// $740608: [PAL][17040-byte Array] List of [(6x) 2840-byte Struct:Player_Profile_Data]
+//          @Fixed Memory Location. Although pointed to by $0x7448a0
+//          - The active (or last used, on Main Menu) Player_Profile is pointed to by $0x7448d8
+//          - Each Player_Profile has his own data storage
+//          - Player_Profile_Data is updated on save/on end of missions
+//          - Struct Definition Player_Profile_Data below
 //          
-//          [PAL][Variable Size ASCII] Previous Area_ID
-//          - Area_ID from the previous area/map/zone is stored here
-//          - This value changes on new area load
-//          - Changing this value to a valid ID and freezing before entering a loading screen, will load the next mission/area to the Area_ID
-//          - IDs listed at $0x6b0808
+//          [Array Definition][17040-byte] List of Player_Profile_Data
+//          |''''''''''''''''''''''''''''''''''''''''''
+//          |+0x0 - [2840-byte Struct:Player_Profile_Data] Profile Slot 1
+//          |+0xB18 - [2840-byte Struct:Player_Profile_Data] Profile Slot 2
+//          |+0x1630 - [2840-byte Struct:Player_Profile_Data] Profile Slot 3
+//          |+0x2148 - [2840-byte Struct:Player_Profile_Data] Profile Slot 4
+//          |+0x2C60 - [2840-byte Struct:Player_Profile_Data] Profile Slot 5
+//          |+0x3778 - [2840-byte Struct:Player_Profile_Data] Profile Slot 6
+//          '
+//          
+//          [Struct Definition][2840-byte] Player_Profile_Data
+//          |''''''''''''''''''''''''''''''''''''''''''
+//          | - Some of these values are Player_Profile statistics which can be viewed in the Journal - Frontier Battles section
+//          |
+//          |+0x0 - [32-bit Float] Max HP
+//          |¨| - This is the value which is read to initialize the HP at Game_Controller ($0x562a20) and the HP at SinglePlayer_Data ($0x763070)
+//          |/
+//          |+0x4 - [32-bit Float] Special Meter Max Gauge
+//          |¨| - This is the value which is read to initialize the Special Meter Gauge at Game_Controller ($0x562a20)
+//          |/
+//          |+0x8 - [32-bit] Current Money/Cash
+//          |¨| - This is the value which is read to initialize the Cash_HUDController at Game_Controller ($0x562a20)
+//          |/
+//          |+0xC - [24-byte Bitset] Player_Profile_Unlocks
+//          |¨| - This is a copy of the bitset stored via $0x763070, the bitset here is updated on save, based on that bitset
+//          |¨| - Bitset Definition at $0x763070
+//          |/
+//          |+0x23C - [Variable Size] Furthest Progressed Area_ID
+//          |¨| - This Area_ID indicates the progress of the Player_Profile in the story
+//          |¨| - Furthest completed mission/Area_ID is stored here
+//          |/
+//          |
+//          |+0x28C - [32-bit] Story Mode - Retries
+//          |+0x294 - [32-bit] Story Mode - Enemies Killed A
+//          |+0x298 - [32-bit] Story Mode - Enemies Killed B
+//          |¨| - Formula: Total number of Enemies Killed (Story Mode) = Enemies Killed A + Enemies Killed B
+//          |/
+//          |+0x384 - [32-bit] Distance Travelled
+//          |+0x388 - [32-bit] Time Spent Playing
+//          |+0x39C - [32-bit] Total Money Collected
+//          |+0x3A0 - [32-bit] Total Bullet Fired
+//          |+0x3A4 - [32-bit] Total Bullet Hits
+//          |+0x3BC - [32-bit] Total Money Spent
+//          |+0x3B0 - [32-bit] Total Head Shots
+//          |+0x3C8 - [32-bit] Number of Special Moves Used
+//          |+0x3CC - [32-bit] Highest Combo Multiplier
+//          |+0x3D0 - [32-bit Float] Highest Combo
+//          |
+//          |+0x7BC - [Variable Size ASCII] Player Profile Name
+//          '
 // $741120: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 2
 //          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
 //          - Struct Definition at $0x740608
@@ -831,27 +885,25 @@
 //          - Struct Definition at $0x740608
 // $744898: [PAL][8-bit {32-bit}] Selected Player_Profile
 //          - Value range [0x0-0x5], there's a total of 6 player profile slots
-//          - Each Player_Profile saves its own story progression and Player_Profile_Unlocks (refer to $0x7448d8)
+//          - Each Player_Profile saves its own data (refer to $0x7448d8)
 // $7448A0: [PAL][32-bit Pointer]
-//          +0x25 - [27-byte Bitset] Shared_Unlocks
-//          | - Documentation at $0x7405cd
-// $7448A8: [PAL][32-bit] Showdown - Bounty Hunter Mode - Bounty Target Limit
-//          - The required Bounty/Cash a player has to collect to win the game
-// $7448D8: (unverified)
-//          [PAL][32-bit Pointer] --(+0x0--> [2840-byte Struct] Player_Profile_Data
-//          - This data correlates to various actions/flags that is saved throughout the story campaign
-//          - This data is only updated when the save menu is displayed in-game OR loaded on game startup (specifically: loading screen after selecting language)
-//          - This is data stored to a specific Player_Profile
-//          
-//          [Struct Definition][2840-byte] Player_Profile_Data
-//          |''''''''''''''''''''''''''''''''''''''''''''
-//          |+0xC - [32-byte Bitset] Player_Profile_Unlocks
-//          |"| - This bitset is only updated when the save menu is shown in-game, it copies the bitset Player_Profile_Unlocks ($0x763070) on update
-//          |"| - This bitset handles unlocks of bought items, weapons, unlocked showdown characters, showdown maps and journal pages
-//          |"| - Unlocks are achieved by buying certain items, achieving certain goals in specific missions (eg. achieve excellent rating) or just completion of a mission
-//          |"| - Once some of these unlocks have been achieved for the first time, they will update the Shared_Unlocks bitset ($0x7405cd) on save
+//          |+0x8 - [28-byte Struct] ShowdownMode_Settings
+//          |¨| - Documentation at $0x7405b0
+//          |/
+//          |+0x25 - [27-byte Bitset] Shared_Unlocks
+//          |¨| - Documentation at $0x7405cd
+//          |/
+//          |+0x60 - [PAL][17040-byte Array] List of [(6x) 2840-byte Struct:Player_Profile_Data]
+//          |¨| - Documentation at $0x740608
 //          |/
 //          '
+// $7448A8: [PAL][32-bit] Showdown - Bounty Hunter Mode - Bounty Target Limit
+//          - The required Bounty/Cash a player needs to collect to win the game
+// $7448D8: [PAL][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
+//          - This pointer points to the currently selected Player_Profile_Data
+//          - Each Player_Profile has his own data storage
+//          - Player_Profile_Data is updated on save/on end of missions
+//          - Struct Definition at $0x740608
 // $747408: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 2)
 //          - Identical pointer at $0x1b190
 // $74A34D: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - NTSC Mode
@@ -1447,6 +1499,11 @@
 //           |
 //           |+0x30 - [12-byte ASCII] Winner_Text - Player 4
 // $1293B84: weapons?
+// $152ED04: BottleA
+// $15396E4: bottleB
+// $153E324: bottleC
+// $15447A4: cupA
+// $1544C64: cupB
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $198B014: [8bit] makes a key appear in chapter 2
 // $198B018: [8bit] makes a key appear in chapter 2
@@ -1466,4 +1523,5 @@
 // $1A5E720: [8bit] Total shots fired mission 1
 // $1A5E74C: [8bit] Total shot hits
 // $1A5E7A8: [8bit] mission 1 total kills
+// $1A5F295: Text ID
 // $1A88434: [8-bit] Chapter 3 - Shots left
