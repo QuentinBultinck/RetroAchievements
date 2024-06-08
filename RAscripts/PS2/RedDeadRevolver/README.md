@@ -1,8 +1,8 @@
 <h1> 
-    Retro Achievements Guide <br> 🔶 GAME_TITLE_HERE (PLATFORM_HERE)
+    Retro Achievements Guide <br> 🔶 Red Dead Revolver (PS2)
 </h1>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")](https://retroachievements.org/game/000000 "Retro Achievements game page - GAME_TITLE_HERE") 
+[![Achievement badge icon](https://i.retroachievements.org/Images/052991.png "Mastery badge icon")](https://retroachievements.org/game/11094 "Retro Achievements game page - Red Dead Revolver") 
 
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
 
@@ -23,10 +23,13 @@ This guide contains information on how to unlock each achievement in the core se
 #### Walkthroughs & Resources
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
-+ [GAME_TITLE_HERE - Retro Achievements Game Page](https://retroachievements.org/game/0000 "Retro Achievements Game Page - GAME_TITLE_HERE") 
-+ Resource_1
-+ Resource_2
-+ Resource_3
++ [Retro Achievements Game Page](https://retroachievements.org/game/11094 "Retro Achievements Game Page - Red Dead Revolver") 
++ [Guides and FAQs | Hosted by GameFAQS](https://gamefaqs.gamespot.com/ps2/560967-red-dead-revolver/faqs "Red Dead Revolver – Guides and FAQs | Hosted by GameFAQS")
++ [FAQs, Guides and Walkthroughs | Hosted by Neoseeker](https://www.neoseeker.com/red-dead-revolver/faqs/ "Red Dead Revolver – FAQs, Guides and Walkthroughs | Hosted by Neoseeker")
++ [IGN Game Guide](https://www.ign.com/wikis/red-dead-revolver
+ "IGN Game Guide")
++ [Red Dead Fandom Wiki](https://reddead.fandom.com/wiki/Red_Dead_Revolver "Red Dead Fandom Wiki")
++ [Longplay (PS2) | Hosted by Youtube](https://www.youtube.com/watch?v=lPr1dGHpsFQ "RDR - Longplay (PS2) | Hosted by Youtube")
 
 
 #### General tips for unlocking the achievements in this set
