@@ -5,6 +5,7 @@
 [![Achievement badge icon](https://i.retroachievements.org/Images/052991.png "Mastery badge icon")](https://retroachievements.org/game/11094 "Retro Achievements game page - Red Dead Revolver") 
 
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
+<br><sub>This guide mirrors the one available on the achievement set developer's [Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/RedDeadRevolver "Red Dead Revolver (PS2) - Achievement Guide")</sub>
 
 **Table of contents**
 

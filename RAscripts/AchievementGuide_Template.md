@@ -5,6 +5,7 @@
 [![Achievement badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")](https://retroachievements.org/game/000000 "Retro Achievements game page - GAME_TITLE_HERE") 
 
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
+<br><sub>This guide mirrors the one available on the achievement set developer's [Github](LINK_TO_GUIDE_ON_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")</sub>
 
 **Table of contents**
 
