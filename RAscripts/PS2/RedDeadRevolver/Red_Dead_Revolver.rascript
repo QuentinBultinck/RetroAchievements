@@ -88,12 +88,43 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_dataStructures = {
+	"Struct_Template_WeaponData": {
+		"sizeInBytes": 18,
+		"offsetsToMembers": {
+			"16Bit_WeaponID": 0x0,
+			"32Bit_WeaponLevel": 0x4,
+			"BitFlag_IsWeaponUnlocked": 0x8,			
+			"BitFlag_IsWeaponEquipped": 0x9,
+			"Float_WeaponAffinity": 0x10
+		}
+	},
+	"Struct_SinglePlayerData": {
+		"pointerChains": {
+			"ASCII_CinematicID_TextHUDMessageID": { 
+				"addAddressChain": [0x168, 0xEC],
+				"offsetToMember": 0x4 // <-- This is the offset to the member inside the struct, which the pointer chain points to
+			}
+		},
 	}
+}
+
 function memory_getDataStructSizeInBytes(string_structKey) =>
 	memory_dataStructures[string_structKey]["sizeInBytes"]
 
 function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
-	memory_dataStructures[string_structKey]["offsets"][string_offsetKey]
+	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
+
+function memory_getPointerChainOffsetToMember(string_structKey, string_pointerChainKey) => 
+	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToMember"]
+
+function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer) {
+	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
+	let_addAddressPointerChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
+		if (let_index == length(let_array_pointerChainOffsets) - 1) return let_addAddressPointerChain
+	}
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 // ==========================
 // • Memory ADDRESS STORAGE •
 // ==========================
@@ -110,9 +141,20 @@ DATATYPE_Float					= 201
 DATATYPE_ASCII					= 150
 DATATYPE_Struct 				= 100
 memory_addresses = {
-	//	"DATATYPE_xxxxx": {
+	//	DATATYPE_xxxxx: {
 	//		"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	//	}
+	//	},
+		DATATYPE_ASCII: {
+			"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+			"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+
+		},
+		DATATYPE_8Bit: {
+			"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
+		},
+		DATATYPE_32BitPointer: {
+			"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
+		},
 	}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
@@ -123,16 +165,23 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // ==================
 // • Memory UTILITY •
 // ==================
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
+function is_ReleaseRegion(enum_releaseRegion) {
+	let_memAddr_gameID = memory_getAddress(DATATYPE_ASCII, "GameID", enum_releaseRegion)
+	let_string_gameID = sNULL
+
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
-		
+		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
-		
+		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+		let_string_gameID = "SLPM_658.54"
 	} else if(enum_releaseRegion == RELEASE_REGION_EUR) {
-		
+		let_string_gameID = "SLES_528.78"
 	} else {
 		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
-	}}
+	}
+
+	return ascii_string_equals(let_memAddr_gameID, let_string_gameID, 4)
+	}
 
 // memUtil_floatToInt: will return an integer from the floored float value => refer to https://docs.retroachievements.org/AddSource-Flag/#interaction-with-floats
 	// 	- RAtools will clean => 	0 + float(0xaa) + 0	 --to-->	float(0xa)
@@ -152,18 +201,99 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// ................
-// ◦ SUB HEADER 1 ◦
-// ''''''''''''''''
+// ----------------CustomASCIIcomparisons---------------------
+function ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
+	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
+	let_array_comparisons = []
+	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
+		let_ASCIIchars = 0
+		if (let_stepBy4Index + 4 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 3) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, dword_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 3 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 2) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, tbyte_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 2 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 1) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, word_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 1 <= let_ASCIIcharacterCount) {
+			let_ASCIIchar = array_ASCIIasHex_ToCheck[let_stepBy4Index]
+			array_push(let_array_comparisons, byte(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchar)
+		}
+	}
+	return all_of(let_array_comparisons, wrapper)}
 
+function ASCII_NotEqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
+	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
+	let_array_comparisons = []
+	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
+		let_ASCIIchars = 0
+		if (let_stepBy4Index + 4 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 3) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, dword_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 3 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 2) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, tbyte_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 2 <= let_ASCIIcharacterCount) {
+			for let_stepBy1Index in range(0, 1) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
+			array_push(let_array_comparisons, word_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
+		} else if (let_stepBy4Index + 1 <= let_ASCIIcharacterCount) {
+			let_ASCIIchar = array_ASCIIasHex_ToCheck[let_stepBy4Index]
+			array_push(let_array_comparisons, byte(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchar)
+		}
+	}
+	return none_of(let_array_comparisons, wrapper)}
+
+function is_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
+	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck)
+
+function was_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
+	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prior(c))
+
+function on_ASCII_changeTo(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
+	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck) && 
+	ASCII_NotEqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prev(c))
+
+// function on_MemoryBlock_change(memAddr_startOfBlock, memAddr_endOfBlock) => 
+	// TODO on_MemoryBlock_change() // looks a lot like ASCII check above
+
+// ................
+// ◦ GAME STATE ◦
+// ''''''''''''''''
+function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
+	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
 // ----------------Divider---------------------
 
 
-// ................
-// ◦ SUB HEADER 2 ◦
-// ''''''''''''''''
+// ...........
+// ◦ AREA ID ◦
+// '''''''''''
+AREA_Campaign_BrokenCreek = "lvl_perfnew"
+function is_Area(enum_areaId, enum_releaseRegion) =>
+	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId)
+function was_Area(enum_areaId, enum_releaseRegion) =>
+	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prior(areaCheckComparison))
+function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
+	is_Area(enum_areaId, enum_releaseRegion) &&
+	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prev(areaCheckComparison))
 
+// .......................................
+// ◦ CINEMATIC ID || TEXT HUD MESSAGE ID ◦ // TODO check if this is related to subtitles
+// '''''''''''''''''''''''''''''''''''''''
+TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion = "GoodComp" // Full length ASCII -> "GoodComp_Phase4_NoCine2"
+const_CinematicID_TextHUDMessageID_asHex = {
+	TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion: [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70] // Full length ASCII -> [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70,0x5F,0x50,0x68,0x61,0x73,0x65,0x34,0x5F,0x4E,0x6F,0x43,0x69,0x6E,0x65,0x32]
+}
 
+function is_CinematicID_TextHUDMessageID(enum_CinematicID_TextHUDMessageID, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_addAddressPointerChain_CinematicID_TextHUDMessageID = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID", let_memAddr_SinglePlayerData) + memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID")
+	return is_ASCII(let_addAddressPointerChain_CinematicID_TextHUDMessageID, const_CinematicID_TextHUDMessageID_asHex[enum_CinematicID_TextHUDMessageID])}
+
+function on_CinematicID_TextHUDMessageID_ChangeTo(enum_CinematicID_TextHUDMessageID, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_addAddressPointerChain_CinematicID_TextHUDMessageID = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID", let_memAddr_SinglePlayerData) + memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID")
+	return on_ASCII_changeTo(let_addAddressPointerChain_CinematicID_TextHUDMessageID, const_CinematicID_TextHUDMessageID_asHex[enum_CinematicID_TextHUDMessageID])}
 
 // =========================
 // • Memory INITIALIZATION •
@@ -210,7 +340,12 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000,
 	//	"devInfo": "xxxxxxx"},
 	
-	"c_Story": { // Category - 
+	"c_Story": { // Category - Story Progression
+		// "a_": { // CONCEPT a_template
+		//	"id": 000000, "points": 0000000,
+		//	"devInfo": "xxxxxxx"},
+	},
+	"c_StoryEnd": { // Category - Story Ending
 		// "a_": { // CONCEPT a_template
 		//	"id": 000000, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
@@ -221,25 +356,27 @@ achievements_coreData = {
 	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
 
 	},
-	"c_Challenge": { // Category -  Story related challenge achievements
-
-	},	
-	"c_Template": { // Category - 
-
+	"c_StoryChallenge": { // Category -  Story related challenge achievements
+		"a_PerfectShootingTutorial": { // CONCEPT a_PerfectShootingTutorial
+			"id": 438301, "points": 1,
+			"devInfo": "Level: 'Bull's Eye'; Finish tutorial without wasting ammo"},
 	}}
 // -------------------------------------
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
-	//	- Possible type keys: "missable" - "progression" - "win_condition" 
-	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
-	//		- Missable is when you would have to play a significant portion of game again to obtain the achievement.
-	//		 	Think about that 40 hour RPG, and something happens where the world state changes, and an area is no longer available, and certain quests are locked out.
-	//		 	But the person making the achievement for that quest didn't tell you that you could miss it.
+	//	- Possible type keys: "missable" || "progression" || "win_condition" || "" (standard)
+	//	- Missable is when you would have to play a significant portion of game again to obtain the achievement.
+	//	 	Think about that 40 hour RPG, and something happens where the world state changes, and an area is no longer available, and certain quests are locked out.
+	//	 	But the person making the achievement for that quest didn't tell you that you could miss it.
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
 	// "c_Template": "xxxxxx",
-	"c_Template": 				sNULL}
+	"c_Story": "progression",
+	"c_StoryEnd": "win_condition",
+	"c_Showdown": "",
+	"c_Unlocks": "",
+	"c_StoryChallenge": "missable"}
 
 // ===================================
 // • Achievements TRIGGER GENERATORS •
@@ -250,9 +387,15 @@ achievements_typeByCategory = { // TODO set achievement types
 // • Achievements TRIGGERS •
 // =========================
 achievements_triggers = {
-	// "a_Template": function Template() {	// WIP_template
-	// 	return always_false()
-	// },
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+	// 	is_ReleaseRegion(enum_releaseRegion) &&
+	// 	always_false()),
+	
+	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
+		on_CinematicID_TextHUDMessageID_ChangeTo(TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion, enum_releaseRegion)),
 	}
 
 // =====================
@@ -260,10 +403,12 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	"a_PerfectShootingTutorial": 			{"en": "Born Bounty Hunter"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the tutorial without wasting a single bullet"},
 	}
 
 // ===============================
@@ -319,6 +464,7 @@ function achievements_initialize() {
 				points = let_achievementData["points"],
 				trigger = achievements_getTrigger(let_cheevmentName)
 			)
+			
 		}}
 	}
 
