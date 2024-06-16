@@ -68,6 +68,8 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
+
+
 // ***************************************************************************************************************************************************************** \\
 //																																									 \\
 //   ███╗   ███╗███████╗███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗     █████╗ ██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗    ██╗      ██████╗  ██████╗ ██╗ ██████╗   \\
@@ -88,42 +90,67 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_dataStructures = {
-	"Struct_Template_WeaponData": {
-		"sizeInBytes": 18,
-		"offsetsToMembers": {
-			"16Bit_WeaponID": 0x0,
-			"32Bit_WeaponLevel": 0x4,
-			"BitFlag_IsWeaponUnlocked": 0x8,			
-			"BitFlag_IsWeaponEquipped": 0x9,
-			"Float_WeaponAffinity": 0x10
-		}
+	"PS2Vector": {
+		"offsetToMember": {
+			"W-Component": 0x0,
+			"Y-Coordinate": 0x4,
+			"Z-Coordinate": 0x8,
+			"X-Coordinate": 0xC	}
+	},
+	"Struct_PlayerProfileData": {
+		"sizeInBytes": 2840,
+		"offsetToMember": {
+			"32BitFloat_TimeSpentPlaying": 0x388}
+	},
+	"Struct_RewardMenuDisplayData": {
+		"pointerChains": {
+			"32Bit_Balance": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
+			"32Bit_BountyCollected": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
+			"BitFlag_IsRewardMenuDisplayed": { 
+				"addAddressChain": [0xAC, 0x38]},
+		},
 	},
 	"Struct_SinglePlayerData": {
 		"pointerChains": {
-			"ASCII_CinematicID_TextHUDMessageID": { 
+			"ASCIi_GameTriggerID": { 
 				"addAddressChain": [0x168, 0xEC],
-				"offsetToMember": 0x4 // <-- This is the offset to the member inside the struct, which the pointer chain points to
-			}
+				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
+			"32Bit_ShotsFired": { 
+				"addAddressChain": [0x36C, 0x0]},
+			"32Bit_ShotsHit": { 
+				"addAddressChain": [0x36C, 0x2C]},
+			"PS2Vector_PlayerLocation": { 
+				"addAddressChain": [0xC, 0xC, 0x90]},
+			"Bitset_PlayerProfileUnlocks": { 
+				"addAddressChain": [0x5C8]},
 		},
-	}
-}
+	},
+	"Struct_GameController": {
+		"pointerChains": {
+			"EquippedWeapon_ReserveAmmo": { 
+				"addAddressChain": [0x2C, 0x14]}
+		},
+	}}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
 	memory_dataStructures[string_structKey]["sizeInBytes"]
 
-function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
-	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
+function memory_getDataStructOffset(string_structKey, string_memberKey) =>
+	memory_dataStructures[string_structKey]["offsetToMember"][string_memberKey]
 
 function memory_getPointerChainOffsetToMember(string_structKey, string_pointerChainKey) => 
-	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToMember"]
+	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"]
 
-function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer) {
+function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToMember = 0, accessor = dword) {
 	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
 	let_addAddressPointerChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
-		let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
-		if (let_index == length(let_array_pointerChainOffsets) - 1) return let_addAddressPointerChain
-	}
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return accessor(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index] + int_offsetToMember)
+		else let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
+	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 // ==========================
 // • Memory ADDRESS STORAGE •
@@ -141,21 +168,24 @@ DATATYPE_Float					= 201
 DATATYPE_ASCII					= 150
 DATATYPE_Struct 				= 100
 memory_addresses = {
-	//	DATATYPE_xxxxx: {
-	//		"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	//	},
-		DATATYPE_ASCII: {
-			"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
-			"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+	// DATATYPE_xxxxx: {
+	// 	"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	// },
+	DATATYPE_ASCII: {
+		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
 
-		},
-		DATATYPE_8Bit: {
-			"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
-		},
-		DATATYPE_32BitPointer: {
-			"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
-		},
-	}
+	},
+	DATATYPE_8Bit: {
+		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
+		"GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
+	},
+	DATATYPE_32BitPointer: {
+		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
+		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
+		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
+		"RewardMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
+	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
@@ -165,6 +195,16 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // ==================
 // • Memory UTILITY •
 // ==================
+memUtil_bitIndexToMemAccessor = {
+	0: bit0,
+	1: bit1,
+	2: bit2,
+	3: bit3,
+	4: bit4,
+	5: bit5,
+	6: bit6,
+	7: bit7}
+
 function is_ReleaseRegion(enum_releaseRegion) {
 	let_memAddr_gameID = memory_getAddress(DATATYPE_ASCII, "GameID", enum_releaseRegion)
 	let_string_gameID = sNULL
@@ -190,6 +230,13 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
+function memUtil_bitwiseOR(memAccessor_A, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
+	memAccessor_A + memAccessor_B - (memAccessor_A & memAccessor_B)
+
+function memUtil_bitwiseOR_SumOf(memAccessor_A, memAccessor_B) { // Same logic as above, but as a sumOf expression
+	return memAccessor_A + memAccessor_B - memAccessor_A & memAccessor_B
+} 
+
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -201,8 +248,8 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// ----------------CustomASCIIcomparisons---------------------
-function ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
+// ----------------CustomASCIIcomparitors---------------------
+function ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
 	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
@@ -223,7 +270,7 @@ function ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper
 	}
 	return all_of(let_array_comparisons, wrapper)}
 
-function ASCII_NotEqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
+function ASCII_NotEquals(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
 	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
@@ -240,30 +287,44 @@ function ASCII_NotEqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrap
 		} else if (let_stepBy4Index + 1 <= let_ASCIIcharacterCount) {
 			let_ASCIIchar = array_ASCIIasHex_ToCheck[let_stepBy4Index]
 			array_push(let_array_comparisons, byte(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchar)
-		}
-	}
+		}}
 	return none_of(let_array_comparisons, wrapper)}
 
 function is_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck)
+	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck)
 
 function was_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prior(c))
+	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prior(c))
 
 function on_ASCII_changeTo(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_EqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck) && 
-	ASCII_NotEqualsComparison(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prev(c))
-
-// function on_MemoryBlock_change(memAddr_startOfBlock, memAddr_endOfBlock) => 
-	// TODO on_MemoryBlock_change() // looks a lot like ASCII check above
+	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck) && 
+	ASCII_NotEquals(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prev(c))
 
 // ................
 // ◦ GAME STATE ◦
 // ''''''''''''''''
-function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
-	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
-// ----------------Divider---------------------
+GAMESTATE_MainMenu = 1
+GAMESTATE_SinglePlayer = 10
+GAMESTATE_ShowdownMode = 20
+const_GameState_data = {
+	GAMESTATE_SinglePlayer: {"ID": 0xFA},
+	GAMESTATE_ShowdownMode: {"ID": 0xC8},
+	GAMESTATE_MainMenu: {"ID": 0xA}}
+function get_GameStateID(enum_gameState) =>
+	const_GameState_data[enum_gameState]["ID"]
 
+function is_GameState(enum_gameState, enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "GameState", enum_releaseRegion)) == get_GameStateID(enum_gameState)
+
+function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
+	is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion) &&
+	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
+
+function on_AnyLevelRestart(enum_releaseRegion) { // This check only works as long as 32BitFloat_TimeSpentPlaying isn't already at max Float value, refer to code note at $0x740608	
+	let_pointerMemAddr_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_TimeSpentPlaying = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
+	let_memAccessor_TimeSpentPlaying = float(dword(let_pointerMemAddr_SelectedPlayerProfileData) + let_offsetTo_TimeSpentPlaying)
+	return let_memAccessor_TimeSpentPlaying != prev(let_memAccessor_TimeSpentPlaying)}
 
 // ...........
 // ◦ AREA ID ◦
@@ -277,23 +338,208 @@ function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
 	is_Area(enum_areaId, enum_releaseRegion) &&
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prev(areaCheckComparison))
 
-// .......................................
-// ◦ CINEMATIC ID || TEXT HUD MESSAGE ID ◦ // TODO check if this is related to subtitles
-// '''''''''''''''''''''''''''''''''''''''
-TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion = "GoodComp" // Full length ASCII -> "GoodComp_Phase4_NoCine2"
-const_CinematicID_TextHUDMessageID_asHex = {
-	TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion: [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70] // Full length ASCII -> [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70,0x5F,0x50,0x68,0x61,0x73,0x65,0x34,0x5F,0x4E,0x6F,0x43,0x69,0x6E,0x65,0x32]
-}
+// ...................
+// ◦ Game Trigger ID ◦
+// '''''''''''''''''''
+GAMETRIGGER_ShootingTutorial_Start = "Pre_TargetA_NoCine"
+GAMETRIGGER_ShootingTutorial_GoodCompletion = "GoodComp_Phase4_NoCine2" 
+const_GameTrigger_asHex = {
+	GAMETRIGGER_ShootingTutorial_Start: {
+		"Short": [0x50,0x72,0x65,0x5F,0x54,0x61,0x72,0x67,0x65,0x74,0x41], // "Pre_TargetA"
+		"Full": [0x50,0x72,0x65,0x5F,0x54,0x61,0x72,0x67,0x65,0x74,0x41,0x5F,0x4E,0x6F,0x43,0x69,0x6E,0x65]
+	},
+	GAMETRIGGER_ShootingTutorial_GoodCompletion: {
+		"Short": [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70], // "Goodcomp"
+		"Full": [0x47,0x6F,0x6F,0x64,0x43,0x6F,0x6D,0x70,0x5F,0x50,0x68,0x61,0x73,0x65,0x34,0x5F,0x4E,0x6F,0x43,0x69,0x6E,0x65,0x32]
+	}}
 
-function is_CinematicID_TextHUDMessageID(enum_CinematicID_TextHUDMessageID, enum_releaseRegion) {
+function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_addAddressPointerChain_CinematicID_TextHUDMessageID = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID", let_memAddr_SinglePlayerData) + memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID")
-	return is_ASCII(let_addAddressPointerChain_CinematicID_TextHUDMessageID, const_CinematicID_TextHUDMessageID_asHex[enum_CinematicID_TextHUDMessageID])}
+	let_pointerChainTo_GameTriggerID = 
+		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
+	return is_ASCII(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])}
 
-function on_CinematicID_TextHUDMessageID_ChangeTo(enum_CinematicID_TextHUDMessageID, enum_releaseRegion) {
+function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_addAddressPointerChain_CinematicID_TextHUDMessageID = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID", let_memAddr_SinglePlayerData) + memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_CinematicID_TextHUDMessageID")
-	return on_ASCII_changeTo(let_addAddressPointerChain_CinematicID_TextHUDMessageID, const_CinematicID_TextHUDMessageID_asHex[enum_CinematicID_TextHUDMessageID])}
+	let_pointerChainTo_GameTriggerID = 
+		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
+	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])}
+
+// ...................
+// ◦ Player Location ◦
+// '''''''''''''''''''
+PLAYER_STATIONARY_THRESHOLD = 0.7
+function is_PlayerXCoordinate_stationary(float_Xcoordinate, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerXCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "X-Coordinate"), 
+			accessor = float)
+	return 
+		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD && 
+		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
+		
+function is_PlayerXCoordinate_notStationary(float_Xcoordinate, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerXCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "X-Coordinate"), 
+			accessor = float)
+	return 
+		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD || 
+		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
+
+function is_PlayerYCoordinate_stationary(float_Ycoordinate, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerYCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
+			accessor = float)
+	return 
+		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD && 
+		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
+
+		
+function is_PlayerYCoordinate_notStationary(float_Ycoordinate, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerYCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
+			accessor = float)
+	return 
+		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD || 
+		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
+
+// ................
+// ◦ Rewards Menu ◦
+// ''''''''''''''''
+function is_RewardMenu_displayed(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsRewardMenuDisplayed == 1}
+
+function on_RewardMenu_render(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
+
+function current_RewardMenuBalance(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+function current_RewardMenuBountyCollected(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+// ..........................
+// ◦ Player Profile Unlocks ◦
+// ''''''''''''''''''''''''''
+UNIQUE_WEAPON_COUNT = 24
+Bitset_PlayerProfileUnlocks_data = {
+	"Flags_AllUpgradedWeapons": {
+		1: [4,6],
+		2: [0,2,5,7],
+		3: [1,3,5,7],
+		4: [1,3,6],
+		5: [0,3,5]},
+	"Flags_AllWeapons": { 
+		"AllFlags": { // 40 flags --> AddSource each Flag (or bitcount with subsource non-weapon flags in byte)
+			1: [3,4,5,6,7],
+			2: [0,1,2,3,4,5,6,7],
+			3: [0,1,2,3,4,5,6,7],
+			4: [0,1,2,3,4,5,6,7],
+			5: [0,1,2,3,4,5,6,7],
+			6: [2,3,4],
+			},
+		"NonUniqueFlags": { // 16 weapons have double flags --> SubSource Flag_Normal OR Flag_Upgraded
+			"OldPistol": {
+				"Flag_Normal": {"ByteIndex": 1, "BitIndex": 3},
+				"Flag_Upgraded": {"ByteIndex": 1, "BitIndex": 4}},
+			"Revolver": {
+				"Flag_Normal": {"ByteIndex": 1, "BitIndex": 5},
+				"Flag_Upgraded": {"ByteIndex": 1, "BitIndex": 6}},
+			"TwinRevolver": {
+				"Flag_Normal": {"ByteIndex": 1, "BitIndex": 7},
+				"Flag_Upgraded": {"ByteIndex": 2, "BitIndex": 0}},
+			"Widowmaker": {
+				"Flag_Normal": {"ByteIndex": 2, "BitIndex": 1},
+				"Flag_Upgraded": {"ByteIndex": 2, "BitIndex": 2}},
+			"BreechLoader": {
+				"Flag_Normal": {"ByteIndex": 2, "BitIndex": 4},
+				"Flag_Upgraded": {"ByteIndex": 2, "BitIndex": 5}},
+			"TheLion": {
+				"Flag_Normal": {"ByteIndex": 2, "BitIndex": 6},
+				"Flag_Upgraded": {"ByteIndex": 2, "BitIndex": 7}},
+			"TwelveGauge": {
+				"Flag_Normal": {"ByteIndex": 3, "BitIndex": 0},
+				"Flag_Upgraded": {"ByteIndex": 3, "BitIndex": 1}},
+			"OwlRifle": {
+				"Flag_Normal": {"ByteIndex": 3, "BitIndex": 2},
+				"Flag_Upgraded": {"ByteIndex": 3, "BitIndex": 3}},
+			"RepeaterRifle": {
+				"Flag_Normal": {"ByteIndex": 3, "BitIndex": 4},
+				"Flag_Upgraded": {"ByteIndex": 3, "BitIndex": 5}},
+			"HighCaliber": {
+				"Flag_Normal": {"ByteIndex": 3, "BitIndex": 6},
+				"Flag_Upgraded": {"ByteIndex": 3, "BitIndex": 7}},
+			"SixShooter": {
+				"Flag_Normal": {"ByteIndex": 4, "BitIndex": 0},
+				"Flag_Upgraded": {"ByteIndex": 4, "BitIndex": 1}},
+			"Pacificador": {
+				"Flag_Normal": {"ByteIndex": 4, "BitIndex": 2},
+				"Flag_Upgraded": {"ByteIndex": 4, "BitIndex": 3}},
+			"HalconRifle": {
+				"Flag_Normal": {"ByteIndex": 4, "BitIndex": 5},
+				"Flag_Upgraded": {"ByteIndex": 4, "BitIndex": 6}},
+			"BayonetRifle": {
+				"Flag_Normal": {"ByteIndex": 4, "BitIndex": 7},
+				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 0}},
+			"SawnOff": {
+				"Flag_Normal": {"ByteIndex": 5, "BitIndex": 2},
+				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 3}},
+			"Escopeta": {
+				"Flag_Normal": {"ByteIndex": 5, "BitIndex": 4},
+				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 5}},
+			}}
+	}
+
+// .............................
+// ◦ AmmoCounter HUDController ◦
+// '''''''''''''''''''''''''''''
+function is_AmmoHUDControllerReserveAmmo(int_ammoCount, enum_releaseRegion) {
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_pointerChain_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	return let_pointerChain_EquippedWeaponReserveAmmo == int_ammoCount}
+	
+function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_pointerChain_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	return let_pointerChain_EquippedWeaponReserveAmmo < prev(let_pointerChain_EquippedWeaponReserveAmmo)}
+
+function on_ShotsFired_increment(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_pointerChain_ShotsFired = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)
+	return let_pointerChain_ShotsFired > prev(let_pointerChain_ShotsFired)}
+
+function on_ShotsHit_increment(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
+	return let_pointerChain_ShotsHit > prev(let_pointerChain_ShotsHit)}
+
+function on_ShotsHit_change(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
+	return let_pointerChain_ShotsHit != prev(let_pointerChain_ShotsHit)}
 
 // =========================
 // • Memory INITIALIZATION •
@@ -346,20 +592,39 @@ achievements_coreData = {
 		//	"devInfo": "xxxxxxx"},
 	},
 	"c_StoryEnd": { // Category - Story Ending
+		// "a_CompleteStoryNormal": { // CONCEPT a_CompleteStoryNormal
+		// 	"id": 000000, "points": 0000000,
+		// 	"devInfo": "Complete single player campaign on normal difficulty"},
+		// "a_CompleteStoryHard": { // CONCEPT a_CompleteStoryHard
+		//	"id": 000000, "points": 0000000,
+		//	"devInfo": "Complete single player campaign on hard difficulty"},
+		// "a_CompleteStoryVeryHard": { // CONCEPT a_CompleteStoryVeryHard
+		//	"id": 000000, "points": 0000000,
+		//	"devInfo": "Complete single player campaign on very hard difficulty"},
+		// "a_CompleteStoryWood": { // CONCEPT a_CompleteStoryWood
+		//	"id": 000000, "points": 0000000,
+		//	"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
+	},
+	"c_Showdown": { // Category - Showdown related achievements
 		// "a_": { // CONCEPT a_template
 		//	"id": 000000, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
 	},
-	"c_Showdown": { // Category - Showdown related achievements
-
-	},
 	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
-
+		// "a_UnlockAllWeapons": { // VERIFIED // BUG --> The logic can't be evaluated by RAtools => coded via RAIntegration UI
+		// 	"id": 439051, "points": 10,
+		// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
+		// "a_UpgradeAllWeapons": { // CONCEPT a_UpgradeAllWeapons
+		// 	"id": 000000, "points": 10,
+		// 	"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
 	},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		"a_PerfectShootingTutorial": { // CONCEPT a_PerfectShootingTutorial
+		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": 1,
-			"devInfo": "Level: 'Bull's Eye'; Finish tutorial without wasting ammo"},
+			"devInfo": "Level 'Bull's Eye': Finish tutorial without wasting ammo (13 targets to hit)"},
+		"a_Chapter1AcquireMoney": { // VERIFIED
+			"id": 438677, "points": 5,
+			"devInfo": "Level 'Bull's Eye': Complete with a bounty collected of $1000 or greater at reward menu"},
 	}}
 // -------------------------------------
 achievements_typeByCategory = { // TODO set achievement types
@@ -382,6 +647,121 @@ achievements_typeByCategory = { // TODO set achievement types
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
+function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {	
+	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
+		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
+		for let_bitIndex in array_bitIndicesToAdd 
+			let_array_bitIndicesToSub[let_bitIndex] = iNULL
+		return let_array_bitIndicesToSub
+	}
+
+	function createAccessorToBitset(int_byteIndex, accessorType, enum_releaseRegion) {
+		let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+		let_memAccessor = memory_generateAddAddressPointerChain(
+				"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
+				int_offsetToMember = int_byteIndex - 1, accessor = accessorType)
+		return let_memAccessor
+	}
+
+	let_array_memAccessorsToSum_AllFlags = []
+	let_array_memAccessorsToSub_AllFlags = [] 
+	for let_byteIndex in Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["AllFlags"] {
+		let_array_bitIndices = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["AllFlags"][let_byteIndex]
+		let_bitCount = length(let_array_bitIndices)
+		if (let_bitCount == 8) { // AddSource bitcount [byte]
+			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
+		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
+			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
+			for let_bitIndexToSub in createArrayOfBitIndicesToSub(let_array_bitIndices) {
+				if (let_bitIndexToSub != iNULL)	{
+					let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
+					array_push(let_array_memAccessorsToSub_AllFlags, let_memAccessor_bit)
+				}
+			}
+		} else if (let_bitCount <= 4) { // AddSource [each bit]
+			for let_bitIndex in let_array_bitIndices {
+				let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bit)
+			}
+		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+	}
+
+	let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_Normal & Flag_Normal (with bitwise AND)
+	for let_weaponKey in Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"] {
+		let_flagNormal = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Normal"]
+		let_memAccessor_flagNormal = createAccessorToBitset(let_flagNormal["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]], enum_releaseRegion)
+		
+		let_flagUpgraded = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
+		let_memAccessor_flagUpgraded = createAccessorToBitset(let_flagUpgraded["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], enum_releaseRegion)
+
+		array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagNormal & let_memAccessor_flagUpgraded))
+	}
+
+	return
+		sum_of(let_array_memAccessorsToSum_AllFlags, memAccessor => memAccessor) // Add all flags
+		// - sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
+		- sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor) // Subtract non-unique flags
+	}
+
+function achievements_generate_SumOf_UnlockAllWeaponsDelta_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+	(prev(bitcount(dword(0x763070) + 0x0005C8))) +
+	(prev(bitcount(dword(0x763070) + 0x0005C9))) +
+	(prev(bitcount(dword(0x763070) + 0x0005CA))) + 
+	(prev(bitcount(dword(0x763070) + 0x0005CB))) +
+	(prev(bitcount(dword(0x763070) + 0x0005CC))) + 
+	(prev(bit2(dword(0x763070) + 0x0005CD))) +
+	(prev(bit3(dword(0x763070) + 0x0005CD))) + 
+	(prev(bit4(dword(0x763070) + 0x0005CD))) - // BUG <-- SubSource bugs
+	// (prev(bit0(dword(0x763070) + 0x0005C8))) - 
+	// (prev(bit1(dword(0x763070) + 0x0005C8))) // -
+	// (prev(bit2(dword(0x763070) + 0x0005C8))) // - 
+	(prev(bit7(dword(0x763070) + 0x0005CB)) & prev(bit0(dword(0x763070) + 0x0005CC))) - 
+	(prev(bit4(dword(0x763070) + 0x0005C9)) & prev(bit5(dword(0x763070) + 0x0005C9))) - 
+	(prev(bit4(dword(0x763070) + 0x0005CC)) & prev(bit5(dword(0x763070) + 0x0005CC))) - 
+	(prev(bit5(dword(0x763070) + 0x0005CB)) & prev(bit6(dword(0x763070) + 0x0005CB))) -
+	(prev(bit6(dword(0x763070) + 0x0005CA)) & prev(bit7(dword(0x763070) + 0x0005CA))) - 
+	(prev(bit3(dword(0x763070) + 0x0005C8)) & prev(bit4(dword(0x763070) + 0x0005C8))) - 
+	(prev(bit2(dword(0x763070) + 0x0005CA)) & prev(bit3(dword(0x763070) + 0x0005CA))) -
+	(prev(bit2(dword(0x763070) + 0x0005CB)) & prev(bit3(dword(0x763070) + 0x0005CB))) - 
+	(prev(bit4(dword(0x763070) + 0x0005CA)) & prev(bit5(dword(0x763070) + 0x0005CA))) - 
+	(prev(bit5(dword(0x763070) + 0x0005C8)) & prev(bit6(dword(0x763070) + 0x0005C8))) -
+	(prev(bit2(dword(0x763070) + 0x0005CC)) & prev(bit3(dword(0x763070) + 0x0005CC))) - 
+	(prev(bit0(dword(0x763070) + 0x0005CB)) & prev(bit1(dword(0x763070) + 0x0005CB))) - 
+	(prev(bit6(dword(0x763070) + 0x0005C9)) & prev(bit7(dword(0x763070) + 0x0005C9))) -
+	(prev(bit0(dword(0x763070) + 0x0005CA)) & prev(bit1(dword(0x763070) + 0x0005CA))) - 
+	(prev(bit7(dword(0x763070) + 0x0005C8)) & prev(bit0(dword(0x763070) + 0x0005C9))) - 
+	(prev(bit1(dword(0x763070) + 0x0005C9)) & prev(bit2(dword(0x763070) + 0x0005C9)))
+
+function achievements_generate_SumOf_UnlockAllWeapons_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+	(bitcount(dword(0x763070) + 0x0005C8)) + 
+	(bitcount(dword(0x763070) + 0x0005C9)) + 
+	(bitcount(dword(0x763070) + 0x0005CA)) + 
+	(bitcount(dword(0x763070) + 0x0005CB)) +
+	(bitcount(dword(0x763070) + 0x0005CC)) + 
+	(bit2(dword(0x763070) + 0x0005CD)) +
+	(bit3(dword(0x763070) + 0x0005CD)) + 
+	(bit4(dword(0x763070) + 0x0005CD)) - 
+	(bit0(dword(0x763070) + 0x0005C8)) - 
+	(bit1(dword(0x763070) + 0x0005C8)) -
+	(bit2(dword(0x763070) + 0x0005C8)) - 
+	(bit7(dword(0x763070) + 0x0005CB) & bit0(dword(0x763070) + 0x0005CC)) - 
+	(bit4(dword(0x763070) + 0x0005C9) & bit5(dword(0x763070) + 0x0005C9)) - 
+	(bit4(dword(0x763070) + 0x0005CC) & bit5(dword(0x763070) + 0x0005CC)) - 
+	(bit5(dword(0x763070) + 0x0005CB) & bit6(dword(0x763070) + 0x0005CB)) -
+	(bit6(dword(0x763070) + 0x0005CA) & bit7(dword(0x763070) + 0x0005CA)) - 
+	(bit3(dword(0x763070) + 0x0005C8) & bit4(dword(0x763070) + 0x0005C8)) - 
+	(bit2(dword(0x763070) + 0x0005CA) & bit3(dword(0x763070) + 0x0005CA)) -
+	(bit2(dword(0x763070) + 0x0005CB) & bit3(dword(0x763070) + 0x0005CB)) - 
+	(bit4(dword(0x763070) + 0x0005CA) & bit5(dword(0x763070) + 0x0005CA)) - 
+	(bit5(dword(0x763070) + 0x0005C8) & bit6(dword(0x763070) + 0x0005C8)) -
+	(bit2(dword(0x763070) + 0x0005CC) & bit3(dword(0x763070) + 0x0005CC)) - 
+	(bit0(dword(0x763070) + 0x0005CB) & bit1(dword(0x763070) + 0x0005CB)) - 
+	(bit6(dword(0x763070) + 0x0005C9) & bit7(dword(0x763070) + 0x0005C9)) -
+	(bit0(dword(0x763070) + 0x0005CA) & bit1(dword(0x763070) + 0x0005CA)) - 
+	(bit7(dword(0x763070) + 0x0005C8) & bit0(dword(0x763070) + 0x0005C9)) - 
+	(bit1(dword(0x763070) + 0x0005C9) & bit2(dword(0x763070) + 0x0005C9))
 
 // =========================
 // • Achievements TRIGGERS •
@@ -391,24 +771,62 @@ achievements_triggers = {
 	// 	is_ReleaseRegion(enum_releaseRegion) &&
 	// 	always_false()),
 	
-	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP
+	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion) &&
 		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
 		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
-		on_CinematicID_TextHUDMessageID_ChangeTo(TEXTHUDMESSAGE_ShootingTutorial_GoodCompletion, enum_releaseRegion)),
+		unless( // <-- Disable achievement when more than 13 bullets were used
+			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) ||
+			once(is_PlayerXCoordinate_notStationary(17.4, enum_releaseRegion)) ||
+			once(is_PlayerYCoordinate_notStationary(-10.5, enum_releaseRegion))
+		) && 
+		once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion)) &&
+		trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
+		||
+		never_toAlt( // Alt - Reset Group
+			is_ReleaseRegion(enum_releaseRegion) &&
+			on_AnyLevelRestart(enum_releaseRegion) || // <-- this line might be redundant as below line already resets before challenge start
+			on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion) // <-- reset when the shooting tutorial starts -> this is primarily necessary to reset the hitCount for repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion))
+		)),
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
+		current_RewardMenuBountyCollected(enum_releaseRegion) >= 1000 &&
+		repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+		once(on_RewardMenu_render(enum_releaseRegion))
+		||
+		never_toAlt( // Alt - Reset Group
+			is_ReleaseRegion(enum_releaseRegion) &&
+			!is_RewardMenu_displayed(enum_releaseRegion)
+		)),
+	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+		prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT &&
+		prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4 &&
+
+		measured(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT) // TODO add measuredIf when not loading
+		),
 	}
 
 // =====================
 // • Achievements TEXT •
 // =====================
 achievements_titles = {
-	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_PerfectShootingTutorial": 			{"en": "Born Bounty Hunter"},
+	// "a_Template": 						{"en": "xxxxxxxxx"},
+	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
+	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
+	"a_UnlockAllWeapons":					{"en": "Total Armament"},
+	"a_UpgradeAllWeapons":					{"en": "Top Gun"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the tutorial without wasting a single bullet"},
+	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
+	"a_Chapter1AcquireMoney": 				{"en": "Accumulate $1000 or more through bounty collection by the end of Chapter 1 'Bull's Eye'"},
+	"a_UnlockAllWeapons":					{"en": "Unlock the full weapon arsenal"},
+	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential"},
 	}
 
 // ===============================
