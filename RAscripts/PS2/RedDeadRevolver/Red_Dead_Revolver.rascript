@@ -321,6 +321,8 @@ function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
 
 function on_AnyLevelRestart(enum_releaseRegion) { // This check only works as long as 32BitFloat_TimeSpentPlaying isn't already at max Float value, refer to code note at $0x740608	
+	// BUG on_AnyLevelRestart() --> only works when manually restarting level through pause menu, doesn't work when mission fails and Retry menu is shown
+	// - Use new memAddr at $0x562a10
 	let_pointerMemAddr_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_TimeSpentPlaying = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
 	let_memAccessor_TimeSpentPlaying = float(dword(let_pointerMemAddr_SelectedPlayerProfileData) + let_offsetTo_TimeSpentPlaying)
@@ -329,11 +331,19 @@ function on_AnyLevelRestart(enum_releaseRegion) { // This check only works as lo
 // ...........
 // ◦ AREA ID ◦
 // '''''''''''
+AREA_loading = "default"
 AREA_Campaign_BrokenCreek = "lvl_perfnew"
+AREA_Campaign_Railroaded = "lvl_traingood"
+
+function is_AreaLoading_active(enum_releaseRegion) => 
+	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
+
 function is_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId)
+
 function was_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prior(areaCheckComparison))
+
 function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
 	is_Area(enum_areaId, enum_releaseRegion) &&
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prev(areaCheckComparison))
@@ -371,47 +381,54 @@ function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 // ◦ Player Location ◦
 // '''''''''''''''''''
 PLAYER_STATIONARY_THRESHOLD = 0.7
-function is_PlayerXCoordinate_stationary(float_Xcoordinate, enum_releaseRegion) {
+function current_PlayerXCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor_PlayerXCoordinate = 
+	let_memAccessor_PlayerCoordinate = 
 		memory_generateAddAddressPointerChain(
 			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
 			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "X-Coordinate"), 
 			accessor = float)
+	return let_memAccessor_PlayerCoordinate}
+
+function current_PlayerYCoordinate(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
+			accessor = float)
+	return let_memAccessor_PlayerCoordinate}
+
+	
+function current_PlayerZCoordinate(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor_PlayerCoordinate = 
+		memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Z-Coordinate"), 
+			accessor = float)
+	return let_memAccessor_PlayerCoordinate}
+
+function is_PlayerXCoordinate_stationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
 	return 
 		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD && 
 		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
 		
-function is_PlayerXCoordinate_notStationary(float_Xcoordinate, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor_PlayerXCoordinate = 
-		memory_generateAddAddressPointerChain(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "X-Coordinate"), 
-			accessor = float)
+function is_PlayerXCoordinate_notStationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
 	return 
 		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD || 
 		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
 
-function is_PlayerYCoordinate_stationary(float_Ycoordinate, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor_PlayerYCoordinate = 
-		memory_generateAddAddressPointerChain(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
-			accessor = float)
+function is_PlayerYCoordinate_stationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerYCoordinate = current_PlayerYCoordinate(enum_releaseRegion)
 	return 
 		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD && 
 		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
-
 		
-function is_PlayerYCoordinate_notStationary(float_Ycoordinate, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor_PlayerYCoordinate = 
-		memory_generateAddAddressPointerChain(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
-			accessor = float)
+function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerYCoordinate = current_PlayerYCoordinate(enum_releaseRegion)
 	return 
 		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD || 
 		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
@@ -445,6 +462,7 @@ function current_RewardMenuBountyCollected(enum_releaseRegion) {
 // ◦ Player Profile Unlocks ◦
 // ''''''''''''''''''''''''''
 UNIQUE_WEAPON_COUNT = 24
+UPGRADEABLE_WEAPON_COUNT = 16
 Bitset_PlayerProfileUnlocks_data = {
 	"Flags_AllUpgradedWeapons": {
 		1: [4,6],
@@ -590,7 +608,7 @@ achievements_coreData = {
 		// "a_": { // CONCEPT a_template
 		//	"id": 000000, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
-	},
+		},
 	"c_StoryEnd": { // Category - Story Ending
 		// "a_CompleteStoryNormal": { // CONCEPT a_CompleteStoryNormal
 		// 	"id": 000000, "points": 0000000,
@@ -604,28 +622,32 @@ achievements_coreData = {
 		// "a_CompleteStoryWood": { // CONCEPT a_CompleteStoryWood
 		//	"id": 000000, "points": 0000000,
 		//	"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
-	},
+		},
 	"c_Showdown": { // Category - Showdown related achievements
 		// "a_": { // CONCEPT a_template
 		//	"id": 000000, "points": 0000000,
 		//	"devInfo": "xxxxxxx"},
-	},
+		},
 	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
-		// "a_UnlockAllWeapons": { // VERIFIED // BUG --> The logic can't be evaluated by RAtools => coded via RAIntegration UI
-		// 	"id": 439051, "points": 10,
+		// "a_UnlockAllWeapons": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+		// 	"id": 439051, "points": 10, 
 		// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
-		// "a_UpgradeAllWeapons": { // CONCEPT a_UpgradeAllWeapons
-		// 	"id": 000000, "points": 10,
-		// 	"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
-	},
+		"a_UpgradeAllWeapons": { // VERIFIED
+			"id": 439234, "points": 10,
+			"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
+		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": 1,
-			"devInfo": "Level 'Bull's Eye': Finish tutorial without wasting ammo (13 targets to hit)"},
+			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_Chapter1AcquireMoney": { // VERIFIED
 			"id": 438677, "points": 5,
-			"devInfo": "Level 'Bull's Eye': Complete with a bounty collected of $1000 or greater at reward menu"},
-	}}
+			"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
+		"a_Chapter5StayOnTrain": { // CONCEPT a_Chapter5StayOnTrain
+			"id": 000000, "points": 3,
+			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
+		},
+	}
 // -------------------------------------
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
@@ -647,6 +669,7 @@ achievements_typeByCategory = { // TODO set achievement types
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
+// -------------------UnlockAllWeapons---------------------
 function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {	
 	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
 		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
@@ -701,11 +724,11 @@ function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {
 
 	return
 		sum_of(let_array_memAccessorsToSum_AllFlags, memAccessor => memAccessor) // Add all flags
-		// - sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
+		- sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
 		- sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor) // Subtract non-unique flags
 	}
 
-function achievements_generate_SumOf_UnlockAllWeaponsDelta_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+function achievements_generate_SumOf_FlagsAllWeaponsDelta_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
 	(prev(bitcount(dword(0x763070) + 0x0005C8))) +
 	(prev(bitcount(dword(0x763070) + 0x0005C9))) +
 	(prev(bitcount(dword(0x763070) + 0x0005CA))) + 
@@ -713,7 +736,7 @@ function achievements_generate_SumOf_UnlockAllWeaponsDelta_HardCoded() => // Har
 	(prev(bitcount(dword(0x763070) + 0x0005CC))) + 
 	(prev(bit2(dword(0x763070) + 0x0005CD))) +
 	(prev(bit3(dword(0x763070) + 0x0005CD))) + 
-	(prev(bit4(dword(0x763070) + 0x0005CD))) - // BUG <-- SubSource bugs
+	(prev(bit4(dword(0x763070) + 0x0005CD))) - // bug <-- These SubSources bug out RAtools (infinite processing)
 	// (prev(bit0(dword(0x763070) + 0x0005C8))) - 
 	// (prev(bit1(dword(0x763070) + 0x0005C8))) // -
 	// (prev(bit2(dword(0x763070) + 0x0005C8))) // - 
@@ -734,7 +757,7 @@ function achievements_generate_SumOf_UnlockAllWeaponsDelta_HardCoded() => // Har
 	(prev(bit7(dword(0x763070) + 0x0005C8)) & prev(bit0(dword(0x763070) + 0x0005C9))) - 
 	(prev(bit1(dword(0x763070) + 0x0005C9)) & prev(bit2(dword(0x763070) + 0x0005C9)))
 
-function achievements_generate_SumOf_UnlockAllWeapons_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+function achievements_generate_SumOf_FlagsAllWeapons_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
 	(bitcount(dword(0x763070) + 0x0005C8)) + 
 	(bitcount(dword(0x763070) + 0x0005C9)) + 
 	(bitcount(dword(0x763070) + 0x0005CA)) + 
@@ -763,6 +786,53 @@ function achievements_generate_SumOf_UnlockAllWeapons_HardCoded() => // Hardcode
 	(bit7(dword(0x763070) + 0x0005C8) & bit0(dword(0x763070) + 0x0005C9)) - 
 	(bit1(dword(0x763070) + 0x0005C9) & bit2(dword(0x763070) + 0x0005C9))
 
+// -------------------UnlockAllUpgradedWeapons---------------------
+function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) {
+	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
+		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
+		for let_bitIndex in array_bitIndicesToAdd 
+			let_array_bitIndicesToSub[let_bitIndex] = iNULL
+		return let_array_bitIndicesToSub
+	}
+
+	function createAccessorToBitset(int_byteIndex, accessorType, enum_releaseRegion) {
+		let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+		let_memAccessor = memory_generateAddAddressPointerChain(
+				"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
+				int_offsetToMember = int_byteIndex - 1, accessor = accessorType)
+		return let_memAccessor
+	}
+
+	let_array_memAccessorsToSum_AllFlags = []
+	let_array_memAccessorsToSub_AllFlags = [] 
+	for let_byteIndex in Bitset_PlayerProfileUnlocks_data["Flags_AllUpgradedWeapons"] {
+		let_array_bitIndices = Bitset_PlayerProfileUnlocks_data["Flags_AllUpgradedWeapons"][let_byteIndex]
+		let_bitCount = length(let_array_bitIndices)
+		if (let_bitCount == 8) { // AddSource bitcount [byte]
+			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
+		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
+			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
+			for let_bitIndexToSub in createArrayOfBitIndicesToSub(let_array_bitIndices) {
+				if (let_bitIndexToSub != iNULL)	{
+					let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
+					array_push(let_array_memAccessorsToSub_AllFlags, let_memAccessor_bit)
+				}
+			}
+		} else if (let_bitCount <= 4) { // AddSource [each bit]
+			for let_bitIndex in let_array_bitIndices {
+				let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bit)
+			}
+		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+	}
+
+	return
+		sum_of(let_array_memAccessorsToSum_AllFlags, memAccessor => memAccessor) // Add all flags
+		- sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
+	}
+
 // =========================
 // • Achievements TRIGGERS •
 // =========================
@@ -770,15 +840,28 @@ achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 	// 	is_ReleaseRegion(enum_releaseRegion) &&
 	// 	always_false()),
-	
+
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+		is_Area(AREA_Campaign_Railroaded, enum_releaseRegion) && 
+		unless(once( // <-- Pause Lock
+			current_PlayerZCoordinate(enum_releaseRegion) < 0
+		)) &&
+		trigger_when(on_RewardMenu_render(enum_releaseRegion))
+		||
+		never_toAlt( // Alt - Reset Group for Pause Lock
+			is_ReleaseRegion(enum_releaseRegion) &&
+			on_AnyLevelRestart(enum_releaseRegion)
+		)),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion) &&
 		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
 		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
 		unless( // <-- Disable achievement when more than 13 bullets were used
 			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) ||
-			once(is_PlayerXCoordinate_notStationary(17.4, enum_releaseRegion)) ||
-			once(is_PlayerYCoordinate_notStationary(-10.5, enum_releaseRegion))
+			once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion)) ||
+			once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion))
 		) && 
 		once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion)) &&
 		trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
@@ -800,14 +883,27 @@ achievements_triggers = {
 			is_ReleaseRegion(enum_releaseRegion) &&
 			!is_RewardMenu_displayed(enum_releaseRegion)
 		)),
-	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		is_ReleaseRegion(enum_releaseRegion) &&
-		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-		prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT &&
-		prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4 &&
-
-		measured(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT) // TODO add measuredIf when not loading
-		),
+	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 		
+		// Underlying two lines break RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
+			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT &&
+			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4 &&
+		measured(
+			achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT, 
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+				!is_AreaLoading_active(enum_releaseRegion)
+		)),
+	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) < UPGRADEABLE_WEAPON_COUNT &&
+		prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) > UPGRADEABLE_WEAPON_COUNT - 4 &&
+		measured(
+			achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) == UPGRADEABLE_WEAPON_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) &&
+				is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
+				!is_AreaLoading_active(enum_releaseRegion)
+		))
 	}
 
 // =====================
@@ -815,16 +911,18 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
+	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
 	"a_UnlockAllWeapons":					{"en": "Total Armament"},
-	"a_UpgradeAllWeapons":					{"en": "Top Gun"},
+	"a_UpgradeAllWeapons":					{"en": "The Finest in the West"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
-	"a_Chapter1AcquireMoney": 				{"en": "Accumulate $1000 or more through bounty collection by the end of Chapter 1 'Bull's Eye'"},
+	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
 	"a_UnlockAllWeapons":					{"en": "Unlock the full weapon arsenal"},
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential"},
 	}
