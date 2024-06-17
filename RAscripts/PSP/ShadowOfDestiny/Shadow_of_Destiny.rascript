@@ -5442,7 +5442,7 @@ achievements_triggers = {
 		// DEV_NOTE: Measured with: MeasuredIf or PauseIf 
 		// ----------------------------------
 		//	MeasuredIf  => is purely to control the visual feedback (UI) through the RAoverlay (measured hit count will always evaluate/continue counting, regardless of MeasuredIf-state) 
-		//		- MeasuredIf is false => 0 will be displayed in RAoverlay, but the measured hit count will still evaluate/will continue counting behind the scenes, even when MeasuredIf-false) + the measured popup will not been shown
+		//		- MeasuredIf is false => 0 will be displayed in RAoverlay, but the measured hit count will still evaluate/will continue counting behind the scenes (but hitting the hit target won't unlock the achievement), even when MeasuredIf-false) + the measured popup will not been shown 
 		//		- MeasuredIf is true => the current measured hit count will be shown (the one that kept evaluating/counting behind the scenes) + the popup is able to be displayed whenever the measured hit count changes (the popup will also be briefly displayed once MeasuredIf becomes true, even when the measured hit count didn't change)
 		//
 		//	PauseIf  => is purely to stop evaluation, the current measured progress is still visible in RAoverlay
