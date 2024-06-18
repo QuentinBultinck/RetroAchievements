@@ -1,13 +1,33 @@
 // Red Dead Revolver
 // #ID = 11094
 
-// $01B190: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (Preferred)
+// $4F6FD8: [8bit] Player is in a cutscene?
+// $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
+//          - Identical to $0x562a0c
+// $4FA558: [PAL][32-bit Timer] Time Spent In Control of Character
+//          - Increments by 3, each 2 frames (same for NTSC, PAL mode)
+//          - Only increments when player can control a character (campaign and showdown mode)
+// $4FBAF0: [PAL][8-bit Bitfield {32-bit}] Game State A
+//          0x0 => Game is booting (Main Menu has not yet been reached) || Also 0 for a few frames when starting a game mode
+//          0xA => Main Menu (lvl_front)
+//          0xC8 => Showdown Mode
+//          0xFA => Single Player Mode
+// $4FD3A8: [PAL][8-bit {32-bit}] Refresh Rate
+//          - Game offers the option to chose refresh rate on game boot
+//          0x32 (=50) => PAL 50Hz mode
+//          0x3C (=60) => NTSC 60Hz mode
+// $54C7CC: [PAL][11-byte ASCII] Game ID (EUR) - PS2 Product ID
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - "SLES_524.78" => EUR
+// $54CAF0: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (Preferred)
 //          |+0xAC - [32-bit Pointer{2}]
-//          |++0x34 - [32-bit Pointer{3}]
-//          |++| - This Pointer{3} is only functional when the Reward Menu is displayed
-//          |++|
-//          |++|+0x1c - [32-bit Pointer{4}] --(+0x0)--> [??-byte Struct] RewardMenu_DisplayData
-//          |++|+| - Struct Definition below
+//          |+|+0x34 - [32-bit Pointer{3}]
+//          |+|+| - This Pointer{3} is only functional when the Reward Menu is displayed
+//          |+|+|
+//          |+|+|+0x1c - [32-bit Pointer{4}] --(+0x0)--> [??-byte Struct] RewardMenu_DisplayData
+//          |+|+|+| - Struct Definition below
+//          |+|/
+//          |+|+0x38 - [Bit Flag {32-bit}] bit 0 => Is Reward Menu Displayed
 //          |/
 //          |
 //          |+0x2D0 - [32-bit Pointer{2}]
@@ -23,7 +43,7 @@
 //          |============================================
 //          | - This struct contains UI data logic for the Reward Menu (where the player can see which items he has unlocked from the mission and his mission stats)
 //          |
-//          |¨|+0x5D4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID to Load
+//          |¨|+0x5D4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID (functional)
 //          |¨| - Documentation at $0x7a0620
 //          |/
 //          |
@@ -44,10 +64,14 @@
 //          |¨|¨| - RewardMenu_UI_Element_ID = "pulseOn_combo"
 //          |/
 //          |
+//          |+0x9E4 - [32-bit] Bounty Collected
+//          |+0x9F4 - [32-bit] Money Spent
+//          |+0xA04 - [32-bit] Balance
+//          |
 //          |+0xA70 - [48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_Data]
 //          |¨[Array Definition][48-byte]
 //          |¨|'''''''''''''''''''''''''
-//          |¨| - Struct Definition ItemUnlock_UI_Element_Databelow
+//          |¨| - Struct Definition ItemUnlock_UI_Element_Data below
 //          |¨|+0x0 - [16-byte Struct:ItemUnlock_UI_Element_Data] Item Unlock - Good Rating
 //          |¨|¨| - RewardMenu_UI_Element_ID = "rankNormal"
 //          |¨|/
@@ -85,39 +109,23 @@
 //          |/
 //          '
 //          
-//          # ItemUnlock_UI_Element_ID
+//          # ItemUnlock_UI_Element_IDs (string)
 //          |(list incomplete) (grouped by mission)
 //          |'''''''''''''''''''''''''''''''''''''''''''''
-//          | - "locked" => image of a lock + text (item is not unlocked)
+//          | locked => image of a lock + text (item is not unlocked)
 //          |---- Bull's Eye ----
-//          | - (GOOD) "Old_Pistol_u" => +Old Pistol+ (upgraded Old Pistol)
-//          | - (EXCELLENT) "lvl_perfnew" => Broken Creek (STAGE)
-//          | - (BOUNTY) "mom" => Falling Star (CHAR)
+//          | (GOOD) Old_Pistol_u => +Old Pistol+ (upgraded Old Pistol)
+//          | (EXCELLENT) lvl_perfnew => Broken Creek (STAGE)
+//          | (BOUNTY) mom => Falling Star (CHAR)
 //          |---- Bounty Hunter ----
-//          | - (GOOD) "gay" => "Bloody" Tom (CHAR)
-//          | - (EXCELLENT) "frk" => "Big Oaf" Whitney (CHAR)
-//          | - (BOUNTY) shp => "Curly" Shaw (CHAR)
+//          | (GOOD) gay => "Bloody" Tom (CHAR)
+//          | (EXCELLENT) frk => "Big Oaf" Whitney (CHAR)
+//          | (BOUNTY) shp => "Curly" Shaw (CHAR)
 //          | ...
 //          '
-// $093390: [PAL][11-byte ASCII] Game ID - PS2 Product ID
-//          - SLES_528.78 --> EUR
-// $4F6FD8: [8bit] Player is in a cutscene?
-// $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
-//          - Identical to $0x562a0c
-// $4FA558: [PAL][32-bit Timer] Time Spent In Control of Character
-//          - Increments by 3, each 2 frames (same for NTSC, PAL mode)
-//          - Only increments when player can control a character (campaign and showdown mode)
-// $4FBAF0: [PAL][8-bit Bitfield {32-bit}] Game State
-//          0x0 => Game is booting (Main Menu has not yet been reached) || Also 0 for a few frames when starting a game mode
-//          0xA => Main Menu (lvl_front)
-//          0xC8 => Showdown Mode
-//          0xFA => Single Player Mode
-// $4FD3A8: [PAL][8-bit {32-bit}] Refresh Rate
-//          - Game offers the option to chose refresh rate on game boot
-//          0x32 (=50) => PAL 50Hz mode
-//          0x3C (=60) => NTSC 60Hz mode
-// $54CAF0: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 1)
-//          - Identical pointer at $0x1b190
+// $54DD4C: [NTSCJ][11-byte ASCII] Game ID (JPN) - PS2 Product ID
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - "SLPM_658.54" => JPN
 // $5602A0: [32-bit] Pointer
 //          +0x58a4 [32-bit] Money
 //          +0x5904  [32-bit] Key 1
@@ -132,6 +140,13 @@
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
 //          bit 0 = 0 => In-game || Game  Is Booting Up
 //          bit 0 = 1 => Title Menu
+// $562A10: [PAL][8-bit Bitfield {32-bit}] Game State B
+//          - Don't use this bitfield for checking loading
+//          0x0 => Loading || Various Menu's (shop, reward menu...)
+//          0x1 => Loading
+//          0x2 => Main Menu
+//          0x4 => In-Game (SinglePlayer & Showdown) || Is in control of player character
+//          0x5 => Retry Menu & Game Over Menu
 // $562A20: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] Game_Controller
 //          
 //          [Struct Definition][??-byte] Game_Controller
@@ -346,25 +361,35 @@
 //          | frj => George (unplayable character of bossfight trio, fight againt "Bloody" Tom, during lvl_hng)
 //          | snp => Sniper NPC, which usually spawns on high ground; Wears a Raccoon hat
 //          '
+// $563FA0: [NTSCJ][32-bit Pointer{1}] --> Showdown Settings
+//          |+0x6c - [32-bit Pointer{2}]
+//          |++0x50 - [32-bit Pointer{3}] --(+0x0)--> [??-byte Struct] Showdown_Settings
+//          |++[Struct Defintion][NTSCJ][??-byte Struct] Showdown_Settings
+//          |++|'''''''''''''''''''''''''''''''''''''''''''''
+//          |++|+0x1290 - [8-bit {32-bit}] Sundown Mode | Fight Time Setting
+//          |++|"| 0 => 3 min.
+//          |++|"| 1 => 5 min.
+//          |++|"| 2 => 10 min.
+//          |++|"| 3 => 15 min.
+//          |++|"| 4 => 1 min.
+//          |++|/
+//          |++|+0x4B60 - [8-bit {32-bit}] Powers Ups Setting
+//          |++|"| 0 => Off
+//          |++|"| 1 => Stud
+//          |++|"| 2 => Hold 'Em
+//          |/
+//          '
 // $6B03F4: [PAL][32-bit Pointer{1}] --> Puppetshow Active Soundtrack File
 //          +0xC - [32-bit Pointer{2}]
 //          | - Pointer{2} is only functional during a Puppetshow
 //          |
 //          |+0x0 - [Variable Size ASCII] - Active Soundtrack File
 //          |"| - Currently playing soundtrack file
-// $6B0808: [PAL][Variable Size ASCII] Area_ID (Preferred)
+// $6B0808: [PAL][Variable Size ASCII] Area_ID (alt)
 //          - This value stores the Area_ID for the current map/level
 //          - Be wary to check only the necessary bytes to identify the Area_ID, don't count the succeeding bytes as there's some bogus data
 //          - Changing this value to a valid ID does not work to cheat/load the map
-//          
-//          # Area_IDs (list incomplete)
-//          |''''''''''''''''''''''''''
-//          | default => Intermittent loading screen (= screen before the MAIN Loading screen, where the protagonist twirls his pistols around) -> some sort of value between switching Area_IDs
-//          | lvl_perf => Chapter 1 - Bull's Eye - Intro with Red Jr.
-//          | lvl_hng => Chapter 2 - Bounty Hunter - Bounty for Bloody Tom
-//          | lvl_sher => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
-//          | lvl_traincar => Chapter 4 - The Traincar - Red has showdown with train robber inside traincar
-//          | lvl_traingood => Chapter 5 - Railroaded - Red fighting bandits on top of moving train
+//          - IDs listed at $0x7a0620
 // $6B18B4: [PAL][1024-byte ASCII Field] ShowdownMode_ScoreboardDisplay_Text
 //          =========================================
 //          @Fixed Memory Location
@@ -449,7 +474,23 @@
 // $6B1B50: [PAL][96-byte ASCII Field] Player_Stats_Text - Player 4
 //          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b18b4)
 //          - ASCII Field Definition at $0x6b1a30
-// $73D819: [1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
+// $6B3588: [NTSCJ][Variable Size ASCII] Area_ID (alt)
+//          @Regional equivalent of $0x6b0808
+// $6B4634: [NTSCJ][1024-byte ASCII Field] ShowdownMode_ScoreboardDisplay_Text
+//          @Regional Equivalent of $0x6b18b4
+// $6B47B0: [NTSCJ][96-byte ASCII Field] Player_Stats_Text - Player 1
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
+//          @Regional Equivalent of $0x6b1a30
+// $6B4810: [NTSCJ][96-byte ASCII Field] Player_Stats_Text - Player 2
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
+//          @Regional Equivalent of $0x6b1a90
+// $6B4870: [NTSCJ][96-byte ASCII Field] Player_Stats_Text - Player 3
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
+//          @Regional Equivalent of $0x6b1af0
+// $6B48D0: [NTSCJ][96-byte ASCII Field] Player_Stats_Text - Player 4
+//          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
+//          @Regional Equivalent of $0x6b1b50
+// $73D819: [PAL][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
 //          @Fixed Memory Location. Although pointed to by $0x562a20
 //          - This array is populated on start of a Showdown match
 //          - Only use this array for achievement logic for Showdown Mode
@@ -460,7 +501,7 @@
 //          |
 //          |+0x1 - [3-byte ASCII] Character_Model_ID
 //          |¨| - Preceding [1-byte ASCII] = "m"
-//          |¨| - IDs listed below
+//          |¨| - IDs listed at $0x562a20
 //          |/
 //          |+0x312 - [Variable Size ASCII] ShowdownAI_Setting
 //          |¨| - ShowdownAI_Settings listed below
@@ -482,6 +523,13 @@
 //          - 0x1 => Single player campaign
 //          - [0x2-0x4] => Showdown Mode
 //          - This value does not reset to a default value on title screen
+// $73ED98: [NTSCJ][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
+//          @Regional Equivalent of $0x73d819
+// $73F2EC: [NTSCJ][8-bit {32-bit}] Number of Players
+//          @Regional Equivalent of $0x73dd6c
+// $740118: [NTSCJ][17040-byte Array] List of [(6x) 2840-byte Struct:Player_Profile_Data]
+//          @Regional Equivalent of $0x740608
+//          @Fixed Memory Location. Although pointed to by $0x7443e8
 // $740438: [PAL][365-byte Array] List of [(4x) 92-byte Struct:ShowdownPlayer_Settings_B]
 //          @Fixed Memory Location. Although pointed to by $0x562a20
 //          - This array is populated on start of a Showdown match
@@ -851,7 +899,11 @@
 //          |¨| - Formula: Total number of Enemies Killed (Story Mode) = Enemies Killed A + Enemies Killed B
 //          |/
 //          |+0x384 - [32-bit] Distance Travelled
-//          |+0x388 - [32-bit] Time Spent Playing
+//          |+0x388 - [32-bit Float] Time Spent Playing (in seconds)
+//          |¨| - Max Float Value = 0x7F7FFFFF, does not overflow/reset back to 0, which is practically millions of billions of years
+//          |¨| - This float value initializes the display value in the Journal as a signed int, which is probably why the max displayable value is 596523h 14m 07s
+//          |¨| - This value is updated whenever the game saves/a mission is restarted/a mission is quit
+//          |/
 //          |+0x39C - [32-bit] Total Money Collected
 //          |+0x3A0 - [32-bit] Total Bullet Fired
 //          |+0x3A4 - [32-bit] Total Bullet Hits
@@ -863,30 +915,21 @@
 //          |
 //          |+0x7BC - [Variable Size ASCII] Player Profile Name
 //          '
-// $741120: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 2
-//          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
-//          - Struct Definition at $0x740608
-// $741C38: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 3
-//          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
-//          - Struct Definition at $0x740608
 // $742118: [8bit] save file id
 // $742158: [32bit] pointer to progress stats
 //          
 //          +0x290 = [32bit] maps completed in save file
 //          starts at 5 and increment by 1 with each map completed /*  also this need more investigation at higher up levels to figure out how this address handles numbers over F i have seen that the max it can get is F but it increases a nearby 8bit when full ? */
-// $742750: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 4
-//          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
-//          - Struct Definition at $0x740608
-// $743268: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 5
-//          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
-//          - Struct Definition at $0x740608
-// $743D80: [PAL][2840-byte Struct] Player_Profile_Data - Profile Slot 6
-//          @Fixed Memory Location. Although pointed to by $0x7448d8 when this is the active Player_Profile
-//          - Struct Definition at $0x740608
+// $7443B0: [NTSCJ][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_01
+//          @Regional Equivalent of $0x7448a0
+// $7443E8: [NTSCJ][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
+//          @Regional Equivalent of $0x7448d8
 // $744898: [PAL][8-bit {32-bit}] Selected Player_Profile
 //          - Value range [0x0-0x5], there's a total of 6 player profile slots
 //          - Each Player_Profile saves its own data (refer to $0x7448d8)
-// $7448A0: [PAL][32-bit Pointer]
+// $7448A0: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_01
+//          [Struct Definition][??-byte] Undefined_Struct_01
+//          |''''''''''''''''''''''''''''''''''''''''''
 //          |+0x8 - [28-byte Struct] ShowdownMode_Settings
 //          |¨| - Documentation at $0x7405b0
 //          |/
@@ -904,8 +947,8 @@
 //          - Each Player_Profile has his own data storage
 //          - Player_Profile_Data is updated on save/on end of missions
 //          - Struct Definition at $0x740608
-// $747408: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 2)
-//          - Identical pointer at $0x1b190
+// $747408: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 1)
+//          - Identical pointer at $0x54caf0
 // $74A34D: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - NTSC Mode
 //          - Preceding [13-byte ASCII] = "cdrom0:\/pss/"
 //          - VideoFileName_IDs and further documentation at $0x74a34f
@@ -918,6 +961,7 @@
 //          | rslogo.pss => Rockstar Logo on game boot
 //          | titles.pss => Game Title Intro Video (plays after selecting language)
 //          | sher7001.pss => Chapter 3 (Ugly Streetfight) - Intro video: Red talks with sheriff about bounty reward + bandit shoots dog
+// $754A80: pointer
 // $754A90: [PAL][32-bit Pointer{1}] --> Actor_Data Array
 //          +0x8 - [32-bit Pointer{2}]
 //          ++0x10 - [160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
@@ -940,9 +984,9 @@
 //          |+|+0x4 - [32-bit Pointer{2}]
 //          |+|+|+0x4 - [32-bit Pointer{3}]
 //          |+|+|+|+0x0 - [Variable Size ASCII] Name of Actor
-//          |+|+|+|¨| - This is the name of the Player_Profile, set at the start of a new campaign
-//          |+|+|+|¨| - Named characters will have their names here
-//          |+|+|+|¨| - Other NPCs, who are never named in-game, have miscellaneous names set here (e.g., Mikey, Bobby, Jeremiah...)
+//          |+|+|+|¨| - When this is the player character: the name of the Player_Profile will be saved here
+//          |+|+|+|¨| - Unique characters will have their names here
+//          |+|+|+|¨| - Other NPCs have miscellaneous names set here (e.g., Mikey, Bobby, Jeremiah...)
 //          |+|+|/
 //          |+|+|+0x18 - [32-bit Pointer{3}]
 //          |+|+|+|+0x10 - [32-bit Float] Actor HP
@@ -954,15 +998,15 @@
 //          |+|+|¨| - PS2_Vector Definition at $0x763070
 //          |/
 //          '
-// $763070: [PAL][32-bit Pointer] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data
+// $763070: [PAL][32-bit Pointer{1}] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data
 //          - Pointer becomes functional once the first mission is started in story mode
 //          
 //          [Struct Definition][3008-byte] SinglePlayer_Data
 //          |=====================================
 //          | - This struct is very similar to ShowdownPlayer_Data_C ($0x7638b8)
 //          |
-//          |+0xC - [32-bit Pointer{1}]
-//          |++0xC - [32-bit Pointer{2}]
+//          |+0xC - [32-bit Pointer{2}]
+//          |++0xC - [32-bit Pointer{3}]
 //          |++|+0x90 - [16-byte PS2_Vector] Player_Location
 //          |++|¨| - PS2_Vector Definition below
 //          |/
@@ -975,8 +1019,15 @@
 //          |++0x10 - [8-bit {32-bit}] Amount of Guns in Inventory
 //          |
 //          |+0x168 - [32-bit Pointer{2}]
-//          |++0xF4 - [32-bit Pointer{3}] --(+0x30)--> [660-byte Struct] Ammunition_Inventory
-//          |++| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, the data in this Struct does not
+//          |+|+0xF4 - [32-bit Pointer{3}]
+//          |+|+|+0x30 - [660-byte Struct] Ammunition_Inventory
+//          |+|+|¨| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, the data in this Struct does not
+//          |+|/
+//          |+|+0xEC - [32-bit Pointer{3}]
+//          |+|+|+0x4 - [Variable Size ASCII] GameTrigger_ID
+//          |+|+|¨| - This can be used to ID certain in-engine cinematics as well as certain triggers/actions
+//          |+|+|¨| - WARNING, sometimes the first letter of this ASCII ID is switched with 0 instead of the ASCII character. The 0 probably means this data is not in use anymore
+//          |+|+|¨| - IDs listed below
 //          |/
 //          |
 //          |+0x194 - [32-bit Pointer{2}]
@@ -1048,52 +1099,54 @@
 //          '
 //          
 //          [Bitset Definition][24-byte] Player_Profile_Unlocks
+//          |- When upgrading a weapon both flags will be 1 until a save occurs. Once the save occurs the bitflag for the non-upgraded weapon will become 0 and the bitflag which corresponds with the upgraded version will be 1;
+//          |- Some Journal Pages and Showdown Characters may be unlocked by 2 seperate bitflags (one bitflag would possibly correspond to buying an item to unlock it VS one bitflag for unlocking it through mission ratings)
 //          |================================
 //          |+0x0 - [Bit Flags] @Byte1 in Bitset:Player_Profile_Unlocks
 //          |¨| bits [0-2] => //
-//          |¨| bit 3 => (PAGE+WEAPON) Side Arms - Old Pistol |⚠|--> Also unlocked by bit4
-//          |¨| bit 4 => (PAGE+WEAPON) Side Arms - Old Pistol |⚠|--> Also unlocked by bit3
-//          |¨| bit 5 => (PAGE+WEAPON) Side Arms - Revolver |⚠|--> Also unlocked by bit6
-//          |¨| bit 6 => (PAGE+WEAPON) Side Arms - Revolver |⚠|--> Also unlocked by bit5
-//          |¨| bit 7 => (PAGE+WEAPON) Side Arms - Twin Revolvers |⚠|--> Also unlocked by bit0@Byte2
+//          |¨| bit 3 => (PAGE+WEAPON) Side Arms - Old Pistol
+//          |¨| bit 4 => (PAGE+WEAPON) Side Arms - Old Pistol (upgraded)
+//          |¨| bit 5 => (PAGE+WEAPON) Side Arms - Revolver
+//          |¨| bit 6 => (PAGE+WEAPON) Side Arms - Revolver (upgraded)
+//          |¨| bit 7 => (PAGE+WEAPON) Side Arms - Twin Revolvers
 //          |/
 //          |+0x1 - [Bit Flags] @Byte2 in Bitset:Player_Profile_Unlocks
-//          |¨| bit 0 => (PAGE+WEAPON) Side Arms - Twin Revolvers |⚠|--> Also unlocked by bit7@Byte1
-//          |¨| bit 1 => (PAGE+WEAPON) Side Arms - Widowmaker |⚠|--> Also unlocked by bit2
-//          |¨| bit 2 => (PAGE+WEAPON) Side Arms - Widowmaker |⚠|--> Also unlocked by bit1
+//          |¨| bit 0 => (PAGE+WEAPON) Side Arms - Twin Revolvers (upgraded)
+//          |¨| bit 1 => (PAGE+WEAPON) Side Arms - Widowmaker
+//          |¨| bit 2 => (PAGE+WEAPON) Side Arms - Widowmaker (upgraded)
 //          |¨| bit 3 => (PAGE+WEAPON) Side Arms - Scorpion
-//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Breech Loader |⚠|--> Also unlocked by bit5
-//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Breech Loader |⚠|--> Also unlocked by bit4
-//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - The Lion |⚠|--> Also unlocked by bit7
-//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - The Lion |⚠|--> Also unlocked by bit6
+//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Breech Loader
+//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Breech Loader (upgraded)
+//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - The Lion
+//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - The Lion (upgraded)
 //          |/
 //          |+0x2 - [Bit Flags] @Byte3 in Bitset:Player_Profile_Unlocks
-//          |¨| bit 0 => (PAGE+WEAPON) Ranged Weapons - Twelve Gauge |⚠|--> Also unlocked by bit1
-//          |¨| bit 1 => (PAGE+WEAPON) Ranged Weapons - Twelve Gauge |⚠|--> Also unlocked by bit0
-//          |¨| bit 2 => (PAGE+WEAPON) Ranged Weapons - Owl Rifle |⚠|--> Also unlocked by bit3
-//          |¨| bit 3 => (PAGE+WEAPON) Ranged Weapons - Owl Rifle |⚠|--> Also unlocked by bit2
-//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Repeater Rifle |⚠|--> Also unlocked by bit5
-//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Repeater Rifle |⚠|--> Also unlocked by bit4
-//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - High Caliber |⚠|--> Also unlocked by bit7
-//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - High Caliber |⚠|--> Also unlocked by bit6
+//          |¨| bit 0 => (PAGE+WEAPON) Ranged Weapons - Twelve Gauge
+//          |¨| bit 1 => (PAGE+WEAPON) Ranged Weapons - Twelve Gauge (upgraded)
+//          |¨| bit 2 => (PAGE+WEAPON) Ranged Weapons - Owl Rifle
+//          |¨| bit 3 => (PAGE+WEAPON) Ranged Weapons - Owl Rifle (upgraded)
+//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Repeater Rifle
+//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Repeater Rifle (upgraded)
+//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - High Caliber
+//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - High Caliber (upgraded)
 //          |/
 //          |+0x3 - [Bit Flags] @Byte4 in Bitset:Player_Profile_Unlocks
-//          |¨| bit 0 => (PAGE+WEAPON) Side Arms - Six Shooter |⚠|--> Also unlocked by bit1
-//          |¨| bit 1 => (PAGE+WEAPON) Side Arms - Six Shooter |⚠|--> Also unlocked by bit0
-//          |¨| bit 2 => (PAGE+WEAPON) Side Arms - Pacificador |⚠|--> Also unlocked by bit3
-//          |¨| bit 3 => (PAGE+WEAPON) Side Arms - Pacificador |⚠|--> Also unlocked by bit2
+//          |¨| bit 0 => (PAGE+WEAPON) Side Arms - Six Shooter
+//          |¨| bit 1 => (PAGE+WEAPON) Side Arms - Six Shooter (upgraded)
+//          |¨| bit 2 => (PAGE+WEAPON) Side Arms - Pacificador
+//          |¨| bit 3 => (PAGE+WEAPON) Side Arms - Pacificador (upgraded)
 //          |¨| bit 4 => (PAGE+WEAPON) Side Arms - Inquisitor
-//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Halcon Rifle |⚠|--> Also unlocked by bit6
-//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - Halcon Rifle |⚠|--> Also unlocked by bit5
-//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - Bayonet Rifle |⚠|--> Also unlocked by bit0@Byte5
+//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Halcon Rifle
+//          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - Halcon Rifle (upgraded)
+//          |¨| bit 7 => (PAGE+WEAPON) Ranged Weapons - Bayonet Rifle
 //          |/
 //          |+0x4 - [Bit Flags] @Byte5 in Bitset:Player_Profile_Unlocks
-//          |¨| bit 0 => (PAGE+WEAPON) Ranged Weapons - Bayonet Rifle |⚠|--> Also unlocked by bit7@Byte4
+//          |¨| bit 0 => (PAGE+WEAPON) Ranged Weapons - Bayonet Rifle (upgraded)
 //          |¨| bit 1 => (PAGE+WEAPON) Ranged Weapons - Oppressor
-//          |¨| bit 2 => (PAGE+WEAPON) Ranged Weapons - Sawn Off |⚠|--> Also unlocked by bit3
-//          |¨| bit 3 => (PAGE+WEAPON) Ranged Weapons - Sawn Off |⚠|--> Also unlocked by bit2
-//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Escopeta |⚠|--> Also unlocked by bit5
-//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Escopeta |⚠|--> Also unlocked by bit4
+//          |¨| bit 2 => (PAGE+WEAPON) Ranged Weapons - Sawn Off
+//          |¨| bit 3 => (PAGE+WEAPON) Ranged Weapons - Sawn Off (upgraded)
+//          |¨| bit 4 => (PAGE+WEAPON) Ranged Weapons - Escopeta
+//          |¨| bit 5 => (PAGE+WEAPON) Ranged Weapons - Escopeta (upgraded)
 //          |¨| bit 6 => (PAGE+WEAPON) Ranged Weapons - Zwei Fasser
 //          |¨| bit 7 => (PAGE+WEAPON) Thrown Weapons - Knife
 //          |/
@@ -1131,7 +1184,7 @@
 //          |+0xA - [Bit Flags] @Byte11 in Bitset:Player_Profile_Unlocks
 //          |¨| bit 0 => Outlaws in Twelve States - Jethro Greensleves
 //          |¨| bit 1 => (PAGE) Wanted Dead or Alive - "Smiley" Fawler || (CHAR) "Smiley" Fawler |⚠|--> These are also unlocked by bit5@Byte23
-//          |¨| bit 2 => (PAGE) Wanted Dead or Alive - "Bloody" Tom || (CHAR) "Bloody" Tom |⚠|--> These are also unlocked by bit6@Byte23
+//          |¨| bit 2 => (PAGE) Wanted Dead or Alive - "Bloody" Tom || (CHAR) "Bloody" Tom (Mission Rating Unlock) |⚠|--> Item Buy Unlock by bit6@Byte23
 //          |¨| bit 3 => (PAGE) Outlaws in Twelve States - Sidney "Sissy" Fess || (CHAR) "Sissy" Fess |⚠|--> These are also unlocked by bit7@Byte23
 //          |¨| bit 4 => (PAGE) Wanted Dead or Alive - Roberto Pedrosa
 //          |¨| bit 5 => (PAGE) Citizens of the Wilderniss - Hank Pullman
@@ -1255,7 +1308,7 @@
 //          |¨| bit 3 => (PAGE) Wanted Dead or Alive - Sam || (CHAR) Sam |⚠|--> These are also unlocked by bit7@Byte10
 //          |¨| bit 4 => (PAGE) Outlaws in Twelve States - Jethro Greensleves
 //          |¨| bit 5 => (PAGE) Wanted Dead or Alive - "Smiley" Fawler || (CHAR) "Smiley" Fawler |⚠|--> These are also unlocked by bit1@Byte11
-//          |¨| bit 6 => (PAGE) Wanted Dead or Alive - "Bloody" Tom || (CHAR) "Bloody" Tom |⚠|--> These are also unlocked by bit2@Byte11
+//          |¨| bit 6 => (PAGE) Wanted Dead or Alive - "Bloody" Tom || (CHAR) "Bloody" Tom (Item Buy Unlock) |⚠|--> Mission Rating Unlock by bit2@Byte11
 //          |¨| bit 7 => (PAGE) Outlaws in Twelve States - Sidney "Sissy" Fess || (CHAR) "Sissy" Fess |⚠|--> These are also unlocked by bit3@Byte11
 //          |/
 //          |+0x17 - [Bit Flags] @Byte24 in Bitset:Player_Profile_Unlocks
@@ -1263,6 +1316,19 @@
 //          |¨| bit 6 => (PAGE) Citizens of the Wilderniss - Red Wolf Tribe |⚠|--> this page is also unlocked by bit5@Byte21
 //          |¨| bit 7 => //
 //          |/
+//          '
+//          
+//          # GameTrigger_IDs (string)
+//          |(list only contains IDs useful for achievement creation)
+//          |''''''''''''''''''''''''''''''''
+//          | Perfnew_Cinematic_Opening => Opening cinematic to first stage/level/mission; Red's father comes home
+//          | Player_Navigation_Guide => IDs sequence of textHUDMessages for leading the player to the shooting tutorial in lvl_perfnew
+//          | Pre_TargetA_NoCine => during shooting tutorial, before shooting the bull's eye (start of shooting tutorial)
+//          | BullsEyeHit_NoCine2 => "That's some good shooting." -> during shooting tutorial, hit bull's eye
+//          | Dummy2_Success_NoCine2 => "Good, you sure can handle a shooting iron!" -> during shooting tutorial, finished shooting scarecrow dummy
+//          | BadComp_Phase4_NoCine2 => "You didn't shoot a single one." -> during shooting tutorial, shooting bottles/pans
+//          | OKComp_Phase4_NoCine2 => "Not bad, but you could've done better." -> during shooting tutorial, shooting bottles/pans
+//          | GoodComp_Phase4_NoCine2 => "You've got them all! Nice shooting!" -> during shooting tutorial, shooting bottles/pans
 //          '
 // $7638B8: [PAL][64-byte Array] List of [(2x-4x) ShowdownPlayer_Data]
 //          - This array is only functional during a showdown match
@@ -1428,10 +1494,19 @@
 //          '
 // $7638F8: [PAL][8-bit {32-bit}] Showdown Mode Playercount
 //          - Value range [0x2-0x4], minimum 2 players, max 4 players
-// $7A0620: [PAL][Variable Size ASCII] Area_ID to Load
+// $7A0620: [PAL][Variable Size ASCII] Area_ID (functional)
 //          - The Area_ID that needs to be loaded is stored here
 //          - Changing this value to a valid ID and freezing before entering a loading screen, will load the corresponding mission/area
-//          - IDs listed at $0x6b0808
+//          
+//          # Area_IDs (list incomplete)
+//          |''''''''''''''''''''''''''
+//          | default => Intermittent loading screen (= screen before the MAIN Loading screen, where the protagonist twirls his pistols around) -> some sort of value between switching Area_IDs
+//          | lvl_perf => Chapter 1 - Bull's Eye - Intro with Red Jr.
+//          | lvl_hng => Chapter 2 - Bounty Hunter - Bounty for Bloody Tom
+//          | lvl_sher => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
+//          | lvl_traincar => Chapter 4 - The Traincar - Red has showdown with train robber inside traincar
+//          | lvl_traingood => Chapter 5 - Railroaded - Red fighting bandits on top of moving train
+//          | lvl_tomb => Brimstone
 // $7A0664: [PAL][8-bit {32-bit}] Display Language
 //          - Changing this value at runtime, will change the display language on loading
 //          0x0 => en
@@ -1458,6 +1533,8 @@
 //          |¨| - This value is NOT responsible for ending sundown mode
 // $7A09C0: [PAL][32-bit Pointer] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data (alt)
 //          - Identical pointer at $0x763070
+// $7A1870: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 2)
+//          - Identical pointer at $0x54caf0
 // $7A2A00: [PAL][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
 //          - Pointer is only functional during a Puppetshow
 //          
@@ -1481,7 +1558,6 @@
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
 // $E36118: could be important
-// $E7A11C: coord
 // $11E54C0: [PAL][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
 //           - Use this field only when the showdown mode scoreboard is displayed, otherwise these 64 bytes may be in use by other data
 //           
@@ -1498,12 +1574,7 @@
 //           |+0x20 - [12-byte ASCII] Winner_Text - Player 3
 //           |
 //           |+0x30 - [12-byte ASCII] Winner_Text - Player 4
-// $1293B84: weapons?
-// $152ED04: BottleA
-// $15396E4: bottleB
-// $153E324: bottleC
-// $15447A4: cupA
-// $1544C64: cupB
+// $14002EC: flag
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $198B014: [8bit] makes a key appear in chapter 2
 // $198B018: [8bit] makes a key appear in chapter 2
@@ -1514,14 +1585,10 @@
 //           pointerino positiive 5AD4
 // $198B260: [8bit] Mission 2 total shots fired
 // $19B7FD4: [8-bit] Chapter 1 - Shots left
-// $1A0EF3C: coord
-// $1A11754: Default weapon id
-// $1A11758: weapon_id equipped
 // $1A5D1BC: [32Bit] Current Cash chapter 1
 // $1A5D414: [8bit] Total ammo
 // $1A5D428: [8bit] Shots left before reloading
 // $1A5E720: [8bit] Total shots fired mission 1
 // $1A5E74C: [8bit] Total shot hits
 // $1A5E7A8: [8bit] mission 1 total kills
-// $1A5F295: Text ID
 // $1A88434: [8-bit] Chapter 3 - Shots left
