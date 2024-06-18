@@ -96,12 +96,13 @@ memory_dataStructures = {
 			"Y-Coordinate": 0x4,
 			"Z-Coordinate": 0x8,
 			"X-Coordinate": 0xC	}
-	},
+		},
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
-			"32BitFloat_TimeSpentPlaying": 0x388}
-	},
+			"32BitFloat_TimeSpentPlaying": 0x388,
+			"32Bit_StoryModeRetries": 0x28C}
+		},
 	"Struct_RewardMenuDisplayData": {
 		"pointerChains": {
 			"32Bit_Balance": { 
@@ -110,8 +111,12 @@ memory_dataStructures = {
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
 			"BitFlag_IsRewardMenuDisplayed": { 
 				"addAddressChain": [0xAC, 0x38]},
+		}},
+	"Struct_InGameMenuController": {
+		"offsetToMember": {
+			"ASCII_InGameMenuID": 0x18,
+			"BitFlag_IsInGameMenuDisplayed": 0x38},
 		},
-	},
 	"Struct_SinglePlayerData": {
 		"pointerChains": {
 			"ASCIi_GameTriggerID": { 
@@ -125,14 +130,13 @@ memory_dataStructures = {
 				"addAddressChain": [0xC, 0xC, 0x90]},
 			"Bitset_PlayerProfileUnlocks": { 
 				"addAddressChain": [0x5C8]},
-		},
-	},
+		}},
 	"Struct_GameController": {
 		"pointerChains": {
 			"EquippedWeapon_ReserveAmmo": { 
 				"addAddressChain": [0x2C, 0x14]}
-		},
-	}}
+		}}
+	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
 	memory_dataStructures[string_structKey]["sizeInBytes"]
@@ -170,22 +174,28 @@ DATATYPE_Struct 				= 100
 memory_addresses = {
 	// DATATYPE_xxxxx: {
 	// 	"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	// },
-	DATATYPE_ASCII: {
-		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
-		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+	// 	},0x501a38
 
-	},
+	DATATYPE_BitFlag: {
+		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL},
+		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
 		"GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
-	},
+		"UIRenderStackLevel": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a10, RELEASE_REGION_JPN: sNULL}, // Unused
+		},	
+	DATATYPE_ASCII: {
+		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"RewardMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
-	}}
+		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d60c, RELEASE_REGION_JPN: sNULL},
+		}
+	}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
@@ -232,10 +242,6 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 
 function memUtil_bitwiseOR(memAccessor_A, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
 	memAccessor_A + memAccessor_B - (memAccessor_A & memAccessor_B)
-
-function memUtil_bitwiseOR_SumOf(memAccessor_A, memAccessor_B) { // Same logic as above, but as a sumOf expression
-	return memAccessor_A + memAccessor_B - memAccessor_A & memAccessor_B
-} 
 
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
@@ -299,34 +305,6 @@ function was_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
 function on_ASCII_changeTo(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
 	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck) && 
 	ASCII_NotEquals(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prev(c))
-
-// ................
-// ◦ GAME STATE ◦
-// ''''''''''''''''
-GAMESTATE_MainMenu = 1
-GAMESTATE_SinglePlayer = 10
-GAMESTATE_ShowdownMode = 20
-const_GameState_data = {
-	GAMESTATE_SinglePlayer: {"ID": 0xFA},
-	GAMESTATE_ShowdownMode: {"ID": 0xC8},
-	GAMESTATE_MainMenu: {"ID": 0xA}}
-function get_GameStateID(enum_gameState) =>
-	const_GameState_data[enum_gameState]["ID"]
-
-function is_GameState(enum_gameState, enum_releaseRegion) => 
-	byte(memory_getAddress(DATATYPE_8Bit, "GameState", enum_releaseRegion)) == get_GameStateID(enum_gameState)
-
-function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
-	is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion) &&
-	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
-
-function on_AnyLevelRestart(enum_releaseRegion) { // This check only works as long as 32BitFloat_TimeSpentPlaying isn't already at max Float value, refer to code note at $0x740608	
-	// BUG on_AnyLevelRestart() --> only works when manually restarting level through pause menu, doesn't work when mission fails and Retry menu is shown
-	// - Use new memAddr at $0x562a10
-	let_pointerMemAddr_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_TimeSpentPlaying = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
-	let_memAccessor_TimeSpentPlaying = float(dword(let_pointerMemAddr_SelectedPlayerProfileData) + let_offsetTo_TimeSpentPlaying)
-	return let_memAccessor_TimeSpentPlaying != prev(let_memAccessor_TimeSpentPlaying)}
 
 // ...........
 // ◦ AREA ID ◦
@@ -433,9 +411,10 @@ function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enu
 		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD || 
 		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
 
-// ................
-// ◦ Rewards Menu ◦
-// ''''''''''''''''
+// ..................
+// ◦ In Game Menu's ◦
+// ''''''''''''''''''
+// ------------------RewardMenu---------------------
 function is_RewardMenu_displayed(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
@@ -450,17 +429,59 @@ function on_RewardMenu_render(enum_releaseRegion) {
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)
 	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
 
-function current_RewardMenuBalance(enum_releaseRegion) {
+function current_RewardMenu_Balance(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
 
-function current_RewardMenuBountyCollected(enum_releaseRegion) {
+function current_RewardMenu_BountyCollected(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
 
-// ..........................
-// ◦ Player Profile Unlocks ◦
-// ''''''''''''''''''''''''''
+// ------------------InGameMenu---------------------
+INGAMEMENU_RetryMenu = "continue"
+INGAMEMENU_GameOverScreen = "gameover"
+INGAMEMENU_PauseMenu = "pause"
+function is_AnyInGameMenu_displayed(enum_releaseRegion) {
+	let_memAccessor_IsInGameMenuDisplayed = bit0(
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed")
+	)
+	return let_memAccessor_IsInGameMenuDisplayed == 1}
+
+function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return 
+		is_AnyInGameMenu_displayed(enum_releaseRegion) && 
+		ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
+
+function is_RetryMenu_displayed(enum_releaseRegion) =>
+	is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)
+
+function is_GameOverScreen_displayed(enum_releaseRegion) =>
+	is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
+
+function is_PauseMenu_displayed(enum_releaseRegion) =>
+	is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
+
+// ..................
+// ◦ PLAYER PROFILE ◦
+// ''''''''''''''''''
+// ----------------PlayerProfileSTATISTICS--------------------
+function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
+	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
+	let_memAccessor_Statistic = float(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
+	return let_memAccessor_Statistic != prev(let_memAccessor_Statistic)}
+
+function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
+	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_StoryModeRetries")
+	let_memAccessor_Statistic = float(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
+	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
+
+// ----------------PlayerProfileUNLOCKS--------------------
 UNIQUE_WEAPON_COUNT = 24
 UPGRADEABLE_WEAPON_COUNT = 16
 Bitset_PlayerProfileUnlocks_data = {
@@ -531,9 +552,9 @@ Bitset_PlayerProfileUnlocks_data = {
 			}}
 	}
 
-// .............................
-// ◦ AmmoCounter HUDController ◦
-// '''''''''''''''''''''''''''''
+// ...............................
+// ◦ AMMO COUNTER HUD CONTROLLER ◦
+// '''''''''''''''''''''''''''''''
 function is_AmmoHUDControllerReserveAmmo(int_ammoCount, enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	let_pointerChain_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
@@ -558,6 +579,60 @@ function on_ShotsHit_change(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
 	return let_pointerChain_ShotsHit != prev(let_pointerChain_ShotsHit)}
+
+// ................
+// ◦ GAME STATE ◦
+// ''''''''''''''''
+GAMESTATE_MainMenu = 1
+GAMESTATE_SinglePlayer = 10
+GAMESTATE_ShowdownMode = 20
+const_GameState_data = {
+	GAMESTATE_SinglePlayer: {"ID": 0xFA},
+	GAMESTATE_ShowdownMode: {"ID": 0xC8},
+	GAMESTATE_MainMenu: {"ID": 0xA}}
+function get_GameState_ID(enum_gameState) =>
+	const_GameState_data[enum_gameState]["ID"]
+
+function current_GameState(enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "GameState", enum_releaseRegion))
+
+function prev_GameState(enum_releaseRegion) => 
+	prev(current_GameState(enum_releaseRegion))
+
+function is_GameState(enum_gameState, enum_releaseRegion) => 
+	current_GameState(enum_releaseRegion) == get_GameState_ID(enum_gameState)
+
+function on_GameState_changeTo(enum_gameState, enum_releaseRegion) => 
+	current_GameState(enum_releaseRegion) == get_GameState_ID(enum_gameState) 
+	&& prev_GameState(enum_releaseRegion) != get_GameState_ID(enum_gameState)
+
+function is_AtMainMenu(enum_releaseRegion) =>
+	is_GameState(GAMESTATE_MainMenu, enum_releaseRegion)
+
+
+
+function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
+	is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion) &&
+	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
+
+function is_Playing_ShowdownMode(enum_releaseRegion) =>
+	is_GameState(GAMESTATE_ShowdownMode, enum_releaseRegion) &&
+	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
+
+
+// ------------------------------------------------------
+function is_InGame(enum_releaseRegion) => 
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion)) == 1
+function on_Game_quit(enum_releaseRegion) => // Quiting game via pause menu
+	on_GameState_changeTo(GAMESTATE_MainMenu, enum_releaseRegion)
+
+function on_PauseMenu_gameRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
+	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
+	&& is_PauseMenu_displayed(enum_releaseRegion)
+
+function on_RetryMenu_gameRestart(enum_releaseRegion) => // Restarting this way loads the last checkpoint
+	on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) // <-- Restarting level via Retry Menu, increments this by 1 
+	&& is_RetryMenu_displayed(enum_releaseRegion)
 
 // =========================
 // • Memory INITIALIZATION •
@@ -636,14 +711,14 @@ achievements_coreData = {
 			"id": 439234, "points": 10,
 			"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements
+	"c_StoryChallenge": { // Category -  Story related challenge achievements // BUG check usage of on_RetryMenu_gameRestart() as they restart from a checkpoint NOT restart from levelStart
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": 1,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_Chapter1AcquireMoney": { // VERIFIED
 			"id": 438677, "points": 5,
 			"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
-		"a_Chapter5StayOnTrain": { // CONCEPT a_Chapter5StayOnTrain
+		"a_Chapter5StayOnTrain": { // VERIFIED
 			"id": 000000, "points": 3,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
 		},
@@ -669,6 +744,20 @@ achievements_typeByCategory = { // TODO set achievement types
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
+function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(enum_releaseRegion) =>
+	// ==== Alt Pause Lock Reset Group ==== Reset on game quit 
+	never_toAlt( 
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& on_Game_quit(enum_releaseRegion))
+	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
+	|| never_toAlt(
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& on_PauseMenu_gameRestart(enum_releaseRegion))
+	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
+	|| never_toAlt(
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& on_RetryMenu_gameRestart(enum_releaseRegion))
+
 // -------------------UnlockAllWeapons---------------------
 function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {	
 	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
@@ -838,72 +927,82 @@ function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)
 // =========================
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
-	// 	is_ReleaseRegion(enum_releaseRegion) &&
-	// 	always_false()),
+	// 	// ==== Core (Alt) Group ====
+	// 	is_ReleaseRegion(enum_releaseRegion) 
+	// 	&& always_false()
+	// 	),
 
-	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion) &&
-		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-		is_Area(AREA_Campaign_Railroaded, enum_releaseRegion) && 
-		unless(once( // <-- Pause Lock
-			current_PlayerZCoordinate(enum_releaseRegion) < 0
-		)) &&
-		trigger_when(on_RewardMenu_render(enum_releaseRegion))
-		||
-		never_toAlt( // Alt - Reset Group for Pause Lock
-			is_ReleaseRegion(enum_releaseRegion) &&
-			on_AnyLevelRestart(enum_releaseRegion)
-		)),
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_InGame(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& is_Area(AREA_Campaign_Railroaded, enum_releaseRegion) 
+
+		&& !is_RetryMenu_displayed(enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
+		&& !is_GameOverScreen_displayed(enum_releaseRegion)
+
+		&& unless(once( // <-- Pause Lock
+			current_PlayerZCoordinate(enum_releaseRegion) < 0))
+
+		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
+
+		// ==== (3x) Alt Pause Lock Reset Groups ====
+		|| achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(enum_releaseRegion)),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion) &&
-		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
-		unless( // <-- Disable achievement when more than 13 bullets were used
-			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) ||
-			once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion)) ||
-			once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion))
-		) && 
-		once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion)) &&
-		trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
-		||
-		never_toAlt( // Alt - Reset Group
-			is_ReleaseRegion(enum_releaseRegion) &&
-			on_AnyLevelRestart(enum_releaseRegion) || // <-- this line might be redundant as below line already resets before challenge start
-			on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion) // <-- reset when the shooting tutorial starts -> this is primarily necessary to reset the hitCount for repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion))
-		)),
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& is_InGame(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
+		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) 
+
+		&& unless( // <-- Pause Lock achievement when more than 13 bullets were used
+			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
+			|| once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion))
+			|| once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion)))
+
+		&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
+		&& trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ==== Reset when the shooting tutorial starts
+		|| never_toAlt( 
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
 	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion) &&
-		is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-		is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) &&
-		current_RewardMenuBountyCollected(enum_releaseRegion) >= 1000 &&
-		repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed 
-		once(on_RewardMenu_render(enum_releaseRegion))
-		||
-		never_toAlt( // Alt - Reset Group
-			is_ReleaseRegion(enum_releaseRegion) &&
-			!is_RewardMenu_displayed(enum_releaseRegion)
-		)),
-	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 		
-		// Underlying two lines break RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
-			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT &&
-			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4 &&
-		measured(
-			achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT, 
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+
+		&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= 1000
+
+		&& once(on_RewardMenu_render(enum_releaseRegion)) 
+		&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+		
+		// ==== Alt Reset Group ==== Reset hits correlated to RewardMenu being displayed
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& !is_RewardMenu_displayed(enum_releaseRegion))),
+	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		// ==== Core (Alt) Group ====
+		// Underlying 2 lines break RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
+			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT 
+			// && prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4
+
+		measured(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT, 
 			when = 
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-				!is_AreaLoading_active(enum_releaseRegion)
-		)),
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion))),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) < UPGRADEABLE_WEAPON_COUNT &&
-		prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) > UPGRADEABLE_WEAPON_COUNT - 4 &&
-		measured(
-			achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) == UPGRADEABLE_WEAPON_COUNT,
+		// ==== Core (Alt) Group ====
+		prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) < UPGRADEABLE_WEAPON_COUNT
+		&& prev(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)) > UPGRADEABLE_WEAPON_COUNT - 4
+		&& measured(achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) == UPGRADEABLE_WEAPON_COUNT,
 			when = 
-				is_ReleaseRegion(enum_releaseRegion) &&
-				is_Playing_SinglePlayerCampaign(enum_releaseRegion) &&
-				!is_AreaLoading_active(enum_releaseRegion)
-		))
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion)))
 	}
 
 // =====================
