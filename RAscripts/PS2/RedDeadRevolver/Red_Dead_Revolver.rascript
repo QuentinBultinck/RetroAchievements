@@ -412,60 +412,6 @@ function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enu
 		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
 
 // ..................
-// ◦ In Game Menu's ◦
-// ''''''''''''''''''
-// ------------------RewardMenu---------------------
-function is_RewardMenu_displayed(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsRewardMenuDisplayed == 1}
-
-function on_RewardMenu_render(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
-
-function current_RewardMenu_Balance(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
-
-function current_RewardMenu_BountyCollected(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
-
-// ------------------InGameMenu---------------------
-INGAMEMENU_RetryMenu = "continue"
-INGAMEMENU_GameOverScreen = "gameover"
-INGAMEMENU_PauseMenu = "pause"
-function is_AnyInGameMenu_displayed(enum_releaseRegion) {
-	let_memAccessor_IsInGameMenuDisplayed = bit0(
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed")
-	)
-	return let_memAccessor_IsInGameMenuDisplayed == 1}
-
-function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
-	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-	return 
-		is_AnyInGameMenu_displayed(enum_releaseRegion) && 
-		ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
-
-function is_RetryMenu_displayed(enum_releaseRegion) =>
-	is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)
-
-function is_GameOverScreen_displayed(enum_releaseRegion) =>
-	is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
-
-function is_PauseMenu_displayed(enum_releaseRegion) =>
-	is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
-
-// ..................
 // ◦ PLAYER PROFILE ◦
 // ''''''''''''''''''
 // ----------------PlayerProfileSTATISTICS--------------------
@@ -478,7 +424,7 @@ function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
 function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_StoryModeRetries")
-	let_memAccessor_Statistic = float(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
+	let_memAccessor_Statistic = dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
 
 // ----------------PlayerProfileUNLOCKS--------------------
@@ -551,6 +497,83 @@ Bitset_PlayerProfileUnlocks_data = {
 				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 5}},
 			}}
 	}
+
+
+// ..................
+// ◦ In Game Menu's ◦
+// ''''''''''''''''''
+// ------------------RewardMenu---------------------
+function is_RewardMenu_displayed(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsRewardMenuDisplayed == 1}
+
+function on_RewardMenu_render(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
+
+function current_RewardMenu_Balance(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+function current_RewardMenu_BountyCollected(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+// ------------------InGameMenu---------------------
+INGAMEMENU_RetryMenu = "continue"
+INGAMEMENU_GameOverScreen = "gameover"
+INGAMEMENU_PauseMenu = "pause"
+function current_IsInGameMenuDisplayed(enum_releaseRegion) =>
+	bit0(
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed")
+	)
+
+function prev_IsInGameMenuDisplayed(enum_releaseRegion) => 
+	prev(current_IsInGameMenuDisplayed(enum_releaseRegion))
+
+function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return 
+		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
+
+function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return 
+		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
+		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
+		
+		|| current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 // <---Block--- Checks when switching between InGameMenu's (eg. RetryMenu goes into GameOverScreen)
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4) // <-- check current ascii string
+		&& !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
+	}
+
+
+function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads the last checkpoint
+	// This function can also be substituted by on_PlayerProfileStat_StoryModeRetries_increment()
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return 
+		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
+		&& ascii_string_equals(let_memAddr_InGameMenuID, INGAMEMENU_RetryMenu, 4)}
+
+function on_PauseMenu_missionRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
+	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
+	&& is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
 
 // ...............................
 // ◦ AMMO COUNTER HUD CONTROLLER ◦
@@ -625,14 +648,6 @@ function is_InGame(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion)) == 1
 function on_Game_quit(enum_releaseRegion) => // Quiting game via pause menu
 	on_GameState_changeTo(GAMESTATE_MainMenu, enum_releaseRegion)
-
-function on_PauseMenu_gameRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
-	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
-	&& is_PauseMenu_displayed(enum_releaseRegion)
-
-function on_RetryMenu_gameRestart(enum_releaseRegion) => // Restarting this way loads the last checkpoint
-	on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) // <-- Restarting level via Retry Menu, increments this by 1 
-	&& is_RetryMenu_displayed(enum_releaseRegion)
 
 // =========================
 // • Memory INITIALIZATION •
@@ -711,7 +726,7 @@ achievements_coreData = {
 			"id": 439234, "points": 10,
 			"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements // BUG check usage of on_RetryMenu_gameRestart() as they restart from a checkpoint NOT restart from levelStart
+	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": 1,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
@@ -752,11 +767,12 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
 	|| never_toAlt(
 		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_PauseMenu_gameRestart(enum_releaseRegion))
+		&& on_PauseMenu_missionRestart(enum_releaseRegion))
 	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
 	|| never_toAlt(
 		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_RetryMenu_gameRestart(enum_releaseRegion))
+		&& on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion))
+		// && on_RetryMenu_retry(enum_releaseRegion) // <-- This can be a substitute for above line, but contains more logic lines
 
 // -------------------UnlockAllWeapons---------------------
 function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {	
@@ -939,16 +955,27 @@ achievements_triggers = {
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& is_Area(AREA_Campaign_Railroaded, enum_releaseRegion) 
 
-		&& !is_RetryMenu_displayed(enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
-		&& !is_GameOverScreen_displayed(enum_releaseRegion)
+		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
+		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
 
 		&& unless(once( // <-- Pause Lock
 			current_PlayerZCoordinate(enum_releaseRegion) < 0))
 
 		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
 
-		// ==== (3x) Alt Pause Lock Reset Groups ====
-		|| achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(enum_releaseRegion)),
+		// ==== Alt Pause Lock Reset Group ==== Reset on game quit 
+		|| never_toAlt( 
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& on_Game_quit(enum_releaseRegion))
+		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& on_PauseMenu_missionRestart(enum_releaseRegion))
+		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
+		|| never_toAlt( 
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) // <---2Lines--- Extra logic necessary, on_PlayerProfileStat_StoryModeRetries_increment() hits before PlayerCharacter is respawned back on top of train, thus PauseLock would immediately reactivate when player had jumped off train
+			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)),  
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion) 
