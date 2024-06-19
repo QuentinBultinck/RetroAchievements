@@ -560,6 +560,16 @@ function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 		&& !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
 
+function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return
+		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
+	}
+
 
 function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads the last checkpoint
 	// This function can also be substituted by on_PlayerProfileStat_StoryModeRetries_increment()
@@ -767,7 +777,8 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
 	|| never_toAlt(
 		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_PauseMenu_missionRestart(enum_releaseRegion))
+		&& on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
+		&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
 	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
 	|| never_toAlt(
 		is_ReleaseRegion(enum_releaseRegion) 
@@ -950,11 +961,12 @@ achievements_triggers = {
 
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_InGame(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_Area(AREA_Campaign_Railroaded, enum_releaseRegion) 
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			|| !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
 
+		&& once(is_InGame(enum_releaseRegion)) // <-- Prevent RATrigger popup being displayed during the shop at the start of the mission + Once is necessary, because this bitflag turns off when loading the RewardMenu
 		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
 		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
 
@@ -970,7 +982,8 @@ achievements_triggers = {
 		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_PauseMenu_missionRestart(enum_releaseRegion))
+			&& on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
+			&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
 		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
