@@ -41,13 +41,15 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 ### Achievement Categories
 
-- [Progression](#Progression)
-- [Win Condition](#WinCondition)
-- [Missable/extra content](#ExtraContent)
-- [Misc_AchievementCategory](#Misc_AchievementCategory)
+- [Story Progression](#Progression)
+- [Story Completion](#WinCondition)
+- [Story Challenges](#StoryChallenges)
+- [Showdown Challenges](#ShowdownChallenges)
+- [Unlocks](#Misc_AchievementCategory)
+
 
 <h2 id=Progression>
-    🏆 Progression 
+    🏆 Story Progression 
 </h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
@@ -58,7 +60,20 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 <h2 id=WinCondition>
-    🏆 Win Condition 
+    🏆 Story Completion 
+</h2>
+
+| Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
+|:---:|---|
+| **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| **title_placeholder**<br><sub>*a_CompleteStoryNormal*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete story mode on normal difficulty <br> - This is the default difficulty when starting from a clean savefile |
+| **title_placeholder**<br><sub>*a_CompleteStoryHard*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete story mode on hard difficulty <br> - This difficulty unlocks after completing store mode on normal difficulty |
+| **title_placeholder**<br><sub>*a_CompleteStoryVeryHard*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete story mode on very hard difficulty <br> - This difficulty unlocks after completing store mode on hard difficulty |
+| **title_placeholder**<br><sub>*a_CompleteStoryWood*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete story mode on 'Red Wood Revolver' difficulty <br> - This difficulty unlocks after completing store mode on hard difficulty |
+
+
+<h2 id=StoryChallenges>
+    🏆 Story Challenges 
 </h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
@@ -66,8 +81,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
 
-<h2 id=ExtraContent>
-    🏆 Missable/extra content 
+<h2 id=ShowdownChallenges>
+    🏆 Showdown Challenges
 </h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
@@ -75,14 +90,17 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
 
-<h2 id=Misc_AchievementCategory>
-    🏆 Misc_AchievementCategory
+<h2 id=Unlocks>
+    🏆 Unlocks
 </h2>
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
 | **title_placeholder**<br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-
+| **title_placeholder**<br><sub>*a_UnlockAllWeapons*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 24 unique weapons in story mode <br><br> <b><u>Side Arms</u></b> (8) <br> - Old Pistol<br> - Revolver<br> - Twin Revolvers<br> - Widowmaker<br> - Scorpion<br> - Six Shooter<br> - Pacificador<br> - Inquisitor<br><br> <b><u>Long Arms</u></b> (12) <br> - Breech Loader <br> - The Lion<br> - Twelve Gauge<br> - Owl Rifle<br> - Repeater Rifle<br> - High Caliber<br> - Halcon Rifle<br> - Bayonet Rifle<br> - Oppressor<br> - Sawn Off<br> - Escopeta<br> - Zwei Fasser<br><br> <b><u>Thrown Weapons</u></b> (4) <br> - Knife<br> - Dynamite<br> - Fire Bottle<br> - Snake Oil |
+| **title_placeholder**<br><sub>*a_UpgradeAllWeapons*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Upgrade or unlock all 16 upgradeable weapons in story mode <br><br> <b><u>Side Arms</u></b> (6) <br> - Old Pistol<br> - Revolver<br> - Twin Revolvers<br> - Widowmaker<br> - Six Shooter<br> - Pacificador<br><br> <b><u>Long Arms</u></b> (10) <br> - Breech Loader <br> - The Lion<br> - Twelve Gauge<br> - Owl Rifle<br> - Repeater Rifle<br> - High Caliber<br> - Halcon Rifle<br> - Bayonet Rifle<br> - Sawn Off<br> - Escopeta|
+| **title_placeholder**<br><sub>*a_MaxHealth*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 7 health upgrades for Red in story mode <br><br> <u><b>HP Upgrades</b></u> <br> - Chapter 7 'Freak Show', by simply completing the mission you'll receive a good rating, unlocking the HP upgrade <br> - 2nd visit to Brimstone, Jack Swift’s Shop: Talk to Jack four times in a row, and then buy his Lucky Flask for \$1500 <br> - .......|
+| **title_placeholder**<br><sub>*a_MaxSpecialMeter*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 5 dead eye upgrades for Red in story mode <br><br> <u><b>Dead Eye Upgrades</b></u> <br> - Chapter 6 'Carnival Life', by simply completing the mission you'll receive a good rating, unlocking the Dead Eye upgrade <br> - Chapter 14 'Sunset Canyon', get an excellent rating <br> - Before starting Chapter 10 'The Cemetery', buy the 'pocket watch' for \$1500 from the boy selling newspapers in Brimstone <br> - Chapter 24 'Battle Finale', get a good rating <br> - In Brimstone buy a 'strong drink' for \$1500 from the barman in the Saloon |
 
 
 <h1 id=LeaderboardsExplained>
