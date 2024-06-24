@@ -718,7 +718,7 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression
-		// "a_ReachBrimStone": { // CONCEPT a_template
+		// "a_ReachBrimStone": { // CONCEPT a_ReachBrimStone
 		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_Progression,
 		//	"devInfo": "Reach Brim"},
 		},
@@ -737,7 +737,7 @@ achievements_coreData = {
 		//	"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
-		// "a_": { // CONCEPT a_template
+		// "a_showdownChallenge": { // CONCEPT a_showdownChallenge
 		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_Standard,
 		//	"devInfo": "xxxxxxx"},
 		},
@@ -756,6 +756,15 @@ achievements_coreData = {
 		//	"devInfo": "Unlock all special meter upgrades"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
+		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
+		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Lose no allied cannons"},
+		// "a_Chapter10RideBison": { // CONCEPT a_Chapter10RideBison
+		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Ride a bison and kill enemies"},
+		// "a_Chapter15FindWeaponFaith": { // CONCEPT a_Chapter15FindWeaponFaith
+		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Faith is located inside a box up in a side corridor"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": 1, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
