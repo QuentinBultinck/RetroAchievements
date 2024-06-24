@@ -4,6 +4,8 @@
 // $4F6FD8: [8bit] Player is in a cutscene?
 // $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
 //          - Identical to $0x562a0c
+// $4FA50C: [PAL][32-bit Pointer] --(+0x0)--> Undefined_Struct_02
+//          - Contains pointers to other structures
 // $4FA558: [PAL][32-bit Timer] Time Spent In Control of Character
 //          - Increments by 3, each 2 frames (same for NTSC, PAL mode)
 //          - Only increments when player can control a character (campaign and showdown mode)
@@ -16,6 +18,12 @@
 //          - Game offers the option to chose refresh rate on game boot
 //          0x32 (=50) => PAL 50Hz mode
 //          0x3C (=60) => NTSC 60Hz mode
+// $501A38: [PAL][Bit Flag {32-bit}] bit 0 => Is In-Game (preferred)
+//          - Can be used to check if the level is restarted via PauseMenu
+//          - Restarting/Retrying via RetryMenu will keep this value at 1
+//          
+//          1 => In-Game (Single Player & Showdown Mode), PauseMenu, RetryMenu, GameOver screen
+//          0 => During loading screens, MainMenu, RewardMenu, Restarting level via PauseMenu
 // $54C7CC: [PAL][11-byte ASCII] Game ID (EUR) - PS2 Product ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - "SLES_524.78" => EUR
@@ -43,14 +51,15 @@
 //          |============================================
 //          | - This struct contains UI data logic for the Reward Menu (where the player can see which items he has unlocked from the mission and his mission stats)
 //          |
-//          |¨|+0x5D4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID (functional)
-//          |¨| - Documentation at $0x7a0620
+//          |+0x5D4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID (functional)
+//          |+| - Documentation at $0x7a0620
 //          |/
 //          |
 //          |+0x810 - [64-byte Array] List of [(4x) 16-byte Struct:RatingObjectiveStar_UI_Element_Data]
 //          |¨[Array Definition][64-byte]
 //          |¨|'''''''''''''''''''''''''
 //          |¨| - Struct Definition RatingObjectiveStar_UI_Element_Data below
+//          |¨|
 //          |¨|+0x0 - [16-byte Struct:RatingObjectiveStar_UI_Element_Data] Accuracy
 //          |¨|¨| - RewardMenu_UI_Element_ID = "pulseOn_accuracy"
 //          |¨|/
@@ -72,6 +81,7 @@
 //          |¨[Array Definition][48-byte]
 //          |¨|'''''''''''''''''''''''''
 //          |¨| - Struct Definition ItemUnlock_UI_Element_Data below
+//          |¨|
 //          |¨|+0x0 - [16-byte Struct:ItemUnlock_UI_Element_Data] Item Unlock - Good Rating
 //          |¨|¨| - RewardMenu_UI_Element_ID = "rankNormal"
 //          |¨|/
@@ -140,13 +150,16 @@
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
 //          bit 0 = 0 => In-game || Game  Is Booting Up
 //          bit 0 = 1 => Title Menu
-// $562A10: [PAL][8-bit Bitfield {32-bit}] Game State B
-//          - Don't use this bitfield for checking loading
-//          0x0 => Loading || Various Menu's (shop, reward menu...)
-//          0x1 => Loading
-//          0x2 => Main Menu
-//          0x4 => In-Game (SinglePlayer & Showdown) || Is in control of player character
-//          0x5 => Retry Menu & Game Over Menu
+// $562A10: [PAL][8-bit {32-bit}] UI Render Stack Level
+//          - This seems to count how many things are render on top of each other whilst in-game
+//          - This value can be used to check if the game is past the Main Menu; Check if => In-Game
+//          
+//          - 0x0 => No UI render?? (unconfirmed) (also during some cutscenes)
+//          - 0x1 => Loading?? (unconfirmed)
+//          - 0x2 => Main Menu
+//          - 0x3 => Game Render?? (unconfirmed)
+//          - 0x4 => Default In-Game HUD
+//          - high values => are extra UI on top of the game HUD (eg. the dualshock controller which is rendered during chapter 1, puts this value at 0x5 => then opening the pause menu puts it at 0x6...)
 // $562A20: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] Game_Controller
 //          
 //          [Struct Definition][??-byte] Game_Controller
@@ -160,6 +173,20 @@
 //          |++|¨| - This determines the size of the HP bar
 //          |++|/
 //          |++|+0x14 - [32-bit] HP (Display)
+//          |/
+//          |
+//          |+0x20 - [32-bit Pointer{2}]
+//          |++0x60 - [32-bit Pointer{3}] --(+0x0)--> [??-byte Struct] SpecialMeterGauge_Controller
+//          |++[Struct Definition][??-byte] SpecialMeterGauge_Controller
+//          |++|''''''''''''''''''''''''''''''''''''''''''''''''''
+//          |++| - Controls both the HUD display and the underlying logic for the special meter (below HP bar)
+//          |++|
+//          |++|+0x60 - [32-bit Float] Special Meter Gauge
+//          |++|¨| - Special actions such as deadeye or a special move depending on selected showdown character
+//          |++|/
+//          |++|+0x64 - [32-bit Float] Special Meter Max Gauge
+//          |++|¨| - This value, rounded down to the nearest whole number, equals the number of special meter bars displayed (e.g., 3.456 --> 3 bars)
+//          |++|¨| - Each special action costs 1 full bar
 //          |/
 //          |
 //          |+0x2C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] AmmoCounter_HUDController
@@ -179,7 +206,7 @@
 //          |+|¨| - Both of these values control the UI display
 //          |+|¨| - Functional ammunition per gun is stored via $0x763070 (refer to Struct: Ammunition_Inventory)
 //          |+|/
-//          |+|+0x28 - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition (copy of abpve)
+//          |+|+0x28 - [8-bit {32-bit}] Equipped Weapon - Loaded Ammunition (copy of above)
 //          |/
 //          |
 //          |+0x5C - [32-bit Pointer{2}] --(+0x0)--> [1916-byte Struct] Showdown_PosterMenu_Controller
@@ -225,19 +252,6 @@
 //          |¨|¨| - Timer starts at 3.5; Goes down by about 0.04 each 2 frames (might be different depending on PAL/NTSC mode)
 //          |¨|/
 //          |¨|+0x30 - [32-bit] Cash/Bounty (copy)
-//          |/
-//          |
-//          |+0x5E0C - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] SpecialMeterGauge_Controller
-//          |+[Struct Definition][??-byte] SpecialMeterGauge_Controller
-//          |+|''''''''''''''''''''''''''''''''''''''''''''''''''
-//          |+| - Controls both the HUD display and the underlying logic for the special meter (below HP bar)
-//          |+|
-//          |+|+0x0 - [32-bit Float] Special Meter Gauge
-//          |+|¨| - Special actions such as deadeye or a special move depending on selected showdown character
-//          |+|/
-//          |+|+0x4 - [32-bit Float] Special Meter Max Gauge
-//          |+|¨| - This value, rounded down to the nearest whole number, equals the number of special meter bars displayed (e.g., 3.456 --> 3 bars)
-//          |+|¨| - Each special action costs 1 full bar
 //          |/
 //          °
 //          
@@ -379,17 +393,26 @@
 //          |++|"| 2 => Hold 'Em
 //          |/
 //          '
-// $6B03F4: [PAL][32-bit Pointer{1}] --> Puppetshow Active Soundtrack File
-//          +0xC - [32-bit Pointer{2}]
-//          | - Pointer{2} is only functional during a Puppetshow
+// $6B03F4: [PAL][32-bit Pointer{1}] --> Soundtrack File Name
+//          |@Member of Struct:Undefined_Struct_02 ($0x4fa50c)
 //          |
-//          |+0x0 - [Variable Size ASCII] - Active Soundtrack File
-//          |"| - Currently playing soundtrack file
+//          |+0xC - [32-bit Pointer{2}]
+//          |+| - Pointer{2} is only functional when a soundtrack is active
+//          |+|
+//          |+|+0x0 - [Variable Size ASCII] Active SoundtrackFileName_ID
+//          |+|¨| - Currently playing soundtrack file
+//          |/
+//          '
 // $6B0808: [PAL][Variable Size ASCII] Area_ID (alt)
 //          - This value stores the Area_ID for the current map/level
 //          - Be wary to check only the necessary bytes to identify the Area_ID, don't count the succeeding bytes as there's some bogus data
 //          - Changing this value to a valid ID does not work to cheat/load the map
 //          - IDs listed at $0x7a0620
+// $6B0C99: [PAL][Bit Flag (8-bit] bit 0 => Is In-Game (alt)
+// $6B0C9A: [PAL][Bit Flag {8-bit}] bit 0 => Is No In-Mission Shop Open
+//          - In-Mission Shop = shop which is opened once the mission/level has already started. The Preceding Byte Bit Flag is 1 (eg. Chapter 2 'Bounty Hunter', shop opens just after intro cutscene OR shops in Brimstone)
+//          0 => In-Mission shop is open
+//          1 => No In-Mission shop is open
 // $6B18B4: [PAL][1024-byte ASCII Field] ShowdownMode_ScoreboardDisplay_Text
 //          =========================================
 //          @Fixed Memory Location
@@ -490,6 +513,44 @@
 // $6B48D0: [NTSCJ][96-byte ASCII Field] Player_Stats_Text - Player 4
 //          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
 //          @Regional Equivalent of $0x6b1b50
+// $73D60C: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] InGameMenu_Controller (preferred)
+//          @Fixed Memory Location. Although pointed to by one of the pointers at [$0x562a20-$0x562a60]
+//          - Pointer{1} is only functional when an InGameMenu has been displayed at least once
+//          - Whenever another type of InGameMenu is opened/render/displayed Pointer{1} changes value
+//          - Types of "InGameMenu's" listed below under InGameMenu_IDs
+//          
+//          [Struct Definition][??-byte] InGameMenu_Controller
+//          |============================================
+//          |+0x18 - [Variable size ASCII] InGameMenu_ID
+//          |¨| - IDs listed below
+//          |/
+//          |+0x38 - [Bit Flag {8-bit}] bit 0 => Is InGameMenu Displayed
+//          |¨| 1 => InGameMenu is displayed
+//          |¨| 0 => InGameMenu not displayed
+//          |/
+//          |+0x39 - [Bit Flag {8-bit}] bit 0 => Is SubMenu NOT Displayed
+//          |¨| 1 => No SubMenu displayed
+//          |¨| 0 => Any SubMenu is displayed
+//          |/
+//          |+0x3C - [28-byte Array] List of [(7x) 32-bit Pointer{2}]
+//          |¨| - Some of these pointers point to structs storing ASCII text which are used as the displaytext for the Retry Menu
+//          |/
+//          |+0x450 - [32-bit Float] Retry Countdown Timer
+//          |¨| - Value range [9.9-0.0]; When this hits 0 --> 'Game Over' screen
+//          |¨| - Decrements each frame
+//          |/
+//          '
+//          
+//          # InGameMenu_IDs
+//          |(list complete)
+//          |'''''''''''''''''
+//          | pause = Pause Menu (entering submenu's of this menu, won't change the ID)
+//          | continue = Retry Menu
+//          | gameover = Game Over screen
+//          '
+// $73D684: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] InGameMenu_Controller (alt)
+//          @Fixed Memory Location. Although pointed to by one of the pointers at [$0x562a20-$0x562a60]
+//          - Pointer{1} is only functional when the Retry Menu has been displayed at least once
 // $73D819: [PAL][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_A]
 //          @Fixed Memory Location. Although pointed to by $0x562a20
 //          - This array is populated on start of a Showdown match
@@ -902,7 +963,7 @@
 //          |+0x388 - [32-bit Float] Time Spent Playing (in seconds)
 //          |¨| - Max Float Value = 0x7F7FFFFF, does not overflow/reset back to 0, which is practically millions of billions of years
 //          |¨| - This float value initializes the display value in the Journal as a signed int, which is probably why the max displayable value is 596523h 14m 07s
-//          |¨| - This value is updated whenever the game saves/a mission is restarted/a mission is quit
+//          |¨| - This value is updated whenever the game saves/a mission is manually restarted via the pause menu/a mission is quit/prior to the retry menu being displayed
 //          |/
 //          |+0x39C - [32-bit] Total Money Collected
 //          |+0x3A0 - [32-bit] Total Bullet Fired
@@ -961,7 +1022,6 @@
 //          | rslogo.pss => Rockstar Logo on game boot
 //          | titles.pss => Game Title Intro Video (plays after selecting language)
 //          | sher7001.pss => Chapter 3 (Ugly Streetfight) - Intro video: Red talks with sheriff about bounty reward + bandit shoots dog
-// $754A80: pointer
 // $754A90: [PAL][32-bit Pointer{1}] --> Actor_Data Array
 //          +0x8 - [32-bit Pointer{2}]
 //          ++0x10 - [160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
@@ -1006,9 +1066,14 @@
 //          | - This struct is very similar to ShowdownPlayer_Data_C ($0x7638b8)
 //          |
 //          |+0xC - [32-bit Pointer{2}]
-//          |++0xC - [32-bit Pointer{3}]
-//          |++|+0x90 - [16-byte PS2_Vector] Player_Location
-//          |++|¨| - PS2_Vector Definition below
+//          |+|
+//          |+|+0xC - [32-bit Pointer{3}]
+//          |+|+|+0x90 - [16-byte PS2_Vector] Player_Location
+//          |+|+|¨| - PS2_Vector Definition below
+//          |+|/
+//          |+|
+//          |+|+0x80 - [32-bit Pointer{3}] --(+0x0)--> [176-byte Struct] Weapon_Manager
+//          |+|+| - Struct Definition at $0x7638b8
 //          |/
 //          |
 //          |+0x18 - [32-bit Pointer{2}]
@@ -1028,11 +1093,6 @@
 //          |+|+|¨| - This can be used to ID certain in-engine cinematics as well as certain triggers/actions
 //          |+|+|¨| - WARNING, sometimes the first letter of this ASCII ID is switched with 0 instead of the ASCII character. The 0 probably means this data is not in use anymore
 //          |+|+|¨| - IDs listed below
-//          |/
-//          |
-//          |+0x194 - [32-bit Pointer{2}]
-//          |++0x360 - [32-bit Pointer{3}] --(+0x0)--> [176-byte Struct] Weapon_Manager
-//          |++| - Struct Definition at $0x7638b8
 //          |/
 //          |
 //          |+0x36C - [32-bit Pointer{2}] --(+0x0)--> [456-byte Struct] SinglePlayer_Stats
@@ -1161,12 +1221,15 @@
 //          |¨| - This byte doesn't unlock anything
 //          |/
 //          |+0x7 - [Bit Flags] @Byte8 in Bitset:Player_Profile_Unlocks
-//          |¨| - This byte doesn't unlock anything
+//          |¨| bit 1 => HP Upgrade - Buy 'Snakebit Kit' from shop guy in Chapter 8 'Rogue Valley' || HP Upgrade - Buy 'Lucky Flask' from Jack Swift walking around Brimstone (during 3rd visit)
+//          |¨| bit 3 => Dead Eye Upgrade - Buy 'Strong Drink' from Barman at Brimstone Saloon
+//          |¨| bit 5 => HP Upgrade - Chapter 7 'Freak Show' (Good rating)
 //          |/
 //          |+0x8 - [Bit Flags] @Byte9 in Bitset:Player_Profile_Unlocks
-//          |¨| bits [0-2] => //
+//          |¨| bit 0 => Dead Eye Upgrade -Cchapter 6 'Carnival Life' (Good rating)
+//          |¨| bits [1-2] => //
 //          |¨| bit 3 => (PAGE) Good People of Brimstone - Mathias Lampry
-//          |¨| bit 4 => (PAGE) Good People of Brimstone - Mathias Lampry
+//          |¨| bit 4 => //
 //          |¨| bit 5 => (PAGE) Merchants of Brimstone - Carnaby Peabody
 //          |¨| bit 6 => (PAGE) Merchant of Brimstone - Ralph Clover
 //          |¨| bit 7 => (PAGE) Citizens of the Wilderniss - Fred Kenyon
@@ -1507,6 +1570,10 @@
 //          | lvl_traincar => Chapter 4 - The Traincar - Red has showdown with train robber inside traincar
 //          | lvl_traingood => Chapter 5 - Railroaded - Red fighting bandits on top of moving train
 //          | lvl_tomb => Brimstone
+//          | lvl_ghost => Chapter 6 - Carnival Life - Red saves Jack Swift + fight against Pig Josh
+//          | lvl_shernite => Chapter 7 - Freak Show - Jack Swift fights Perry's gang
+//          | lvl_bomb => Chapter 8 - Rogue Valley - Red fights Bad Bessie's gang
+//          | lvl_gunsmoke => Chapter 9 - Ghost Town - Red fights Jessy Lynch's gang
 // $7A0664: [PAL][8-bit {32-bit}] Display Language
 //          - Changing this value at runtime, will change the display language on loading
 //          0x0 => en
@@ -1514,6 +1581,10 @@
 //          0x2 => fr
 //          0x3 => de
 //          0x4 => it
+// $7A0694: [PAL][32-bit Pointer] --(+0x0)--> [Variable Size Struct] Mission_Data (preferred)
+//          - Mission_Data stores various information about enemy spawn flags, checkpoint flags, event flags, cutscene flags (stored as floats)
+//          - Floats: 1.0 (=0x3f800000) => flag/checkpoint is activated || 0.0 (0x0) => flag/chekcpoint is inactive, perhaps certain inactive flags are stored as -1.0
+//          - Turning these flags on/off during mission can trigger enemy spawns, checkpoint, cutscenes... (some event flags may bug out the mission, when manually turning them on)
 // $7A0788: [PAL][32-bit Pointer] --> Mission/Level Timers
 //          - These timers behave differently based on game mode
 //          
@@ -1523,18 +1594,24 @@
 //          |
 //          |+0x20 - [32-bit Float] Time Spent in Mission/Level (functional)
 //          |¨| - This is the value which is shown on the Reward Menu (campaign)
+//          |/
+//          '
 //          
-//          {Showdown: Sundown Mode
+//          {Campaign Mode || Showdown: Sundown Mode
 //          |''''''''''''''''''''''''
 //          |+0x1C - [32-bit Float] Countdown timer (functional)
-//          |¨| - This value IS responsible for ending sundown mode (When this value hits 0.0 --> triggers end of sundown mode)
-//          |
+//          |¨| - This value is responsible for ending sundown mode (When this value hits 0.0 --> triggers end of sundown mode)
+//          |¨| - This value is also used as a countdown timer for some Single Player mission objectives
+//          |/
 //          |+0x20 - [32-bit Float] Time Spent in Mission/Level
 //          |¨| - This value is NOT responsible for ending sundown mode
+//          |/
+//          '
 // $7A09C0: [PAL][32-bit Pointer] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data (alt)
 //          - Identical pointer at $0x763070
 // $7A1870: [PAL][32-bit Pointer{1}] --> Reward Menu Display Data (alt 2)
 //          - Identical pointer at $0x54caf0
+// $7A1920: [PAL][32-bit Pointer] --(+0x0)--> [Variable Size Struct] Mission_Data (alt)
 // $7A2A00: [PAL][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
 //          - Pointer is only functional during a Puppetshow
 //          
@@ -1563,18 +1640,17 @@
 //           
 //           [ASCII Field Definition][64-byte] ShowdownMode_ScoreboardWinnerDisplay_Text
 //           |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-//           |+0x0 - [12-byte ASCII] Winner_Text - Player 1
-//           |¨[ASCII Definition][12-byte] Winner_Text
+//           |+0x0 - [12-byte ASCII Field:Winner_Text] Player 1
+//           |¨[ASCII Field Definition][12-byte] Winner_Text
 //           |¨|'''''''''''''''''''''''''''
-//           |¨| - ASCII = "Winner" => Player is a winner
-//           |¨| - ASCII = " okLable" => Player is not a winner
+//           |¨| - ASCII = "Winner" => Player is a part of the winning team
+//           |¨| - ASCII = " okLable" => Player is NOT part of the winning team
 //           |/
-//           |+0x10 - [12-byte ASCII] Winner_Text - Player 2
+//           |+0x10 - [12-byte ASCII Field:Winner_Text] Player 2
 //           |
-//           |+0x20 - [12-byte ASCII] Winner_Text - Player 3
+//           |+0x20 - [12-byte ASCII Field:Winner_Text] Player 3
 //           |
-//           |+0x30 - [12-byte ASCII] Winner_Text - Player 4
-// $14002EC: flag
+//           |+0x30 - [12-byte ASCII Field:Winner_Text] Player 4
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $198B014: [8bit] makes a key appear in chapter 2
 // $198B018: [8bit] makes a key appear in chapter 2
