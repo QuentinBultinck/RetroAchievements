@@ -100,8 +100,10 @@ memory_dataStructures = {
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
-			"32BitFloat_TimeSpentPlaying": 0x388,
-			"32Bit_StoryModeRetries": 0x28C}
+			"ASCII_FurthestCompletedStoryChapter": 0x23C,
+			"32Bit_StoryModeRetries": 0x28C,
+			"32Bit_CurrentPlaythroughDifficulty": 0x292,
+			"32BitFloat_TimeSpentPlaying": 0x388,}
 		},
 	"Struct_RewardMenuDisplayData": {
 		"pointerChains": {
@@ -187,6 +189,7 @@ memory_addresses = {
 	DATATYPE_ASCII: {
 		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
 		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
@@ -255,56 +258,32 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 	)
 
 // ----------------CustomASCIIcomparitors---------------------
-function ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
-	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
+// Custom ASCII comparitors are necessary to use with pointers, built-in RAtools asci_string_equals() generates weird logic, when using pointers as the memAddrr
+function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	let_array_comparisons = []
-	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
-		let_ASCIIchars = 0
-		if (let_stepBy4Index + 4 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 3) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, dword_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 3 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 2) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, tbyte_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 2 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 1) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, word_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 1 <= let_ASCIIcharacterCount) {
-			let_ASCIIchar = array_ASCIIasHex_ToCheck[let_stepBy4Index]
-			array_push(let_array_comparisons, byte(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchar)
-		}
+	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
+		let_substring = substring(string_s, let_stepBy4Index, 4)
+		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
 	}
-	return all_of(let_array_comparisons, wrapper)}
+	return all_of(let_array_comparisons, c => c)}
 
-function ASCII_NotEquals(memAddr_ASCII, array_ASCIIasHex_ToCheck, wrapper = c => c) {
-	let_ASCIIcharacterCount = length(array_ASCIIasHex_ToCheck)
+function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
 	let_array_comparisons = []
-	for let_stepBy4Index in range(0, let_ASCIIcharacterCount - 1, step = 4) {
-		let_ASCIIchars = 0
-		if (let_stepBy4Index + 4 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 3) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, dword_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 3 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 2) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, tbyte_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 2 <= let_ASCIIcharacterCount) {
-			for let_stepBy1Index in range(0, 1) let_ASCIIchars = (let_ASCIIchars * 0x100) + array_ASCIIasHex_ToCheck[let_stepBy4Index + let_stepBy1Index]
-			array_push(let_array_comparisons, word_be(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchars)
-		} else if (let_stepBy4Index + 1 <= let_ASCIIcharacterCount) {
-			let_ASCIIchar = array_ASCIIasHex_ToCheck[let_stepBy4Index]
-			array_push(let_array_comparisons, byte(memAddr_ASCII + let_stepBy4Index) == let_ASCIIchar)
-		}}
-	return none_of(let_array_comparisons, wrapper)}
+	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
+		let_substring = substring(string_s, let_stepBy4Index, 4)
+		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
+	}
+	return none_of(let_array_comparisons, c => c)}
 
-function is_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck)
+function is_ASCII(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s)
 
-function was_ASCII(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prior(c))
+function was_ASCII(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s, c => prior(c))
 
-function on_ASCII_changeTo(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
-	ASCII_Equals(memAddr_ASCII, array_ASCIIasHex_ToCheck) && 
-	ASCII_NotEquals(memAddr_ASCII, array_ASCIIasHex_ToCheck, c => prev(c))
+function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s) && 
+	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
 
 // ...........
 // ◦ AREA ID ◦
@@ -312,6 +291,13 @@ function on_ASCII_changeTo(memAddr_ASCII, array_ASCIIasHex_ToCheck) =>
 AREA_loading = "default"
 AREA_Campaign_BrokenCreek = "lvl_perfnew"
 AREA_Campaign_Railroaded = "lvl_traingood"
+
+AREA_Campaign_FallFromGrace = "lvl_mansroof"
+// const_AreaIDs_asHex = {
+// 	AREA_loading: {
+// 		""
+// 	}
+// }
 
 function is_AreaLoading_active(enum_releaseRegion) => 
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
@@ -329,8 +315,8 @@ function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
 // ...................
 // ◦ Game Trigger ID ◦
 // '''''''''''''''''''
-GAMETRIGGER_ShootingTutorial_Start = "Pre_TargetA_NoCine"
-GAMETRIGGER_ShootingTutorial_GoodCompletion = "GoodComp_Phase4_NoCine2" 
+GAMETRIGGER_ShootingTutorial_Start = "Pre_TargetA" // Pre_TargetA_NoCine
+GAMETRIGGER_ShootingTutorial_GoodCompletion = "GoodComp" // GoodComp_Phase4_NoCine2
 const_GameTrigger_asHex = {
 	GAMETRIGGER_ShootingTutorial_Start: {
 		"Short": [0x50,0x72,0x65,0x5F,0x54,0x61,0x72,0x67,0x65,0x74,0x41], // "Pre_TargetA"
@@ -346,14 +332,20 @@ function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 	let_pointerChainTo_GameTriggerID = 
 		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
 		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
-	return is_ASCII(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])}
+	// return is_ASCII(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
+	return is_ASCII(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
+	
+	}
 
 function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
 		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
 		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
-	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])}
+	// return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
+	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
+	
+	}
 
 // ...................
 // ◦ Player Location ◦
@@ -414,7 +406,7 @@ function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enu
 // ..................
 // ◦ PLAYER PROFILE ◦
 // ''''''''''''''''''
-// ----------------PlayerProfileSTATISTICS--------------------
+// ----------------PlayerProfile STATISTICS--------------------
 function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
@@ -427,7 +419,7 @@ function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	let_memAccessor_Statistic = dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
 
-// ----------------PlayerProfileUNLOCKS--------------------
+// ----------------PlayerProfile UNLOCKS--------------------
 UNIQUE_WEAPON_COUNT = 24
 UPGRADEABLE_WEAPON_COUNT = 16
 Bitset_PlayerProfileUnlocks_data = {
@@ -497,6 +489,23 @@ Bitset_PlayerProfileUnlocks_data = {
 				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 5}},
 			}}
 	}
+
+// -------------------------PlayerProfile CAMPAIGN SETTINGS-----------------------------
+DIFFICULTY_Normal = 0x0
+DIFFICULTY_Hard = 0x1
+DIFFICULTY_VeryHard = 0x2
+DIFFICULTY_RedWoodRevolver = 0x3
+function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) {
+	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_CurrentPlaythroughDifficulty") 
+	return byte(let_memAddrPointerTo_SelectedPlayerProfileData + let_offsetTo_CampaignSetting) == enum_difficulty}
+
+function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
+	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + 0x1 // <-- 0x1, because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof") 
+	let_areaId_fixed = substring(enum_areaId, 1) // <-- because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof") 
+	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)
+}
 
 
 // ..................
@@ -651,7 +660,11 @@ function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
 function is_Playing_ShowdownMode(enum_releaseRegion) =>
 	is_GameState(GAMESTATE_ShowdownMode, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
-
+// ------------------------------------------------------
+CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
+function on_EndingCreditsVideo_start(enum_releaseRegion) {
+	let_memAddr_EndingCreditsFlag = memory_getAddress(DATATYPE_ASCII, "EndingCreditsFlag", enum_releaseRegion)
+	return on_ASCII_changeTo(let_memAddr_EndingCreditsFlag, CREDITS_AUDIO_FILE_NAME)} 
 
 // ------------------------------------------------------
 function is_InGame(enum_releaseRegion) => 
@@ -723,18 +736,21 @@ achievements_coreData = {
 		//	"devInfo": "Reach Brim"},
 		},
 	"c_StoryEnd": { // Category - Story Ending
-		// "a_CompleteStoryNormal": { // CONCEPT a_CompleteStoryNormal
-		// 	"id": 000000, "points": 0000000, "type": achievements_TYPE_WinCondition,
-		// 	"devInfo": "Complete single player campaign on normal difficulty"},
+		"a_CompleteStoryNormal": { // CONCEPT a_CompleteStoryNormal
+			"id": 443703, "points": 10, "type": achievements_TYPE_WinCondition,
+			"devInfo": "Complete single player campaign on normal difficulty"},
 		// "a_CompleteStoryHard": { // CONCEPT a_CompleteStoryHard
-		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_WinCondition,
+		//	"id": 000000, "points": 10, "type": achievements_TYPE_WinCondition,
 		//	"devInfo": "Complete single player campaign on hard difficulty"},
 		// "a_CompleteStoryVeryHard": { // CONCEPT a_CompleteStoryVeryHard
-		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_WinCondition,
+		//	"id": 000000, "points": 25, "type": achievements_TYPE_WinCondition,
 		//	"devInfo": "Complete single player campaign on very hard difficulty"},
 		// "a_CompleteStoryWood": { // CONCEPT a_CompleteStoryWood
-		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_WinCondition,
+		//	"id": 000000, "points": 10, "type": achievements_TYPE_WinCondition,
 		//	"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
+		// "a_CompleteStoryHardcoreCheat": { // CONCEPT a_CompleteStoryHardcoreCheat
+		//	"id": 000000, "points": 25, "type": achievements_TYPE_WinCondition,
+		//	"devInfo": "Complete single player campaign on very hard difficulty with cheat 'Bite The Bullet' activated"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
 		// "a_showdownChallenge": { // CONCEPT a_showdownChallenge
@@ -971,6 +987,13 @@ achievements_triggers = {
 	// 	&& always_false()
 	// 	),
 
+	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+		&& is_StoryCampaignDifficulty(DIFFICULTY_Normal, enum_releaseRegion)
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)
+		),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
 		unless(
@@ -1062,15 +1085,24 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
+	"a_CompleteStoryNormal": 				{"en": "Fall From Grace"},
+	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
+	"a_CompleteStoryVeryHard": 				{"en": "Legend of the West"},
+	"a_CompleteStoryWood": 					{"en": "The Wood, The Red and the Inferno"},
+	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
-	"a_UnlockAllWeapons":					{"en": "Total Armament"},
-	"a_UpgradeAllWeapons":					{"en": "The Finest in the West"},
+	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
+	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_CompleteStoryNormal": 				{"en": "Wrangle the story campaign on normal difficulty"},
+	"a_CompleteStoryHard": 					{"en": "Wrangle the story campaign on hard difficulty"},
+	"a_CompleteStoryVeryHard": 				{"en": "Wrangle the story campaign on very hard difficulty"},
+	"a_CompleteStoryWood": 					{"en": "Wrangle the story campaign on Red Wood Revolver difficulty"},
 	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
