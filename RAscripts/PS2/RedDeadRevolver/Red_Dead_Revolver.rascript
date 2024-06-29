@@ -498,14 +498,14 @@ DIFFICULTY_RedWoodRevolver = 0x3
 function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_CurrentPlaythroughDifficulty") 
-	return byte(let_memAddrPointerTo_SelectedPlayerProfileData + let_offsetTo_CampaignSetting) == enum_difficulty}
+	return byte(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting) == enum_difficulty}
 
 function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
+	letConst_offset = 1 // <-- because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof")
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + 0x1 // <-- 0x1, because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof") 
-	let_areaId_fixed = substring(enum_areaId, 1) // <-- because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof") 
-	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)
-}
+	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + letConst_offset  
+	let_areaId_fixed = substring(enum_areaId, letConst_offset)
+	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
 
 
 // ..................
@@ -712,6 +712,16 @@ achievements_TYPE_Progression = "progression"
 achievements_TYPE_WinCondition = "win_condition"
 achievements_TYPE_Missable = "missable"
 achievements_TYPE_Standard = ""
+
+achievement_POINTS_Minor = 1 		// Finding a hidden item, do some arbitrary/easter egg task
+achievement_POINTS_Basic = 2 		// Defeating a few enemies
+achievement_POINTS_Easy = 3 		// Completing an easy quest or level
+achievement_POINTS_Intermediate = 4 // Completing a harder quest or level
+achievement_POINTS_Advanced = 5 	// Collecting rare items
+achievement_POINTS_Challenging = 10 // Defeating a major boss
+achievement_POINTS_Hard = 25 		// Completing the game 
+achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
+achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
@@ -727,68 +737,80 @@ achievements_coreData = {
 		// ------------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "type": achievements_TYPE_Standard,
+	//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression
 		// "a_ReachBrimStone": { // CONCEPT a_ReachBrimStone
-		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Reach Brim"},
+		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Reach Brimstone for the 1st time"},
 		},
 	"c_StoryEnd": { // Category - Story Ending
-		"a_CompleteStoryNormal": { // CONCEPT a_CompleteStoryNormal
-			"id": 443703, "points": 10, "type": achievements_TYPE_WinCondition,
+		"a_CompleteStoryNormal": { // VERIFIED
+			"id": 443703, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
 			"devInfo": "Complete single player campaign on normal difficulty"},
-		// "a_CompleteStoryHard": { // CONCEPT a_CompleteStoryHard
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_WinCondition,
-		//	"devInfo": "Complete single player campaign on hard difficulty"},
-		// "a_CompleteStoryVeryHard": { // CONCEPT a_CompleteStoryVeryHard
-		//	"id": 000000, "points": 25, "type": achievements_TYPE_WinCondition,
-		//	"devInfo": "Complete single player campaign on very hard difficulty"},
-		// "a_CompleteStoryWood": { // CONCEPT a_CompleteStoryWood
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_WinCondition,
-		//	"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
+		"a_CompleteStoryHard": { // QA
+			"id": 443870, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
+			"devInfo": "Complete single player campaign on hard difficulty"},
+		"a_CompleteStoryVeryHard": { // QA
+			"id": 443871, "points": achievement_POINTS_Hard, "type": achievements_TYPE_WinCondition,
+			"devInfo": "Complete single player campaign on very hard difficulty"},
+		"a_CompleteStoryWood": { // VERIFIED
+			"id": 443872, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
+			"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
 		// "a_CompleteStoryHardcoreCheat": { // CONCEPT a_CompleteStoryHardcoreCheat
-		//	"id": 000000, "points": 25, "type": achievements_TYPE_WinCondition,
+		//	"id": 0000000, "points": achievement_POINTS_Hard, "type": achievements_TYPE_WinCondition,
 		//	"devInfo": "Complete single player campaign on very hard difficulty with cheat 'Bite The Bullet' activated"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
-		// "a_showdownChallenge": { // CONCEPT a_showdownChallenge
-		//	"id": 000000, "points": 0000000, "type": achievements_TYPE_Standard,
-		//	"devInfo": "xxxxxxx"},
+		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		//	"devInfo": "As The 'Blade' Slade win bouny hunter match on stage 'xxxx', using only knives"},
+		// "a_WinSundownFortDiego": { // CONCEPT a_WinSundownFortDiego
+		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a 4 player Free-for-all Sundown match on stage 'Fort Diego'"},
+		// "a_WinSundown1vsTeam": { // CONCEPT a_WinSundown1vsTeam
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a 1 vs 3 player CPU team Sundown match on stage 'xxxxxx'"},
+		// "a_WinHighNoonxxxx": { // CONCEPT a_WinHighNoon
+		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a 4 player Free-for-all High Noon match on stage 'xxxxx'"},
+		// "a_WinBountyHunterSunsetCanyon": { // CONCEPT a_WinBountyHunterSunsetCanyon
+		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a 4 player Free-for-all Bounty Hunter match on stage 'Sunset Canyon'"},
 		},
 	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
 		// "a_UnlockAllWeapons": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
-		// 	"id": 439051, "points": 10, "type": achievements_TYPE_Standard,
+		// 	"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED
-			"id": 439234, "points": 10, "type": achievements_TYPE_Standard,
+			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
 		// "a_MaxHealth": { // CONCEPT a_MaxHealth
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Unlock all health upgrades"},
 		// "a_MaxSpecialMeter": { // CONCEPT a_MaxSpecialMeter
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Unlock all special meter upgrades"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Lose no allied cannons"},
 		// "a_Chapter10RideBison": { // CONCEPT a_Chapter10RideBison
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Ride a bison and kill enemies"},
 		// "a_Chapter15FindWeaponFaith": { // CONCEPT a_Chapter15FindWeaponFaith
-		//	"id": 000000, "points": 10, "type": achievements_TYPE_Standard,
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Faith is located inside a box up in a side corridor"},
 		"a_PerfectShootingTutorial": { // VERIFIED
-			"id": 438301, "points": 1, "type": achievements_TYPE_Standard,
+			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_Chapter1AcquireMoney": { // VERIFIED
-			"id": 438677, "points": 5, "type": achievements_TYPE_Standard,
+			"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
 		"a_Chapter5StayOnTrain": { // VERIFIED
-			"id": 000000, "points": 3, "type": achievements_TYPE_Standard,
+			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
 		},
 	}
@@ -992,8 +1014,25 @@ achievements_triggers = {
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 		&& is_StoryCampaignDifficulty(DIFFICULTY_Normal, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)
-		),
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+	"a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+		&& is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+	"a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+		&& is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion)
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+	"a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
 		unless(
@@ -1085,17 +1124,44 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
-	"a_CompleteStoryNormal": 				{"en": "Fall From Grace"},
+	"a_CompleteStoryNormal": 				{"en": "Red's Redemption"},
 	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
 	"a_CompleteStoryVeryHard": 				{"en": "Legend of the West"},
 	"a_CompleteStoryWood": 					{"en": "The Wood, The Red and the Inferno"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
+	"a_WinHighNoon":						{"en": "Last Man Standing"},
+	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
+	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
 	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
+
+// Showdown Challenge Title Idea's
+	// Red's Redemption
+	// Vendetta Complete
+	// Last Man Standing
+	// Justice Served Cold
+	// The Final Showdown
+	// Revenge of Red
+	// Nemesis No More
+	// Blood for Blood
+	// End of the Trail
+	// Gunfight at Sunset
+	// Foe Vanquished
+	// Reckoning Day
+	// Wrath Unleashed
+	// Rivalry Ended
+	// Deadly Vengeance
+	// Bullet with a Name
+	// Silent Justice
+	// Legend of Red
+	// Bitter Victory
+	// Westward Justice
+
+
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
@@ -1103,11 +1169,15 @@ achievements_descriptions = {
 	"a_CompleteStoryHard": 					{"en": "Wrangle the story campaign on hard difficulty"},
 	"a_CompleteStoryVeryHard": 				{"en": "Wrangle the story campaign on very hard difficulty"},
 	"a_CompleteStoryWood": 					{"en": "Wrangle the story campaign on Red Wood Revolver difficulty"},
+	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
+	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
+	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
+	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
 	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
-	"a_UnlockAllWeapons":					{"en": "Unlock the full weapon arsenal"},
-	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential"},
+	"a_UnlockAllWeapons":					{"en": "Unlock the full weapon arsenal in the story campaign"},
+	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
 
 // ===============================
