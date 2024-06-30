@@ -105,7 +105,7 @@ memory_dataStructures = {
 			"32Bit_CurrentPlaythroughDifficulty": 0x292,
 			"32BitFloat_TimeSpentPlaying": 0x388,}
 		},
-	"Struct_RewardMenuDisplayData": {
+	"Struct_RewardMenu_StartChpMenu_DisplayData": {
 		"pointerChains": {
 			"32Bit_Balance": { 
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
@@ -113,6 +113,8 @@ memory_dataStructures = {
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
 			"BitFlag_IsRewardMenuDisplayed": { 
 				"addAddressChain": [0xAC, 0x38]},
+			"BitFlag_IsStartChpMenuActive": { 
+				"addAddressChain": [0x214]},
 		}},
 	"Struct_InGameMenuController": {
 		"offsetToMember": {
@@ -180,6 +182,7 @@ memory_addresses = {
 
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL},
+		"IsNotLoading": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -195,7 +198,7 @@ memory_addresses = {
 		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
-		"RewardMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
+		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d60c, RELEASE_REGION_JPN: sNULL},
 		}
 	}
@@ -246,6 +249,44 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 function memUtil_bitwiseOR(memAccessor_A, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
 	memAccessor_A + memAccessor_B - (memAccessor_A & memAccessor_B)
 
+function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This function should be used when counting flags via a bitcount, where not all bits should be counted (eg. bitcount(0xA) - bit0(0xA) - bit1(0xA))
+		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
+		for let_bitIndex in array_bitIndicesToAdd 
+			let_array_bitIndicesToSub[let_bitIndex] = iNULL
+		return let_array_bitIndicesToSub
+	}
+
+function memGenerate_SumOf_BitsetFlags(dict_FlagData, memAccessor_accessorToBitset, enum_releaseRegion) { // memAccessor_accessorToBitset should require parameters: (int_byteIndex, accessorType, enum_releaseRegion)
+	let_array_memAccessorsToSum = []
+	let_array_memAccessorsToSub = [] 
+	for let_byteIndex in dict_FlagData {
+		let_array_bitIndices = dict_FlagData[let_byteIndex]
+		let_bitCount = length(let_array_bitIndices)
+		if (let_bitCount == 8) { // AddSource bitcount [byte]
+			let_memAccessor_bitcount = memAccessor_accessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
+		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
+			let_memAccessor_bitcount = memAccessor_accessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
+			for let_bitIndexToSub in memUtil_createArrayOfBitIndicesToSub(let_array_bitIndices) {
+				if (let_bitIndexToSub != iNULL)	{
+					let_memAccessor_bit = memAccessor_accessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
+					array_push(let_array_memAccessorsToSub, let_memAccessor_bit)
+				}
+			}
+		} else if (let_bitCount <= 4) { // AddSource [each bit]
+			for let_bitIndex in let_array_bitIndices {
+				let_memAccessor_bit = memAccessor_accessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				array_push(let_array_memAccessorsToSum, let_memAccessor_bit)
+			}
+		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+	}
+	
+	return
+		sum_of(let_array_memAccessorsToSum, memAccessor => memAccessor) // Add all flags
+		- sum_of(let_array_memAccessorsToSub, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
+	}
+
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -293,11 +334,6 @@ AREA_Campaign_BrokenCreek = "lvl_perfnew"
 AREA_Campaign_Railroaded = "lvl_traingood"
 
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
-// const_AreaIDs_asHex = {
-// 	AREA_loading: {
-// 		""
-// 	}
-// }
 
 function is_AreaLoading_active(enum_releaseRegion) => 
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
@@ -420,16 +456,27 @@ function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
 
 // ----------------PlayerProfile UNLOCKS--------------------
-UNIQUE_WEAPON_COUNT = 24
+WEAPON_COUNT = 24
 UPGRADEABLE_WEAPON_COUNT = 16
-Bitset_PlayerProfileUnlocks_data = {
-	"Flags_AllUpgradedWeapons": {
+HP_UPGRADE_COUNT = 7
+DEADEYE_UPGRADE_COUNT = 5 
+STAGE_COUNT = 13
+STAGE_DEFAULT_UNLOCKED_COUNT = 2
+CHARACTER_COUNT = 48
+CHARACTER_DEFAULT_UNLOCKED_COUNT = 8
+JOURNALPAGE_COUNT = 129
+JOURNALPAGE_DEFAULT_UNLOCKED_COUNT = 9
+FlagData_Bitset_PlayerProfileUnlocks = {
+	// FlagData Dictionary Definition:
+		// Dictionary key --> refers to byte index in bitset
+		// Dictionary value --> refers to bit indices
+	"Flags_AllUpgradedWeapons": { // 16 flags
 		1: [4,6],
 		2: [0,2,5,7],
 		3: [1,3,5,7],
 		4: [1,3,6],
 		5: [0,3,5]},
-	"Flags_AllWeapons": { 
+	"Flags_AllUniqueWeapons": { // 24 unique flags
 		"AllFlags": { // 40 flags --> AddSource each Flag (or bitcount with subsource non-weapon flags in byte)
 			1: [3,4,5,6,7],
 			2: [0,1,2,3,4,5,6,7],
@@ -438,7 +485,7 @@ Bitset_PlayerProfileUnlocks_data = {
 			5: [0,1,2,3,4,5,6,7],
 			6: [2,3,4],
 			},
-		"NonUniqueFlags": { // 16 weapons have double flags --> SubSource Flag_Normal OR Flag_Upgraded
+		"NonUniqueFlags": { // 16 weapons have double flags --> SubSource Flag_Normal [bitwise_AND] Flag_Upgraded
 			"OldPistol": {
 				"Flag_Normal": {"ByteIndex": 1, "BitIndex": 3},
 				"Flag_Upgraded": {"ByteIndex": 1, "BitIndex": 4}},
@@ -487,8 +534,166 @@ Bitset_PlayerProfileUnlocks_data = {
 			"Escopeta": {
 				"Flag_Normal": {"ByteIndex": 5, "BitIndex": 4},
 				"Flag_Upgraded": {"ByteIndex": 5, "BitIndex": 5}},
-			}}
+			}},
+	"Flags_AllHealthUpgrades": { // 7 flags
+		7: [7],
+		8: [0,1,2,5,6,7]},
+	"Flags_AllDeadEyeUpgrades": { // 5 flags
+		8: [3,4],
+		9: [0,1,2]},
+	"Flags_AllUniqueCharacters": { // 40 Unique Flags (+ 8 characters unlocked by default)
+		"AllFlags": { // 46 Flags
+			10: [0,1,2,6,7],
+			11: [1,2,3,6],
+			12: [3,5,6],
+			13: [1,3],
+			14: [1,2],
+			15: [1,3,5,6],
+			16: [2,3,4,6,7],
+			17: [0,2,4,6,7],
+			18: [2],
+			19: [0,3,4],
+			20: [3,4,7],
+			21: [0,1,4,6],
+			23: [2,3,5,6,7]},
+		"NonUniqueFlags": { // 6 characters have double flags --> SubSource Flag_A [bitwise_AND] Flag_B
+			"MannyQuinn": {
+				"Flag_A": {"ByteIndex": 12, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 19, "BitIndex": 3}},
+			"SissyFess": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 3},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 7}},
+			"BloodyTom": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 2},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 6}},
+			"SmileyFawler": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 1},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 5}},
+			"Sam": {
+				"Flag_A": {"ByteIndex": 10, "BitIndex": 7},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 3}},
+			"Grizzly": {
+				"Flag_A": {"ByteIndex": 10, "BitIndex": 6},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 2}}}},
+	"Flags_AllStages": { // 11 flags ( + 2 stages unlocked by default)
+		12: [2,7],
+		13: [0,7],
+		14: [3],
+		15: [0,2],
+		16: [5],
+		18: [4],
+		20: [2],
+		21: [2]},
+	"Flags_AllUniquePages": { // 120 unique flags (+ 9 pages unlocked by default)
+		"AllFlags": { // 144 flags
+			// ==== Weapons ==== (40)
+			1: [3,4,5,6,7],
+			2: [0,1,2,3,4,5,6,7],
+			3: [0,1,2,3,4,5,6,7],
+			4: [0,1,2,3,4,5,6,7],
+			5: [0,1,2,3,4,5,6,7],
+			6: [2,3,4],
+			// ==== Pages ==== (104)
+			9: [3,5,6,7],
+			10: [0,1,2,3,4,5,6,7],
+			11: [0,1,2,3,4,5,6,7],
+			12: [0,1,3,4,5,6,7],
+			13: [1,2,3,4,5,6],
+			14: [0,1,2,4,5,6,7],
+			15: [0,1,2,3,4,5,6,7],
+			16: [0,1,2,3,4,5,6,7],
+			17: [0,1,2,3,4,5,6,7],
+			18: [0,1,2,3,4,5,6,7],
+			19: [0,1,2,3,4,5,6,7],
+			20: [0,1,2,3,4,5,6,7],
+			21: [0,1,4,5,6,7],
+			22: [0,1],
+			23: [1,2,3,4,5,6,7],
+			24: [6]},
+		"NonUniqueFlags": { // 24 non-unique flags
+			// ==== Pages ==== (2)
+			"RedWolfTribe": {
+				"Flag_A": {"ByteIndex": 21, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 24, "BitIndex": 6}},
+			"OscarNavarro_PaulSwigBennet": {
+				"Flag_A": {"ByteIndex": 10, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 1}},
+			// ==== Weapons ==== (16)
+			"OldPistol": {
+				"Flag_A": {"ByteIndex": 1, "BitIndex": 3},
+				"Flag_B": {"ByteIndex": 1, "BitIndex": 4}},
+			"Revolver": {
+				"Flag_A": {"ByteIndex": 1, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 1, "BitIndex": 6}},
+			"TwinRevolver": {
+				"Flag_A": {"ByteIndex": 1, "BitIndex": 7},
+				"Flag_B": {"ByteIndex": 2, "BitIndex": 0}},
+			"Widowmaker": {
+				"Flag_A": {"ByteIndex": 2, "BitIndex": 1},
+				"Flag_B": {"ByteIndex": 2, "BitIndex": 2}},
+			"BreechLoader": {
+				"Flag_A": {"ByteIndex": 2, "BitIndex": 4},
+				"Flag_B": {"ByteIndex": 2, "BitIndex": 5}},
+			"TheLion": {
+				"Flag_A": {"ByteIndex": 2, "BitIndex": 6},
+				"Flag_B": {"ByteIndex": 2, "BitIndex": 7}},
+			"TwelveGauge": {
+				"Flag_A": {"ByteIndex": 3, "BitIndex": 0},
+				"Flag_B": {"ByteIndex": 3, "BitIndex": 1}},
+			"OwlRifle": {
+				"Flag_A": {"ByteIndex": 3, "BitIndex": 2},
+				"Flag_B": {"ByteIndex": 3, "BitIndex": 3}},
+			"RepeaterRifle": {
+				"Flag_A": {"ByteIndex": 3, "BitIndex": 4},
+				"Flag_B": {"ByteIndex": 3, "BitIndex": 5}},
+			"HighCaliber": {
+				"Flag_A": {"ByteIndex": 3, "BitIndex": 6},
+				"Flag_B": {"ByteIndex": 3, "BitIndex": 7}},
+			"SixShooter": {
+				"Flag_A": {"ByteIndex": 4, "BitIndex": 0},
+				"Flag_B": {"ByteIndex": 4, "BitIndex": 1}},
+			"Pacificador": {
+				"Flag_A": {"ByteIndex": 4, "BitIndex": 2},
+				"Flag_B": {"ByteIndex": 4, "BitIndex": 3}},
+			"HalconRifle": {
+				"Flag_A": {"ByteIndex": 4, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 4, "BitIndex": 6}},
+			"BayonetRifle": {
+				"Flag_A": {"ByteIndex": 4, "BitIndex": 7},
+				"Flag_B": {"ByteIndex": 5, "BitIndex": 0}},
+			"SawnOff": {
+				"Flag_A": {"ByteIndex": 5, "BitIndex": 2},
+				"Flag_B": {"ByteIndex": 5, "BitIndex": 3}},
+			"Escopeta": {
+				"Flag_A": {"ByteIndex": 5, "BitIndex": 4},
+				"Flag_B": {"ByteIndex": 5, "BitIndex": 5}},
+			// ==== Characters ==== (6)
+			"MannyQuinn": {
+				"Flag_A": {"ByteIndex": 12, "BitIndex": 5},
+				"Flag_B": {"ByteIndex": 19, "BitIndex": 3}},
+			"SissyFess": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 3},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 7}},
+			"BloodyTom": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 2},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 6}},
+			"SmileyFawler": {
+				"Flag_A": {"ByteIndex": 11, "BitIndex": 1},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 5}},
+			"Sam": {
+				"Flag_A": {"ByteIndex": 10, "BitIndex": 7},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 3}},
+			"Grizzly": {
+				"Flag_A": {"ByteIndex": 10, "BitIndex": 6},
+				"Flag_B": {"ByteIndex": 23, "BitIndex": 2}}}},
 	}
+
+function memGenerate_acessorToBitset_PlayerProfileUnlocks(int_byteIndex, accessorType, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor = memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = int_byteIndex - 1, accessor = accessorType)
+	return let_memAccessor}
 
 // -------------------------PlayerProfile CAMPAIGN SETTINGS-----------------------------
 DIFFICULTY_Normal = 0x0
@@ -513,26 +718,34 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 // ''''''''''''''''''
 // ------------------RewardMenu---------------------
 function is_RewardMenu_displayed(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)
 	return let_memAccessor_IsRewardMenuDisplayed == 1}
 
 function on_RewardMenu_render(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenuDisplayData", "BitFlag_IsRewardMenuDisplayed",
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)
 	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
 
 function current_RewardMenu_BountyCollected(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenuDisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+// ------------------StartChpMenu---------------------
+function is_StartChpMenu_active(enum_releaseRegion) {
+	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStartChpMenuActive =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsStartChpMenuActive", 
+		let_memAddr_StartChpMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsStartChpMenuActive == 1}
 
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
@@ -660,6 +873,10 @@ function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
 function is_Playing_ShowdownMode(enum_releaseRegion) =>
 	is_GameState(GAMESTATE_ShowdownMode, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
+
+function is_Loading(enum_releaseRegion) => 
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLoading", enum_releaseRegion)) == 0
+
 // ------------------------------------------------------
 CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
 function on_EndingCreditsVideo_start(enum_releaseRegion) {
@@ -779,19 +996,31 @@ achievements_coreData = {
 		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Win a 4 player Free-for-all Bounty Hunter match on stage 'Sunset Canyon'"},
 		},
-	"c_Unlocks": { // Category - Unlocking journal pages, showdown characters and showdown maps/stages
+	"c_Unlocks": { // Category - Unlocking items
 		// "a_UnlockAllWeapons": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
 		// 	"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Unlock all upgraded weapons in the Story Campaign"},
-		// "a_MaxHealth": { // CONCEPT a_MaxHealth
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Unlock all health upgrades"},
-		// "a_MaxSpecialMeter": { // CONCEPT a_MaxSpecialMeter
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Unlock all special meter upgrades"},
+			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
+		"a_UnlockAllStages": { // VERIFIED
+			"id": 444065, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Unlock all 13 Showdown stages"},
+		"a_UnlockAllCharacters": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			"devInfo": "Unlock all 48 Showdown characters"},
+		// "a_CompleteHalfJournal": { // CONCEPT a_CompleteHalfJournal
+		//	"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Complete 50% of the journal"},
+		"a_CompleteFullJournal": { // CONCEPT a_CompleteFullJournal
+			"id": 0000000, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete 100% of the journal"},
+		"a_MaxHealth": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			"id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			"devInfo": "Unlock all 7 health upgrades for Red"},
+		"a_MaxDeadEye": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
@@ -803,6 +1032,9 @@ achievements_coreData = {
 		// "a_Chapter15FindWeaponFaith": { // CONCEPT a_Chapter15FindWeaponFaith
 		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Faith is located inside a box up in a side corridor"},
+		// "a_Chapter8SaveCurlyShaw": { // CONCEPT a_Chapter8SaveCurlyShaw
+		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Level 'Rogue Valley' | Save Curly Shaw from the bandits"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
@@ -834,67 +1066,39 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 		is_ReleaseRegion(enum_releaseRegion) 
 		&& on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion))
 		// && on_RetryMenu_retry(enum_releaseRegion) // <-- This can be a substitute for above line, but contains more logic lines
+function achievements_generate_FullTrigger_StoryCompletion(enum_difficulty, enum_releaseRegion) =>
+	// ==== Core (Alt) Group ====
+	is_ReleaseRegion(enum_releaseRegion)
+	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+	&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+	&& is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion)
+	&& on_EndingCreditsVideo_start(enum_releaseRegion)
 
-// -------------------UnlockAllWeapons---------------------
-function achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) {	
-	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
-		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
-		for let_bitIndex in array_bitIndicesToAdd 
-			let_array_bitIndicesToSub[let_bitIndex] = iNULL
-		return let_array_bitIndicesToSub
+// -------------------UnlockAllUniqueWeapons---------------------
+function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {	
+	function achievements_generate_SumOf_NonUniqueWeaponFlags(enum_releaseRegion) {
+		let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_Normal & Flag_Normal (with bitwise AND)
+		for let_weaponKey in FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"] {
+			let_flagNormal = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Normal"]
+			let_memAccessor_flagNormal = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagNormal["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]], enum_releaseRegion)
+			
+			let_flagUpgraded = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
+			let_memAccessor_flagUpgraded = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagUpgraded["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], enum_releaseRegion)
+
+			array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagNormal & let_memAccessor_flagUpgraded))
+		}
+		return sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor)
 	}
 
-	function createAccessorToBitset(int_byteIndex, accessorType, enum_releaseRegion) {
-		let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-		let_memAccessor = memory_generateAddAddressPointerChain(
-				"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
-				int_offsetToMember = int_byteIndex - 1, accessor = accessorType)
-		return let_memAccessor
+	let_sumOf_AllWeaponFlags = memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["AllFlags"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+	let_sumOf_NonUniqueWeaponFlags = achievements_generate_SumOf_NonUniqueWeaponFlags(enum_releaseRegion)
+
+	return 
+		let_sumOf_AllWeaponFlags 
+		- let_sumOf_NonUniqueWeaponFlags // Subtract non-unique flags
 	}
 
-	let_array_memAccessorsToSum_AllFlags = []
-	let_array_memAccessorsToSub_AllFlags = [] 
-	for let_byteIndex in Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["AllFlags"] {
-		let_array_bitIndices = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["AllFlags"][let_byteIndex]
-		let_bitCount = length(let_array_bitIndices)
-		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
-		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
-			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
-			for let_bitIndexToSub in createArrayOfBitIndicesToSub(let_array_bitIndices) {
-				if (let_bitIndexToSub != iNULL)	{
-					let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
-					array_push(let_array_memAccessorsToSub_AllFlags, let_memAccessor_bit)
-				}
-			}
-		} else if (let_bitCount <= 4) { // AddSource [each bit]
-			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
-				array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bit)
-			}
-		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
-	}
-
-	let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_Normal & Flag_Normal (with bitwise AND)
-	for let_weaponKey in Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"] {
-		let_flagNormal = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Normal"]
-		let_memAccessor_flagNormal = createAccessorToBitset(let_flagNormal["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]], enum_releaseRegion)
-		
-		let_flagUpgraded = Bitset_PlayerProfileUnlocks_data["Flags_AllWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
-		let_memAccessor_flagUpgraded = createAccessorToBitset(let_flagUpgraded["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], enum_releaseRegion)
-
-		array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagNormal & let_memAccessor_flagUpgraded))
-	}
-
-	return
-		sum_of(let_array_memAccessorsToSum_AllFlags, memAccessor => memAccessor) // Add all flags
-		- sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
-		- sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor) // Subtract non-unique flags
-	}
-
-function achievements_generate_SumOf_FlagsAllWeaponsDelta_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+function achievements_generate_SumOf_FlagsAllUniqueWeaponsDelta_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < WEAPON_COUNT"
 	(prev(bitcount(dword(0x763070) + 0x0005C8))) +
 	(prev(bitcount(dword(0x763070) + 0x0005C9))) +
 	(prev(bitcount(dword(0x763070) + 0x0005CA))) + 
@@ -923,7 +1127,7 @@ function achievements_generate_SumOf_FlagsAllWeaponsDelta_HardCoded() => // Hard
 	(prev(bit7(dword(0x763070) + 0x0005C8)) & prev(bit0(dword(0x763070) + 0x0005C9))) - 
 	(prev(bit1(dword(0x763070) + 0x0005C9)) & prev(bit2(dword(0x763070) + 0x0005C9)))
 
-function achievements_generate_SumOf_FlagsAllWeapons_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < UNIQUE_WEAPON_COUNT"
+function achievements_generate_SumOf_FlagsAllUniqueWeapons_HardCoded() => // Hardcoded because RAtools can't generate: "achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) < WEAPON_COUNT"
 	(bitcount(dword(0x763070) + 0x0005C8)) + 
 	(bitcount(dword(0x763070) + 0x0005C9)) + 
 	(bitcount(dword(0x763070) + 0x0005CA)) + 
@@ -952,51 +1156,68 @@ function achievements_generate_SumOf_FlagsAllWeapons_HardCoded() => // Hardcoded
 	(bit7(dword(0x763070) + 0x0005C8) & bit0(dword(0x763070) + 0x0005C9)) - 
 	(bit1(dword(0x763070) + 0x0005C9) & bit2(dword(0x763070) + 0x0005C9))
 
-// -------------------UnlockAllUpgradedWeapons---------------------
-function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) {
-	function createArrayOfBitIndicesToSub(array_bitIndicesToAdd) {
-		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
-		for let_bitIndex in array_bitIndicesToAdd 
-			let_array_bitIndicesToSub[let_bitIndex] = iNULL
-		return let_array_bitIndicesToSub
+// -------------------UnlocksOther---------------------
+function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) => 
+	memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+
+function achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) =>
+	memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllHealthUpgrades"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+
+function achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion) =>
+	memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllDeadEyeUpgrades"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+
+function achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion) =>
+	memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllStages"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+	+ STAGE_DEFAULT_UNLOCKED_COUNT
+
+function achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion) {
+	function achievements_generate_SumOf_NonUniqueCharacterFlags(enum_releaseRegion) {
+		let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_A & Flag_B (with bitwise AND)
+		for let_characterKey in FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueCharacters"]["NonUniqueFlags"] {
+			let_flagA = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueCharacters"]["NonUniqueFlags"][let_characterKey]["Flag_A"]
+			let_memAccessor_flagA = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagA["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagA["BitIndex"]], enum_releaseRegion)
+			
+			let_flagB = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueCharacters"]["NonUniqueFlags"][let_characterKey]["Flag_B"]
+			let_memAccessor_flagB = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagB["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagB["BitIndex"]], enum_releaseRegion)
+
+			array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagA & let_memAccessor_flagB))
+		}
+		return sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor)
 	}
 
-	function createAccessorToBitset(int_byteIndex, accessorType, enum_releaseRegion) {
-		let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-		let_memAccessor = memory_generateAddAddressPointerChain(
-				"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
-				int_offsetToMember = int_byteIndex - 1, accessor = accessorType)
-		return let_memAccessor
+	let_sumOf_AllCharacterFlags = 
+		memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueCharacters"]["AllFlags"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+		+ CHARACTER_DEFAULT_UNLOCKED_COUNT
+	let_sumOf_NonUniqueCharacterFlags = achievements_generate_SumOf_NonUniqueCharacterFlags(enum_releaseRegion)
+
+	return 
+		let_sumOf_AllCharacterFlags 
+		- let_sumOf_NonUniqueCharacterFlags // Subtract non-unique flags
 	}
 
-	let_array_memAccessorsToSum_AllFlags = []
-	let_array_memAccessorsToSub_AllFlags = [] 
-	for let_byteIndex in Bitset_PlayerProfileUnlocks_data["Flags_AllUpgradedWeapons"] {
-		let_array_bitIndices = Bitset_PlayerProfileUnlocks_data["Flags_AllUpgradedWeapons"][let_byteIndex]
-		let_bitCount = length(let_array_bitIndices)
-		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
-		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
-			let_memAccessor_bitcount = createAccessorToBitset(let_byteIndex, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bitcount)
-			for let_bitIndexToSub in createArrayOfBitIndicesToSub(let_array_bitIndices) {
-				if (let_bitIndexToSub != iNULL)	{
-					let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
-					array_push(let_array_memAccessorsToSub_AllFlags, let_memAccessor_bit)
-				}
-			}
-		} else if (let_bitCount <= 4) { // AddSource [each bit]
-			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = createAccessorToBitset(let_byteIndex, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
-				array_push(let_array_memAccessorsToSum_AllFlags, let_memAccessor_bit)
-			}
-		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) {
+	function achievements_generate_SumOf_NonUniqueCharacterFlags(enum_releaseRegion) {
+		let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_A & Flag_B (with bitwise AND)
+		for let_characterKey in FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniquePages"]["NonUniqueFlags"] {
+			let_flagA = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniquePages"]["NonUniqueFlags"][let_characterKey]["Flag_A"]
+			let_memAccessor_flagA = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagA["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagA["BitIndex"]], enum_releaseRegion)
+			
+			let_flagB = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniquePages"]["NonUniqueFlags"][let_characterKey]["Flag_B"]
+			let_memAccessor_flagB = memGenerate_acessorToBitset_PlayerProfileUnlocks(let_flagB["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagB["BitIndex"]], enum_releaseRegion)
+
+			array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagA & let_memAccessor_flagB))
+		}
+		return sum_of(let_array_memAccessorsToSub_NonUniqueFlags, memAccessor => memAccessor)
 	}
 
-	return
-		sum_of(let_array_memAccessorsToSum_AllFlags, memAccessor => memAccessor) // Add all flags
-		- sum_of(let_array_memAccessorsToSub_AllFlags, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
+	let_sumOf_AllCharacterFlags = 
+		memGenerate_SumOf_BitsetFlags(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniquePages"]["AllFlags"], memGenerate_acessorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
+		+ JOURNALPAGE_DEFAULT_UNLOCKED_COUNT
+	let_sumOf_NonUniqueCharacterFlags = achievements_generate_SumOf_NonUniqueCharacterFlags(enum_releaseRegion)
+
+	return 
+		let_sumOf_AllCharacterFlags 
+		- let_sumOf_NonUniqueCharacterFlags // Subtract non-unique flags
 	}
 
 // =========================
@@ -1011,28 +1232,16 @@ achievements_triggers = {
 
 	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_Normal, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+		achievements_generate_FullTrigger_StoryCompletion(DIFFICULTY_Normal, enum_releaseRegion)),
 	"a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+		achievements_generate_FullTrigger_StoryCompletion(DIFFICULTY_Hard, enum_releaseRegion)),
 	"a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+		achievements_generate_FullTrigger_StoryCompletion(DIFFICULTY_VeryHard, enum_releaseRegion)),
 	"a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+		achievements_generate_FullTrigger_StoryCompletion(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
 		unless(
@@ -1097,13 +1306,65 @@ achievements_triggers = {
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& !is_RewardMenu_displayed(enum_releaseRegion))),
+	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		// Below line break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+			// prev(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion)) == HP_UPGRADE_COUNT - 1 &&
+		measured(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) == HP_UPGRADE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion))),
+	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		// Below line break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+			// prev(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion)) == DEADEYE_UPGRADE_COUNT - 1 &&
+		measured(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion) == DEADEYE_UPGRADE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion))),
+	"a_UnlockAllStages": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		prev(achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)) == STAGE_COUNT - 1
+		&& measured(achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion) == STAGE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion))),
+	"a_UnlockAllCharacters": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====
+		// Underlying 2 lines break RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
+			// prev(achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)) < CHARACTER_COUNT 
+			// && prev(achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)) > (CHARACTER_COUNT*7)/10
+		measured(achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion) == CHARACTER_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				&& !is_AreaLoading_active(enum_releaseRegion))),
+	"a_CompleteFullJournal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+		// Underlying 2 lines breaks RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
+			// prev(achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)) < JOURNALPAGE_COUNT 
+			// && prev(achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)) > (JOURNALPAGE_COUNT*4)/5
+		measured(achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) == JOURNALPAGE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
+				&& !is_AreaLoading_active(enum_releaseRegion) // TODO implement these 4 lines into the other Unlocks achievements
+				&& !is_StartChpMenu_active(enum_releaseRegion)
+				&& !is_Loading(enum_releaseRegion)
+				&& (is_InGame(enum_releaseRegion) || is_RewardMenu_displayed(enum_releaseRegion))
+			// format = "percent" // <-- This line break RATools, thus manually turn on percentage via RAIntegration UI
+			)),
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
 		// Underlying 2 lines break RAtools - but are required for the achievement, thus this trigger is implementated via RAintegration UI
-			// prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) < UNIQUE_WEAPON_COUNT 
-			// && prev(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion)) > UNIQUE_WEAPON_COUNT - 4
+			// prev(achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)) < WEAPON_COUNT 
+			// && prev(achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)) > (WEAPON_COUNT*7)/10
 
-		measured(achievements_generate_SumOf_FlagsAllWeapons(enum_releaseRegion) == UNIQUE_WEAPON_COUNT, 
+		measured(achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) == WEAPON_COUNT, 
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -1116,7 +1377,7 @@ achievements_triggers = {
 			when = 
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-				&& !is_AreaLoading_active(enum_releaseRegion)))
+				&& !is_AreaLoading_active(enum_releaseRegion))),
 	}
 
 // =====================
@@ -1126,7 +1387,7 @@ achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
 	"a_CompleteStoryNormal": 				{"en": "Red's Redemption"},
 	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
-	"a_CompleteStoryVeryHard": 				{"en": "Legend of the West"},
+	"a_CompleteStoryVeryHard": 				{"en": "A Revolver's Story"},
 	"a_CompleteStoryWood": 					{"en": "The Wood, The Red and the Inferno"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
@@ -1135,6 +1396,12 @@ achievements_titles = {
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
+	"a_MaxHealth":							{"en": "Peak Condition"},
+	"a_MaxDeadEye":							{"en": "Red Eye"},
+	"a_UnlockAllStages": 					{"en": "Showdown Trailblazer"},
+	"a_UnlockAllCharacters":				{"en": "Gunslinger's Ensemble"},
+	"a_CompleteHalfJournal":				{"en": "Historical Account"},
+	"a_CompleteFullJournal":				{"en": "Chronicles of the Frontier"},
 	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
@@ -1176,7 +1443,13 @@ achievements_descriptions = {
 	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
-	"a_UnlockAllWeapons":					{"en": "Unlock the full weapon arsenal in the story campaign"},
+	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
+	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
+	"a_UnlockAllStages": 					{"en": "Unlock all Showdown stages on a single Player Profile"},
+	"a_UnlockAllCharacters":				{"en": "Unlock all Showdown characters on a single Player Profile"},
+	"a_CompleteHalfJournal":				{"en": "Unlock half of Sheriff Bartlett's journal on a single Player Profile"},
+	"a_CompleteFullJournal":				{"en": "Complete Sheriff Bartlett's journal on a single Player Profile"},
+	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal in the story campaign"},
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
 
