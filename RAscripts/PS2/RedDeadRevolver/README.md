@@ -84,9 +84,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **title_placeholder**<br><sub>*a_Chapter5StayOnTrain*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 5 'Railroaded', without falling off the train once. Hanging off the train, close to the ground, may also count as falling off. |
 
 
-
-
-
 <h2 id=ShowdownChallenges>
     🏆 Showdown Challenges
 </h2>

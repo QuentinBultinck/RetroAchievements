@@ -103,7 +103,8 @@ memory_dataStructures = {
 			"32Bit_StoryModeRetries": 0x28C,
 			"32Bit_CurrentPlaythroughDifficulty": 0x292,
 			"32BitFloat_TimeSpentPlaying": 0x388,			
-			"Bitset_BountyHunterMissionsCompleted": 0x7B0}
+			"Bitset_BountyHunterMissionsCompleted": 0x7B0,
+			"Bitset_ActivatedChears": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
 		"pointerChains": {
@@ -183,6 +184,7 @@ memory_addresses = {
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL},
 		"IsNotLoading": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL},
+		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -200,13 +202,14 @@ memory_addresses = {
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
-		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d60c, RELEASE_REGION_JPN: sNULL},
+		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
+		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
 	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
@@ -262,27 +265,27 @@ function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This f
 		return let_array_bitIndicesToSub
 	}
 
-function memGenerate_SumOf_BitsetFlags(dict_FlagData, memAccessor_accessorToBitset, enum_releaseRegion) { // memAccessor_accessorToBitset should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
+function memGenerate_SumOf_BitsetFlags(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
 	let_array_memAccessorsToSum = []
 	let_array_memAccessorsToSub = [] 
 	for let_byteIndex in dict_FlagData {
 		let_array_bitIndices = dict_FlagData[let_byteIndex]
 		let_bitCount = length(let_array_bitIndices)
 		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = memAccessor_accessorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
 			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
 		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
-			let_memAccessor_bitcount = memAccessor_accessorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
 			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
 			for let_bitIndexToSub in memUtil_createArrayOfBitIndicesToSub(let_array_bitIndices) {
 				if (let_bitIndexToSub != iNULL)	{
-					let_memAccessor_bit = memAccessor_accessorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
+					let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
 					array_push(let_array_memAccessorsToSub, let_memAccessor_bit)
 				}
 			}
 		} else if (let_bitCount <= 4) { // AddSource [each bit]
 			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = memAccessor_accessorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
 				array_push(let_array_memAccessorsToSum, let_memAccessor_bit)
 			}
 		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
@@ -293,17 +296,17 @@ function memGenerate_SumOf_BitsetFlags(dict_FlagData, memAccessor_accessorToBits
 		- sum_of(let_array_memAccessorsToSub, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
 	}
 
-function memGenerate_SumOf_BitsetFlags_noSubSource(dict_FlagData, memAccessor_accessorToBitset, enum_releaseRegion) { // memAccessor_accessorToBitset should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
+function memGenerate_SumOf_BitsetFlags_noSubSource(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
 	let_array_memAccessorsToSum = []
 	for let_byteIndex in dict_FlagData {
 		let_array_bitIndices = dict_FlagData[let_byteIndex]
 		let_bitCount = length(let_array_bitIndices)
 		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = memAccessor_accessorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
 			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
 		} else if (let_bitCount < 8) { // AddSource [each bit]
 			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = memAccessor_accessorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
 				array_push(let_array_memAccessorsToSum, let_memAccessor_bit)
 			}
 		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
@@ -505,6 +508,16 @@ FlagData_Bitset_ShowdownMapUnlocks = { // 13 flags
 	1: [5,6,7],
 	2: [0,1,2,3,4,5,7],
 	3: [0,1,3]}
+
+// ----------------Cheats--------------------
+FlagData_Bitset_CheatUnlocks = { // 10 flags
+	"Flags_UnlockableCheats": { // 7 flags
+		1: [1,2,3,6,7],
+		2: [0,1]},
+	"Flags_DebugCheats": { // 3 flags
+		1: [0,4,5]}
+	}
+
 // ..................
 // ◦ PLAYER PROFILE ◦
 // ''''''''''''''''''
@@ -752,6 +765,20 @@ FlagData_Bitset_PlayerProfileUnlocks = {
 				"Flag_B": {"ByteIndex": 23, "BitIndex": 2}}}},
 	}
 
+function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+	let_memAddr_Bitset_SelectedPlayerProfileUnlocks =
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
+	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
+
+function bitFlagMemAccessorGenerator_toDynamicBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAccessor = memory_generateAddAddressPointerChain(
+			"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
+			int_offsetToMember = int_offsetToByte, accessor = memAccessor_bitFlagAccessor)
+	return let_memAccessor}
+
+// ----------------UnusedCodeBelow--------------------
 function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile1Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
 	let_playerProfileNumber = 0
 	let_memAddr_Bitset_BountyHunterMissionsCompleted =
@@ -816,19 +843,7 @@ function lookup_bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfileUnlocks(
 	else
 		util_throwError(format("Player profile number ({0}) is out of range [0-5]", int_playerProfileNumber))
 	}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_memAddr_Bitset_SelectedPlayerProfileUnlocks =
-		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toDynamicBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor = memory_generateAddAddressPointerChain(
-			"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = int_offsetToByte, accessor = memAccessor_bitFlagAccessor)
-	return let_memAccessor}
+// ----------------UnusedCodeAbove--------------------
 
 // ----------------PlayerProfile BOUNTY HUNTER MODE--------------------
 BOUNTY_HUNTER_MISSON_COUNT = 20
@@ -838,53 +853,11 @@ FlagData_Bitset_BountyHunterMissionsCompleted = {
 	3: [0,1,2,4,5,7],
 	4: [0,4,5,7]}
 
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile1_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 0
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile2_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 1
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile3_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 2
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile4_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 3
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile5_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 4
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile6_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 5
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
+function bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+	let_memAddr_Bitset_BountyHunterMissionsCompleted =
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_BountyHunterMissionsCompleted")
+	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_BountyHunterMissionsCompleted + int_offsetToByte)}
 
 // -------------------------PlayerProfile CAMPAIGN SETTINGS-----------------------------
 DIFFICULTY_Normal = 0x0
@@ -906,7 +879,6 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + letConst_offset  
 	let_areaId_fixed = substring(enum_areaId, letConst_offset)
 	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
-
 
 // ..................
 // ◦ In Game Menu's ◦
@@ -946,6 +918,7 @@ function is_StartChpMenu_active(enum_releaseRegion) {
 INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
 INGAMEMENU_PauseMenu = "pause"
+INGAMEMENU_CheatsMenu = "cheats"
 function current_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
@@ -1001,6 +974,53 @@ function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads t
 function on_PauseMenu_missionRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
 	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
 	&& is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
+
+// ..........
+// ◦ CHEATS ◦
+// ''''''''''
+FlagData_Bitset_ActivatedCheats = {
+	"Flags_UnlockableCheats": {
+		1: [6,7],
+		2: [2,4,5,6,7]},
+	"Flags_DebugCheats": {
+		2: [0,1]}
+	}
+
+function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedChears =
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedChears")
+	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedChears + int_offsetToByte)}
+
+function is_AnyCheat_active_withAccumulator(enum_releaseRegion) {
+	let_sumOf_AllCheatFlags = 
+		memGenerate_SumOf_BitsetFlags(
+			FlagData_Bitset_ActivatedCheats["Flags_UnlockableCheats"],
+			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			enum_releaseRegion)
+		+ memGenerate_SumOf_BitsetFlags(
+			FlagData_Bitset_ActivatedCheats["Flags_DebugCheats"],
+			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			enum_releaseRegion)
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
+		&& let_sumOf_AllCheatFlags > 0
+	}
+
+function is_AnyCheat_active_withOR(enum_releaseRegion) { // TODO find solution for this problem <-- RATools can't generate it
+	let_sumOf_AllCheatFlags = 
+		memGenerate_SumOf_BitsetFlags(
+			FlagData_Bitset_ActivatedCheats["Flags_UnlockableCheats"],
+			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			enum_releaseRegion)
+		+ memGenerate_SumOf_BitsetFlags(
+			FlagData_Bitset_ActivatedCheats["Flags_DebugCheats"],
+			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			enum_releaseRegion)
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
+		&& let_sumOf_AllCheatFlags > 0
+	}
 
 // ...............................
 // ◦ AMMO COUNTER HUD CONTROLLER ◦
@@ -1069,6 +1089,10 @@ function is_Playing_ShowdownMode(enum_releaseRegion) =>
 	is_GameState(GAMESTATE_ShowdownMode, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
 
+function is_Playing_BountyHunterMode(enum_releaseRegion) =>
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
+	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
 function is_Loading(enum_releaseRegion) => 
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLoading", enum_releaseRegion)) == 0
 
@@ -1115,6 +1139,9 @@ memory_initialize()
 //   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
 //																																			  \\
 // ****************************************************************************************************************************************** \\
+
+// TODO Cheat Protection againt RStar for c_Unlocks achievements
+// TODO Cheat Protection in challege achievements
 
 // ==========================
 // • Achievements CORE DATA •
@@ -1192,12 +1219,6 @@ achievements_coreData = {
 		//	"devInfo": "Win a 4 player Free-for-all Bounty Hunter match on stage 'Sunset Canyon'"},
 		},
 	"c_Unlocks": { // Category - Unlocking items
-		// "a_UnlockAllWeapons": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
-			// 	"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
-		// "a_UpgradeAllWeapons": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
-			// 	"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		"a_UnlockAllStages": { // VERIFIED
 			"id": 444065, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 13 Showdown stages"},
@@ -1210,14 +1231,26 @@ achievements_coreData = {
 		"a_CompleteFullJournal": { // VERIFIED
 			"id": 444489, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete 100% of the journal"},
-		// "a_MaxHealth": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
-			// 	"id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+		// "a_MaxHealth": { // VERIFIED // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// 	"id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_missable,
 			// 	"devInfo": "Unlock all 7 health upgrades for Red"},
-		// "a_MaxDeadEye": { // VERIFIED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
-			// 	"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+		// "a_MaxDeadEye": { // VERIFIED // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// 	"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// 	"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
+		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
+		// "a_UpgradeAllWeapons": { // VERIFIED // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// 	"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// 	"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
+		// "a_BountyCompletionHalf": { // QA // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// 	"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Complete half the Bounty Hunter Mode Missions"},
+		// "a_BountyCompletionAll": { // QA  // DISABLED --> Implementation via RAIntegration UI (because the required logic can't be generated by RAtools, RAtools gets into infinite processing, thus this is commented)
+			// 	"id": 444682, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
 		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Lose no allied cannons"},
@@ -1334,6 +1367,11 @@ function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
 		memAccessorGeneratorToBitset_JournalPageUnlocks, 
 		enum_releaseRegion)
 
+// ------------------BountyHunterMissions----------------------
+function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion) => 
+	memGenerate_SumOf_BitsetFlags(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
+
+
 // =========================
 // • Achievements TRIGGERS •
 // =========================
@@ -1402,7 +1440,7 @@ achievements_triggers = {
 		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) // <---2Lines--- Extra logic necessary, on_PlayerProfileStat_StoryModeRetries_increment() hits before PlayerCharacter is respawned back on top of train, thus PauseLock would immediately reactivate when player had jumped off train
+			&& once(on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) // <---2Lines--- Difference in logic compared to achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(), once() is necessary because on_PlayerProfileStat_StoryModeRetries_increment() hits before PlayerCharacter is respawned back on top of train, in that case PauseLock would immediately reactivate when player had jumped off train
 			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)),  
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
@@ -1428,6 +1466,7 @@ achievements_triggers = {
 		is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+		&& !is_AnyCheat_active(enum_releaseRegion)
 
 		&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= 1000
 
@@ -1438,26 +1477,6 @@ achievements_triggers = {
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& !is_RewardMenu_displayed(enum_releaseRegion))),
-	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // <-- Implementation via RAIntegration UI
-		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
-
-		// ==== Core (Alt) Group ====
-		// Below commented line break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
-			// prev(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion)) == HP_UPGRADE_COUNT - 1 &&
-		measured(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) == HP_UPGRADE_COUNT,
-			when = 
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))),
-	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // <-- Implementation via RAIntegration UI
-		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
-
-		// ==== Core (Alt) Group ====
-		// Below commented line break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
-			// prev(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion)) == DEADEYE_UPGRADE_COUNT - 1 &&
-		measured(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion) == DEADEYE_UPGRADE_COUNT,
-			when = 
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))),
 	"a_UnlockAllStages": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
@@ -1504,11 +1523,32 @@ achievements_triggers = {
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion),
 				format = "percent")
 		}),
+	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // <-- Implementation via RAIntegration UI
+		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
+
+		// ==== Core (Alt) Group ====
+		// Below commented line breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+			// prev(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion)) == HP_UPGRADE_COUNT - 1 
+		measured(achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) == HP_UPGRADE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))),
+	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // <-- Implementation via RAIntegration UI
+		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
+
+		// ==== Core (Alt) Group ====
+		// Below commented line breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+			// prev(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion)) == DEADEYE_UPGRADE_COUNT - 1
+		measured(achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion) == DEADEYE_UPGRADE_COUNT,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))),
+	
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // <-- Implementation via RAIntegration UI
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
 		return 
-		// Below 2 commented lines break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+		// Below 2 commented lines breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
 			// prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT
 			// && prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT*5/8
 			measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
@@ -1520,12 +1560,34 @@ achievements_triggers = {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)
 		return 
-			// Below 2 commented lines break RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+			// Below 2 commented lines breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
 				// prev(let_sumOf_AllWeaponFlags) < UPGRADEABLE_WEAPON_COUNT
 				// && prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT/2
 			measured(let_sumOf_AllWeaponFlags == UPGRADEABLE_WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+		}),
+	"a_BountyCompletionHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // <-- Implementation via RAIntegration UI
+		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
+		return
+			// ==== Core (Alt) Group ====
+			// Below commented line breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+				// prev(let_sumOf_FlagsAllBountyMissionsCompleted) == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
+			measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2,
+				when = 
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+		}),
+	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // <-- Implementation via RAIntegration UI
+		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
+		return
+			// ==== Core (Alt) Group ====
+			// Below commented line breaks RAtools --> thus this AddSource chain is manually created via RAIntegration UI
+				// prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
+			measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT,
+				when = 
+					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 		}),
 	}
@@ -1538,20 +1600,24 @@ achievements_titles = {
 	"a_CompleteStoryNormal": 				{"en": "Red's Redemption"},
 	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
 	"a_CompleteStoryVeryHard": 				{"en": "A Revolver's Story"},
-	"a_CompleteStoryWood": 					{"en": "The Wood, The Red and the Inferno"},
+	"a_CompleteStoryWood": 					{"en": "The Wood, the Red and the Inferno"},
+	"a_BountyCompletionHalf": 				{"en": "Out for Blood"},
+	"a_BountyCompletionAll":				{"en": "Notorious Bounty Hunter"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
 	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
 	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
-	"a_Chapter1AcquireMoney": 				{"en": "Budding Bounty Hunter"},
-	"a_MaxHealth":							{"en": "Peak Condition"},
-	"a_MaxDeadEye":							{"en": "Red Eye"},
+	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"},
 	"a_UnlockAllStages": 					{"en": "Showdown Trailblazer"},
 	"a_UnlockAllCharacters":				{"en": "Gunslinger's Ensemble"},
 	"a_CompleteHalfJournal":				{"en": "Historical Account"},
 	"a_CompleteFullJournal":				{"en": "Chronicles of the Frontier"},
+
+	// text to manual edit (due to RATools bug)
+	"a_MaxHealth":							{"en": "Peak Condition"},
+	"a_MaxDeadEye":							{"en": "Red Eye"},
 	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
@@ -1586,6 +1652,8 @@ achievements_descriptions = {
 	"a_CompleteStoryHard": 					{"en": "Wrangle Red's story on hard or higher difficulty"},
 	"a_CompleteStoryVeryHard": 				{"en": "Wrangle Red's story on very hard difficulty"},
 	"a_CompleteStoryWood": 					{"en": "Wrangle the story on Red Wood Revolver difficulty"},
+	"a_BountyCompletionHalf": 				{"en": "Complet half of the Bounty Hunter Mode missions on a single player profile"},
+	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on a single player profile"},
 	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
 	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
@@ -1593,12 +1661,14 @@ achievements_descriptions = {
 	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
-	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
-	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
 	"a_UnlockAllStages": 					{"en": "Unlock all Showdown stages"},
 	"a_UnlockAllCharacters":				{"en": "Unlock all Showdown characters"},
 	"a_CompleteHalfJournal":				{"en": "Unlock half of Sheriff Bartlett's journal"},
 	"a_CompleteFullJournal":				{"en": "Complete Sheriff Bartlett's journal"},
+
+	// text to manual edit (due to RATools bug)
+	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
+	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
 	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"},
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
