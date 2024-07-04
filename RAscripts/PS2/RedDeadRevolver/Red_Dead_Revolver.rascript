@@ -116,6 +116,8 @@ memory_dataStructures = {
 				"addAddressChain": [0xAC, 0x38]},
 			"BitFlag_IsStartChpMenuActive": { 
 				"addAddressChain": [0x214]},
+			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA84, 0x0]},
 		}},
 	"Struct_InGameMenuController": {
 		"offsetToMember": {
@@ -124,7 +126,7 @@ memory_dataStructures = {
 		},
 	"Struct_SinglePlayerData": {
 		"pointerChains": {
-			"ASCIi_GameTriggerID": { 
+			"ASCII_GameTriggerID": { 
 				"addAddressChain": [0x168, 0xEC],
 				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
 			"32Bit_ShotsFired": { 
@@ -397,8 +399,8 @@ const_GameTrigger_asHex = {
 function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
+		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
 	// return is_ASCII(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return is_ASCII(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
@@ -407,8 +409,8 @@ function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCIi_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCIi_GameTriggerID")
+		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
 	// return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
@@ -887,6 +889,7 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 // ◦ In Game Menu's ◦
 // ''''''''''''''''''
 // ------------------RewardMenu---------------------
+REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
 function is_RewardMenu_displayed(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
@@ -908,6 +911,11 @@ function current_RewardMenu_Balance(enum_releaseRegion) {
 function current_RewardMenu_BountyCollected(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+function is_RatingBounty_achieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_pointerChainTo_GameTriggerID = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData)
+	return !is_ASCII(let_pointerChainTo_GameTriggerID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
 
 // ------------------StartChpMenu---------------------
 function is_StartChpMenu_active(enum_releaseRegion) {
@@ -1257,7 +1265,7 @@ achievements_coreData = {
 		"a_Chapter1AcquireMoney": { // VERIFIED
 			"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
-		"a_Chapter5StayOnTrain": { // VERIFIED
+		"a_Chapter5StayOnTrain": { // BUG - restarting/retrying this mission in Bounty Hunter Mode (never resets)
 			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
 		},
@@ -1357,7 +1365,7 @@ function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
 
 // ------------------BountyHunterMissions----------------------
 function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted, enum_releaseRegion)
 
 
 // =========================
@@ -1399,7 +1407,8 @@ achievements_triggers = {
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
+		&& on_EndingCreditsVideo_start(enum_releaseRegion)
+	),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// ==== Core (Alt) Group ====
 		unless(
@@ -1464,7 +1473,8 @@ achievements_triggers = {
 		// ==== Alt Reset Group ==== Reset hits correlated to RewardMenu being displayed
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& !is_RewardMenu_displayed(enum_releaseRegion))),
+			&& !is_RewardMenu_displayed(enum_releaseRegion))
+	),	
 	"a_UnlockAllStages": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
@@ -1521,7 +1531,9 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllHealthUpgrades == HP_UPGRADE_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_StartChpMenu_active(enum_releaseRegion)) // <-- Health upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+
 		}),
 	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
@@ -1533,7 +1545,8 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllDeadEyeUpgrades == DEADEYE_UPGRADE_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_StartChpMenu_active(enum_releaseRegion)) // <-- DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 		}),	
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // Manual creation via RAIntegration
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
@@ -1566,10 +1579,8 @@ achievements_triggers = {
 		return
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
-			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-
 			&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
-			&& let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2 // <-- No Measured necessary as a_BountyCompletionAll already has one
+			&& let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2
 		}),
 	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
@@ -1580,8 +1591,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-		}),
-	}
+		}
+	)}
 
 // =====================
 // • Achievements TEXT •
