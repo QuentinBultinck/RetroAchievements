@@ -117,7 +117,7 @@ memory_dataStructures = {
 			"BitFlag_IsStartChpMenuActive": { 
 				"addAddressChain": [0x214]},
 			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA84, 0x0]},
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA94]},
 		}},
 	"Struct_InGameMenuController": {
 		"offsetToMember": {
@@ -904,6 +904,13 @@ function on_RewardMenu_render(enum_releaseRegion) {
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)
 	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
 
+function on_RewardMenu_close(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_IsRewardMenuDisplayed < prev(let_memAccessor_IsRewardMenuDisplayed)}
+
 function current_RewardMenu_Balance(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
@@ -918,12 +925,20 @@ function is_RatingBounty_achieved(enum_releaseRegion) {
 	return !is_ASCII(let_pointerChainTo_GameTriggerID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
 
 // ------------------StartChpMenu---------------------
-function is_StartChpMenu_active(enum_releaseRegion) {
+function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
 	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsStartChpMenuActive =	memory_generateAddAddressPointerChain(
+	return memory_generateAddAddressPointerChain(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsStartChpMenuActive", 
-		let_memAddr_StartChpMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsStartChpMenuActive == 1}
+		let_memAddr_StartChpMenuDisplayData, accessor = bit0)}
+
+function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) => 
+	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
+
+function is_StartChpMenu_active(enum_releaseRegion) =>
+	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) == 1
+
+function on_StartChpMenu_initialize(enum_releaseRegion) =>
+	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) > prev_FlagState_IsStartChpMenuActive(enum_releaseRegion)
 
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
@@ -1075,8 +1090,6 @@ function on_GameState_changeTo(enum_gameState, enum_releaseRegion) =>
 function is_AtMainMenu(enum_releaseRegion) =>
 	is_GameState(GAMESTATE_MainMenu, enum_releaseRegion)
 
-
-
 function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
 	is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
@@ -1101,6 +1114,12 @@ function on_EndingCreditsVideo_start(enum_releaseRegion) {
 // ------------------------------------------------------
 function is_InGame(enum_releaseRegion) => 
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion)) == 1
+
+function on_InGame_start(enum_releaseRegion) {
+	let_memAccessor_IsInGame = bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion))
+	return 
+		let_memAccessor_IsInGame > prev(let_memAccessor_IsInGame)}
+
 function on_Game_quit(enum_releaseRegion) => // Quiting game via pause menu
 	on_GameState_changeTo(GAMESTATE_MainMenu, enum_releaseRegion)
 
@@ -1579,20 +1598,57 @@ achievements_triggers = {
 		return
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
-			&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
-			&& let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2
+
+			&& once( // <-- Once to show RATrigger popup
+				let_sumOf_FlagsAllBountyMissionsCompleted == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
+				&& is_Playing_BountyHunterMode(enum_releaseRegion)
+				&& is_RatingBounty_achieved(enum_releaseRegion)
+				&& is_RewardMenu_displayed(enum_releaseRegion))
+
+			&& trigger_when(
+				prev(let_sumOf_FlagsAllBountyMissionsCompleted) == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
+				&& let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2)
+
+			// ==== Alt Reset Group ==== reset once() when replaying the bounty hunter mission (so the RATrigger popup hides again)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					on_InGame_start(enum_releaseRegion)
+					|| on_StartChpMenu_initialize(enum_releaseRegion)
+					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+				)
 		}),
 	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
 		return
-			// ==== Core (Alt) Group ====
-			prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
-			&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT,
-				when = 
-					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-		}
-	)}
+			// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
+			(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
+				&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
+			)
+
+			// ==== Alt RATrigger Popup Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
+			|| (
+				is_ReleaseRegion(enum_releaseRegion)
+				&& once( // <-- once() to show RATrigger popup
+					let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT - 1
+					&& is_Playing_BountyHunterMode(enum_releaseRegion)
+					&& is_RatingBounty_achieved(enum_releaseRegion)
+					&& is_RewardMenu_displayed(enum_releaseRegion))
+				&& trigger_when(always_false()) // <-- always_false()
+			)
+
+			// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					on_InGame_start(enum_releaseRegion)
+					|| on_StartChpMenu_initialize(enum_releaseRegion)
+					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+			)
+		}),
+	}
 
 // =====================
 // • Achievements TEXT •
