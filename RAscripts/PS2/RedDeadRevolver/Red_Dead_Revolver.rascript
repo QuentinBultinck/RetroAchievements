@@ -185,14 +185,15 @@ memory_addresses = {
 
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL},
-		"IsNotLoading": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL},
+		"IsNotLoading": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, // Unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
-		"GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
+		"GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
 		"UIRenderStackLevel": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a10, RELEASE_REGION_JPN: sNULL}, // Unused
 		"SelectedPlayerProfile": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
+		"AreaState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
 		},	
 	DATATYPE_ASCII: {
 		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
@@ -363,6 +364,7 @@ function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 // ◦ AREA ID ◦
 // '''''''''''
 AREA_loading = "default"
+AREA_MainMenu = "lvl_front"
 AREA_Campaign_BrokenCreek = "lvl_perfnew"
 AREA_Campaign_Railroaded = "lvl_traingood"
 
@@ -380,6 +382,39 @@ function was_Area(enum_areaId, enum_releaseRegion) =>
 function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
 	is_Area(enum_areaId, enum_releaseRegion) &&
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prev(areaCheckComparison))
+
+// ..............
+// ◦ AREA STATE ◦
+// ''''''''''''''
+AREASTATE_InGame = 10
+AREASTATE_Standby = 20
+AREASTATE_Loading = 30
+const_GameState_data = {
+	AREASTATE_InGame: {"ID": 0x2},
+	AREASTATE_Standby: {"ID": 0x32},
+	AREASTATE_Loading: {"ID": 0xFF}}
+
+function get_AreaStateId(enum_areaState) =>
+	const_GameState_data[enum_areaState]["ID"]
+
+function current_AreaState(enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "AreaState", enum_releaseRegion))
+
+function prev_AreaState(enum_releaseRegion) => 
+	prev(current_AreaState(enum_releaseRegion))
+
+function is_AreaState_InGame(enum_releaseRegion) => 
+	current_AreaState(enum_releaseRegion) == get_AreaStateId(AREASTATE_InGame)
+
+function is_AreaState_Standby(enum_releaseRegion) => 
+	current_AreaState(enum_releaseRegion) == get_AreaStateId(AREASTATE_Standby)
+
+function is_AreaState_Loading(enum_releaseRegion) => 
+	current_AreaState(enum_releaseRegion) == get_AreaStateId(AREASTATE_Loading)
+
+function on_AreaState_ChangeTo(enum_areaState, enum_releaseRegion) =>
+	current_AreaState(enum_releaseRegion) == enum_areaState 
+	&& prev_AreaState(enum_releaseRegion) != enum_areaState
 
 // ...................
 // ◦ Game Trigger ID ◦
@@ -1061,50 +1096,46 @@ function on_ShotsHit_change(enum_releaseRegion) {
 	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
 	return let_pointerChain_ShotsHit != prev(let_pointerChain_ShotsHit)}
 
-// ................
-// ◦ GAME STATE ◦
-// ''''''''''''''''
-GAMESTATE_MainMenu = 1
-GAMESTATE_SinglePlayer = 10
-GAMESTATE_ShowdownMode = 20
-const_GameState_data = {
-	GAMESTATE_SinglePlayer: {"ID": 0xFA},
-	GAMESTATE_ShowdownMode: {"ID": 0xC8},
-	GAMESTATE_MainMenu: {"ID": 0xA}}
-function get_GameState_ID(enum_gameState) =>
-	const_GameState_data[enum_gameState]["ID"]
+// .............
+// ◦ GAME MODE ◦
+// '''''''''''''
+GAMEMODE_MainMenu = 1
+GAMEMODE_SinglePlayer = 10
+GAMEMODE_ShowdownMode = 20
+const_GameMode_data = {
+	GAMEMODE_SinglePlayer: {"ID": 0xFA},
+	GAMEMODE_ShowdownMode: {"ID": 0xC8},
+	GAMEMODE_MainMenu: {"ID": 0xA}}
+function get_GameMode_ID(enum_gameState) =>
+	const_GameMode_data[enum_gameState]["ID"]
 
-function current_GameState(enum_releaseRegion) => 
-	byte(memory_getAddress(DATATYPE_8Bit, "GameState", enum_releaseRegion))
+function current_GameMode(enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "GameMode", enum_releaseRegion))
 
-function prev_GameState(enum_releaseRegion) => 
-	prev(current_GameState(enum_releaseRegion))
+function prev_GameMode(enum_releaseRegion) => 
+	prev(current_GameMode(enum_releaseRegion))
 
-function is_GameState(enum_gameState, enum_releaseRegion) => 
-	current_GameState(enum_releaseRegion) == get_GameState_ID(enum_gameState)
+function is_GameMode(enum_gameState, enum_releaseRegion) => 
+	current_GameMode(enum_releaseRegion) == get_GameMode_ID(enum_gameState)
 
-function on_GameState_changeTo(enum_gameState, enum_releaseRegion) => 
-	current_GameState(enum_releaseRegion) == get_GameState_ID(enum_gameState) 
-	&& prev_GameState(enum_releaseRegion) != get_GameState_ID(enum_gameState)
+function on_GameMode_changeTo(enum_gameState, enum_releaseRegion) => 
+	current_GameMode(enum_releaseRegion) == get_GameMode_ID(enum_gameState) 
+	&& prev_GameMode(enum_releaseRegion) != get_GameMode_ID(enum_gameState)
 
 function is_AtMainMenu(enum_releaseRegion) =>
-	is_GameState(GAMESTATE_MainMenu, enum_releaseRegion)
+	is_GameMode(GAMEMODE_MainMenu, enum_releaseRegion)
 
 function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
-	is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion) &&
+	is_GameMode(GAMEMODE_SinglePlayer, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
 
 function is_Playing_ShowdownMode(enum_releaseRegion) =>
-	is_GameState(GAMESTATE_ShowdownMode, enum_releaseRegion) &&
+	is_GameMode(GAMEMODE_ShowdownMode, enum_releaseRegion) &&
 	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
 
 function is_Playing_BountyHunterMode(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
-	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-
-function is_Loading(enum_releaseRegion) => 
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLoading", enum_releaseRegion)) == 0
-
+	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)	
 // ------------------------------------------------------
 CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
 function on_EndingCreditsVideo_start(enum_releaseRegion) {
@@ -1120,8 +1151,8 @@ function on_InGame_start(enum_releaseRegion) {
 	return 
 		let_memAccessor_IsInGame > prev(let_memAccessor_IsInGame)}
 
-function on_Game_quit(enum_releaseRegion) => // Quiting game via pause menu
-	on_GameState_changeTo(GAMESTATE_MainMenu, enum_releaseRegion)
+function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
+	on_GameMode_changeTo(GAMEMODE_MainMenu, enum_releaseRegion)
 
 // =========================
 // • Memory INITIALIZATION •
@@ -1260,10 +1291,10 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		"a_BountyCompletionHalf": { // QA // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete half the Bounty Hunter Mode Missions"},
-		"a_BountyCompletionAll": { // QA  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		"a_BountyCompletionAll": { // VERIFIED  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444682, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
@@ -1298,7 +1329,7 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 	// ==== Alt Pause Lock Reset Group ==== Reset on game quit 
 	never_toAlt( 
 		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_Game_quit(enum_releaseRegion))
+		&& on_QuitToMainMenu(enum_releaseRegion))
 	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
 	|| never_toAlt(
 		is_ReleaseRegion(enum_releaseRegion) 
@@ -1428,42 +1459,57 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP
 		// ==== Core (Alt) Group ====
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			|| !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
+			|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
-		&& once(is_InGame(enum_releaseRegion)) // <-- Prevent RATrigger popup being displayed during the shop at the start of the mission + Once is necessary, because this bitflag turns off when loading the RewardMenu
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
+		
+		&& unless(once( // <-- Pause Lock: when stumbled off the train
+			current_PlayerZCoordinate(enum_releaseRegion) < 0)
+			&& is_InGame(enum_releaseRegion))
+
+		&& once(on_InGame_start(enum_releaseRegion)) // <-- Prevent RATrigger popup being displayed during the shop at the start of the mission + Once is necessary, because this bitflag turns off when loading the RewardMenu
+		&& is_AreaState_InGame(enum_releaseRegion)	
 		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
 		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
-
-		&& unless(once( // <-- Pause Lock
-			current_PlayerZCoordinate(enum_releaseRegion) < 0))
+		// && !is_StartChpMenu_active(enum_releaseRegion)
 
 		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ==== Reset on game quit 
+		// ==== Alt Pause Lock Reset Group ==== Reset when not in correct Area_ID // TODO // WIP Create these resets with Player_Input_Reader
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_Game_quit(enum_releaseRegion))
-		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
+			&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
+		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via pause menu (for Bounty Hunter Mode)
+		|| never_toAlt( 
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
+				on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
+			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)
+		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via pause menu (for Single Player Story Mode)
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
-			&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
-		// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
+			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
+				on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
+				&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
+			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)
+		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via retry/continue menu
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) // <---2Lines--- Difference in logic compared to achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(), once() is necessary because on_PlayerProfileStat_StoryModeRetries_increment() hits before PlayerCharacter is respawned back on top of train, in that case PauseLock would immediately reactivate when player had jumped off train
+			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
+				on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) 
 			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)),  
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion) 
 		&& is_InGame(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
-		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion) 
+		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+		// && !is_AnyCheat_active(enum_releaseRegion) // <-- usage of cheats for this achievement makes no difference
 
 		&& unless( // <-- Pause Lock achievement when more than 13 bullets were used
 			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
