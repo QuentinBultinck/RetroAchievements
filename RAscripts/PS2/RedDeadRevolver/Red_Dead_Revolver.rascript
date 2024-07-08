@@ -417,8 +417,18 @@ function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
 AREA_loading = "default"
 AREA_MainMenu = "lvl_front"
 AREA_Campaign_BrokenCreek = "lvl_perfnew"
+AREA_Campaign_UglyStreetFight = "lvl_sher"
 AREA_Campaign_Railroaded = "lvl_traingood"
-
+AREA_Campaign_FreakShow = "lvl_shernite"
+AREA_Campaign_TheCemetery = "lvl_cemetery"
+AREA_Campaign_RangeWar = "lvl_ranch"
+AREA_Campaign_TheTraitor = "lvl_bridge"
+AREA_Campaign_BearMountain = "lvl_woods"
+AREA_Campaign_TheMine = "lvl_corenew"
+AREA_Campaign_HellPass = "lvl_msncyn"
+AREA_Campaign_FortDiego = "lvl_fort"
+AREA_Campaign_DevilsAndAngels = "lvl_trainend"
+AREA_Campaign_BattleFinale = "lvl_royfinal"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
 
 const_Area_data = {
@@ -1505,9 +1515,42 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression
-		// "a_ReachBrimStone": { // CONCEPT a_ReachBrimStone
-		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Progression,
+		// "a_CompleteChapter3": { // CONCEPT a_CompleteChapter3
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 3"},
+		// "a_CompleteChapter5": { // CONCEPT a_CompleteChapter5
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 		//	"devInfo": "Reach Brimstone for the 1st time"},
+		// "a_CompleteChapter7": { // CONCEPT a_CompleteChapter7
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 7"},
+		// "a_CompleteChapter10": { // CONCEPT a_CompleteChapter10
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 10 'The Cemetery'"},
+		// "a_CompleteChapter11": { // CONCEPT a_CompleteChapter11
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter13": { // CONCEPT a_CompleteChapter13
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter15": { // CONCEPT a_CompleteChapter15
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter17": { // CONCEPT a_CompleteChapter17
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter19": { // CONCEPT a_CompleteChapter19
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter20": { // CONCEPT a_CompleteChapter20
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter22": { // CONCEPT a_CompleteChapter22
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
+		// "a_CompleteChapter24": { // CONCEPT a_CompleteChapter24
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "xxxxxxx"},
 		},
 	"c_StoryEnd": { // Category - Story Ending // TODO implement unlocking lower diff achievements as well for players "replaying"
 		"a_CompleteStoryNormal": { // VERIFIED
@@ -1542,18 +1585,24 @@ achievements_coreData = {
 		// "a_WinBountyHunterSunsetCanyon": { // CONCEPT a_WinBountyHunterSunsetCanyon
 		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Win a 4 player Free-for-all Bounty Hunter match on stage 'Sunset Canyon'"},
+		// "a_WeaponHandler": { // CONCEPT a_WeaponHandler
+		//	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a match by killing opponents with 7 different weapons"},
 		},
 	"c_Unlocks": { // Category - Unlocking items
-		"a_UnlockAllStages": { // VERIFIED
+		"a_UnlockStagesAll": { // VERIFIED
 			"id": 444065, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 13 Showdown stages"},
-		"a_UnlockAllCharacters": { // VERIFIED
+		"a_UnlockCharactersHalf": { // CONCEPT a_UnlockCharactersHalf
+			"id": 447034, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Unlock 24 Showdown characters"},
+		"a_UnlockCharactersAll": { // VERIFIED
 			"id": 444067, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 48 Showdown characters"},
-		"a_CompleteHalfJournal": { // VERIFIED
+		"a_CompleteJournalHalf": { // VERIFIED
 			"id": 444490, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete 50% of the journal"},
-		"a_CompleteFullJournal": { // VERIFIED
+		"a_CompleteJournalAll": { // VERIFIED
 			"id": 444489, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete 100% of the journal"},
 		"a_MaxHealth": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -1562,7 +1611,7 @@ achievements_coreData = {
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
-		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED --> Manual creation via RAIntegration as this still uses SubSources // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as this still uses SubSources // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// 	"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -1570,6 +1619,9 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
+		// "a_BigMoney": { // CONCEPT a_template
+		// 	"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Amass an amount of cash in the single player story"},
 		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete half the Bounty Hunter Mode Missions"},
@@ -1591,7 +1643,7 @@ achievements_coreData = {
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
-		// "a_Chapter1AcquireMoney": { // VERIFIED // DISABLED as an AddSource chain is unable to generated by RATools - Manual edit via RAIntegration
+		// "a_Chapter1AcquireMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// 	"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
 		"a_Chapter5StayOnTrain": { // VERIFIED
@@ -1619,6 +1671,14 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 		is_ReleaseRegion(enum_releaseRegion) 
 		&& on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion))
 		// && on_RetryMenu_retry(enum_releaseRegion) // <-- This can be a substitute for above line, but contains more logic lines
+
+function achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(enum_areaId, enum_releaseRegion) =>
+	// ==== Core (Alt) Group ====
+	is_ReleaseRegion(enum_releaseRegion)
+	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+	&& is_Area(AREA_Campaign_UglyStreetFight, enum_releaseRegion)
+	&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal
+	&& on_RewardMenu_render(enum_releaseRegion)
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -1706,7 +1766,31 @@ achievements_triggers = {
 	// 	is_ReleaseRegion(enum_releaseRegion) 
 	// 	&& always_false()
 	// 	),
-
+	"a_CompleteChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO test these
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"a_CompleteChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"a_CompleteChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"a_CompleteChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"a_CompleteChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"a_CompleteChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"a_CompleteChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"a_CompleteChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"a_CompleteChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"a_CompleteChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"a_CompleteChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"a_CompleteChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_BattleFinale, enum_releaseRegion)
+	),
 	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion)
@@ -1809,7 +1893,7 @@ achievements_triggers = {
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashAcquiredDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is only updated on save
@@ -1862,7 +1946,7 @@ achievements_triggers = {
 			// 	is_ReleaseRegion(enum_releaseRegion) 
 			// 	&& !is_RewardMenu_displayed(enum_releaseRegion))
 	}),	
-	"a_UnlockAllStages": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
 			// ==== Core (Alt) Group ====
@@ -1873,7 +1957,18 @@ achievements_triggers = {
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 		}),
-	"a_UnlockAllCharacters": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_UnlockCharactersHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_sumOf_FlagsAllCharacters = achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)
+		return 			
+			// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
+			&& prev(let_sumOf_FlagsAllCharacters) < CHARACTER_COUNT/2
+			&& prev(let_sumOf_FlagsAllCharacters) > (CHARACTER_COUNT/4)
+			&& let_sumOf_FlagsAllCharacters == CHARACTER_COUNT/2
+		}),
+	"a_UnlockCharactersAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllCharacters = achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)
 		return 			
 			// ==== Core (Alt) Group ====
@@ -1884,7 +1979,7 @@ achievements_triggers = {
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 		}),
-	"a_CompleteHalfJournal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_CompleteJournalHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: No Measured Flag required for this as a_CompleteFullJournal already has one
 		let_sumOf_FlagsAllPages = achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)
 		return 			
@@ -1896,7 +1991,7 @@ achievements_triggers = {
 			&& prev(let_sumOf_FlagsAllPages) > JOURNALPAGE_COUNT/4
 			&& let_sumOf_FlagsAllPages >= JOURNALPAGE_COUNT/2 
 		}),
-	"a_CompleteFullJournal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_CompleteJournalAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllPages = achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)
 		return 			
 			// ==== Core (Alt) Group ====
@@ -2023,12 +2118,24 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
+	"a_CompleteChapter3":					{"en": "First Marks"}, 
+	"a_CompleteChapter5":					{"en": "Train Warden"}, 
+	"a_CompleteChapter7":					{"en": "Perry's Peculiar Predicament"}, 
+	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"}, 
+	"a_CompleteChapter11":					{"en": "Faithful Rancher"}, 
+	"a_CompleteChapter13":					{"en": "Pact of Perdition"},
+	"a_CompleteChapter15":					{"en": "Wolf Mountain"},
+	"a_CompleteChapter17": 					{"en": "Breakout"},
+	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
+	"a_CompleteChapter20": 					{"en": "Red Wolf"},
+	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
+	"a_CompleteChapter24":					{"en": "Battle Royalist"}, 
 	"a_CompleteStoryNormal": 				{"en": "Red's Redemption"},
 	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
 	"a_CompleteStoryVeryHard": 				{"en": "A Revolver's Story"},
 	"a_CompleteStoryWood": 					{"en": "The Wood, the Red and the Inferno"},
 	"a_BountyCompletionHalf": 				{"en": "Out for Blood"},
-	"a_BountyCompletionAll":				{"en": "Notorious Bounty Hunter"},
+	"a_BountyCompletionAll":				{"en": "Strictly Bounty Business"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
 	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
@@ -2036,16 +2143,18 @@ achievements_titles = {
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"},
-	"a_UnlockAllStages": 					{"en": "Showdown Trailblazer"},
-	"a_UnlockAllCharacters":				{"en": "Gunslinger's Ensemble"},
-	"a_CompleteHalfJournal":				{"en": "Historical Account"},
-	"a_CompleteFullJournal":				{"en": "Chronicles of the Frontier"},
+	"a_UnlockStagesAll": 					{"en": "Showdown Trailblazer"},
+	"a_UnlockCharactersHalf":				{"en": "Gunslinger's Ensemble"},
+	"a_UnlockCharactersAll":				{"en": "Gunslinger's Enchilada"},
+	"a_CompleteJournalHalf":				{"en": "Historical Account"},
+	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
 	"a_MaxHealth":							{"en": "Peak Condition"},
 	"a_MaxDeadEye":							{"en": "Red Eye"},
 	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
 
+// Chapter 12 'Bar Fight' Quite a Show
 // Showdown Challenge Title Idea's
 	// Red's Redemption
 	// Vendetta Complete
@@ -2072,23 +2181,36 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_CompleteStoryNormal": 				{"en": "Wrangle Red's story on normal or higher difficulty"},
-	"a_CompleteStoryHard": 					{"en": "Wrangle Red's story on hard or higher difficulty"},
-	"a_CompleteStoryVeryHard": 				{"en": "Wrangle Red's story on very hard difficulty"},
-	"a_CompleteStoryWood": 					{"en": "Wrangle the story on Red Wood Revolver difficulty"},
+	"a_CompleteChapter3":					{"en": "Quash both Bloody Tom's posse as well as the Ugly Gang by the conclusion of Chapter 3, 'Ugly Streetfight'"},
+	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, 'RailRoaded'"},
+	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in the gripping events of Chapter 7, 'Freak Show'"},
+	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, 'The Cemetery'"},
+	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, 'Range War'"},
+	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, 'The Traitor'"},
+	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, 'Bear Mountain'"},
+	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines during Chapter 17, 'The Mine'"},
+	"a_CompleteChapter19": 					{"en": "Make it to Brimstone by stagecoach during Chapter 19, 'Hell's Pass'"},
+	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, 'Fort Diego'"},
+	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, 'Devils and Angels'"},
+	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries by the end of Chapter 24, 'Battle Finale'"}, 
+	"a_CompleteStoryNormal": 				{"en": "Conclude Red's tale on normal difficulty or higher"},
+	"a_CompleteStoryHard": 					{"en": "Conclude Red's tale on hard difficulty or higher"},
+	"a_CompleteStoryVeryHard": 				{"en": "Conclude Red's tale on very hard difficulty"},
+	"a_CompleteStoryWood": 					{"en": "Wrangle Red's tale on Red Wood Revolver difficulty"},
 	"a_BountyCompletionHalf": 				{"en": "Complet half of the Bounty Hunter Mode missions on a single player profile"},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on a single player profile"},
 	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
 	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
 	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
-	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5 'Railroaded' without stumbling off the train even once"},
-	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1 'Bull's Eye' by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
-	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1 'Bull's Eye'"},
-	"a_UnlockAllStages": 					{"en": "Unlock all Showdown stages"},
-	"a_UnlockAllCharacters":				{"en": "Unlock all Showdown characters"},
-	"a_CompleteHalfJournal":				{"en": "Unlock half of Sheriff Bartlett's journal"},
-	"a_CompleteFullJournal":				{"en": "Complete Sheriff Bartlett's journal"},
+	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5, 'Railroaded', without stumbling off the train even once"},
+	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, 'Bull's Eye', by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
+	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1, 'Bull's Eye'"},
+	"a_UnlockStagesAll": 					{"en": "Unlock all Showdown stages"},
+	"a_UnlockCharactersHalf":				{"en": "Unlock half the Showdown characters"},
+	"a_UnlockCharactersAll":				{"en": "Unlock all Showdown characters"},
+	"a_CompleteJournalHalf":				{"en": "Unlock half of Sheriff Bartlett's journal"},
+	"a_CompleteJournalAll":				{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
 	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
 	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"},
