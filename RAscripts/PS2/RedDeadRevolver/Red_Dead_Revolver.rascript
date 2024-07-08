@@ -32,10 +32,11 @@
 //	- prior_ 	=> returns a memory accessor to the prior value
 //	- prev_ 	=> returns a memory accessor to the previous/delta value
 //
-//	- is_		=> returns a comparison, which only uses current values					-> eg is_Area(id_area) => id_area == byte(0xAA)
-//	- was_		=> returns a comparison, which only uses prior values					-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
-//	- has_ 		=> returns a comparison, which uses current AND prior values			-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
-//	- on_		=> returns a comparison, which uses at least one delta/previous values	-> eg on_Area_change() => current_Area() != prev_Area()
+//	- is_		=> returns a comparison, which only uses current values								-> eg is_Area(id_area) => id_area == byte(0xAA)
+//	- was_		=> returns a comparison, which only uses prior values								-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
+//	- has_ 		=> returns a comparison, which uses current AND prior values						-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
+//	- isPrev_	=> returns a comparison, which only uses previous/deta values						-> eg isPrev_Area(id_area) => id_area == prev(byte(0xAA))
+//	- on_		=> returns a comparison, which checks for a change (using delta and current values)	-> eg on_Area_change() => current_Area() != prev_Area()
 
 //	Visual Studio Code: specific info
 // ---------------------------------------------
@@ -95,6 +96,11 @@ memory_dataStructures = {
 			"Z-Coordinate": 0x8,
 			"X-Coordinate": 0xC	}
 		},
+	"Struct_PlayerInputReader": {
+		"offsetToMember": {
+			"BitFlags_PlayerInputA": 0x0,
+			"BitFlags_PlayerInputB": 0x1}
+		},
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
@@ -108,21 +114,28 @@ memory_dataStructures = {
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
 		"pointerChains": {
-			"32Bit_Balance": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
-			"32Bit_BountyCollected": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
-			"BitFlag_IsRewardMenuDisplayed": { 
-				"addAddressChain": [0xAC, 0x38]},
 			"BitFlag_IsStartChpMenuActive": { 
 				"addAddressChain": [0x214]},
+			"BitFlag_IsRewardMenuDisplayed": { 
+				"addAddressChain": [0xAC, 0x38]},
+			"BitFlag_IsQuitConfirmationMenuDisplayed": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xE4]},
+			"BitFlag_HighlightedMenuItem": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0x8A4]},
+			"32Bit_BountyCollected": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
+			"8Bit_MenuDepth": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9D4]},
+			"32Bit_Balance": { 
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
 			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA94]},
+				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA94]},				 
 		}},
 	"Struct_InGameMenuController": {
 		"offsetToMember": {
 			"ASCII_InGameMenuID": 0x18,
-			"BitFlag_IsInGameMenuDisplayed": 0x38},
+			"BitFlag_IsInGameMenuDisplayed": 0x38,
+			"8Bit_HighlightedMenuItemID": 0x318},
 		},
 	"Struct_SinglePlayerData": {
 		"pointerChains": {
@@ -213,6 +226,7 @@ memory_addresses = {
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
 		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
+		"PlayerInputReader": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},	
 	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
@@ -360,6 +374,32 @@ function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s) && 
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
 
+// .......................
+// ◦ PLAYER INPUT READER ◦
+// '''''''''''''''''''''''
+function current_PlayerInputState_X(enum_releaseRegion) => 
+	bit6( 
+		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
+		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+
+function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) {
+	let_memAccessor_confirmBtnPressedState = sNULL
+	if (enum_releaseRegion == RELEASE_REGION_EUR)
+		let_memAccessor_confirmBtnPressedState = current_PlayerInputState_X(enum_releaseRegion)
+	else
+		util_throwError(format("Release Region: {0} not supported", enum_releaseRegion))
+		
+	return let_memAccessor_confirmBtnPressedState == 1}
+
+function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
+	let_memAccessor_confirmBtnPressedState = sNULL
+	if (enum_releaseRegion == RELEASE_REGION_EUR)
+		let_memAccessor_confirmBtnPressedState = current_PlayerInputState_X(enum_releaseRegion)
+	else
+		util_throwError(format("Release Region: {0} not supported", enum_releaseRegion))
+		
+	return let_memAccessor_confirmBtnPressedState > prev(let_memAccessor_confirmBtnPressedState)}
+
 // ...........
 // ◦ AREA ID ◦
 // '''''''''''
@@ -369,6 +409,37 @@ AREA_Campaign_BrokenCreek = "lvl_perfnew"
 AREA_Campaign_Railroaded = "lvl_traingood"
 
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
+
+const_Area_data = {
+	AREA_Campaign_Railroaded: { // TODO put these coordinates inside the code notes
+		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading
+			"X-Coordinate": 2.03,
+			"Y-Coordinate": 104.04,
+			"Z-Coordinate": 1.63},
+		"PlayerSpawnCoordinates": {
+			"X-Coordinate": 0.13,
+			"Y-Coordinate": -1.63,
+			"Z-Coordinate": 1.13}
+		},
+	}
+
+function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["X-Coordinate"]
+
+function get_Area_PlayerSpawnYCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["Y-Coordinate"]
+
+function get_Area_PlayerSpawnZCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["Z-Coordinate"]
+
+function get_Area_PlayerLoadXCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["X-Coordinate"]
+
+function get_Area_PlayerLoadYCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Y-Coordinate"]
+
+function get_Area_PlayerLoadZCoordinate(enum_areaId) =>
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Z-Coordinate"]
 
 function is_AreaLoading_active(enum_releaseRegion) => 
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
@@ -413,8 +484,8 @@ function is_AreaState_Loading(enum_releaseRegion) =>
 	current_AreaState(enum_releaseRegion) == get_AreaStateId(AREASTATE_Loading)
 
 function on_AreaState_ChangeTo(enum_areaState, enum_releaseRegion) =>
-	current_AreaState(enum_releaseRegion) == enum_areaState 
-	&& prev_AreaState(enum_releaseRegion) != enum_areaState
+	current_AreaState(enum_releaseRegion) == get_AreaStateId(enum_areaState)
+	&& prev_AreaState(enum_releaseRegion) != get_AreaStateId(enum_areaState)
 
 // ...................
 // ◦ Game Trigger ID ◦
@@ -455,6 +526,7 @@ function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 // ◦ Player Location ◦
 // '''''''''''''''''''
 PLAYER_STATIONARY_THRESHOLD = 0.7
+PLAYER_SPAWN_THRESHOLD = 0.5
 function current_PlayerXCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
@@ -472,7 +544,6 @@ function current_PlayerYCoordinate(enum_releaseRegion) {
 			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
 			accessor = float)
 	return let_memAccessor_PlayerCoordinate}
-
 	
 function current_PlayerZCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -483,29 +554,82 @@ function current_PlayerZCoordinate(enum_releaseRegion) {
 			accessor = float)
 	return let_memAccessor_PlayerCoordinate}
 
-function is_PlayerXCoordinate_stationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) {
-	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
-	return 
-		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD && 
-		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
-		
-function is_PlayerXCoordinate_notStationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) {
-	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
-	return 
-		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate - PLAYER_STATIONARY_THRESHOLD || 
-		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate + PLAYER_STATIONARY_THRESHOLD}
+function prev_PlayerXCoordinate(enum_releaseRegion) =>
+	prev(current_PlayerXCoordinate(enum_releaseRegion))
 
-function is_PlayerYCoordinate_stationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) {
+function prev_PlayerYCoordinate(enum_releaseRegion) =>
+	prev(current_PlayerYCoordinate(enum_releaseRegion))
+
+function prev_PlayerZCoordinate(enum_releaseRegion) =>
+	prev(current_PlayerZCoordinate(enum_releaseRegion))
+
+function is_PlayerXCoordinate_nearCoordinate(float_Xcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerXCoordinate <= float_Xcoordinate + float_thresholdFromCoordinate}
+
+function is_PlayerYCoordinate_nearCoordinate(float_Ycoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
 	let_memAccessor_PlayerYCoordinate = current_PlayerYCoordinate(enum_releaseRegion)
 	return 
-		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD && 
-		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
+		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerYCoordinate <= float_Ycoordinate + float_thresholdFromCoordinate}
+
+function is_PlayerZCoordinate_nearCoordinate(float_Zcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerZCoordinate = current_PlayerZCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerZCoordinate >= float_Zcoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerZCoordinate <= float_Zcoordinate + float_thresholdFromCoordinate}
+
+function is_PlayerXCoordinate_notNearCoordinate(float_Xcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerXCoordinate <= float_Xcoordinate - float_thresholdFromCoordinate
+		|| let_memAccessor_PlayerXCoordinate >= float_Xcoordinate + float_thresholdFromCoordinate}
+
+function is_PlayerYCoordinate_notNearCoordinate(float_Ycoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerYCoordinate = current_PlayerYCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate - float_thresholdFromCoordinate
+		|| let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + float_thresholdFromCoordinate}
+
+function is_PlayerXCoordinate_stationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) =>
+	is_PlayerXCoordinate_nearCoordinate(float_Xcoordinate, PLAYER_STATIONARY_THRESHOLD, enum_releaseRegion)
 		
-function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) {
-	let_memAccessor_PlayerYCoordinate = current_PlayerYCoordinate(enum_releaseRegion)
-	return 
-		let_memAccessor_PlayerYCoordinate <= float_Ycoordinate - PLAYER_STATIONARY_THRESHOLD || 
-		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate + PLAYER_STATIONARY_THRESHOLD}
+function is_PlayerXCoordinate_notStationaryNearCoordinate(float_Xcoordinate, enum_releaseRegion) =>
+	is_PlayerXCoordinate_notNearCoordinate(float_Xcoordinate, PLAYER_STATIONARY_THRESHOLD, enum_releaseRegion)
+
+function is_PlayerYCoordinate_stationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) =>
+	is_PlayerYCoordinate_nearCoordinate(float_Ycoordinate, PLAYER_STATIONARY_THRESHOLD, enum_releaseRegion)
+		
+function is_PlayerYCoordinate_notStationaryNearCoordinate(float_Ycoordinate, enum_releaseRegion) =>
+	is_PlayerYCoordinate_notNearCoordinate(float_Ycoordinate, PLAYER_STATIONARY_THRESHOLD, enum_releaseRegion)
+
+function is_PlayerPosition_withinArea(float_areaCenterXcoordinate, float_areaCenterYcoordinate, float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion) => 
+	is_PlayerXCoordinate_nearCoordinate(float_areaCenterXcoordinate, float_thresholdFromCenter, enum_releaseRegion)		
+	&& is_PlayerYCoordinate_nearCoordinate(float_areaCenterYcoordinate, float_thresholdFromCenter, enum_releaseRegion)
+	&& is_PlayerZCoordinate_nearCoordinate(float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion)
+
+function is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion) {
+	let_missionLoad_Xcoordinate = get_Area_PlayerLoadXCoordinate(enum_areaId)
+	let_missionLoad_Ycoordinate = get_Area_PlayerLoadYCoordinate(enum_areaId)
+	let_missionLoad_Zcoordinate = get_Area_PlayerLoadZCoordinate(enum_areaId)
+	
+	return is_PlayerPosition_withinArea(
+		let_missionLoad_Xcoordinate, let_missionLoad_Ycoordinate, let_missionLoad_Zcoordinate,
+		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
+	}
+
+function is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion) {
+	let_missionSpawn_Xcoordinate = get_Area_PlayerSpawnXCoordinate(enum_areaId)
+	let_missionSpawn_Ycoordinate = get_Area_PlayerSpawnYCoordinate(enum_areaId)
+	let_missionSpawn_Zcoordinate = get_Area_PlayerSpawnZCoordinate(enum_areaId)
+	
+	return is_PlayerPosition_withinArea(
+		let_missionSpawn_Xcoordinate, let_missionSpawn_Ycoordinate, let_missionSpawn_Zcoordinate,
+		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
+	}
+
 
 // ..................
 // ◦ SHARED UNLOCKS ◦
@@ -925,6 +1049,34 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 // ''''''''''''''''''
 // ------------------RewardMenu---------------------
 REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
+function current_HighlightedRewardMenuItem(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_HighlightedMenuItem", 
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+	return let_memAccessor_HighlightedMenuItem}
+
+function current_RewardMenu_Balance(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+function current_RewardMenu_BountyCollected(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+
+function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsQuitConfirmationMenuDisplayed", 
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
+
+function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", 
+		let_memAddr_RewardMenuDisplayData, accessor = byte)
+	return let_memAccessor_MenuDepth == int_depth}
+
 function is_RewardMenu_displayed(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
@@ -946,18 +1098,28 @@ function on_RewardMenu_close(enum_releaseRegion) {
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)
 	return let_memAccessor_IsRewardMenuDisplayed < prev(let_memAccessor_IsRewardMenuDisplayed)}
 
-function current_RewardMenu_Balance(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
-
-function current_RewardMenu_BountyCollected(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
-
 function is_RatingBounty_achieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_pointerChainTo_GameTriggerID = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData)
-	return !is_ASCII(let_pointerChainTo_GameTriggerID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
+	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData)
+	return !is_ASCII(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
+
+function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) => 
+	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 1
+	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
+	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
+
+function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => 
+	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 0
+	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
+	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
+
+function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
+	const_YES = 0
+	return 
+		is_RewardMenu_displayed(enum_releaseRegion)
+		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
+		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_YES
+		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 // ------------------StartChpMenu---------------------
 function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
@@ -980,14 +1142,31 @@ INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
 INGAMEMENU_PauseMenu = "pause"
 INGAMEMENU_CheatsMenu = "cheats"
+INGAMEMENU_WarningMenu = "warning"
 function current_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed")
-	)
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
 
 function prev_IsInGameMenuDisplayed(enum_releaseRegion) => 
 	prev(current_IsInGameMenuDisplayed(enum_releaseRegion))
+
+function current_HighlightedInGameMenuItem(enum_releaseRegion) =>
+	byte(
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "8Bit_HighlightedMenuItemID"))
+
+function is_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
+
+function isPrev_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c))}
 
 function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
@@ -1021,20 +1200,73 @@ function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
 
+// function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads the last checkpoint
+// 	// This function can also be substituted by on_PlayerProfileStat_StoryModeRetries_increment()
+// 	let_memAddr_InGameMenuID = 
+// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// 	return 
+// 		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+// 		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
+// 		&& ascii_string_equals(let_memAddr_InGameMenuID, INGAMEMENU_RetryMenu, 4)}
 
-function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads the last checkpoint
-	// This function can also be substituted by on_PlayerProfileStat_StoryModeRetries_increment()
-	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// function on_PauseMenu_missionRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
+// 	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
+// 	&& is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
+
+function on_RetryMenu_yes(enum_releaseRegion) {
+	const_YES = 0x4
 	return 
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
-		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
-		&& ascii_string_equals(let_memAddr_InGameMenuID, INGAMEMENU_RetryMenu, 4)}
+		isPrev_InGameMenuID(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
-function on_PauseMenu_missionRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
-	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
-	&& is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
+function on_WarningMenu_yes(enum_releaseRegion) {
+	const_YES = 0x4
+	return 
+		isPrev_InGameMenuID(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
+
+// function on_RetryMenu_yes_close(enum_releaseRegion) {
+// 	const_YES = 0x4
+// 	let_memAddr_InGameMenuID = 
+// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// 	return 
+// 		on_InGameMenu_close(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
+
+// function on_RetryMenu_yes_displayed(enum_releaseRegion) {
+// 	const_YES = 0x4
+// 	let_memAddr_InGameMenuID = 
+// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// 	return 
+// 		is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits while is_InGameMenu_displayed() is still true
+// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
+
+// function on_WarningMenu_yes_close(enum_releaseRegion) {
+// 	const_YES = 0x4
+// 	let_memAddr_InGameMenuID = 
+// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// 	return 
+// 		on_InGameMenu_close(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
+
+// function on_WarningMenu_yes_displayed(enum_releaseRegion) {
+// 	const_YES = 0x4
+// 	let_memAddr_InGameMenuID = 
+// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+// 	return 
+// 		is_InGameMenu_displayed(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits while is_InGameMenu_displayed() is still true
+// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
+// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 // ..........
 // ◦ CHEATS ◦
@@ -1459,8 +1691,8 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP
-		// ==== Core (Alt) Group ====
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP		
+		// ==== Core (Alt) Group ====			
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -1468,41 +1700,48 @@ achievements_triggers = {
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
 		
-		&& unless(once( // <-- Pause Lock: when stumbled off the train
-			current_PlayerZCoordinate(enum_releaseRegion) < 0)
-			&& is_InGame(enum_releaseRegion))
+		&& unless( // <-- Pause Lock: when stumbled off the train
+			once(
+				is_PlayerPosition_atMissionSpawnPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
+				&& is_AreaState_InGame(enum_releaseRegion))
+			&& once(
+				current_PlayerZCoordinate(enum_releaseRegion) < 0
+				&& is_AreaState_InGame(enum_releaseRegion)))
 
-		&& once(on_InGame_start(enum_releaseRegion)) // <-- Prevent RATrigger popup being displayed during the shop at the start of the mission + Once is necessary, because this bitflag turns off when loading the RewardMenu
-		&& is_AreaState_InGame(enum_releaseRegion)	
+		&& once(
+			is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
+		&& once(
+			is_PlayerPosition_atMissionSpawnPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
+			&& is_AreaState_InGame(enum_releaseRegion))
+
 		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
 		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
-		// && !is_StartChpMenu_active(enum_releaseRegion)
-
 		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ==== Reset when not in correct Area_ID // TODO // WIP Create these resets with Player_Input_Reader
-		|| never_toAlt( 
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
-		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via pause menu (for Bounty Hunter Mode)
-		|| never_toAlt( 
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
-				on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
-			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)
-		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via pause menu (for Single Player Story Mode)
+		// ==== Alt Pause Lock Reset Group ====  Reset when not in correct Area
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
-				on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
-				&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
-			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)
-		// ==== Alt Pause Lock Reset Group ==== Reset on level/mission restart via retry/continue menu
-		|| never_toAlt( 
+			&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu on mission failure
+		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& once( // <-- once() is necessary because this check may hit before character is reloaded above the Z-Coordinate 
-				on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion)) 
-			&& current_PlayerZCoordinate(enum_releaseRegion) >= 0)),  
+			&& once(on_RetryMenu_yes(enum_releaseRegion))
+			&& once(
+				is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
+				&& is_AreaState_InGame(enum_releaseRegion))
+			// && is_Playing_BountyHunterMode(enum_releaseRegion) // <-- check is unneccesary as is_PlayerPosition_atMissionSpawnPoint() is already incorporated inside [Core (Alt) Group] + this allows retry usage for the first checkpoint in StoryMode
+			&& current_PlayerZCoordinate(enum_releaseRegion) > 0)
+
+		// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu>levelRestart or PauseMenu>quit
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_WarningMenu_yes(enum_releaseRegion))
+			&& once(
+				is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
+				&& is_AreaState_InGame(enum_releaseRegion))
+			&& current_PlayerZCoordinate(enum_releaseRegion) > 0)
+		),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion) 
