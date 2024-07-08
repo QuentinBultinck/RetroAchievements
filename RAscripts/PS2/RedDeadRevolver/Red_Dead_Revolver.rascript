@@ -104,6 +104,7 @@ memory_dataStructures = {
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
+			"32Bit_Cash": 0x8,
 			"Bitset_PlayerProfileUnlocks": 0xC,
 			"ASCII_FurthestCompletedStoryChapter": 0x23C,
 			"32Bit_StoryModeRetries": 0x28C,
@@ -153,8 +154,18 @@ memory_dataStructures = {
 		}},
 	"Struct_GameController": {
 		"pointerChains": {
-			"EquippedWeapon_ReserveAmmo": { 
-				"addAddressChain": [0x2C, 0x14]}
+			"32Bit_EquippedWeapon_ReserveAmmo": { 
+				"addAddressChain": [0x2C, 0x14]},
+			"32Bit_Cash": { 
+				"addAddressChain": [0x5874],
+				"offsetToPointedToMember": 0x8},
+			"32Bit_CashCombo": { 
+				"addAddressChain": [0x5874],
+				"offsetToPointedToMember": 0x10},
+			"32Bit_CashComboMultiplier": { 
+				"addAddressChain": [0x5874],
+				"offsetToPointedToMember": 0x14}, 
+
 		}}
 	}
 
@@ -690,6 +701,11 @@ function is_SelectedPlayerProfile(int_playerProfileNumber, enum_releaseRegion) {
 	return byte(let_memAddr_SelectedPlayerProfile) == int_playerProfileNumber} 
 
 // ----------------PlayerProfile STATISTICS--------------------
+function current_PlayerProfile_SavedCash(enum_releaseRegion) {
+	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_Cash = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_Cash")
+	return dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Cash)}
+
 function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
@@ -701,6 +717,8 @@ function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_StoryModeRetries")
 	let_memAccessor_Statistic = dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
+
+
 
 // ----------------PlayerProfile UNLOCKS--------------------
 WEAPON_COUNT = 24
@@ -1300,18 +1318,47 @@ function is_AnyCheat_active(enum_releaseRegion) {
 		&& let_sumOf_AllCheatFlags > 0
 	}
 
-// ...............................
-// ◦ AMMO COUNTER HUD CONTROLLER ◦
-// '''''''''''''''''''''''''''''''
+// ...................
+// ◦ GAME CONTROLLER ◦
+// '''''''''''''''''''
+// ------------------------Cash_HUDController------------------------------
+function current_Cash(enum_releaseRegion) {
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return 
+		memory_generateAddAddressPointerChain(
+			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
+			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_Cash"),
+			accessor = dword)
+	}
+
+function current_CashCombo(enum_releaseRegion) {
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return 
+		memory_generateAddAddressPointerChain(
+			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
+			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_CashCombo"),
+			accessor = dword)
+	}
+
+function current_CashComboMultiplier(enum_releaseRegion) {
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return 
+		memory_generateAddAddressPointerChain(
+			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
+			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_CashComboMultiplier"),
+			accessor = dword)
+	}
+
+// ------------------------AmmoCounter_HUDController------------------------------
 function is_AmmoHUDControllerReserveAmmo(int_ammoCount, enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_pointerChain_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
-	return let_pointerChain_EquippedWeaponReserveAmmo == int_ammoCount}
+	let_pointerChainto_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	return let_memAccessor_EquippedWeaponReserveAmmo == int_ammoCount}
 	
 function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_pointerChain_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
-	return let_pointerChain_EquippedWeaponReserveAmmo < prev(let_pointerChain_EquippedWeaponReserveAmmo)}
+	let_memAccessor_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	return let_memAccessor_EquippedWeaponReserveAmmo < prev(let_memAccessor_EquippedWeaponReserveAmmo)}
 
 function on_ShotsFired_increment(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -1544,10 +1591,10 @@ achievements_coreData = {
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
-		"a_Chapter1AcquireMoney": { // VERIFIED
-			"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
-		"a_Chapter5StayOnTrain": { // BUG - restarting/retrying this mission in Bounty Hunter Mode (never resets)
+		// "a_Chapter1AcquireMoney": { // VERIFIED // DISABLED as an AddSource chain is unable to generated by RATools - Manual edit via RAIntegration
+			// 	"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
+		"a_Chapter5StayOnTrain": { // VERIFIED
 			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
 		},
@@ -1691,7 +1738,7 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP		
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
 		// ==== Core (Alt) Group ====			
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -1762,23 +1809,59 @@ achievements_triggers = {
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion)
-		&& !is_AnyCheat_active(enum_releaseRegion)
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_CASH_TARGET = 1000
+		let_sumOf_cashAcquiredDuringMission = 
+			current_Cash(enum_releaseRegion)  // <-- Cash which is only updated on save
+			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false() => manually edited in RAIntegration
+			- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is always up to date
+		alt_TriggerPopup = 
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
 
-		&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= 1000
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
 
-		&& once(on_RewardMenu_render(enum_releaseRegion)) 
-		&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
-		
-		// ==== Alt Reset Group ==== Reset hits correlated to RewardMenu being displayed
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& !is_RewardMenu_displayed(enum_releaseRegion))
-	),	
+			&& let_sumOf_cashAcquiredDuringMission >= const_CASH_TARGET // Due to RATools bug this sumOf is manually edited via RAIntegration - Edit in logic below
+			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) results in below lines of logic
+			// -------------------------------
+			// AddAddress	Mem 32-bit 0x562a20
+			// AddSource 	Mem 32-bit 0x5884 * Mem 32-bit 0x5888
+			// 				Val 0 >= 0x3e8
+
+			&& trigger_when(always_false())
+		alt_Reset = 
+			never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_RewardMenu_displayed(enum_releaseRegion))
+
+		return
+			// ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
+			
+			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
+			&& once(
+				never(!is_RewardMenu_displayed(enum_releaseRegion))
+				&& on_RewardMenu_render(enum_releaseRegion)) 
+			&& trigger_when(
+				repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+
+			// ==== Alt Trigger Group ==== This alt handles the trigger popup
+			|| alt_TriggerPopup	
+
+			// ==== Alt Reset Group ==== Reset hits correlated to RewardMenu being displayed
+			// || never_toAlt(
+			// 	is_ReleaseRegion(enum_releaseRegion) 
+			// 	&& !is_RewardMenu_displayed(enum_releaseRegion))
+	}),	
 	"a_UnlockAllStages": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
