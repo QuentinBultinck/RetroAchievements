@@ -21,6 +21,8 @@
         "QA",
         "TESTING",
 
+        "WARNING",
+
         "BUG",
         "ERROR",
 
@@ -132,10 +134,19 @@
             "hideFromActivityBar": true,
             "hideFromTree": true
         },
+        "WARNING": {
+            "icon": "alert", 
+            "foreground": "#ffaa29",
+            "background": "#683106",
+            "type": "text-and-comment",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
+            "hideFromTree": true
+        },
         "BUG": {
             "foreground": "#fc5353",
             "background": "#612c03",
-            "type": "text-and-comment",             
+            "type": "text-and-comment",
             "icon": "stop"
         },
         "DISABLED": {
