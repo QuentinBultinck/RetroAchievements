@@ -1438,8 +1438,6 @@ memory_initialize()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-// TODO update readme
-
 // ==========================
 // • Achievements CORE DATA •
 // ==========================
@@ -1514,7 +1512,7 @@ achievements_coreData = {
 			"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 24 'Battle Finale'"},
 		},
-	"c_StoryEnd": { // Category - Story Ending // TODO implement unlocking lower diff achievements as well for players "replaying"
+	"c_StoryEnd": { // Category - Story Ending
 		"a_CompleteStoryNormal": { // VERIFIED
 			"id": 443703, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
 			"devInfo": "Complete single player campaign on normal difficulty"},
@@ -1581,9 +1579,9 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		// "a_BigMoney": { // CONCEPT a_template
-		// 	"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Amass an amount of cash in the single player story"},
+		"a_BigMoney": { // CONCEPT a_template
+			"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Amass an amount of cash on a single player profile"},
 		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete half the Bounty Hunter Mode Missions"},
@@ -1787,6 +1785,26 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
+	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP_template
+		const_CASH_TARGET = 50000
+		alt_RewardMenuBankBalance = 
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& is_RewardMenu_displayed(enum_releaseRegion)
+			&& trigger_when(
+				once(on_RewardMenu_render(enum_releaseRegion)))
+
+		return
+			// ==== Core (Alt) Group ====
+			// RATrigger when cash_hudcontroller
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& current_Cash(enum_releaseRegion) >= const_CASH_TARGET
+			&& trigger_when(
+				once(on_RewardMenu_render(enum_releaseRegion)))
+			
+			|| alt_RewardMenuBankBalance
+		}),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
 		// ==== Core (Alt) Group ====			
 		unless(
@@ -1858,7 +1876,7 @@ achievements_triggers = {
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO rewrite a_Chapter1AcquireMoney with reset + checkpoint on mission start // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashAcquiredDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is only updated on save
@@ -1893,7 +1911,7 @@ achievements_triggers = {
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 				|| !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
 
-			&& unless(once( // <-- Pause Lock: Cheat Protection
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			
 			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
@@ -2117,8 +2135,8 @@ achievements_titles = {
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"}, // WARNING - Manual creation via RAIntegration
 	"a_UnlockStagesAll": 					{"en": "Showdown Trailblazer"},
-	"a_UnlockCharactersHalf":				{"en": "Gunslinger's Ensemble"},
-	"a_UnlockCharactersAll":				{"en": "Gunslinger's Enchilada"},
+	"a_UnlockCharactersHalf":				{"en": "Gunslingers' Ensemble"},
+	"a_UnlockCharactersAll":				{"en": "Gunslingers' Enchilada"},
 	"a_CompleteJournalHalf":				{"en": "Historical Account"},
 	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
 	"a_MaxHealth":							{"en": "Peak Condition"},
