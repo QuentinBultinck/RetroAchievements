@@ -109,8 +109,9 @@ memory_dataStructures = {
 			"ASCII_FurthestCompletedStoryChapter": 0x23C,
 			"32Bit_StoryModeRetries": 0x28C,
 			"32Bit_CurrentPlaythroughDifficulty": 0x292,
-			"32BitFloat_TimeSpentPlaying": 0x388,			
+			"32BitFloat_TimeSpentPlaying": 0x388,
 			"Bitset_BountyHunterMissionsCompleted": 0x7B0,
+			"ASCII_PlayerProfileName": 0x7BC,
 			"Bitset_ActivatedChears": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
@@ -378,6 +379,9 @@ function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
 function is_ASCII(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s)
 
+function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s)
+
 function was_ASCII(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s, c => prior(c))
 
@@ -544,7 +548,7 @@ function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 	}
 
 // ...................
-// ◦ Player Location ◦
+// ◦ PLAYER LOCATION ◦
 // '''''''''''''''''''
 PLAYER_STATIONARY_THRESHOLD = 0.7
 PLAYER_SPAWN_THRESHOLD = 0.5
@@ -1072,9 +1076,9 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 	let_areaId_fixed = substring(enum_areaId, letConst_offset)
 	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
 
-// ..................
-// ◦ In Game Menu's ◦
-// ''''''''''''''''''
+// ................
+// ◦ IN GAME MENU ◦
+// ''''''''''''''''
 // ------------------RewardMenu---------------------
 REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
@@ -1129,7 +1133,7 @@ function on_RewardMenu_close(enum_releaseRegion) {
 function is_RatingBounty_achieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData)
-	return !is_ASCII(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
+	return is_ASCII_notEqualTo(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
 
 function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) => 
 	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 1
@@ -1228,20 +1232,6 @@ function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
 
-// function on_RetryMenu_retry(enum_releaseRegion) { // Restarting this way loads the last checkpoint
-// 	// This function can also be substituted by on_PlayerProfileStat_StoryModeRetries_increment()
-// 	let_memAddr_InGameMenuID = 
-// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-// 	return 
-// 		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
-// 		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
-// 		&& ascii_string_equals(let_memAddr_InGameMenuID, INGAMEMENU_RetryMenu, 4)}
-
-// function on_PauseMenu_missionRestart(enum_releaseRegion) => // Restarting this way restarts the whole level
-// 	on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic
-// 	&& is_InGameMenu_displayed(INGAMEMENU_PauseMenu, enum_releaseRegion)
-
 function on_RetryMenu_yes(enum_releaseRegion) {
 	const_YES = 0x4
 	return 
@@ -1256,49 +1246,12 @@ function on_WarningMenu_yes(enum_releaseRegion) {
 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
-// function on_RetryMenu_yes_close(enum_releaseRegion) {
-// 	const_YES = 0x4
-// 	let_memAddr_InGameMenuID = 
-// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-// 	return 
-// 		on_InGameMenu_close(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
-// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
-// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
-// function on_RetryMenu_yes_displayed(enum_releaseRegion) {
-// 	const_YES = 0x4
-// 	let_memAddr_InGameMenuID = 
-// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-// 	return 
-// 		is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits while is_InGameMenu_displayed() is still true
-// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
-// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
-
-// function on_WarningMenu_yes_close(enum_releaseRegion) {
-// 	const_YES = 0x4
-// 	let_memAddr_InGameMenuID = 
-// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-// 	return 
-// 		on_InGameMenu_close(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
-// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
-// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
-
-// function on_WarningMenu_yes_displayed(enum_releaseRegion) {
-// 	const_YES = 0x4
-// 	let_memAddr_InGameMenuID = 
-// 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-// 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
-// 	return 
-// 		is_InGameMenu_displayed(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits while is_InGameMenu_displayed() is still true
-// 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
-// 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 // ..........
 // ◦ CHEATS ◦
 // ''''''''''
+// ------------------------Cheats------------------------------
 FlagData_Bitset_ActivatedCheats = {
 	"Flags_UnlockableCheats": {
 		1: [6,7],
@@ -1327,6 +1280,13 @@ function is_AnyCheat_active(enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
+// ------------------------RstarCheat------------------------------
+function is_RStar_Cheat_inActive(enum_releaseRegion) {
+	const_RSTAR_NAME = "Rstar"
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
+	return is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
 
 // ...................
 // ◦ GAME CONTROLLER ◦
@@ -1424,7 +1384,10 @@ function is_Playing_ShowdownMode(enum_releaseRegion) =>
 
 function is_Playing_BountyHunterMode(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
-	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)	
+	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
+function is_Playing_BountyHunterMode_short(enum_releaseRegion) =>
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
 // ------------------------------------------------------
 CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
 function on_EndingCreditsVideo_start(enum_releaseRegion) {
@@ -1475,8 +1438,7 @@ memory_initialize()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-// TODO Cheat Protection againt RStar for c_Unlocks achievements
-// TODO Cheat Protection in challege achievements
+// TODO update readme
 
 // ==========================
 // • Achievements CORE DATA •
@@ -1515,42 +1477,42 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression
-		// "a_CompleteChapter3": { // CONCEPT a_CompleteChapter3
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 3"},
-		// "a_CompleteChapter5": { // CONCEPT a_CompleteChapter5
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Reach Brimstone for the 1st time"},
-		// "a_CompleteChapter7": { // CONCEPT a_CompleteChapter7
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 7"},
-		// "a_CompleteChapter10": { // CONCEPT a_CompleteChapter10
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 10 'The Cemetery'"},
-		// "a_CompleteChapter11": { // CONCEPT a_CompleteChapter11
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter13": { // CONCEPT a_CompleteChapter13
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter15": { // CONCEPT a_CompleteChapter15
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter17": { // CONCEPT a_CompleteChapter17
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter19": { // CONCEPT a_CompleteChapter19
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter20": { // CONCEPT a_CompleteChapter20
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter22": { // CONCEPT a_CompleteChapter22
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
-		// "a_CompleteChapter24": { // CONCEPT a_CompleteChapter24
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "xxxxxxx"},
+		"a_CompleteChapter3": { // VERIFIED
+			"id": 447279, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 3 'Ugly Streetfight'"},
+		"a_CompleteChapter5": { // VERIFIED
+			"id": 447280, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 5 'Railroaded'"},
+		"a_CompleteChapter7": { // VERIFIED
+			"id": 447281, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 7 'Freak Show'"},
+		"a_CompleteChapter10": { // VERIFIED
+			"id": 447270, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 10 'The Cemetery'"},
+		"a_CompleteChapter11": { // VERIFIED
+			"id": 447271, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 11 'Range War'"},
+		"a_CompleteChapter13": { // VERIFIED
+			"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 13 'The Traitor'"},
+		"a_CompleteChapter15": { // VERIFIED
+			"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 15 'Bear Mountain'"},
+		"a_CompleteChapter17": { // VERIFIED
+			"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 17 'The Mine'"},
+		"a_CompleteChapter19": { // VERIFIED
+			"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 19 'Hell Pass'"},
+		"a_CompleteChapter20": { // VERIFIED
+			"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 20 'Fort Diego'"},
+		"a_CompleteChapter22": { // VERIFIED
+			"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 22 'Devils and Angels'"},
+		"a_CompleteChapter24": { // VERIFIED
+			"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 24 'Battle Finale'"},
 		},
 	"c_StoryEnd": { // Category - Story Ending // TODO implement unlocking lower diff achievements as well for players "replaying"
 		"a_CompleteStoryNormal": { // VERIFIED
@@ -1674,11 +1636,14 @@ function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(en
 
 function achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(enum_areaId, enum_releaseRegion) =>
 	// ==== Core (Alt) Group ====
-	is_ReleaseRegion(enum_releaseRegion)
-	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-	&& is_Area(AREA_Campaign_UglyStreetFight, enum_releaseRegion)
+	never(
+		!is_ReleaseRegion(enum_releaseRegion)
+		|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		|| is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		|| !is_Area(enum_areaId, enum_releaseRegion))
 	&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal
-	&& on_RewardMenu_render(enum_releaseRegion)
+	&& once(on_RewardMenu_render(enum_releaseRegion))
+	&& repeated(40, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay popup to coincide with the UI effects of the RewardMenu for better experience
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -1766,7 +1731,7 @@ achievements_triggers = {
 	// 	is_ReleaseRegion(enum_releaseRegion) 
 	// 	&& always_false()
 	// 	),
-	"a_CompleteChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO test these
+	"a_CompleteChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
 	"a_CompleteChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_Railroaded, enum_releaseRegion)),
@@ -1893,7 +1858,7 @@ achievements_triggers = {
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // Manual creation via RAIntegration
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashAcquiredDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is only updated on save
@@ -1955,7 +1920,8 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllStages == STAGE_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UnlockCharactersHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllCharacters = achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)
@@ -1963,6 +1929,7 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllCharacters) < CHARACTER_COUNT/2
 			&& prev(let_sumOf_FlagsAllCharacters) > (CHARACTER_COUNT/4)
@@ -1977,7 +1944,8 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllCharacters == CHARACTER_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_CompleteJournalHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: No Measured Flag required for this as a_CompleteFullJournal already has one
@@ -1986,6 +1954,7 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllPages) < JOURNALPAGE_COUNT
 			&& prev(let_sumOf_FlagsAllPages) > JOURNALPAGE_COUNT/4
@@ -2000,7 +1969,8 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllPages == JOURNALPAGE_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion),
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion),
 				format = "percent")
 		}),
 	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -2014,8 +1984,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_StartChpMenu_active(enum_releaseRegion)) // <-- Health upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
-
+					&& !is_StartChpMenu_active(enum_releaseRegion) // <-- Health upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
@@ -2028,9 +1998,10 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_StartChpMenu_active(enum_releaseRegion)) // <-- DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& !is_StartChpMenu_active(enum_releaseRegion) // <-- DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),	
-	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // Manual creation via RAIntegration
+	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
 		
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
@@ -2042,7 +2013,8 @@ achievements_triggers = {
 			measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
@@ -2054,7 +2026,8 @@ achievements_triggers = {
 			&& measured(let_sumOf_AllWeaponFlags == UPGRADEABLE_WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_BountyCompletionHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
@@ -2142,7 +2115,7 @@ achievements_titles = {
 	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
 	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
-	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"},
+	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"}, // WARNING - Manual creation via RAIntegration
 	"a_UnlockStagesAll": 					{"en": "Showdown Trailblazer"},
 	"a_UnlockCharactersHalf":				{"en": "Gunslinger's Ensemble"},
 	"a_UnlockCharactersAll":				{"en": "Gunslinger's Enchilada"},
@@ -2150,7 +2123,7 @@ achievements_titles = {
 	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
 	"a_MaxHealth":							{"en": "Peak Condition"},
 	"a_MaxDeadEye":							{"en": "Red Eye"},
-	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
+	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"}, // WARNING - Manual creation via RAIntegration
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
 
@@ -2197,7 +2170,7 @@ achievements_descriptions = {
 	"a_CompleteStoryHard": 					{"en": "Conclude Red's tale on hard difficulty or higher"},
 	"a_CompleteStoryVeryHard": 				{"en": "Conclude Red's tale on very hard difficulty"},
 	"a_CompleteStoryWood": 					{"en": "Wrangle Red's tale on Red Wood Revolver difficulty"},
-	"a_BountyCompletionHalf": 				{"en": "Complet half of the Bounty Hunter Mode missions on a single player profile"},
+	"a_BountyCompletionHalf": 				{"en": "Complete half of the Bounty Hunter Mode missions on a single player profile"},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on a single player profile"},
 	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
@@ -2205,15 +2178,15 @@ achievements_descriptions = {
 	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
 	"a_Chapter5StayOnTrain":				{"en": "Navigate Chapter 5, 'Railroaded', without stumbling off the train even once"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, 'Bull's Eye', by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
-	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1, 'Bull's Eye'"},
+	"a_Chapter1AcquireMoney": 				{"en": "Collect a bounty of $1000 or more by the end of Chapter 1, 'Bull's Eye'"}, // WARNING - Manual creation via RAIntegration
 	"a_UnlockStagesAll": 					{"en": "Unlock all Showdown stages"},
 	"a_UnlockCharactersHalf":				{"en": "Unlock half the Showdown characters"},
 	"a_UnlockCharactersAll":				{"en": "Unlock all Showdown characters"},
 	"a_CompleteJournalHalf":				{"en": "Unlock half of Sheriff Bartlett's journal"},
-	"a_CompleteJournalAll":				{"en": "Complete Sheriff Bartlett's journal"},
+	"a_CompleteJournalAll":					{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
 	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
-	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"},
+	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"}, // WARNING - Manual creation via RAIntegration
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
 
