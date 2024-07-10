@@ -437,7 +437,7 @@ AREA_Campaign_FallFromGrace = "lvl_mansroof"
 
 const_Area_data = {
 	AREA_Campaign_Railroaded: { // TODO put these coordinates inside the code notes
-		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading
+		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X-Coordinate": 2.03,
 			"Y-Coordinate": 104.04,
 			"Z-Coordinate": 1.63},
@@ -445,6 +445,16 @@ const_Area_data = {
 			"X-Coordinate": 0.13,
 			"Y-Coordinate": -1.63,
 			"Z-Coordinate": 1.13}
+		},
+	AREA_Campaign_BrokenCreek: { 
+		"PlayerLoadCoordinates": {
+			"X-Coordinate": 20.60,
+			"Y-Coordinate": 12.65,
+			"Z-Coordinate": -4.46},
+		"PlayerSpawnCoordinates": {
+			"X-Coordinate": -18.6,
+			"Y-Coordinate": 16.0,
+			"Z-Coordinate": -0.75}
 		},
 	}
 
@@ -1579,7 +1589,7 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		"a_BigMoney": { // CONCEPT a_template
+		"a_BigMoney": { // CONCEPT a_BigMoney
 			"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Amass an amount of cash on a single player profile"},
 		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -1642,6 +1652,13 @@ function achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(enum
 	&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal
 	&& once(on_RewardMenu_render(enum_releaseRegion))
 	&& repeated(40, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay popup to coincide with the UI effects of the RewardMenu for better experience
+
+function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) =>
+	once(
+		is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+	&& once(
+		is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion)
+		&& is_AreaState_InGame(enum_releaseRegion))
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -1785,25 +1802,61 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP_template
+	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO a_BigMoney - Resets not working properly // WARNING - Manual creation via RAIntegration 
 		const_CASH_TARGET = 50000
-		alt_RewardMenuBankBalance = 
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& is_RewardMenu_displayed(enum_releaseRegion)
+		let_sumOf_cashDuringMission = 
+			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
+			- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is only updated on save
+			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false() => manually edited in RAIntegration
+				// Full SumOf would look like this [PAL]:
+				// -------------------------------
+				// AddAddress	Mem 32-bit 0x562a20
+				// AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+				// AddAddress	Mem 32-bit 0x7448d8
+				// SubSource 	Mem 32-bit 0x8
+				// AddAddress	Mem 32-bit 0x562a20
+				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+
+
+		coreAlt_logic = 
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
+			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
 			&& trigger_when(
-				once(on_RewardMenu_render(enum_releaseRegion)))
+				once(on_RewardMenu_render(enum_releaseRegion))
+				&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+
+
+		alt_TriggerPopupDuringMissionHandler =
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
+			&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
+
+			&& trigger_when(always_false())
+
 
 		return
-			// ==== Core (Alt) Group ====
-			// RATrigger when cash_hudcontroller
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& current_Cash(enum_releaseRegion) >= const_CASH_TARGET
-			&& trigger_when(
-				once(on_RewardMenu_render(enum_releaseRegion)))
+			// ==== Core (Alt) Logic Group ==== This group handles the core logic; It's responsible for unlocking the achievement
+			coreAlt_logic
+
+			// ==== Alt Trigger Popup Handler Group ==== This alt handles the trigger popup during the mission; It can never unlock the achievement
+			|| alt_TriggerPopupDuringMissionHandler
 			
-			|| alt_RewardMenuBankBalance
+			// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_RetryMenu_yes(enum_releaseRegion))
+
+			// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
 		}),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
 		// ==== Core (Alt) Group ====			
@@ -1822,17 +1875,13 @@ achievements_triggers = {
 				current_PlayerZCoordinate(enum_releaseRegion) < 0
 				&& is_AreaState_InGame(enum_releaseRegion)))
 
-		&& once(
-			is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
-		&& once(
-			is_PlayerPosition_atMissionSpawnPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
-			&& is_AreaState_InGame(enum_releaseRegion))
+		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_Railroaded, enum_releaseRegion)
 
 		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
 		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
 		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ====  Reset when not in correct Area
+		// ==== Alt Reset Group ====  Reset when not in correct Area
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
@@ -1876,58 +1925,75 @@ achievements_triggers = {
 		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO rewrite a_Chapter1AcquireMoney with reset + checkpoint on mission start // WARNING - Manual creation via RAIntegration
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
-		let_sumOf_cashAcquiredDuringMission = 
-			current_Cash(enum_releaseRegion)  // <-- Cash which is only updated on save
-			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false() => manually edited in RAIntegration
-			- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is always up to date
-		alt_TriggerPopup = 
+		let_sumOf_cashDuringMission = 
+			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
+			- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is only updated on save
+			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false() => manually edited in RAIntegration
+				// Full SumOf would look like this [PAL]:
+				// -------------------------------
+				// AddAddress	Mem 32-bit 0x562a20
+				// AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+				// AddAddress	Mem 32-bit 0x7448d8
+				// SubSource 	Mem 32-bit 0x8
+				// AddAddress	Mem 32-bit 0x562a20
+				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+
+		coreAlt_logic = 
 			unless(
-				!is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-				|| !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
-
-			&& unless(once( // <-- Pause Lock: Cheat Protection
-				is_AnyCheat_active(enum_releaseRegion)))
-
-			&& let_sumOf_cashAcquiredDuringMission >= const_CASH_TARGET // Due to RATools bug this sumOf is manually edited via RAIntegration - Edit in logic below
-			// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) results in below lines of logic
-			// -------------------------------
-			// AddAddress	Mem 32-bit 0x562a20
-			// AddSource 	Mem 32-bit 0x5884 * Mem 32-bit 0x5888
-			// 				Val 0 >= 0x3e8
-
-			&& trigger_when(always_false())
-		alt_Reset = 
-			never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_RewardMenu_displayed(enum_releaseRegion))
-
-		return
-			// ==== Core (Alt) Group ====
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion) // is_InGame() must not be used because we check data of the RewardMenu
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-				|| !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			
+
+			&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+
 			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
-			&& once(
-				never(!is_RewardMenu_displayed(enum_releaseRegion))
-				&& on_RewardMenu_render(enum_releaseRegion)) 
-			&& trigger_when(
-				repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+			&& once(on_RewardMenu_render(enum_releaseRegion))
+			&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+			
 
-			// ==== Alt Trigger Group ==== This alt handles the trigger popup
-			|| alt_TriggerPopup	
+		alt_TriggerPopupDuringMissionHandler =
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
-			// ==== Alt Reset Group ==== Reset hits correlated to RewardMenu being displayed
-			// || never_toAlt(
-			// 	is_ReleaseRegion(enum_releaseRegion) 
-			// 	&& !is_RewardMenu_displayed(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+			&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
+
+			&& trigger_when(always_false())
+
+
+		return
+			// ==== Core (Alt) Logic Group ==== This group handles the core logic; It's responsible for unlocking the achievement
+			coreAlt_logic
+
+			// ==== Alt Trigger Popup Handler Group ==== This alt handles the trigger popup during the mission; It can never unlock the achievement
+			|| alt_TriggerPopupDuringMissionHandler	
+
+			// ==== Alt Reset Group ====  Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
+
+			// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+				&& is_AreaState_InGame(enum_releaseRegion))
+
+			// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+				&& is_AreaState_InGame(enum_releaseRegion))
 	}),	
 	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
