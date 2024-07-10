@@ -1524,7 +1524,7 @@ achievements_coreData = {
 		},
 	"c_StoryEnd": { // Category - Story Ending
 		"a_CompleteStoryNormal": { // VERIFIED
-			"id": 443703, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
+			"id": 443703, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_WinCondition,
 			"devInfo": "Complete single player campaign on normal difficulty"},
 		"a_CompleteStoryHard": { // VERIFIED
 			"id": 443870, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
@@ -1589,8 +1589,8 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		"a_BigMoney": { // CONCEPT a_BigMoney
-			"id": 0000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+		"a_BigMoney": { // VERIFIED
+			"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Amass an amount of cash on a single player profile"},
 		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
@@ -1598,7 +1598,7 @@ achievements_coreData = {
 		"a_BountyCompletionAll": { // VERIFIED  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444682, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
-		// "a_Chapter13LoseNoCannons": { // CONCEPT a_Chapter13LoseNoCannons
+		// "a_Chapter13Cannons": { // CONCEPT a_Chapter13Cannons
 		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Lose no allied cannons"},
 		// "a_Chapter10RideBison": { // CONCEPT a_Chapter10RideBison
@@ -1659,6 +1659,9 @@ function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaI
 	&& once(
 		is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion)
 		&& is_AreaState_InGame(enum_releaseRegion))
+
+function achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion) =>
+	current_Cash(enum_releaseRegion) - current_PlayerProfile_SavedCash(enum_releaseRegion) == 0
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -1802,7 +1805,7 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO a_BigMoney - Resets not working properly // WARNING - Manual creation via RAIntegration 
+	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration 
 		const_CASH_TARGET = 50000
 		let_sumOf_cashDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
@@ -1848,15 +1851,23 @@ achievements_triggers = {
 			// ==== Alt Trigger Popup Handler Group ==== This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| alt_TriggerPopupDuringMissionHandler
 			
+			// ==== Alt Reset Group ==== Reset everything when at main menu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_AtMainMenu(enum_releaseRegion))
+
 			// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu after mission failure
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_RetryMenu_yes(enum_releaseRegion))
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
 
 			// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_WarningMenu_yes(enum_releaseRegion))
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
+
 		}),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
 		// ==== Core (Alt) Group ====			

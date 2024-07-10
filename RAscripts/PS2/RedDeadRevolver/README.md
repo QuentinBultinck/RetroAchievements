@@ -10,10 +10,11 @@ This guide contains information on how to unlock each achievement in the core se
 **Table of contents**
 
 - [Achievement Guide](#AchievementGuide) (divided by category)
-    - [Progression](#Progression)
-    - [Win Condition](#WinCondition)
-    - [Missable/extra content](#ExtraContent)
-    - [Misc_AchievementCategory](#Misc_AchievementCategory)
+    - [Story Progression](#Progression)
+    - [Story Completion](#WinCondition)
+    - [Story Challenges](#ExtraContent)
+    - [Showdown Challenges](#Misc_AchievementCategory)
+    - [Unlocks](#Misc_AchievementCategory)
 - [Leaderboards Explained](#LeaderboardsExplained)
 
 
@@ -38,15 +39,6 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + General_tip_2
 
 ***
-
-### Achievement Categories
-
-- [Story Progression](#Progression)
-- [Story Completion](#WinCondition)
-- [Story Challenges](#StoryChallenges)
-- [Showdown Challenges](#ShowdownChallenges)
-- [Unlocks](#Misc_AchievementCategory)
-
 
 <h2 id=Progression>
     🏆 Story Progression 
@@ -94,7 +86,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | **Rookie Sharpshooter**<br><sub>*a_PerfectShootingTutorial*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - In Chapter 1 'Bull's Eye', during the shooting tutorial: <br> Stay stationary + Hit all 13 targets without missing a single shot <br> <sub>(Bull's Eye: 1 \|\| Scarecrow: 4 \|\| Bottles: 5 \|\| Pans: 3)</sub> <br><br> - Restarting the level can be used to retry this challenge |
 | **Budding Prize Hunter**<br><sub>*a_Chapter1AcquireMoney*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Finish Chapter 1 'Bull's Eye' by a acquiring \$1000 bounty or higher. <br> This refers to the bounty collected at the reward menu, not your bank balance. This should be easily achievable by maintaining your combo <br><br> <b>⚠</b> Using cheats will disable this achievement |
 | **Railway Maverick**<br><sub>*a_Chapter5StayOnTrain*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 5 'Railroaded', without falling off the train once. Hanging off the train, close to the ground, may also count as falling off <br><br> <b>⚠</b> Using cheats will disable this achievement |
-| **It Was Always About the Money**<br><sub>*a_BigMoney*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Achieve a bank balance of $50 000 on a single player profile and finish the mission <br> - This achievement will only unlock when a reward menu is displayed, the menu which shows your statistics for the current mission. As some missions/levels don't have any post mission reward menu. These missions usually have a follow-up finale mission with a dedicated reward menu |
+| **It Was Always About the Money**<br><sub>*a_BigMoney*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Achieve a bank balance of $50 000 on a single player profile and finish the mission <br> - This achievement will only unlock when the reward menu is displayed, the menu which is displayed at the end of missions. It shows your statistics for the current mission. A few missions/levels don't have any post mission reward menu. These missions usually have a follow-up finale mission with a dedicated reward menu |
 | **Out for Blood**<br><sub>*a_BountyCompletionHalf*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") |  - Complete 10 of 20 Bounty Hunter missions <br> - The achievement triggers/measured popup updates when successfully completing a Bounty Hunter mission and '**quiting**' on the reward menu <br> (don't press 'replay', otherwise you'll have to complete the mission again) <br> - List of completed bounty hunter missions can be viewed at the title screen <br> Total count of completed Bounty Hunter missions can be viewed in RAoverlay |
 | **Strictly Bounty Business**<br><sub>*a_BountyCompletionAll*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") |  - Complete all 20 Bounty Hunter missions <br> - The achievement triggers/measured popup updates when successfully completing a Bounty Hunter mission and '**quiting**' on the reward menu <br> (don't press 'replay', otherwise you'll have to complete the mission again) <br> - List of completed bounty hunter missions can be viewed at the title screen <br> Total count of completed Bounty Hunter missions can be viewed in RAoverlay |
 
