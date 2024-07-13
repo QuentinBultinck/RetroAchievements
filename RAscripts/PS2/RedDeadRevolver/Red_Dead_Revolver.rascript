@@ -26,17 +26,17 @@
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
-// Nomenclature / Naming Convention
+// Nomenclature / Naming Convention // TODO update this part in template
 // ---------------------------------------------
 //	- current_ 	=> returns a memory accessor to the current value
 //	- prior_ 	=> returns a memory accessor to the prior value
 //	- prev_ 	=> returns a memory accessor to the previous/delta value
 //
 //	- is_		=> returns a comparison, which only uses current values								-> eg is_Area(id_area) => id_area == byte(0xAA)
-//	- was_		=> returns a comparison, which only uses prior values								-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
+//	- wasPrior_	=> returns a comparison, which only uses prior values								-> eg wasPrior_inArea(id_area) => id_area == prior(byte(0xAA))
 //	- has_ 		=> returns a comparison, which uses current AND prior values						-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
-//	- isPrev_	=> returns a comparison, which only uses previous/deta values						-> eg isPrev_Area(id_area) => id_area == prev(byte(0xAA))
-//	- on_		=> returns a comparison, which checks for a change (using delta and current values)	-> eg on_Area_change() => current_Area() != prev_Area()
+//	- wasPrev_	=> returns a comparison, which only uses previous/delta values						-> eg wasPrev_Area(id_area) => id_area == prev(byte(0xAA))
+//	- on_		=> returns a comparison, which checks for a change between delta and current values	-> eg on_Area_change() => current_Area() != prev_Area()
 
 //	Visual Studio Code: specific info
 // ---------------------------------------------
@@ -382,7 +382,7 @@ function is_ASCII(memAddr_ASCII, string_s) =>
 function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s)
 
-function was_ASCII(memAddr_ASCII, string_s) =>
+function wasPrior_ASCII(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s, c => prior(c))
 
 function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
@@ -413,59 +413,295 @@ function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
 	else
 		util_throwError(format("Release Region: {0} not supported", enum_releaseRegion))
 		
-	return let_memAccessor_confirmBtnPressedState > prev(let_memAccessor_confirmBtnPressedState)}
+	return let_memAccessor_confirmBtnPressedState < prev(let_memAccessor_confirmBtnPressedState)}
 
 // ...........
 // ◦ AREA ID ◦
 // '''''''''''
 AREA_loading = "default"
 AREA_MainMenu = "lvl_front"
-AREA_Campaign_BrokenCreek = "lvl_perfnew"
+AREA_Campaign_BullsEye = "lvl_perfnew"
+AREA_Campaign_BountyHunter = "lvl_hng"
 AREA_Campaign_UglyStreetFight = "lvl_sher"
+AREA_Campaign_Traincar = "lvl_triancar"
 AREA_Campaign_Railroaded = "lvl_traingood"
+AREA_Campaign_CarnivalLife = "lvl_ghost"
 AREA_Campaign_FreakShow = "lvl_shernite"
+AREA_Campaign_RogueValley = "lvl_bomb"
+AREA_Campaign_GhostTown = "lvl_gunsmoke"
 AREA_Campaign_TheCemetery = "lvl_cemetery"
 AREA_Campaign_RangeWar = "lvl_ranch"
+AREA_Campaign_SaloonFight = "lvl_barfight"
 AREA_Campaign_TheTraitor = "lvl_bridge"
+AREA_Campaign_SunsetCanyon = "lvl_coach"
 AREA_Campaign_BearMountain = "lvl_woods"
+AREA_Campaign_Jailbreak = "lvl_core"
 AREA_Campaign_TheMine = "lvl_corenew"
+AREA_Campaign_Stagecoach = "lvl_msn"
 AREA_Campaign_HellPass = "lvl_msncyn"
 AREA_Campaign_FortDiego = "lvl_fort"
+AREA_Campaign_EndOfTheLine = "lvl_train"
 AREA_Campaign_DevilsAndAngels = "lvl_trainend"
+AREA_Campaign_BattleRoyale = "lvl_roydusk"
 AREA_Campaign_BattleFinale = "lvl_royfinal"
+AREA_Campaign_Siege = "lvl_mans"
+AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
 
-const_Area_data = {
-	AREA_Campaign_Railroaded: { // TODO put these coordinates inside the code notes
+const_Area_data = { // TODO Re-check all coordinates
+	AREA_Campaign_BullsEye: { // TODO put these coordinates inside the code notes
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
-			"X-Coordinate": 2.03,
-			"Y-Coordinate": 104.04,
-			"Z-Coordinate": 1.63},
-		"PlayerSpawnCoordinates": {
-			"X-Coordinate": 0.13,
-			"Y-Coordinate": -1.63,
-			"Z-Coordinate": 1.13}
-		},
-	AREA_Campaign_BrokenCreek: { 
-		"PlayerLoadCoordinates": {
 			"X-Coordinate": 20.60,
 			"Y-Coordinate": 12.65,
 			"Z-Coordinate": -4.46},
-		"PlayerSpawnCoordinates": {
+		"PlayerStartCoordinates": { // These are the coordinates of the player_location on mission start
 			"X-Coordinate": -18.6,
 			"Y-Coordinate": 16.0,
-			"Z-Coordinate": -0.75}
-		},
+			"Z-Coordinate": -0.75}},
+	AREA_Campaign_BountyHunter: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 3.05,
+			"Y-Coordinate": 13.39,
+			"Z-Coordinate": -0.08},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": -2.62,
+			"Y-Coordinate": 41.22,
+			"Z-Coordinate": 0.01}},
+	AREA_Campaign_UglyStreetFight: { 
+		"PlayerLoadCoordinates": {
+			"X-Coordinate": 34.35,
+			"Y-Coordinate": -14.90,
+			"Z-Coordinate": 2.27},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 41.83,
+			"Y-Coordinate": 7.72,
+			"Z-Coordinate": 1.91}},
+	AREA_Campaign_Traincar: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_Railroaded: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 2.03,
+			"Y-Coordinate": 104.04,
+			"Z-Coordinate": 1.63},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 0.06,
+			"Y-Coordinate": -1.65,
+			"Z-Coordinate": 1.13}},
+	AREA_Campaign_CarnivalLife: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 8.45,
+			"Y-Coordinate": -5.12,
+			"Z-Coordinate": 4.62},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": -5.80,
+			"Y-Coordinate": -6.60,
+			"Z-Coordinate": 4.87}},
+	AREA_Campaign_FreakShow: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 21.19,
+			"Y-Coordinate": -15.16,
+			"Z-Coordinate": 2.39},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 24.55,
+			"Y-Coordinate": -15.38,
+			"Z-Coordinate": 2.42}},
+	AREA_Campaign_RogueValley: { // Both these coordinates are pretty identical
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 138.79,
+			"Y-Coordinate": 39.72,
+			"Z-Coordinate": -46.58},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 138.79,
+			"Y-Coordinate": 39.72,
+			"Z-Coordinate": -46.58}},
+	AREA_Campaign_GhostTown: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 46.48,
+			"Y-Coordinate": 5.43,
+			"Z-Coordinate": -0.28},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 50.32,
+			"Y-Coordinate": 6.83,
+			"Z-Coordinate": -0.13}},
+	AREA_Campaign_TheCemetery: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": -58.15,
+			"Y-Coordinate": 31.69,
+			"Z-Coordinate": 7.48},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": -58.42,
+			"Y-Coordinate": 40.00,
+			"Z-Coordinate": 7.48}},
+	AREA_Campaign_RangeWar: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": 0.90,
+			"Y-Coordinate": -15.37,
+			"Z-Coordinate": 0.41},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 26.45,
+			"Y-Coordinate": 0.48,
+			"Z-Coordinate": 0.00}},
+	AREA_Campaign_SaloonFight: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": -6.9,
+			"Y-Coordinate": -3.64,
+			"Z-Coordinate": -2.5},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": -3.15,
+			"Y-Coordinate": 1.12,
+			"Z-Coordinate": -2.46}},
+	AREA_Campaign_TheTraitor: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_SunsetCanyon: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_BearMountain: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_Jailbreak: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_TheMine: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_Stagecoach: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_HellPass: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_FortDiego: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_EndOfTheLine: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_DevilsAndAngels: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_BattleRoyale: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_BattleFinale: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_Siege: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_HouseOfCards: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
+	AREA_Campaign_FallFromGrace: { 
+		"PlayerLoadCoordinates": { 
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": sNULL,
+			"Y-Coordinate": sNULL,
+			"Z-Coordinate": sNULL}},
 	}
 
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["X-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
 
 function get_Area_PlayerSpawnYCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["Y-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Y-Coordinate"]
 
 function get_Area_PlayerSpawnZCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerSpawnCoordinates"]["Z-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Z-Coordinate"]
 
 function get_Area_PlayerLoadXCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["X-Coordinate"]
@@ -482,7 +718,7 @@ function is_AreaLoading_active(enum_releaseRegion) =>
 function is_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId)
 
-function was_Area(enum_areaId, enum_releaseRegion) =>
+function wasPrior_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prior(areaCheckComparison))
 
 function on_Area_changeTo(enum_areaId, enum_releaseRegion) =>
@@ -616,6 +852,24 @@ function is_PlayerZCoordinate_nearCoordinate(float_Zcoordinate, float_thresholdF
 		let_memAccessor_PlayerZCoordinate >= float_Zcoordinate - float_thresholdFromCoordinate
 		&& let_memAccessor_PlayerZCoordinate <= float_Zcoordinate + float_thresholdFromCoordinate}
 
+function wasPrev_PlayerXCoordinate_nearCoordinate(float_Xcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerXCoordinate = prev_PlayerXCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerXCoordinate >= float_Xcoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerXCoordinate <= float_Xcoordinate + float_thresholdFromCoordinate}
+
+function wasPrev_PlayerYCoordinate_nearCoordinate(float_Ycoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerYCoordinate = prev_PlayerYCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerYCoordinate >= float_Ycoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerYCoordinate <= float_Ycoordinate + float_thresholdFromCoordinate}
+
+function wasPrev_PlayerZCoordinate_nearCoordinate(float_Zcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
+	let_memAccessor_PlayerZCoordinate = prev_PlayerZCoordinate(enum_releaseRegion)
+	return 
+		let_memAccessor_PlayerZCoordinate >= float_Zcoordinate - float_thresholdFromCoordinate
+		&& let_memAccessor_PlayerZCoordinate <= float_Zcoordinate + float_thresholdFromCoordinate}
+
 function is_PlayerXCoordinate_notNearCoordinate(float_Xcoordinate, float_thresholdFromCoordinate, enum_releaseRegion) {
 	let_memAccessor_PlayerXCoordinate = current_PlayerXCoordinate(enum_releaseRegion)
 	return 
@@ -645,6 +899,11 @@ function is_PlayerPosition_withinArea(float_areaCenterXcoordinate, float_areaCen
 	&& is_PlayerYCoordinate_nearCoordinate(float_areaCenterYcoordinate, float_thresholdFromCenter, enum_releaseRegion)
 	&& is_PlayerZCoordinate_nearCoordinate(float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion)
 
+function wasPrev_PlayerPosition_withinArea(float_areaCenterXcoordinate, float_areaCenterYcoordinate, float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion) => 
+	wasPrev_PlayerXCoordinate_nearCoordinate(float_areaCenterXcoordinate, float_thresholdFromCenter, enum_releaseRegion)		
+	&& wasPrev_PlayerYCoordinate_nearCoordinate(float_areaCenterYcoordinate, float_thresholdFromCenter, enum_releaseRegion)
+	&& wasPrev_PlayerZCoordinate_nearCoordinate(float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion)
+
 function is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion) {
 	let_missionLoad_Xcoordinate = get_Area_PlayerLoadXCoordinate(enum_areaId)
 	let_missionLoad_Ycoordinate = get_Area_PlayerLoadYCoordinate(enum_areaId)
@@ -655,7 +914,17 @@ function is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion
 		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
 	}
 
-function is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion) {
+function wasPrev_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion) {
+	let_missionLoad_Xcoordinate = get_Area_PlayerLoadXCoordinate(enum_areaId)
+	let_missionLoad_Ycoordinate = get_Area_PlayerLoadYCoordinate(enum_areaId)
+	let_missionLoad_Zcoordinate = get_Area_PlayerLoadZCoordinate(enum_areaId)
+	
+	return wasPrev_PlayerPosition_withinArea(
+		let_missionLoad_Xcoordinate, let_missionLoad_Ycoordinate, let_missionLoad_Zcoordinate,
+		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
+	}
+
+function is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion) {
 	let_missionSpawn_Xcoordinate = get_Area_PlayerSpawnXCoordinate(enum_areaId)
 	let_missionSpawn_Ycoordinate = get_Area_PlayerSpawnYCoordinate(enum_areaId)
 	let_missionSpawn_Zcoordinate = get_Area_PlayerSpawnZCoordinate(enum_areaId)
@@ -664,6 +933,10 @@ function is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion) 
 		let_missionSpawn_Xcoordinate, let_missionSpawn_Ycoordinate, let_missionSpawn_Zcoordinate,
 		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
 	}
+
+function on_PlayerSpawn_atMissionStartPoint(enum_areaId, enum_releaseRegion) =>
+	is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion)
+	&& wasPrev_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion)
 
 
 // ..................
@@ -1204,7 +1477,7 @@ function is_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
 
-function isPrev_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
+function wasPrev_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
@@ -1245,14 +1518,14 @@ function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 function on_RetryMenu_yes(enum_releaseRegion) {
 	const_YES = 0x4
 	return 
-		isPrev_InGameMenuID(INGAMEMENU_RetryMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+		is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)
 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 function on_WarningMenu_yes(enum_releaseRegion) {
 	const_YES = 0x4
 	return 
-		isPrev_InGameMenuID(INGAMEMENU_WarningMenu, enum_releaseRegion) // <-- on_PlayerInput_ConfirmBtn_press() hits at same frame as on_InGameMenu_close()
+		is_InGameMenu_displayed(INGAMEMENU_WarningMenu, enum_releaseRegion)
 		&& current_HighlightedInGameMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
@@ -1448,6 +1721,14 @@ memory_initialize()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
+// TODO set design: 
+// - a set of session-based cheat-protected achievements for every story mission completion, on any difficulty (17-25)
+// - a set of session-based cheat-protected custom challenge achievements for every/some story missions, on specific difficulties (17-25) --> Should be marked missable, as player can't replay previous missions
+// - a set of cheat-protected leaderboards to fill out things in between (eg complete chapters 1 to 5 on hard difficulty OR eg complete chapters 20 to 27 on Red Wood Revolver difficulty)
+// - a set session-based cheat-protected achievements per bounty hunter mission (20)
+// == 54-70 achievements for Story Mode & Bounty Hunter Mode
+
+
 // ==========================
 // • Achievements CORE DATA •
 // ==========================
@@ -1485,59 +1766,66 @@ achievements_coreData = {
 	//	"devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression
+		"a_CompleteChapter1": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 1"},
+		"a_CompleteChapter2": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 2"},
 		"a_CompleteChapter3": { // VERIFIED
 			"id": 447279, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 3 'Ugly Streetfight'"},
+			"devInfo": "Complete Chapter 3"},
 		"a_CompleteChapter5": { // VERIFIED
 			"id": 447280, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 5 'Railroaded'"},
+			"devInfo": "Complete Chapter 5"},
+		"a_CompleteChapter6": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 6"},
 		"a_CompleteChapter7": { // VERIFIED
 			"id": 447281, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 7 'Freak Show'"},
+			"devInfo": "Complete Chapter 7"},
+		"a_CompleteChapter8": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 8"},
 		"a_CompleteChapter10": { // VERIFIED
 			"id": 447270, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 10 'The Cemetery'"},
+			"devInfo": "Complete Chapter 10"},
 		"a_CompleteChapter11": { // VERIFIED
 			"id": 447271, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 11 'Range War'"},
-		"a_CompleteChapter13": { // VERIFIED
-			"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 13 'The Traitor'"},
-		"a_CompleteChapter15": { // VERIFIED
-			"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 15 'Bear Mountain'"},
-		"a_CompleteChapter17": { // VERIFIED
-			"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 17 'The Mine'"},
-		"a_CompleteChapter19": { // VERIFIED
-			"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 19 'Hell Pass'"},
-		"a_CompleteChapter20": { // VERIFIED
-			"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 20 'Fort Diego'"},
-		"a_CompleteChapter22": { // VERIFIED
-			"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 22 'Devils and Angels'"},
-		"a_CompleteChapter24": { // VERIFIED
-			"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-			"devInfo": "Complete Chapter 24 'Battle Finale'"},
-		},
-	"c_StoryEnd": { // Category - Story Ending
-		"a_CompleteStoryNormal": { // VERIFIED
-			"id": 443703, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_WinCondition,
-			"devInfo": "Complete single player campaign on normal difficulty"},
-		"a_CompleteStoryHard": { // VERIFIED
-			"id": 443870, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
-			"devInfo": "Complete single player campaign on hard difficulty"},
-		"a_CompleteStoryVeryHard": { // VERIFIED
-			"id": 443871, "points": achievement_POINTS_Hard, "type": achievements_TYPE_WinCondition,
-			"devInfo": "Complete single player campaign on very hard difficulty"},
-		"a_CompleteStoryWood": { // VERIFIED
-			"id": 443872, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_WinCondition,
-			"devInfo": "Complete single player campaign on Red Wood Revolver difficulty"},
-		// "a_CompleteStoryHardcoreCheat": { // CONCEPT a_CompleteStoryHardcoreCheat
-		//	"id": 0000000, "points": achievement_POINTS_Hard, "type": achievements_TYPE_WinCondition,
-		//	"devInfo": "Complete single player campaign on very hard difficulty with cheat 'Bite The Bullet' activated"},
+			"devInfo": "Complete Chapter 11"},
+		"a_CompleteChapter12": { // VERIFIED
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 12"},
+		// "a_CompleteChapter13": { // CONCEPT a_CompleteChapter
+		//	"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 13"},
+		// "a_CompleteChapter14": { // CONCEPT a_CompleteChapter
+		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 14"},
+		// "a_CompleteChapter15": { // CONCEPT a_CompleteChapter
+		//	"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 15"},
+		// "a_CompleteChapter17": { // CONCEPT a_CompleteChapter
+		//	"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 17"},
+		// "a_CompleteChapter19": { // CONCEPT a_CompleteChapter
+		//	"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 19"},
+		// "a_CompleteChapter20": { // CONCEPT a_CompleteChapter
+		//	"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 20"},
+		// "a_CompleteChapter22": { // CONCEPT a_CompleteChapter
+		//	"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 22"},
+		// "a_CompleteChapter24": { // CONCEPT a_CompleteChapter
+		//	"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 24"},
+		// "a_CompleteChapter25": { // CONCEPT a_CompleteChapter
+		//	"id": 443871, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+		//	"devInfo": "Complete Chapter 25"},
+		// "a_CompleteChapter27": { // CONCEPT a_CompleteChapter
+		//	"id": 443703, "points": achievement_POINTS_Basic, "type": achievements_TYPE_WinCondition,
+		//	"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
 		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
@@ -1563,7 +1851,7 @@ achievements_coreData = {
 		"a_UnlockStagesAll": { // VERIFIED
 			"id": 444065, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 13 Showdown stages"},
-		"a_UnlockCharactersHalf": { // CONCEPT a_UnlockCharactersHalf
+		"a_UnlockCharactersHalf": { // VERIFIED
 			"id": 447034, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock 24 Showdown characters"},
 		"a_UnlockCharactersAll": { // VERIFIED
@@ -1588,15 +1876,74 @@ achievements_coreData = {
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
+	"c_BountyHunter": {
+		// "a_BountyHuntChapter1": { // CONCEPT a_BountyHuntChapter1 overwrites a_BountyCompletionHalf
+		// 	"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
+		// "a_BountyHuntChapter2": { // CONCEPT a_BountyHuntChapter2
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
+		// "a_BountyHuntChapter3": { // CONCEPT a_BountyHuntChapter3
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
+		// "a_BountyHuntChapter5": { // CONCEPT a_BountyHuntChapter5
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
+		// "a_BountyHuntChapter6": { // CONCEPT a_BountyHuntChapter6
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
+		// "a_BountyHuntChapter7": { // CONCEPT a_BountyHuntChapter7
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
+		// "a_BountyHuntChapter8": { // CONCEPT a_BountyHuntChapter8
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
+		// "a_BountyHuntChapter9": { // CONCEPT a_BountyHuntChapter9
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
+		// "a_BountyHuntChapter11": { // CONCEPT a_BountyHuntChapter11
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
+		// "a_BountyHuntChapter12": { // CONCEPT a_BountyHuntChapter12
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
+		// "a_BountyHuntChapter13": { // CONCEPT a_BountyHuntChapter13
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
+		// "a_BountyHuntChapter14": { // CONCEPT a_BountyHuntChapter14
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
+		// "a_BountyHuntChapter15": { // CONCEPT a_BountyHuntChapter15
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
+		// "a_BountyHuntChapter17": { // CONCEPT a_BountyHuntChapter17
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
+		// "a_BountyHuntChapter18": { // CONCEPT a_BountyHuntChapter18
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
+		// "a_BountyHuntChapter20": { // CONCEPT a_BountyHuntChapter20
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
+		// "a_BountyHuntChapter21": { // CONCEPT a_BountyHuntChapter21
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
+		// "a_BountyHuntChapter24": { // CONCEPT a_BountyHuntChapter24
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
+		// "a_BountyHuntChapter25": { // CONCEPT a_BountyHuntChapter25
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 25"},
+		// "a_BountyHuntChapter27": { // CONCEPT a_BountyHuntChapter27
+		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
+	},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		"a_BigMoney": { // VERIFIED
-			"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Amass an amount of cash on a single player profile"},
-		"a_BountyCompletionHalf": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete half the Bounty Hunter Mode Missions"},
-		"a_BountyCompletionAll": { // VERIFIED  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444682, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
+		// "a_BigMoney": { // QA - test changes to retryMenu() + on_PlayerSpawn_atMissionStartPoint() // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			// 	"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Amass an amount of cash on a one player profile"},		
+		"a_BountyCompletionAll": { // CONCEPT  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			"id": 444682, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		// "a_Chapter13Cannons": { // CONCEPT a_Chapter13Cannons
 		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
@@ -1613,7 +1960,7 @@ achievements_coreData = {
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
-		// "a_Chapter1AcquireMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+		// "a_Chapter1AcquireMoney": { // QA - test changes to retryMenu() + on_PlayerSpawn_atMissionStartPoint() // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// 	"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
 		"a_Chapter5StayOnTrain": { // VERIFIED
@@ -1657,11 +2004,38 @@ function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaI
 	once(
 		is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
 	&& once(
-		is_PlayerPosition_atMissionSpawnPoint(enum_areaId, enum_releaseRegion)
+		is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion)
 		&& is_AreaState_InGame(enum_releaseRegion))
 
 function achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion) =>
 	current_Cash(enum_releaseRegion) - current_PlayerProfile_SavedCash(enum_releaseRegion) == 0
+
+function achievements_generate_PauseLock_CheatProtection(enum_releaseRegion) => 
+	unless(once( // <-- Pause Lock: Cheat Protection
+		is_AnyCheat_active(enum_releaseRegion)))
+// ------------------ChapterCompletion----------------------
+function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
+	// ==== Core (Alt) Group ====
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& unless(!is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+		&& achievements_generate_PauseLock_CheatProtection(enum_releaseRegion)
+		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion)
+		&& once(on_RewardMenu_render(enum_releaseRegion))
+		&& repeated(40, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay achievement unlock to coincide with game UI effects
+
+	// ==== Alt Reset Group ====  Reset when not playing Single Player Campaign OR when not in correct AREA
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& (
+				!is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| !is_Area(enum_areaId, enum_releaseRegion)
+			))
+
+	// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// Don't reset on RetryMenu retry, only on mission restart
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& on_WarningMenu_yes(enum_releaseRegion))
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -1737,8 +2111,7 @@ function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
 
 // ------------------BountyHunterMissions----------------------
 function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted, enum_releaseRegion)
-
+	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted, enum_releaseRegion) 
 
 // =========================
 // • Achievements TRIGGERS •
@@ -1749,30 +2122,47 @@ achievements_triggers = {
 	// 	is_ReleaseRegion(enum_releaseRegion) 
 	// 	&& always_false()
 	// 	),
+
+	"a_CompleteChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"a_CompleteChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BountyHunter, enum_releaseRegion)),
 	"a_CompleteChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
 	"a_CompleteChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_Railroaded, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"a_CompleteChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
 	"a_CompleteChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_FreakShow, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"a_CompleteChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_RogueValley, enum_releaseRegion)),
 	"a_CompleteChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheCemetery, enum_releaseRegion)),
 	"a_CompleteChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_RangeWar, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"a_CompleteChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_SaloonFight, enum_releaseRegion)),
 	"a_CompleteChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"a_CompleteChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
 	"a_CompleteChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_BearMountain, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BearMountain, enum_releaseRegion)),
 	"a_CompleteChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_TheMine, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheMine, enum_releaseRegion)),
 	"a_CompleteChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_HellPass, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_HellPass, enum_releaseRegion)),
 	"a_CompleteChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_FortDiego, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FortDiego, enum_releaseRegion)),
 	"a_CompleteChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
 	"a_CompleteChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(AREA_Campaign_BattleFinale, enum_releaseRegion)
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"a_CompleteChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_Siege, enum_releaseRegion)),
+	"a_CompleteChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 	),
 	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
@@ -1819,57 +2209,48 @@ achievements_triggers = {
 				// SubSource 	Mem 32-bit 0x8
 				// AddAddress	Mem 32-bit 0x562a20
 				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
-
-
-		coreAlt_logic = 
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
-			&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
-			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
-			&& trigger_when(
-				once(on_RewardMenu_render(enum_releaseRegion))
-				&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
-
-
-		alt_TriggerPopupDuringMissionHandler =
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
-			&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
-			&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
-
-			&& trigger_when(always_false())
-
-
 		return
-			// ==== Core (Alt) Logic Group ==== This group handles the core logic; It's responsible for unlocking the achievement
-			coreAlt_logic
+			// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+				unless(
+					!is_ReleaseRegion(enum_releaseRegion)
+					|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				
+				&& unless(once( // <-- Pause Lock: Cheat Protection 
+					is_AnyCheat_active(enum_releaseRegion)))
 
-			// ==== Alt Trigger Popup Handler Group ==== This alt handles the trigger popup during the mission; It can never unlock the achievement
-			|| alt_TriggerPopupDuringMissionHandler
-			
-			// ==== Alt Reset Group ==== Reset everything when at main menu
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& is_AtMainMenu(enum_releaseRegion))
+				&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
+				&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
+				&& trigger_when(
+					once(on_RewardMenu_render(enum_releaseRegion))
+					&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
 
-			// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
+			// ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
+				|| unless(
+					!is_ReleaseRegion(enum_releaseRegion)
+					|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
-			// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
+				&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
+				&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
+				&& trigger_when(always_false())
+				
+			// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+				|| never_toAlt(
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_AtMainMenu(enum_releaseRegion))
 
+			// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure // BUG ?? does this reset with "once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))" in main logic group??
+				|| never_toAlt(
+					is_ReleaseRegion(enum_releaseRegion) 
+					&& once(on_RetryMenu_yes(enum_releaseRegion))
+					&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
+
+			// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+				|| never_toAlt(
+					is_ReleaseRegion(enum_releaseRegion) 
+					&& once(on_WarningMenu_yes(enum_releaseRegion))
+					&& achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_releaseRegion))
 		}),
-	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
+	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====			
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -1877,19 +2258,15 @@ achievements_triggers = {
 
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
+
+		&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
+			on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))
 		
-		&& unless( // <-- Pause Lock: when stumbled off the train
-			once(
-				is_PlayerPosition_atMissionSpawnPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
-				&& is_AreaState_InGame(enum_releaseRegion))
-			&& once(
-				current_PlayerZCoordinate(enum_releaseRegion) < 0
-				&& is_AreaState_InGame(enum_releaseRegion)))
+		&& unless(once( // <-- Pause Lock: when stumbled off the train
+			current_PlayerZCoordinate(enum_releaseRegion) < 0
+			&& is_AreaState_InGame(enum_releaseRegion)))
 
-		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_Railroaded, enum_releaseRegion)
-
-		&& !is_InGameMenu_displayed(INGAMEMENU_RetryMenu, enum_releaseRegion)	// <---2Lines--- Prevent RATrigger popup being displayed during these menu's
-		&& !is_InGameMenu_displayed(INGAMEMENU_GameOverScreen, enum_releaseRegion)
+		&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
 
 		// ==== Alt Reset Group ====  Reset when not in correct Area
@@ -1900,42 +2277,35 @@ achievements_triggers = {
 		// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu on mission failure
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_RetryMenu_yes(enum_releaseRegion))
-			&& once(
-				is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
-				&& is_AreaState_InGame(enum_releaseRegion))
-			// && is_Playing_BountyHunterMode(enum_releaseRegion) // <-- check is unneccesary as is_PlayerPosition_atMissionSpawnPoint() is already incorporated inside [Core (Alt) Group] + this allows retry usage for the first checkpoint in StoryMode
-			&& current_PlayerZCoordinate(enum_releaseRegion) > 0)
+			&& once(on_RetryMenu_yes(enum_releaseRegion)) 
+			&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu>levelRestart or PauseMenu>quit
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& once(on_WarningMenu_yes(enum_releaseRegion))
-			&& once(
-				is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion)
-				&& is_AreaState_InGame(enum_releaseRegion))
-			&& current_PlayerZCoordinate(enum_releaseRegion) > 0)
+			&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 		),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion) 
-		&& is_InGame(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
-		&& is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion)
-		// && !is_AnyCheat_active(enum_releaseRegion) // <-- usage of cheats for this achievement makes no difference
-
-		&& unless( // <-- Pause Lock achievement when more than 13 bullets were used
-			repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
-			|| once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion))
-			|| once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion)))
-
-		&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
-		&& trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== Reset when the shooting tutorial starts
-		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
+			&& is_InGame(enum_releaseRegion)
+			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
+			&& is_Area(AREA_Campaign_BullsEye, enum_releaseRegion)
+			// && !is_AnyCheat_active(enum_releaseRegion) // <-- usage of cheats for this achievement makes no difference
+
+			&& unless( // <-- Pause Lock achievement when more than 13 bullets were used
+				repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
+				|| once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion))
+				|| once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion)))
+
+			&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
+			&& trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ==== 	-> Reset when the shooting tutorial starts
+			|| never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
 	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashDuringMission = 
@@ -1949,9 +2319,9 @@ achievements_triggers = {
 				// AddAddress	Mem 32-bit 0x7448d8
 				// SubSource 	Mem 32-bit 0x8
 				// AddAddress	Mem 32-bit 0x562a20
-				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
-
-		coreAlt_logic = 
+				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET				
+		return
+		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -1959,57 +2329,44 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_BrokenCreek, enum_releaseRegion)
-
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
 			&& once(on_RewardMenu_render(enum_releaseRegion))
 			&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
-			
 
-		alt_TriggerPopupDuringMissionHandler =
-			unless(
+		// ==== Alt RATrigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
+			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& achievements_generate_Check_HasPlayerStartedMissionFromStart(AREA_Campaign_BrokenCreek, enum_releaseRegion)
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
+			&& trigger_when(always_false())	
 
-			&& trigger_when(always_false())
-
-
-		return
-			// ==== Core (Alt) Logic Group ==== This group handles the core logic; It's responsible for unlocking the achievement
-			coreAlt_logic
-
-			// ==== Alt Trigger Popup Handler Group ==== This alt handles the trigger popup during the mission; It can never unlock the achievement
-			|| alt_TriggerPopupDuringMissionHandler	
-
-			// ==== Alt Reset Group ====  Reset when not in correct AREA
+		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Area(AREA_Campaign_BrokenCreek, enum_releaseRegion))
+				&& !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
 
-			// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu after mission failure
+		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BrokenCreek, enum_releaseRegion)
-				&& is_AreaState_InGame(enum_releaseRegion))
+				&& on_RetryMenu_yes(enum_releaseRegion)
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 
-			// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BrokenCreek, enum_releaseRegion)
-				&& is_AreaState_InGame(enum_releaseRegion))
+				&& on_WarningMenu_yes(enum_releaseRegion)
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 	}),	
 	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
-			// ==== Core (Alt) Group ====
+		// ==== Core (Alt) Group ====
 			prev(let_sumOf_FlagsAllStages) < STAGE_COUNT
 			&& prev(let_sumOf_FlagsAllStages) > STAGE_COUNT/2
 			&& measured(let_sumOf_FlagsAllStages == STAGE_COUNT,
@@ -2046,7 +2403,7 @@ achievements_triggers = {
 		// NOTE: No Measured Flag required for this as a_CompleteFullJournal already has one
 		let_sumOf_FlagsAllPages = achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)
 		return 			
-			// ==== Core (Alt) Group ====
+		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
@@ -2058,7 +2415,7 @@ achievements_triggers = {
 	"a_CompleteJournalAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllPages = achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion)
 		return 			
-			// ==== Core (Alt) Group ====
+		// ==== Core (Alt) Group ====
 			prev(let_sumOf_FlagsAllPages) < JOURNALPAGE_COUNT
 			&& prev(let_sumOf_FlagsAllPages) > JOURNALPAGE_COUNT*3/4
 			&& measured(let_sumOf_FlagsAllPages == JOURNALPAGE_COUNT,
@@ -2070,10 +2427,9 @@ achievements_triggers = {
 		}),
 	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
-
 		let_sumOf_FlagsAllHealthUpgrades = achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion)
 		return 
-			// ==== Core (Alt) Group ====
+		// ==== Core (Alt) Group ====
 			prev(let_sumOf_FlagsAllHealthUpgrades) == HP_UPGRADE_COUNT - 1 
 			&& measured(let_sumOf_FlagsAllHealthUpgrades == HP_UPGRADE_COUNT,
 				when = 
@@ -2084,10 +2440,9 @@ achievements_triggers = {
 		}),
 	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks allowed as there are no HP upgrades unlockable during the StartChpMenu
-
 		let_sumOf_FlagsAllDeadEyeUpgrades = achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion)
 		return 
-			// ==== Core (Alt) Group ====
+		// ==== Core (Alt) Group ====
 			prev(let_sumOf_FlagsAllDeadEyeUpgrades) == DEADEYE_UPGRADE_COUNT - 1
 			&& measured(let_sumOf_FlagsAllDeadEyeUpgrades == DEADEYE_UPGRADE_COUNT,
 				when = 
@@ -2098,10 +2453,9 @@ achievements_triggers = {
 		}),	
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
-		
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
 		return 
-			// ==== Core (Alt) Group ==== 
+		// ==== Core (Alt) Group ==== 
 			// BUG RATools - infinite processing error --> Manual creation via RAIntegration
 			// prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT // <---2Lines--- Break RATools
 			// && prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT*5/8
@@ -2113,9 +2467,9 @@ achievements_triggers = {
 		}),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
-		
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion)
 		return 
+		// ==== Core (Alt) Logic Group ====
 			prev(let_sumOf_AllWeaponFlags) < UPGRADEABLE_WEAPON_COUNT
 			&& prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT/2
 			&& measured(let_sumOf_AllWeaponFlags == UPGRADEABLE_WEAPON_COUNT, 
@@ -2124,42 +2478,17 @@ achievements_triggers = {
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
-	"a_BountyCompletionHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
-		return
-			// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion)
-
-			&& once( // <-- Once to show RATrigger popup
-				let_sumOf_FlagsAllBountyMissionsCompleted == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
-				&& is_Playing_BountyHunterMode(enum_releaseRegion)
-				&& is_RatingBounty_achieved(enum_releaseRegion)
-				&& is_RewardMenu_displayed(enum_releaseRegion))
-
-			&& trigger_when(
-				prev(let_sumOf_FlagsAllBountyMissionsCompleted) == (BOUNTY_HUNTER_MISSON_COUNT/2) - 1
-				&& let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT/2)
-
-			// ==== Alt Reset Group ==== reset once() when replaying the bounty hunter mission (so the RATrigger popup hides again)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& (
-					on_InGame_start(enum_releaseRegion)
-					|| on_StartChpMenu_initialize(enum_releaseRegion)
-					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
-				)
-		}),
 	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
 		return
-			// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
+		// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
 			(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
 				&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
 			)
 
-			// ==== Alt RATrigger Popup Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
+		// ==== Alt RATrigger Popup Handler Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
 			|| (
 				is_ReleaseRegion(enum_releaseRegion)
 				&& once( // <-- once() to show RATrigger popup
@@ -2170,7 +2499,7 @@ achievements_triggers = {
 				&& trigger_when(always_false()) // <-- always_false()
 			)
 
-			// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
+		// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& (
@@ -2186,24 +2515,27 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
-	"a_CompleteChapter3":					{"en": "First Marks"}, 
-	"a_CompleteChapter5":					{"en": "Train Warden"}, 
+	"a_CompleteChapter1": 					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter2":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter3":					{"en": "First Marks"},
+	"a_CompleteChapter5":					{"en": "Train Warden"},
+	"a_CompleteChapter6":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter7":					{"en": "Perry's Peculiar Predicament"}, 
-	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"}, 
-	"a_CompleteChapter11":					{"en": "Faithful Rancher"}, 
+	"a_CompleteChapter8":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"},
+	"a_CompleteChapter11":					{"en": "Faithful Rancher"},
+	"a_CompleteChapter12":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter13":					{"en": "Pact of Perdition"},
+	"a_CompleteChapter14":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter15":					{"en": "Wolf Mountain"},
 	"a_CompleteChapter17": 					{"en": "Breakout"},
 	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
 	"a_CompleteChapter20": 					{"en": "Red Wolf"},
 	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
-	"a_CompleteChapter24":					{"en": "Battle Royalist"}, 
-	"a_CompleteStoryNormal": 				{"en": "Red's Redemption"},
-	"a_CompleteStoryHard": 					{"en": "The Scorpion's Retribution"},
-	"a_CompleteStoryVeryHard": 				{"en": "A Revolver's Story"},
-	"a_CompleteStoryWood": 					{"en": "The Wood, the Red and the Inferno"},
-	"a_BountyCompletionHalf": 				{"en": "Out for Blood"},
-	"a_BountyCompletionAll":				{"en": "Strictly Bounty Business"},
+	"a_CompleteChapter24":					{"en": "Battle Royalist"},
+	"a_CompleteChapter25":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter27":					{"en": "xxxxxxxxx"},
+	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
 	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
@@ -2249,24 +2581,27 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_CompleteChapter1": 					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter2":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter3":					{"en": "Quash both Bloody Tom's posse as well as the Ugly Gang by the conclusion of Chapter 3, 'Ugly Streetfight'"},
 	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, 'RailRoaded'"},
-	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in the gripping events of Chapter 7, 'Freak Show'"},
+	"a_CompleteChapter6":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, 'Freak Show'"},
+	"a_CompleteChapter8":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, 'The Cemetery'"},
 	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, 'Range War'"},
+	"a_CompleteChapter12":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, 'The Traitor'"},
+	"a_CompleteChapter14":					{"en": "xxxxxxxxx"},
 	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, 'Bear Mountain'"},
 	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines during Chapter 17, 'The Mine'"},
 	"a_CompleteChapter19": 					{"en": "Make it to Brimstone by stagecoach during Chapter 19, 'Hell's Pass'"},
 	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, 'Fort Diego'"},
 	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, 'Devils and Angels'"},
-	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries by the end of Chapter 24, 'Battle Finale'"}, 
-	"a_CompleteStoryNormal": 				{"en": "Conclude Red's tale on normal difficulty or higher"},
-	"a_CompleteStoryHard": 					{"en": "Conclude Red's tale on hard difficulty or higher"},
-	"a_CompleteStoryVeryHard": 				{"en": "Conclude Red's tale on very hard difficulty"},
-	"a_CompleteStoryWood": 					{"en": "Wrangle Red's tale on Red Wood Revolver difficulty"},
-	"a_BountyCompletionHalf": 				{"en": "Complete half of the Bounty Hunter Mode missions on a single player profile"},
-	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on a single player profile"},
+	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries by the end of Chapter 24, 'Battle Finale'"},
+	"a_CompleteChapter25":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter27":					{"en": "xxxxxxxxx"},
+	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
 	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
 	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
