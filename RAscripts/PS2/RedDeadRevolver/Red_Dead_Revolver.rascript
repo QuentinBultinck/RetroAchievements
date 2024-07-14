@@ -116,9 +116,11 @@ memory_dataStructures = {
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
 		"pointerChains": {
+			"ASCII_StartChpMenuName": {
+				"addAddressChain": [0x1EC]},
 			"BitFlag_IsStartChpMenuActive": { 
 				"addAddressChain": [0x214]},
-			"BitFlag_IsRewardMenuDisplayed": { 
+			"BitFlag_IsRewardMenuOrStartChpMenuDisplayed": { 
 				"addAddressChain": [0xAC, 0x38]},
 			"BitFlag_IsQuitConfirmationMenuDisplayed": { 
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0xE4]},
@@ -376,13 +378,13 @@ function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
 	}
 	return none_of(let_array_comparisons, c => c)}
 
-function is_ASCII(memAddr_ASCII, string_s) =>
+function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s)
 
 function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s)
 
-function wasPrior_ASCII(memAddr_ASCII, string_s) =>
+function wasPrior_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s, c => prior(c))
 
 function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
@@ -448,8 +450,8 @@ AREA_Campaign_Siege = "lvl_mans"
 AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
 
-const_Area_data = { // TODO Re-check all coordinates
-	AREA_Campaign_BullsEye: { // TODO put these coordinates inside the code notes
+const_Area_data = { // TODO put these coordinates inside the code notes
+	AREA_Campaign_BullsEye: { 
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X-Coordinate": 20.60,
 			"Y-Coordinate": 12.65,
@@ -778,8 +780,8 @@ function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 	let_pointerChainTo_GameTriggerID = 
 		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
 		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
-	// return is_ASCII(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
-	return is_ASCII(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
+	// return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
+	return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
 	}
 
@@ -1357,11 +1359,33 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + letConst_offset  
 	let_areaId_fixed = substring(enum_areaId, letConst_offset)
-	return is_ASCII(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
+	return is_ASCII_EqualTo(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
 
 // ................
 // ◦ IN GAME MENU ◦
 // ''''''''''''''''
+// ------------------StartChpMenu---------------------
+function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
+	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsStartChpMenuActive", 
+		let_memAddr_StartChpMenuDisplayData, accessor = bit0)}
+
+function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) => 
+	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
+
+function is_StartChpMenu_active(enum_releaseRegion) { // WIP
+	// const_STRING_STARTCHPMENU = "startChpMenu"
+	// const_STRING_SHORT_STARTCHPMENU = "startChp"
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	// let_pointerChainTo_StartChpMenuName = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_StartChpMenuName", let_memAddr_RewardMenuDisplayData)	
+	return 
+		// is_ASCII_EqualTo(let_pointerChainTo_StartChpMenuName, const_STRING_SHORT_STARTCHPMENU)
+		current_FlagState_IsStartChpMenuActive(enum_releaseRegion) == 1}
+	
+
+function on_StartChpMenu_initialize(enum_releaseRegion) =>
+	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) > prev_FlagState_IsStartChpMenuActive(enum_releaseRegion)
 // ------------------RewardMenu---------------------
 REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
@@ -1385,6 +1409,12 @@ function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion)
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsQuitConfirmationMenuDisplayed", 
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
 
+function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuOrStartChpMenuDisplayed",
+		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
+
 function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain(
@@ -1392,26 +1422,22 @@ function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
 		let_memAddr_RewardMenuDisplayData, accessor = byte)
 	return let_memAccessor_MenuDepth == int_depth}
 
-function is_RewardMenu_displayed(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsRewardMenuDisplayed == 1}
+function is_RewardMenu_displayed(enum_releaseRegion) => 
+	current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) == 1
+	&& !is_StartChpMenu_active(enum_releaseRegion)
 
 function on_RewardMenu_render(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsRewardMenuDisplayed > prev(let_memAccessor_IsRewardMenuDisplayed)}
+	let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed = current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion)
+	return 
+		let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed > prev(let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed)
+		// && !is_StartChpMenu_active(enum_releaseRegion) // <-- Unnecessary
+		}
 
 function on_RewardMenu_close(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsRewardMenuDisplayed =	memory_generateAddAddressPointerChain(
-		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
-	return let_memAccessor_IsRewardMenuDisplayed < prev(let_memAccessor_IsRewardMenuDisplayed)}
+	let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed = current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion)
+	return 
+		let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed < prev(let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed)
+		&& !is_StartChpMenu_active(enum_releaseRegion)}
 
 function is_RatingBounty_achieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
@@ -1435,23 +1461,6 @@ function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
 		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
-
-// ------------------StartChpMenu---------------------
-function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
-	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
-		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsStartChpMenuActive", 
-		let_memAddr_StartChpMenuDisplayData, accessor = bit0)}
-
-function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) => 
-	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
-
-function is_StartChpMenu_active(enum_releaseRegion) =>
-	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) == 1
-
-function on_StartChpMenu_initialize(enum_releaseRegion) =>
-	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) > prev_FlagState_IsStartChpMenuActive(enum_releaseRegion)
-
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
@@ -1796,36 +1805,36 @@ achievements_coreData = {
 		"a_CompleteChapter12": { // VERIFIED
 			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 12"},
-		// "a_CompleteChapter13": { // CONCEPT a_CompleteChapter
-		//	"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 13"},
-		// "a_CompleteChapter14": { // CONCEPT a_CompleteChapter
-		//	"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 14"},
-		// "a_CompleteChapter15": { // CONCEPT a_CompleteChapter
-		//	"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 15"},
-		// "a_CompleteChapter17": { // CONCEPT a_CompleteChapter
-		//	"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 17"},
-		// "a_CompleteChapter19": { // CONCEPT a_CompleteChapter
-		//	"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 19"},
-		// "a_CompleteChapter20": { // CONCEPT a_CompleteChapter
-		//	"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 20"},
-		// "a_CompleteChapter22": { // CONCEPT a_CompleteChapter
-		//	"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 22"},
-		// "a_CompleteChapter24": { // CONCEPT a_CompleteChapter
-		//	"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 24"},
-		// "a_CompleteChapter25": { // CONCEPT a_CompleteChapter
-		//	"id": 443871, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
-		//	"devInfo": "Complete Chapter 25"},
-		// "a_CompleteChapter27": { // CONCEPT a_CompleteChapter
-		//	"id": 443703, "points": achievement_POINTS_Basic, "type": achievements_TYPE_WinCondition,
-		//	"devInfo": "Complete Chapter 27"},
+		"a_CompleteChapter13": { // QA
+			"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 13"},
+		"a_CompleteChapter14": { // QA
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 14"},
+		"a_CompleteChapter15": { // QA
+			"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 15"},
+		"a_CompleteChapter17": { // QA
+			"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 17"},
+		"a_CompleteChapter19": { // QA
+			"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 19"},
+		"a_CompleteChapter20": { // QA
+			"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 20"},
+		"a_CompleteChapter22": { // QA
+			"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 22"},
+		"a_CompleteChapter24": { // QA
+			"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 24"},
+		"a_CompleteChapter25": { // QA
+			"id": 443871, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"devInfo": "Complete Chapter 25"},
+		"a_CompleteChapter27": { // QA
+			"id": 443703, "points": achievement_POINTS_Basic, "type": achievements_TYPE_WinCondition,
+			"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
 		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
@@ -1877,14 +1886,17 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": {
-		// "a_BountyHuntChapter1": { // CONCEPT a_BountyHuntChapter1 overwrites a_BountyCompletionHalf
-		// 	"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
+		"a_BountyCompletionAll": { // CONCEPT a_BountyCompletionAll remove this?? // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			"id": 444682, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
+		"a_BountyHuntChapter1": { // VERIFIED
+			"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
 		// "a_BountyHuntChapter2": { // CONCEPT a_BountyHuntChapter2
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"id": 443870, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
 		// "a_BountyHuntChapter3": { // CONCEPT a_BountyHuntChapter3
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"id": 443872, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
 		// "a_BountyHuntChapter5": { // CONCEPT a_BountyHuntChapter5
 		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
@@ -1939,12 +1951,9 @@ achievements_coreData = {
 		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 	},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		// "a_BigMoney": { // QA - test changes to retryMenu() + on_PlayerSpawn_atMissionStartPoint() // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// 	"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Amass an amount of cash on a one player profile"},		
-		"a_BountyCompletionAll": { // CONCEPT  // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444682, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
+		// "a_BigMoney": { // QA - test changes // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Amass an amount of cash on a one player profile"},		
 		// "a_Chapter13Cannons": { // CONCEPT a_Chapter13Cannons
 		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Lose no allied cannons"},
@@ -1960,9 +1969,9 @@ achievements_coreData = {
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
-		// "a_Chapter1AcquireMoney": { // QA - test changes to retryMenu() + on_PlayerSpawn_atMissionStartPoint() // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// 	"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
+		// "a_Chapter1AcquireMoney": { // QA - test changes // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			// "id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
 		"a_Chapter5StayOnTrain": { // VERIFIED
 			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
@@ -1973,33 +1982,6 @@ achievements_coreData = {
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_AltResetGroups_OnMissionReset_OR_OnMissionQuit(enum_releaseRegion) =>
-	// ==== Alt Pause Lock Reset Group ==== Reset on game quit 
-	never_toAlt( 
-		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_QuitToMainMenu(enum_releaseRegion))
-	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via pause menu
-	|| never_toAlt(
-		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion) // <-- Restarting level via Pause Menu, updates this statistic (on same frame the PauseMenu closes)
-		&& on_InGameMenu_close(INGAMEMENU_PauseMenu, enum_releaseRegion))
-	// ==== Alt Pause Lock Reset Group ==== Reset on mission restart via retry menu
-	|| never_toAlt(
-		is_ReleaseRegion(enum_releaseRegion) 
-		&& on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion))
-		// && on_RetryMenu_retry(enum_releaseRegion) // <-- This can be a substitute for above line, but contains more logic lines
-
-function achievements_generate_FullTrigger_ChapterCompletion_withRewardMenu(enum_areaId, enum_releaseRegion) =>
-	// ==== Core (Alt) Group ====
-	never(
-		!is_ReleaseRegion(enum_releaseRegion)
-		|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		|| is_Playing_BountyHunterMode_short(enum_releaseRegion)
-		|| !is_Area(enum_areaId, enum_releaseRegion))
-	&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal
-	&& once(on_RewardMenu_render(enum_releaseRegion))
-	&& repeated(40, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay popup to coincide with the UI effects of the RewardMenu for better experience
-
 function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) =>
 	once(
 		is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
@@ -2013,6 +1995,12 @@ function achievements_generate_Check_HasCashResetToPlayerProfileSavedCash(enum_r
 function achievements_generate_PauseLock_CheatProtection(enum_releaseRegion) => 
 	unless(once( // <-- Pause Lock: Cheat Protection
 		is_AnyCheat_active(enum_releaseRegion)))
+
+function achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion) =>
+	once(
+		never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
+		&& on_RewardMenu_render(enum_releaseRegion))
+
 // ------------------ChapterCompletion----------------------
 function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
 	// ==== Core (Alt) Group ====
@@ -2020,8 +2008,10 @@ function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_area
 		&& unless(!is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 		&& achievements_generate_PauseLock_CheatProtection(enum_releaseRegion)
 		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion)
-		&& once(on_RewardMenu_render(enum_releaseRegion))
-		&& repeated(40, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay achievement unlock to coincide with game UI effects
+		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+		&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
+			never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
+			&& is_RewardMenu_displayed(enum_releaseRegion)) 
 
 	// ==== Alt Reset Group ====  Reset when not playing Single Player Campaign OR when not in correct AREA
 		|| never_toAlt(
@@ -2119,8 +2109,8 @@ function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releas
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 	// 	// ==== Core (Alt) Group ====
-	// 	is_ReleaseRegion(enum_releaseRegion) 
-	// 	&& always_false()
+	// 		is_ReleaseRegion(enum_releaseRegion) 
+	// 		&& always_false()
 	// 	),
 
 	"a_CompleteChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -2164,7 +2154,7 @@ achievements_triggers = {
 	"a_CompleteChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 	),
-	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -2172,7 +2162,7 @@ achievements_triggers = {
 		&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal // <---2Lines--- unlock this achievement on any difficulty, without using orNext or altGroups
 		&& current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -2180,14 +2170,14 @@ achievements_triggers = {
 		&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Hard // <---2Lines--- unlock this achievement on any hard or veryHard, without using orNext or altGroups
 		&& current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 		&& is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
 		// ==== Core (Alt) Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -2195,7 +2185,46 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
-	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration 
+	"a_BountyHuntChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ==== Core (Alt) Group ====			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& is_RatingBounty_achieved(enum_releaseRegion)
+			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+				never(is_StartChpMenu_active(enum_releaseRegion))
+				&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		
+		// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_AtMainMenu(enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+		),
+	"a_BountyHuntChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO Reupload - changes with achievements_generate_Check_Once_OnRewardMenuRender()  // WARNING - Manual creation via RAIntegration 
 		const_CASH_TARGET = 50000
 		let_sumOf_cashDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
@@ -2221,8 +2250,10 @@ achievements_triggers = {
 				&& once(on_AreaState_ChangeTo(AREASTATE_InGame, enum_releaseRegion))
 				&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
 				&& trigger_when(
-					once(on_RewardMenu_render(enum_releaseRegion))
-					&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+					achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+					&& repeated(197, 
+						never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
+						&& is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
 
 			// ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 				|| unless(
@@ -2252,39 +2283,39 @@ achievements_triggers = {
 		}),
 	"a_Chapter5StayOnTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====			
-		unless(
-			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 
-		&& unless(once( // <-- Pause Lock: Cheat Protection
-			is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
 
-		&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
-			on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))
-		
-		&& unless(once( // <-- Pause Lock: when stumbled off the train
-			current_PlayerZCoordinate(enum_releaseRegion) < 0
-			&& is_AreaState_InGame(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
+				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))
+			
+			&& unless(once( // <-- Pause Lock: when stumbled off the train
+				current_PlayerZCoordinate(enum_releaseRegion) < 0
+				&& is_AreaState_InGame(enum_releaseRegion)))
 
-		&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-		&& trigger_when(on_RewardMenu_render(enum_releaseRegion))
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& trigger_when(achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion))
 
 		// ==== Alt Reset Group ====  Reset when not in correct Area
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu on mission failure
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_RetryMenu_yes(enum_releaseRegion)) 
-			&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion)) 
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu>levelRestart or PauseMenu>quit
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_WarningMenu_yes(enum_releaseRegion))
-			&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 		),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
@@ -2306,7 +2337,7 @@ achievements_triggers = {
 			|| never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO Reupload - changes with achievements_generate_Check_Once_OnRewardMenuRender() // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
@@ -2331,8 +2362,10 @@ achievements_triggers = {
 
 			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
-			&& once(on_RewardMenu_render(enum_releaseRegion))
-			&& repeated(197, is_RewardMenu_displayed(enum_releaseRegion)) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& repeated(197, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+				never(is_StartChpMenu_active(enum_releaseRegion))
+				&& is_RewardMenu_displayed(enum_releaseRegion)) 
 
 		// ==== Alt RATrigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
@@ -2515,26 +2548,46 @@ achievements_triggers = {
 // =====================
 achievements_titles = {
 	// "a_Template": 						{"en": "xxxxxxxxx"},
-	"a_CompleteChapter1": 					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter2":					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter3":					{"en": "First Marks"},
-	"a_CompleteChapter5":					{"en": "Train Warden"},
-	"a_CompleteChapter6":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter1": 					{"en": "The Scorpion's Scar"},
+	"a_CompleteChapter2":					{"en": "Prime Cut"},
+	"a_CompleteChapter3":					{"en": "The Uglier They Come, the Harder They Fall"},
+	"a_CompleteChapter5":					{"en": "Tickets Please!"},
+	"a_CompleteChapter6":					{"en": "Explosive Pig Out"},
 	"a_CompleteChapter7":					{"en": "Perry's Peculiar Predicament"}, 
-	"a_CompleteChapter8":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter8":					{"en": "Bovine Beatdown"},
 	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"},
 	"a_CompleteChapter11":					{"en": "Faithful Rancher"},
-	"a_CompleteChapter12":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter12":					{"en": "The Final Curtain"},
 	"a_CompleteChapter13":					{"en": "Pact of Perdition"},
-	"a_CompleteChapter14":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter14":					{"en": "Bullion's Folly"},
 	"a_CompleteChapter15":					{"en": "Wolf Mountain"},
-	"a_CompleteChapter17": 					{"en": "Breakout"},
+	"a_CompleteChapter17": 					{"en": "Ore-some Parole"},
 	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
 	"a_CompleteChapter20": 					{"en": "Red Wolf"},
 	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
-	"a_CompleteChapter24":					{"en": "Battle Royalist"},
-	"a_CompleteChapter25":					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter27":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter24":					{"en": "Dust Settler"},
+	"a_CompleteChapter25":					{"en": "Straight Into the Lion's Den"},
+	"a_CompleteChapter27":					{"en": "Redemption"},
+	"a_BountyHuntChapter1": 				{"en": "Bounty Hunter - Chapter 1, 'Bull's Eye"}, // TODO get creative titles for a_BountyHuntChapter - Descriptive is for description
+	"a_BountyHuntChapter2": 				{"en": "Bounty Hunter - Chapter 2, 'Bounty Hunter'"},
+	"a_BountyHuntChapter3": 				{"en": "Bounty Hunter - Chapter 3, 'Ugly Streetfight'"},
+	"a_BountyHuntChapter5": 				{"en": "Bounty Hunter - Chapter 5, 'Railroaded'"},
+	"a_BountyHuntChapter6": 				{"en": "Bounty Hunter - Chapter 6, 'Carnival Life'"},
+	"a_BountyHuntChapter7": 				{"en": "Bounty Hunter - Chapter 7, 'Freak Show'"},
+	"a_BountyHuntChapter8": 				{"en": "Bounty Hunter - Chapter 8, 'Rogue Valley'"},
+	"a_BountyHuntChapter9": 				{"en": "Bounty Hunter - Chapter 9, 'Ghost Town'"},
+	"a_BountyHuntChapter11": 				{"en": "Bounty Hunter - Chapter 11, 'Range War'"},
+	"a_BountyHuntChapter12": 				{"en": "Bounty Hunter - Chapter 12, 'Bar Fight'"},
+	"a_BountyHuntChapter13": 				{"en": "Bounty Hunter - Chapter 13, 'The Traitor'"},
+	"a_BountyHuntChapter14": 				{"en": "Bounty Hunter - Chapter 14, 'Sunset Canyon'"},
+	"a_BountyHuntChapter15": 				{"en": "Bounty Hunter - Chapter 15, 'Bear Mountain'"},
+	"a_BountyHuntChapter17": 				{"en": "Bounty Hunter - Chapter 17, 'The Mine'"},
+	"a_BountyHuntChapter18": 				{"en": "Bounty Hunter - Chapter 18, 'Stagecoach'"},
+	"a_BountyHuntChapter20": 				{"en": "Bounty Hunter - Chapter 20, 'Fort Diego'"},
+	"a_BountyHuntChapter21": 				{"en": "Bounty Hunter - Chapter 21, 'End of the Line'"},
+	"a_BountyHuntChapter24": 				{"en": "Bounty Hunter - Chapter 24, 'Battle Finale'"},
+	"a_BountyHuntChapter25": 				{"en": "Bounty Hunter - Chapter 25, 'Siege'"},
+	"a_BountyHuntChapter27": 				{"en": "Bounty Hunter - Chapter 27, 'Fall From Grace'"},
 	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
@@ -2581,28 +2634,48 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_CompleteChapter1": 					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter2":					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter3":					{"en": "Quash both Bloody Tom's posse as well as the Ugly Gang by the conclusion of Chapter 3, 'Ugly Streetfight'"},
+	"a_CompleteChapter1": 					{"en": "Valiantly hold the fort at Harlow's Home in Chapter 1, 'Bull's Eye'"},
+	"a_CompleteChapter2":					{"en": "Tenderize Bloody Tom's beefy ambitions during the events of Chapter 2, 'Bounty Hunter'"},
+	"a_CompleteChapter3":					{"en": "Neatly Nix the Ugly Gang by the end of Chapter 3, 'Ugly Streetfight'"},
 	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, 'RailRoaded'"},
-	"a_CompleteChapter6":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter6":					{"en": "Wrangle the dynamite-fiend during the events of Chapter 6, 'Carnival Life'"},
 	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, 'Freak Show'"},
-	"a_CompleteChapter8":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter8":					{"en": "Rein in Bad Bessie's gang of outlaws during Chapter 8, 'Rogue Valley'"},
 	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, 'The Cemetery'"},
 	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, 'Range War'"},
-	"a_CompleteChapter12":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter12":					{"en": "Survive a storm of fists, bottles and bullets during Chapter 12, 'Bar Fight'"},
 	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, 'The Traitor'"},
-	"a_CompleteChapter14":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter14":					{"en": "Disrupt an illicit gold operation during the events of Chapter 14, 'Sunset Canyon'"},
 	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, 'Bear Mountain'"},
-	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines during Chapter 17, 'The Mine'"},
+	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines within Chapter 17, 'The Mine'"},
 	"a_CompleteChapter19": 					{"en": "Make it to Brimstone by stagecoach during Chapter 19, 'Hell's Pass'"},
 	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, 'Fort Diego'"},
 	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, 'Devils and Angels'"},
-	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries by the end of Chapter 24, 'Battle Finale'"},
-	"a_CompleteChapter25":					{"en": "xxxxxxxxx"},
-	"a_CompleteChapter27":					{"en": "xxxxxxxxx"},
+	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries in Chapter 24, 'Battle Finale'"},
+	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, 'Siege'"},
+	"a_CompleteChapter27":					{"en": "Conclude Red's story by completion of Chapter 27, 'Fall From Grace'"},
+	"a_BountyHuntChapter1": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 1, 'Bull's Eye"},
+	"a_BountyHuntChapter2": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 2, 'Bounty Hunter'"},
+	"a_BountyHuntChapter3": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 3, 'Ugly Streetfight'"},
+	"a_BountyHuntChapter5": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 5, 'Railroaded'"},
+	"a_BountyHuntChapter6": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 6, 'Carnival Life'"},
+	"a_BountyHuntChapter7": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 7, 'Freak Show'"},
+	"a_BountyHuntChapter8": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 8, 'Rogue Valley'"},
+	"a_BountyHuntChapter9": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 9, 'Ghost Town'"},
+	"a_BountyHuntChapter11": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 11, 'Range War'"},
+	"a_BountyHuntChapter12": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 12, 'Bar Fight'"},
+	"a_BountyHuntChapter13": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 13, 'The Traitor'"},
+	"a_BountyHuntChapter14": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 14, 'Sunset Canyon'"},
+	"a_BountyHuntChapter15": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 15, 'Bear Mountain'"},
+	"a_BountyHuntChapter17": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 17, 'The Mine'"},
+	"a_BountyHuntChapter18": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 18, 'Stagecoach'"},
+	"a_BountyHuntChapter20": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 20, 'Fort Diego'"},
+	"a_BountyHuntChapter21": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 21, 'End of the Line'"},
+	"a_BountyHuntChapter24": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 24, 'Battle Finale'"},
+	"a_BountyHuntChapter25": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 25, 'Siege'"},
+	"a_BountyHuntChapter27": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 27, 'Fall From Grace'"},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
-	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 in the story campaign"},
+	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 during the story campaign"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
 	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
 	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
