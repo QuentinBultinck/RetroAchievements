@@ -26,7 +26,7 @@
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
-// Nomenclature / Naming Convention // TODO update this part in template
+// Nomenclature / Naming Convention // TODO update Nomenclature in template
 // ---------------------------------------------
 //	- current_ 	=> returns a memory accessor to the current value
 //	- prior_ 	=> returns a memory accessor to the prior value
@@ -455,9 +455,9 @@ const_Area_data = { // TODO Re-check all coordinates
 			"Y-Coordinate": 12.65,
 			"Z-Coordinate": -4.46},
 		"PlayerStartCoordinates": { // These are the coordinates of the player_location on mission start
-			"X-Coordinate": -18.6,
-			"Y-Coordinate": 16.0,
-			"Z-Coordinate": -0.75}},
+			"X-Coordinate": 20.64,
+			"Y-Coordinate": -8.00,
+			"Z-Coordinate": -5.12}},
 	AREA_Campaign_BountyHunter: { 
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": 3.05,
@@ -475,16 +475,16 @@ const_Area_data = { // TODO Re-check all coordinates
 		"PlayerStartCoordinates": {
 			"X-Coordinate": 41.83,
 			"Y-Coordinate": 7.72,
-			"Z-Coordinate": 1.91}},
-	AREA_Campaign_Traincar: { 
+			"Z-Coordinate": 1.90}},
+	AREA_Campaign_Traincar: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -0.05,
+			"Y-Coordinate": 6.99,
+			"Z-Coordinate": 0.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": -0.05,
+			"Y-Coordinate": 6.99,
+			"Z-Coordinate": 0.00}},
 	AREA_Campaign_Railroaded: { 
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": 2.03,
@@ -492,7 +492,7 @@ const_Area_data = { // TODO Re-check all coordinates
 			"Z-Coordinate": 1.63},
 		"PlayerStartCoordinates": {
 			"X-Coordinate": 0.06,
-			"Y-Coordinate": -1.65,
+			"Y-Coordinate": -1.63,
 			"Z-Coordinate": 1.13}},
 	AREA_Campaign_CarnivalLife: { 
 		"PlayerLoadCoordinates": { 
@@ -500,17 +500,17 @@ const_Area_data = { // TODO Re-check all coordinates
 			"Y-Coordinate": -5.12,
 			"Z-Coordinate": 4.62},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -5.80,
-			"Y-Coordinate": -6.60,
-			"Z-Coordinate": 4.87}},
+			"X-Coordinate": -7.46,
+			"Y-Coordinate": -4.67,
+			"Z-Coordinate": 4.83}},
 	AREA_Campaign_FreakShow: { 
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": 21.19,
 			"Y-Coordinate": -15.16,
 			"Z-Coordinate": 2.39},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 24.55,
-			"Y-Coordinate": -15.38,
+			"X-Coordinate": 24.66,
+			"Y-Coordinate": -15.32,
 			"Z-Coordinate": 2.42}},
 	AREA_Campaign_RogueValley: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
@@ -523,13 +523,13 @@ const_Area_data = { // TODO Re-check all coordinates
 			"Z-Coordinate": -46.58}},
 	AREA_Campaign_GhostTown: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 46.48,
-			"Y-Coordinate": 5.43,
-			"Z-Coordinate": -0.28},
-		"PlayerStartCoordinates": {
 			"X-Coordinate": 50.32,
 			"Y-Coordinate": 6.83,
-			"Z-Coordinate": -0.13}},
+			"Z-Coordinate": -0.13},
+		"PlayerStartCoordinates": {
+			"X-Coordinate": 46.48,
+			"Y-Coordinate": 5.43,
+			"Z-Coordinate": -0.28}},
 	AREA_Campaign_TheCemetery: { 
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": -58.15,
@@ -557,141 +557,141 @@ const_Area_data = { // TODO Re-check all coordinates
 			"X-Coordinate": -3.15,
 			"Y-Coordinate": 1.12,
 			"Z-Coordinate": -2.46}},
-	AREA_Campaign_TheTraitor: { 
-		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+	AREA_Campaign_TheTraitor: { // Both these coordinates are identical
+		"PlayerLoadCoordinates": {
+			"X-Coordinate": 36.82,
+			"Y-Coordinate": 1.30,
+			"Z-Coordinate": 4.16},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": 36.82,
+			"Y-Coordinate": 1.30,
+			"Z-Coordinate": 4.16}},
 	AREA_Campaign_SunsetCanyon: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -2.02,
+			"Y-Coordinate": -93.09,
+			"Z-Coordinate": -2.40},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_BearMountain: { 
+			"X-Coordinate": -3.6,
+			"Y-Coordinate": -90.51,
+			"Z-Coordinate": -2.90}},
+	AREA_Campaign_BearMountain: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 40.93,
+			"Y-Coordinate": -24.63,
+			"Z-Coordinate": -15.40},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_Jailbreak: { 
+			"X-Coordinate": 40.93,
+			"Y-Coordinate": -24.63,
+			"Z-Coordinate": -15.40}},
+	AREA_Campaign_Jailbreak: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -65.31,
+			"Y-Coordinate": -8.43,
+			"Z-Coordinate": -2.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": -65.31,
+			"Y-Coordinate": -8.43,
+			"Z-Coordinate": -2.00}},
 	AREA_Campaign_TheMine: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -25.64,
+			"Y-Coordinate": 23.10,
+			"Z-Coordinate": 0.64},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_Stagecoach: { 
+			"X-Coordinate": -9.52,
+			"Y-Coordinate": 20.53,
+			"Z-Coordinate": 2.03}},
+	AREA_Campaign_Stagecoach: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 0.76,
+			"Y-Coordinate": -1.17,
+			"Z-Coordinate": 2.97},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_HellPass: { 
+			"X-Coordinate": 0.76,
+			"Y-Coordinate": -1.17,
+			"Z-Coordinate": 2.91}},
+	AREA_Campaign_HellPass: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -0.02,
+			"Y-Coordinate": 0.18,
+			"Z-Coordinate": 2.85},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": -0.02,
+			"Y-Coordinate": 0.18,
+			"Z-Coordinate": 2.84}},
 	AREA_Campaign_FortDiego: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": -11.20,
+			"Y-Coordinate": -14.12,
+			"Z-Coordinate": 0.85},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": -19.93,
+			"Y-Coordinate": -21.89,
+			"Z-Coordinate": 0.70}},
 	AREA_Campaign_EndOfTheLine: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
-		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_DevilsAndAngels: { 
+			"X-Coordinate": 39.79,
+			"Y-Coordinate": 29.36,
+			"Z-Coordinate": 0.44},
+		"PlayerStartCoordinates": { // These are zero'd because player spawns in on horseback
+			"X-Coordinate": 0.0,
+			"Y-Coordinate": 0.0,
+			"Z-Coordinate": 0.0}},
+	AREA_Campaign_DevilsAndAngels: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 32.22,
+			"Y-Coordinate": 25.42,
+			"Z-Coordinate": 0.33},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": 32.22,
+			"Y-Coordinate": 25.42,
+			"Z-Coordinate": 0.33}},
 	AREA_Campaign_BattleRoyale: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 29.74,
+			"Y-Coordinate": -13.06,
+			"Z-Coordinate": 0.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": 26.99,
+			"Y-Coordinate": -12.30,
+			"Z-Coordinate": 0.00}},
 	AREA_Campaign_BattleFinale: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 11.44,
+			"Y-Coordinate": -23.70,
+			"Z-Coordinate": 0.80},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": 26.92,
+			"Y-Coordinate": -10.52,
+			"Z-Coordinate": 0.00}},
 	AREA_Campaign_Siege: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 44.11,
+			"Y-Coordinate": 0.00,
+			"Z-Coordinate": 0.01},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
-	AREA_Campaign_HouseOfCards: { 
-		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 34.84,
+			"Y-Coordinate": 0.00,
+			"Z-Coordinate": 0.49}},
+	AREA_Campaign_HouseOfCards: {
+		"PlayerLoadCoordinates": {
+			"X-Coordinate": -3.82,
+			"Y-Coordinate": 0.15,
+			"Z-Coordinate": 0.99},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": -1.98,
+			"Y-Coordinate": 1.23,
+			"Z-Coordinate": 0.99}},
 	AREA_Campaign_FallFromGrace: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL},
+			"X-Coordinate": 9.15,
+			"Y-Coordinate": 25.34,
+			"Z-Coordinate": 11.22},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": sNULL,
-			"Y-Coordinate": sNULL,
-			"Z-Coordinate": sNULL}},
+			"X-Coordinate": 4.17,
+			"Y-Coordinate": 23.11,
+			"Z-Coordinate": 10.97}},
 	}
 
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
