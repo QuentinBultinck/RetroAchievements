@@ -150,6 +150,8 @@ memory_dataStructures = {
 				"addAddressChain": [0x36C, 0x0]},
 			"32Bit_ShotsHit": { 
 				"addAddressChain": [0x36C, 0x2C]},
+			"32Bit_DeathToll": { 
+				"addAddressChain": [0x36C, 0x5C]},
 			"PS2Vector_PlayerLocation": { 
 				"addAddressChain": [0xC, 0xC, 0x90]},
 			"Bitset_PlayerProfileUnlocks": { 
@@ -169,7 +171,11 @@ memory_dataStructures = {
 				"addAddressChain": [0x5874],
 				"offsetToPointedToMember": 0x14}, 
 
-		}}
+		}},
+	"Undefined_Struct_03": {
+		"offsetToMember": {
+			"32Bit_MissionKillcount": 0xD8}
+		},
 	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -233,6 +239,7 @@ memory_addresses = {
 		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
+		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -1622,6 +1629,9 @@ function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
 	let_memAccessor_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
 	return let_memAccessor_EquippedWeaponReserveAmmo < prev(let_memAccessor_EquippedWeaponReserveAmmo)}
 
+// ......................
+// ◦ SINGLE PLAYER DATA ◦
+// ''''''''''''''''''''''
 function on_ShotsFired_increment(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChain_ShotsFired = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)
@@ -1636,6 +1646,11 @@ function on_ShotsHit_change(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
 	return let_pointerChain_ShotsHit != prev(let_pointerChain_ShotsHit)}
+
+function on_DeathToll_increment(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_pointerChain_DeathToll = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)
+	return let_pointerChain_DeathToll > prev(let_pointerChain_DeathToll)}
 
 // .............
 // ◦ GAME MODE ◦
@@ -1697,6 +1712,23 @@ function on_InGame_start(enum_releaseRegion) {
 
 function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
 	on_GameMode_changeTo(GAMEMODE_MainMenu, enum_releaseRegion)
+
+// .........
+// ◦ OTHER ◦
+// '''''''''
+// --------------------MissionKillcount------------------------
+function current_MissionKillcount(enum_releaseRegion) {
+	let_memAddr_UndefinedStruct = memory_getAddress(DATATYPE_32BitPointer, "Undefined_Struct_03", enum_releaseRegion)
+	let_PointerChainTo_MissionKillcount = 
+		dword(let_memAddr_UndefinedStruct)
+		+ memory_getDataStructOffset("Undefined_Struct_03", "32Bit_MissionKillcount")
+	return dword(let_PointerChainTo_MissionKillcount)}
+
+function prev_MissionKillcount(enum_releaseRegion) =>
+	prev(current_MissionKillcount(enum_releaseRegion))
+
+function on_MissionKillcount_increment(enum_releaseRegion) =>
+	current_MissionKillcount(enum_releaseRegion) > prev_MissionKillcount(enum_releaseRegion)
 
 // =========================
 // • Memory INITIALIZATION •
@@ -1892,63 +1924,63 @@ achievements_coreData = {
 		"a_BountyHuntChapter1": { // VERIFIED
 			"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
-		// "a_BountyHuntChapter2": { // CONCEPT a_BountyHuntChapter2
-		// 	"id": 443870, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
-		// "a_BountyHuntChapter3": { // CONCEPT a_BountyHuntChapter3
-		// 	"id": 443872, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
-		// "a_BountyHuntChapter5": { // CONCEPT a_BountyHuntChapter5
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
-		// "a_BountyHuntChapter6": { // CONCEPT a_BountyHuntChapter6
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
-		// "a_BountyHuntChapter7": { // CONCEPT a_BountyHuntChapter7
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
-		// "a_BountyHuntChapter8": { // CONCEPT a_BountyHuntChapter8
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
-		// "a_BountyHuntChapter9": { // CONCEPT a_BountyHuntChapter9
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
-		// "a_BountyHuntChapter11": { // CONCEPT a_BountyHuntChapter11
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
-		// "a_BountyHuntChapter12": { // CONCEPT a_BountyHuntChapter12
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
-		// "a_BountyHuntChapter13": { // CONCEPT a_BountyHuntChapter13
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
-		// "a_BountyHuntChapter14": { // CONCEPT a_BountyHuntChapter14
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
-		// "a_BountyHuntChapter15": { // CONCEPT a_BountyHuntChapter15
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
-		// "a_BountyHuntChapter17": { // CONCEPT a_BountyHuntChapter17
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
-		// "a_BountyHuntChapter18": { // CONCEPT a_BountyHuntChapter18
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
-		// "a_BountyHuntChapter20": { // CONCEPT a_BountyHuntChapter20
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
-		// "a_BountyHuntChapter21": { // CONCEPT a_BountyHuntChapter21
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
-		// "a_BountyHuntChapter24": { // CONCEPT a_BountyHuntChapter24
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
-		// "a_BountyHuntChapter25": { // CONCEPT a_BountyHuntChapter25
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 25"},
-		// "a_BountyHuntChapter27": { // CONCEPT a_BountyHuntChapter27
-		// 	"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
+		"a_BountyHuntChapter2": { // CONCEPT a_BountyHuntChapter2
+			"id": 443870, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
+		"a_BountyHuntChapter3": { // CONCEPT a_BountyHuntChapter3
+			"id": 443872, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
+		"a_BountyHuntChapter5": { // CONCEPT a_BountyHuntChapter5
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
+		"a_BountyHuntChapter6": { // CONCEPT a_BountyHuntChapter6
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
+		"a_BountyHuntChapter7": { // CONCEPT a_BountyHuntChapter7
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
+		"a_BountyHuntChapter8": { // CONCEPT a_BountyHuntChapter8
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
+		"a_BountyHuntChapter9": { // CONCEPT a_BountyHuntChapter9
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
+		"a_BountyHuntChapter11": { // CONCEPT a_BountyHuntChapter11
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
+		"a_BountyHuntChapter12": { // CONCEPT a_BountyHuntChapter12
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
+		"a_BountyHuntChapter13": { // CONCEPT a_BountyHuntChapter13
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
+		"a_BountyHuntChapter14": { // CONCEPT a_BountyHuntChapter14
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
+		"a_BountyHuntChapter15": { // CONCEPT a_BountyHuntChapter15
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
+		"a_BountyHuntChapter17": { // CONCEPT a_BountyHuntChapter17
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
+		"a_BountyHuntChapter18": { // VERIFIED
+			"id": 444682, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
+		"a_BountyHuntChapter20": { // CONCEPT a_BountyHuntChapter20
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
+		"a_BountyHuntChapter21": { // CONCEPT a_BountyHuntChapter21
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
+		"a_BountyHuntChapter24": { // CONCEPT a_BountyHuntChapter24
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
+		"a_BountyHuntChapter25": { // CONCEPT a_BountyHuntChapter25
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 25"},
+		"a_BountyHuntChapter27": { // CONCEPT a_BountyHuntChapter27
+			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 	},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		// "a_BigMoney": { // QA - test changes // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
@@ -2000,6 +2032,41 @@ function achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 	once(
 		never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
 		&& on_RewardMenu_render(enum_releaseRegion))
+
+function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enum_releaseRegion) => 
+	// ==== Core (Alt) Group ====			
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
+
+		&& once(on_PlayerSpawn_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+		&& is_RatingBounty_achieved(enum_releaseRegion)
+		&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+			never(is_StartChpMenu_active(enum_releaseRegion))
+			&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+	
+	// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_AtMainMenu(enum_releaseRegion))
+
+	// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_RetryMenu_yes(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+
+	// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_WarningMenu_yes(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
 
 // ------------------ChapterCompletion----------------------
 function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
@@ -2185,17 +2252,77 @@ achievements_triggers = {
 		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
 		&& on_EndingCreditsVideo_start(enum_releaseRegion)
 	),
+	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
+		return
+		// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
+			(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
+				&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
+			)
+
+		// ==== Alt RATrigger Popup Handler Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
+			|| (
+				is_ReleaseRegion(enum_releaseRegion)
+				&& once( // <-- once() to show RATrigger popup
+					let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT - 1
+					&& is_Playing_BountyHunterMode(enum_releaseRegion)
+					&& is_RatingBounty_achieved(enum_releaseRegion)
+					&& is_RewardMenu_displayed(enum_releaseRegion))
+				&& trigger_when(always_false()) // <-- always_false()
+			)
+
+		// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					on_InGame_start(enum_releaseRegion)
+					|| on_StartChpMenu_initialize(enum_releaseRegion)
+					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+			)
+		}),
 	"a_BountyHuntChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"a_BountyHuntChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"a_BountyHuntChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"a_BountyHuntChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"a_BountyHuntChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"a_BountyHuntChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"a_BountyHuntChapter9": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_GhostTown, enum_releaseRegion)),
+	"a_BountyHuntChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"a_BountyHuntChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"a_BountyHuntChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"a_BountyHuntChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"a_BountyHuntChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"a_BountyHuntChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"a_BountyHuntChapter18": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+				|| !is_Area(AREA_Campaign_Stagecoach, enum_releaseRegion))
 
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Stagecoach, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& measured(repeated(40, on_MissionKillcount_increment(enum_releaseRegion))) 
 			&& is_RatingBounty_achieved(enum_releaseRegion)
 			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
 				never(is_StartChpMenu_active(enum_releaseRegion))
@@ -2211,20 +2338,26 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Stagecoach, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Stagecoach, enum_releaseRegion))
 		),
-	"a_BountyHuntChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
-	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO Reupload - changes with achievements_generate_Check_Once_OnRewardMenuRender()  // WARNING - Manual creation via RAIntegration 
+	"a_BountyHuntChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"a_BountyHuntChapter21": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_EndOfTheLine, enum_releaseRegion)),
+	"a_BountyHuntChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"a_BountyHuntChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Siege, enum_releaseRegion)),
+	"a_BountyHuntChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+	),
+	"a_BigMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration 
 		const_CASH_TARGET = 50000
 		let_sumOf_cashDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
@@ -2337,7 +2470,7 @@ achievements_triggers = {
 			|| never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
-	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO Reupload - changes with achievements_generate_Check_Once_OnRewardMenuRender() // WARNING - Manual creation via RAIntegration
+	"a_Chapter1AcquireMoney": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
 		let_sumOf_cashDuringMission = 
 			current_Cash(enum_releaseRegion)  // <-- Cash which is always up to date
@@ -2511,104 +2644,16 @@ achievements_triggers = {
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
-	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
-		return
-		// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
-			(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
-				&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
-			)
-
-		// ==== Alt RATrigger Popup Handler Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
-			|| (
-				is_ReleaseRegion(enum_releaseRegion)
-				&& once( // <-- once() to show RATrigger popup
-					let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT - 1
-					&& is_Playing_BountyHunterMode(enum_releaseRegion)
-					&& is_RatingBounty_achieved(enum_releaseRegion)
-					&& is_RewardMenu_displayed(enum_releaseRegion))
-				&& trigger_when(always_false()) // <-- always_false()
-			)
-
-		// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& (
-					on_InGame_start(enum_releaseRegion)
-					|| on_StartChpMenu_initialize(enum_releaseRegion)
-					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
-			)
-		}),
 	}
 
 // =====================
 // • Achievements TEXT •
 // =====================
 achievements_titles = {
-	// "a_Template": 						{"en": "xxxxxxxxx"},
-	"a_CompleteChapter1": 					{"en": "The Scorpion's Scar"},
-	"a_CompleteChapter2":					{"en": "Prime Cut"},
-	"a_CompleteChapter3":					{"en": "The Uglier They Come, the Harder They Fall"},
-	"a_CompleteChapter5":					{"en": "Tickets Please!"},
-	"a_CompleteChapter6":					{"en": "Explosive Pig Out"},
-	"a_CompleteChapter7":					{"en": "Perry's Peculiar Predicament"}, 
-	"a_CompleteChapter8":					{"en": "Bovine Beatdown"},
-	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"},
-	"a_CompleteChapter11":					{"en": "Faithful Rancher"},
-	"a_CompleteChapter12":					{"en": "The Final Curtain"},
-	"a_CompleteChapter13":					{"en": "Pact of Perdition"},
-	"a_CompleteChapter14":					{"en": "Bullion's Folly"},
-	"a_CompleteChapter15":					{"en": "Wolf Mountain"},
-	"a_CompleteChapter17": 					{"en": "Ore-some Parole"},
-	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
-	"a_CompleteChapter20": 					{"en": "Red Wolf"},
-	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
-	"a_CompleteChapter24":					{"en": "Dust Settler"},
-	"a_CompleteChapter25":					{"en": "Straight Into the Lion's Den"},
-	"a_CompleteChapter27":					{"en": "Redemption"},
-	"a_BountyHuntChapter1": 				{"en": "Bounty Hunter - Chapter 1, 'Bull's Eye"}, // TODO get creative titles for a_BountyHuntChapter - Descriptive is for description
-	"a_BountyHuntChapter2": 				{"en": "Bounty Hunter - Chapter 2, 'Bounty Hunter'"},
-	"a_BountyHuntChapter3": 				{"en": "Bounty Hunter - Chapter 3, 'Ugly Streetfight'"},
-	"a_BountyHuntChapter5": 				{"en": "Bounty Hunter - Chapter 5, 'Railroaded'"},
-	"a_BountyHuntChapter6": 				{"en": "Bounty Hunter - Chapter 6, 'Carnival Life'"},
-	"a_BountyHuntChapter7": 				{"en": "Bounty Hunter - Chapter 7, 'Freak Show'"},
-	"a_BountyHuntChapter8": 				{"en": "Bounty Hunter - Chapter 8, 'Rogue Valley'"},
-	"a_BountyHuntChapter9": 				{"en": "Bounty Hunter - Chapter 9, 'Ghost Town'"},
-	"a_BountyHuntChapter11": 				{"en": "Bounty Hunter - Chapter 11, 'Range War'"},
-	"a_BountyHuntChapter12": 				{"en": "Bounty Hunter - Chapter 12, 'Bar Fight'"},
-	"a_BountyHuntChapter13": 				{"en": "Bounty Hunter - Chapter 13, 'The Traitor'"},
-	"a_BountyHuntChapter14": 				{"en": "Bounty Hunter - Chapter 14, 'Sunset Canyon'"},
-	"a_BountyHuntChapter15": 				{"en": "Bounty Hunter - Chapter 15, 'Bear Mountain'"},
-	"a_BountyHuntChapter17": 				{"en": "Bounty Hunter - Chapter 17, 'The Mine'"},
-	"a_BountyHuntChapter18": 				{"en": "Bounty Hunter - Chapter 18, 'Stagecoach'"},
-	"a_BountyHuntChapter20": 				{"en": "Bounty Hunter - Chapter 20, 'Fort Diego'"},
-	"a_BountyHuntChapter21": 				{"en": "Bounty Hunter - Chapter 21, 'End of the Line'"},
-	"a_BountyHuntChapter24": 				{"en": "Bounty Hunter - Chapter 24, 'Battle Finale'"},
-	"a_BountyHuntChapter25": 				{"en": "Bounty Hunter - Chapter 25, 'Siege'"},
-	"a_BountyHuntChapter27": 				{"en": "Bounty Hunter - Chapter 27, 'Fall From Grace'"},
-	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
-	"a_BigMoney":							{"en": "It Was Always About the Money"},
-	"a_WinHighNoon":						{"en": "Last Man Standing"},
-	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
-	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
-	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
-	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
-	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"}, // WARNING - Manual creation via RAIntegration
-	"a_UnlockStagesAll": 					{"en": "Showdown Trailblazer"},
-	"a_UnlockCharactersHalf":				{"en": "Gunslingers' Ensemble"},
-	"a_UnlockCharactersAll":				{"en": "Gunslingers' Enchilada"},
-	"a_CompleteJournalHalf":				{"en": "Historical Account"},
-	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
-	"a_MaxHealth":							{"en": "Peak Condition"},
-	"a_MaxDeadEye":							{"en": "Red Eye"},
-	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"}, // WARNING - Manual creation via RAIntegration
-	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
-	}
-
-// Chapter 12 'Bar Fight' Quite a Show
-// Showdown Challenge Title Idea's
+	// Title Idea's
+	// Cavalry Draw - Jack Swift related achievement
+	// Hammer of the God - weapon of the traitor General Diego
+	// Quite a show - Chapter 12	
 	// Red's Redemption
 	// Vendetta Complete
 	// Last Man Standing
@@ -2630,6 +2675,65 @@ achievements_titles = {
 	// Bitter Victory
 	// Westward Justice
 
+	// "a_Template": 						{"en": "xxxxxxxxx"},
+	"a_CompleteChapter1": 					{"en": "The Scorpion's Scar"},
+	"a_CompleteChapter2":					{"en": "Prime Cut"},
+	"a_CompleteChapter3":					{"en": "The Uglier They Come, the Harder They Fall"},
+	"a_CompleteChapter5":					{"en": "Tickets Please!"},
+	"a_CompleteChapter6":					{"en": "Explosive Pig Out"},
+	"a_CompleteChapter7":					{"en": "Perry's Peculiar Predicament"}, 
+	"a_CompleteChapter8":					{"en": "Bovine Beatdown"},
+	"a_CompleteChapter10":					{"en": "One Hell of a Bounty Hunter"},
+	"a_CompleteChapter11":					{"en": "Faithful Rancher"},
+	"a_CompleteChapter12":					{"en": "The Final Curtain"},
+	"a_CompleteChapter13":					{"en": "Pact of Perdition"},
+	"a_CompleteChapter14":					{"en": "Bullion's Folly"},
+	"a_CompleteChapter15":					{"en": "Grizzly Passage"},
+	"a_CompleteChapter17": 					{"en": "Ore-some Parole"},
+	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
+	"a_CompleteChapter20": 					{"en": "Red Wolf"},
+	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
+	"a_CompleteChapter24":					{"en": "Dust Settler"},
+	"a_CompleteChapter25":					{"en": "Straight Into the Lion's Den"},
+	"a_CompleteChapter27":					{"en": "Redemption"},
+	"a_BountyHuntChapter1": 				{"en": "Skull's Eye"}, // TODO get creative titles for a_BountyHuntChapter - Descriptive is for description
+	"a_BountyHuntChapter2": 				{"en": "Flawless Cut"},
+	"a_BountyHuntChapter3": 				{"en": "Slick Streetfight"},
+	"a_BountyHuntChapter5": 				{"en": "Railrushed"},
+	"a_BountyHuntChapter6": 				{"en": "Roaring Carnival"},
+	"a_BountyHuntChapter7": 				{"en": "Brawny Show"},
+	"a_BountyHuntChapter8": 				{"en": "Fortune Valley"},
+	"a_BountyHuntChapter9": 				{"en": "Wraith of the West"},
+	"a_BountyHuntChapter11": 				{"en": "Faithful Fortune"},
+	"a_BountyHuntChapter12": 				{"en": "Three Gals, Zero Wails"},
+	"a_BountyHuntChapter13": 				{"en": "Charge Me Not"}, 
+	"a_BountyHuntChapter14": 				{"en": "Grand Theft Horse"},
+	"a_BountyHuntChapter15": 				{"en": "Wolf Mountain"},
+	"a_BountyHuntChapter17": 				{"en": "Bound Momentum"},
+	"a_BountyHuntChapter18": 				{"en": "Buffalo Soldier and the 40 Troopers"},
+	"a_BountyHuntChapter20": 				{"en": "Fort Plenty"},
+	"a_BountyHuntChapter21": 				{"en": "End of Abundance"},
+	"a_BountyHuntChapter24": 				{"en": "Quickdraw"},
+	"a_BountyHuntChapter25": 				{"en": "Showstopper"},
+	"a_BountyHuntChapter27": 				{"en": "Diligent Fall"},
+	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
+	"a_BigMoney":							{"en": "It Was Always About the Money"},
+	"a_WinHighNoon":						{"en": "Last Man Standing"},
+	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
+	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
+	"a_Chapter5StayOnTrain":				{"en": "Railway Maverick"},
+	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
+	"a_Chapter1AcquireMoney": 				{"en": "Budding Prize Hunter"}, // WARNING - Manual creation via RAIntegration
+	"a_UnlockStagesAll": 					{"en": "Showdown Trailblazer"},
+	"a_UnlockCharactersHalf":				{"en": "Gunslingers' Ensemble"},
+	"a_UnlockCharactersAll":				{"en": "Gunslingers' Enchilada"},
+	"a_CompleteJournalHalf":				{"en": "Historical Account"},
+	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
+	"a_MaxHealth":							{"en": "Peak Condition"},
+	"a_MaxDeadEye":							{"en": "Red Eye"},
+	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"}, // WARNING - Manual creation via RAIntegration
+	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
+	}
 
 // -------------------------------------
 achievements_descriptions = {
@@ -2653,7 +2757,7 @@ achievements_descriptions = {
 	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, 'Devils and Angels'"},
 	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries in Chapter 24, 'Battle Finale'"},
 	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, 'Siege'"},
-	"a_CompleteChapter27":					{"en": "Conclude Red's story by completion of Chapter 27, 'Fall From Grace'"},
+	"a_CompleteChapter27":					{"en": "Conclude Red's story by completing Chapter 27, 'Fall From Grace'"},
 	"a_BountyHuntChapter1": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 1, 'Bull's Eye"},
 	"a_BountyHuntChapter2": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 2, 'Bounty Hunter'"},
 	"a_BountyHuntChapter3": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 3, 'Ugly Streetfight'"},
