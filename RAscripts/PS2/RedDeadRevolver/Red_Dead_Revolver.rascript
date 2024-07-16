@@ -176,6 +176,15 @@ memory_dataStructures = {
 		"offsetToMember": {
 			"32Bit_MissionKillcount": 0xD8}
 		},
+	"Struct_BountyHunterMode_Data_RogueValley": {
+		"pointerChains": {
+			"BitFlag_IsTreasureAFound": { 
+				"addAddressChain": [0x4, 0x4C]},
+			"BitFlag_IsTreasureBFound": { 
+				"addAddressChain": [0x8, 0x4C]},
+			"BitFlag_IsTreasureCFound": { 
+				"addAddressChain": [0xC, 0x4C]}},	
+	}
 	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -240,6 +249,7 @@ memory_addresses = {
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
+		"BountyHunterMode_Data_RogueValley": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -1381,7 +1391,7 @@ function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
 function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) => 
 	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
 
-function is_StartChpMenu_active(enum_releaseRegion) { // WIP
+function is_StartChpMenu_active(enum_releaseRegion) {
 	// const_STRING_STARTCHPMENU = "startChpMenu"
 	// const_STRING_SHORT_STARTCHPMENU = "startChp"
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
@@ -1730,6 +1740,18 @@ function prev_MissionKillcount(enum_releaseRegion) =>
 function on_MissionKillcount_increment(enum_releaseRegion) =>
 	current_MissionKillcount(enum_releaseRegion) > prev_MissionKillcount(enum_releaseRegion)
 
+// --------------------BountyHunterMode_Data------------------------
+ROGUEVALLEY_TREASURE_A = "BitFlag_IsTreasureAFound"
+ROGUEVALLEY_TREASURE_B = "BitFlag_IsTreasureBFound"
+ROGUEVALLEY_TREASURE_C = "BitFlag_IsTreasureCFound"
+
+function on_RogueValley_Treasure_find(enum_rogueValleyTreasureId, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "BountyHunterMode_Data_RogueValley", enum_releaseRegion)
+	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
+		"Struct_BountyHunterMode_Data_RogueValley", enum_rogueValleyTreasureId, 
+		let_memAddr_basePointer, accessor = dword)		
+	return let_memAccessor_IsTreasureFound > prev(let_memAccessor_IsTreasureFound)}
+
 // =========================
 // • Memory INITIALIZATION •
 // =========================
@@ -1808,10 +1830,10 @@ achievements_coreData = {
 	
 	"c_Story": { // Category - Story Progression
 		"a_CompleteChapter1": { // VERIFIED
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448757, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 1"},
 		"a_CompleteChapter2": { // VERIFIED
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448758, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 2"},
 		"a_CompleteChapter3": { // VERIFIED
 			"id": 447279, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
@@ -1820,13 +1842,13 @@ achievements_coreData = {
 			"id": 447280, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 5"},
 		"a_CompleteChapter6": { // VERIFIED
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448763, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 6"},
 		"a_CompleteChapter7": { // VERIFIED
 			"id": 447281, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 7"},
 		"a_CompleteChapter8": { // VERIFIED
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448761, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 8"},
 		"a_CompleteChapter10": { // VERIFIED
 			"id": 447270, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
@@ -1835,13 +1857,13 @@ achievements_coreData = {
 			"id": 447271, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 11"},
 		"a_CompleteChapter12": { // VERIFIED
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448765, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 12"},
 		"a_CompleteChapter13": { // QA
 			"id": 447272, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 13"},
 		"a_CompleteChapter14": { // QA
-			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 448764, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 14"},
 		"a_CompleteChapter15": { // QA
 			"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
@@ -1917,69 +1939,69 @@ achievements_coreData = {
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
-	"c_BountyHunter": {
-		"a_BountyCompletionAll": { // CONCEPT a_BountyCompletionAll remove this?? // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			"id": 444682, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete all the Bounty Hunter Mode Missions"},
+	"c_BountyHunter": { // QA This whole category
+		// "a_BountyCompletionAll": { // DISABLED not cheat protected // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		"a_BountyHuntChapter1": { // VERIFIED
 			"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
-		"a_BountyHuntChapter2": { // CONCEPT a_BountyHuntChapter2
+		"a_BountyHuntChapter2": { // VERIFIED
 			"id": 443870, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
-		"a_BountyHuntChapter3": { // CONCEPT a_BountyHuntChapter3
+		"a_BountyHuntChapter3": { // VERIFIED
 			"id": 443872, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
-		"a_BountyHuntChapter5": { // CONCEPT a_BountyHuntChapter5
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter5": { // VERIFIED
+			"id": 449110, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
-		"a_BountyHuntChapter6": { // CONCEPT a_BountyHuntChapter6
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter6": { // VERIFIED
+			"id": 449109, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
-		"a_BountyHuntChapter7": { // CONCEPT a_BountyHuntChapter7
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter7": { // VERIFIED
+			"id": 444682, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
-		"a_BountyHuntChapter8": { // CONCEPT a_BountyHuntChapter8
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter8": { // VERIFIED
+			"id": 449108, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
-		"a_BountyHuntChapter9": { // CONCEPT a_BountyHuntChapter9
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter9": { // VERIFIED
+			"id": 449107, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
-		"a_BountyHuntChapter11": { // CONCEPT a_BountyHuntChapter11
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter11": { // VERIFIED
+			"id": 449101, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
-		"a_BountyHuntChapter12": { // CONCEPT a_BountyHuntChapter12
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter12": { // VERIFIED
+			"id": 449100, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
-		"a_BountyHuntChapter13": { // CONCEPT a_BountyHuntChapter13
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter13": { // VERIFIED
+			"id": 449099, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
-		"a_BountyHuntChapter14": { // CONCEPT a_BountyHuntChapter14
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter14": { // VERIFIED
+			"id": 449098, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
-		"a_BountyHuntChapter15": { // CONCEPT a_BountyHuntChapter15
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter15": { // VERIFIED
+			"id": 449097, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
-		"a_BountyHuntChapter17": { // CONCEPT a_BountyHuntChapter17
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter17": { // VERIFIED
+			"id": 449096, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
 		"a_BountyHuntChapter18": { // VERIFIED
-			"id": 444682, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449064, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
-		"a_BountyHuntChapter20": { // CONCEPT a_BountyHuntChapter20
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter20": { // VERIFIED
+			"id": 449106, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
-		"a_BountyHuntChapter21": { // CONCEPT a_BountyHuntChapter21
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter21": { // VERIFIED
+			"id": 449105, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
-		"a_BountyHuntChapter24": { // CONCEPT a_BountyHuntChapter24
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter24": { // VERIFIED
+			"id": 449104, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
-		"a_BountyHuntChapter25": { // CONCEPT a_BountyHuntChapter25
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter25": { // VERIFIED
+			"id": 449103, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 25"},
-		"a_BountyHuntChapter27": { // CONCEPT a_BountyHuntChapter27
-			"id": 0000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		"a_BountyHuntChapter27": { // VERIFIED
+			"id": 449102, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 	},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
@@ -2046,7 +2068,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		&& once(on_PlayerSpawn_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 		&& is_RatingBounty_achieved(enum_releaseRegion)
-		&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+		&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
 			never(is_StartChpMenu_active(enum_releaseRegion))
 			&& is_RewardMenu_displayed(enum_releaseRegion)))
 
@@ -2295,7 +2317,47 @@ achievements_triggers = {
 	"a_BountyHuntChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FreakShow, enum_releaseRegion)),
 	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion)),
+		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion) with measured on 3 treasures found
+		
+		// ==== Core (Alt) Group ====			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+				|| !is_Area(AREA_Campaign_RogueValley, enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_RogueValley, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& measured(tally(3, [
+				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_A, enum_releaseRegion)),
+				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_B, enum_releaseRegion)),
+				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_C, enum_releaseRegion))
+				]))
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& is_RatingBounty_achieved(enum_releaseRegion)
+			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
+				never(is_StartChpMenu_active(enum_releaseRegion))
+				&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		
+		// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_AtMainMenu(enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_RogueValley, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_RogueValley, enum_releaseRegion))
+		),
 	"a_BountyHuntChapter9": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_GhostTown, enum_releaseRegion)),
 	"a_BountyHuntChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -2311,6 +2373,8 @@ achievements_triggers = {
 	"a_BountyHuntChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_TheMine, enum_releaseRegion)),
 	"a_BountyHuntChapter18": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Stagecoach, enum_releaseRegion) with measured on 40 enemies killed
+		
 		// ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
@@ -2321,10 +2385,10 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Stagecoach, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& measured(repeated(40, on_MissionKillcount_increment(enum_releaseRegion))) 
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& is_RatingBounty_achieved(enum_releaseRegion)
-			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
 				never(is_StartChpMenu_active(enum_releaseRegion))
 				&& is_RewardMenu_displayed(enum_releaseRegion)))
 
@@ -2702,7 +2766,7 @@ achievements_titles = {
 	"a_BountyHuntChapter5": 				{"en": "Railrushed"},
 	"a_BountyHuntChapter6": 				{"en": "Roaring Carnival"},
 	"a_BountyHuntChapter7": 				{"en": "Brawny Show"},
-	"a_BountyHuntChapter8": 				{"en": "Fortune Valley"},
+	"a_BountyHuntChapter8": 				{"en": "Treasure Valley"},
 	"a_BountyHuntChapter9": 				{"en": "Wraith of the West"},
 	"a_BountyHuntChapter11": 				{"en": "Faithful Fortune"},
 	"a_BountyHuntChapter12": 				{"en": "Three Gals, Zero Wails"},
