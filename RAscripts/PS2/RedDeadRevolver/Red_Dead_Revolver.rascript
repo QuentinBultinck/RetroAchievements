@@ -112,7 +112,7 @@ memory_dataStructures = {
 			"32BitFloat_TimeSpentPlaying": 0x388,
 			"Bitset_BountyHunterMissionsCompleted": 0x7B0,
 			"ASCII_PlayerProfileName": 0x7BC,
-			"Bitset_ActivatedChears": 0x800}
+			"Bitset_ActivatedCheats": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
 		"pointerChains": {
@@ -487,7 +487,7 @@ const_Area_data = { // TODO put these coordinates inside the code notes
 			"Z-Coordinate": -0.08},
 		"PlayerStartCoordinates": {
 			"X-Coordinate": -2.62,
-			"Y-Coordinate": 41.22,
+			"Y-Coordinate": 41.20,
 			"Z-Coordinate": 0.01}},
 	AREA_Campaign_UglyStreetFight: { 
 		"PlayerLoadCoordinates": {
@@ -1564,19 +1564,39 @@ function on_WarningMenu_yes(enum_releaseRegion) {
 // ◦ CHEATS ◦
 // ''''''''''
 // ------------------------Cheats------------------------------
+CHEAT_BiteTheBullet = 10
+CHEAT_GoldenGun = 20
+CHEAT_InfiniteDeadeye = 30
+CHEAT_Invincibility = 40
+CHEAT_NoDistortion = 50
+CHEAT_NoHud =  60
+CHEAT_SadStars = 70
+CHEAT_Debug_ShowPlayerPosition = 210
+CHEAT_Debug_ShowAIInfo = 220
+
 FlagData_Bitset_ActivatedCheats = {
 	"Flags_UnlockableCheats": {
 		1: [6,7],
 		2: [2,4,5,6,7]},
 	"Flags_DebugCheats": {
-		2: [0,1]}
+		2: [0,1]},
+	"Flags_ByCheat": {
+		CHEAT_Invincibility: {"ByteIndex": 1, "BitIndex": 6},
+		CHEAT_GoldenGun: {"ByteIndex": 1, "BitIndex": 7},
+		CHEAT_Debug_ShowPlayerPosition: {"ByteIndex": 2, "BitIndex": 0},
+		CHEAT_Debug_ShowAIInfo: {"ByteIndex": 2, "BitIndex": 1},
+		CHEAT_InfiniteDeadeye: {"ByteIndex": 2, "BitIndex": 2},
+		CHEAT_BiteTheBullet: {"ByteIndex": 2, "BitIndex": 4},
+		CHEAT_SadStars: {"ByteIndex": 2, "BitIndex": 5},
+		CHEAT_NoHud: {"ByteIndex": 2, "BitIndex": 6},
+		CHEAT_NoDistortion: {"ByteIndex": 2, "BitIndex": 7}}
 	}
 
 function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_memAddr_Bitset_ActivatedChears =
+	let_memAddr_Bitset_ActivatedCheats =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedChears")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedChears + int_offsetToByte)}
+		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
 
 function is_AnyCheat_active(enum_releaseRegion) {
 	let_sumOf_AllCheatFlags = 
@@ -1592,6 +1612,59 @@ function is_AnyCheat_active(enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
+
+function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedCheats =
+			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 1}
+
+function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedCheats =
+			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 0}
+
+function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedCheats =
+			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_array_memAccessors_toActivatedCheats = []
+	for enum_cheat in array_cheatEnums {
+		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
+		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
+	}
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) == length(array_cheatEnums)}
+
+function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedCheats =
+			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_array_memAccessors_toActivatedCheats = []
+	for enum_cheat in array_cheatEnums {
+		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
+		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
+	}
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
+
 // ------------------------RstarCheat------------------------------
 function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	const_RSTAR_NAME = "Rstar"
@@ -2024,78 +2097,78 @@ achievements_coreData = {
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		// "a_BigMoney": { // QA - test changes // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+		// "a_BigMoney": { // QA - test changes // TODO update type to missable // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			// "devInfo": "Amass an amount of cash on a one player profile"},
 		// "a_FlawlessDuel3": { // CONCEPT a_FlawlessDuel3
-		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
+		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Win a duel vs 3 opponents without taking damage"},
 		"a_PerfectShootingTutorial": { // VERIFIED
-			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
+			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_SaveCurly": { // QA a_SaveCurly
-			"id": 449378, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
+			"id": 449378, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Rogue Valley' | After saving Curly Shaw, pick up the $1500 pouch he drops near him"},
-		// "a_ChallengeChapter1": { // QA - test changes // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// "id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater at reward menu"},
-		// "a_ChallengeChapter2": { // CONCEPT a_ChallengeChapter2
-		// 	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat"},
+		// "a_ChallengeChapter1": { // VERIFIED // TODO update type to missable // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools  
+			// "id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater | Very Hard"},
+		"a_ChallengeChapter2": { // QA
+			"id": 450183, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat | hard or higher"},
 		// "a_ChallengeChapter3": { // CONCEPT a_ChallengeChapter3
-		// 	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Level 'Uglu Streetfight' | Complete without using any healing items"},
+		// 	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		// 	"devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
 		"a_ChallengeChapter5": { // VERIFIED
-			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train"},
+			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or higher"},
 		// "a_ChallengeChapter6": { // CONCEPT a_ChallengeChapter6
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Carinval Life' | Kill xx amount of enemies with gatling gun"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Carinval Life' | Kill xx amount of enemies with gatling gun | Hard or higher"},
 		// "a_ChallengeChapter7": { // CONCEPT a_ChallengeChapter7
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher | Very Hard"},
 		// "a_ChallengeChapter8": { // CONCEPT a_ChallengeChapter8
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Rogue Valley' | Kill xx amount of enemies"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Rogue Valley' | Kill xx amount of enemies" | hard or higher},
 		// "a_ChallengeChapter10": { // CONCEPT a_ChallengeChapter10
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion' cheat"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion' & 'No HUD' cheats | Hard or higher"},
 		// "a_ChallengeChapter11": { // CONCEPT a_ChallengeChapter11
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Range War' | Ride a bison and kill enemies"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Range War' | Ride a bison and kill enemies | Hard or higher"},
 		// "a_ChallengeChapter12": { // CONCEPT a_ChallengeChapter12
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Bar Fight' | Complete with damage taken less than 50%"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Bar Fight' | Complete with damage taken less than 50% | Very Hard"},
 		// "a_ChallengeChapter13": { // CONCEPT a_ChallengeChapter13
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'The Traitor' | Win the battle with 7 allied cannons still functional"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'The Traitor' | Win the battle with 7 allied cannons still functional | Very Hard"},
 		// "a_ChallengeChapter13": { // CONCEPT a_ChallengeChapter14
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Sunset Canyon' | Kill all enemies in this level"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Sunset Canyon' | Kill all enemies in this level | Hard or higher"},
 		// "a_ChallengeChapter15": { // CONCEPT a_ChallengeChapter15
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Bear Mountain' | Deal final blow to Grizzly with gun 'Faith'"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Bear Mountain' | Deal final blow to Grizzly with gun 'Faith' | Hard or higher"},
 		// "a_ChallengeChapter17": { // CONCEPT a_ChallengeChapter17
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'The Mine' | Complete without using bullets, use melee, invincibility cheat allowed, time trail"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'The Mine' | Complete without using bullets, use melee, invincibility cheat allowed, time trail | Very Hard"},
 		// "a_ChallengeChapter19": { // CONCEPT a_ChallengeChapter19
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Hell Pass' | Kill X enemies with No HUD cheat"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Hell Pass' | Kill X enemies with No HUD cheat | Hard or higher"},
 		// "a_ChallengeChapter20": { // CONCEPT a_ChallengeChapter20
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Fort Diego' | Complete with 'Bite the Bullet' Cheat"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Fort Diego' | Complete with 'Bite the Bullet' Cheat | Very Hard"},
 		// "a_ChallengeChapter22": { // CONCEPT a_ChallengeChapter22
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Fort Diego' | Complete with in under xxx time"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Fort Diego' | Complete with in under xxx time | Hard or Higher"},
 		// "a_ChallengeChapter24": { // CONCEPT a_ChallengeChapter24
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Battle Finale' | Complete with 'Sad Stars' Cheat"},
+		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Battle Finale' | Complete with 'Sad Stars' Cheat | Hard or Higher"},
 		// "a_ChallengeChapter25": { // CONCEPT a_ChallengeChapter25
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Siege' | Complete with Jack's HP above 75%, 'Golden Gun' cheat allowed"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Siege' | Complete with Jack's HP above 75%, 'Golden Gun' cheat allowed | Very Hard"},
 		// "a_ChallengeChapter27": { // CONCEPT a_ChallengeChapter27
-		//	"id": 000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Level 'Fall From Grace' | Complete in under 30 seconds, 'infinite DeadEye' cheat allowed"},
+		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+		//	"devInfo": "Level 'Fall From Grace' | Complete in under 30 seconds, 'infinite DeadEye' cheat allowed | Very Hard"},
 		},
 	}
 
@@ -2568,6 +2641,10 @@ achievements_triggers = {
 	"a_SaveCurly": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CURLY_CASH_AWARD = 1500
 		const_MISSON_AREA = AREA_Campaign_RogueValley
+		const_CURLY_CASH_PICKUP_AREA_X = -37.0
+		const_CURLY_CASH_PICKUP_AREA_Y = 40.0
+		const_CURLY_CASH_PICKUP_AREA_Z = -9.5
+		const_CURLY_CASH_PICKUP_AREA_THRESHOLD = 8.0
 
 		return 
 		// ==== Core (Alt) Group ====			
@@ -2586,7 +2663,13 @@ achievements_triggers = {
 				&& is_AreaState_InGame(enum_releaseRegion)))
 
 			&& once(on_PlayerSpawn_atMissionStartPoint(const_MISSON_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-			&& once(on_CashAcquiredByOtherMeans_increasesBy(const_CURLY_CASH_AWARD, enum_releaseRegion))
+			
+			&& once(
+				is_PlayerPosition_withinArea(
+					const_CURLY_CASH_PICKUP_AREA_X, const_CURLY_CASH_PICKUP_AREA_Y, const_CURLY_CASH_PICKUP_AREA_Z,
+					const_CURLY_CASH_PICKUP_AREA_THRESHOLD, enum_releaseRegion)
+				&& on_CashAcquiredByOtherMeans_increasesBy(const_CURLY_CASH_AWARD, enum_releaseRegion))
+			
 			&& trigger_when(achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion))
 
 		// ==== Alt Reset Group ====  Reset when not in correct Area
@@ -2645,7 +2728,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
-			&& let_sumOf_cashDuringMission >= const_CASH_TARGET // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
+			&& measured(let_sumOf_cashDuringMission >= const_CASH_TARGET) // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
 			&& trigger_when(always_false())	
 
 		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -2656,15 +2739,60 @@ achievements_triggers = {
 		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_RetryMenu_yes(enum_releaseRegion)
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_WarningMenu_yes(enum_releaseRegion)
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 		}),	
+	"a_ChallengeChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {  // WIP_template
+		let_array_UnallowedCheats = [ 
+			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
+			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+
+		return
+		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(let_array_UnallowedCheats, enum_releaseRegion)))
+
+			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+				is_SpecifiedCheat_active(CHEAT_NoHud, enum_releaseRegion) 
+				&& on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BountyHunter, enum_releaseRegion))
+			&& trigger_when(
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(AREA_Campaign_BountyHunter, enum_releaseRegion))
+
+		// ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(CHEAT_NoHud, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BountyHunter, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BountyHunter, enum_releaseRegion))
+		}),
 	"a_ChallengeChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====			
 			unless(
@@ -2682,7 +2810,11 @@ achievements_triggers = {
 				&& is_AreaState_InGame(enum_releaseRegion)))
 
 			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-			&& trigger_when(achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion))
+			&& trigger_when(
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
+					never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
+					&& is_RewardMenu_displayed(enum_releaseRegion)))			
 
 		// ==== Alt Reset Group ====  Reset when not in correct Area
 			|| never_toAlt(
@@ -2874,7 +3006,7 @@ achievements_titles = {
 	"a_CompleteChapter25":					{"en": "Straight Into the Lion's Den"},
 	"a_CompleteChapter27":					{"en": "Redemption"},
 
-	"a_BountyHuntChapter1": 				{"en": "Skull's Eye"}, // TODO get creative titles for a_BountyHuntChapter - Descriptive is for description
+	"a_BountyHuntChapter1": 				{"en": "Skull's Eye"},
 	"a_BountyHuntChapter2": 				{"en": "Flawless Cut"},
 	"a_BountyHuntChapter3": 				{"en": "Slick Streetfight"},
 	"a_BountyHuntChapter5": 				{"en": "Railrushed"},
@@ -2900,7 +3032,7 @@ achievements_titles = {
 	"a_SaveCurly":							{"en": "A Curly Deal for Carbine Zeal"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_ChallengeChapter1": 					{"en": "Budding Prize Hunter"}, // WARNING - Manual creation via RAIntegration
-	"a_ChallengeChapter2":					{"en": "xxxxxxx in Chapter 2, 'Bounty Hunter'"},
+	"a_ChallengeChapter2":					{"en": "Keenly Grubbed"},
 	"a_ChallengeChapter3":					{"en": "xxxxxxx in Chapter 3, 'Ugly Streetfight'"},
 	"a_ChallengeChapter5":					{"en": "Railway Maverick"},
 	"a_ChallengeChapter6":					{"en": "xxxxxxx in Chapter 6, 'Carnival Life'"},
@@ -2985,7 +3117,7 @@ achievements_descriptions = {
 	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1500 reward for saving him during the events of Chapter 8, 'Rogue Valley'"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, 'Bull's Eye', by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_ChallengeChapter1": 					{"en": "Collect a bounty of $1000 or more by the end of Chapter 1, 'Bull's Eye'"}, // WARNING - Manual creation via RAIntegration
-	"a_ChallengeChapter2":					{"en": "xxxxxxx in Chapter 2, 'Bounty Hunter'"},
+	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, 'Bounty Hunter', on hard or very hard difficulty with 'No HUD' cheat active"},
 	"a_ChallengeChapter3":					{"en": "xxxxxxx in Chapter 3, 'Ugly Streetfight'"},
 	"a_ChallengeChapter5":					{"en": "Navigate Chapter 5, 'Railroaded', without stumbling off the train even once"},
 	"a_ChallengeChapter6":					{"en": "xxxxxxx in Chapter 6, 'Carnival Life'"},
