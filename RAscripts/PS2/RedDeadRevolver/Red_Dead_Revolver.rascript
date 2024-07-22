@@ -188,8 +188,13 @@ memory_dataStructures = {
 			"BitFlag_IsTreasureBFound": { 
 				"addAddressChain": [0x8, 0x4C]},
 			"BitFlag_IsTreasureCFound": { 
-				"addAddressChain": [0xC, 0x4C]}},	
-	}
+				"addAddressChain": [0xC, 0x4C]}}
+		},
+	"Struct_GatlingGunZone_Data": {
+		"offsetToMember": {
+			"ASCII_InteractableZoneID": 0x1C,
+			"BitFlag_IsGatlingGunManned": 0x169}
+		},
 	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -255,6 +260,7 @@ memory_addresses = {
 		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
 		"BountyHunterMode_Data_RogueValley": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
+		"GatlingGunZone_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -416,28 +422,52 @@ function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 // .......................
 // ◦ PLAYER INPUT READER ◦
 // '''''''''''''''''''''''
-function current_PlayerInputState_X(enum_releaseRegion) => 
+function current_FlagState_PlayerInput_X(enum_releaseRegion) => 
 	bit6( 
 		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
 		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
+function current_FlagState_PlayerInput_R1(enum_releaseRegion) => 
+	bit3( 
+		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
+		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+
+
 function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) {
-	let_memAccessor_confirmBtnPressedState = sNULL
+	let_memAccessor_inputState = sNULL
 	if (enum_releaseRegion == RELEASE_REGION_EUR)
-		let_memAccessor_confirmBtnPressedState = current_PlayerInputState_X(enum_releaseRegion)
+		let_memAccessor_inputState = current_FlagState_PlayerInput_X(enum_releaseRegion)
 	else
-		util_throwError(format("Release Region: {0} not supported", enum_releaseRegion))
+		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
 		
-	return let_memAccessor_confirmBtnPressedState == 1}
+	return let_memAccessor_inputState == 1}
 
 function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
-	let_memAccessor_confirmBtnPressedState = sNULL
+	let_memAccessor_inputState = sNULL
 	if (enum_releaseRegion == RELEASE_REGION_EUR)
-		let_memAccessor_confirmBtnPressedState = current_PlayerInputState_X(enum_releaseRegion)
+		let_memAccessor_inputState = current_FlagState_PlayerInput_X(enum_releaseRegion)
 	else
-		util_throwError(format("Release Region: {0} not supported", enum_releaseRegion))
+		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
 		
-	return let_memAccessor_confirmBtnPressedState < prev(let_memAccessor_confirmBtnPressedState)}
+	return let_memAccessor_inputState < prev(let_memAccessor_inputState)}
+
+function is_PlayerInput_FireGun_pressed(enum_releaseRegion) {
+	let_memAccessor_inputState = sNULL
+	if (enum_releaseRegion == RELEASE_REGION_EUR)
+		let_memAccessor_inputState = current_FlagState_PlayerInput_R1(enum_releaseRegion)
+	else
+		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
+		
+	return let_memAccessor_inputState == 1}
+
+function on_PlayerInput_FireGun_release(enum_releaseRegion) {
+	let_memAccessor_inputState = sNULL
+	if (enum_releaseRegion == RELEASE_REGION_EUR)
+		let_memAccessor_inputState = current_FlagState_PlayerInput_R1(enum_releaseRegion)
+	else
+		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
+		
+	return let_memAccessor_inputState > prev(let_memAccessor_inputState)}
 
 // ...........
 // ◦ AREA ID ◦
@@ -526,7 +556,11 @@ const_Area_data = { // TODO put these coordinates inside the code notes
 		"PlayerStartCoordinates": {
 			"X-Coordinate": -7.46,
 			"Y-Coordinate": -4.67,
-			"Z-Coordinate": 4.83}},
+			"Z-Coordinate": 4.83},
+		"Zone_GatlingGunA": {
+			"X-Coordinate": -14.96,
+			"Y-Coordinate": 0.68,
+			"Z-Coordinate": 9.37}},
 	AREA_Campaign_FreakShow: { 
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": 21.19,
@@ -736,6 +770,15 @@ function get_Area_PlayerLoadYCoordinate(enum_areaId) =>
 function get_Area_PlayerLoadZCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Z-Coordinate"]
 
+function get_Area_GatlingGunXCoordinate(enum_areaId) => 
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["X-Coordinate"]
+
+function get_Area_GatlingGunYCoordinate(enum_areaId) => 
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Y-Coordinate"]
+
+function get_Area_GatlingGunZCoordinate(enum_areaId) => 
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Z-Coordinate"]
+
 function is_AreaLoading_active(enum_releaseRegion) => 
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
 
@@ -822,6 +865,7 @@ function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 // '''''''''''''''''''
 PLAYER_STATIONARY_THRESHOLD = 0.7
 PLAYER_SPAWN_THRESHOLD = 0.5
+PLAYER_GATLING_GUN_THRESHOLD = 0.3
 function current_PlayerXCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
@@ -928,6 +972,7 @@ function wasPrev_PlayerPosition_withinArea(float_areaCenterXcoordinate, float_ar
 	&& wasPrev_PlayerYCoordinate_nearCoordinate(float_areaCenterYcoordinate, float_thresholdFromCenter, enum_releaseRegion)
 	&& wasPrev_PlayerZCoordinate_nearCoordinate(float_areaCenterZcoordinate, float_thresholdFromCenter, enum_releaseRegion)
 
+// ----------------PlayerSpawn--------------------
 function is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion) {
 	let_missionLoad_Xcoordinate = get_Area_PlayerLoadXCoordinate(enum_areaId)
 	let_missionLoad_Ycoordinate = get_Area_PlayerLoadYCoordinate(enum_areaId)
@@ -958,9 +1003,20 @@ function is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion) 
 		PLAYER_SPAWN_THRESHOLD, enum_releaseRegion)
 	}
 
-function on_PlayerSpawn_atMissionStartPoint(enum_areaId, enum_releaseRegion) =>
+function on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion) =>
 	is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion)
 	&& wasPrev_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion)
+
+// ----------------GatlingGun--------------------
+function is_PlayerPosition_atGatlingGun(enum_areaId, enum_releaseRegion) {
+	let_Xcoordinate = get_Area_GatlingGunXCoordinate(enum_areaId)
+	let_Ycoordinate = get_Area_GatlingGunYCoordinate(enum_areaId)
+	let_Zcoordinate = get_Area_GatlingGunZCoordinate(enum_areaId)
+	
+	return is_PlayerPosition_withinArea(
+		let_Xcoordinate, let_Ycoordinate, let_Zcoordinate,
+		PLAYER_GATLING_GUN_THRESHOLD, enum_releaseRegion)
+	}
 
 
 // ..................
@@ -1832,6 +1888,57 @@ function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
 // .........
 // ◦ OTHER ◦
 // '''''''''
+// --------------------GatlingGunZone------------------------
+function is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion) {
+	const_INTERACTABLE_ZONE_ID = "zone_gunA_01"
+	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
+	let_pointerChainTo_InteractableZoneID = 
+		dword(let_memAddr_GatlingGunZoneData)
+		+ memory_getDataStructOffset("Struct_GatlingGunZone_Data", "ASCII_InteractableZoneID")
+	return is_ASCII_EqualTo(let_pointerChainTo_InteractableZoneID, const_INTERACTABLE_ZONE_ID)}
+
+function current_FlagState_IsGatlingGunManned(enum_releaseRegion) {
+	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
+	return bit0(
+		dword(let_memAddr_GatlingGunZoneData)
+		+ memory_getDataStructOffset("Struct_GatlingGunZone_Data", "BitFlag_IsGatlingGunManned")
+	)}
+
+function prev_FlagState_IsGatlingGunManned(enum_releaseRegion) =>
+	prev(current_FlagState_IsGatlingGunManned(enum_releaseRegion))
+
+function is_GatlingGun_manned(enum_releaseRegion) =>
+	is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion)
+	&& current_FlagState_IsGatlingGunManned(enum_releaseRegion) == 1
+
+function is_GatlingGun_unmanned(enum_releaseRegion) =>
+	is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion)
+	&& current_FlagState_IsGatlingGunManned(enum_releaseRegion) == 0
+
+function on_GatlingGun_man(enum_releaseRegion) =>
+	is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion)
+	&& current_FlagState_IsGatlingGunManned(enum_releaseRegion) > prev_FlagState_IsGatlingGunManned(enum_releaseRegion)
+
+function on_GatlingGun_unman(enum_releaseRegion) =>
+	is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion)
+	&& current_FlagState_IsGatlingGunManned(enum_releaseRegion) < prev_FlagState_IsGatlingGunManned(enum_releaseRegion)
+
+function is_PlayerUsing_GatlingGun(enum_areaId, enum_releaseRegion) => 
+	is_PlayerPosition_atGatlingGun(enum_areaId, enum_releaseRegion)
+	&& is_GatlingGun_manned(enum_releaseRegion)
+
+function is_PlayerNotUsing_GatlingGun(enum_areaId, enum_releaseRegion) => 
+	!is_PlayerPosition_atGatlingGun(enum_areaId, enum_releaseRegion)
+	&& is_GatlingGun_unmanned(enum_releaseRegion)
+
+function on_PlayerGatlingGun_mount(enum_areaId, enum_releaseRegion) =>
+	is_PlayerPosition_atGatlingGun(enum_areaId, enum_releaseRegion)
+	&& on_GatlingGun_man(enum_releaseRegion)
+
+function on_PlayerGatlingGun_dismount(enum_areaId, enum_releaseRegion) =>
+	is_PlayerPosition_atGatlingGun(enum_areaId, enum_releaseRegion)
+	&& on_GatlingGun_unman(enum_releaseRegion)
+
 // --------------------MissionKillcount------------------------
 function current_MissionKillcount(enum_releaseRegion) {
 	let_memAddr_UndefinedStruct = memory_getAddress(DATATYPE_32BitPointer, "Undefined_Struct_03", enum_releaseRegion)
@@ -2126,7 +2233,7 @@ achievements_coreData = {
 		// "a_ChallengeChapter1": { // VERIFIED // TODO update type to missable // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools  
 		// 	"id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		// 	"devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater | Very Hard"},
-		"a_ChallengeChapter2": { // QA
+		"a_ChallengeChapter2": { // VERIFIED
 			"id": 450183, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat | Hard or Very Hard"},
 		"a_ChallengeChapter3": { // VERIFIED
@@ -2135,9 +2242,9 @@ achievements_coreData = {
 		"a_ChallengeChapter5": { // VERIFIED
 			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
-		// "a_ChallengeChapter6": { // CONCEPT a_ChallengeChapter6
-		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Carinval Life' | Kill xx amount of enemies with gatling gun | Hard or Very Hard"},
+		"a_ChallengeChapter6": { // CONCEPT a_ChallengeChapter6
+			"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Carinval Life' | Get a killstreak of xx using the gatling gun without letting go off the trigger | Hard or Very Hard"},
 		// "a_ChallengeChapter7": { // CONCEPT a_ChallengeChapter7
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher | Very Hard"},
@@ -2219,7 +2326,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
 
-		&& once(on_PlayerSpawn_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 		&& is_RatingBounty_achieved(enum_releaseRegion)
 		&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
@@ -2482,7 +2589,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_RogueValley, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_RogueValley, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			&& measured(tally(3, [
 				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_A, enum_releaseRegion)),
 				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_B, enum_releaseRegion)),
@@ -2538,7 +2645,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Stagecoach, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_Stagecoach, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			&& measured(repeated(40, on_MissionKillcount_increment(enum_releaseRegion))) 
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& is_RatingBounty_achieved(enum_releaseRegion)
@@ -2676,7 +2783,7 @@ achievements_triggers = {
 				current_PlayerZCoordinate(enum_releaseRegion) < 0
 				&& is_AreaState_InGame(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(const_MISSON_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSON_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			
 			&& once(
 				is_PlayerPosition_withinArea(
@@ -2729,7 +2836,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& repeated(197, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
@@ -2744,7 +2851,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& measured(let_sumOf_cashDuringMission >= const_CASH_TARGET) // WARNING - Due to RATools bug this sumOf is manually edited via RAIntegration - Check code above
 			&& trigger_when(always_false())	
 
@@ -2785,7 +2892,7 @@ achievements_triggers = {
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(CHEAT_NoHud, enum_releaseRegion) 
-				&& on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_BountyHunter, enum_releaseRegion))
+				&& on_PlayerReset_atMissionStartPoint(AREA_Campaign_BountyHunter, enum_releaseRegion))
 			&& trigger_when(
 				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
@@ -2830,7 +2937,7 @@ achievements_triggers = {
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_PlayerHP_heal(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
 			&& trigger_when(
 				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
@@ -2853,8 +2960,7 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
-		),
-	
+		),	
 	"a_ChallengeChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====			
 			unless(
@@ -2875,7 +2981,7 @@ achievements_triggers = {
 				current_PlayerZCoordinate(enum_releaseRegion) < 0
 				&& is_AreaState_InGame(enum_releaseRegion)))
 
-			&& once(on_PlayerSpawn_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_Railroaded, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			&& trigger_when(
 				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
@@ -2899,6 +3005,59 @@ achievements_triggers = {
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 		),
+	"a_ChallengeChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP QA 
+		// DEV_NOTE: Alt Group Evaluation Priority
+		// --------------------------
+		//	Core group => this must always be able to become true
+		//	Alt groups => one of these must be able to become true
+		//		- alt groups are evaluated from top to bottom. (so if using multiple Alt Reset Groups => the top ones will be evaluated first, then the ones below)
+		
+		const_GATLINGGUN_KILLSTREAK_COUNT = 10
+		const_MISSION_AREA = AREA_Campaign_CarnivalLife
+		
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& measured( // <-- Measured: Get killcount whilst holding down fireBtn
+				repeated(const_GATLINGGUN_KILLSTREAK_COUNT, 
+					never( // <-- ResetNextIf: Releasing fireBtn resets repeated count
+						on_PlayerInput_FireGun_release(enum_releaseRegion))
+					&& on_DeathToll_increment(enum_releaseRegion)),
+				when = 
+					once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+					&& once(
+						never( // <-- ResetNextIf: Releasing fireBtn resets repeated count
+							on_PlayerGatlingGun_dismount(const_MISSION_AREA, enum_releaseRegion))
+						&& on_PlayerGatlingGun_mount(const_MISSION_AREA, enum_releaseRegion))
+				)
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
 	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion) 
