@@ -134,7 +134,13 @@ memory_dataStructures = {
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
 			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": { 
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA94]},				 
+			"Struct_RewardMenuDisplayText": { 
+				"addAddressChain": [0x2D0, 0x24, 0x34]},
 		}},
+	"Struct_RewardMenuDisplayText": {
+		"offsetToMember": {
+			"ASCII_Accuracy": 0x150}
+		},
 	"Struct_InGameMenuController": {
 		"offsetToMember": {
 			"ASCII_InGameMenuID": 0x18,
@@ -252,6 +258,9 @@ memory_addresses = {
 		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
 		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL},
 		},
+	DATATYPE_32Bit: {
+		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL},
+		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
@@ -313,6 +322,9 @@ function is_ReleaseRegion(enum_releaseRegion) {
 function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
+
+function memUtil_memAddrTo_AlwaysNull(enum_releaseRegion) =>
+	memory_getAddress(DATATYPE_32Bit, "AlwaysNULL", enum_releaseRegion)
 
 function memUtil_bitwiseOR(memAccessor_bitFlagAccessor, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
 	memAccessor_bitFlagAccessor + memAccessor_B - (memAccessor_bitFlagAccessor & memAccessor_B)
@@ -1539,6 +1551,13 @@ function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
 		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
+
+function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_PointerChainTo_Struct_RewardMenuDisplayText = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "Struct_RewardMenuDisplayText", let_memAddr_RewardMenuDisplayData)
+	let_offsetTo_Accuracy = memory_getDataStructOffset("Struct_RewardMenuDisplayText", "ASCII_Accuracy")
+	return is_ASCII_EqualTo(let_PointerChainTo_Struct_RewardMenuDisplayText + let_offsetTo_Accuracy, string_accuracy)}
+
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
@@ -1804,20 +1823,28 @@ function on_PlayerHP_heal(enum_releaseRegion) =>
 
 
 // ------------------------SinglePlayer_Mission_Stats------------------------------
-function on_ShotsFired_increment(enum_releaseRegion) {
+function current_ShotsFired(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChain_ShotsFired = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)
-	return let_pointerChain_ShotsFired > prev(let_pointerChain_ShotsFired)}
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)}
 
-function on_ShotsHit_increment(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
-	return let_pointerChain_ShotsHit > prev(let_pointerChain_ShotsHit)}
+function prev_ShotsFired(enum_releaseRegion) =>
+	prev(current_ShotsFired(enum_releaseRegion))
 
-function on_ShotsHit_change(enum_releaseRegion) {
+function current_ShotsHit(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChain_ShotsHit = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)
-	return let_pointerChain_ShotsHit != prev(let_pointerChain_ShotsHit)}
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)}
+
+function prev_ShotsHit(enum_releaseRegion) =>
+	prev(current_ShotsHit(enum_releaseRegion))
+
+function on_ShotsFired_increment(enum_releaseRegion) => 
+	current_ShotsFired(enum_releaseRegion) > prev_ShotsFired(enum_releaseRegion)
+
+function on_ShotsHit_increment(enum_releaseRegion) => 
+	current_ShotsHit(enum_releaseRegion) > prev_ShotsHit(enum_releaseRegion)
+
+function on_ShotsHit_change(enum_releaseRegion) =>
+	current_ShotsHit(enum_releaseRegion) != prev_ShotsHit(enum_releaseRegion)
 
 function on_DeathToll_increment(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -2242,12 +2269,12 @@ achievements_coreData = {
 		"a_ChallengeChapter5": { // VERIFIED
 			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
-		"a_ChallengeChapter6": { // CONCEPT a_ChallengeChapter6
-			"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Carinval Life' | Get a killstreak of xx using the gatling gun without letting go off the trigger | Hard or Very Hard"},
-		// "a_ChallengeChapter7": { // CONCEPT a_ChallengeChapter7
-		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher | Very Hard"},
+		"a_ChallengeChapter6": { // QA
+			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go off the trigger | Hard or Very Hard"},
+		"a_ChallengeChapter7": { // CONCEPT a_ChallengeChapter7
+			"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher | Very Hard"},
 		// "a_ChallengeChapter8": { // CONCEPT a_ChallengeChapter8
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Rogue Valley' | Kill xx amount of enemies" | Hard or Very Hard"},
@@ -2709,9 +2736,9 @@ achievements_triggers = {
 				&& current_RewardMenu_BountyCollected(enum_releaseRegion) >= const_CASH_TARGET
 				&& trigger_when(
 					achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
-					&& repeated(197, 
+					&& repeated(197, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
 						never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
-						&& is_RewardMenu_displayed(enum_releaseRegion))) // <-- Delay: so the achievement pops when the cash balance UI is displayed 
+						&& is_RewardMenu_displayed(enum_releaseRegion)))
 
 			// ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 				|| unless(
@@ -3005,7 +3032,7 @@ achievements_triggers = {
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
 		),
-	"a_ChallengeChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP QA 
+	"a_ChallengeChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		// DEV_NOTE: Alt Group Evaluation Priority
 		// --------------------------
 		//	Core group => this must always be able to become true
@@ -3040,6 +3067,57 @@ achievements_triggers = {
 							on_PlayerGatlingGun_dismount(const_MISSION_AREA, enum_releaseRegion))
 						&& on_PlayerGatlingGun_mount(const_MISSION_AREA, enum_releaseRegion))
 				)
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
+	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		// NOTE: Creating a RAMeasured popup which displays accuracy during gameplay is impossible with RAIntegration v1.3.0, it would require logic below
+			// ''''''''''''''''''''''''''''''''''
+			// let_calculation_accuracy = 
+			// 		byte(memUtil_memAddrTo_AlwaysNull(enum_releaseRegion)) // <-- To force RATools to generate float at start and end of the accumulator, this is to force the accumulator to work with floats (refer to https://docs.retroachievements.org/developer-docs/flags/addsource.html#interaction-with-floats)
+			// 		+ current_ShotsHit(enum_releaseRegion) / current_ShotsFired(enum_releaseRegion)
+			// 		+ byte(memUtil_memAddrTo_AlwaysNull(enum_releaseRegion)) * 100
+			//
+			// measured(let_calculation_accuracy == 100, format = "percent")
+
+		const_MISSION_AREA = AREA_Campaign_FreakShow
+		const_DESIRED_ACCURACY = 0.9
+		let_array_AllowedAccuracyStrings = ["90%", "91%", "92%", "93%", "94%", "95%", "96%", "97%", "98%", "99%", "100%"]
+		
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& tally_of(let_array_AllowedAccuracyStrings, 1, 
+				accuracyString => once(
+					is_RewardMenu_displayed(enum_releaseRegion)
+					&& is_RewardMenu_Accuracy(accuracyString, enum_releaseRegion)))
+			&& repeated(440, // <-- Delay achievement unlock to coincide with stats window being displayed 
+				never(is_StartChpMenu_active(enum_releaseRegion))
+				&& is_RewardMenu_displayed(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -3260,8 +3338,8 @@ achievements_titles = {
 	"a_ChallengeChapter2":					{"en": "Keenly Grubbed"},
 	"a_ChallengeChapter3":					{"en": "Laudanum Skeptic"},
 	"a_ChallengeChapter5":					{"en": "Railway Maverick"},
-	"a_ChallengeChapter6":					{"en": "xxxxxxx in Chapter 6, 'Carnival Life'"},
-	"a_ChallengeChapter7":					{"en": "xxxxxxx in Chapter 7, 'Freak Show'"},
+	"a_ChallengeChapter6":					{"en": "Gale of Gunpowder"},
+	"a_ChallengeChapter7":					{"en": "Swift and Sure"},
 	"a_ChallengeChapter8":					{"en": "You done kill 'em all!"},
 	"a_ChallengeChapter10":					{"en": "xxxxxxx in Chapter 10, 'The Cemetery'"},
 	"a_ChallengeChapter11":					{"en": "xxxxxxx in Chapter 11, 'Range War'"},
@@ -3345,8 +3423,8 @@ achievements_descriptions = {
 	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, 'Bounty Hunter', on hard or very hard difficulty with 'No HUD' cheat active"},
 	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, 'Ugly Streetfight', on very hard difficulty without picking up any healing items"},
 	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, 'Railroaded', on hard or very hard difficulty without stumbling off the train even once"},
-	"a_ChallengeChapter6":					{"en": "Complete Chapter 6, 'Carnival Life', xxxxx"},
-	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', xxxxx"},
+	"a_ChallengeChapter6":					{"en": "In Chapter 6, 'Carnival Life', on hard or very hard difficulty achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
+	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', on very hard difficulty with an accuracy of 90% or better"},
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, 'Rogue Valley', Kill xxx enemies"},
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', xxxxx"},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', xxxxx"},
