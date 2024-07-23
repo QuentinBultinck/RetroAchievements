@@ -160,6 +160,8 @@ memory_dataStructures = {
 				"addAddressChain": [0x36C, 0x2C]},
 			"32Bit_DeathToll": { 
 				"addAddressChain": [0x36C, 0x5C]},
+			"Float_DamageTaken": { 
+				"addAddressChain": [0x36C, 0x70]},
 			"PS2Vector_PlayerLocation": { 
 				"addAddressChain": [0xC, 0xC, 0x90]},
 			"Bitset_PlayerProfileUnlocks": { 
@@ -1742,6 +1744,21 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
 
+function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
+	let_memAddr_Bitset_ActivatedCheats =
+			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
+			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_array_memAccessors_toActivatedCheats = []
+	for enum_cheat in array_cheatEnums {
+		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
+		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
+	}
+	return 
+		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
+
 // ------------------------RstarCheat------------------------------
 function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	const_RSTAR_NAME = "Rstar"
@@ -1846,11 +1863,22 @@ function on_ShotsHit_increment(enum_releaseRegion) =>
 function on_ShotsHit_change(enum_releaseRegion) =>
 	current_ShotsHit(enum_releaseRegion) != prev_ShotsHit(enum_releaseRegion)
 
-function on_DeathToll_increment(enum_releaseRegion) {
+function current_DeathToll(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChain_DeathToll = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)
-	return let_pointerChain_DeathToll > prev(let_pointerChain_DeathToll)}
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)}
 
+function prev_DeathToll(enum_releaseRegion) =>
+	prev(current_DeathToll(enum_releaseRegion))
+
+function on_DeathToll_increment(enum_releaseRegion) => 
+	current_DeathToll(enum_releaseRegion) > prev_DeathToll(enum_releaseRegion)
+
+function current_DamageTaken(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData)}
+
+
+	
 // .............
 // ◦ GAME MODE ◦
 // '''''''''''''
@@ -2286,22 +2314,22 @@ achievements_coreData = {
 		//	"devInfo": "Level 'Range War' | Ride a bison and kill enemies | Hard or Very Hard"},
 		// "a_ChallengeChapter12": { // CONCEPT a_ChallengeChapter12
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Bar Fight' | Complete with damage taken less than 50% | Very Hard"},
+		//	"devInfo": "Level 'Bar Fight' | Complete with damage taken less than 75% | Very Hard"},
 		// "a_ChallengeChapter13": { // CONCEPT a_ChallengeChapter13
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'The Traitor' | Win the battle with 7 allied cannons still functional | Very Hard"},
-		// "a_ChallengeChapter13": { // CONCEPT a_ChallengeChapter14
+		// "a_ChallengeChapter14": { // CONCEPT a_ChallengeChapter14
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Sunset Canyon' | Kill all enemies in this level | Hard or Very Hard"},
 		// "a_ChallengeChapter15": { // CONCEPT a_ChallengeChapter15
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Bear Mountain' | Deal final blow to Grizzly with gun 'Faith' | Hard or Very Hard"},
+		//	"devInfo": "Level 'Bear Mountain' | Kill xx enemies and Grizzly with gun 'Faith' | Hard or Very Hard"},
 		// "a_ChallengeChapter17": { // CONCEPT a_ChallengeChapter17
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'The Mine' | Complete without using bullets, use melee, invincibility cheat allowed, time trail | Very Hard"},
 		// "a_ChallengeChapter19": { // CONCEPT a_ChallengeChapter19
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Hell Pass' | Kill X enemies with No HUD cheat | Hard or Very Hard"},
+		//	"devInfo": "Level 'Hell Pass' | Kill X enemies with 'No HUD' cheat | Hard or Very Hard"},
 		// "a_ChallengeChapter20": { // CONCEPT a_ChallengeChapter20
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Fort Diego' | Complete with 'Bite the Bullet' Cheat | Very Hard"},
@@ -3085,7 +3113,7 @@ achievements_triggers = {
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 		}),
-	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // QA
 		// NOTE: Creating a RAMeasured popup which displays accuracy during gameplay is impossible with RAIntegration v1.3.0, it would require logic below
 			// ''''''''''''''''''''''''''''''''''
 			// let_calculation_accuracy = 
@@ -3136,6 +3164,245 @@ achievements_triggers = {
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 		}),
+	"a_ChallengeChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // QA
+		const_MISSION_AREA = AREA_Campaign_RogueValley
+		const_ENEMY_KILL_COUNT = 20
+		
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& measured(current_DeathToll(enum_releaseRegion) >= const_ENEMY_KILL_COUNT)
+			&& trigger_when(
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
+	"a_ChallengeChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // QA
+		const_MISSION_AREA = AREA_Campaign_TheCemetery
+		let_array_UnallowedCheats = [ 
+			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
+			CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+		let_array_requiredCheats = [CHEAT_NoHud, CHEAT_NoDistortion]
+
+		return
+		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(let_array_UnallowedCheats, enum_releaseRegion)))
+
+			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+				is_AllSpecifiedCheats_active(let_array_requiredCheats, enum_releaseRegion) 
+				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& trigger_when(
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_AnySpecifiedCheats_inactive(let_array_requiredCheats, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
+	"a_ChallengeChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // QA
+		const_MISSION_AREA = AREA_Campaign_SaloonFight
+		const_MAX_DAMAGE_TAKEN = 75.0
+		
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& current_DamageTaken(enum_releaseRegion) <= const_MAX_DAMAGE_TAKEN
+			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+			&& trigger_when(
+				repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		// [1] ==== Alt RAMeasured Handler Group ==== 			-> This group handles the RAMueasured popup to show current damage taken; It can never unlock the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& measured(current_DamageTaken(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN)
+			&& trigger_when(always_false())
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
+	"a_ChallengeChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
+	"a_ChallengeChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		const_MISSION_AREA = AREA_Campaign_BattleFinale
+		let_array_UnallowedCheats = [ 
+			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
+			CHEAT_NoHud, CHEAT_NoDistortion, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+		let_requiredCheat = CHEAT_SadStars
+
+		return
+		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(let_array_UnallowedCheats, enum_releaseRegion)))
+
+			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+				is_SpecifiedCheat_active(let_requiredCheat, enum_releaseRegion) 
+				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& trigger_when(
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed(enum_releaseRegion)))
+
+		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(let_requiredCheat, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RetryMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+
+		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_WarningMenu_yes(enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		}),
+	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+		),
 	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion) 
