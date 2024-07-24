@@ -2305,13 +2305,13 @@ achievements_coreData = {
 			"devInfo": "Level 'Freak Show' | Complete with 90% accuracy or higher | Very Hard"},
 		// "a_ChallengeChapter8": { // CONCEPT a_ChallengeChapter8
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Rogue Valley' | Kill xx amount of enemies" | Hard or Very Hard"},
-		// "a_ChallengeChapter10": { // CONCEPT a_ChallengeChapter10
+		//	"devInfo": "Level 'Rogue Valley' | Complete without manually reloading, reload via DeadEye, 'infinite DeadEye' cheat required" | Hard or Very Hard"},
+		// "a_ChallengeChapter10": { // CONCEPT a_ChallengeChapter10 // TODO add Sad Stars Cheat
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion' & 'No HUD' cheats | Hard or Very Hard"},
+		//	"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', ''Sad Stars' & 'No HUD' cheats | Hard or Very Hard"}, 
 		// "a_ChallengeChapter11": { // CONCEPT a_ChallengeChapter11
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Range War' | Ride a bison and kill enemies | Hard or Very Hard"},
+		//	"devInfo": "Level 'Range War' | Ride a bison and kill xx enemies | Hard or Very Hard"},
 		// "a_ChallengeChapter12": { // CONCEPT a_ChallengeChapter12
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Bar Fight' | Complete with damage taken less than 75% | Very Hard"},
@@ -2323,28 +2323,28 @@ achievements_coreData = {
 		//	"devInfo": "Level 'Sunset Canyon' | Kill all enemies in this level | Hard or Very Hard"},
 		// "a_ChallengeChapter15": { // CONCEPT a_ChallengeChapter15
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Bear Mountain' | Kill xx enemies and Grizzly with gun 'Faith' | Hard or Very Hard"},
+		//	"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Hard or Very Hard"},
 		// "a_ChallengeChapter17": { // CONCEPT a_ChallengeChapter17
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'The Mine' | Complete without using bullets, use melee, invincibility cheat allowed, time trail | Very Hard"},
 		// "a_ChallengeChapter19": { // CONCEPT a_ChallengeChapter19
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Hell Pass' | Kill X enemies with 'No HUD' cheat | Hard or Very Hard"},
+		//	"devInfo": "Level 'Hell Pass' | Kill xx enemies with Dead Eye ability, 'infinite DeadEye' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter20": { // CONCEPT a_ChallengeChapter20
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Fort Diego' | Complete with 'Bite the Bullet' Cheat | Very Hard"},
 		// "a_ChallengeChapter22": { // CONCEPT a_ChallengeChapter22
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Devils and Angels' | Complete in under xxx time | Hard or Very Hard"},
-		// "a_ChallengeChapter24": { // CONCEPT a_ChallengeChapter24
+		// "a_ChallengeChapter24": { // CONCEPT a_ChallengeChapter24 // TODO think of other challenge
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Battle Finale' | Complete with 'Sad Stars' Cheat | Hard or Very Hard"},
+		//	"devInfo": "Level 'Battle Finale' | Complete with xx headshots on Mr. Kelley | Hard or Very Hard"},
 		// "a_ChallengeChapter25": { // CONCEPT a_ChallengeChapter25
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Siege' | Complete with Jack's HP above 75%, 'Golden Gun' cheat allowed | Very Hard"},
+		//	"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat allowed | Very Hard"},
 		// "a_ChallengeChapter27": { // CONCEPT a_ChallengeChapter27
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Fall From Grace' | Complete in under 30 seconds, 'infinite DeadEye' cheat allowed | Very Hard"},
+		//	"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 95% or better AND damage taken less than 25% | Very Hard"},
 		},
 	}
 
@@ -3260,7 +3260,7 @@ achievements_triggers = {
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& always_false()
 		),
-	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // QA
+	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {  // QA
 		const_MISSION_AREA = AREA_Campaign_SaloonFight
 		const_MAX_DAMAGE_TAKEN = 75.0
 		
@@ -3275,7 +3275,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
-			&& current_DamageTaken(enum_releaseRegion) <= const_MAX_DAMAGE_TAKEN
+			&& current_DamageTaken(enum_releaseRegion) < const_MAX_DAMAGE_TAKEN
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& trigger_when(
 				repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
@@ -3347,7 +3347,7 @@ achievements_triggers = {
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& always_false()
 		),
-	"a_ChallengeChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+	"a_ChallengeChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {  // WIP_template
 		const_MISSION_AREA = AREA_Campaign_BattleFinale
 		let_array_UnallowedCheats = [ 
 			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
@@ -3607,20 +3607,20 @@ achievements_titles = {
 	"a_ChallengeChapter5":					{"en": "Railway Maverick"},
 	"a_ChallengeChapter6":					{"en": "Gale of Gunpowder"},
 	"a_ChallengeChapter7":					{"en": "Swift and Sure"},
-	"a_ChallengeChapter8":					{"en": "You done kill 'em all!"},
-	"a_ChallengeChapter10":					{"en": "xxxxxxx in Chapter 10, 'The Cemetery'"},
-	"a_ChallengeChapter11":					{"en": "xxxxxxx in Chapter 11, 'Range War'"},
-	"a_ChallengeChapter12":					{"en": "xxxxxxx in Chapter 12, 'Bar Fight'"},
-	"a_ChallengeChapter13":					{"en": "xxxxxxx in Chapter 13, 'The Traitor'"},
-	"a_ChallengeChapter14":					{"en": "xxxxxxx in Chapter 14, 'Sunset Canyon'"},
-	"a_ChallengeChapter15":					{"en": "xxxxxxx in Chapter 15, 'Bear Mountain'"},
-	"a_ChallengeChapter17": 				{"en": "xxxxxxx in Chapter 17, 'The Mine'"},
-	"a_ChallengeChapter19": 				{"en": "xxxxxxx in Chapter 19, 'Hell's Pass'"},
-	"a_ChallengeChapter20": 				{"en": "xxxxxxx in Chapter 20, 'Fort Diego'"},
+	"a_ChallengeChapter8":					{"en": "You Done Kill 'em All!"},
+	"a_ChallengeChapter10":					{"en": "Tall-Tale"},
+	"a_ChallengeChapter11":					{"en": "Savage Saddle"},
+	"a_ChallengeChapter12":					{"en": "Quite the Show"},
+	"a_ChallengeChapter13":					{"en": "Hammers of the Gods"},
+	"a_ChallengeChapter14":					{"en": "Carnage at Sunset"},
+	"a_ChallengeChapter15":					{"en": "Roaring Bane"},
+	"a_ChallengeChapter17": 				{"en": "Melee Minehem"},
+	"a_ChallengeChapter19": 				{"en": "Bacon 'n Beans"},
+	"a_ChallengeChapter20": 				{"en": "Chomp the Cannonball"},
 	"a_ChallengeChapter22":					{"en": "Ándale, Ándale!"},
-	"a_ChallengeChapter24":					{"en": "xxxxxxx in Chapter 24, 'Battle Finale'"},
-	"a_ChallengeChapter25":					{"en": "xxxxxxx in Chapter 25, 'Siege'"},
-	"a_ChallengeChapter27":					{"en": "xxxxxxx in Chapter 27, 'Fall From Grace'"},
+	"a_ChallengeChapter24":					{"en": "High-Fashioned Cleanup"},
+	"a_ChallengeChapter25":					{"en": "Vigilante"},
+	"a_ChallengeChapter27":					{"en": "Bullet with a Name"},
 
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
 	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
