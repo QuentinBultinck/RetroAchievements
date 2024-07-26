@@ -96,6 +96,17 @@ memory_dataStructures = {
 			"Z-Coordinate": 0x8,
 			"X-Coordinate": 0xC	}
 		},
+	"Struct_ActorData_0": {
+		"sizeInBytes": 8,
+		"offsetToMember": {
+			"Struct_ActorData_A": 0x0,
+			"Struct_ActorData_B": 0x4} 
+		},
+	"Struct_ActorData_B": {
+		"pointerChains": {
+			"8Bit_UniversalWeaponState": { 
+				"addAddressChain": [0x80, 0xA8]}, 
+		}},
 	"Struct_PlayerInputReader": {
 		"offsetToMember": {
 			"BitFlags_PlayerInputA": 0x0,
@@ -187,13 +198,12 @@ memory_dataStructures = {
 			"32Bit_CashComboMultiplier": { 
 				"addAddressChain": [0x5874],
 				"offsetToPointedToMember": 0x14}, 
-
 		}},
 	"Undefined_Struct_03": {
 		"offsetToMember": {
 			"32Bit_MissionKillcount": 0xD8}
 		},
-	"Struct_BountyHunterMode_Data_RogueValley": {
+	"Struct_Extra_Mission_Data.RogueValley": {
 		"pointerChains": {
 			"BitFlag_IsTreasureAFound": { 
 				"addAddressChain": [0x4, 0x4C]},
@@ -201,6 +211,25 @@ memory_dataStructures = {
 				"addAddressChain": [0x8, 0x4C]},
 			"BitFlag_IsTreasureCFound": { 
 				"addAddressChain": [0xC, 0x4C]}}
+		},
+	"Struct_Extra_Mission_Data.TheTraitor": {
+		"pointerChains": {
+			"BitFlag_IsAlliedCannonA_Destroyed": { 
+				"addAddressChain": [0x4, 0x4C]},
+			"BitFlag_IsAlliedCannonB_Destroyed": { 
+				"addAddressChain": [0x8, 0x4C]},
+			"BitFlag_IsAlliedCannonC_Destroyed": { 
+				"addAddressChain": [0xC, 0x4C]},
+			"BitFlag_IsAlliedCannonD_Destroyed": { 
+				"addAddressChain": [0x10, 0x4C]},
+			"BitFlag_IsAlliedCannonE_Destroyed": { 
+				"addAddressChain": [0x14, 0x4C]},
+			"BitFlag_IsAlliedCannonF_Destroyed": { 
+				"addAddressChain": [0x18, 0x4C]},
+			"BitFlag_IsAlliedCannonG_Destroyed": { 
+				"addAddressChain": [0x1C, 0x4C]},
+			"BitFlag_IsAlliedCannonH_Destroyed": { 
+				"addAddressChain": [0x20, 0x4C]}}
 		},
 	"Struct_GatlingGunZone_Data": {
 		"offsetToMember": {
@@ -274,11 +303,12 @@ memory_addresses = {
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
-		"BountyHunterMode_Data_RogueValley": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
+		"Extra_Mission_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
 		"GatlingGunZone_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
+		"Array_ActorData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -1527,12 +1557,19 @@ function is_RewardMenu_displayed_short(enum_releaseRegion) { // This comparison 
 	let_memAccessor_Pointer = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
 	return let_memAccessor_Pointer > 0}
 	
-function on_RewardMenu_render(enum_releaseRegion) {
+function on_RewardMenu_render_long(enum_releaseRegion) {
 	let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed = current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion)
 	return 
 		let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed > prev(let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed)
 		// && !is_StartChpMenu_active(enum_releaseRegion) // <-- Unnecessary
 		}
+
+function on_RewardMenu_render_short(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_Pointer = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
+	return 
+		let_memAccessor_Pointer > 0
+		&& prev(let_memAccessor_Pointer) == 0}
 
 function on_RewardMenu_close(enum_releaseRegion) {
 	let_memAccessor_IsRewardMenuOrStartChpMenuDisplayed = current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion)
@@ -1558,7 +1595,7 @@ function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) =>
 function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 	const_YES = 0
 	return 
-		is_RewardMenu_displayed_long(enum_releaseRegion)
+		is_RewardMenu_displayed_short(enum_releaseRegion)
 		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
 		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_YES
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
@@ -1894,7 +1931,32 @@ function current_DamageTaken(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, accessor = float)}
 
+// ..............
+// ◦ ACTOR DATA ◦
+// ''''''''''''''
+function get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion) {
+	let_memAddr_ActorDataArray = memory_getAddress(DATATYPE_Struct, "Array_ActorData", enum_releaseRegion)
+	let_memAddr_ActorData0 = let_memAddr_ActorDataArray + (memory_getDataStructSizeInBytes("Struct_ActorData_0") * int_actorDataindex)
+	return let_memAddr_ActorData0 + memory_getDataStructOffset("Struct_ActorData_0", "Struct_ActorData_B")}
 
+// ------------------------UniversalWeaponState------------------------------
+UNIVERSAL_WEAPON_STATE_Holstered = 0x0
+UNIVERSAL_WEAPON_STATE_Aiming = 0x3
+UNIVERSAL_WEAPON_STATE_Reloading = 0x4
+
+function current_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion) {
+	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_ActorData_B", "8Bit_UniversalWeaponState", let_memAddr_ActorDataB)}
+
+function prev_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion) =>
+	prev(current_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion))
+
+function is_Actor_UniversalWeaponState(int_actorDataindex, enum_universalWeaponState, enum_releaseRegion) =>
+	current_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion) == enum_universalWeaponState
+
+function on_Actor_UniversalWeaponState_changeTo(int_actorDataindex, enum_universalWeaponState, enum_releaseRegion) =>
+	current_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion) == enum_universalWeaponState 
+	&& prev_Actor_UniversalWeaponState(int_actorDataindex, enum_releaseRegion) != enum_universalWeaponState
 
 // .............
 // ◦ GAME MODE ◦
@@ -1956,6 +2018,50 @@ function on_InGame_start(enum_releaseRegion) {
 
 function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
 	on_GameMode_changeTo(GAMEMODE_MainMenu, enum_releaseRegion)
+
+// ......................
+// ◦ EXTRA MISSION DATA ◦
+// ''''''''''''''''''''''
+
+const_ExtraMission_data = {
+	AREA_Campaign_TheTraitor: [
+		"BitFlag_IsAlliedCannonA_Destroyed",
+		"BitFlag_IsAlliedCannonB_Destroyed",
+		"BitFlag_IsAlliedCannonC_Destroyed",
+		"BitFlag_IsAlliedCannonD_Destroyed",
+		"BitFlag_IsAlliedCannonE_Destroyed",
+		"BitFlag_IsAlliedCannonF_Destroyed",
+		"BitFlag_IsAlliedCannonG_Destroyed",
+		"BitFlag_IsAlliedCannonH_Destroyed"]
+}
+
+
+// TODO refactor this like for AREA_Campaign_TheTraitor
+ROGUEVALLEY_TREASURE_A = "BitFlag_IsTreasureAFound"
+ROGUEVALLEY_TREASURE_B = "BitFlag_IsTreasureBFound"
+ROGUEVALLEY_TREASURE_C = "BitFlag_IsTreasureCFound"
+
+function on_RogueValley_Treasure_find(enum_rogueValleyTreasureId, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
+	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
+		"Struct_Extra_Mission_Data.RogueValley", enum_rogueValleyTreasureId, 
+		let_memAddr_basePointer, accessor = bit0)		
+	return let_memAccessor_IsTreasureFound > prev(let_memAccessor_IsTreasureFound)}
+
+function is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey_toBitflag, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
+	let_memAccessor_IsCannonDestroyed = memory_generateAddAddressPointerChain(
+		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey_toBitflag, 
+		let_memAddr_basePointer, accessor = bit0)		
+	return let_memAccessor_IsCannonDestroyed}
+
+function current_Calculated_AllyCannonsDestroyedCount(enum_releaseRegion) =>
+	sum_of([
+		"BitFlag_IsAlliedCannonA_Destroyed", "BitFlag_IsAlliedCannonB_Destroyed",
+		"BitFlag_IsAlliedCannonC_Destroyed", "BitFlag_IsAlliedCannonD_Destroyed",
+		"BitFlag_IsAlliedCannonE_Destroyed", "BitFlag_IsAlliedCannonF_Destroyed",
+		"BitFlag_IsAlliedCannonG_Destroyed", "BitFlag_IsAlliedCannonH_Destroyed"],
+		string_pointerChainKey_toBitflag => is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey_toBitflag, enum_releaseRegion))
 
 // .........
 // ◦ OTHER ◦
@@ -2024,18 +2130,6 @@ function prev_MissionKillcount(enum_releaseRegion) =>
 
 function on_MissionKillcount_increment(enum_releaseRegion) =>
 	current_MissionKillcount(enum_releaseRegion) > prev_MissionKillcount(enum_releaseRegion)
-
-// --------------------BountyHunterMode_Data------------------------
-ROGUEVALLEY_TREASURE_A = "BitFlag_IsTreasureAFound"
-ROGUEVALLEY_TREASURE_B = "BitFlag_IsTreasureBFound"
-ROGUEVALLEY_TREASURE_C = "BitFlag_IsTreasureCFound"
-
-function on_RogueValley_Treasure_find(enum_rogueValleyTreasureId, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "BountyHunterMode_Data_RogueValley", enum_releaseRegion)
-	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
-		"Struct_BountyHunterMode_Data_RogueValley", enum_rogueValleyTreasureId, 
-		let_memAddr_basePointer, accessor = dword)		
-	return let_memAccessor_IsTreasureFound > prev(let_memAccessor_IsTreasureFound)}
 
 // =========================
 // • Memory INITIALIZATION •
@@ -2320,9 +2414,9 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		"a_ChallengeChapter7": { // VERIFIED
 			"id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Freak Show' | Complete with 80% accuracy or higher | Very Hard"},
-		// "a_ChallengeChapter8": { // CONCEPT a_ChallengeChapter8
+		// "a_ChallengeChapter8": { // CONCEPT a_ChallengeChapter8 
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Rogue Valley' | Complete without manually reloading, reload via DeadEye, 'infinite DeadEye' cheat required" | Hard or Very Hard"},
+		//	"devInfo": "Level 'Rogue Valley' | Kill all enemies in the level | Hard or Very Hard"},
 		"a_ChallengeChapter10": { // VERIFIED
 			"id": 450554, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', 'Sad Stars' and 'No HUD' cheats | Hard or Very Hard"}, 
@@ -2332,12 +2426,12 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		"a_ChallengeChapter12": { // VERIFIED
 			"id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bar Fight' | Complete will full hp at end | Very Hard"},
-		// "a_ChallengeChapter13": { // CONCEPT a_ChallengeChapter13
-		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'The Traitor' | Win the battle with 7 allied cannons still functional | Very Hard"},
-		// "a_ChallengeChapter14": { // CONCEPT a_ChallengeChapter14
-		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Sunset Canyon' | Kill all enemies in this level | Hard or Very Hard"},
+		"a_ChallengeChapter13": { // VERIFIED // TODO title for a_ChallengeChapter13, trigger is OK
+			"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'The Traitor' | Win the battle with 6 allied cannons still operational | Very Hard"},
+		"a_ChallengeChapter14": { // VERIFIED
+			"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Sunset Canyon' | Complete using only the Dead Eye ability for reloading, 'Infinite Deadeye' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter15": { // CONCEPT a_ChallengeChapter15
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Hard or Very Hard"},
@@ -2369,6 +2463,25 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
+function achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion) => // TODO implement achievements_generate_3x_AltResetGroup_OnRestartMission() in most mission achievements 
+	// [1] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_RetryMenu_yes(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+
+	// [2] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_WarningMenu_yes(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+
+	// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))	
+
 function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) =>
 	once(
 		is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
@@ -2386,9 +2499,9 @@ function achievements_generate_PauseLock_CheatProtection(enum_releaseRegion) =>
 function achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion) =>
 	once(
 		never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
-		&& on_RewardMenu_render(enum_releaseRegion))
+		&& on_RewardMenu_render_long(enum_releaseRegion))
 
-function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enum_releaseRegion) => 
+function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enum_releaseRegion) => // TODO implement + test with achievements_generate_3x_AltResetGroup_OnRestartMission()
 	// ==== Core (Alt) Group ====			
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -2423,13 +2536,15 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 			&& once(on_WarningMenu_yes(enum_releaseRegion))
 			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
 
+
 // ------------------ChapterCompletion----------------------
-function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
+function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) => // TODO refactor this so it looks like the other code logic
 	// ==== Core (Alt) Group ====
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(!is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 		&& achievements_generate_PauseLock_CheatProtection(enum_releaseRegion)
-		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion)
+
+		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) // TODO change & test this line to on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)
 		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 		&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
 			never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
@@ -3340,16 +3455,82 @@ achievements_triggers = {
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 		}),
-	"a_ChallengeChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
-	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
+	"a_ChallengeChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_TheTraitor
+		const_ALLOWED_ALLIED_CANNONS_DESTROYED = 2 // of 8 total allied cannons
+
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& current_Calculated_AllyCannonsDestroyedCount(enum_releaseRegion) <= const_ALLOWED_ALLIED_CANNONS_DESTROYED
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(200, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
+	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_SunsetCanyon
+		const_ACTOR_DATA_INDEX_PROTAGONIST = 2 // <-- for this mission the protagonist is always at index 2
+		let_array_DisallowedCheats = [ 
+			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_Invincibility, CHEAT_NoHud,
+			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(let_array_DisallowedCheats, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: When manually reloading
+				is_AreaState_InGame(enum_releaseRegion)
+				&& on_Actor_UniversalWeaponState_changeTo(const_ACTOR_DATA_INDEX_PROTAGONIST, UNIVERSAL_WEAPON_STATE_Reloading, enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(200, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+			// Below trigger_when() is alternative to above trigger_when()
+				//'''''''''''''''''''''''''''''
+				// && trigger_when(
+				// 	achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				// 	&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
+				// 		never(is_StartChpMenu_active(enum_releaseRegion))
+				// 		&& is_RewardMenu_displayed_long(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(CHEAT_InfiniteDeadeye, enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
 	"a_ChallengeChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion) 
@@ -3788,7 +3969,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', xxxxx"},
 	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty with a full health bar"},
 	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', xxxxx"},
-	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', xxxxx"},
+	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on hard or very hard difficulty using only DeadEye for reloading with the 'Infinite DeadEye' cheat enabled"},
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, 'Bear Mountain', xxxxx"},
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', xxxxx"},
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', xxxxx"},
