@@ -105,13 +105,16 @@ memory_dataStructures = {
 	"Struct_ActorData_B": {
 		"pointerChains": {
 			"Float_ActorHP": { 
-				"addAddressChain": [0x18, 0x10]},
+				"addAddressChain": [0x4, 0x18, 0x10]},
 			"Float_ActorMaxHP": { 
-				"addAddressChain": [0x18, 0x14]},
+				"addAddressChain": [0x4, 0x18, 0x14]},
 			"8Bit_UniversalWeaponState": { 
 				"addAddressChain": [0x80, 0xA8]},
 			"PS2Vector_ActorLocation": { 
 				"addAddressChain": [0xC, 0x90]},
+			"ASCII_CharacterModelID": { 
+				"addAddressChain": [0x24, 0x4], 
+				"offsetToPointedToMember": 0x4},
 			"BitFlag_IsRidingAnimal": { 
 				"addAddressChain": [0xC, 0xC0]},
 		}},
@@ -1868,6 +1871,12 @@ function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
 	return is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
 
+// ............................
+// ◦ CHARACTER IDENTIFICATION ◦
+// ''''''''''''''''''''''''''''
+CHARACTER_GeneralDiego = "dgo"
+
+
 // ...................
 // ◦ GAME CONTROLLER ◦
 // '''''''''''''''''''
@@ -2080,6 +2089,24 @@ function prev_Actor_HP(int_actorDataindex, enum_releaseRegion) =>
 function on_Actor_HP_decrement(int_actorDataindex, enum_releaseRegion) =>
 	current_Actor_HP(int_actorDataindex, enum_releaseRegion) < prev_Actor_HP(int_actorDataindex, enum_releaseRegion)
 
+function on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion) => 
+	current_Actor_HP(int_actorDataindex, enum_releaseRegion) == 0
+	&& prev_Actor_HP(int_actorDataindex, enum_releaseRegion) > 0
+
+function is_Actor_CharacterModelId_equalTo(int_actorDataindex, enum_characterModelId, enum_releaseRegion) {
+	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
+	let_offsetTo_CharacterModelID = memory_getPointerChainOffsetToMember("Struct_ActorData_B", "ASCII_CharacterModelID")
+	let_memAddr_CharacterModelID = memory_generateAddAddressPointerChain(
+		"Struct_ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
+	return is_ASCII_EqualTo(let_memAddr_CharacterModelID + let_offsetTo_CharacterModelID, enum_characterModelId)}
+
+function is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, enum_characterModelId, enum_releaseRegion) {
+	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
+	let_offsetTo_CharacterModelID = memory_getPointerChainOffsetToMember("Struct_ActorData_B", "ASCII_CharacterModelID")
+	let_memAddr_CharacterModelID = memory_generateAddAddressPointerChain(
+		"Struct_ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
+	return is_ASCII_notEqualTo(let_memAddr_CharacterModelID + let_offsetTo_CharacterModelID, enum_characterModelId)}
+
 // .............
 // ◦ CUTSCENES ◦
 // '''''''''''''
@@ -2236,6 +2263,10 @@ function prev_MainBossHP(int_bossIndex, enum_releaseRegion) =>
 
 function on_MainBossHP_decrement(int_bossIndex, enum_releaseRegion) => 
 	current_MainBossHP(int_bossIndex, enum_releaseRegion) < prev_MainBossHP(int_bossIndex, enum_releaseRegion)
+
+function on_MainBossHP_zero(int_bossIndex, enum_releaseRegion) =>
+	current_MainBossHP(int_bossIndex, enum_releaseRegion) == 0
+	&& prev_MainBossHP(int_bossIndex, enum_releaseRegion) > 0
 
 // --------------------GatlingGunZone------------------------
 function is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion) {
@@ -2615,9 +2646,9 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		// "a_ChallengeChapter20": { // CONCEPT a_ChallengeChapter20
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Fort Diego' | Complete with 'Bite the Bullet' Cheat | Very Hard"},
-		// "a_ChallengeChapter22": { // CONCEPT a_ChallengeChapter22
-		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Devils and Angels' | Complete in under xxx time | Hard or Very Hard"},
+		"a_ChallengeChapter22": { // VERIFIED
+			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Devils and Angels' | Complete in under xxx time and only killing General Diego | Hard or Very Hard"},
 		// "a_ChallengeChapter24": { // CONCEPT a_ChallengeChapter24
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Battle Finale' | Complete with xx headshots on Mr. Kelley | Hard or Very Hard"},
@@ -3763,8 +3794,8 @@ achievements_triggers = {
 		const_MISSION_AREA = AREA_Campaign_TheMine
 		const_REQUIRED_WEAPON = WEAPON_Knife
 		const_TIME_LIMIT_SECONDS = 60.0
-		coonst_BOSS_A_INDEX = 0
-		coonst_BOSS_B_INDEX = 1
+		const_BOSS_A_INDEX = 0
+		const_BOSS_B_INDEX = 1
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -3779,13 +3810,11 @@ achievements_triggers = {
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(coonst_BOSS_A_INDEX, enum_releaseRegion)),
+					&& on_MainBossHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(coonst_BOSS_B_INDEX, enum_releaseRegion))
-				]))
-			
-			
+					&& on_MainBossHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
+				]))			
 			&& unless(once( // <-- Pause Lock: When over time limit
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
 
@@ -3808,10 +3837,10 @@ achievements_triggers = {
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(coonst_BOSS_A_INDEX, enum_releaseRegion)),
+					&& on_MainBossHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(coonst_BOSS_B_INDEX, enum_releaseRegion))
+					&& on_MainBossHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
 				]))
 			&& unless(once( // <-- Pause Lock: When over time limit
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
@@ -3839,11 +3868,66 @@ achievements_triggers = {
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& always_false()
 		),
-	"a_ChallengeChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
+	"a_ChallengeChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: Reseting through RetryMenu is managed with ResetNextIf on certain once hit counts
+		const_MISSION_AREA = AREA_Campaign_DevilsAndAngels
+		const_TIME_LIMIT_SECONDS = 180.0
+		const_DIEGO_BOSS_INDEX = 0
+		const_array_ENEMY_ACTOR_DATA_INDICES = [1,2,3,4,5,6,7]
+
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: When over time limit
+				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+			&& unless( // <-- Pause Lock: When an enemy other than General Diego was killed
+				tally_of(const_array_ENEMY_ACTOR_DATA_INDICES, 1, int_actorDataindex => 
+					is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
+					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))		
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+			
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: When over time limit
+				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+			&& unless( // <-- Pause Lock: When an enemy other than General Diego was killed
+				tally_of(const_array_ENEMY_ACTOR_DATA_INDICES, 1, int_actorDataindex => 
+					is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
+					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
+			
+			&& measured(
+				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS, 
+				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)))
+			&& trigger_when(always_false())					
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
 	"a_ChallengeChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_BattleFinale
 		const_array_DISALLOWED_CHEATS = [ 
@@ -4262,7 +4346,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', on hard or very hard difficulty in under 1 minute, using only a knife to damage Ted and Tony"},
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', xxxxx"},
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', xxxxx"},
-	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', xxxxx"},
+	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', xxxxx"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', xxxxx"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 100% damage and achieving an accuracy of 80% or higher"},
