@@ -252,17 +252,51 @@ memory_dataStructures = {
 			"BitFlag_IsAlliedCannonH_Destroyed": { 
 				"addAddressChain": [0x20, 0x4C]}}
 		},
-	"Struct_MainBoss_Data": {
+	"Struct_MajorCharacter_Data": {
 		"sizeInBytes": 8,
 		"pointerChains": {
-			"Float_Boss0_HP": { 
+			"Float_MajorCharacter0_HP": { 
 				"addAddressChain": [0x0, 0x18, 0x10]},
-			"Float_Boss0_MaxHP": { 
+			"Float_MajorCharacter0_MaxHP": { 
 				"addAddressChain": [0x0, 0x18, 0x14]},
-			"Float_Boss1_HP": { 
-				"addAddressChain": [0x4, 0x18, 0x10]},
-			"Float_Boss1_MaxHP": { 
-				"addAddressChain": [0x4, 0x18, 0x14]},
+			"ASCII_MajorCharacter0_CharacterName": { 
+				"addAddressChain": [0x0, 0x4],
+				"offsetToPointedToMember": 0x0},
+			"Float_MajorCharacter1_HP": { 
+				"addAddressChain": [0x8, 0x18, 0x10]},
+			"Float_MajorCharacter1_MaxHP": { 
+				"addAddressChain": [0x8, 0x18, 0x14]},
+			"ASCII_MajorCharacter1_CharacterName": { 
+				"addAddressChain": [0x8, 0x4],
+				"offsetToPointedToMember": 0x0},
+			"Float_MajorCharacter2_HP": { 
+				"addAddressChain": [0x10, 0x18, 0x10]},
+			"Float_MajorCharacter2_MaxHP": { 
+				"addAddressChain": [0x10, 0x18, 0x14]},
+			"ASCII_MajorCharacter2_CharacterName": { 
+				"addAddressChain": [0x10, 0x4],
+				"offsetToPointedToMember": 0x0},
+			"Float_MajorCharacter3_HP": { 
+				"addAddressChain": [0x18, 0x18, 0x10]},
+			"Float_MajorCharacter3_MaxHP": { 
+				"addAddressChain": [0x18, 0x18, 0x14]},
+			"ASCII_MajorCharacter3_CharacterName": { 
+				"addAddressChain": [0x18, 0x4],
+				"offsetToPointedToMember": 0x0},
+			"Float_MajorCharacter4_HP": { 
+				"addAddressChain": [0x20, 0x18, 0x10]},
+			"Float_MajorCharacter4_MaxHP": { 
+				"addAddressChain": [0x20, 0x18, 0x14]},
+			"ASCII_MajorCharacter4_CharacterName": { 
+				"addAddressChain": [0x20, 0x4],
+				"offsetToPointedToMember": 0x0},
+			"Float_MajorCharacter5_HP": { 
+				"addAddressChain": [0x28, 0x18, 0x10]},
+			"Float_MajorCharacter5_MaxHP": { 
+				"addAddressChain": [0x28, 0x18, 0x14]},
+			"ASCII_MajorCharacter5_CharacterName": { 
+				"addAddressChain": [0x28, 0x4],
+				"offsetToPointedToMember": 0x0},
 		}},
 	"Struct_GatlingGunZone_Data": {
 		"offsetToMember": {
@@ -359,7 +393,7 @@ memory_addresses = {
 		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
 		"Extra_Mission_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
 		"GatlingGunZone_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
-		"MainBoss_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
+		"MajorCharacter_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
@@ -1878,6 +1912,47 @@ function is_RStar_Cheat_inActive(enum_releaseRegion) {
 // ''''''''''''''''''''''''''''
 CHARACTER_GeneralDiego = "dgo"
 CHARACTER_MrKelley = "mrk"
+CHARACTER_JackSwift = "jck"
+CHARACTER_AnnieStoakes = "ani"
+const_Character_data = {
+	CHARACTER_JackSwift: {
+		"CharacterName": "Jack"},
+	CHARACTER_AnnieStoakes: {
+		"CharacterName": "Annie"},
+}
+function get_CharacterName(enum_character) =>
+	const_Character_data[enum_character]["CharacterName"]
+
+// -----------------------MajorCharacterData------------------------------
+function current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
+	let_string_pointerChainKey = format("Float_MajorCharacter{0}_HP", int_majorCharacterIndex)
+	return memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = float)}
+
+function prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) =>
+	prev(current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion))
+
+function current_MajorCharacterMaxHP(int_majorCharacterIndex, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
+	let_string_pointerChainKey = format("Float_MajorCharacter{0}_MaxHP", int_majorCharacterIndex)
+	return memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = float)}
+
+function on_MajorCharacterHP_decrement(int_majorCharacterIndex, enum_releaseRegion) => 
+	current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) < prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion)
+
+function on_MajorCharacterHP_zero(int_majorCharacterIndex, enum_releaseRegion) =>
+	current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) == 0
+	&& prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) > 0
+
+function is_MajorCharacter_CharacterName(int_majorCharacterIndex, enum_character, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
+	let_string_pointerChainKey = format("ASCII_MajorCharacter{0}_CharacterName", int_majorCharacterIndex)
+	let_offsetTo_CharacterName = memory_getPointerChainOffsetToMember("Struct_MajorCharacter_Data", let_string_pointerChainKey)
+	let_memAddr_CharacterName = memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer)
+	return is_ASCII_EqualTo(let_memAddr_CharacterName + let_offsetTo_CharacterName, get_CharacterName(enum_character))}
+
+function current_Calculated_MajorCharacterHPPercentage(int_majorCharacterIndex, enum_releaseRegion) => 
+	current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) / current_MajorCharacterMaxHP(int_majorCharacterIndex, enum_releaseRegion)
 
 
 // ...................
@@ -2267,23 +2342,6 @@ function current_TimeSpentInMission(enum_releaseRegion) {
 // .........
 // ◦ OTHER ◦
 // '''''''''
-// ------------------------MainBossHP------------------------------
-
-function current_MainBossHP(int_bossIndex, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MainBoss_Data", enum_releaseRegion)
-	let_string_pointerChainKey = format("Float_Boss{0}_HP", int_bossIndex)
-	return memory_generateAddAddressPointerChain("Struct_MainBoss_Data", let_string_pointerChainKey, let_memAddr_BasePointer)}
-
-function prev_MainBossHP(int_bossIndex, enum_releaseRegion) =>
-	prev(current_MainBossHP(int_bossIndex, enum_releaseRegion))
-
-function on_MainBossHP_decrement(int_bossIndex, enum_releaseRegion) => 
-	current_MainBossHP(int_bossIndex, enum_releaseRegion) < prev_MainBossHP(int_bossIndex, enum_releaseRegion)
-
-function on_MainBossHP_zero(int_bossIndex, enum_releaseRegion) =>
-	current_MainBossHP(int_bossIndex, enum_releaseRegion) == 0
-	&& prev_MainBossHP(int_bossIndex, enum_releaseRegion) > 0
-
 // --------------------GatlingGunZone------------------------
 function is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion) {
 	const_INTERACTABLE_ZONE_ID = "zone_gunA_01"
@@ -2667,10 +2725,10 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Level 'Devils and Angels' | Complete in under xxx time and only killing General Diego | Hard or Very Hard"},
 		"a_ChallengeChapter24": { // VERIFIED
 			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Hard or Very Hard"},
-		// "a_ChallengeChapter25": { // CONCEPT a_ChallengeChapter25
-		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat allowed | Very Hard"},
+			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
+		"a_ChallengeChapter25": { // CONCEPT a_ChallengeChapter25
+			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat required | Hard or Very Hard"},
 		"a_ChallengeChapter27": { // VERIFIED
 			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 80% or higher AND damage taken less than 100% | Very Hard"},
@@ -3776,7 +3834,7 @@ achievements_triggers = {
 				never( // <-- ResetNextIf this once: when retrying boss battle (after playerDeath)
 					on_Puppetshow_start(PUPPETSHOW_BearMountain_PreBoss, enum_releaseRegion))
 				&& !is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-				&& on_MainBossHP_decrement(const_GRIZZLY_BOSS_INDEX, enum_releaseRegion)))
+				&& on_MajorCharacterHP_decrement(const_GRIZZLY_BOSS_INDEX, enum_releaseRegion)))
 
 			&& is_Weapon_inInventory(const_REQUIRED_WEAPON, enum_releaseRegion)
 			&& once(
@@ -3826,10 +3884,10 @@ achievements_triggers = {
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
+					&& on_MajorCharacterHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
+					&& on_MajorCharacterHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
 				]))			
 			&& unless(once( // <-- Pause Lock: When over time limit
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
@@ -3853,10 +3911,10 @@ achievements_triggers = {
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
+					&& on_MajorCharacterHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
 					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
-					&& on_MainBossHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
+					&& on_MajorCharacterHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
 				]))
 			&& unless(once( // <-- Pause Lock: When over time limit
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
@@ -3956,8 +4014,7 @@ achievements_triggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 			&& unless(
-				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
-				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
@@ -3969,7 +4026,7 @@ achievements_triggers = {
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
 				repeated(const_HEADSHOTS_MRKELLEY_REQUIRED, // <---repeated--- checks headshots on MrKelley 
-					on_MainBossHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
+					on_MajorCharacterHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
 					&& on_HeadShots_increment(enum_releaseRegion))
 				&& once(on_RewardMenu_render_short(enum_releaseRegion))
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
@@ -3980,8 +4037,7 @@ achievements_triggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 			&& unless(
-				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
-				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
@@ -3992,7 +4048,7 @@ achievements_triggers = {
 			
 			&& measured(
 				repeated(const_HEADSHOTS_MRKELLEY_REQUIRED, 
-					on_MainBossHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
+					on_MajorCharacterHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
 					&& on_HeadShots_increment(enum_releaseRegion)), 
 				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)))
 			&& trigger_when(always_false())
@@ -4005,11 +4061,55 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
+	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_Siege
+		const_array_DISALLOWED_CHEATS = [ 
+			CHEAT_BiteTheBullet, CHEAT_NoHud, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
+			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+		const_REQUIRED_CHEAT = CHEAT_GoldenGun
+		const_JACK_MAJOR_CHARACTER_INDEX = 3
+		const_ANNIE_MAJOR_CHARACTER_INDEX = 4
+		const_ALLIED_HP_THRESHOLD_PERCENTAGE = 0.75
+
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))				
+			
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+
+			&& is_MajorCharacter_CharacterName(const_JACK_MAJOR_CHARACTER_INDEX, CHARACTER_JackSwift, enum_releaseRegion) 
+			&& current_Calculated_MajorCharacterHPPercentage(const_JACK_MAJOR_CHARACTER_INDEX, enum_releaseRegion) 
+				>= const_ALLIED_HP_THRESHOLD_PERCENTAGE
+
+			&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion) 
+			&& current_Calculated_MajorCharacterHPPercentage(const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) 
+				>= const_ALLIED_HP_THRESHOLD_PERCENTAGE
+
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
 	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
 		const_MISSION_AREA = AREA_Campaign_FallFromGrace
 		const_MAX_DAMAGE_TAKEN = 100.0
@@ -4373,8 +4473,8 @@ achievements_descriptions = {
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', xxxxx"},
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', xxxxx"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty in under 3 minutes, killing only General Diego"},
-	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on hard or very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', xxxxx"},
+	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty with Jack's and Annie's HP above 75%, using the 'Golden Gun' cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 100% damage and achieving an accuracy of 80% or higher"},
 
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
