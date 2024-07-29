@@ -180,6 +180,8 @@ memory_dataStructures = {
 			"ASCII_GameTriggerID": { 
 				"addAddressChain": [0x168, 0xEC],
 				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
+			"32Bit_HeadShots": { 
+				"addAddressChain": [0x36C, 0x30]},
 			"32Bit_DeathToll": { 
 				"addAddressChain": [0x36C, 0x5C]},
 			"Float_DamageTaken": { 
@@ -1875,6 +1877,7 @@ function is_RStar_Cheat_inActive(enum_releaseRegion) {
 // ◦ CHARACTER IDENTIFICATION ◦
 // ''''''''''''''''''''''''''''
 CHARACTER_GeneralDiego = "dgo"
+CHARACTER_MrKelley = "mrk"
 
 
 // ...................
@@ -2070,6 +2073,16 @@ function current_DamageTaken(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, accessor = float)}
 
+function current_HeadShots(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HeadShots", let_memAddr_SinglePlayerData)}
+
+function prev_HeadShots(enum_releaseRegion) =>
+	prev(current_HeadShots(enum_releaseRegion))
+
+function on_HeadShots_increment(enum_releaseRegion) =>
+	current_HeadShots(enum_releaseRegion) > prev_HeadShots(enum_releaseRegion)
+
 // ..............
 // ◦ ACTOR DATA ◦ // May be unsued code
 // ''''''''''''''
@@ -2079,6 +2092,9 @@ function get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion) {
 	return let_memAddr_ActorData0 + memory_getDataStructOffset("Struct_ActorData_0", "Struct_ActorData_B")}
 
 // ------------------------HealthPoints------------------------------
+function is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion) => // This checks if this index in the Array_ActorData is filled
+	dword(get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)) > 0
+
 function current_Actor_HP(int_actorDataindex, enum_releaseRegion) {
 	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_ActorData_B", "Float_ActorHP", let_memAddr_ActorDataB)}
@@ -2649,9 +2665,9 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		"a_ChallengeChapter22": { // VERIFIED
 			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Devils and Angels' | Complete in under xxx time and only killing General Diego | Hard or Very Hard"},
-		// "a_ChallengeChapter24": { // CONCEPT a_ChallengeChapter24
-		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-		//	"devInfo": "Level 'Battle Finale' | Complete with xx headshots on Mr. Kelley | Hard or Very Hard"},
+		"a_ChallengeChapter24": { // VERIFIED
+			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Hard or Very Hard"},
 		// "a_ChallengeChapter25": { // CONCEPT a_ChallengeChapter25
 		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 		//	"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat allowed | Very Hard"},
@@ -3899,7 +3915,7 @@ achievements_triggers = {
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 			
-		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -3930,54 +3946,64 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_BattleFinale
-		const_array_DISALLOWED_CHEATS = [ 
-			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
-			CHEAT_NoHud, CHEAT_NoDistortion, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
-		const_REQUIRED_CHEAT = CHEAT_SadStars
+		const_array_PEDESTRIAN_ACTOR_DATA_INDICES = [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17] // Index 0 = Red; Index 1 = MrKelley; Other indices are pedestrians
+		const_MRKELLEY_BOSS_INDEX = 0 
+		const_HEADSHOTS_MRKELLEY_REQUIRED = 5
 
 		return
-		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
-				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-
-			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
-				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion) 
-				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
+				tally_of(const_array_PEDESTRIAN_ACTOR_DATA_INDICES, 1, int_actorDataindex =>
+					is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
+					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_MrKelley, enum_releaseRegion)
+					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
+			
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
-				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
-				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
-					never(is_StartChpMenu_active(enum_releaseRegion))
-					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
+				repeated(const_HEADSHOTS_MRKELLEY_REQUIRED, // <---repeated--- checks headshots on MrKelley 
+					on_MainBossHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
+					&& on_HeadShots_increment(enum_releaseRegion))
+				&& once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+		
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to display headshot count on Mr Kelley; This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
+				tally_of(const_array_PEDESTRIAN_ACTOR_DATA_INDICES, 1, int_actorDataindex =>
+					is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
+					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_MrKelley, enum_releaseRegion)
+					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
+			
+			&& measured(
+				repeated(const_HEADSHOTS_MRKELLEY_REQUIRED, 
+					on_MainBossHP_decrement(const_MRKELLEY_BOSS_INDEX, enum_releaseRegion)
+					&& on_HeadShots_increment(enum_releaseRegion)), 
+				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)))
+			&& trigger_when(always_false())
 
-		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// ==== Alt Reset Group ====  					-> Reset when required cheats are not active
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
@@ -4347,7 +4373,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', xxxxx"},
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', xxxxx"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty in under 3 minutes, killing only General Diego"},
-	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', xxxxx"},
+	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on hard or very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', xxxxx"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 100% damage and achieving an accuracy of 80% or higher"},
 
