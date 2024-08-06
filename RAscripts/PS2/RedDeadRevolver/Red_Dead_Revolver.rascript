@@ -2764,10 +2764,10 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Level 'Bar Fight' | Complete will full hp at end | Very Hard"},
 		"a_ChallengeChapter13": { // VERIFIED
 			"id": 450844, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'The Traitor' | Win the battle with 6 allied cannons still operational | Hard or Very Hard"},
+			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
 		"a_ChallengeChapter14": { // VERIFIED
 			"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Sunset Canyon' | Complete with less than 100% damage taken| Very Hard"},
+			"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
 			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
@@ -2776,10 +2776,10 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		"a_ChallengeChapter19": { // VERIFIED
 			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite DeadEye' cheat required | Hard or Very Hard"},
-		"a_ChallengeChapter20": { // VERIFIED
+			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite DeadEye' cheat required, melee is allowed | Hard or Very Hard"},
+		"a_ChallengeChapter20": { // VERIFIED 
 			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Fort Diego' | Kill 20 enemies with head shots | Very Hard"},
+			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
 		"a_ChallengeChapter22": { // VERIFIED
 			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Devils and Angels' | Complete in under xxx time and only killing General Diego | Hard or Very Hard"},
@@ -2791,7 +2791,13 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat required | Hard or Very Hard"},
 		"a_ChallengeChapter27": { // VERIFIED
 			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 80% or higher AND damage taken less than 100% | Very Hard"},
+			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 70% or higher AND damage taken less than 50% | Very Hard"},
+		// "a_WoodChapter8": { // CONCEPT a_WoodChapter8
+		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
+		//	"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
+		// "a_WoodChapter10": { // CONCEPT a_WoodChapter10
+		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
+		//	"devInfo": "Level 'Rogue Valley' | Only damage enemies with the 'Infinite Deadeye' cheat | Red Wood Revolver"},
 		},
 	}
 
@@ -3397,7 +3403,7 @@ achievements_triggers = {
 			&& unless( // <-- Pause Lock: when DamageTaken > allowed
 				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
 					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) / float_maxHPvalue >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion) 
@@ -3787,7 +3793,7 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_TheTraitor
-		const_ALLOWED_ALLIED_CANNONS_DESTROYED = 2 // of 8 total allied cannons
+		const_ALLOWED_ALLIED_CANNONS_DESTROYED = 3 // of 8 total allied cannons
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -3817,7 +3823,7 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_SunsetCanyon
-		const_MAX_DAMAGE_TAKEN_DECIMAL = 1.0 // = 100%
+		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.9 // = 90%
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -3831,7 +3837,7 @@ achievements_triggers = {
 			&& unless( // <-- Pause Lock: when DamageTaken > allowed
 				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
 					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) / float_maxHPvalue >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
@@ -4021,7 +4027,7 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_FortDiego
-		const_ENEMY_HEADSHOT_KILL_COUNT = 20
+		const_ENEMY_HEADSHOT_KILL_COUNT = 12
 		
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4220,9 +4226,10 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
 		const_MISSION_AREA = AREA_Campaign_FallFromGrace
-		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.4 // = 40%
-		// const_DESIRED_ACCURACY = 0.80
+		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.5 // = 50%
+		// const_DESIRED_ACCURACY = 0.70
 		let_array_AllowedAccuracyStrings = [
+			"70%", "71%", "72%", "73%", "74%", "75%", "76%", "77%", "78%", "79%",
 			"80%", "81%", "82%", "83%", "84%", "85%", "86%", "87%", "88%", "89%",
 			"90%", "91%", "92%", "93%", "94%", "95%", "96%", "97%", "98%", "99%", 
 			"100%"]
@@ -4239,7 +4246,7 @@ achievements_triggers = {
 			&& unless( // <-- Pause Lock: when DamageTaken > allowed
 				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
 					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) / float_maxHPvalue >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
@@ -4553,16 +4560,16 @@ achievements_descriptions = {
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty with following the cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
 	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty with a full health bar at the end"},
-	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty with at least 6 allied cannons remaining"},
-	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on very hard difficulty with less than 100% damage taken"},
+	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty with at least 5 allied cannons remaining"},
+	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on very hard difficulty with less than 90% damage taken"},
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, 'Bear Mountain', on very hard difficulty using only the firearm 'Faith' to damage Grizzly"},
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', on hard or very hard difficulty in under 1 minute, using only a knife to damage Ted and Tony"},
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', on hard or very hard difficulty with the stagecoach's HP above 40%, using the 'Infinite DeadEye' cheat as the only means of shooting"},
-	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', on very hard difficulty with 20 headshot kills"},
+	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', on very hard difficulty with 12 headshot kills"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty with Jack's and Annie's HP above 75%, using the 'Golden Gun' cheat"},
-	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 40% damage and achieving an accuracy of 80% or higher"},
+	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 50% damage and achieving an accuracy of 70% or higher"},
 
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty using the 'Infinite Deadeye' cheat as the only means of doing damage"},
 
