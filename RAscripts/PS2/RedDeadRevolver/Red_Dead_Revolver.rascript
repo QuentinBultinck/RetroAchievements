@@ -2526,6 +2526,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
+// TODO check if c_StoryChallenge is actually achievements_TYPE_Missable => perhaps achievements_TYPE_Standard fits better
 achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryChallenge based on challenge difficulty
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
@@ -2606,6 +2607,9 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
+		"a_WinKatieFreeForAll": { // CONCEPT a_WinKatieFreeForAll
+			"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
+			"devInfo": "As Katie O'Grady, win a free-for-all 5k target Bounty Hunter match against Ugly Chris, Professor Perry, and General Diego in Widow's Patch"},
 		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 		//	"devInfo": "As The 'Blade' Slade win a bouny hunter match on stage 'xxxx', using only knives"},
@@ -2792,12 +2796,12 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		"a_ChallengeChapter27": { // VERIFIED
 			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 70% or higher AND damage taken less than 50% | Very Hard"},
-		// "a_WoodChapter8": { // CONCEPT a_WoodChapter8
-		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
-		//	"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
-		// "a_WoodChapter10": { // CONCEPT a_WoodChapter10
-		//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
-		//	"devInfo": "Level 'Rogue Valley' | Only damage enemies with the 'Infinite Deadeye' cheat | Red Wood Revolver"},
+		"a_WoodChapter8": { // QA a_WoodChapter8
+			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
+		"a_WoodChapter10": { // QA a_WoodChapter10
+			"id": 453664, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
 		},
 	}
 
@@ -4269,7 +4273,96 @@ achievements_triggers = {
 
 		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
+	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+		const_MISSION_AREA = AREA_Campaign_RogueValley
+		const_array_DISALLOWED_CHEATS = [ 
+			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
+			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+		const_REQUIRED_CHEAT = CHEAT_BiteTheBullet
+
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
+
+			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
+				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}),
+	"a_WoodChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+		const_MISSION_AREA = AREA_Campaign_HellPass
+		const_array_DISALLOWED_CHEATS = [ 
+			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
+			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
+		const_REQUIRED_CHEAT = CHEAT_InfiniteDeadeye
+		
+		return
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: When using a firearm without the deadeye ability
+				is_PlayerInput_AimGun_pressed(enum_releaseRegion)
+				&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
+
+			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
+				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+			&& trigger_when(
+				once(on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 	}),
+	"a_WinKatieFreeForAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP Make use of 0x740438 and 0x7405b0 + Perhaps 0x562a20 => Showdown_PosterMenu_Controller
+		// ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& always_false()
+
+		// 
+		// ONCE(at ShowdownPosterMenu with right match settings and character setup) --> ResetNextIf:Once(when settings aren't correct anymore)
+		// Trigger_when(when at ShowdownEndMenu AND player is winner) --> Pause(when at Ending Menu AND player is not a winner)
+		// Reset when not in Multiplayer AND not at ShowdownPosterMenu (AND not in ShowdownEndMenu)
+	),
 	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
@@ -4483,9 +4576,10 @@ achievements_titles = {
 	"a_ChallengeChapter24":					{"en": "High-Fashioned Cleanup"},
 	"a_ChallengeChapter25":					{"en": "Vigilante"},
 	"a_ChallengeChapter27":					{"en": "Bullet with a Name"},
-
+	"a_WoodChapter8":						{"en": "Wood You Believe It?"},
 	"a_WoodChapter10":						{"en": "Cremation at Sundawn"},
 
+	"a_WinKatieFreeForAll":					{"en": "Remember Me?"},
 	"a_WinHighNoon":						{"en": "Last Man Standing"},
 	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
 	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
@@ -4570,9 +4664,10 @@ achievements_descriptions = {
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty with Jack's and Annie's HP above 75%, using the 'Golden Gun' cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 50% damage and achieving an accuracy of 70% or higher"},
-
+	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty with 'Bite the Bullet' cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty using the 'Infinite Deadeye' cheat as the only means of doing damage"},
 
+	"a_WinKatieFreeForAll":					{"en": "As Katie O'Grady, win a free-for-all 5k target Bounty Hunter match against Ugly Chris, Professor Perry, and General Diego in Widow's Patch"},
 	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
 	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
 	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
