@@ -209,6 +209,32 @@ memory_dataStructures = {
 		"pointerChains": {
 			"32Bit_EquippedWeapon_ReserveAmmo": { 
 				"addAddressChain": [0x2C, 0x14]},
+			"BitFlag_IsShowdownPosterMenuDisplayed": { 
+				"addAddressChain": [0xC0, 0x48, 0xFD]},
+			"BitFlag_IsShowdownPlayerSlot1Filled": { 
+				"addAddressChain": [0xC0, 0x7C, 0xFD]},
+			"ASCII_ShowdownPlayer1CharacterModelId": { 
+				"addAddressChain": [0xC0, 0x7C, 0x13D]},
+			"BitFlag_IsShowdownPlayerSlot2Filled": { 
+				"addAddressChain": [0xC0, 0x80, 0xFD]},
+			"ASCII_ShowdownPlayer2CharacterModelId": { 
+				"addAddressChain": [0xC0, 0x80, 0x13D]},
+			"BitFlag_IsShowdownPlayerSlot3Filled": { 
+				"addAddressChain": [0xC0, 0x84, 0xFD]},
+			"ASCII_ShowdownPlayer3CharacterModelId": { 
+				"addAddressChain": [0xC0, 0x84, 0x13D]},
+			"BitFlag_IsShowdownPlayerSlot4Filled": { 
+				"addAddressChain": [0xC0, 0x88, 0xFD]},
+			"ASCII_ShowdownPlayer4CharacterModelId": { 
+				"addAddressChain": [0xC0, 0x88, 0x13D]},
+			"8Bit_TeamIdPlayer1": { 
+				"addAddressChain": [0x53C]},
+			"8Bit_TeamIdPlayer2": { 
+				"addAddressChain": [0x588]},
+			"8Bit_TeamIdPlayer3": { 
+				"addAddressChain": [0x5D4]},
+			"8Bit_TeamIdPlayer4": { 
+				"addAddressChain": [0x620]},
 			"32Bit_Cash": { 
 				"addAddressChain": [0x5874],
 				"offsetToPointedToMember": 0x8},
@@ -220,7 +246,7 @@ memory_dataStructures = {
 				"offsetToPointedToMember": 0x10},
 			"32Bit_CashComboMultiplier": { 
 				"addAddressChain": [0x5874],
-				"offsetToPointedToMember": 0x14}, 
+				"offsetToPointedToMember": 0x14},
 		}},
 	"Undefined_Struct_03": {
 		"offsetToMember": {
@@ -320,6 +346,21 @@ memory_dataStructures = {
 			"Float_CountdownTimer": 0x1C,
 			"Float_TimeSpentinMission": 0x20}
 		},
+	"Struct_ShowdownPlayer_Settings_A": {
+		"sizeInBytes": 92,
+		"offsetToMember": {
+			"Lower4_TeamId": 0x0,
+			"ASCII_CharacterModelId": 0x5,
+			"ASCII_ShowdownAIsetting": 0x36}
+		},
+	"Struct_ShowdownPlayer_Settings_B": {
+		"sizeInBytes": 336,
+		"offsetToMember": {
+			"ASCII_CharacterModelId": 0x1,
+			"Lower4_TeamId": 0x11,
+			"BitFlag_IsPlayerSlotFilled": 0x19,
+			"ASCII_ShowdownAIsetting": 0x312}
+		},		
 	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -402,6 +443,8 @@ memory_addresses = {
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
 		"Array_ActorData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
+		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -691,6 +734,7 @@ AREA_Campaign_BattleFinale = "lvl_royfinal"
 AREA_Campaign_Siege = "lvl_mans"
 AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
+AREA_Showdown_WidowsPatch = "lvl_shernite2"
 
 const_Area_data = { // TODO put these coordinates inside the code notes
 	AREA_Campaign_BullsEye: { 
@@ -1962,6 +2006,9 @@ CHARACTER_GeneralDiego = "dgo"
 CHARACTER_MrKelley = "mrk"
 CHARACTER_JackSwift = "jck"
 CHARACTER_AnnieStoakes = "ani"
+CHARACTER_KatieGrady = "kti"
+CHARACTER_UglyChris = "ugl"
+CHARACTER_ProfessorPerry = "pry"
 CHARACTER_StageCoach = 100
 const_Character_data = {
 	CHARACTER_JackSwift: {
@@ -2406,6 +2453,72 @@ function current_TimeSpentInMission(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion)
 	let_offsetTo_TimeSpentInMission = memory_getDataStructOffset("Struct_Mission_Timers", "Float_TimeSpentinMission")
 	return float(dword(let_memAddr_BasePointer) + let_offsetTo_TimeSpentInMission)}
+
+// ............
+// ◦ SHOWDOWN ◦
+// ''''''''''''
+SHOWDOWN_TEAM_RED = 0
+SHOWDOWN_TEAM_WHITE = 1
+SHOWDOWN_TEAM_BLUE = 2
+SHOWDOWN_TEAM_YELLOW = 3		
+const_array_ALL_SHOWDOWN_TEAMS = [SHOWDOWN_TEAM_RED, SHOWDOWN_TEAM_BLUE, SHOWDOWN_TEAM_WHITE, SHOWDOWN_TEAM_YELLOW]
+
+// --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
+function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain(
+		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_BasePointer)}
+
+function is_ShowdownPosterMenu_displayed(enum_releaseRegion) =>
+	current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) == 1
+
+function current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	let_string_pointerChainKey = format("BitFlag_IsShowdownPlayerSlot{0}Filled", int_playerIndex)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = bit0)}
+
+function is_PosterMenu_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
+	current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) == 1
+
+function current_Calculated_PosterMenu_ActiveShowdownPlayers(enum_releaseRegion) {
+	let_array_ShowdownPlayerIndices = [1,2,3,4]}
+	return sum_of(let_array_ShowdownPlayerIndices, int_playerIndex => 
+		current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion))
+
+function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+	let_string_pointerChainKey = format("ASCII_ShowdownPlayer{0}CharacterModelId", int_playerIndex)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_PointerChainTo_ShowdownPlayerCharacterModelId = memory_generateAddAddressPointerChain(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer)
+	return is_ASCII_EqualTo(let_PointerChainTo_ShowdownPlayerCharacterModelId, enum_character)}
+
+// --------------------ShowdownPlayer_Settings------------------------
+SHOWDOWN_AI_SETTING_HumanPlayer = "MPplayer"
+
+function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1	
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_CharacterModelID = 
+		let_memAddr_ShowdownPlayerSettingsArray 
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
+	return is_ASCII_EqualTo(let_memAddr_CharacterModelID, enum_character)}
+
+function is_ShowdownPlayer_HumanPlayer(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1	
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_ShowdownAIsetting = 
+		let_memAddr_ShowdownPlayerSettingsArray 
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
+	return is_ASCII_EqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
 
 // .........
 // ◦ OTHER ◦
@@ -4353,16 +4466,26 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 	}),
-	"a_WinKatieFreeForAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP Make use of 0x740438 and 0x7405b0 + Perhaps 0x562a20 => Showdown_PosterMenu_Controller
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
+	"a_WinKatieFreeForAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {  // WIP Make use of 0x740438 and 0x7405b0
+		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego] 
+		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
+
+		return
+		// [1] ==== Core (Alt) Group ====
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_ShowdownPlayerCharacter(1, CHARACTER_KatieGrady, enum_releaseRegion)
+			&& is_ShowdownPlayer_HumanPlayer(1, enum_releaseRegion)
+			
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
 
 		// 
-		// ONCE(at ShowdownPosterMenu with right match settings and character setup) --> ResetNextIf:Once(when settings aren't correct anymore)
 		// Trigger_when(when at ShowdownEndMenu AND player is winner) --> Pause(when at Ending Menu AND player is not a winner)
 		// Reset when not in Multiplayer AND not at ShowdownPosterMenu (AND not in ShowdownEndMenu)
-	),
+	}),
 	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
 		return 			
