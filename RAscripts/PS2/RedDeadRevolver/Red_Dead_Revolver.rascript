@@ -357,10 +357,37 @@ memory_dataStructures = {
 		"sizeInBytes": 336,
 		"offsetToMember": {
 			"ASCII_CharacterModelId": 0x1,
-			"Lower4_TeamId": 0x11,
-			"BitFlag_IsPlayerSlotFilled": 0x19,
-			"ASCII_ShowdownAIsetting": 0x312}
+			"Lower4_TeamId": 0xB,
+			"BitFlag_IsPlayerSlotFilled": 0x13,
+			"ASCII_ShowdownAIsetting": 0x139}
 		},		
+	"Struct_MultiplayerRewardMenu_Data": {
+		"pointerChains": {
+			"32BitPointer_28": {
+				"addAddressChain": [0x28]},
+			"ASCII_Flag_IsPlayer1Winner": {
+				"addAddressChain": [0x28, 0x24, 0x34],
+				"offsetToPointedToMember": 0x0},
+			"ASCII_Flag_IsPlayer2Winner": {
+				"addAddressChain": [0x28, 0x24, 0x34],
+				"offsetToPointedToMember": 0x10},
+			"ASCII_Flag_IsPlayer3Winner": {
+				"addAddressChain": [0x28, 0x24, 0x34],
+				"offsetToPointedToMember": 0x20},
+			"ASCII_Flag_IsPlayer4Winner": {
+				"addAddressChain": [0x28, 0x24, 0x34],
+				"offsetToPointedToMember": 0x30},
+			"ASCII_Flag_IsMultiplayerRewardMenuDisplayed": {
+				"addAddressChain": [0x28, 0x0]},
+		}},
+	"Struct_ShowdownMode_Settings": {
+		"offsetToMember": {
+			"Lower4_GameMode": 0x0,
+			"Lower4_BountyLimit": 0x4,
+			"Lower4_SundownFightTime": 0x8,
+			"Lower4_HighNoonRequiredWins": 0xC,
+			"Lower4_PowerUpSetting": 0x18} 
+		},
 	}
 
 function memory_getDataStructSizeInBytes(string_structKey) =>
@@ -439,6 +466,7 @@ memory_addresses = {
 		"MajorCharacter_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
+		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -449,7 +477,8 @@ memory_addresses = {
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
 		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
-		"PlayerInputReader": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},	
+		"PlayerInputReader": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
+		"ShowdownMode_Settings": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
 	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
@@ -602,6 +631,9 @@ function wasPrior_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 function wasPrev_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s, c => prev(c))
 
+function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+
 function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s) && 
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
@@ -734,7 +766,7 @@ AREA_Campaign_BattleFinale = "lvl_royfinal"
 AREA_Campaign_Siege = "lvl_mans"
 AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
-AREA_Showdown_WidowsPatch = "lvl_shernite2"
+AREA_Showdown_WidowsPatch = "lvl_shernit2"
 
 const_Area_data = { // TODO put these coordinates inside the code notes
 	AREA_Campaign_BullsEye: { 
@@ -2353,6 +2385,10 @@ const_GameMode_data = {
 	GAMEMODE_SinglePlayer: {"ID": 0xFA},
 	GAMEMODE_ShowdownMode: {"ID": 0xC8},
 	GAMEMODE_MainMenu: {"ID": 0xA}}
+
+function current_NumberOfPlayers(enum_releaseRegion) =>
+	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion))
+
 function get_GameMode_ID(enum_gameState) =>
 	const_GameMode_data[enum_gameState]["ID"]
 
@@ -2373,12 +2409,15 @@ function is_AtMainMenu(enum_releaseRegion) =>
 	is_GameMode(GAMEMODE_MainMenu, enum_releaseRegion)
 
 function is_Playing_SinglePlayerCampaign(enum_releaseRegion) =>
-	is_GameMode(GAMEMODE_SinglePlayer, enum_releaseRegion) &&
-	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) == 1
+	is_GameMode(GAMEMODE_SinglePlayer, enum_releaseRegion) 
+	&& current_NumberOfPlayers(enum_releaseRegion) == 1
 
-function is_Playing_ShowdownMode(enum_releaseRegion) =>
-	is_GameMode(GAMEMODE_ShowdownMode, enum_releaseRegion) &&
-	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion)) > 1
+function is_Playing_ShowdownMode_short(enum_releaseRegion) =>
+	is_GameMode(GAMEMODE_ShowdownMode, enum_releaseRegion)
+
+function is_Playing_ShowdownMode_long(enum_releaseRegion) =>
+	is_GameMode(GAMEMODE_ShowdownMode, enum_releaseRegion)
+	&& current_NumberOfPlayers(enum_releaseRegion) > 1
 
 function is_Playing_BountyHunterMode(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
@@ -2461,7 +2500,6 @@ SHOWDOWN_TEAM_RED = 0
 SHOWDOWN_TEAM_WHITE = 1
 SHOWDOWN_TEAM_BLUE = 2
 SHOWDOWN_TEAM_YELLOW = 3		
-const_array_ALL_SHOWDOWN_TEAMS = [SHOWDOWN_TEAM_RED, SHOWDOWN_TEAM_BLUE, SHOWDOWN_TEAM_WHITE, SHOWDOWN_TEAM_YELLOW]
 
 // --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
@@ -2482,9 +2520,9 @@ function is_PosterMenu_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRe
 	current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) == 1
 
 function current_Calculated_PosterMenu_ActiveShowdownPlayers(enum_releaseRegion) {
-	let_array_ShowdownPlayerIndices = [1,2,3,4]}
+	let_array_ShowdownPlayerIndices = [1,2,3,4]
 	return sum_of(let_array_ShowdownPlayerIndices, int_playerIndex => 
-		current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion))
+		current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion))}
 
 function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
 	let_string_pointerChainKey = format("ASCII_ShowdownPlayer{0}CharacterModelId", int_playerIndex)
@@ -2519,6 +2557,118 @@ function is_ShowdownPlayer_HumanPlayer(int_playerIndex, enum_releaseRegion) { //
 		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
 	return is_ASCII_EqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
+
+function is_ShowdownPlayer_CPUPlayer(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1	
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_ShowdownAIsetting = 
+		let_memAddr_ShowdownPlayerSettingsArray 
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
+	return is_ASCII_notEqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
+
+function is_ShowdownPlayer_Team(int_playerIndex, enum_showdownTeam, enum_releaseRegion) { // Player Index [1-4]
+	let_playerIndex = int_playerIndex - 1
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_TeamId =
+		let_memAddr_ShowdownPlayerSettingsArray 
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "Lower4_TeamId")
+	return low4(let_memAddr_TeamId) == enum_showdownTeam
+}
+
+// --------------------ShowdownMode_Settings------------------------
+SHOWDOWN_MODE_BountyHunter = 0 
+SHOWDOWN_MODE_Sundown = 1 
+SHOWDOWN_MODE_HighNoon = 2 
+
+function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) {
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_GameMode")
+	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_showdownMode}
+
+SHOWDOWN_BOUNTY_LIMIT_3K = 0 
+SHOWDOWN_BOUNTY_LIMIT_5K = 1 
+SHOWDOWN_BOUNTY_LIMIT_10K = 2 
+SHOWDOWN_BOUNTY_LIMIT_15K = 2 
+SHOWDOWN_BOUNTY_LIMIT_20K = 4 
+
+function is_Showdown_BountyLimit(enum_showdownBountyLimit, enum_releaseRegion) {
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_BountyLimit")
+	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_showdownBountyLimit}
+
+SHOWDOWN_SUNDOWN_FIGHT_TIME_3min = 0 
+SHOWDOWN_SUNDOWN_FIGHT_TIME_5min = 1 
+SHOWDOWN_SUNDOWN_FIGHT_TIME_10min = 2 
+SHOWDOWN_SUNDOWN_FIGHT_TIME_15min = 3 
+SHOWDOWN_SUNDOWN_FIGHT_TIME_1min = 4 
+
+function is_Showdown_SundownFightTime(enum_sundownFightTime, enum_releaseRegion) {
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_SundownFightTime")
+	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_sundownFightTime}
+
+SHOWDOWN_HIGH_NOON_REQUIRED_WINS_3 = 0
+SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5 = 1
+SHOWDOWN_HIGH_NOON_REQUIRED_WINS_7 = 2
+SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 = 3
+SHOWDOWN_HIGH_NOON_REQUIRED_WINS_1 = 4
+
+function is_Showdown_HighNoonRequiredWins(enum_highNoonRequiredWins, enum_releaseRegion) {
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_HighNoonRequiredWins")
+	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_highNoonRequiredWins}
+
+SHOWDOWN_POWER_UPS_SETTING_Off = 0
+SHOWDOWN_POWER_UPS_SETTING_Stud = 1
+SHOWDOWN_POWER_UPS_SETTING_HoldEm = 2 
+
+function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
+	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_powerUpsSetting}
+
+// --------------------MultiplayerRewardMenu------------------------
+function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+		
+	ASCII_FLAG_IsPlayerWinner = "Winner"
+	
+	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
+	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey)
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
+
+function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
+	return let_memAccessor_InnerPointer > 0}
+
+function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
+	return 
+		let_memAccessor_InnerPointer > 0 
+		&& prev(let_memAccessor_InnerPointer) == 0}
+
+function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) {
+	ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpRewards_new3"
+
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAddr_ASCII = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_BasePointer)
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
+		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
 
 // .........
 // ◦ OTHER ◦
@@ -2721,7 +2871,7 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		},
 	"c_Showdown": { // Category - Showdown related achievements
 		"a_WinKatieFreeForAll": { // CONCEPT a_WinKatieFreeForAll
-			"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
+			"id": 0000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady, win a free-for-all 5k target Bounty Hunter match against Ugly Chris, Professor Perry, and General Diego in Widow's Patch"},
 		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
 		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
@@ -3095,6 +3245,21 @@ function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
 // ------------------BountyHunterMissions----------------------
 function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion) => 
 	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted, enum_releaseRegion) 
+
+function achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion) {
+	let_array_ALL_SHOWDOWN_TEAM_IDs = [SHOWDOWN_TEAM_RED, SHOWDOWN_TEAM_BLUE, SHOWDOWN_TEAM_WHITE, SHOWDOWN_TEAM_YELLOW]
+	let_PlayerSlot1_Index = 1
+	let_PlayerSlot2_Index = 2
+	let_PlayerSlot3_Index = 3
+	let_PlayerSlot4_Index = 4
+	return tally_of(let_array_ALL_SHOWDOWN_TEAM_IDs, length(let_array_ALL_SHOWDOWN_TEAM_IDs), int_showdownTeamId => // <---TallyOf--- Count if all 4 unique teams are present 
+		once(
+			is_ShowdownPlayer_Team(let_PlayerSlot1_Index, int_showdownTeamId, enum_releaseRegion)
+			|| is_ShowdownPlayer_Team(let_PlayerSlot2_Index, int_showdownTeamId, enum_releaseRegion)
+			|| is_ShowdownPlayer_Team(let_PlayerSlot3_Index, int_showdownTeamId, enum_releaseRegion)
+			|| is_ShowdownPlayer_Team(let_PlayerSlot4_Index, int_showdownTeamId, enum_releaseRegion)))
+}
+
 
 // =========================
 // • Achievements TRIGGERS •
@@ -4467,24 +4632,54 @@ achievements_triggers = {
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 	}),
 	"a_WinKatieFreeForAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {  // WIP Make use of 0x740438 and 0x7405b0
-		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego] 
+		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego]
 		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
+		const_HUMANPLAYER_INDEX = 1 // Always 1 human player at index 1
+		const_CPUPLAYER_1_INDEX = 2
+		const_CPUPLAYER_2_INDEX = 3
+		const_CPUPLAYER_3_INDEX = 4
 
 		return
 		// [1] ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
-			&& is_ShowdownPlayerCharacter(1, CHARACTER_KatieGrady, enum_releaseRegion)
-			&& is_ShowdownPlayer_HumanPlayer(1, enum_releaseRegion)
+			&& is_Playing_ShowdownMode_short(enum_releaseRegion)
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+
+			&& is_ShowdownPlayerCharacter(const_HUMANPLAYER_INDEX, CHARACTER_KatieGrady, enum_releaseRegion)
+			&& is_ShowdownPlayer_HumanPlayer(const_HUMANPLAYER_INDEX, enum_releaseRegion)
+
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_1_INDEX, enum_releaseRegion) // <---3 Lines--- Check if other players are bots/CPUs
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_2_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_3_INDEX, enum_releaseRegion)
+
+			&& tally_of(const_array_REQUIRED_CPU_CHARACTERS, length(const_array_REQUIRED_CPU_CHARACTERS), enum_character => // <---TallyOf--- Count 1 for each required CPU character; should be 3 if each character is in one of the player slots
+				once(
+					is_ShowdownPlayerCharacter(const_CPUPLAYER_1_INDEX, enum_character, enum_releaseRegion)
+					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_2_INDEX, enum_character, enum_releaseRegion)
+					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_3_INDEX, enum_character, enum_releaseRegion)))
+
+			// TODO add cheat protection from start to finish of showdown match
+
+			&& achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion) 
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_5K, enum_releaseRegion)
 			
+			&& trigger_when(
+				once(
+					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+				&& is_ShowdownPlayer_Winner(1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
 
-		// 
-		// Trigger_when(when at ShowdownEndMenu AND player is winner) --> Pause(when at Ending Menu AND player is not a winner)
-		// Reset when not in Multiplayer AND not at ShowdownPosterMenu (AND not in ShowdownEndMenu)
+		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
 	}),
 	"a_UnlockStagesAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		let_sumOf_FlagsAllStages = achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion)
