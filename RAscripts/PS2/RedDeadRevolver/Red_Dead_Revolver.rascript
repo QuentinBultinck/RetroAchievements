@@ -773,6 +773,16 @@ AREA_Campaign_Siege = "lvl_mans"
 AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
 AREA_Showdown_WidowsPatch = "lvl_shernit2"
+AREA_Showdown_TheRanch = "lvl_ranch2"
+AREA_Showdown_Fairground = "lvl_ghost2"
+AREA_Showdown_FallenCreek = "lvl_flash2"
+AREA_Showdown_GhostTown = "lvl_gun2"
+AREA_Showdown_SunsetCanyon = "lvl_coach2"
+AREA_Showdown_BrokenCreek = "lvl_perf2"
+AREA_Showdown_MansionGrounds = "lvl_mans2"
+AREA_Showdown_TheMansion = "lvl_int2"
+AREA_Showdown_TwinRocks = "lvl_hng2"
+AREA_Showdown_DesertFortress = "lvl_fort2"
 
 const_Area_data = { // TODO put these coordinates inside the code notes
 	AREA_Campaign_BullsEye: { 
@@ -2047,6 +2057,30 @@ CHARACTER_AnnieStoakes = "ani"
 CHARACTER_KatieGrady = "kti"
 CHARACTER_UglyChris = "ugl"
 CHARACTER_ProfessorPerry = "pry"
+CHARACTER_BladeSlade = "bwi"
+CHARACTER_SherrifGrady = "cls"
+CHARACTER_SherrifBartlett = "kng"
+CHARACTER_HolsteinHal = "tcb"
+CHARACTER_Sam = "tck"
+CHARACTER_GovernorGriffon = "wyn"
+CHARACTER_ShadowWolf = "tck"
+CHARACTER_FallingStar = "mom" 
+CHARACTER_Grizzly = "mst"
+CHARACTER_StandingSnake = "msk"
+CHARACTER_MrBlack = "blk"
+CHARACTER_BadBessie = "bty"
+CHARACTER_PigJosh = "pgj"
+CHARACTER_NateHarlow = "dad"
+CHARACTER_ColonelDaren = "ydr"
+CHARACTER_Natalie = "ntl"
+CHARACTER_RedJr = "mrd"
+CHARACTER_CurlyShaw = "shp"
+CHARACTER_BloodyTom = "gay"
+CHARACTER_BigOaf = "frk"
+CHARACTER_TwiggyPhelps = "twg"
+CHARACTER_SissyFess = "sto"
+CHARACTER_RicoPedrosa = "bra"
+CHARACTER_UdoKang = "mon"
 CHARACTER_StageCoach = 100
 const_Character_data = {
 	CHARACTER_JackSwift: {
@@ -2889,27 +2923,42 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
-		"a_WinKatieFreeForAll": { // VERIFIED
+		"a_BountyHunterKatie": { // TODO rewrite according to desciption
 			"id": 454648, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
-			"devInfo": "As Katie O'Grady, win a free-for-all 5k target Bounty Hunter match against Ugly Chris, Professor Perry, and General Diego in Widow's Patch"},
-		// "a_WinBladeSlade": { // CONCEPT a_WinBladeSlade
-		//	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-		//	"devInfo": "As The 'Blade' Slade win a bouny hunter match on stage 'xxxx', using only knives"},
-		// "a_WinSundownFortDiego": { // CONCEPT a_WinSundownFortDiego
-		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a Free-for-all Sundown match vs 3 CPU's, on stage 'Fort Diego'"},
-		// "a_WinSundown1vsTeam": { // CONCEPT a_WinSundown1vsTeam
-		//	"id": 000000, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a Sundown match vs one team of 3 CPU's, on stage 'xxxxxx'"},
-		// "a_WinHighNoonxxxx": { // CONCEPT a_WinHighNoon
-		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a Free-for-all High Noon match vs 3 CPU's, on stage 'xxxxx'"},
-		// "a_WinBountyHunterSunsetCanyon": { // CONCEPT a_WinBountyHunterSunsetCanyon
-		//	"id": 000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a Free-for-all Bounty Hunter match vs 3 CPU's, on stage 'Sunset Canyon'"},
-		// "a_WeaponHandler": { // CONCEPT a_WeaponHandler
+			"devInfo": "As Katie O'Grady, with Sherrif O'Grady as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris and Gigolo Hancock in Widow's Patch"},
+		// "a_BountyHunterBlade": { // CONCEPT a_BountyHunterBlade
+		// 	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As The Blade Slade, win a free-for-all 10k target Bouny Hunter match against Sissy Fess, Rico Pedrosa and Udo Kang in Sunset Canyon, using only knives"},
+		// "a_BountyHunterAnnie": { // CONCEPT a_BountyHunterAnnie
+		// 	"id": 0000000, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Annie Stoakes, win a 10k target Bounty Hunter match against a team of Governor Griffon, Holstein Hal, and Sam on The Ranch"},
+		// "a_BountyHunterCooper": { // CONCEPT a_BountyHunterCooper
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Cooper, win a 10k target Bounty Hunter match against a team of Jason Cornet, Sheriff Bartlett and Sheriff O'Grady on Fairground"},
+		// "a_BountyHunterWeapons": { // CONCEPT a_BountyHunterWeapons
 		//	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a match by killing opponents with 7 different weapons"},
+		//	"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
+		// "a_SundownFallenStar": { // CONCEPT a_SundownFallenStar
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Falling Star, with Shadow Wolf as your ally, win a 5 minute Sundown match against a team of Grizzly and Standing Snake in Fallen Creek"},
+		// "a_SundownBlack": { // CONCEPT a_SundownBlack
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town"},
+		// "a_SundownGriffon": { // CONCEPT a_SundownGriffon
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Governor Griffon, win a 5 minute Sundown match against a team of Nate Harlow, Falling Star, and Red in Broken Creek"},
+		// "a_SundownNate": { // CONCEPT a_SundownNate
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren, and General Diego in The Mansion"},
+		// "a_SundownFlawless": { // CONCEPT a_SundownFlawless
+		//	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+		//	"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
+		// "a_HighNoonNatalie": { // CONCEPT a_HighNoonNatalie
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Natalie, with Mr. Kelley as your ally, win a best of 5 High Noon match against a team of Red Jr. and Nate Harlow on Mansion Grounds"},
+		// "a_HighNoonCurly": { // CONCEPT a_HighNoonCurly
+		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "As Curly Shaw, win a best of 5, free-for-all High Noon match against Bloody Tom, Big Oaf Whitney, and Twiggy Phelps in Twin Rocks"},		
 		},
 	"c_Unlocks": { // Category - Unlocking items
 		"a_UnlockStagesAll": { // VERIFIED
@@ -3005,7 +3054,7 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"id": 449102, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements
+	"c_StoryChallenge": { // Category -  Story related challenge achievements // TODO Allow certain Very Hard achievements on Red Wood Revolver difficulty as well??
 		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
 			// "devInfo": "Amass an amount of cash on a one player profile"},
@@ -4649,7 +4698,69 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 	}),
-	"a_WinKatieFreeForAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_BountyHunterKatie": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego]
+		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
+		const_HUMANPLAYER_INDEX = 1 // Always 1 human player at index 1s
+		const_CPUPLAYER_1_INDEX = 2
+		const_CPUPLAYER_2_INDEX = 3
+		const_CPUPLAYER_3_INDEX = 4
+
+		return
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayerCharacter(const_HUMANPLAYER_INDEX, CHARACTER_KatieGrady, enum_releaseRegion)
+			&& is_ShowdownPlayer_HumanPlayer(const_HUMANPLAYER_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_1_INDEX, enum_releaseRegion) // <---3 Lines--- Check if other players are bots/CPUsp
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_2_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_3_INDEX, enum_releaseRegion)
+
+			&& tally_of(const_array_REQUIRED_CPU_CHARACTERS, length(const_array_REQUIRED_CPU_CHARACTERS), enum_character => // <---TallyOf--- Count 1 for each required CPU character; should be 3 if each character is in one of the player slots
+				once(
+					is_ShowdownPlayerCharacter(const_CPUPLAYER_1_INDEX, enum_character, enum_releaseRegion)
+					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_2_INDEX, enum_character, enum_releaseRegion)
+					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_3_INDEX, enum_character, enum_releaseRegion)))
+
+			&& achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion)
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_5K, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+			
+			&& trigger_when(
+				once(
+					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+				&& is_ShowdownPlayer_Winner(1, enum_releaseRegion))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
+	"a_BountyHunterBlade": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego]
 		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
 		const_HUMANPLAYER_INDEX = 1 // Always 1 human player at index 1s
@@ -4927,10 +5038,18 @@ achievements_titles = {
 	"a_WoodChapter8":						{"en": "Wood You Believe It?"},
 	"a_WoodChapter10":						{"en": "Cremation at Sundawn"},
 
-	"a_WinKatieFreeForAll":					{"en": "Remember Me?"},
-	"a_WinHighNoon":						{"en": "Last Man Standing"},
-	"a_WinSundownFortDiego":				{"en": "The Final Showdown"},
-	"a_WinBountyHunterSunsetCanyon":		{"en": "Gunfight at Sunset"},
+	"a_BountyHunterKatie":					{"en": "Remember Me?"},
+	"a_BountyHunterBlade": 					{"en": "Sharp Shooter"},
+	"a_BountyHunterAnnie": 					{"en": "Taking the Ranch Back"},
+	"a_BountyHunterCooper": 				{"en": "Rolling Over the Law"},
+	"a_BountyHunterWeapons": 				{"en": "Killer Collection"},
+	"a_SundownFallenStar": 					{"en": "Tribal Warfare"},
+	"a_SundownBlack": 						{"en": "Sound Undertaking"},
+	"a_SundownGriffon": 					{"en": "I've Come To Finish the Job"},
+	"a_SundownNate": 						{"en": "Harlow's Reckoning"},
+	"a_SundownFlawless": 					{"en": "Untouchable at Twilight"},
+	"a_HighNoonNatalie": 					{"en": "Familiar Standoff"},
+	"a_HighNoonCurly": 						{"en": "Supplies Depleted, Trigger Repeated"},	
 
 	"a_UnlockStagesAll": 					{"en": "Frontier Sojourn"},
 	"a_UnlockCharactersHalf":				{"en": "Gunslingers' Ensemble"},
@@ -5015,10 +5134,18 @@ achievements_descriptions = {
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty with 'Bite the Bullet' cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty using the 'Infinite Deadeye' cheat as the only means of doing damage"},
 
-	"a_WinKatieFreeForAll":					{"en": "As Katie O'Grady, win a free-for-all 5k target Bounty Hunter match against Ugly Chris, Professor Perry, and General Diego in Widow's Patch"},
-	"a_WinHighNoon":						{"en": "xxxxxxxxx"},
-	"a_WinSundownFortDiego":				{"en": "xxxxxxxxx"},
-	"a_WinBountyHunterSunsetCanyon":		{"en": "xxxxxxxxx"},
+	"a_BountyHunterKatie":					{"en": "As Katie O'Grady, with Sherrif O'Grady as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris and Gigolo Hancock in Widow's Patch"},
+	"a_BountyHunterBlade": 					{"en": "As The Blade Slade, win a free-for-all 10k target Bouny Hunter match against Sissy Fess, Rico Pedrosa and Udo Kang in Sunset Canyon, using only knives"},
+	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes, win a 10k target Bounty Hunter match against a team of Governor Griffon, Holstein Hal, and Sam on The Ranch"},
+	"a_BountyHunterCooper": 				{"en": "As Cooper, win a 10k target Bounty Hunter match against a team of Jason Cornet, Sheriff Bartlett and Sheriff O'Grady on Fairground"},
+	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
+	"a_SundownFallenStar": 					{"en": "As Falling Star, with Shadow Wolf as your ally, win a 5 minute Sundown match against a team of Grizzly and Standing Snake in Fallen Creek"},
+	"a_SundownBlack": 						{"en": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town"},
+	"a_SundownGriffon": 					{"en": "As Governor Griffon, win a 5 minute Sundown match against a team of Nate Harlow, Falling Star, and Red in Broken Creek"},
+	"a_SundownNate": 						{"en": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren, and General Diego in The Mansion"},
+	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all sundown match without dying once"},
+	"a_HighNoonNatalie": 					{"en": "As Natalie, with Mr. Kelley as your ally, win a best of 5 High Noon match against a team of Red Jr. and Nate Harlow on Mansion Grounds"},
+	"a_HighNoonCurly": 						{"en": "As Curly Shaw, win a best of 5, free-for-all High Noon match against Bloody Tom, Big Oaf Whitney, and Twiggy Phelps in Twin Rocks"},
 
 	"a_UnlockStagesAll": 					{"en": "Unlock all Showdown stages"},
 	"a_UnlockCharactersHalf":				{"en": "Unlock half the Showdown characters"},
