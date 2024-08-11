@@ -22,6 +22,7 @@
         "TESTING",
 
         "WARNING",
+        "MANUAL_CONSTRUCTION"
 
         "BUG",
         "ERROR",
@@ -69,7 +70,12 @@
         "IDEA": [
             "IDEA",
             "CONCEPT"
-        ]
+        ],
+        "WARNING": [
+            "WARNING",
+            "MANUAL",
+            "MANUAL_CONSTRUCTION",
+        ],
     },
     "todo-tree.highlights.defaultHighlight": {
         "foreground": "#1cdb07",
