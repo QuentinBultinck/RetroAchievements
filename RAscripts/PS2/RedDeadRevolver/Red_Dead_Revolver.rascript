@@ -2056,10 +2056,11 @@ CHARACTER_JackSwift = "jck"
 CHARACTER_AnnieStoakes = "ani"
 CHARACTER_KatieGrady = "kti"
 CHARACTER_UglyChris = "ugl"
+CHARACTER_GigoloHancock = "ggl"
 CHARACTER_ProfessorPerry = "pry"
 CHARACTER_BladeSlade = "bwi"
-CHARACTER_SherrifGrady = "cls"
-CHARACTER_SherrifBartlett = "kng"
+CHARACTER_SheriffGrady = "cls"
+CHARACTER_SheriffBartlett = "kng"
 CHARACTER_HolsteinHal = "tcb"
 CHARACTER_Sam = "tck"
 CHARACTER_GovernorGriffon = "wyn"
@@ -2586,7 +2587,7 @@ function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releas
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
 	return is_ASCII_EqualTo(let_memAddr_CharacterModelID, enum_character)}
 
-function is_ShowdownPlayer_HumanPlayer(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
@@ -2598,7 +2599,7 @@ function is_ShowdownPlayer_HumanPlayer(int_playerIndex, enum_releaseRegion) { //
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
 	return is_ASCII_EqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
 
-function is_ShowdownPlayer_CPUPlayer(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+function is_ShowdownPlayer_CPU(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
@@ -2610,15 +2611,20 @@ function is_ShowdownPlayer_CPUPlayer(int_playerIndex, enum_releaseRegion) { // P
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
 	return is_ASCII_notEqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
 
-function is_ShowdownPlayer_Team(int_playerIndex, enum_showdownTeam, enum_releaseRegion) { // Player Index [1-4]
+function current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
 	let_memAddr_TeamId =
 		let_memAddr_ShowdownPlayerSettingsArray 
 		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "Lower4_TeamId")
-	return low4(let_memAddr_TeamId) == enum_showdownTeam
-}
+	return low4(let_memAddr_TeamId)}
+
+function is_ShowdownPlayer_Team(int_playerIndex, enum_showdownTeam, enum_releaseRegion) => // Player Index [1-4]
+	 current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) == enum_showdownTeam
 
 // --------------------ShowdownMode_Settings------------------------
 SHOWDOWN_MODE_BountyHunter = 0 
@@ -2719,7 +2725,8 @@ function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
 	return let_memAccessor_HighlightedMenuItem == const_REPLAY}
 
 function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) => 
-	is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion)
+	is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+	&& is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion)
 	&& is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion)
 
 
@@ -2923,9 +2930,9 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 			"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements
-		"a_BountyHunterKatie": { // TODO rewrite according to desciption
+		"a_BountyHunterKatie": { // VERIFIED
 			"id": 454648, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
-			"devInfo": "As Katie O'Grady, with Sherrif O'Grady as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris and Gigolo Hancock in Widow's Patch"},
+			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
 		// "a_BountyHunterBlade": { // CONCEPT a_BountyHunterBlade
 		// 	"id": 000000, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "As The Blade Slade, win a free-for-all 10k target Bouny Hunter match against Sissy Fess, Rico Pedrosa and Udo Kang in Sunset Canyon, using only knives"},
@@ -2943,13 +2950,13 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		// 	"devInfo": "As Falling Star, with Shadow Wolf as your ally, win a 5 minute Sundown match against a team of Grizzly and Standing Snake in Fallen Creek"},
 		// "a_SundownBlack": { // CONCEPT a_SundownBlack
 		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town"},
+		// 	"devInfo": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town, with a death toll of over 10"},
 		// "a_SundownGriffon": { // CONCEPT a_SundownGriffon
 		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
 		// 	"devInfo": "As Governor Griffon, win a 5 minute Sundown match against a team of Nate Harlow, Falling Star, and Red in Broken Creek"},
 		// "a_SundownNate": { // CONCEPT a_SundownNate
 		// 	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren, and General Diego in The Mansion"},
+		// 	"devInfo": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren, and General Diego in The Mansion, with an accuracy rating of 60% or higher"},
 		// "a_SundownFlawless": { // CONCEPT a_SundownFlawless
 		//	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 		//	"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
@@ -4698,39 +4705,44 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 	}),
-	"a_BountyHunterKatie": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego]
+	"a_BountyHunterKatie": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
 		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
-		const_HUMANPLAYER_INDEX = 1 // Always 1 human player at index 1s
-		const_CPUPLAYER_1_INDEX = 2
-		const_CPUPLAYER_2_INDEX = 3
-		const_CPUPLAYER_3_INDEX = 4
+		const_HUMAN_PLAYER_CHARACTER = CHARACTER_KatieGrady
+		const_ALLIED_CPU_CHARACTER = CHARACTER_SheriffGrady
+		const_ENEMY_CPU_CHARACTER_1 = CHARACTER_UglyChris
+		const_ENEMY_CPU_CHARACTER_2 = CHARACTER_GigoloHancock
+		const_HUMAN_PLAYER_INDEX_1 = 1 // Human player is always at index 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
 
 		return
 		// [1] ==== Core (Alt) Group ====
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND player has not won the game
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayerCharacter(const_HUMANPLAYER_INDEX, CHARACTER_KatieGrady, enum_releaseRegion)
-			&& is_ShowdownPlayer_HumanPlayer(const_HUMANPLAYER_INDEX, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_1_INDEX, enum_releaseRegion) // <---3 Lines--- Check if other players are bots/CPUsp
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_2_INDEX, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_3_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
-			&& tally_of(const_array_REQUIRED_CPU_CHARACTERS, length(const_array_REQUIRED_CPU_CHARACTERS), enum_character => // <---TallyOf--- Count 1 for each required CPU character; should be 3 if each character is in one of the player slots
-				once(
-					is_ShowdownPlayerCharacter(const_CPUPLAYER_1_INDEX, enum_character, enum_releaseRegion)
-					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_2_INDEX, enum_character, enum_releaseRegion)
-					|| is_ShowdownPlayerCharacter(const_CPUPLAYER_3_INDEX, enum_character, enum_releaseRegion)))
+			&& is_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) 
+			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion)
+			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion)
+			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
+			
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
+			&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
 
-			&& achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion)
 			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
-			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_5K, enum_releaseRegion)
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
@@ -4738,7 +4750,7 @@ achievements_triggers = {
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
 					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(1, enum_releaseRegion))
+				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -4761,8 +4773,8 @@ achievements_triggers = {
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
 		}),
 	"a_BountyHunterBlade": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_ProfessorPerry, CHARACTER_UglyChris, CHARACTER_GeneralDiego]
-		const_SHOWDOWN_STAGE = AREA_Showdown_WidowsPatch
+		const_array_REQUIRED_CPU_CHARACTERS = [CHARACTER_SissyFess, CHARACTER_RicoPedrosa, CHARACTER_UdoKang]
+		const_SHOWDOWN_STAGE = AREA_Showdown_SunsetCanyon
 		const_HUMANPLAYER_INDEX = 1 // Always 1 human player at index 1s
 		const_CPUPLAYER_1_INDEX = 2
 		const_CPUPLAYER_2_INDEX = 3
@@ -4773,16 +4785,17 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Once killed someone with a weapon other than the knife
+				on_DeathToll_increment(enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayerCharacter(const_HUMANPLAYER_INDEX, CHARACTER_KatieGrady, enum_releaseRegion)
-			&& is_ShowdownPlayer_HumanPlayer(const_HUMANPLAYER_INDEX, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_1_INDEX, enum_releaseRegion) // <---3 Lines--- Check if other players are bots/CPUsp
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_2_INDEX, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPUPlayer(const_CPUPLAYER_3_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_Human(const_HUMANPLAYER_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPUPLAYER_1_INDEX, enum_releaseRegion) // <---3 Lines--- Check if other players are bots/CPUsp
+			&& is_ShowdownPlayer_CPU(const_CPUPLAYER_2_INDEX, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPUPLAYER_3_INDEX, enum_releaseRegion)
 
 			&& tally_of(const_array_REQUIRED_CPU_CHARACTERS, length(const_array_REQUIRED_CPU_CHARACTERS), enum_character => // <---TallyOf--- Count 1 for each required CPU character; should be 3 if each character is in one of the player slots
 				once(
@@ -5134,18 +5147,18 @@ achievements_descriptions = {
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty with 'Bite the Bullet' cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty using the 'Infinite Deadeye' cheat as the only means of doing damage"},
 
-	"a_BountyHunterKatie":					{"en": "As Katie O'Grady, with Sherrif O'Grady as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris and Gigolo Hancock in Widow's Patch"},
-	"a_BountyHunterBlade": 					{"en": "As The Blade Slade, win a free-for-all 10k target Bouny Hunter match against Sissy Fess, Rico Pedrosa and Udo Kang in Sunset Canyon, using only knives"},
-	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes, win a 10k target Bounty Hunter match against a team of Governor Griffon, Holstein Hal, and Sam on The Ranch"},
-	"a_BountyHunterCooper": 				{"en": "As Cooper, win a 10k target Bounty Hunter match against a team of Jason Cornet, Sheriff Bartlett and Sheriff O'Grady on Fairground"},
-	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
+	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
+	"a_BountyHunterBlade": 					{"en": "As The Blade Slade, win a free-for-all 10k target Bounty Hunter match against Sissy Fess, Rico Pedrosa and Udo Kang in Sunset Canyon, using only knives"},
+	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes, win a 10k target Bounty Hunter match against a team of Governor Griffon, Holstein Hal and Sam on The Ranch"},
+	"a_BountyHunterCooper": 				{"en": "As Cooper, win a 10k target Bounty Hunter match against a team of Jason Cornet, Sheriff Bartlett and Sheriff O'Grady on Fairground, with damage taken less than 250%"},
+	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match, getting a kill with 7 different weapons"},
 	"a_SundownFallenStar": 					{"en": "As Falling Star, with Shadow Wolf as your ally, win a 5 minute Sundown match against a team of Grizzly and Standing Snake in Fallen Creek"},
-	"a_SundownBlack": 						{"en": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town"},
-	"a_SundownGriffon": 					{"en": "As Governor Griffon, win a 5 minute Sundown match against a team of Nate Harlow, Falling Star, and Red in Broken Creek"},
-	"a_SundownNate": 						{"en": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren, and General Diego in The Mansion"},
-	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all sundown match without dying once"},
+	"a_SundownBlack": 						{"en": "As Mr. Black, win a 5 minute free-for-all Sundown match against Bad Bessie, Ugly Chris and Pig Josh in Ghost Town, with a death toll of over 10"},
+	"a_SundownGriffon": 					{"en": "As Governor Griffon, win a 5 minute Sundown match against a team of Nate Harlow, Falling Star and Red in Broken Creek"},
+	"a_SundownNate": 						{"en": "As Nate Harlow, win a 5 minute Sundown match against a team of Governor Griffon, Colonel Daren and General Diego in The Mansion, with an accuracy rating of 60% or higher"},
+	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match without dying once"},
 	"a_HighNoonNatalie": 					{"en": "As Natalie, with Mr. Kelley as your ally, win a best of 5 High Noon match against a team of Red Jr. and Nate Harlow on Mansion Grounds"},
-	"a_HighNoonCurly": 						{"en": "As Curly Shaw, win a best of 5, free-for-all High Noon match against Bloody Tom, Big Oaf Whitney, and Twiggy Phelps in Twin Rocks"},
+	"a_HighNoonCurly": 						{"en": "As Curly Shaw, win a best of 5, free-for-all High Noon match against Bloody Tom, Big Oaf Whitney and Twiggy Phelps in Twin Rocks"},
 
 	"a_UnlockStagesAll": 					{"en": "Unlock all Showdown stages"},
 	"a_UnlockCharactersHalf":				{"en": "Unlock half the Showdown characters"},
