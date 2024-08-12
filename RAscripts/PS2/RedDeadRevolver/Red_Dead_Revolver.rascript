@@ -2363,8 +2363,19 @@ function current_DamageTaken(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, accessor = float)}
 
-function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>
-	current_DamageTaken(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion)
+function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MANUAL_CONSTRUCTION necessary for RATools 1.14.1
+	/* MANUAL_CONSTRUCTION: Remember + Recall
+		OUTPUT (PAL)
+			AddAddress	Mem		32-bit	0x00763070
+			AddAddress	Mem		32-bit	0x18
+			Remember	Mem		Float	0x14
+			AddAddress	Mem		32-bit	0x00763070
+			AddAddress	Mem		32-bit	0x36c
+			Remember	Mem		Float	0x70		/	Recall
+			Remember	Recall						*	Float 	100.0
+	*/
+	// current_DamageTaken(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion)
+	current_DamageTaken(enum_releaseRegion) / 100.0
 
 function current_HeadShots(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -2979,12 +2990,12 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		"a_BountyHunterAnnie": { // QA a_BountyHunterAnnie
 			"id": 455172, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
-		"a_BountyHunterCooper": { // QA a_BountyHunterCooper
-			"id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
+		// "a_BountyHunterCooper": { // QA a_BountyHunterCooper // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+			// 	"id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
 		// "a_BountyHunterWeapons": { // CONCEPT a_BountyHunterWeapons
-		//	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
-		//	"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
+		// 	"id": 000000, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+		// 	"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
 		"a_SundownFallingStar": { // QA a_SundownFallingStar
 			"id": 455174, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
@@ -4948,7 +4959,7 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
 		}),
-	"a_BountyHunterCooper": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_BountyHunterCooper": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_SHOWDOWN_STAGE = AREA_Showdown_Fairground
 		const_HUMAN_PLAYER_CHARACTER = CHARACTER_Cooper
 		const_ENEMY_CPU_CHARACTER_1 = CHARACTER_JasonCornet
@@ -4971,7 +4982,7 @@ achievements_triggers = {
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
-			&& unless(once( // <-- Pause Lock: Once flat damage taken exceeds damage allowed
+			&& unless(once( // <-- Pause Lock: Once flat damage taken exceeds damage allowed; This stops RAmeasured + RAtrigger from showing
 				current_DamageTaken(enum_releaseRegion) >= (const_SHOWDOWN_PLAYER_MAX_HP * const_MAX_DAMAGE_TAKEN_DECIMAL)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
@@ -4998,6 +5009,55 @@ achievements_triggers = {
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
 					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+			
+		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current damage taken (as this is otherwise not shown during gameplay), This alt group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once flat damage taken exceeds damage allowed; This stops RAmeasured + RAtrigger from showing
+				current_DamageTaken(enum_releaseRegion) >= (const_SHOWDOWN_PLAYER_MAX_HP * const_MAX_DAMAGE_TAKEN_DECIMAL)))	
+
+			&& measured(
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100),
+				/* MANUAL_CONSTRUCTION: Remember + Recall
+					OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Remember	Recall						*	Float 	100.0
+						Measured	Recall						>=	Float 	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100)
+				*/
+				when = 
+					current_NumberOfPlayers(enum_releaseRegion) == 4
+					&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+					&& is_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) 
+					&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion)
+					&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
+					&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_3, enum_releaseRegion)
+					
+					&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) // <---2 Lines--- Check 3 player enemy team
+					&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  
+					
+					&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
+					&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
+
+					&& once(is_AreaState_InGame(enum_releaseRegion)),
+				format = "raw"
+				)
+			
+			&& trigger_when(always_false())
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -5019,11 +5079,57 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
 		}),
-	"a_BountyHunterWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& always_false()
-		),
+	"a_BountyHunterWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_HUMAN_PLAYER_INDEX_1 = 1 // Human player is always at index 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+			
+			&& achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion)
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+			
+			&& trigger_when(
+				once(
+					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
 	"a_SundownFallingStar": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_SHOWDOWN_STAGE = AREA_Showdown_FallenCreek
 		const_HUMAN_PLAYER_CHARACTER = CHARACTER_FallingStar
@@ -5333,7 +5439,8 @@ achievements_triggers = {
 					&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion) 
 					&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion)
 
-					&& once(is_AreaState_InGame(enum_releaseRegion))
+					&& once(is_AreaState_InGame(enum_releaseRegion)),
+				format "percent"
 				)
 			
 			&& trigger_when(always_false())
