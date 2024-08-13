@@ -173,10 +173,6 @@ memory_dataStructures = {
 		},
 	"Struct_SinglePlayerData": {
 		"pointerChains": {
-			"32Bit_ShotsFiredShowdown": { 
-				"addAddressChain": [0x36C, 0x494]},
-			"32Bit_ShotsHitShowdown": { 
-				"addAddressChain": [0x36C, 0x498]},
 			"Float_PlayerHP": { 
 				"addAddressChain": [0x18, 0x10]},
 			"Float_PlayerMaxHP": { 
@@ -196,6 +192,14 @@ memory_dataStructures = {
 				"addAddressChain": [0x36C, 0x198]},
 			"32Bit_DeadEyeAbilitiesUsed": { 
 				"addAddressChain": [0x36C, 0x1BC]},
+			"32Bit_ShotsFiredShowdown": { 
+				"addAddressChain": [0x36C, 0x494]},
+			"32Bit_ShotsHitShowdown": { 
+				"addAddressChain": [0x36C, 0x498]},
+			"32Bit_HighestComboMultiplierShowdown": { 
+				"addAddressChain": [0x36C, 0x4C0]},
+			"Float_HighestComboShowdown": { 
+				"addAddressChain": [0x36C, 0x4C4]},
 			"PS2Vector_PlayerLocation": { 
 				"addAddressChain": [0xC, 0xC, 0x90]},
 			"BitFlag_IsRidingAnimal": { 
@@ -2203,15 +2207,33 @@ function current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) => // 
 	current_Cash(enum_releaseRegion)  // <-- Cash which updates during the mission
 	- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is only updated on save (on mission end)
 	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
-	
-	// Full SumOf would look like this [PAL]:
-	// -------------------------------
-	// AddAddress	Mem 32-bit 0x7448d8
-	// SubSource 	Mem 32-bit 0x8
-	// AddAddress	Mem 32-bit 0x562a20
-	// AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
-	// AddAddress	Mem 32-bit 0x562a20
-	// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+	/* MANUAL_CONSTRUCTION 
+		current_Cash() - current_PlayerProfile_SavedCash()
+		+ (current_CashCombo() * current_CashComboMultiplier())
+
+		-> OUTPUT (PAL)
+			AddAddress	Mem 32-bit 0x7448d8
+			SubSource 	Mem 32-bit 0x8
+			AddAddress	Mem 32-bit 0x562a20
+			AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+			AddAddress	Mem 32-bit 0x562a20
+						Mem 32-bit 0x587c
+	*/
+
+function current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) =>
+	current_Cash(enum_releaseRegion) 
+	+ (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
+	/* MANUAL_CONSTRUCTION 
+		current_Cash(enum_releaseRegion) 
+		+ (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
+
+		-> OUTPUT (PAL)
+			AddAddress	Mem 32-bit 0x562a20
+			AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+			AddAddress	Mem 32-bit 0x562a20
+						Mem 32-bit 0x587c
+	*/
+		
 
 function on_CashResetToSavedCash(enum_releaseRegion) =>
 	current_Cash(enum_releaseRegion) - current_PlayerProfile_SavedCash(enum_releaseRegion) == 0
@@ -2412,6 +2434,14 @@ function prev_DeadEyeAbilitiesUsed(enum_releaseRegion) =>
 
 function on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion) =>
 	current_DeadEyeAbilitiesUsed(enum_releaseRegion) > prev_DeadEyeAbilitiesUsed(enum_releaseRegion)
+
+function current_HighestCombo_Showdown(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_HighestComboShowdown", let_memAddr_SinglePlayerData, accessor = float)}
+
+function current_HighestComboMultiplier_Showdown(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HighestComboMultiplierShowdown", let_memAddr_SinglePlayerData, accessor = dword)}
 
 // ..............
 // ◦ ACTOR DATA ◦ // May be unsued code
@@ -2719,7 +2749,7 @@ function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) {
 SHOWDOWN_BOUNTY_LIMIT_3K = 0 
 SHOWDOWN_BOUNTY_LIMIT_5K = 1 
 SHOWDOWN_BOUNTY_LIMIT_10K = 2 
-SHOWDOWN_BOUNTY_LIMIT_15K = 2 
+SHOWDOWN_BOUNTY_LIMIT_15K = 3
 SHOWDOWN_BOUNTY_LIMIT_20K = 4 
 
 function is_Showdown_BountyLimit(enum_showdownBountyLimit, enum_releaseRegion) {
@@ -6535,6 +6565,19 @@ leaderboards_coreData = {
 	// 	"id": 000000, "isLowerBetter": false, 
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
+
+	"lb_ShowdownFastestBounty": { // VERIFIED
+		"id": 112549, "isLowerBetter": true, 
+		"leaderboardFormat": "SECS",
+		"devInfo": "Bounty Hunter match with 3 CPUs: Fastest to collect 15k"},
+	"lb_ShowdownLargestBounty": { // VERIFIED
+		"id": 112550, "isLowerBetter": false, 
+		"leaderboardFormat": "VALUE",
+		"devInfo": "Sundown match with 3 CPUs: largest bounty collection in 10 min"},
+	"lb_ShowdownBestCombo": { // VERIFIED
+		"id": 112548, "isLowerBetter": false, 
+		"leaderboardFormat": "VALUE",
+		"devInfo": "Any Showdown match with 3 CPUs: highest combo"},
 	}
 
 // ===================================
@@ -6545,22 +6588,233 @@ leaderboards_coreData = {
 // =========================
 // • Leaderboards TRIGGERS •
 // =========================
-leaderboards_startTriggers = {	
+leaderboards_startTriggers = {
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_15K, enum_releaseRegion)
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
+			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))		
+
+			&& once(
+				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& once(
+				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+
+			&& current_HighestCombo_Showdown(enum_releaseRegion) > 0
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+	}),
 	}
-leaderboards_cancelTriggers = {	
+leaderboards_cancelTriggers = {
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion)
+		&& (
+			!is_Playing_ShowdownMode_long(enum_releaseRegion)
+			|| on_WarningMenu_yes(enum_releaseRegion)
+			|| on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
+		)),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()),
 	}
 leaderboards_submitTriggers = {
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion)
+		&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion)),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()),
 	}
-leaderboards_valueMeasures = {		
+
+//-----------------valueMeasures--------------------
+function leaderboards_generate_ValueMeasures_AllSupportedRegions(function_valueMeasure) { // function_valueMeasure() => must take enum_releaseregion as a paramater
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, function_valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+function lb_template_ValueMeasure() { // Template
+	function valueMeasure(enum_releaseRegion) => measured(		
+		repeated(100, always_false()), // <-- Logic goes here
+		when = is_ReleaseRegion(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+function lb_ShowdownFastestBounty_ValueMeasure() {
+	function valueMeasure(enum_releaseRegion) => measured(
+		current_TimeSpentInMission(enum_releaseRegion), 
+		when = is_ReleaseRegion(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+function lb_ShowdownLargestBounty_ValueMeasure() {
+	function valueMeasure(enum_releaseRegion) => measured(
+		current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion),
+		/* MANUAL CONSTRUCTION (not necessary RATools generates correct logic)
+			current_Cash(enum_releaseRegion) + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
+
+			-> OUTPUT (PAL)
+				AddAddress	Mem 32-bit 0x562a20
+				AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+				AddAddress	Mem 32-bit 0x562a20
+							Mem 32-bit 0x587c
+		*/
+		when = is_ReleaseRegion(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+function lb_ShowdownBestCombo_ValueMeasure() {
+	function valueMeasure(enum_releaseRegion) => measured(
+		current_HighestCombo_Showdown(enum_releaseRegion) * current_HighestComboMultiplier_Showdown(enum_releaseRegion), 
+		when = is_ReleaseRegion(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+leaderboards_valueMeasures = { 
+	"lb_ShowdownFastestBounty": lb_ShowdownFastestBounty_ValueMeasure(),
+	"lb_ShowdownLargestBounty": lb_ShowdownLargestBounty_ValueMeasure(),
+	"lb_ShowdownBestCombo": lb_ShowdownBestCombo_ValueMeasure(),
 	}
 // =====================
 // • Leaderboards TEXT •
 // =====================
-leaderboards_titles = {
+leaderboards_titles = { // TODO Leaderboards: creative text
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
+	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
+	"lb_ShowdownBestCombo": 				{"en": "Unstoppable String"},
 	}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match with 3 CPU's as fast as possible"},
+	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match with 3 CPU's"},
+	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match with 3 CPU's"},
 	}
 
 // ===============================
