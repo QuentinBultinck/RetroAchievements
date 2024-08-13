@@ -26,7 +26,7 @@
 //	- Documentation for RALibretro => https://docs.retroachievements.org/Developer-Docs/
 //	- Documentation for RATools => https://github.com/Jamiras/RATools/wiki
 
-// Nomenclature / Naming Convention // TODO update Nomenclature in template
+// Nomenclature / Naming Convention
 // ---------------------------------------------
 //	- current_ 	=> returns a memory accessor to the current value
 //	- prior_ 	=> returns a memory accessor to the prior value
@@ -788,7 +788,7 @@ AREA_Showdown_TheMansion = "lvl_int2"
 AREA_Showdown_TwinRocks = "lvl_hng2"
 AREA_Showdown_DesertFortress = "lvl_fort2"
 
-const_Area_data = { // TODO put these coordinates inside the code notes
+const_Area_data = { // TODO put these coordinates inside the code notes??
 	AREA_Campaign_BullsEye: { 
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X-Coordinate": 20.60,
@@ -2330,7 +2330,7 @@ function current_Calculated_Accuracy(enum_releaseRegion) => // MANUAL_CONSTRUCTI
 			AddAddress	Mem		32-bit	0x36c
 			Remember	Mem		32-bit	0x198		/ 	Recall
 	*/
-	current_ShotsHit(enum_releaseRegion) / current_ShotsFired(enum_releaseRegion)
+	current_ShotsFired(enum_releaseRegion) + current_ShotsHit(enum_releaseRegion)
 
 function current_ShotsFired_Showdown(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -2380,17 +2380,18 @@ function current_DamageTaken(enum_releaseRegion) {
 
 function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MANUAL_CONSTRUCTION necessary for RATools 1.14.1
 	/* MANUAL_CONSTRUCTION: Remember + Recall
-		OUTPUT (PAL)
+		current_PlayerMaxHP(enum_releaseRegion) / current_DamageTaken(enum_releaseRegion)
+
+		-> OUTPUT (PAL)
 			AddAddress	Mem		32-bit	0x00763070
 			AddAddress	Mem		32-bit	0x18
 			Remember	Mem		Float	0x14
 			AddAddress	Mem		32-bit	0x00763070
 			AddAddress	Mem		32-bit	0x36c
 			Remember	Mem		Float	0x70		/	Recall
-			Remember	Recall						*	Float 	100.0
 	*/
-	// current_DamageTaken(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion)
-	current_DamageTaken(enum_releaseRegion) / 100.0
+	current_PlayerMaxHP(enum_releaseRegion)
+	+ current_DamageTaken(enum_releaseRegion)
 
 function current_HeadShots(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -2562,35 +2563,48 @@ const_ExtraMission_data = {
 		"BitFlag_IsAlliedCannonE_Destroyed",
 		"BitFlag_IsAlliedCannonF_Destroyed",
 		"BitFlag_IsAlliedCannonG_Destroyed",
-		"BitFlag_IsAlliedCannonH_Destroyed"]}
+		"BitFlag_IsAlliedCannonH_Destroyed"],
+	AREA_Campaign_RogueValley: [
+		"BitFlag_IsTreasureAOpened",
+		"BitFlag_IsTreasureBOpened",
+		"BitFlag_IsTreasureCOpened"]
+	}
 
-
-// TODO refactor this like for AREA_Campaign_TheTraitor
-ROGUEVALLEY_TREASURE_A = "BitFlag_IsTreasureAOpened"
-ROGUEVALLEY_TREASURE_B = "BitFlag_IsTreasureBOpened"
-ROGUEVALLEY_TREASURE_C = "BitFlag_IsTreasureCOpened"
-
-function on_RogueValley_Treasure_find(enum_rogueValleyTreasureId, enum_releaseRegion) {
+function on_RogueValley_Treasure_find(string_pointerChainKey, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
 	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.RogueValley", enum_rogueValleyTreasureId, 
+		"Struct_Extra_Mission_Data.RogueValley", string_pointerChainKey, 
 		let_memAddr_basePointer, accessor = bit0)		
 	return let_memAccessor_IsTreasureFound > prev(let_memAccessor_IsTreasureFound)}
 
-function is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey_toBitflag, enum_releaseRegion) {
+function is_RogueValley_Treasure_opened(string_pointerChainKey, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
+	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
+		"Struct_Extra_Mission_Data.RogueValley", string_pointerChainKey, 
+		let_memAddr_basePointer, accessor = bit0)		
+	return let_memAccessor_IsTreasureFound}
+
+function current_Calculated_RogueValley_TreasuresOpenedCount(enum_releaseRegion) =>
+	sum_of(const_ExtraMission_data[AREA_Campaign_RogueValley], string_pointerChainKey => 
+		is_RogueValley_Treasure_opened(string_pointerChainKey, enum_releaseRegion))
+
+function on_TheTraitor_AllyCannon_destroy(string_pointerChainKey, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
 	let_memAccessor_IsCannonDestroyed = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey_toBitflag, 
+		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey, 
+		let_memAddr_basePointer, accessor = bit0)
+	return let_memAccessor_IsCannonDestroyed > prev(let_memAccessor_IsCannonDestroyed)}
+
+function is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
+	let_memAccessor_IsCannonDestroyed = memory_generateAddAddressPointerChain(
+		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey, 
 		let_memAddr_basePointer, accessor = bit0)		
 	return let_memAccessor_IsCannonDestroyed}
 
-function current_Calculated_AllyCannonsDestroyedCount(enum_releaseRegion) =>
-	sum_of([
-		"BitFlag_IsAlliedCannonA_Destroyed", "BitFlag_IsAlliedCannonB_Destroyed",
-		"BitFlag_IsAlliedCannonC_Destroyed", "BitFlag_IsAlliedCannonD_Destroyed",
-		"BitFlag_IsAlliedCannonE_Destroyed", "BitFlag_IsAlliedCannonF_Destroyed",
-		"BitFlag_IsAlliedCannonG_Destroyed", "BitFlag_IsAlliedCannonH_Destroyed"],
-		string_pointerChainKey_toBitflag => is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey_toBitflag, enum_releaseRegion))
+function current_Calculated_TheTraitor_AllyCannonsDestroyedCount(enum_releaseRegion) =>
+	sum_of(const_ExtraMission_data[AREA_Campaign_TheTraitor], string_pointerChainKey => 
+		is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey, enum_releaseRegion))
 
 // ..........
 // ◦ TIMERS ◦
@@ -2915,8 +2929,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-// TODO check if c_StoryChallenge is actually achievements_TYPE_Missable => perhaps achievements_TYPE_Standard fits better
-achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryChallenge based on challenge difficulty
+achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3129,77 +3142,77 @@ achievements_coreData = { // TODO recheck scoring on c_BountyHunter & c_StoryCha
 		},
 	"c_StoryChallenge": { // Category -  Story related challenge achievements // TODO Allow certain Very Hard achievements on Red Wood Revolver difficulty as well??
 		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Amass an amount of cash on one player profile"},
-		// "a_PerfectAccuracy": { // QA a_PerfectAccuracy
+		// "a_PerfectAccuracy": { // QA a_PerfectAccuracy // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// 	"id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_SaveCurly": { // VERIFIED
-			"id": 449378, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
+			"id": 449378, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Rogue Valley' | After saving Curly Shaw, pick up the $1500 pouch he drops near him"},
 		// "a_ChallengeChapter1": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools  
-			// "id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			// "id": 438677, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater | Very Hard"},
-		"a_ChallengeChapter2": { // VERIFIED
-			"id": 450183, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat and with damage taken less than 50% | Hard or Very Hard"},
+		// "a_ChallengeChapter2": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			// "id": 450183, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat and with damage taken less than 50% | Hard or Very Hard"},
 		"a_ChallengeChapter3": { // VERIFIED
-			"id": 450198, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"id": 450198, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
 		"a_ChallengeChapter5": { // VERIFIED
-			"id": 439585, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
+			"id": 439585, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
 		"a_ChallengeChapter6": { // VERIFIED
-			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go off the trigger | Hard or Very Hard"},
-		"a_ChallengeChapter7": { // VERIFIED
-			"id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Freak Show' | Complete with 65% accuracy or higher | Very Hard"},
+			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
+		// "a_ChallengeChapter7": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			// 	"id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
 		"a_ChallengeChapter8": { // VERIFIED
-			"id": 451482, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 451482, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
 		"a_ChallengeChapter10": { // VERIFIED
-			"id": 450554, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 450554, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', 'Sad Stars' and 'No HUD' cheats | Hard or Very Hard"}, 
 		"a_ChallengeChapter11": { // VERIFIED
-			"id": 450845, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 450845, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
 		"a_ChallengeChapter12": { // VERIFIED
-			"id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bar Fight' | Complete will full hp at end | Very Hard"},
 		"a_ChallengeChapter13": { // VERIFIED
-			"id": 450844, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
-		"a_ChallengeChapter14": { // VERIFIED
-			"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
+		// "a_ChallengeChapter14": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			// 	"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
-			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
 		"a_ChallengeChapter17": { // VERIFIED
-			"id": 450889, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"id": 450889, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		"a_ChallengeChapter19": { // VERIFIED
-			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite DeadEye' cheat required, melee is allowed | Hard or Very Hard"},
 		"a_ChallengeChapter20": { // VERIFIED 
-			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
+			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
 		"a_ChallengeChapter22": { // VERIFIED
-			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Devils and Angels' | Complete in under xxx time and only killing General Diego | Hard or Very Hard"},
+			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Devils and Angels' | Complete in under 3 minutes and only killing General Diego | Hard or Very Hard"},
 		"a_ChallengeChapter24": { // VERIFIED
-			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Missable,
+			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
 		"a_ChallengeChapter25": { // VERIFIED
-			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 75% , 'Golden Gun' cheat required | Hard or Very Hard"},
-		"a_ChallengeChapter27": { // VERIFIED
-			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Missable,
-			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 70% or higher AND damage taken less than 50% | Very Hard"},
+			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 60% , 'Golden Gun' cheat required | Hard or Very Hard"},
+		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			// 	"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
 		"a_WoodChapter8": { // QA a_WoodChapter8
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
@@ -3230,31 +3243,19 @@ function achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, en
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
-			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))	
-
-function achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) =>
-	once(
-		is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
-	&& once(
-		is_PlayerPosition_atMissionStartPoint(enum_areaId, enum_releaseRegion)
-		&& is_AreaState_InGame(enum_releaseRegion))
-
-function achievements_generate_PauseLock_CheatProtection(enum_releaseRegion) => 
-	unless(once( // <-- Pause Lock: Cheat Protection
-		is_AnyCheat_active(enum_releaseRegion)))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
 
 function achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion) =>
 	once(
 		never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
 		&& on_RewardMenu_render_long(enum_releaseRegion))
 
-function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enum_releaseRegion) => // TODO implement everything wher applicabled achievements_generate_3x_AltResetGroup_OnRestartMission() - WRNING for checkpoints
-	// ==== Core (Alt) Group ====			
+function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enum_releaseRegion) =>
+	// [1] ==== Core (Alt) Group ====			
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
 			|| !is_Area(enum_areaId, enum_releaseRegion))
-
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
 
@@ -3264,40 +3265,31 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
 			never(is_StartChpMenu_active(enum_releaseRegion))
 			&& is_RewardMenu_displayed_long(enum_releaseRegion)))
-
 	
-	// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+	// [2] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_AtMainMenu(enum_releaseRegion))
 
-	// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_RetryMenu_yes(enum_releaseRegion))
-			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
-
-	// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& once(on_WarningMenu_yes(enum_releaseRegion))
-			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+	// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 
 // ------------------ChapterCompletion----------------------
-function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) => // TODO refactor this so it looks like the other code logic
-	// ==== Core (Alt) Group ====
+function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
+	// [1] ==== Core (Alt) Group ====
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(!is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-		&& achievements_generate_PauseLock_CheatProtection(enum_releaseRegion)
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
 
-		&& achievements_generate_Check_HasPlayerStartedMissionFromStart(enum_areaId, enum_releaseRegion) // TODO change & test this line to on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)
+		&& on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)
 		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 		&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
 			never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
 			&& is_RewardMenu_displayed_long(enum_releaseRegion)) 
 
-	// ==== Alt Reset Group ====  Reset when not playing Single Player Campaign OR when not in correct AREA
+	// [2] ==== Alt Reset Group ====  				-> Reset when not playing Single Player Campaign OR when not in correct AREA
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& (
@@ -3305,8 +3297,8 @@ function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_area
 				|| !is_Area(enum_areaId, enum_releaseRegion)
 			))
 
-	// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-		// Don't reset on RetryMenu retry, only on mission restart
+	// [3] ==== Alt Pause Lock Reset Group ==== 	-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// NOTE: Don't reset on_RetryMenu_yes(), only on mission restart
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_WarningMenu_yes(enum_releaseRegion))
@@ -3525,30 +3517,30 @@ achievements_triggers = {
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
 	"a_BountyHuntChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FreakShow, enum_releaseRegion)),
-	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion) with measured on 3 treasures found
+	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion). This add an RAmeasured
 		
+		const_MISSION_AREA = AREA_Campaign_RogueValley
+		const_array_POINTER_CHAIN_KEYS = const_ExtraMission_data[const_MISSION_AREA]
+
+		return
 		// ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
-				|| !is_Area(AREA_Campaign_RogueValley, enum_releaseRegion))
-
+				|| !is_Area(const_MISSION_AREA, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_RogueValley, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-			&& measured(tally(3, [
-				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_A, enum_releaseRegion)),
-				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_B, enum_releaseRegion)),
-				once(on_RogueValley_Treasure_find(ROGUEVALLEY_TREASURE_C, enum_releaseRegion))
-				]))
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			&& measured(tally_of(const_array_POINTER_CHAIN_KEYS, length(const_array_POINTER_CHAIN_KEYS), string_pointerChainKey =>
+				once(on_RogueValley_Treasure_find(string_pointerChainKey, enum_releaseRegion))))
+
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& is_RatingBounty_achieved(enum_releaseRegion)
 			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
 				never(is_StartChpMenu_active(enum_releaseRegion))
 				&& is_RewardMenu_displayed_long(enum_releaseRegion)))
-
 		
 		// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
 			|| never_toAlt(
@@ -3559,14 +3551,15 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_RogueValley, enum_releaseRegion))
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 
 		// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_RogueValley, enum_releaseRegion))
-		),
+				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+				
+		}),
 	"a_BountyHuntChapter9": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_GhostTown, enum_releaseRegion)),
 	"a_BountyHuntChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -3582,19 +3575,19 @@ achievements_triggers = {
 	"a_BountyHuntChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_TheMine, enum_releaseRegion)),
 	"a_BountyHuntChapter18": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Stagecoach, enum_releaseRegion) with measured on 40 enemies killed
+		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Stagecoach, enum_releaseRegion). Adds an RAmeasured
 		
 		// ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
 				|| !is_Area(AREA_Campaign_Stagecoach, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_Stagecoach, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
-			&& measured(repeated(40, on_MissionKillcount_increment(enum_releaseRegion))) 
+			&& measured(repeated(40, on_MissionKillcount_increment(enum_releaseRegion)))
+
 			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 			&& is_RatingBounty_achieved(enum_releaseRegion)
 			&& trigger_when(repeated(530, // <-- Delay: so the achievement pops when the reward unlocks UI is displayed 
@@ -3697,7 +3690,7 @@ achievements_triggers = {
 			
 			&& once(on_RewardMenu_render_short(enum_releaseRegion))			
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
-				/* MANUAL_CONSTRUCTION sumOf
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
 					-> OUTPUT (PAL)
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
@@ -3883,7 +3876,7 @@ achievements_triggers = {
 		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.5 // = 50%
 
 		return
-		// ==== Core (Alt) Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -3892,19 +3885,74 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion))) 
-			&& unless( // <-- Pause Lock: when DamageTaken > allowed
-				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
-					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+				-> OUTPUT (PAL)
+					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x14
+					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		Float	0x70		/	Recall
+					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
+			*/
+			/* Below commented code is a larger alternative to above Pause Lock (without Remember + Recall)
+			---------------------------
+				&& unless( 
+					tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => 
+						is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
+						&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
+			*/
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion) 
-				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))				
+				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))		
+					
 			&& trigger_when(
 				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 				&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects
 					never(is_StartChpMenu_active(enum_releaseRegion))
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
+
+		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for DamageTaken; It can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+				-> OUTPUT (PAL)
+					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x14
+					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		Float	0x70		/	Recall
+					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+			*/
+			
+			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
+				/* MANUAL_CONSTRUCTION (of Measured) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)				
+				*/
+				when = once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+					is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion) 
+					&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
+				format = "raw")
+			&& trigger_when(always_false())
 
 		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -3916,17 +3964,8 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// [6] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [5+6+7] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4066,23 +4105,9 @@ achievements_triggers = {
 				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 		}),
 	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// NOTE: Creating a RAMeasured popup which displays accuracy during gameplay is impossible with RAIntegration v1.3.0, it would require logic below
-			// ''''''''''''''''''''''''''''''''''
-			// let_calculation_accuracy = 
-			// 		byte(memUtil_memAddrTo_AlwaysNull(enum_releaseRegion)) // <-- To force RATools to generate float at start and end of the accumulator, this is to force the accumulator to work with floats (refer to https://docs.retroachievements.org/developer-docs/flags/addsource.html#interaction-with-floats)
-			// 		+ current_ShotsHit(enum_releaseRegion) / current_ShotsFired(enum_releaseRegion)
-			// 		+ byte(memUtil_memAddrTo_AlwaysNull(enum_releaseRegion)) * 100
-			//
-			// measured(let_calculation_accuracy == 100, format = "percent")
-
 		const_MISSION_AREA = AREA_Campaign_FreakShow
-		// const_DESIRED_ACCURACY = 0.65
-		let_array_AllowedAccuracyStrings = [
-			"65%", "66%", "67%", "68%", "69%",
-			"70%", "71%", "72%", "73%", "74%", "75%", "76%", "77%", "78%", "79%",
-			"80%", "81%", "82%", "83%", "84%", "85%", "86%", "87%", "88%", "89%",
-			"90%", "91%", "92%", "93%", "94%", "95%", "96%", "97%", "98%", "99%", 
-			"100%"]
+		const_DESIRED_ACCURACY = 0.6 // 60%
+		const_MAX_ACCURACY = 100.0 // 100%
 		
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4095,34 +4120,58 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
-			&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
 
-			&& tally_of(let_array_AllowedAccuracyStrings, 1, // <---TallyOf--- checks accuracy string at RewardMenu
-				accuracyString => once(
-					is_RewardMenu_displayed_short(enum_releaseRegion)
-					&& is_RewardMenu_Accuracy(accuracyString, enum_releaseRegion)))
-			// && current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY // <---line--- could replace above tally, but doesn't work with RAIntegration v1.3.0
+			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+									Recall						>= 	Float			const_DESIRED_ACCURACY
+				*/
+			
+			&& trigger_when(				
+				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
+				&& repeated(440, // <-- Delay achievement unlock to coincide with stats window being displayed 
+					never(is_StartChpMenu_active(enum_releaseRegion))
+					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-			&& repeated(440, // <-- Delay achievement unlock to coincide with stats window being displayed 
-				never(is_StartChpMenu_active(enum_releaseRegion))
-				&& is_RewardMenu_displayed_long(enum_releaseRegion))
+		
+		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+			&& measured(current_Calculated_Accuracy(enum_releaseRegion) >= const_MAX_ACCURACY,
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+						Remember	Recall						*	Float			100.0
+						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
+				*/
+				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
+				format = "percent")				
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_RogueValley
@@ -4299,7 +4348,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
-			&& current_Calculated_AllyCannonsDestroyedCount(enum_releaseRegion) <= const_ALLOWED_ALLIED_CANNONS_DESTROYED
+			&& current_Calculated_TheTraitor_AllyCannonsDestroyedCount(enum_releaseRegion) <= const_ALLOWED_ALLIED_CANNONS_DESTROYED
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
@@ -4326,10 +4375,18 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause Lock: when DamageTaken > allowed
-				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
-					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
+				*/
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
@@ -4344,12 +4401,48 @@ achievements_triggers = {
 				// 		never(is_StartChpMenu_active(enum_releaseRegion))
 				// 		&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for DamageTaken; It can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				*/
+			
+			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
+				/* MANUAL_CONSTRUCTION (of Measured) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)				
+				*/
+				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
+				format = "raw")
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -4598,7 +4691,7 @@ achievements_triggers = {
 			&& measured(
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS, 
 				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)))
-			&& trigger_when(always_false())					
+			&& trigger_when(always_false())
 
 		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -4675,7 +4768,7 @@ achievements_triggers = {
 		const_REQUIRED_CHEAT = CHEAT_GoldenGun
 		const_JACK_MAJOR_CHARACTER_INDEX = 3
 		const_ANNIE_MAJOR_CHARACTER_INDEX = 4
-		const_ALLIED_HP_THRESHOLD_PERCENTAGE = 0.75
+		const_ALLIED_HP_THRESHOLD_PERCENTAGE = 0.65
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4717,14 +4810,12 @@ achievements_triggers = {
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+		// NOTE: only 1 measured target can be displayed => prefer showing accuracy rating instead of damage taken, because accuracy isn't shown during gameplay, HP bar is shown
+
 		const_MISSION_AREA = AREA_Campaign_FallFromGrace
-		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.5 // = 50%
-		// const_DESIRED_ACCURACY = 0.70
-		let_array_AllowedAccuracyStrings = [
-			"70%", "71%", "72%", "73%", "74%", "75%", "76%", "77%", "78%", "79%",
-			"80%", "81%", "82%", "83%", "84%", "85%", "86%", "87%", "88%", "89%",
-			"90%", "91%", "92%", "93%", "94%", "95%", "96%", "97%", "98%", "99%", 
-			"100%"]
+		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.75 // = 75%
+		const_DESIRED_ACCURACY = 0.6 // 60%
+		const_MAX_ACCURACY = 100.0 // 100%
 		
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4735,31 +4826,81 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause Lock: when DamageTaken > allowed
-				tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => // <---TallyOf--- Necessary as current_Calculated_DamageTakenPercentage() doesn't work in RAIntegration v1.3.0. ---> For each Max HP value: calculate percentage damage taken
-					is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-					&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				*/
+
+			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+									Recall						>= 	Float			const_DESIRED_ACCURACY
+				*/
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& trigger_when(
 				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
-
-				&& tally_of(let_array_AllowedAccuracyStrings, 1, // <---TallyOf--- checks accuracy string at RewardMenu
-					accuracyString => once(
-						is_RewardMenu_displayed_short(enum_releaseRegion)
-						&& is_RewardMenu_Accuracy(accuracyString, enum_releaseRegion)))
-				// && current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY // <---line--- could replace above tally, but doesn't work with RAIntegration v1.3.0
-
 				&& repeated(440, // <-- Delay achievement unlock to coincide with stats window being displayed 
 					never(is_StartChpMenu_active(enum_releaseRegion))
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				*/
+
+			&& measured(current_Calculated_Accuracy(enum_releaseRegion) >= const_MAX_ACCURACY,
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+					-> OUTPUT (PAL)
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+						Remember	Recall						*	Float			100.0
+						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
+				*/
+				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
+				format = "percent")				
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
@@ -4816,7 +4957,7 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: When using a firearm without the deadeye ability
+			&& unless(once( // <-- Pause Lock: Once a firearm is used
 				is_PlayerInput_AimGun_pressed(enum_releaseRegion)
 				&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
 
@@ -6064,28 +6205,28 @@ achievements_descriptions = {
 	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a single player story mission without using your Dead Eye ability"},
 	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1500 reward for saving him during Chapter 8, 'Rogue Valley'"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, 'Bull's Eye', by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
-	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, 'Bull's Eye', on very hard difficulty with a collected bounty of $1000 or more"}, // WARNING - Manual creation via RAIntegration
+	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, 'Bull's Eye', on very hard difficulty, with a collected bounty of $1000 or more"}, // WARNING - Manual creation via RAIntegration
 	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, 'Bounty Hunter', on hard or very hard difficulty, sustaining less than 50% damage and with the 'No HUD' cheat enabled"},
-	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, 'Ugly Streetfight', on very hard difficulty without picking up any healing items"},
-	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, 'Railroaded', on hard or very hard difficulty without stumbling off the train even once"},
-	"a_ChallengeChapter6":					{"en": "In Chapter 6, 'Carnival Life', on hard or very hard difficulty achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
-	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', on very hard difficulty with an accuracy of 65% or better"},
-	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, 'Rogue Valley', on very hard difficulty with 'Bite the Bullet' cheat enabled"},
-	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty with following the cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
+	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, 'Ugly Streetfight', on very hard difficulty, without picking up any healing items"},
+	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, 'Railroaded', on hard or very hard difficulty, without stumbling off the train even once"},
+	"a_ChallengeChapter6":					{"en": "In Chapter 6, 'Carnival Life', on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
+	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', on very hard difficulty, with an accuracy of 60% or better"},
+	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, 'Rogue Valley', on very hard difficulty, with 'Bite the Bullet' cheat enabled"},
+	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty, with following the cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
-	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty with a full health bar at the end"},
-	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty with at least 5 allied cannons remaining"},
-	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on very hard difficulty with less than 90% damage taken"},
-	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, 'Bear Mountain', on very hard difficulty using only the firearm 'Faith' to damage Grizzly"},
-	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', on hard or very hard difficulty in under 1 minute, using only a knife to damage Ted and Tony"},
-	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', on hard or very hard difficulty with the stagecoach's HP above 40%, using the 'Infinite DeadEye' cheat as the only means of shooting"},
-	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', on very hard difficulty with 12 headshot kills"},
-	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty in under 3 minutes, killing only General Diego"},
-	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty with Jack's and Annie's HP above 75%, using the 'Golden Gun' cheat"},
-	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 50% damage and achieving an accuracy of 70% or higher"},
-	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty with 'Bite the Bullet' cheat enabled"},
-	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty using the 'Infinite Deadeye' cheat as the only means of doing damage"},
+	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty, with a full health bar at the end"},
+	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty, with at least 5 allied cannons remaining"},
+	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on very hard difficulty, with less than 90% damage taken"},
+	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, 'Bear Mountain', on very hard difficulty, using only the firearm 'Faith' to damage Grizzly"},
+	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
+	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', on hard or very hard difficulty, with the stagecoach's HP above 40%, using the 'Infinite DeadEye' cheat as the only means of shooting"},
+	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', on very hard difficulty, with 12 headshot kills"},
+	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
+	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty, with Jack's and Annie's HP above 65%, using the 'Golden Gun' cheat"},
+	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
+	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty, with 'Bite the Bullet' cheat enabled"},
+	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty, using the 'Infinite Deadeye' cheat as the only means of doing damage"},
 
 	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
 	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
