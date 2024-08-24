@@ -2,19 +2,30 @@
 // #ID = 11094
 
 // $000040: [PAL][32-bit] Always_NULL
-// $0780B0: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_UI_Controller (Preferred)
+// $0780B0: [PAL][NTSCU][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_UI_Controller (Preferred)
 //          [Struct Definition][??-byte] MultiplayerRewardMenu_UI_Controller
 //          |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
 //          |+0x1C - [32-bit Pointer{2}]
-//          |+|+0x1414 - [32-bit || Float] Highlighted PopupMenu Item
+//          |+|+0x1414 - [PAL][32-bit || Float] Highlighted PopupMenu Item
 //          |+|¨| - 0x0 => Replay
 //          |+|¨| - 0x1 => Multiplayer Settings || 0x3F800000 (= 1.0) => Multiplayer Settings (becomes a float sometimes)
 //          |+|¨| - 0x2 => Quit
-//          &/
+//          |+|/
+//          |+|+0x1044 - [NTSCU][32-bit || Float] Highlighted PopupMenu Item
+//          |+|¨| - Identical as (PAL)
+//          |/
 //          '
 // $4F6FD8: [8bit] Player is in a cutscene?
+// $4F792C: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [Variable Size Struct] Extra_Mission_Data
+//          @Regional equivalent of $0x4f9fac (PAL)
+// $4F7CF0: [NTSCU][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_03
+//          @Regional equivalent of $0x4fa370 (PAL)
+// $4F7D20: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [112-byte Array] List of [(14x) 8-byte Struct] Major_Character_Data{1}
+//          @Regional equivalent of $0x4fa3a0 (PAL)
 // $4F93DC: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (alt)
 //          - Identical to $0x562a0c
+// $4F9470: [NTSCU][8-bit Bitfield {32-bit}] Game Mode
+//          @Regional equivalent of $0x4fbaf0
 // $4F9FAC: [PAL][32-bit Pointer{1}] --(+0x0)--> [Variable Size Struct] Extra_Mission_Data
 //          - Extra_Mission_Data contains extra data pertaining mission logic
 //          - Extra_Mission_Data size is dependent on the mission
@@ -53,7 +64,7 @@
 //          |+0x4 - [32-bit Pointer{2}]
 //          |++0x4C - [Bit Flag {32-bit}] bit 0 => Is TreasureBox Faith Opened
 //          '
-// $4FA370: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_03
+// $4FA370: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_03 (Preferred)
 //          [Struct Definition][??-byte] Undefined_Struct_03
 //          |''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 //          |+0xD8 - [32-bit] Mission Killcount
@@ -105,6 +116,14 @@
 //          
 //          1 => In-Game (Single Player & Showdown Mode), PauseMenu, RetryMenu, GameOver screen
 //          0 => During loading screens, MainMenu, RewardMenu, Restarting level via PauseMenu
+// $54A04C: [NTSCU][11-byte ASCII] Game ID (USA) - PS2 Product ID
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - "SLUS_205.00" => USA
+// $54A348: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_Data
+//          @Regional equivalent of $0x54cac8 (PAL)
+// $54A370: [NTSCU][32-bit Pointer{1}] --> RewardMenu and StartChpMenu Display Data
+//          @Regional equivalent of $0x54caf0 (PAL)
+//          ⚠ -> Struct: RewardMenu_DisplayData (NTSCU) has different offsets but same setup compared to PAL
 // $54C7CC: [PAL][11-byte ASCII] Game ID (EUR) - PS2 Product ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - "SLES_524.78" => EUR
@@ -120,7 +139,10 @@
 //          |+|/
 //          |+|+0x24 - [32-bit Pointer{3}]
 //          |+|++0x34 - [32-bit Pointer{4}]
-//          |+|++|+0x0 - [64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
+//          |+|++|+0x0 - [PAL][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
+//          |+|++|¨| - ASCII Field Definition below
+//          |+|++|
+//          |+|++|+0x180 - [NTSCU][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
 //          |+|++|¨| - ASCII Field Definition below
 //          |/
 //          |
@@ -180,7 +202,7 @@
 //          |/
 //          '
 //          
-//          [Struct Definition][??-byte] RewardMenu_DisplayData
+//          [Struct Definition][PAL][??-byte] RewardMenu_DisplayData
 //          |============================================
 //          | - This struct contains UI data logic for the Reward Menu (where the player can see which items he has unlocked from the mission and his mission stats)
 //          |
@@ -294,6 +316,8 @@
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - "SLPM_658.54" => JPN
 // $5511F4: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_Data (Alt1)
+// $55B6A8: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [480-byte Struct] GatlingGun_Zone_Data
+//          @Regional equivalent of $0x55de28 (PAL)
 // $55DE28: [PAL][32-bit Pointer{1}] --(+0x0)--> [480-byte Struct] GatlingGun_Zone_Data
 //          - This Pointer{1} seems to point to a possible LinkedList containing interactable "zones" within an AREA/level/mission, each zone seems to contain an interactable levelitem (eg. gatling gun OR shootable lever)
 //          - This Pointer{1} always points to the node "zone_gunA_01", which is the gatling gun, thus this Pointer{1} should only be used for that functionality
@@ -308,17 +332,6 @@
 //          |¨| - Can be manned by AI as well as player
 //          |/
 //          '
-// $5602A0: [32-bit] Pointer
-//          +0x58a4 [32-bit] Money
-//          +0x5904  [32-bit] Key 1
-//          +0x5908  [32-bit] Key 2
-//          +0x590c  [32-bit] Key 3
-//          +0x5910  [32-bit] Key 4
-//          +0x5914  [32-bit] Key 5
-//          +0x5994  [Float] Health
-//          +0x5ad4  [32-bit] Ammo
-//          +0x5ae8  [32-bit] Shots Left
-//          +0x5a90  [32-bit] Hits Taken
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
 //          bit 0 = 0 => In-game || Game  Is Booting Up
 //          bit 0 = 1 => Title Menu
@@ -599,6 +612,8 @@
 //          |++|"| 2 => Hold 'Em
 //          |/
 //          '
+// $6AAA9C: [NTSCU][8-bit Bitfield {32-bit}] Area State
+//          @Regional equivalent of $0x6b0a1c (PAL)
 // $6B03F4: [PAL][32-bit Pointer{1}] --> Soundtrack File Name
 //          |@Member of Struct:Undefined_Struct_02 ($0x4fa50c)
 //          |
@@ -724,6 +739,14 @@
 // $6B48D0: [NTSCJ][96-byte ASCII Field] ShowdownPlayer_Stats_Text - Player 4
 //          @Member of Struct: ShowdownMode_ScoreboardDisplay_Text ($0x6b4634)
 //          @Regional Equivalent of $0x6b1b50
+// $73AF04: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] InGame_Menu_Controller
+//          @Regional equivalent of $0x73d684 (PAL)
+// $73B099: [NTSCU][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_B]
+//          @Regional equivalent of $0x73d819 (PAL)
+// $73B5EC: [NTSCU][8-bit {32-bit}] Number of Players
+//          @Regional equivalent of $0x73dd6c (PAL)
+// $73B7C2: [NTSCU][30-byte Struct] Player_Input_Reader
+//          @Regional equivalent of $0x73df42 (PAL)
 // $73D60C: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] InGame_Menu_Controller (MainMenu)
 //          @Fixed Memory Location. Although pointed to by one of the pointers at [$0x562a20-$0x562a60]
 //          - Pointer is only functional when an InGame_Menu has been displayed at least once
@@ -820,10 +843,18 @@
 //          | sneakybot
 //          | ...??
 //          '
+// $73DCB8: [NTSCU][365-byte Array] List of [(4x) 92-byte Struct:ShowdownPlayer_Settings_A]
+//          @Regional equivalent of $0x740438 (PAL)
 // $73DD6C: [PAL][8-bit {32-bit}] Number of Players
 //          - 0x1 => Single player campaign
 //          - [0x2-0x4] => Showdown Mode
 //          - This value does not reset to a default value on title screen
+// $73DE30: [NTSCU[28-byte Struct] ShowdownMode_Settings
+//          @Regional equivalent of $0x7405b0 (PAL)
+// $73DE4C: [NTSCU][28-byte Bitset] Shared_Unlocks
+//          @Regional equivalent of $0x7405cc (PAL)
+// $73DE88: [NTSCU][17040-byte Array] List of [(6x) 2840-byte Struct:Player_Profile_Data]
+//          @Regional equivalent of $0x740608 (PAL)
 // $73DF42: [PAL][30-byte Struct] Player_Input_Reader
 //          [Struct Definition][30-byte] Player_Input_Reader
 //          |'''''''''''''''''''''''''''''''''''''''
@@ -938,12 +969,7 @@
 //          bit 5 =&gt; Cheat (non-unlockable debug feature) - Show Player Position (doesn't work out-of-the-box)
 //          bit 6 =&gt; Cheat - Bite the Bullet (hardcore mode, significantly increases damage vs player and AI)
 //          bit 7 =&gt; Cheat - Sad Stars (replaces blood splatters with a special effect)
-// $7405CD: [PAL][27-byte Bitset] Shared_Unlocks
-//          @Fixed Memory Location. Although pointed to by $0x7448a0
-//          - This bitset is updated on save according to the bitset Player_Profile_Unlocks ($0x763070)
-//          - This bitset handles unlocks for showdown characters, showdown maps and journal pages
-//          
-//          [PAL][19-byte Bitset] JournalPage_Unlocks (137 flags total)
+// $7405CD: [PAL][19-byte Bitset] JournalPage_Unlocks (137 flags total)
 //          @Sub-bitset in Bitset: Shared_Unlocks $0x7405cc
 //          - This bitset handles the unlocks for journal pages
 //          
@@ -1365,16 +1391,11 @@
 //          |¨|¨| bit 7 => No Distortion
 //          |/
 //          '
-// $742118: [8bit] save file id
-// $742158: [32bit] pointer to progress stats
-//          
-//          +0x290 = [32bit] maps completed in save file
-//          starts at 5 and increment by 1 with each map completed /*  also this need more investigation at higher up levels to figure out how this address handles numbers over F i have seen that the max it can get is F but it increases a nearby 8bit when full ? */
 // $7443B0: [NTSCJ][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_01
 //          @Regional Equivalent of $0x7448a0
 // $7443E8: [NTSCJ][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
 //          @Regional Equivalent of $0x7448d8
-// $744898: [PAL][8-bit {32-bit}] Selected Player_Profile
+// $744898: [PAL][8-bit {32-bit}] Selected Player_Profile ID
 //          - Value range [0x0-0x5], there's a total of 6 player profile slots
 //          - Each Player_Profile saves its own data (refer to $0x7448d8)
 // $7448A0: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_01
@@ -1400,6 +1421,8 @@
 // $744C78: [PAL][24-byte Bitset] Temporary Selected Player_Profile_Unlocks
 // $747408: [PAL][32-bit Pointer{1}] --> RewardMenu and StartChpMenu Display Data (alt 1)
 //          - Identical pointer at $0x54caf0
+// $747BCD: [NTSCU][6-byte ASCII {Variable Size}] Video File Name ID
+//          @Regional equivalent of $0x74a34d (PAL)
 // $74A34D: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - NTSC Mode
 //          - Preceding [13-byte ASCII] = "cdrom0:\/pss/"
 //          - VideoFileName_IDs and further documentation at $0x74a34f
@@ -1432,6 +1455,10 @@
 //          +0x8 - [32-bit Pointer{2}]
 //          ++0x10 - [160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
 //          +| - Further documentation at $0x7621d0
+// $75FA50: [NTSCU][160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
+//          @Regional equivalent of $0x7621d0 (PAL)
+// $7608F0: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data
+//          @Regional equivalent of $0x763070 (PAL)
 // $7621D0: [PAL][160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
 //          @Fixed Memory Location, Although pointed to by $0x754a90
 //          
@@ -1517,14 +1544,12 @@
 //          |+| - This struct stores stats per mission
 //          |+| - On save/on restart/on RetryMenu render, the stats here will update the Player_Profile_Data stats ($0x740608)
 //          |+|
-//          |+|+0x0 - [32-bit] Shots Fired (showdown) (copy)
+//          |+|+0x0 - [32-bit] Shots Fired (copy)
 //          |+|¨| - Depending on weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
-//          |+|¨| - This value should be used for showdown mode
 //          |+|¨| - functional value further below
 //          |+|
-//          |+|+0x2C - [32-bit] Shots Hit (showdown) (copy)
+//          |+|+0x2C - [32-bit] Shots Hit (copy)
 //          |+|¨| - This is not always an exact copy of the functional value (further below)
-//          |+|¨| - This value should be used for showdown mode
 //          |+|
 //          |+|+0x30 - [32-bit] Head Shot Kills
 //          |+|¨| - Enemies killed by head shots
@@ -1541,13 +1566,11 @@
 //          |+|+0x190 - [32-bit] Bounty/Cash Collected
 //          |+|¨| - Copies value stored via pointer at $0x562a20
 //          |+|
-//          |+|+0x194 - [32-bit] Shots Fired (story) (functional)
+//          |+|+0x194 - [32-bit] Shots Fired (functional)
 //          |+|¨| - This value is used to calculate accuracy statistic on the Reward Menu
-//          |+|¨| - This value should be used for the single player mode
 //          |+|
-//          |+|+0x198 - [32-bit] Shots Hit (story) (functional)
+//          |+|+0x198 - [32-bit] Shots Hit (functional)
 //          |+|¨| - This value is used to calculate accuracy statistic on the Reward Menu
-//          |+|¨| - This value should be used for the single player mode
 //          |+|
 //          |+|+0x19C - [32-bit] Arm Shots
 //          |+|
@@ -2016,13 +2039,23 @@
 //          '
 // $7638F8: [PAL][8-bit {32-bit}] Showdown Mode Playercount
 //          - Value range [0x2-0x4], minimum 2 players, max 4 players
-// $7A0620: [PAL][Variable Size {64-byte??} ASCII] Area_ID (functional)
+// $79DEA0: [NTSCU][Variable Size ASCII] Area_ID
+//          @Regional equivalent of $0x7a0620 (PAL)
+// $79E008: [NTSCU][32-bit Pointer] --(+0x0)--> [??-byte Struct] Mission_Timers
+//          @Regional equivalent of $0x7a0788 (PAL)
+// $79E21C: [NTSCU][Bit Flag {32-bit}] bit 0 => Is Playing Bounty Hunter Mode (unverified)
+//          @Regional equivalent of $0x7a099c (PAL)
+// $7A0280: [NTSCU][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
+//          @Regional equivalent of $0x7a2a00 (PAL)
+// $7A0620: [PAL][Variable Size ASCII] Area_ID (functional)
 //          - The Area_ID that needs to be loaded is stored here
 //          - Changing this value to a valid ID and freezing before entering a loading screen, will load the corresponding mission/area
 //          
-//          # Area_IDs (list incomplete)
+//          # Area_IDs (list only contains IDs used in achievement creation)
 //          |''''''''''''''''''''''''''
 //          | default => Intermittent loading screen (= screen before the MAIN Loading screen, where the protagonist twirls his pistols around) -> some sort of value between switching Area_IDs
+//          |
+//          |--- Story Campaign ---
 //          | lvl_perfnew => Chapter 1 - Bull's Eye - Intro with Red Jr.
 //          | lvl_hng => Chapter 2 - Bounty Hunter - Bounty for Bloody Tom
 //          | lvl_sher => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
@@ -2051,6 +2084,20 @@
 //          | lvl_mans => Chapter 25 - Siege - Fight in garden
 //          | lvl_mansintb => Chapter 26 - House of Cards  - Fight inside mansion
 //          | lvl_mansroof => Chapter 27 - Fall from Grace  - Fight on roof of mansion (follow-up of Chapter 26)
+//          |
+//          |--- Showdown Stages ---
+//          | lvl_shernit2 => WidowPatch
+//          | lvl_ranch2 => TheRanch
+//          | lvl_ghost2 => Fairground
+//          | lvl_flash2 => FallenCreek
+//          | lvl_gun2 => GhostTown
+//          | lvl_coach2 => SunsetCanyon
+//          | lvl_perf2 => BrokenCreek
+//          | lvl_mans2 => MansionGrounds
+//          | lvl_int2 => TheMansion
+//          | lvl_hng2 => TwinRocks
+//          | lvl_fort2 => DesertFortress
+//          '
 // $7A0664: [PAL][8-bit {32-bit}] Display Language
 //          - Changing this value at runtime, will change the display language on load
 //          0x0 => en
@@ -2084,7 +2131,7 @@
 //          |¨| - This is the value which is shown on the Reward Menu (campaign)
 //          |/
 //          '
-// $7A099C: [PAL][Bit Flag{32-bit}] bit 0 => Is Playing Bounty Hunter Mode
+// $7A099C: [PAL][Bit Flag {32-bit}] bit 0 => Is Playing Bounty Hunter Mode
 //          - This needs to be combined with $0x4fbaf0 to determine if player is effectively playing Bounty Hunter Mode
 //          - Values becomes 1, when pressing 'accept' on 'Bounty Hunter'
 //          - Values returns only back to 0, when pressing 'accept' on 'New Game'
@@ -2121,7 +2168,6 @@
 //          |+0x68 - [Variable Size ASCII] Puppetshow ID
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
-// $DA2A20: 112 byte
 // $E36118: could be important
 // $10795E4: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_UI_Controller (Alt)
 // $11E54C0: [PAL][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
@@ -2140,19 +2186,6 @@
 //           |+0x20 - [12-byte ASCII Field:Winner_Text] Player 3
 //           |
 //           |+0x30 - [12-byte ASCII Field:Winner_Text] Player 4
-// $11E5F90: 12 byte
-// $13B1470: 480 byte
-// $148FB90: 68 byte
-// $1508E4C: boxA
-// $1508FEC: BoxB
-// $150918C: boxc
-// $179DA68: [PAL] Universal Weapon State
-//           0x0 => Holstered
-//           [0x1-0x2] => Getting ready to aim
-//           0x3 => Aiming
-//           0x4 => Reloading (not viable when 'reloading' throwable items)
-//           0x5 => Most of the frames during Holstering animation
-//           0x6 => Last few frames of Holstering animation
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $198B014: [8bit] makes a key appear in chapter 2
 // $198B018: [8bit] makes a key appear in chapter 2
@@ -2170,7 +2203,6 @@
 // $1A5E74C: [8bit] Total shot hits
 // $1A5E7A8: [8bit] mission 1 total kills
 // $1A88434: [8-bit] Chapter 3 - Shots left
-// $1B8CAD0: on bison
 // $1F7EC20: [PAL][18-byte ASCII] Ending Credits Flag
 //           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing
 //           (this is the audio file name, which is played during the Ending Credits Video)

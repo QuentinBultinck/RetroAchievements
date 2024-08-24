@@ -58,7 +58,7 @@ sNULL = "-1"
 RELEASE_REGION_USA = "NTSC-U"
 RELEASE_REGION_JPN = "NTSC-J"
 RELEASE_REGION_EUR = "PAL"
-RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_EUR] // TODO add regions
+RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_EUR, RELEASE_REGION_USA]
 
 function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -448,51 +448,49 @@ memory_addresses = {
 	// 	},0x501a38
 
 	DATATYPE_BitFlag: {
-		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL},
-		"IsNotLoading": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, // Unused
-		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
+		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // TODO verify usage of this RAM
+		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL}, // TODO verify this RAM for USA version
 		},
 	DATATYPE_8Bit: {
-		"NumberOfPlayers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
-		"GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
-		"UIRenderStackLevel": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a10, RELEASE_REGION_JPN: sNULL}, // Unused
-		"SelectedPlayerProfile": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
-		"AreaState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
+		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
+		"GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
+		"SelectedPlayerProfileId": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
+		"AreaState": {RELEASE_REGION_USA: 0x6aaa9c, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
 		},	
 	DATATYPE_ASCII: {
-		"GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
-		"AreaID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
-		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL},
+		"GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+		"AreaID": {RELEASE_REGION_USA: 0x79dea0, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
+		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in disabled achievements
 		},
 	DATATYPE_32Bit: {
-		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL},
+		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
 		},
 	DATATYPE_32BitPointer: {
-		"SinglePlayerData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
-		"Selected_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
-		"GameController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
-		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
-		"InGameMenuController": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
-		"Undefined_Struct_03": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
-		"Extra_Mission_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
-		"GatlingGunZone_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
-		"MajorCharacter_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
-		"Puppetshow_Manager": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
-		"Mission_Timers": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL},
+		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
+		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
+		"GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
+		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets for Struct:RewardMenu_DisplayData
+		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
+		"Undefined_Struct_03": {RELEASE_REGION_USA: 0x4f7cf0, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
+		"Extra_Mission_Data": {RELEASE_REGION_USA: 0x4f792c, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
+		"GatlingGunZone_Data": {RELEASE_REGION_USA: 0x55b6a8, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
+		"MajorCharacter_Data": {RELEASE_REGION_USA: 0x4f7d20, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
+		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
+		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
+		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets
+		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets
 		},
 	DATATYPE_Struct: {
-		"Array_PlayerProfileData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
-		"Array_ActorData": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
-		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
-		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
-		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
-		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
-		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
-		"PlayerInputReader": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
-		"ShowdownMode_Settings": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
+		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
+		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
+		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
+		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
+		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
+		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
+		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: 0x73de4c, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
+		"PlayerInputReader": {RELEASE_REGION_USA: 0x73b7c2, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
+		"ShowdownMode_Settings": {RELEASE_REGION_USA: 0x73de30, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
 	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
@@ -1372,7 +1370,7 @@ FlagData_Bitset_CheatUnlocks = { // 10 flags
 // ◦ PLAYER PROFILE ◦
 // ''''''''''''''''''
 function is_SelectedPlayerProfile(int_playerProfileNumber, enum_releaseRegion) {
-	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_8Bit, "SelectedPlayerProfile", enum_releaseRegion)
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_8Bit, "SelectedPlayerProfileId", enum_releaseRegion)
 	return byte(let_memAddr_SelectedPlayerProfile) == int_playerProfileNumber} 
 
 // ----------------PlayerProfile STATISTICS--------------------
@@ -6453,8 +6451,6 @@ richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
-
-// -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
 	// 		- Expression examples:
@@ -6565,6 +6561,11 @@ leaderboards_coreData = {
 	// 	"id": 000000, "isLowerBetter": false, 
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
+
+	// "lb_Chapter1Normal": { // CONCEPT lb_Chapter1Normal
+	// 	"id": 000000, "isLowerBetter": false, 
+	// 	"leaderboardFormat": "VALUE",
+	// 	"devInfo": "Read dev_ID"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED
 		"id": 112549, "isLowerBetter": true, 
@@ -6806,12 +6807,18 @@ leaderboards_valueMeasures = {
 // =====================
 leaderboards_titles = { // TODO Leaderboards: creative text
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+
+	"lb_Chapter1Normal":					{"en": "Chapter 1 Normal - Best Stats"},
+
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
 	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
 	"lb_ShowdownBestCombo": 				{"en": "Unstoppable String"},
 	}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+
+	"lb_Chapter1Normal":					{"en": "Complete Chapter 1, 'Bull's Eye', with the best stats"},
+
 	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match with 3 CPU's as fast as possible"},
 	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match with 3 CPU's"},
 	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match with 3 CPU's"},
