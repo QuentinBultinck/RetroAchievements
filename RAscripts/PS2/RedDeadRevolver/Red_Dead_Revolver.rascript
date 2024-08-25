@@ -148,14 +148,22 @@ memory_dataStructures = {
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0xE4]},
 			"BitFlag_HighlightedMenuItem": { 
 				"addAddressChain": [0xAC, 0x34, 0x1C, 0x8A4]},
-			"32Bit_BountyCollected": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9E4]},
-			"8Bit_MenuDepth": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0x9D4]},
-			"32Bit_Balance": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA04]},
-			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xA94]},			 
+			"32Bit_BountyCollected": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9E4],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9C4]}},
+			"8Bit_MenuDepth": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9D4],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9B4]}},
+			"32Bit_Balance": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA04],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9E4]}},
+			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA94],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0xA54]}},	 
 			"32BitPointer_2D0": { 
 				"addAddressChain": [0x2D0]},
 			"Struct_RewardMenuDisplayText": { 
@@ -375,23 +383,33 @@ memory_dataStructures = {
 				"addAddressChain": [0x28]},
 			"ASCII_Flag_IsPlayer1Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
-				"offsetToPointedToMember": 0x0},
+				"offsetToPointedToMember": {
+					RELEASE_REGION_EUR: 0x0,
+					RELEASE_REGION_USA: 0x180}},
 			"ASCII_Flag_IsPlayer2Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
-				"offsetToPointedToMember": 0x10},
+				"offsetToPointedToMember": {
+					RELEASE_REGION_EUR: 0x10,
+					RELEASE_REGION_USA: 0x190}},
 			"ASCII_Flag_IsPlayer3Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
-				"offsetToPointedToMember": 0x20},
+				"offsetToPointedToMember": {
+					RELEASE_REGION_EUR: 0x20,
+					RELEASE_REGION_USA: 0x1A0}},
 			"ASCII_Flag_IsPlayer4Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
-				"offsetToPointedToMember": 0x30},
+				"offsetToPointedToMember": {
+					RELEASE_REGION_EUR: 0x30,
+					RELEASE_REGION_USA: 0x1B0}},
 			"ASCII_Flag_IsMultiplayerRewardMenuDisplayed": {
 				"addAddressChain": [0x28, 0x0]},
 		}},
 	"Struct_MultiplayerRewardMenu_UI_Controller": {
 		"pointerChains": {
 			"32Bit_HighlightedPopupMenuItem": {
-				"addAddressChain": [0x1C, 0x1414]},
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x1C, 0x1414],
+					RELEASE_REGION_USA: [0x1C, 0x1044]}},
 		}},
 	"Struct_ShowdownMode_Settings": {
 		"offsetToMember": {
@@ -411,12 +429,25 @@ function memory_getDataStructOffset(string_structKey, string_memberKey) =>
 
 function memory_getPointerChainOffsetToMember(string_structKey, string_pointerChainKey) => 
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"]
+	
+	function memory_getPointerChainOffsetToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
+	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
 function memory_getAddressChain(string_structKey, string_pointerChainKey) =>
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
 
 function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToMember = 0, accessor = dword) {
 	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
+	let_addAddressPointerChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return accessor(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index] + int_offsetToMember)
+		else let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
+
+function memory_generateAddAddressPointerChain_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToMember = 0, accessor = dword) {
+	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"][enum_releaseRegion]
 	let_addAddressPointerChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
 		if (let_index == length(let_array_pointerChainOffsets) - 1)
@@ -448,8 +479,8 @@ memory_addresses = {
 	// 	},0x501a38
 
 	DATATYPE_BitFlag: {
-		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // TODO verify usage of this RAM
-		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL}, // TODO verify this RAM for USA version
+		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
+		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -469,7 +500,7 @@ memory_addresses = {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
-		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets for Struct:RewardMenu_DisplayData
+		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Undefined_Struct_03": {RELEASE_REGION_USA: 0x4f7cf0, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
 		"Extra_Mission_Data": {RELEASE_REGION_USA: 0x4f792c, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
@@ -477,8 +508,8 @@ memory_addresses = {
 		"MajorCharacter_Data": {RELEASE_REGION_USA: 0x4f7d20, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // TODO USA version has different offsets
+		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
+		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -516,7 +547,7 @@ function is_ReleaseRegion(enum_releaseRegion) {
 	let_string_gameID = sNULL
 
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
-		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+		let_string_gameID = "SLUS_205.00"
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
 		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 		let_string_gameID = "SLPM_658.54"
@@ -674,9 +705,9 @@ function current_FlagState_PlayerInput_R2(enum_releaseRegion) =>
 		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
 
-function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) {
+function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) { // Check playerInput based on region, as Confirm button for JPN version is not same button as for the EUR and USA
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_X(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -685,7 +716,7 @@ function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) {
 
 function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_X(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -694,7 +725,7 @@ function on_PlayerInput_ConfirmBtn_press(enum_releaseRegion) {
 
 function is_PlayerInput_FireGun_pressed(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_R1(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -703,7 +734,7 @@ function is_PlayerInput_FireGun_pressed(enum_releaseRegion) {
 
 function on_PlayerInput_FireGun_release(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_R1(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -712,7 +743,7 @@ function on_PlayerInput_FireGun_release(enum_releaseRegion) {
 
 function on_PlayerInput_FireGun_press(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_R1(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -721,7 +752,7 @@ function on_PlayerInput_FireGun_press(enum_releaseRegion) {
 
 function is_PlayerInput_AimGun_pressed(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_L1(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -730,7 +761,7 @@ function is_PlayerInput_AimGun_pressed(enum_releaseRegion) {
 
 function is_PlayerInput_DeadEyeAbility_pressed(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_R2(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -739,7 +770,7 @@ function is_PlayerInput_DeadEyeAbility_pressed(enum_releaseRegion) {
 
 function on_PlayerInput_DeadEyeAbility_press(enum_releaseRegion) {
 	let_memAccessor_inputState = sNULL
-	if (enum_releaseRegion == RELEASE_REGION_EUR)
+	if (enum_releaseRegion == RELEASE_REGION_EUR || enum_releaseRegion == RELEASE_REGION_USA)
 		let_memAccessor_inputState = current_FlagState_PlayerInput_R2(enum_releaseRegion)
 	else
 		util_throwError(format("Player Input handling for release region: {0} not supported", enum_releaseRegion))
@@ -1761,7 +1792,6 @@ function is_StartChpMenu_active(enum_releaseRegion) {
 function on_StartChpMenu_initialize(enum_releaseRegion) =>
 	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) > prev_FlagState_IsStartChpMenuActive(enum_releaseRegion)
 // ------------------RewardMenu---------------------
-REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain(
@@ -1771,11 +1801,15 @@ function current_HighlightedRewardMenuItem(enum_releaseRegion) {
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+	return memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, 
+		enum_releaseRegion, accessor = dword)}
 
 function current_RewardMenu_BountyCollected(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, accessor = dword)}
+	return memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, 
+		enum_releaseRegion, accessor = dword)}
 
 function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
@@ -1791,9 +1825,9 @@ function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegio
 
 function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain(
-		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", 
-		let_memAddr_RewardMenuDisplayData, accessor = byte)
+	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", let_memAddr_RewardMenuDisplayData,
+		enum_releaseRegion, accessor = byte)
 	return let_memAccessor_MenuDepth == int_depth}
 
 function is_RewardMenu_displayed_long(enum_releaseRegion) => // This comparison is bigger than is_RewardMenu_displayed_short()
@@ -1826,8 +1860,13 @@ function on_RewardMenu_close(enum_releaseRegion) {
 		&& !is_StartChpMenu_active(enum_releaseRegion)}
 
 function is_RatingBounty_achieved(enum_releaseRegion) {
+	REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
+
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData)
+	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = 
+		memory_generateAddAddressPointerChain_byReleaseRegion(
+			"Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData, 
+			enum_releaseRegion)
 	return is_ASCII_notEqualTo(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
 
 function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) => 
@@ -2541,6 +2580,9 @@ function on_GameMode_changeTo(enum_gameState, enum_releaseRegion) =>
 	current_GameMode(enum_releaseRegion) == get_GameMode_ID(enum_gameState) 
 	&& prev_GameMode(enum_releaseRegion) != get_GameMode_ID(enum_gameState)
 
+function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
+	on_GameMode_changeTo(GAMEMODE_MainMenu, enum_releaseRegion)
+
 function is_AtMainMenu(enum_releaseRegion) =>
 	is_GameMode(GAMEMODE_MainMenu, enum_releaseRegion)
 
@@ -2568,16 +2610,17 @@ function on_EndingCreditsVideo_start(enum_releaseRegion) {
 	return on_ASCII_changeTo(let_memAddr_EndingCreditsFlag, CREDITS_AUDIO_FILE_NAME)} 
 
 // ------------------------------------------------------
+function current_FlagState_IsInGame(enum_releaseRegion) =>
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion))
+
+function prev_FlagState_IsInGame(enum_releaseRegion) =>
+	prev(current_FlagState_IsInGame(enum_releaseRegion))
+
 function is_InGame(enum_releaseRegion) => 
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion)) == 1
+	current_FlagState_IsInGame(enum_releaseRegion) == 1
 
-function on_InGame_start(enum_releaseRegion) {
-	let_memAccessor_IsInGame = bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion))
-	return 
-		let_memAccessor_IsInGame > prev(let_memAccessor_IsInGame)}
-
-function on_QuitToMainMenu(enum_releaseRegion) => // Quiting game via pause menu
-	on_GameMode_changeTo(GAMEMODE_MainMenu, enum_releaseRegion)
+function on_InGame_start(enum_releaseRegion) =>
+	current_FlagState_IsInGame(enum_releaseRegion) > prev_FlagState_IsInGame(enum_releaseRegion)
 
 // ......................
 // ◦ EXTRA MISSION DATA ◦
@@ -2797,7 +2840,7 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
 	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
 		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
-	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey)
+	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
 
 function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
@@ -2828,8 +2871,9 @@ function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
 	const_REPLAY = 0
 
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_UI_Controller", enum_releaseRegion)
-	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_UI_Controller", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, accessor = dword)
+	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_UI_Controller", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
+		enum_releaseRegion, accessor = dword)
 	return let_memAccessor_HighlightedMenuItem == const_REPLAY}
 
 function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) => 
@@ -2957,7 +3001,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = {
+achievements_coreData = { // TODO Publish DISABLED achievements - with USA version support changes
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3104,9 +3148,9 @@ achievements_coreData = {
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": { // QA category c_BountyHunter
-		// "a_BountyCompletionAll": { // DISABLED not cheat protected // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-		// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-		// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
+		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements; Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		"a_BountyHuntChapter1": { // VERIFIED
 			"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
@@ -3254,7 +3298,7 @@ achievements_coreData = {
 // • Achievements TRIGGER GENERATORS •
 // ===================================
 //	- For achievement logic that's reoccuring across multiple triggers
-function achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion) => // TODO implement achievements_generate_3x_AltResetGroup_OnRestartMission() in most mission achievements 
+function achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion) =>
 	// [1] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
@@ -3302,7 +3346,6 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 	// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
-
 // ------------------ChapterCompletion----------------------
 function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
 	// [1] ==== Core (Alt) Group ====
@@ -3311,11 +3354,11 @@ function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_area
 		&& unless(once( // <-- Pause Lock: Cheat Protection
 			is_AnyCheat_active(enum_releaseRegion)))
 
-		&& on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)
-		&& achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
-		&& repeated(40, // <-- Delay achievement unlock to coincide with game UI effects			
-			never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
-			&& is_RewardMenu_displayed_long(enum_releaseRegion)) 
+		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion))		
+		&& once(on_RewardMenu_render_short(enum_releaseRegion))
+		&& trigger_when(
+			repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+				is_RewardMenu_displayed_short(enum_releaseRegion)))
 
 	// [2] ==== Alt Reset Group ====  				-> Reset when not playing Single Player Campaign OR when not in correct AREA
 		|| never_toAlt(
@@ -3472,67 +3515,67 @@ achievements_triggers = {
 	"a_CompleteChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 	),
-	"a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
-		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal // <---2Lines--- unlock this achievement on any difficulty, without using orNext or altGroups
-		&& current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
-		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Hard // <---2Lines--- unlock this achievement on any hard or veryHard, without using orNext or altGroups
-		&& current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
-		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)),
-	"a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
-		// ==== Core (Alt) Group ====
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
-		&& is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
-		&& on_EndingCreditsVideo_start(enum_releaseRegion)
-	),
-	"a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
-		return
-		// ==== Core (Alt) Logic Group ==== this is the only group which can unlock this achievement
-			(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
-				&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
-			)
+	// "a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
+			// // ==== Core (Alt) Group ====
+			// is_ReleaseRegion(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+			// && current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Normal // <---2Lines--- unlock this achievement on any difficulty, without using orNext or altGroups
+			// && current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
+			// && on_EndingCreditsVideo_start(enum_releaseRegion)),
+	// "a_CompleteStoryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
+			// // ==== Core (Alt) Group ====
+			// is_ReleaseRegion(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+			// && current_StoryCampaignDifficulty(enum_releaseRegion) >= DIFFICULTY_Hard // <---2Lines--- unlock this achievement on any hard or veryHard, without using orNext or altGroups
+			// && current_StoryCampaignDifficulty(enum_releaseRegion) <= DIFFICULTY_VeryHard
+			// && on_EndingCreditsVideo_start(enum_releaseRegion)),
+	// "a_CompleteStoryVeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
+			// // ==== Core (Alt) Group ====
+			// is_ReleaseRegion(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+			// && is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion)
+			// && on_EndingCreditsVideo_start(enum_releaseRegion)),
+	// "a_CompleteStoryWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
+			// // ==== Core (Alt) Group ====
+			// is_ReleaseRegion(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_FurthestCompletedStoryChapter(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+			// && is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
+			// && on_EndingCreditsVideo_start(enum_releaseRegion)
+	// ),
+	// "a_BountyCompletionAll": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // DISABLED - Redundant as this is already incorporated in set with an achievement for each bounty hunter mission
+		// let_sumOf_FlagsAllBountyMissionsCompleted = achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion)
+		// return
+		// // [1] ==== Core (Alt) Logic Group ==== 		-> This group is responsible for unlocking the achievement. The bitset which is checked in this group is only updated on pressing continue on the RewardMenu 
+		// 	(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& prev(let_sumOf_FlagsAllBountyMissionsCompleted) == BOUNTY_HUNTER_MISSON_COUNT - 1
+		// 		&& measured(let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT)
+		// 	)
 
-		// ==== Alt RATrigger Popup Handler Group ==== this alt purely exists to combine the Measured flag in [Core (Alt) Logic Group] with a Trigger flag by using always_false() in this group
-			|| (
-				is_ReleaseRegion(enum_releaseRegion)
-				&& once( // <-- once() to show RATrigger popup
-					let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT - 1
-					&& is_Playing_BountyHunterMode(enum_releaseRegion)
-					&& is_RatingBounty_achieved(enum_releaseRegion)
-					&& is_RewardMenu_displayed_long(enum_releaseRegion))
-				&& trigger_when(always_false()) // <-- always_false()
-			)
+		// // [2] ==== Alt RATrigger Handler Group ==== 	-> This group is responsible for displaying an RAtrigger popup on RewardMenu Render when finishing the last Bounty Hunter Mission, thus indicating to the player this achievement will unlock once he presses continue
+		// 	|| (
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& once( // <-- once() to show RATrigger popup
+		// 			let_sumOf_FlagsAllBountyMissionsCompleted == BOUNTY_HUNTER_MISSON_COUNT - 1
+		// 			&& is_Playing_BountyHunterMode(enum_releaseRegion)
+		// 			&& is_RatingBounty_achieved(enum_releaseRegion)
+		// 			&& is_RewardMenu_displayed_long(enum_releaseRegion))
+		// 		&& trigger_when(always_false()) // <-- always_false()
+		// 	)
 
-		// ==== Alt Reset Group ==== reset once() in [Alt RATrigger Popup Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& (
-					on_InGame_start(enum_releaseRegion)
-					|| on_StartChpMenu_initialize(enum_releaseRegion)
-					|| !is_Playing_BountyHunterMode(enum_releaseRegion))
-			)
-		}),
+		// // [3] ==== Alt Reset Group ==== 				-> reset the once() in the [Alt RATrigger Group] when replaying the bounty hunter mission (so the RATrigger popup hides again)
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& (
+		// 			on_InGame_start(enum_releaseRegion)
+		// 			|| on_StartChpMenu_initialize(enum_releaseRegion)
+		// 			|| !is_Playing_BountyHunterMode(enum_releaseRegion))
+		// 	)
+		// }),
 	"a_BountyHuntChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BullsEye, enum_releaseRegion)),
 	"a_BountyHuntChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -3673,7 +3716,9 @@ achievements_triggers = {
 		// [2] ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))			
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(is_AreaState_InGame(enum_releaseRegion)) 
 			&& current_Calculated_CashDuringMission(enum_releaseRegion) >= const_CASH_TARGET // WARNING - RATools cannot generate this sumOf correctly, thus this check is manually edited in via RAIntegration
@@ -3692,6 +3737,7 @@ achievements_triggers = {
 				&& is_AtMainMenu(enum_releaseRegion))
 
 		// [4] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			// NOTE: Reset on RetryMenu restart => is not allowed for cheats being used...
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
@@ -3769,8 +3815,7 @@ achievements_triggers = {
 		}),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ==== Core (Alt) Group ====
-			is_ReleaseRegion(enum_releaseRegion) 
-			&& is_InGame(enum_releaseRegion)
+			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
 			&& is_Area(AREA_Campaign_BullsEye, enum_releaseRegion)
 			// && !is_AnyCheat_active(enum_releaseRegion) // <-- usage of cheats for this achievement makes no difference
@@ -3800,13 +3845,10 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
-
 			&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
-				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))
-			
+				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))			
 			&& unless(once( // <-- Pause Lock: when stumbled off the train
 				current_PlayerZCoordinate(enum_releaseRegion) < 0
 				&& is_AreaState_InGame(enum_releaseRegion)))
