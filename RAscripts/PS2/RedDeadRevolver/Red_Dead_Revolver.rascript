@@ -498,7 +498,7 @@ memory_addresses = {
 		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
-		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
+		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
@@ -3001,7 +3001,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = { // TODO Publish DISABLED achievements - with USA version support changes
+achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3091,8 +3091,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 455172, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 		// "a_BountyHunterCooper": { // QA a_BountyHunterCooper // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// 	"id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
+			// "id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
 		"a_BountyHunterWeapons": { // QA a_BountyHunterWeapons
 			"id": 455443, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
@@ -3106,8 +3106,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 455176, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 		// "a_SundownNate": { // QA a_SundownNate // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// "id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
+			// 	"id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
 		"a_SundownFlawless": { // QA a_SundownFlawless
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
@@ -3141,8 +3141,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
 		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as this still uses SubSources // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			// 	"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			// 	"devInfo": "Unlock all unique weapons in the Story Campaign"},
+			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
@@ -3217,8 +3217,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Amass an amount of cash on one player profile"},
 		// "a_PerfectAccuracy": { // QA a_PerfectAccuracy // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// 	"id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
+			// "id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
@@ -3241,8 +3241,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
 		// "a_ChallengeChapter7": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			// 	"id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
+			// "id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
 		"a_ChallengeChapter8": { // VERIFIED
 			"id": 451482, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
@@ -3259,8 +3259,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
 		// "a_ChallengeChapter14": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			// 	"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
+			// "id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
 			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
@@ -3283,8 +3283,8 @@ achievements_coreData = { // TODO Publish DISABLED achievements - with USA versi
 			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 60% , 'Golden Gun' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// 	"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
+			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
 		"a_WoodChapter8": { // QA a_WoodChapter8
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
@@ -3728,6 +3728,12 @@ achievements_triggers = {
 					AddSource 	Mem 32-bit 0x5884 		* Mem 32-bit 0x5888
 					AddAddress	Mem 32-bit 0x562a20
 								Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+
+				OUTPUT (NTSCU)
+					AddAddress	Mem 32-bit 0x5602a0
+					AddSource 	Mem 32-bit 0x5884 		* Mem 32-bit 0x5888
+					AddAddress	Mem 32-bit 0x5602a0
+								Mem 32-bit 0x587c	>= Val const_CASH_TARGET
 			*/
 			&& trigger_when(always_false())
 			
@@ -3773,7 +3779,17 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
+
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+									Recall						>= 	Float			const_DESIRED_ACCURACY
 				*/
+
 				/* This commented code could replace above sumOf line, but this logic contains more lines
 					-----------------------------------------------------------------------------------
 					&& tally_of(let_array_AllowedAccuracyStrings, 1, // <---TallyOf--- checks accuracy string at RewardMenu
@@ -3884,7 +3900,7 @@ achievements_triggers = {
 		const_CASH_TARGET = 1000
 			
 		return
-		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -3900,7 +3916,7 @@ achievements_triggers = {
 				never(is_StartChpMenu_active(enum_releaseRegion))
 				&& is_RewardMenu_displayed_long(enum_releaseRegion)) 
 
-		// ==== Alt RATrigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
+		// [2] ==== Alt RATrigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -3910,28 +3926,37 @@ achievements_triggers = {
 
 			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& measured(current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) >= const_CASH_TARGET) // WARNING - RATools cannot generate this sumOf correctly, thus this check is manually edited in via RAIntegration
-				// Full SumOf would look like this [PAL]:
-				// -------------------------------
-				// AddAddress	Mem 32-bit 0x7448d8
-				// SubSource 	Mem 32-bit 0x8
-				// AddAddress	Mem 32-bit 0x562a20
-				// AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
-				// AddAddress	Mem 32-bit 0x562a20
-				// 			 	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+				/* MANUAL_CONSTRUCTION of Measured(sumOf)
+					OUTPUT (PAL)
+						AddAddress	Mem 32-bit 0x7448d8
+						SubSource 	Mem 32-bit 0x8
+						AddAddress	Mem 32-bit 0x562a20
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddAddress	Mem 32-bit 0x562a20
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+					
+					OUTPUT (NTSCU)
+						AddAddress	Mem 32-bit 0x742158
+						SubSource 	Mem 32-bit 0x8
+						AddAddress	Mem 32-bit 0x5602a0
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddAddress	Mem 32-bit 0x5602a0
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+				*/
 			&& trigger_when(always_false())	
 
-		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
+		// [4] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RetryMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
@@ -3959,13 +3984,22 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 				-> OUTPUT (PAL)
-					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x763070
 					AddAddress	Mem		32-bit	0x18
 					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x763070
 					AddAddress	Mem		32-bit	0x36c
 					Remember	Mem		Float	0x70		/	Recall
-					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
+					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+
+				-> OUTPUT (NTSCU)
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x14
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		Float	0x70		/	Recall
+					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
 			*/
 			/* Below commented code is a larger alternative to above Pause Lock (without Remember + Recall)
 			---------------------------
@@ -3998,10 +4032,19 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 				-> OUTPUT (PAL)
-					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x763070
 					AddAddress	Mem		32-bit	0x18
 					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x00763070
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		Float	0x70		/	Recall
+					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+
+				-> OUTPUT (NTSCU)
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x14
+					AddAddress	Mem		32-bit	0x7608f0
 					AddAddress	Mem		32-bit	0x36c
 					Remember	Mem		Float	0x70		/	Recall
 					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
@@ -4010,10 +4053,19 @@ achievements_triggers = {
 			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
 				/* MANUAL_CONSTRUCTION (of Measured) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)
+						
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)				
@@ -4201,6 +4253,15 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
+									
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+									Recall						>= 	Float			const_DESIRED_ACCURACY
 				*/
 			
 			&& trigger_when(				
@@ -4226,6 +4287,16 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
 						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+						Remember	Recall						*	Float			100.0
+						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
+
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 						Remember	Recall						*	Float			100.0
@@ -4449,10 +4520,19 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
+						
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
@@ -4483,13 +4563,22 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 				*/
 			
 			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
@@ -4501,7 +4590,16 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x00763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)				
+						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)
+
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)	
 				*/
 				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
 				format = "raw")
@@ -4900,10 +4998,19 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
@@ -4912,10 +5019,19 @@ achievements_triggers = {
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
-						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+									Recall						>= 	Float			const_DESIRED_ACCURACY
+
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
@@ -4940,10 +5056,19 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
 					-> OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
@@ -4956,6 +5081,16 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
 						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x198		/ 	Recall
+						Remember	Recall						*	Float			100.0
+						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
+						
+					-> OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x194
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 						Remember	Recall						*	Float			100.0
@@ -5332,10 +5467,20 @@ achievements_triggers = {
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100),
 				/* MANUAL_CONSTRUCTION: Remember + Recall
 					OUTPUT (PAL)
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
-						AddAddress	Mem		32-bit	0x00763070
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						Remember	Recall						*	Float 	100.0
+						Measured	Recall						>=	Float 	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100)
+
+					OUTPUT (NTSCU)
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
 						Remember	Recall						*	Float 	100.0
@@ -5721,6 +5866,15 @@ achievements_triggers = {
 					AddAddress	Mem		32-bit	0x36c
 					Remember	Mem		32-bit	0x498		/ 	Recall
 								Recall						>= 	Float			const_DESIRED_ACCURACY
+								
+				-> OUTPUT [NTSCU]
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Float			0.0			+	Mem		32-bit	0x494
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		32-bit	0x498		/ 	Recall
+								Recall						>= 	Float			const_DESIRED_ACCURACY
 			*/
 			
 			&& trigger_when(
@@ -5749,6 +5903,16 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x494
 						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		32-bit	0x498		/ 	Recall
+						Remember	Recall						* 	Float			100.0
+						Measured	Recall						>=	Float			const_MAX_ACCURACY
+
+					-> OUTPUT [NTSCU]
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Float			0.0			+	Mem		32-bit	0x494
+						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x498		/ 	Recall
 						Remember	Recall						* 	Float			100.0
