@@ -6570,10 +6570,17 @@ function achievements_initialize() {
 // =====================
 // • RichPresence TEXT •
 // =====================
-//	- Contains text for the rich presence script
+//	- Contains text for the rich presence script // TODO implement rp_Default + rp_DefaultPlus
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
+	"rp_HighNoonShowdown":								{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2}"}
+	"rp_SundownShowdown":								{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | Time left: {2}"}
+	"rp_BountyHuntShowdown":							{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected"}
+	"rp_BountyHunterMode":								{"en": "Chapter {0} '{1}' on Bounty Hunter Mode"}
+	"rp_StoryMode":										{"en": "Chapter {0} '{1}' on {2} | Journal: {3}%"}	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
+	"rp_MainMenu":										{"en": "Main menu of Red Dead Revolver | Journal: {0}%"}	
+	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"}	
+	"rp_Default":										{"en": "Playing Red Dead Revolver"}}	
 richPresence_LookupTablesText = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},	
 	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
@@ -6783,10 +6790,10 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_Chapter1Normal": { // CONCEPT lb_Chapter1Normal
-		"id": 115333, "isLowerBetter": false, 
-		"leaderboardFormat": "VALUE",
-		"devInfo": "Best Stats - Chapter 1 - Normal"},
+	// "lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		// "id": 115333, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Chapter 1 - Normal"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED
 		"id": 112549, "isLowerBetter": true, 
