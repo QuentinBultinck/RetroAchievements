@@ -200,6 +200,10 @@ memory_dataStructures = {
 				"addAddressChain": [0x36C, 0x198]},
 			"32Bit_DeadEyeAbilitiesUsed": { 
 				"addAddressChain": [0x36C, 0x1BC]},
+			"32Bit_HighestComboMultiplier": { 
+				"addAddressChain": [0x36C, 0x1C0]},
+			"Float_HighestCombo": { 
+				"addAddressChain": [0x36C, 0x1C4]},
 			"32Bit_ShotsFiredShowdown": { 
 				"addAddressChain": [0x36C, 0x494]},
 			"32Bit_ShotsHitShowdown": { 
@@ -2472,6 +2476,14 @@ function prev_DeadEyeAbilitiesUsed(enum_releaseRegion) =>
 function on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion) =>
 	current_DeadEyeAbilitiesUsed(enum_releaseRegion) > prev_DeadEyeAbilitiesUsed(enum_releaseRegion)
 
+function current_HighestCombo(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_HighestCombo", let_memAddr_SinglePlayerData, accessor = float)}
+
+function current_HighestComboMultiplier(enum_releaseRegion) {
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HighestComboMultiplier", let_memAddr_SinglePlayerData, accessor = dword)}
+
 function current_HighestCombo_Showdown(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_HighestComboShowdown", let_memAddr_SinglePlayerData, accessor = float)}
@@ -2684,6 +2696,9 @@ function current_TimeSpentInMission(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion)
 	let_offsetTo_TimeSpentInMission = memory_getDataStructOffset("Struct_Mission_Timers", "Float_TimeSpentinMission")
 	return float(dword(let_memAddr_BasePointer) + let_offsetTo_TimeSpentInMission)}
+
+function prev_TimeSpentInMission(enum_releaseRegion) =>
+	prev(current_TimeSpentInMission(enum_releaseRegion))
 
 // ............
 // ◦ SHOWDOWN ◦
@@ -6768,10 +6783,10 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	// "lb_Chapter1Normal": { // CONCEPT lb_Chapter1Normal
-	// 	"id": 000000, "isLowerBetter": false, 
-	// 	"leaderboardFormat": "VALUE",
-	// 	"devInfo": "Read dev_ID"},
+	"lb_Chapter1Normal": { // CONCEPT lb_Chapter1Normal
+		"id": 115333, "isLowerBetter": false, 
+		"leaderboardFormat": "VALUE",
+		"devInfo": "Best Stats - Chapter 1 - Normal"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED
 		"id": 112549, "isLowerBetter": true, 
@@ -6796,6 +6811,44 @@ leaderboards_coreData = {
 // • Leaderboards TRIGGERS •
 // =========================
 leaderboards_startTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: Only Mission Restart works to reset the leaderboard. RetryMenu should not reset the leaderboard as this uses checkpoints
+		const_MISSION_AREA = AREA_Campaign_BullsEye
+		const_DIFFICULTY = DIFFICULTY_Normal
+
+		return 
+		// [1] ==== Core (Alt) Group ====					-> Start when starting the mission from start/restart
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Area(const_MISSION_AREA, enum_releaseRegion)
+				|| !is_StoryCampaignDifficulty(const_DIFFICULTY, enum_releaseRegion))
+
+			&& once( // ---2x Once--> Check if player has started mission from start/restart
+				current_TimeSpentInMission(enum_releaseRegion) >= 1.0
+				&& prev_TimeSpentInMission(enum_releaseRegion) < 1.0)
+			&& is_AreaState_InGame(enum_releaseRegion)
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Single Player Campaign (eg. quit to main menu)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when any cheat is active
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_AnyCheat_active(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_RewardMenu_Replay_confirm(enum_releaseRegion))
+		}),
+
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		const_HUMAN_PLAYER_INDEX_1 = 1
 		const_CPU_PLAYER_INDEX_2 = 2
@@ -6925,6 +6978,24 @@ leaderboards_startTriggers = {
 	}),
 	}
 leaderboards_cancelTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		return 
+		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Single Player Campaign (eg. quit to main menu)
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
+		// [2] ==== Cancel (Alt) Group ====		-> Cancel when any cheat is active
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& is_AnyCheat_active(enum_releaseRegion)
+
+		// [3] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_WarningMenu_yes(enum_releaseRegion)
+
+		// [4] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on RewardMenu->Replay
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_RewardMenu_Replay_confirm(enum_releaseRegion)
+		}),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion)
 		&& (
@@ -6938,6 +7009,21 @@ leaderboards_cancelTriggers = {
 		always_false()),
 	}
 leaderboards_submitTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_BullsEye
+		return 
+		// [1] ==== Core (Alt) Group ==== 	-> Submit when the RewardMenu is rendered
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
+			&& once(on_RewardMenu_render_short(enum_releaseRegion))
+			&& repeated(120, is_RewardMenu_displayed_short(enum_releaseRegion))
+
+		// [2] ==== Alt Reset GRoup==== 	-> Reset when RewardMenu is not rendered
+			|| never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_RewardMenu_displayed_short(enum_releaseRegion))
+		}),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion)
 		&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion)),
@@ -6947,13 +7033,7 @@ leaderboards_submitTriggers = {
 		always_true()),
 	}
 
-//-----------------valueMeasures--------------------
-function leaderboards_generate_ValueMeasures_AllSupportedRegions(function_valueMeasure) { // function_valueMeasure() => must take enum_releaseregion as a paramater
-	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-		array_push(let_array_valueMeasures, function_valueMeasure(enum_releaseRegion))
-	return max_of(let_array_valueMeasures)}
-
+//-----------------------------valueMeasures----------------------------
 function lb_template_ValueMeasure() { // Template
 	function valueMeasure(enum_releaseRegion) => measured(		
 		repeated(100, always_false()), // <-- Logic goes here
@@ -6963,7 +7043,87 @@ function lb_template_ValueMeasure() { // Template
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
+//---------------------------------
+function lb_Chapter1Normal_ValueMeasure() {
+	function valueMeasure(enum_releaseRegion) => measured(
+		current_RewardMenu_BountyCollected(enum_releaseRegion)
+		+ current_ShotsFired(enum_releaseRegion)
+		+ current_ShotsHit(enum_releaseRegion)
+		+ current_DamageTaken(enum_releaseRegion)
+		+ current_TimeSpentInMission(enum_releaseRegion)
+		+ current_HighestCombo(enum_releaseRegion)
+		+ current_HighestComboMultiplier(enum_releaseRegion), 
+		when = 
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_RewardMenu_displayed_short(enum_releaseRegion))
 
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
+			-> OUTPUT (PAL)
+				1	AddAddress	Mem		32bit	0x763070
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x763070
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
+				9	AddAddress	Mem		32bit	0x54caf0
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+
+				14	AddAddress	Mem		32bit	0x763070
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x7a0788
+				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x763070
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x763070
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+			-> OUTPUT (NTSCU)
+				1	AddAddress	Mem		32bit	0x7608f0
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x7608f0
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
+				9	AddAddress	Mem		32bit	0x54a370
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+
+				14	AddAddress	Mem		32bit	0x7608f0
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x79e008
+				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x7608f0
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x7608f0
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+	*/
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+//---------------------------------
 function lb_ShowdownFastestBounty_ValueMeasure() {
 	function valueMeasure(enum_releaseRegion) => measured(
 		current_TimeSpentInMission(enum_releaseRegion), 
@@ -6977,15 +7137,6 @@ function lb_ShowdownFastestBounty_ValueMeasure() {
 function lb_ShowdownLargestBounty_ValueMeasure() {
 	function valueMeasure(enum_releaseRegion) => measured(
 		current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion),
-		/* MANUAL CONSTRUCTION (not necessary RATools generates correct logic)
-			current_Cash(enum_releaseRegion) + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
-
-			-> OUTPUT (PAL)
-				AddAddress	Mem 32-bit 0x562a20
-				AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
-				AddAddress	Mem 32-bit 0x562a20
-							Mem 32-bit 0x587c
-		*/
 		when = is_ReleaseRegion(enum_releaseRegion))
 
 	let_array_valueMeasures = []
@@ -7004,6 +7155,8 @@ function lb_ShowdownBestCombo_ValueMeasure() {
 	return max_of(let_array_valueMeasures)}
 
 leaderboards_valueMeasures = { 
+	"lb_Chapter1Normal": lb_Chapter1Normal_ValueMeasure(),
+
 	"lb_ShowdownFastestBounty": lb_ShowdownFastestBounty_ValueMeasure(),
 	"lb_ShowdownLargestBounty": lb_ShowdownLargestBounty_ValueMeasure(),
 	"lb_ShowdownBestCombo": lb_ShowdownBestCombo_ValueMeasure(),
@@ -7014,7 +7167,7 @@ leaderboards_valueMeasures = {
 leaderboards_titles = { // TODO Leaderboards: creative text
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Chapter 1 Normal - Best Stats"},
+	"lb_Chapter1Normal":					{"en": "Bull's Eye Bounty Board - Normal"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
 	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
@@ -7023,7 +7176,7 @@ leaderboards_titles = { // TODO Leaderboards: creative text
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Complete Chapter 1, 'Bull's Eye', with the best stats"},
+	"lb_Chapter1Normal":					{"en": "Master Chapter 1, 'Bull's Eye, with deadly precision, steadfast resilience, swift alacrity and a bounty haul worthy of a Wild West legend, on normal difficulty"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match with 3 CPU's as fast as possible"},
 	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match with 3 CPU's"},
