@@ -64,8 +64,28 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
+function util_throwError_RegionNotSupported(enum_releaseRegion) =>
+	util_throwError(format("This functionality is not supported for release region: {0}", enum_releaseRegion))
+
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
+
+const_asciiToHex  = {
+  'A': 0x41,  'B': 0x42,  'C': 0x43,  'D': 0x44,  'E': 0x45,  'F': 0x46,  'G': 0x47, 
+  'H': 0x48,  'I': 0x49,  'J': 0x4A,  'K': 0x4B,  'L': 0x4C,  'M': 0x4D,  'N': 0x4E, 
+  'O': 0x4F,  'P': 0x50,  'Q': 0x51,  'R': 0x52,  'S': 0x53,  'T': 0x54,  'U': 0x55, 
+  'V': 0x56,  'W': 0x57,  'X': 0x58,  'Y': 0x59,  'Z': 0x5A,  'a': 0x61,  'b': 0x62, 
+  'c': 0x63,  'd': 0x64,  'e': 0x65,  'f': 0x66,  'g': 0x67,  'h': 0x68,  'i': 0x69, 
+  'j': 0x6A,  'k': 0x6B,  'l': 0x6C,  'm': 0x6D,  'n': 0x6E,  'o': 0x6F,  'p': 0x70, 
+  'q': 0x71,  'r': 0x72,  's': 0x73,  't': 0x74,  'u': 0x75,  'v': 0x76,  'w': 0x77, 
+  'x': 0x78,  'y': 0x79,  'z': 0x7A,  '0': 0x30,  '1': 0x31,  '2': 0x32,  '3': 0x33, 
+  '4': 0x34,  '5': 0x35,  '6': 0x36,  '7': 0x37,  '8': 0x38,  '9': 0x39,  ' ': 0x20, 
+  '!': 0x21,  '"': 0x22,  '#': 0x23,  '$': 0x24,  '%': 0x25,  '&': 0x26,  '\'': 0x27, 
+  '(': 0x28,  ')': 0x29,  '*': 0x2A,  '+': 0x2B,  ',': 0x2C,  '-': 0x2D,  '.': 0x2E, 
+  '/': 0x2F,  ':': 0x3A,  ';': 0x3B,  '<': 0x3C,  '=': 0x3D,  '>': 0x3E,  '?': 0x3F, 
+  '@': 0x40,  '[': 0x5B,  '\\': 0x5C,  ']': 0x5D,  '^': 0x5E,  '_': 0x5F,  '`': 0x60, 
+  '{': 0x7B,  '|': 0x7C,  '}': 0x7D,  '~': 0x7E}
+ 
 
 
 
@@ -381,6 +401,21 @@ memory_dataStructures = {
 			"BitFlag_IsPlayerSlotFilled": 0x13,
 			"ASCII_ShowdownAIsetting": 0x139}
 		},		
+	"Struct_ShowdownPlayer_Data": {
+		"sizeInBytes": 16,
+		"offsetToMember": {
+			"Struct_ShowdownPlayer_Data_A": 0x0,
+			"Struct_ShowdownPlayer_Data_B": 0x4,
+			"Struct_ShowdownPlayer_Data_C": 0x8,
+			"Struct_ShowdownPlayer_Data_D": 0xC}
+		},
+	"Struct_ShowdownPlayer_Data_B": {
+		"pointerChains": {
+			"32Bit HighNoonRoundsWon": { 
+				"addAddressChain": [0x30, 0x430]},
+			"32Bit_CashCollected": { 
+				"addAddressChain": [0x30, 0x490]}}
+		},
 	"Struct_MultiplayerRewardMenu_Data": {
 		"pointerChains": {
 			"32BitPointer_28": {
@@ -520,6 +555,7 @@ memory_addresses = {
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -826,7 +862,8 @@ AREA_Showdown_TwinRocks = "lvl_hng2"
 AREA_Showdown_DesertFortress = "lvl_fort2"
 
 const_Area_data = { // TODO put these coordinates inside the code notes??
-	AREA_Campaign_BullsEye: { 
+	AREA_Campaign_BullsEye: { // Documentation nested here
+		"InnerAreaID_asHex": 0x72666e65, // ASCII = "rfne" // Used by Rich Presence (as we can't check ASCII, only integers in lookupTables are allowed)
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X-Coordinate": 20.60,
 			"Y-Coordinate": 12.65,
@@ -836,6 +873,7 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"Y-Coordinate": -8.00,
 			"Z-Coordinate": -5.12}},
 	AREA_Campaign_BountyHunter: { 
+		"InnerAreaID_asHex": 0x67000000, // ASCII = "g   "
 		"PlayerLoadCoordinates": { 
 			"X-Coordinate": 3.05,
 			"Y-Coordinate": 13.39,
@@ -845,6 +883,7 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"Y-Coordinate": 41.20,
 			"Z-Coordinate": 0.01}},
 	AREA_Campaign_UglyStreetFight: { 
+		"InnerAreaID_asHex": 0x65720000, // ASCII = "er  "
 		"PlayerLoadCoordinates": {
 			"X-Coordinate": 34.35,
 			"Y-Coordinate": -14.90,
@@ -1075,6 +1114,16 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"Z-Coordinate": 10.97}},
 	}
 
+function get_InnerAreaID_atByte5_asHex(enum_areaId) => // Used by Rich Presence (as we can't check ASCII only integers in lookupTables)
+	const_Area_data[enum_areaId]["InnerAreaID_atByte5_asHex"]
+
+function get_InnerAreaID_atByte7_asHex(enum_areaId) => // Used by Rich Presence (as we can't check ASCII only integers in lookupTables)
+	const_Area_data[enum_areaId]["InnerAreaID_atByte7_asHex"]
+
+function ASCIIaddress_ShortAreaID(enum_releaseRegion) => // lvl_..XXXX...	 --> Use with dword_be()
+	memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion) + 0x7
+
+// -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
 
@@ -2110,12 +2159,16 @@ function is_RStar_Cheat_inActive(enum_releaseRegion) {
 CHARACTER_GeneralDiego = "dgo"
 CHARACTER_MrKelley = "mrk"
 CHARACTER_JackSwift = "jck"
+CHARACTER_WhiskeyTreadwell = "wsk"
+CHARACTER_HedgehogThornton = "hdh" 
 CHARACTER_AnnieStoakes = "ani"
 CHARACTER_KatieGrady = "kti"
 CHARACTER_UglyChris = "ugl"
+CHARACTER_SmileyFawler = "aka"
 CHARACTER_GigoloHancock = "ggl"
 CHARACTER_ProfessorPerry = "pry"
 CHARACTER_BladeSlade = "bwi"
+CHARACTER_GabrialNavarro = "zzt"
 CHARACTER_SheriffGrady = "cls"
 CHARACTER_SheriffBartlett = "kng"
 CHARACTER_HolsteinHal = "tcb"
@@ -2124,20 +2177,28 @@ CHARACTER_Cooper = "bkt"
 CHARACTER_GovernorGriffon = "wyn"
 CHARACTER_JasonCornet = "sev"
 CHARACTER_BuffaloSoldier = "bfs"
-CHARACTER_ShadowWolf = "tck"
+CHARACTER_Smitty = "ncb"
 CHARACTER_FallingStar = "mom" 
+CHARACTER_Sam = "bdg"
+CHARACTER_DigFowler = "gwk"
+CHARACTER_MannyQuinn = "mok"
 CHARACTER_Grizzly = "mst"
 CHARACTER_StandingSnake = "msk"
 CHARACTER_MrBlack = "blk"
+CHARACTER_ShadowWolf = "ttk" // TODO update achievements with this CHARACTER ID => was wrong ID previously
 CHARACTER_BadBessie = "bty"
 CHARACTER_PigJosh = "pgj"
 CHARACTER_NateHarlow = "dad"
 CHARACTER_ColonelDaren = "ydr"
 CHARACTER_Natalie = "ntl"
 CHARACTER_RedJr = "mrd"
+CHARACTER_Fidgit = "mdg"
+CHARACTER_Christina = "ctn"
+CHARACTER_KidCougar = "ent"
 CHARACTER_Red = "srd"
 CHARACTER_CurlyShaw = "shp"
 CHARACTER_BloodyTom = "gay"
+CHARACTER_Chicken = "chk"
 CHARACTER_BigOaf = "frk"
 CHARACTER_TwiggyPhelps = "twg"
 CHARACTER_SissyFess = "sto"
@@ -2146,14 +2207,18 @@ CHARACTER_UdoKang = "mon"
 CHARACTER_StageCoach = 100
 const_Character_data = {
 	CHARACTER_JackSwift: {
-		"CharacterName": "Jack"},
+		"CharacterName": "Jack",
+		"CharacterID_asHex_BE": 0x6a636b},
 	CHARACTER_AnnieStoakes: {
-		"CharacterName": "Annie"},
+		"CharacterName": "Annie",
+		"CharacterID_asHex_BE": 0x6b7469},
 	CHARACTER_StageCoach: {
-		"CharacterName": "StageCoach"},
-}
+		"CharacterName": "StageCoach"}}
 function get_CharacterName(enum_character) =>
 	const_Character_data[enum_character]["CharacterName"]
+
+function get_CharacterID_asHex(enum_character) =>
+	const_Character_data[enum_character]["CharacterID_asHex_BE"]
 
 // -----------------------MajorCharacterData------------------------------
 function current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) {
@@ -2706,7 +2771,7 @@ function prev_TimeSpentInMission(enum_releaseRegion) =>
 SHOWDOWN_TEAM_RED = 0
 SHOWDOWN_TEAM_WHITE = 1
 SHOWDOWN_TEAM_BLUE = 2
-SHOWDOWN_TEAM_YELLOW = 3		
+SHOWDOWN_TEAM_YELLOW = 3
 
 // --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
@@ -2741,7 +2806,7 @@ function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, 
 // --------------------ShowdownPlayer_Settings------------------------
 SHOWDOWN_AI_SETTING_HumanPlayer = "MPplayer"
 
-function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+function ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
@@ -2751,6 +2816,10 @@ function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releas
 		let_memAddr_ShowdownPlayerSettingsArray 
 		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
+	return let_memAddr_CharacterModelID}
+
+function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+	let_memAddr_CharacterModelID = ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_memAddr_CharacterModelID, enum_character)}
 
 function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -2791,6 +2860,22 @@ function current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // P
 
 function is_ShowdownPlayer_Team(int_playerIndex, enum_showdownTeam, enum_releaseRegion) => // Player Index [1-4]
 	 current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) == enum_showdownTeam
+
+// --------------------ShowdownPlayer_Stats------------------------
+function current_ShowdownPlayer_CashCollected(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1
+	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+	
+	let_memAccessor_CashCollected = memory_generateAddAddressPointerChain(
+		"Struct_ShowdownPlayer_Data_B", "32Bit_CashCollected", 
+		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+	return let_memAccessor_CashCollected}
 
 // --------------------ShowdownMode_Settings------------------------
 SHOWDOWN_MODE_BountyHunter = 0 
@@ -6570,20 +6655,88 @@ function achievements_initialize() {
 // =====================
 // • RichPresence TEXT •
 // =====================
-//	- Contains text for the rich presence script // TODO implement rp_Default + rp_DefaultPlus
+//	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_HighNoonShowdown":								{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2}"}
-	"rp_SundownShowdown":								{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | Time left: {2}"}
-	"rp_BountyHuntShowdown":							{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected"}
-	"rp_BountyHunterMode":								{"en": "Chapter {0} '{1}' on Bounty Hunter Mode"}
-	"rp_StoryMode":										{"en": "Chapter {0} '{1}' on {2} | Journal: {3}%"}	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
-	"rp_MainMenu":										{"en": "Main menu of Red Dead Revolver | Journal: {0}%"}	
-	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"}	
-	"rp_Default":										{"en": "Playing Red Dead Revolver"}}	
+	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 4th place"},
+	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 3rd place"},
+	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 2nd place"},
+	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 1st place"},
+	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 4th place | Time left: {2}"},
+	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 3rd place | Time left: {2}"},
+	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 2nd place | Time left: {2}"},
+	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 1st place | Time left: {2}"},
+	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 4th place"},
+	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 3rd place"},
+	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 2nd place"},
+	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 1st place"},
+	"rp_BountyHunterMode":								{"en": "Chapter {0} on Bounty Hunter Mode | Journal: {1}%"},
+	"rp_StoryMode":										{"en": "Chapter {0} on {1} | Journal: xxx%"},	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
+	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: {0}%"},
+	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"},
+	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
 richPresence_LookupTablesText = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+	// "lup_Template": 									{"en": "xxxxxxxx"},	
+	// "lup_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+
+	"lup_CharacterName_GeneralDiego": 					{"en": "General Diego"},
+	"lup_CharacterName_MrKelley": 						{"en": "Mr. Kelley"},
+	"lup_CharacterName_JackSwift": 						{"en": "Jack Swift"},
+	"lup_CharacterName_WhiskeyTreadwell":				{"en": "'Whiskey' Treadwell"},
+	"lup_CharacterName_HedgehogThornton": 				{"en": "'Hedgehog' Thornton"},
+	"lup_CharacterName_AnnieStoakes": 					{"en": "Annie Stoakes"},
+	"lup_CharacterName_KatieGrady": 					{"en": "Katie O'Grady"},
+	"lup_CharacterName_UglyChris": 						{"en": "'Ugly' Chris"},
+	"lup_CharacterName_SmileyFawler": 					{"en": "'Smiley' Fawler"},
+	"lup_CharacterName_GigoloHancock": 					{"en": "'Gigolo' Hancock"},
+	"lup_CharacterName_ProfessorPerry": 				{"en": "Professor Perry"},
+	"lup_CharacterName_BladeSlade": 					{"en": "The 'Blade' Slade"},
+	"lup_CharacterName_GabrialNavarro": 				{"en": "Gabrial Navarro"},
+	"lup_CharacterName_SheriffGrady": 					{"en": "Sheriff O'Grady"},
+	"lup_CharacterName_SheriffBartlett": 				{"en": "Sheriff Bartlett"},
+	"lup_CharacterName_HolsteinHal": 					{"en": "Holstein Hal"},
+	"lup_CharacterName_Cooper": 						{"en": "Cooper"},
+	"lup_CharacterName_GovernorGriffon": 				{"en": "Governor Griffon"},
+	"lup_CharacterName_JasonCornet": 					{"en": "Jason Cornet"},
+	"lup_CharacterName_BuffaloSoldier": 				{"en": "Buffalo Soldier"},
+	"lup_CharacterName_Smitty": 						{"en": "Smitty"},
+	"lup_CharacterName_FallingStar": 					{"en": "Falling Star"},
+	"lup_CharacterName_Sam": 							{"en": "Sam"},
+	"lup_CharacterName_MannyQuinn": 					{"en": "Manny Quinn"},
+	"lup_CharacterName_Grizzly": 						{"en": "Grizzly"},
+	"lup_CharacterName_StandingSnake": 					{"en": "Standing Snake"},
+	"lup_CharacterName_MrBlack": 						{"en": "Mr. Black"},
+	"lup_CharacterName_ShadowWolf": 					{"en": "Shadow Wolf"},
+	"lup_CharacterName_BadBessie": 						{"en": "Bad Bessie"},
+	"lup_CharacterName_PigJosh": 						{"en": "'Pig' Josh"},
+	"lup_CharacterName_DigFowler": 						{"en": "'Dig' Fowler"},
+	"lup_CharacterName_NateHarlow": 					{"en": "Nate Harlow"},
+	"lup_CharacterName_ColonelDaren": 					{"en": "Colonel Daren"},
+	"lup_CharacterName_Natalie": 						{"en": "Natalie"},
+	"lup_CharacterName_RedJr": 							{"en": "Red Jr."},
+	"lup_CharacterName_Fidgit": 						{"en": "Fidgit"},
+	"lup_CharacterName_Christina": 						{"en": "Christina"},
+	"lup_CharacterName_KidCougar": 						{"en": "'Kid' Cougar"},
+	"lup_CharacterName_Red": 							{"en": "Red"},
+	"lup_CharacterName_CurlyShaw": 						{"en": "'Curly' Shaw"},
+	"lup_CharacterName_BloodyTom":						{"en": "'Bloody' Tom"},
+	"lup_CharacterName_Chicken": 						{"en": "Chicken"},
+	"lup_CharacterName_BigOaf": 						{"en": "'Big Oaf' Whitney"},
+	"lup_CharacterName_TwiggyPhelps":					{"en": "'Twiggy' Phelps"},
+	"lup_CharacterName_SissyFess": 						{"en": "'Sissy' Fess"},
+	"lup_CharacterName_RicoPedrosa": 					{"en": "Rico Pedrosa"},
+	"lup_CharacterName_UdoKang": 						{"en": "Udo Kang"},
+	"lup_CharacterName_LookupFallback": 				{"en": "a gunslinger"},
+
+	"lup_StoryChapterName_BullsEye": 					{"en": "1 'Bull's Eye'"},
+	"lup_StoryChapterName_BountyHunter": 				{"en": "2 'Bounty Hunter'"},
+	"lup_StoryChapterName_UglyStreetFight": 			{"en": "3 'Ugly Streetfight'"},
+
+	"lup_StoryDifficultyName_Normal": 					{"en": "Normal"},
+	"lup_StoryDifficultyName_Hard":						{"en": "Hard"},
+	"lup_StoryDifficultyName_VeryHard": 				{"en": "Very Hard"},
+	"lup_StoryDifficultyName_RedWoodRevolver": 			{"en": "Red Wood Revolver"},
+
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -6593,9 +6746,80 @@ function richPresence_getLookupTableText(string_parameterKey, string_lookupValue
 	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	"lup_StoryDifficultyName": {
+		DIFFICULTY_Normal: "Normal",
+		DIFFICULTY_Hard: "Hard",
+		DIFFICULTY_VeryHard: "VeryHard",
+		DIFFICULTY_RedWoodRevolver: "RedWoodRevolver"
+	},
+	"lup_StoryChapterShortID": { // TODO lup_StoryChapterShortID // When the full ASCII AREA_ID <= 8 bytes long
+		get_InnerAreaID_asHex(AREA_Campaign_BullsEye): "BullsEye",
+		get_InnerAreaID_asHex(AREA_Campaign_BountyHunter): "BountyHunter",
+		get_InnerAreaID_asHex(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
+	},
+	"lup_StoryChapterLongID": { // TODO lup_StoryChapterShortID // When the full ASCII AREA_ID > 8 bytes long
+		get_InnerAreaID_asHex(AREA_Campaign_BullsEye): "BullsEye",
+		get_InnerAreaID_asHex(AREA_Campaign_BountyHunter): "BountyHunter",
+		get_InnerAreaID_asHex(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
+	},
+	// "lup_ShowdownStageName": { // TODO lup_ShowdownStageName
+	// 	0: "xxx"
+	// },
+	"lup_CharacterName": { // TODO lup_CharacterName
+		get_CharacterID_asHex(CHARACTER_JackSwift): "JackSwift",
+		get_CharacterID_asHex(CHARACTER_AnnieStoakes): "AnnieStoakes",
+	},
+	// "lup_CharacterName_bis": { 
+	// 	CHARACTER_GeneralDiego: "GeneralDiego",
+	// 	CHARACTER_MrKelley: "MrKelley",
+	// 	CHARACTER_JackSwift: "JackSwift",
+	// 	CHARACTER_WhiskeyTreadwell: "WhiskeyTreadwell",
+	// 	CHARACTER_HedgehogThornton: "HedgehogThornton",
+	// 	CHARACTER_AnnieStoakes: "AnnieStoakes",
+	// 	CHARACTER_KatieGrady: "KatieGrady",
+	// 	CHARACTER_UglyChris: "UglyChris",
+	// 	CHARACTER_SmileyFawler: "SmileyFawler",
+	// 	CHARACTER_GigoloHancock: "GigoloHancock",
+	// 	CHARACTER_ProfessorPerry: "ProfessorPerry",
+	// 	CHARACTER_BladeSlade: "BladeSlade",
+	// 	CHARACTER_GabrialNavarro: "GabrialNavarro",
+	// 	CHARACTER_SheriffGrady: "SheriffGrady",
+	// 	CHARACTER_SheriffBartlett: "SheriffBartlett",
+	// 	CHARACTER_HolsteinHal: "HolsteinHal",
+	// 	CHARACTER_DigFowler: "DigFowler",
+	// 	CHARACTER_Cooper: "Cooper",
+	// 	CHARACTER_GovernorGriffon: "GovernorGriffon",
+	// 	CHARACTER_JasonCornet: "JasonCornet",
+	// 	CHARACTER_BuffaloSoldier: "BuffaloSoldier",
+	// 	CHARACTER_Smitty: "Smitty",
+	// 	CHARACTER_FallingStar: "FallingStar",
+	// 	CHARACTER_Sam: "Sam",
+	// 	CHARACTER_MannyQuinn: "MannyQuinn",
+	// 	CHARACTER_Grizzly: "Grizzly",
+	// 	CHARACTER_StandingSnake: "StandingSnake",
+	// 	CHARACTER_MrBlack: "MrBlack",
+	// 	CHARACTER_ShadowWolf: "ShadowWolf",
+	// 	CHARACTER_BadBessie: "BadBessie",
+	// 	CHARACTER_PigJosh: "PigJosh",
+	// 	CHARACTER_NateHarlow: "NateHarlow",
+	// 	CHARACTER_ColonelDaren: "ColonelDaren",
+	// 	CHARACTER_Natalie: "Natalie",
+	// 	CHARACTER_RedJr: "RedJr",
+	// 	CHARACTER_Fidgit: "Fidgit",
+	// 	CHARACTER_Christina: "Christina",
+	// 	CHARACTER_KidCougar: "KidCougar",
+	// 	CHARACTER_Red: "Red",
+	// 	CHARACTER_CurlyShaw: "CurlyShaw",
+	// 	CHARACTER_BloodyTom: "BloodyTom",
+	// 	CHARACTER_Chicken: "Chicken",
+	// 	CHARACTER_BigOaf: "BigOaf",
+	// 	CHARACTER_TwiggyPhelps: "TwiggyPhelps",
+	// 	CHARACTER_SissyFess: "SissyFess",
+	// 	CHARACTER_RicoPedrosa: "RicoPedrosa",
+	// 	CHARACTER_UdoKang: "UdoKang"},
 	}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
+function richPresence_getLookupTable(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -6654,22 +6878,50 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+function rp_StoryMode(enum_releaseRegion) { // TODO enhance rp_StoryMode with journal %%
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
+
+	rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_StoryMode"),
+		richPresence_callParameterFunction("rpp_StoryChapterName", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
+	}
+
+function rp_BountyHuntShowdown_First(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_short(enum_releaseRegion)
+		&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
+
+	rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_BountyHuntShowdown_First"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1Character", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1Cash", enum_releaseRegion))
+	}
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
+
 	rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
-	)}
+		richPresence_getText("rp_DefaultPlus"))
+	}
 function rp_Default() {
 	rich_presence_display(	
-		richPresence_getText("rp_Default")
-	)}
+		richPresence_getText("rp_Default"))
+	}
 // -------------------------------------
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		rp_StoryMode(enum_releaseRegion) // CONCEPT rp_StoryMode 
+		rp_BountyHuntShowdown_First(enum_releaseRegion) // QA rp_BountyHuntShowdown_First
+		// rp_DefaultPlus(enum_releaseRegion) // TODO rp_DefaultPlus
 	}} 
 
 // ===========================
@@ -6678,6 +6930,23 @@ function richPresence_initializeDisplays() {
 richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+// -------------------------------------
+
+function rpp_StoryChapterName(enum_releaseRegion) =>
+	dword_be(ASCIIaddress_ShortAreaID(enum_releaseRegion))
+
+function rpp_StoryDifficulty(enum_releaseRegion) =>
+	current_StoryCampaignDifficulty(enum_releaseRegion)
+
+function rpp_ShowdownPlayer1Character(enum_releaseRegion) =>
+	tbyte_be(ASCIIaddress_ShowdownPlayerCharacterId(1, enum_releaseRegion))
+
+function rpp_ShowdownPlayer2Character(enum_releaseRegion) =>
+	tbyte_be(ASCIIaddress_ShowdownPlayerCharacterId(2, enum_releaseRegion))
+
+function rpp_ShowdownPlayer1Cash(enum_releaseRegion) =>
+	current_ShowdownPlayer_CashCollected(1, enum_releaseRegion)
+
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -6688,7 +6957,7 @@ richPresence_parameterData = {
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	//	 "rpp_ValueTemplate": {
+	//	"rpp_ValueTemplate": {
 	//	 	"RPtype": richPresence_VALUE,
 	//	 	"Expression": {
 	//	 		RELEASE_REGION_USA: () => always_false(), 
@@ -6702,18 +6971,63 @@ richPresence_parameterData = {
 	//	 		RELEASE_REGION_USA: () => always_false(), 
 	//	 		RELEASE_REGION_EUR: () => always_false(),
 	//	 		RELEASE_REGION_JPN: () => always_false()},
-	//	 	"LookupFallback": richPresence_getLookupTableText("rpp_LookupTemplate", "LookupFallback")},
+	//		"LookupTableID": "lup_LookupTemplate",
+	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTemplate", "LookupFallback")},
 
-	//	 "rpp_MacroTemplate": {
+	//	"rpp_MacroTemplate": {
 	//	 	"RPtype": richPresence_MACRO,
 	//	 	"Expression": {
 	//	 		RELEASE_REGION_USA: () => always_false(), 
 	//	 		RELEASE_REGION_EUR: () => always_false(),
 	//	 		RELEASE_REGION_JPN: () => always_false()},
-	//	 	"MacroFormat": "Number"},
-	
+	//	 	"MacroFormat": "Number"},	
+
 	
 
+	
+	"rpp_StoryChapterShortID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_StoryChapterName(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_StoryChapterName(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapterShortID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapterLongID", "BullsEye")},
+	"rpp_StoryChapterLongID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_StoryChapterName(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_StoryChapterName(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapterLongID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapterLongID", "BullsEye")},
+	"rpp_StoryDifficulty": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_StoryDifficulty(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_StoryDifficulty(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryDifficultyName",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryDifficultyName", "Normal")},
+	"rpp_ShowdownPlayer1Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer1Character(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Character(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LookupFallback")},
+	"rpp_ShowdownPlayer2Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer2Character(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer2Character(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LookupFallback")},
+
+	"rpp_ShowdownPlayer1Cash": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer1Cash(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Cash(RELEASE_REGION_EUR), 
+			RELEASE_REGION_JPN: () => util_throwError_RegionNotSupported(RELEASE_REGION_JPN)},
+		"MacroFormat": "Number"},
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
@@ -6729,7 +7043,7 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
-		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
@@ -6740,9 +7054,9 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
+	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 
 // ===============================
