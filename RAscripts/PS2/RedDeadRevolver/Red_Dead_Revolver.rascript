@@ -589,7 +589,7 @@ memUtil_asciiToFloat = {
   "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
   "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
 
-function memUtil_asciiToHexBE(string_s) { // length of string_s maximum 4
+function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4
 	let_stringLength = length(string_s)
 
 	if (let_stringLength > 4)
@@ -1175,7 +1175,7 @@ function get_Area_InnerId_UniqueCharacter(enum_areaId) { // Take Nth character f
 	return substring(let_InnerId, let_UniqueCharacterIndex, 1)} 
 
 function get_Area_InnerId_UniqueCharacter_asHex(enum_areaId) =>
-	memUtil_asciiToHexBE(get_Area_InnerId_UniqueCharacter(enum_areaId))
+	memUtil_asciiStringToHex(get_Area_InnerId_UniqueCharacter(enum_areaId))
 
 function get_Area_InnerId_UniqueSubstring(enum_areaId) { // From the Nth character take a substring to uniquely ID the Area_InnerID
 	let_InnerId = get_Area_InnerId(enum_areaId)
@@ -1184,7 +1184,7 @@ function get_Area_InnerId_UniqueSubstring(enum_areaId) { // From the Nth charact
 	return substring(let_InnerId, let_UniqueSubstringIndex, let_UniqueSubstringLength)} 
 
 function get_Area_InnerId_UniqueSubstring_asHex(enum_areaId) =>
-	memUtil_asciiToHexBE(get_Area_InnerId_UniqueSubstring(enum_areaId))
+	memUtil_asciiStringToHex(get_Area_InnerId_UniqueSubstring(enum_areaId))
 
 function get_Area_memAddr_InnerAreaID(enum_releaseRegion) => 
 	memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion) + 0x4
@@ -6744,7 +6744,13 @@ richPresence_text = {
 	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 3rd place"},
 	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 2nd place"},
 	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 1st place"},
-	"rp_BountyHunterMode":								{"en": "Chapter {0} on Bounty Hunter Mode | Journal: {1}%"},
+	"rp_BountyHunterMode_3charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_4charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_5charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_6charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_7charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_8charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_9charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
 	"rp_StoryChapter_3charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
 	"rp_StoryChapter_4charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
 	"rp_StoryChapter_5charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
@@ -6846,6 +6852,7 @@ richPresence_LookupTablesText = {
 	"lup_StoryDifficulty_Hard":							{"en": "Hard"},
 	"lup_StoryDifficulty_VeryHard": 					{"en": "Very Hard"},
 	"lup_StoryDifficulty_RedWoodRevolver": 				{"en": "Red Wood Revolver"},
+	"lup_StoryDifficulty_BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
 
 	}
 function richPresence_getText(string_textKey) =>
@@ -7032,7 +7039,7 @@ function rp_StoryChapter_byAreaInnerIdLength(int_innerIdLength, enum_releaseRegi
 	return rich_presence_conditional_display( 
 		condition(int_innerIdLength, enum_releaseRegion),
 		richPresence_getText(format("rp_StoryChapter_{0}charID", int_innerIdLength)),
-		richPresence_callParameterFunction(format("lup_StoryChapter{0}charID", int_innerIdLength), enum_releaseRegion), 
+		richPresence_callParameterFunction(format("rpp_StoryChapter{0}charID", int_innerIdLength), enum_releaseRegion), 
 		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
 	}
 function rp_StoryChapter_3charID(enum_releaseRegion) =>
@@ -7049,6 +7056,36 @@ function rp_StoryChapter_8charID(enum_releaseRegion) =>
 	rp_StoryChapter_byAreaInnerIdLength(8, enum_releaseRegion)
 function rp_StoryChapter_9charID(enum_releaseRegion) =>
 	rp_StoryChapter_byAreaInnerIdLength(9, enum_releaseRegion)
+
+// ------------------rp_BountyHunterMode-----------------
+function rp_BountyHunterMode_byAreaInnerIdLength(int_innerIdLength, enum_releaseRegion) { // TODO enhance rp_BountyHunterMode with journal %%
+	function condition(int_innerIdLength, enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		&& is_Area_InnerIdLength(int_innerIdLength, enum_releaseRegion)
+
+	return rich_presence_conditional_display( 
+		condition(int_innerIdLength, enum_releaseRegion),
+		richPresence_getText(format("rp_BountyHunterMode_{0}charID", int_innerIdLength)),
+		richPresence_callParameterFunction(format("rpp_StoryChapter{0}charID", int_innerIdLength), enum_releaseRegion), 
+		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
+	}
+function rp_BountyHunterMode_3charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(3, enum_releaseRegion)
+function rp_BountyHunterMode_4charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(4, enum_releaseRegion)
+function rp_BountyHunterMode_5charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(5, enum_releaseRegion)
+function rp_BountyHunterMode_6charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(6, enum_releaseRegion)
+function rp_BountyHunterMode_7charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(7, enum_releaseRegion)
+function rp_BountyHunterMode_8charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(8, enum_releaseRegion)
+function rp_BountyHunterMode_9charID(enum_releaseRegion) =>
+	rp_BountyHunterMode_byAreaInnerIdLength(9, enum_releaseRegion)
+
 // ----------------------------------------------
 function rp_BountyHuntShowdown_First(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
@@ -7078,7 +7115,14 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_StoryChapter_3charID(enum_releaseRegion) // CONCEPT rp_StoryMode 
+		rp_BountyHunterMode_3charID(enum_releaseRegion)
+		rp_BountyHunterMode_4charID(enum_releaseRegion)
+		rp_BountyHunterMode_5charID(enum_releaseRegion)
+		rp_BountyHunterMode_6charID(enum_releaseRegion)
+		rp_BountyHunterMode_7charID(enum_releaseRegion)
+		rp_BountyHunterMode_8charID(enum_releaseRegion)
+		rp_BountyHunterMode_9charID(enum_releaseRegion)
+		rp_StoryChapter_3charID(enum_releaseRegion)
 		rp_StoryChapter_4charID(enum_releaseRegion)
 		rp_StoryChapter_5charID(enum_releaseRegion)
 		rp_StoryChapter_6charID(enum_releaseRegion)
@@ -7101,7 +7145,7 @@ function rpp_StoryChapterName_UniqueCharacter(int_innerIdLength, enum_releaseReg
 	byte(get_Area_memAddr_InnerAreaID(enum_releaseRegion) + get_Area_InnerId_UniqueCharacterIndex_byInnerIdLength(int_innerIdLength))
 
 function rpp_StoryChapterName_UniqueSubstring(int_innerIdLength, enum_releaseRegion) =>
-	word_be(get_Area_memAddr_InnerAreaID(enum_releaseRegion) + get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(int_innerIdLength))
+	word(get_Area_memAddr_InnerAreaID(enum_releaseRegion) + get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(int_innerIdLength))
 
 function rpp_StoryDifficulty(enum_releaseRegion) =>
 	current_StoryCampaignDifficulty(enum_releaseRegion)
@@ -7151,49 +7195,49 @@ richPresence_parameterData = {
 	//	 	"MacroFormat": "Number"},	
 
 	
-	"lup_StoryChapter3charID": {
+	"rpp_StoryChapter3charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(3, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(3, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter3charID",
-		"LookupFallback": "3333"},
-	"lup_StoryChapter4charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter4charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(4, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(4, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter4charID",
-		"LookupFallback": "444"},
-	"lup_StoryChapter5charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter5charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(5, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(5, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter5charID",
-		"LookupFallback": "555"},
-	"lup_StoryChapter6charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter6charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(6, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(6, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter6charID",
-		"LookupFallback": "666"},
-	"lup_StoryChapter7charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter7charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(7, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(7, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter7charID",
-		"LookupFallback": "777"},
-	"lup_StoryChapter8charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter8charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueSubstring(8, RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueSubstring(8, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter8charID",
-		"LookupFallback": "888"},
-	"lup_StoryChapter9charID": {
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
+	"rpp_StoryChapter9charID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(9, RELEASE_REGION_USA), 
