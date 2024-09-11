@@ -2219,13 +2219,20 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
-// ------------------------RstarCheat------------------------------
-function is_RStar_Cheat_inActive(enum_releaseRegion) {
+// ------------------------RstarCheat------------------------------ // TODO Solution to bug is in a_UnlockCharactersHalf && a_UnlockCharactersAll achievement // BUG need to check whole Player_Profile name length (eg. "Rstarman" shouldn't disable the achievement)
+function is_RStar_Cheat_inActive(enum_releaseRegion) { // This Rstar cheat check needs to be used plainly
 	const_RSTAR_NAME = "Rstar"
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
 	return is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
+
+function is_RStar_Cheat_active(enum_releaseRegion) { // This Rstar cheat check needs to be in MeasuredIfs
+	const_RSTAR_NAME = "Rstar"
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
+	return is_ASCII_EqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
 
 // ............................
 // ◦ CHARACTER IDENTIFICATION ◦
@@ -6340,7 +6347,9 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& is_RStar_Cheat_inActive(enum_releaseRegion)
+			&& once(
+				never(is_RStar_Cheat_active(enum_releaseRegion)) // TODO this RStar Cheat checker for all cases where it's used
+				&& !is_RStar_Cheat_active(enum_releaseRegion))
 
 			&& prev(let_sumOf_FlagsAllCharacters) < CHARACTER_COUNT/2
 			&& prev(let_sumOf_FlagsAllCharacters) > (CHARACTER_COUNT/4)
@@ -6356,7 +6365,11 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& is_RStar_Cheat_inActive(enum_releaseRegion))
+					&& once(
+						never(is_RStar_Cheat_active(enum_releaseRegion))
+						&& !is_RStar_Cheat_active(enum_releaseRegion)
+					)
+			)
 		}),
 	"a_CompleteJournalHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: No Measured Flag required for this as a_CompleteFullJournal already has one
@@ -6422,7 +6435,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& is_RStar_Cheat_inActive(enum_releaseRegion))
+					&& is_RStar_Cheat_inActive(enum_releaseRegion)) 
 		}),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
