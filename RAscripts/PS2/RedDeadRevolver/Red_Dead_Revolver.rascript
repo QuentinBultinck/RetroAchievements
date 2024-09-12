@@ -2219,20 +2219,131 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
-// ------------------------RstarCheat------------------------------ // TODO Solution to bug is in a_UnlockCharactersHalf && a_UnlockCharactersAll achievement // BUG need to check whole Player_Profile name length (eg. "Rstarman" shouldn't disable the achievement)
-function is_RStar_Cheat_inActive(enum_releaseRegion) { // This Rstar cheat check needs to be used plainly
-	const_RSTAR_NAME = "Rstar"
+// ------------------------RstarCheat------------------------------ 
+function is_RStar_Cheat_Active(enum_releaseRegion) { // When using with PauseIf -> ResetNextIfs can be replaced by 1 ResetNextIf when the active PlayerProfile changes or when the PlayerProfile is erased (First letter of PlayerProfileName becomes 0x0)
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
-	return is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
+		
+	/* is Rstar cheat active + Need ResetNextIf on every hitcount
+	----------------------- Checking 7-byte ASCII for "Rstar__"
+		0xA == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xA == "r"    	(+1)
+		0xB == "S"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xB == "s"    	(+1)
+		...same for "_sta_" chars...
+		0xE == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xE == "r"    	(+1)
+		0xF == " " 		(+1) --2 lines--> only 1 of these can be true at one given time
+		0xF == 0x0		(+1)
+		0x10 == " " 	(+1) --2 lines--> only 1 of these can be true at one given time
+		0x10 == 0x0		(+1)
+		val == 7       --> Rstar cheat IS active
+	*/
+	
+	return 
+		tally(7, [
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "R")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "r")) && // lowercase check r
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "r")),
+				
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "S")) && // uppercase check S -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "S")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "s")) && // lowercase check s
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "s")),
 
-function is_RStar_Cheat_active(enum_releaseRegion) { // This Rstar cheat check needs to be in MeasuredIfs
-	const_RSTAR_NAME = "Rstar"
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "T")) && // uppercase check T -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "T")), 
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "t")) && // lowercase check t
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "t")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "A")) && // uppercase check A -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "A")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "a")) && // lowercase check a
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "a")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "R")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "r")) && // lowercase check r
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "r")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x5, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x5, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x5) != 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x5) == 0x0),			
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x6, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x6, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x6) != 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x6) == 0x0),
+		])}
+
+function is_RStar_Cheat_inActive(enum_releaseRegion) { 
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
-	return is_ASCII_EqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
+
+	/* is Rstar cheat NOT active + Need ResetNextIf on every hitcount
+	----------------------- Checking 7-byte ASCII for "Rstar__"
+		0xA != "R"    	(+1) --2 lines--> Both of these need to be true
+		0xA != "r"    	(+1)
+		0xB != "S"    	(+1) --2 lines--> Both of these need to be true
+		0xB != "s"    	(+1)
+		...same for "_sta_" chars...
+		0xE != "R"    	(+1) --2 lines--> Both of these need to be true
+		0xE != "r"    	(+1)
+		0xF != " " 		(+1) --2 lines--> Both of these need to be true
+		0xF != 0x0		(+1)
+		0x10 != " " 	(+1) --2 lines--> Both of these need to be true
+		0x10 != 0x0		(+1)
+		val == 14       --> Rstar cheat NOT active
+
+
+
+	
+
+
+	*/
+
+	return 
+		tally(1, [ // ---tally--> 
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "R")) && // uppercase check R -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "R")),
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "r")) && // lowercase check r
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "r"))])
+				
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "S")) && // uppercase check S -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "S")),
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "s")) && // lowercase check s
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "s")),
+
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "T")) && // uppercase check T -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "T")), 
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "t")) && // lowercase check t
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "t")),
+
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "A")) && // uppercase check A -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "A")),
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "a")) && // lowercase check a
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "a")),
+
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "R")) && // uppercase check R -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "R")),
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "r")) && // lowercase check r
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "r")),
+
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x5, " ")) && // ASCII space check -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x5, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x5) == 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x5) != 0x0),			
+
+			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x6, " ")) && // ASCII space check -- this once AND below once need to be true
+				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x6, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x6) == 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x6) != 0x0),
+		])
+}
 
 // ............................
 // ◦ CHARACTER IDENTIFICATION ◦
@@ -6347,9 +6458,7 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& once(
-				never(is_RStar_Cheat_active(enum_releaseRegion)) // TODO this RStar Cheat checker for all cases where it's used
-				&& !is_RStar_Cheat_active(enum_releaseRegion))
+			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllCharacters) < CHARACTER_COUNT/2
 			&& prev(let_sumOf_FlagsAllCharacters) > (CHARACTER_COUNT/4)
@@ -6365,11 +6474,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& once(
-						never(is_RStar_Cheat_active(enum_releaseRegion))
-						&& !is_RStar_Cheat_active(enum_releaseRegion)
-					)
-			)
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_CompleteJournalHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: No Measured Flag required for this as a_CompleteFullJournal already has one
@@ -6435,7 +6540,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& is_RStar_Cheat_inActive(enum_releaseRegion)) 
+					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
