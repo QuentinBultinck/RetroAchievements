@@ -1225,7 +1225,7 @@ function is_Area(enum_areaId, enum_releaseRegion) =>
 
 function is_Area_InnerIdLength(int_innerIdLength, enum_releaseRegion) {
 	let_memaddr_AreaID = memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion)
-	let_memAddr_LastCharacterOfAreaId = let_memaddr_AreaID + 0x4 + (int_innerIdLength - 1) // TODO check if this works?
+	let_memAddr_LastCharacterOfAreaId = let_memaddr_AreaID + 0x4 + (int_innerIdLength - 1)
 	return 
 		tbyte(let_memAddr_LastCharacterOfAreaId) != 0x00
 		&& byte(let_memAddr_LastCharacterOfAreaId) != 0x00
@@ -2278,72 +2278,31 @@ function is_RStar_Cheat_Active(enum_releaseRegion) { // When using with PauseIf 
 			once(never(byte(let_memAddr_PlayerProfileName + 0x6) != 0x0) && // 0x0 check
 				byte(let_memAddr_PlayerProfileName + 0x6) == 0x0),
 		])}
+		
+function is_RStar_Cheat_inActive(enum_releaseRegion) =>
+	always_false()
 
-function is_RStar_Cheat_inActive(enum_releaseRegion) { 
+function is_RStar_Cheat_inActive_test(enum_releaseRegion) { // TODO implement is_RStar_Cheat_inActive fix everywhere
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
 
-	/* is Rstar cheat NOT active + Need ResetNextIf on every hitcount
-	----------------------- Checking 7-byte ASCII for "Rstar__"
-		0xA != "R"    	(+1) --2 lines--> Both of these need to be true
-		0xA != "r"    	(+1)
-		0xB != "S"    	(+1) --2 lines--> Both of these need to be true
-		0xB != "s"    	(+1)
-		...same for "_sta_" chars...
-		0xE != "R"    	(+1) --2 lines--> Both of these need to be true
-		0xE != "r"    	(+1)
-		0xF != " " 		(+1) --2 lines--> Both of these need to be true
-		0xF != 0x0		(+1)
-		0x10 != " " 	(+1) --2 lines--> Both of these need to be true
-		0x10 != 0x0		(+1)
-		val == 14       --> Rstar cheat NOT active
-
-
-
-	
-
-
+	/* is Rstar cheat NOT active 
+	----------------------- 
+		& 0xDF any alphabetical ASCII character (+ space " ", same as 0x0)
+			--> uppercase ASCII & 0xDF --> would result in uppercase value		eg. "R" & 0xDF -> 0x52 (="R")
+			--> lowercase ASCII & 0xDF --> would result in uppercase value		eg. "r" & 0xDF -> 0x52 (="R")
 	*/
 
-	return 
-		tally(1, [ // ---tally--> 
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "R")) && // uppercase check R -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "R")),
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "r")) && // lowercase check r
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "r"))])
-				
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "S")) && // uppercase check S -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "S")),
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "s")) && // lowercase check s
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "s")),
-
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "T")) && // uppercase check T -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "T")), 
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "t")) && // lowercase check t
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "t")),
-
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "A")) && // uppercase check A -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "A")),
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "a")) && // lowercase check a
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "a")),
-
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "R")) && // uppercase check R -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "R")),
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "r")) && // lowercase check r
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "r")),
-
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x5, " ")) && // ASCII space check -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x5, " ")),
-			once(never(byte(let_memAddr_PlayerProfileName + 0x5) == 0x0) && // 0x0 check
-				byte(let_memAddr_PlayerProfileName + 0x5) != 0x0),			
-
-			once(never(is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x6, " ")) && // ASCII space check -- this once AND below once need to be true
-				is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x6, " ")),
-			once(never(byte(let_memAddr_PlayerProfileName + 0x6) == 0x0) && // 0x0 check
-				byte(let_memAddr_PlayerProfileName + 0x6) != 0x0),
-		])
-}
+	return __ornext( // --> force orNext, this is allowed/this works with other andNext logic, as these are single orNext requirements
+		byte(let_memAddr_PlayerProfileName) & 0xdf != memUtil_asciiToHex["R"] // 0x52
+		|| byte(let_memAddr_PlayerProfileName + 0x1) & 0xdf != memUtil_asciiToHex["S"] // 0x53
+		|| byte(let_memAddr_PlayerProfileName + 0x2) & 0xdf != memUtil_asciiToHex["T"] // 0x54
+		|| byte(let_memAddr_PlayerProfileName + 0x3) & 0xdf != memUtil_asciiToHex["A"] // 0x41
+		|| byte(let_memAddr_PlayerProfileName + 0x4) & 0xdf != memUtil_asciiToHex["R"] // 0x52
+		|| byte(let_memAddr_PlayerProfileName + 0x5) & 0xdf != 0x0  // 0x0 or 0x20 (0x20 = space = " ")
+		|| byte(let_memAddr_PlayerProfileName + 0x6) & 0xdf != 0x0) // 0x0 or 0x20 (0x20 = space = " ")
+	}
 
 // ............................
 // ◦ CHARACTER IDENTIFICATION ◦
@@ -6483,7 +6442,7 @@ achievements_triggers = {
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& is_RStar_Cheat_inActive(enum_releaseRegion)
+			&& is_RStar_Cheat_inActive_test(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllPages) < JOURNALPAGE_COUNT
 			&& prev(let_sumOf_FlagsAllPages) > JOURNALPAGE_COUNT/4
@@ -6499,7 +6458,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& is_RStar_Cheat_inActive(enum_releaseRegion),
+					&& is_RStar_Cheat_inActive_test(enum_releaseRegion),
 				format = "percent")
 		}),
 	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
