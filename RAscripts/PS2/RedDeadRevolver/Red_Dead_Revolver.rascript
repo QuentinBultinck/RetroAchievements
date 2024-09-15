@@ -536,7 +536,7 @@ memory_addresses = {
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
+		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x766038, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -4199,19 +4199,19 @@ achievements_triggers = {
 				/* MANUAL_CONSTRUCTION of Measured(sumOf)
 					OUTPUT (PAL)
 						AddAddress	Mem 32-bit 0x7448d8
-						SubSource 	Mem 32-bit 0x8
+						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x562a20
-						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888			|+ CurrentCashCombo * CurrentCashComboMulitplier|
 						AddAddress	Mem 32-bit 0x562a20
-						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 					
 					OUTPUT (NTSCU)
 						AddAddress	Mem 32-bit 0x742158
-						SubSource 	Mem 32-bit 0x8
+						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x5602a0
-						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888			|+ CurrentCashCombo * CurrentCashComboMulitplier|
 						AddAddress	Mem 32-bit 0x5602a0
-						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 				*/
 			&& trigger_when(always_false())	
 
@@ -4364,13 +4364,10 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-
 			&& unless(once( // <-- Pause Lock: When a health item is used
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_PlayerHP_heal(enum_releaseRegion)))
@@ -7707,17 +7704,18 @@ function lb_template_ValueMeasure() { // Template
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_Chapter1Normal_ValueMeasure() {
-	function valueMeasure(enum_releaseRegion) => measured(
-		current_RewardMenu_BountyCollected(enum_releaseRegion)
-		+ current_ShotsFired(enum_releaseRegion)
-		+ current_ShotsHit(enum_releaseRegion)
-		+ current_DamageTaken(enum_releaseRegion)
-		+ current_TimeSpentInMission(enum_releaseRegion)
-		+ current_HighestCombo(enum_releaseRegion)
-		+ current_HighestComboMultiplier(enum_releaseRegion), 
-		when = 
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_RewardMenu_displayed_short(enum_releaseRegion))
+	function valueMeasureDuringGameplay(enum_releaseRegion) => 
+		measured(
+			current_Cash(enum_releaseRegion)
+			+ current_CashCombo(enum_releaseRegion) + current_CashComboMultiplier(enum_releaseRegion)
+			+ current_PlayerProfile_SavedCash(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion), 
+			when = is_ReleaseRegion(enum_releaseRegion))
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
 			-> OUTPUT (PAL)
@@ -7727,29 +7725,34 @@ function lb_Chapter1Normal_ValueMeasure() {
 				4	AddAddress	Mem		32bit	0x763070
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
-				9	AddAddress	Mem		32bit	0x54caf0
-				10	AddAddress	Mem		32bit	0xac
-				11	AddAddress	Mem		32bit	0x34
-				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
 
-				14	AddAddress	Mem		32bit	0x763070
-				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
-				17	AddAddress	Mem		32bit	0x7a0788
-				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
 
-				20	AddAddress	Mem		32bit	0x763070
-				21	AddAddress	Mem		32bit	0x36c
-				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				23	AddAddress	Mem		32bit	0x763070
-				24	AddAddress	Mem		32bit	0x36c
-				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				15	AddAddress	Mem		32bit	0x763070
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x7a0788
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x763070
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x763070
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
+				28	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+
+
 			-> OUTPUT (NTSCU)
 				1	AddAddress	Mem		32bit	0x7608f0
 				2	AddAddress	Mem		32bit	0x36c
@@ -7757,20 +7760,106 @@ function lb_Chapter1Normal_ValueMeasure() {
 				4	AddAddress	Mem		32bit	0x7608f0
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
-				9	AddAddress	Mem		32bit	0x54a370
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
+
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+
+				15	AddAddress	Mem		32bit	0x7608f0
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x79e008
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x7608f0
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x7608f0
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+
+				28	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+			*/
+
+	function valueMeasureSubmitted(enum_releaseRegion) => 
+		measured(
+			current_RewardMenu_BountyCollected(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion), 
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_RewardMenu_displayed_short(enum_releaseRegion))
+
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
+			-> OUTPUT (PAL)
+				1	AddAddress	Mem		32bit	0x763070
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x763070
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
+
+				9	AddAddress	Mem		32bit	0x54caf0
 				10	AddAddress	Mem		32bit	0xac
 				11	AddAddress	Mem		32bit	0x34
 				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
+
+				14	AddAddress	Mem		32bit	0x763070
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x7a0788
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x763070
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x763070
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				26	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				27	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+				28	AddAddress	Mem		32bit	0x54caf0
+				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+
+			-> OUTPUT (NTSCU)
+				1	AddAddress	Mem		32bit	0x7608f0
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x7608f0
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|	
+
+				9	AddAddress	Mem		32bit	0x54caf0
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
 
 				14	AddAddress	Mem		32bit	0x7608f0
 				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				17	AddAddress	Mem		32bit	0x79e008
-				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				20	AddAddress	Mem		32bit	0x7608f0
 				21	AddAddress	Mem		32bit	0x36c
@@ -7778,12 +7867,19 @@ function lb_Chapter1Normal_ValueMeasure() {
 				23	AddAddress	Mem		32bit	0x7608f0
 				24	AddAddress	Mem		32bit	0x36c
 				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
-	*/
+				26	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+				28	AddAddress	Mem		32bit	0x54a370
+				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+			*/
 
 	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED  {
+		array_push(let_array_valueMeasures, valueMeasureDuringGameplay(enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasureSubmitted(enum_releaseRegion))
+	}
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_ShowdownFastestBounty_ValueMeasure() {
