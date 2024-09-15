@@ -2220,7 +2220,7 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
 // ------------------------RstarCheat------------------------------ 
-function is_RStar_Cheat_Active(enum_releaseRegion) { // When using with PauseIf -> ResetNextIfs can be replaced by 1 ResetNextIf when the active PlayerProfile changes or when the PlayerProfile is erased (First letter of PlayerProfileName becomes 0x0)
+function is_RStar_Cheat_Active_bis(enum_releaseRegion) { // When using with PauseIf -> ResetNextIfs can be replaced by 1 ResetNextIf when the active PlayerProfile changes or when the PlayerProfile is erased (First letter of PlayerProfileName becomes 0x0)
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
@@ -2278,11 +2278,30 @@ function is_RStar_Cheat_Active(enum_releaseRegion) { // When using with PauseIf 
 			once(never(byte(let_memAddr_PlayerProfileName + 0x6) != 0x0) && // 0x0 check
 				byte(let_memAddr_PlayerProfileName + 0x6) == 0x0),
 		])}
-		
-function is_RStar_Cheat_inActive(enum_releaseRegion) =>
-	always_false()
 
-function is_RStar_Cheat_inActive_test(enum_releaseRegion) { // TODO implement is_RStar_Cheat_inActive fix everywhere
+function is_RStar_Cheat_active(enum_releaseRegion) {
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
+
+	/* is Rstar cheat active 
+	----------------------- 
+		& 0xDF any alphabetical ASCII character (+ space " ", same as 0x0)
+			--> uppercase ASCII & 0xDF --> would result in uppercase value		eg. "R" & 0xDF -> 0x52 (="R")
+			--> lowercase ASCII & 0xDF --> would result in uppercase value		eg. "r" & 0xDF -> 0x52 (="R")
+	*/
+
+	return 
+		byte(let_memAddr_PlayerProfileName) & 0xdf == memUtil_asciiToHex["R"] // 0x52
+		&& byte(let_memAddr_PlayerProfileName + 0x1) & 0xdf == memUtil_asciiToHex["S"] // 0x53
+		&& byte(let_memAddr_PlayerProfileName + 0x2) & 0xdf == memUtil_asciiToHex["T"] // 0x54
+		&& byte(let_memAddr_PlayerProfileName + 0x3) & 0xdf == memUtil_asciiToHex["A"] // 0x41
+		&& byte(let_memAddr_PlayerProfileName + 0x4) & 0xdf == memUtil_asciiToHex["R"] // 0x52
+		&& byte(let_memAddr_PlayerProfileName + 0x5) & 0xdf == 0x0  // 0x0 or 0x20 (0x20 = space = " ")
+		&& byte(let_memAddr_PlayerProfileName + 0x6) & 0xdf == 0x0 // 0x0 or 0x20 (0x20 = space = " ")
+	}
+		
+function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
@@ -6442,7 +6461,7 @@ achievements_triggers = {
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-			&& is_RStar_Cheat_inActive_test(enum_releaseRegion)
+			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllPages) < JOURNALPAGE_COUNT
 			&& prev(let_sumOf_FlagsAllPages) > JOURNALPAGE_COUNT/4
@@ -6458,7 +6477,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& is_RStar_Cheat_inActive_test(enum_releaseRegion),
+					&& is_RStar_Cheat_inActive(enum_releaseRegion),
 				format = "percent")
 		}),
 	"a_MaxHealth": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
