@@ -891,7 +891,7 @@ AREA_Campaign_BullsEye = "lvl_perfnew"
 AREA_Campaign_BattleRoyale = "lvl_roydusk"
 AREA_Campaign_TheMine = "lvl_corenew"
 // ------------ AREA_Campaign InnerIdlength = 8
-AREA_Campaign_Traincar = "lvl_triancar"
+AREA_Campaign_Traincar = "lvl_traincar"
 AREA_Campaign_FreakShow = "lvl_shernite"
 AREA_Campaign_GhostTown = "lvl_gunsmoke"
 AREA_Campaign_TheCemetery = "lvl_cemetery"
@@ -904,6 +904,8 @@ AREA_Campaign_FallFromGrace = "lvl_mansroof"
 AREA_Campaign_Railroaded = "lvl_traingood"
 
 // ------------ AREA_Showdown
+AREA_Showdown_TheBridge = "lvl_bridge2"
+AREA_Showdown_TheMine = "lvl_core2"
 AREA_Showdown_WidowsPatch = "lvl_shernit2"
 AREA_Showdown_TheRanch = "lvl_ranch2"
 AREA_Showdown_Fairground = "lvl_ghost2"
@@ -1169,10 +1171,31 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 		6: 0, 7: 0,	9: 0},
 	"CampaignInnerId_UniqueSubstring_byInnerIdLength": {
 		8: {"Index": 6, "Length": 2}},
+	"ShowdownStageInnerId_UniqueSubstring": {
+		AREA_Showdown_TheBridge: substring(AREA_Showdown_TheBridge, 4, 3) // "lvl_bridge2" --> "bri"
+		AREA_Showdown_TheMine: substring(AREA_Showdown_TheMine, 4, 3)
+		AREA_Showdown_WidowsPatch: substring(AREA_Showdown_WidowsPatch, 4, 3)
+		AREA_Showdown_TheRanch: substring(AREA_Showdown_TheRanch, 4, 3)
+		AREA_Showdown_Fairground: substring(AREA_Showdown_Fairground, 4, 3)
+		AREA_Showdown_FallenCreek: substring(AREA_Showdown_FallenCreek, 4, 3)
+		AREA_Showdown_GhostTown: substring(AREA_Showdown_GhostTown, 4, 3)
+		AREA_Showdown_SunsetCanyon: substring(AREA_Showdown_SunsetCanyon, 4, 3)
+		AREA_Showdown_BrokenCreek: substring(AREA_Showdown_BrokenCreek, 4, 3)
+		AREA_Showdown_MansionGrounds: substring(AREA_Showdown_MansionGrounds, 4, 3)
+		AREA_Showdown_TheMansion: substring(AREA_Showdown_TheMansion, 4, 3)
+		AREA_Showdown_TwinRocks: substring(AREA_Showdown_TwinRocks, 4, 3)
+		AREA_Showdown_DesertFortress: substring(AREA_Showdown_DesertFortress, 4, 3)
+	}
 	}
 
-function get_Area_InnerId(enum_areaId) => // Removes "lvl_" from string
-	substring(enum_areaId, 4)
+function get_AreaCampaign_InnerId(enum_areaId) { 
+	if (length(enum_areaId) < 6)
+		return substring(enum_areaId, 4, 3) // "lvl_bomb" --> "bom"
+	else 
+		return substring(enum_areaId, 6, 4)} // "lvl_traingood" --> "aing"
+
+function get_AreaShowdown_InnerId(enum_areaId) =>
+	substring(enum_areaId, 4, 3) // "lvl_bomb2" --> "bom"
 
 function get_Area_InnerId_UniqueCharacterIndex_byInnerIdLength(int_innerIdLength) {
 	let_UniqueCharacterIndex = const_Area_data["CampaignInnerId_UniqueCharacterIndex_byInnerIdLength"][int_innerIdLength]
@@ -1191,7 +1214,7 @@ function get_Area_InnerId_UniqueCharacterIndex(string_innerId) {
 	return let_UniqueCharacterIndex}
 
 function get_Area_InnerId_UniqueCharacter(enum_areaId) { // Take Nth character from Area_InnerID as this is a unique character in that list of AREA_IDs grouped by InnerId length
-	let_InnerId = get_Area_InnerId(enum_areaId)
+	let_InnerId = get_AreaCampaign_InnerId(enum_areaId)
 	let_UniqueCharacterIndex = get_Area_InnerId_UniqueCharacterIndex(let_InnerId)
 	return substring(let_InnerId, let_UniqueCharacterIndex, 1)} 
 
@@ -1199,7 +1222,7 @@ function get_Area_InnerId_UniqueCharacter_asHex(enum_areaId) =>
 	memUtil_asciiStringToHex(get_Area_InnerId_UniqueCharacter(enum_areaId))
 
 function get_Area_InnerId_UniqueSubstring(enum_areaId) { // From the Nth character take a substring to uniquely ID the Area_InnerID
-	let_InnerId = get_Area_InnerId(enum_areaId)
+	let_InnerId = get_AreaCampaign_InnerId(enum_areaId)
 	let_UniqueSubstringLength = get_Area_InnerId_UniqueSubstringLength_byInnerIdLength(length(let_InnerId))
 	let_UniqueSubstringIndex = get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(length(let_InnerId))
 	return substring(let_InnerId, let_UniqueSubstringIndex, let_UniqueSubstringLength)} 
@@ -1209,6 +1232,9 @@ function get_Area_InnerId_UniqueSubstring_asHex(enum_areaId) =>
 
 function get_Area_memAddr_InnerAreaID(enum_releaseRegion) => 
 	memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion) + 0x4
+
+function get_AreaShowdown_InnerId_UniqueSubstring(enum_areaId) =>
+	memUtil_asciiStringToHex(const_Area_data["ShowdownStageInnerId_UniqueSubstring"][enum_areaId])
 
 // -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
@@ -2025,7 +2051,7 @@ function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) =>
 	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
 	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
 
-function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => // TODO this function has changes --> update where used
+function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => 
 	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 0
 	&& 0x2 - 1 < current_RewardMenu_MenuDepth(enum_releaseRegion) 
 	&& current_RewardMenu_MenuDepth(enum_releaseRegion) < 0x3 + 1
@@ -2120,7 +2146,7 @@ function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
 	}
 
-function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) { // TODO new function has replaced !is_InGameMenu_displayed() --> update where used
+function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
@@ -2425,7 +2451,7 @@ CHARACTER_MannyQuinn = "mok"
 CHARACTER_Grizzly = "mst"
 CHARACTER_StandingSnake = "msk"
 CHARACTER_MrBlack = "blk"
-CHARACTER_ShadowWolf = "ttk" // TODO update achievements with this CHARACTER ID => was wrong ID previously
+CHARACTER_ShadowWolf = "ttk"
 CHARACTER_BadBessie = "bty"
 CHARACTER_PigJosh = "pgj"
 CHARACTER_NateHarlow = "dad"
@@ -3341,7 +3367,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = {
+achievements_coreData = { // TODO update all achievements (regarding CheatProtection && on_RewardMenu_Replay_Confirm())
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3424,37 +3450,37 @@ achievements_coreData = {
 		"a_BountyHunterKatie": { // VERIFIED 
 			"id": 454648, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
-		"a_BountyHunterBlade": { // QA a_BountyHunterBlade
+		"a_BountyHunterBlade": { // VERIFIED
 			"id": 455158, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
-		"a_BountyHunterAnnie": { // QA a_BountyHunterAnnie
+		"a_BountyHunterAnnie": { // VERIFIED
 			"id": 455172, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
-		// "a_BountyHunterCooper": { // QA a_BountyHunterCooper // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// "id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
-		"a_BountyHunterWeapons": { // QA a_BountyHunterWeapons
+		"a_BountyHunterWeapons": { // VERIFIED
 			"id": 455443, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
-		"a_SundownFallingStar": { // QA a_SundownFallingStar
+		"a_SundownFallingStar": { // VERIFIED
 			"id": 455174, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
-		"a_SundownBlack": { // QA a_SundownBlack
+		"a_SundownBlack": { // VERIFIED
 			"id": 455175, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill-streak of over 10"},
-		"a_SundownGriffon": { // QA a_SundownGriffon
+		"a_SundownGriffon": { // VERIFIED
 			"id": 455176, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
-		// "a_SundownNate": { // QA a_SundownNate // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// 	"id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
-		"a_SundownFlawless": { // QA a_SundownFlawless
+		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
-		"a_HighNoonNatalie": { // QA a_HighNoonNatalie
+		"a_HighNoonNatalie": { // VERIFIED
 			"id": 455179, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
-		"a_HighNoonCurly": { // QA a_HighNoonCurly
+		"a_HighNoonCurly": { // VERIFIED
 			"id": 455180, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},		
 		},
@@ -3556,7 +3582,7 @@ achievements_coreData = {
 		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Amass an amount of cash on one player profile"},
-		// "a_PerfectAccuracy": { // QA a_PerfectAccuracy // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		// "a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
@@ -3625,10 +3651,10 @@ achievements_coreData = {
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
-		"a_WoodChapter8": { // QA a_WoodChapter8
+		"a_WoodChapter8": { // VERIFIED
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
-		"a_WoodChapter10": { // QA a_WoodChapter10
+		"a_WoodChapter10": { // VERIFIED
 			"id": 453664, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
 		},
@@ -6895,18 +6921,18 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 4th place"},
-	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 3rd place"},
-	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 2nd place"},
-	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2} | 1st place"},
-	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 4th place | Time left: {2}"},
-	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 3rd place | Time left: {2}"},
-	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 2nd place | Time left: {2}"},
-	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | 1st place | Time left: {2}"},
-	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 4th place"},
-	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 3rd place"},
-	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 2nd place"},
-	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected | 1st place"},
+	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 4th place"},
+	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 3rd place"},
+	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 2nd place"},
+	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 1st place"},
+	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 4th place | Time left: {2}"},
+	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 3rd place | Time left: {2}"},
+	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 2nd place | Time left: {2}"},
+	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 1st place | Time left: {2}"},
+	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 4th place"},
+	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 3rd place"},
+	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 2nd place"},
+	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 1st place"},
 	"rp_BountyHunterMode_3charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
 	"rp_BountyHunterMode_4charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
 	"rp_BountyHunterMode_5charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
@@ -6925,105 +6951,116 @@ richPresence_text = {
 	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"},
 	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
 richPresence_LookupTablesText = {
-	// "lup_Template": 									{"en": "xxxxxxxx"},	
-	// "lup_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+	// "lup_Template": {
+	// 	"LOOKUP_FALLBACK": 			{"en": "xxxxxxx"},
+	//
+	// 	"AAA": 						{"en": "xxxxxxx"},
+	// 	"BBB":						{"en": "xxxxxxx"},
+	// 	"CCC": 						{"en": "xxxxxxx"},
+	// },
 
-	"lup_CharacterName_GeneralDiego": 					{"en": "General Diego"},
-	"lup_CharacterName_MrKelley": 						{"en": "Mr. Kelley"},
-	"lup_CharacterName_JackSwift": 						{"en": "Jack Swift"},
-	"lup_CharacterName_WhiskeyTreadwell":				{"en": "'Whiskey' Treadwell"},
-	"lup_CharacterName_HedgehogThornton": 				{"en": "'Hedgehog' Thornton"},
-	"lup_CharacterName_AnnieStoakes": 					{"en": "Annie Stoakes"},
-	"lup_CharacterName_KatieGrady": 					{"en": "Katie O'Grady"},
-	"lup_CharacterName_UglyChris": 						{"en": "'Ugly' Chris"},
-	"lup_CharacterName_SmileyFawler": 					{"en": "'Smiley' Fawler"},
-	"lup_CharacterName_GigoloHancock": 					{"en": "'Gigolo' Hancock"},
-	"lup_CharacterName_ProfessorPerry": 				{"en": "Professor Perry"},
-	"lup_CharacterName_BladeSlade": 					{"en": "The 'Blade' Slade"},
-	"lup_CharacterName_GabrialNavarro": 				{"en": "Gabrial Navarro"},
-	"lup_CharacterName_SheriffGrady": 					{"en": "Sheriff O'Grady"},
-	"lup_CharacterName_SheriffBartlett": 				{"en": "Sheriff Bartlett"},
-	"lup_CharacterName_HolsteinHal": 					{"en": "Holstein Hal"},
-	"lup_CharacterName_Cooper": 						{"en": "Cooper"},
-	"lup_CharacterName_GovernorGriffon": 				{"en": "Governor Griffon"},
-	"lup_CharacterName_JasonCornet": 					{"en": "Jason Cornet"},
-	"lup_CharacterName_BuffaloSoldier": 				{"en": "Buffalo Soldier"},
-	"lup_CharacterName_Smitty": 						{"en": "Smitty"},
-	"lup_CharacterName_FallingStar": 					{"en": "Falling Star"},
-	"lup_CharacterName_Sam": 							{"en": "Sam"},
-	"lup_CharacterName_MannyQuinn": 					{"en": "Manny Quinn"},
-	"lup_CharacterName_Grizzly": 						{"en": "Grizzly"},
-	"lup_CharacterName_StandingSnake": 					{"en": "Standing Snake"},
-	"lup_CharacterName_MrBlack": 						{"en": "Mr. Black"},
-	"lup_CharacterName_ShadowWolf": 					{"en": "Shadow Wolf"},
-	"lup_CharacterName_BadBessie": 						{"en": "Bad Bessie"},
-	"lup_CharacterName_PigJosh": 						{"en": "'Pig' Josh"},
-	"lup_CharacterName_DigFowler": 						{"en": "'Dig' Fowler"},
-	"lup_CharacterName_NateHarlow": 					{"en": "Nate Harlow"},
-	"lup_CharacterName_ColonelDaren": 					{"en": "Colonel Daren"},
-	"lup_CharacterName_Natalie": 						{"en": "Natalie"},
-	"lup_CharacterName_RedJr": 							{"en": "Red Jr."},
-	"lup_CharacterName_Fidgit": 						{"en": "Fidgit"},
-	"lup_CharacterName_Christina": 						{"en": "Christina"},
-	"lup_CharacterName_KidCougar": 						{"en": "'Kid' Cougar"},
-	"lup_CharacterName_Red": 							{"en": "Red"},
-	"lup_CharacterName_CurlyShaw": 						{"en": "'Curly' Shaw"},
-	"lup_CharacterName_BloodyTom":						{"en": "'Bloody' Tom"},
-	"lup_CharacterName_Chicken": 						{"en": "Chicken"},
-	"lup_CharacterName_BigOaf": 						{"en": "'Big Oaf' Whitney"},
-	"lup_CharacterName_TwiggyPhelps":					{"en": "'Twiggy' Phelps"},
-	"lup_CharacterName_SissyFess": 						{"en": "'Sissy' Fess"},
-	"lup_CharacterName_RicoPedrosa": 					{"en": "Rico Pedrosa"},
-	"lup_CharacterName_UdoKang": 						{"en": "Udo Kang"},
-	"lup_CharacterName_LookupFallback": 				{"en": "a gunslinger"},
+	"lup_CharacterName": {
+		"LOOKUP_FALLBACK": 				{"en": "a gunslinger"},
+		
+		"GeneralDiego": 				{"en": "General Diego"},
+		"MrKelley": 					{"en": "Mr. Kelley"},
+		"JackSwift": 					{"en": "Jack Swift"},
+		"WhiskeyTreadwell":				{"en": "'Whiskey' Treadwell"},
+		"HedgehogThornton": 			{"en": "'Hedgehog' Thornton"},
+		"AnnieStoakes": 				{"en": "Annie Stoakes"},
+		"KatieGrady": 					{"en": "Katie O'Grady"},
+		"UglyChris": 					{"en": "'Ugly' Chris"},
+		"SmileyFawler": 				{"en": "'Smiley' Fawler"},
+		"GigoloHancock": 				{"en": "'Gigolo' Hancock"},
+		"ProfessorPerry": 				{"en": "Professor Perry"},
+		"BladeSlade": 					{"en": "The 'Blade' Slade"},
+		"GabrialNavarro": 				{"en": "Gabrial Navarro"},
+		"SheriffGrady": 				{"en": "Sheriff O'Grady"},
+		"SheriffBartlett": 				{"en": "Sheriff Bartlett"},
+		"HolsteinHal": 					{"en": "Holstein Hal"},
+		"Cooper": 						{"en": "Cooper"},
+		"GovernorGriffon": 				{"en": "Governor Griffon"},
+		"JasonCornet": 					{"en": "Jason Cornet"},
+		"BuffaloSoldier": 				{"en": "Buffalo Soldier"},
+		"Smitty": 						{"en": "Smitty"},
+		"FallingStar": 					{"en": "Falling Star"},
+		"Sam": 							{"en": "Sam"},
+		"MannyQuinn": 					{"en": "Manny Quinn"},
+		"Grizzly": 						{"en": "Grizzly"},
+		"StandingSnake": 				{"en": "Standing Snake"},
+		"MrBlack": 						{"en": "Mr. Black"},
+		"ShadowWolf": 					{"en": "Shadow Wolf"},
+		"BadBessie": 					{"en": "Bad Bessie"},
+		"PigJosh": 						{"en": "'Pig' Josh"},
+		"DigFowler": 					{"en": "'Dig' Fowler"},
+		"NateHarlow": 					{"en": "Nate Harlow"},
+		"ColonelDaren": 				{"en": "Colonel Daren"},
+		"Natalie": 						{"en": "Natalie"},
+		"RedJr": 						{"en": "Red Jr."},
+		"Fidgit": 						{"en": "Fidgit"},
+		"Christina": 					{"en": "Christina"},
+		"KidCougar": 					{"en": "'Kid' Cougar"},
+		"Red": 							{"en": "Red"},
+		"CurlyShaw": 					{"en": "'Curly' Shaw"},
+		"BloodyTom":					{"en": "'Bloody' Tom"},
+		"Chicken": 						{"en": "Chicken"},
+		"BigOaf": 						{"en": "'Big Oaf' Whitney"},
+		"TwiggyPhelps":					{"en": "'Twiggy' Phelps"},
+		"SissyFess": 					{"en": "'Sissy' Fess"},
+		"RicoPedrosa": 					{"en": "Rico Pedrosa"},
+		"UdoKang": 						{"en": "Udo Kang"},
+	},
 
-	"lup_StoryChapter3charID_Stagecoach": 				{"en": "18 \"Stagecoach\""},
-	"lup_StoryChapter3charID_BountyHunter": 			{"en": "2 \"Bounty Hunter\""},
+	"lup_StoryChapter": {
+		"3charID_Stagecoach": 				{"en": "18 \"Stagecoach\""},
+		"3charID_BountyHunter": 			{"en": "2 \"Bounty Hunter\""},
 
-	"lup_StoryChapter4charID_RogueValley":				{"en": "8 \"Rogue Valley\""},
-	"lup_StoryChapter4charID_Jailbreak":				{"en": "16 \"Jailbreak\""},
-	"lup_StoryChapter4charID_FortDiego":				{"en": "20 \"Fort Diego\""},
-	"lup_StoryChapter4charID_Siege":					{"en": "25 \"Siege\""},
+		"4charID_RogueValley":				{"en": "8 \"Rogue Valley\""},
+		"4charID_Jailbreak":				{"en": "16 \"Jailbreak\""},
+		"4charID_FortDiego":				{"en": "20 \"Fort Diego\""},
+		"4charID_Siege":					{"en": "25 \"Siege\""},
 
-	"lup_StoryChapter5charID_SunsetCanyon":				{"en": "14 \"Sunset Canyon\""},
-	"lup_StoryChapter5charID_CarnivalLife":				{"en": "6 \"Carnival Life\""},
-	"lup_StoryChapter5charID_RangeWar":					{"en": "11 \"Range War\""},
-	"lup_StoryChapter5charID_EndOfTheLine":				{"en": "21 \"End Of The Line\""},
-	"lup_StoryChapter5charID_BearMountain":				{"en": "15 \"Bear Mountain\""},
+		"5charID_SunsetCanyon":				{"en": "14 \"Sunset Canyon\""},
+		"5charID_CarnivalLife":				{"en": "6 \"Carnival Life\""},
+		"5charID_RangeWar":					{"en": "11 \"Range War\""},
+		"5charID_EndOfTheLine":				{"en": "21 \"End Of The Line\""},
+		"5charID_BearMountain":				{"en": "15 \"Bear Mountain\""},
 
-	"lup_StoryChapter6charID_TheTraitor":  				{"en": "13 \"The Traitor\""},
-	"lup_StoryChapter6charID_HellPass":  				{"en": "19 \"Hell Pass\""},
-	"lup_StoryChapter6charID_UglyStreetFight":  		{"en": "3 \"Ugly StreetFight\""},
+		"6charID_TheTraitor":  				{"en": "13 \"The Traitor\""},
+		"6charID_HellPass":  				{"en": "19 \"Hell Pass\""},
+		"6charID_UglyStreetFight":  		{"en": "3 \"Ugly StreetFight\""},
 
-	"lup_StoryChapter7charID_BullsEye":  				{"en": "1 \"Bull's Eye\""},
-	"lup_StoryChapter7charID_BattleRoyale":  			{"en": "23 \"Battle Royale\""},
-	"lup_StoryChapter7charID_TheMine":  				{"en": "17 \"The Mine\""},
+		"7charID_BullsEye":  				{"en": "1 \"Bull's Eye\""},
+		"7charID_BattleRoyale":  			{"en": "23 \"Battle Royale\""},
+		"7charID_TheMine":  				{"en": "17 \"The Mine\""},
 
-	"lup_StoryChapter8charID_SaloonFight":  			{"en": "12 \"Bar Fight\""},
-	"lup_StoryChapter8charID_TheCemetery":  			{"en": "10 \"The Cemetery\""},
-	"lup_StoryChapter8charID_FallFromGrace":  			{"en": "27 \"Fall From Grace\""},
-	"lup_StoryChapter8charID_HouseOfCards":  			{"en": "26 \"House Of Cards\""},
-	"lup_StoryChapter8charID_BattleFinale":  			{"en": "24 \"Battle Finale\""},
-	"lup_StoryChapter8charID_Traincar":  				{"en": "4 \"Traincar\""},
-	"lup_StoryChapter8charID_DevilsAndAngels":  		{"en": "22 \"Devils And Angels\""},
-	"lup_StoryChapter8charID_FreakShow":  				{"en": "7 \"Freak Show\""},
-	"lup_StoryChapter8charID_GhostTown":  				{"en": "9 \"Ghost Town\""},
+		"8charID_SaloonFight":  			{"en": "12 \"Bar Fight\""},
+		"8charID_TheCemetery":  			{"en": "10 \"The Cemetery\""},
+		"8charID_FallFromGrace":  			{"en": "27 \"Fall From Grace\""},
+		"8charID_HouseOfCards":  			{"en": "26 \"House Of Cards\""},
+		"8charID_BattleFinale":  			{"en": "24 \"Battle Finale\""},
+		"8charID_Traincar":  				{"en": "4 \"Traincar\""},
+		"8charID_DevilsAndAngels":  		{"en": "22 \"Devils And Angels\""},
+		"8charID_FreakShow":  				{"en": "7 \"Freak Show\""},
+		"8charID_GhostTown":  				{"en": "9 \"Ghost Town\""},
 
-	"lup_StoryChapter9charID_Railroaded":  				{"en": "5 \"Railroaded\""},
-
-	"lup_StoryDifficulty_Normal": 						{"en": "Normal"},
-	"lup_StoryDifficulty_Hard":							{"en": "Hard"},
-	"lup_StoryDifficulty_VeryHard": 					{"en": "Very Hard"},
-	"lup_StoryDifficulty_RedWoodRevolver": 				{"en": "Red Wood Revolver"},
-	"lup_StoryDifficulty_BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
+		"9charID_Railroaded":  				{"en": "5 \"Railroaded\""},
+	},
+	
+	"lup_StoryDifficulty": {
+		"Normal": 						{"en": "Normal"},
+		"Hard":							{"en": "Hard"},
+		"VeryHard": 					{"en": "Very Hard"},
+		"RedWoodRevolver": 				{"en": "Red Wood Revolver"},
+		"BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
+	},
 
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
+function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
+	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
 	"lup_StoryDifficulty": {
@@ -7031,6 +7068,103 @@ richPresence_lookupTables = {
 		DIFFICULTY_Hard: "Hard",
 		DIFFICULTY_VeryHard: "VeryHard",
 		DIFFICULTY_RedWoodRevolver: "RedWoodRevolver"
+	},	
+
+	"lup_ShowdownStage": {
+		/* LookUpKeys
+			brid // bridge2
+			coac // coach2
+			core // core2
+			flas // flash2
+			fort // fort2
+			ghos // ghost2
+			gun2 // gun2
+			hng2 // hng2
+			int2 // int2
+			mans // mans2
+			perf // perf2
+			ranc // ranch2
+			sher // shernit2
+		*/
+		get_AreaShowdown_InnerId(AREA_Showdown_TheBridge): "TheBridge",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheMine): "TheMine",
+		get_AreaShowdown_InnerId(AREA_Showdown_WidowsPatch): "WidowsPatch",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheRanch): "TheRanch",
+		get_AreaShowdown_InnerId(AREA_Showdown_Fairground): "Fairground",
+		get_AreaShowdown_InnerId(AREA_Showdown_FallenCreek): "FallenCreek",
+		get_AreaShowdown_InnerId(AREA_Showdown_GhostTown): "GhostTown",
+		get_AreaShowdown_InnerId(AREA_Showdown_SunsetCanyon): "SunsetCanyon",
+		get_AreaShowdown_InnerId(AREA_Showdown_BrokenCreek): "BrokenCreek",
+		get_AreaShowdown_InnerId(AREA_Showdown_MansionGrounds): "MansionGrounds",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheMansion): "TheMansion",
+		get_AreaShowdown_InnerId(AREA_Showdown_TwinRocks): "TwinRocks",
+		get_AreaShowdown_InnerId(AREA_Showdown_DesertFortress): "DesertFortress",
+	},
+
+	"lup_StoryChapter_ShortID": { // InnerIDs < 6 characters long
+		/*	5 characters or less
+			bom // bomb
+			coa // coach
+			cor // core
+			for // fort
+			gho // ghost
+			hng // hng
+			ran // ranch
+			tom // tomb
+			tra // train
+			woo // woods
+			msn // msn
+			man // mans		
+		*/
+		get_AreaCampaign_InnerId(AREA_Campaign_SunsetCanyon): "SunsetCanyon",  
+		get_AreaCampaign_InnerId(AREA_Campaign_BearMountain): "BearMountain",  
+		get_AreaCampaign_InnerId(AREA_Campaign_CarnivalLife): "CarnivalLife",  
+		get_AreaCampaign_InnerId(AREA_Campaign_RangeWar): "RangeWar",  
+		get_AreaCampaign_InnerId(AREA_Campaign_EndOfTheLine): "EndOfTheLine",  
+		get_AreaCampaign_InnerId(AREA_Campaign_RogueValley): "RogueValley",  
+		get_AreaCampaign_InnerId(AREA_Campaign_Jailbreak): "Jailbreak",  
+		get_AreaCampaign_InnerId(AREA_Campaign_FortDiego): "FortDiego",  
+		get_AreaCampaign_InnerId(AREA_Campaign_Siege): "Siege",  
+		get_AreaCampaign_InnerId(AREA_Campaign_Brimstone): "Brimstone",  
+		get_AreaCampaign_InnerId(AREA_Campaign_Stagecoach): "Stagecoach",  
+		get_AreaCampaign_InnerId(AREA_Campaign_BountyHunter): "BountyHunter",  
+	},
+	"lup_StoryChapter_LongID": { // InnerIDs >= 6 characters long
+		/* 6 characters or more
+			idg // bridge
+			rfn // perfnew
+			rfi // barfight
+			met // cemetery
+			nsm // gunsmoke
+			ain // trainend
+			ain // traingood
+			ain // traincar
+			nsi // mansintb
+			nsr // mansroof
+			er7 // sher70
+			ern // shernite
+			ydu // roydusk
+			yfi // royfinal
+			ren // corenew
+			ncy // msncyn
+		*/
+		get_AreaCampaign_InnerId(AREA_Campaign_TheTraitor): "TheTraitor",
+		get_AreaCampaign_InnerId(AREA_Campaign_HellPass): "HellPass",
+		get_AreaCampaign_InnerId(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
+		get_AreaCampaign_InnerId(AREA_Campaign_BullsEye): "BullsEye",
+		get_AreaCampaign_InnerId(AREA_Campaign_BattleRoyale): "BattleRoyale",
+		get_AreaCampaign_InnerId(AREA_Campaign_TheMine): "TheMine",
+		get_AreaCampaign_InnerId(AREA_Campaign_Traincar): "Traincar",
+		get_AreaCampaign_InnerId(AREA_Campaign_FreakShow): "FreakShow",
+		get_AreaCampaign_InnerId(AREA_Campaign_GhostTown): "GhostTown",
+		get_AreaCampaign_InnerId(AREA_Campaign_TheCemetery): "TheCemetery",
+		get_AreaCampaign_InnerId(AREA_Campaign_SaloonFight): "SaloonFight",
+		get_AreaCampaign_InnerId(AREA_Campaign_DevilsAndAngels): "DevilsAndAngels",
+		get_AreaCampaign_InnerId(AREA_Campaign_BattleFinale): "BattleFinale",
+		get_AreaCampaign_InnerId(AREA_Campaign_HouseOfCards): "HouseOfCards",
+		get_AreaCampaign_InnerId(AREA_Campaign_FallFromGrace): "FallFromGrace",
+		get_AreaCampaign_InnerId(AREA_Campaign_Railroaded): "Railroaded",
+		
 	},
 	
 	"lup_StoryChapter3charID": { 
@@ -7075,9 +7209,7 @@ richPresence_lookupTables = {
 	"lup_StoryChapter9charID": { 
 		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_Railroaded): "Railroaded"
 	},
-	// "lup_ShowdownStageName": { // TODO lup_ShowdownStageName
-	// 	0: "xxx"
-	// },
+	
 	"lup_CharacterName": { // TODO lup_CharacterName
 		get_CharacterID_asHex(CHARACTER_JackSwift): "JackSwift",
 		get_CharacterID_asHex(CHARACTER_AnnieStoakes): "AnnieStoakes",
@@ -7346,8 +7478,8 @@ richPresence_parameterData = {
 	//	 		RELEASE_REGION_USA: () => always_false(), 
 	//	 		RELEASE_REGION_EUR: () => always_false(),
 	//	 		RELEASE_REGION_JPN: () => always_false()},
-	//		"LookupTableID": "lup_LookupTemplate",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTemplate", "LookupFallback")},
+	//		"LookupTableID": "lup_LookupTableKey",
+	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
 	//	 	"RPtype": richPresence_MACRO,
@@ -7357,8 +7489,8 @@ richPresence_parameterData = {
 	//	 		RELEASE_REGION_JPN: () => always_false()},
 	//	 	"MacroFormat": "Number"},	
 
-	
-	"rpp_StoryChapter3charID": {
+
+	"rpp_StoryChapter3charID": { // TODO Rewrite rpp_StoryChapter3 --> Check tmp.txt
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(3, RELEASE_REGION_USA), 
@@ -7471,11 +7603,11 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 // • RichPresence INITIALIZATION •
 // ===============================
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
-	for let_parameterKey in richPresence_lookupTables {
+	for let_lookupTableKey in richPresence_lookupTables {
 		let_lookupTable = richPresence_lookupTables[let_parameterKey]
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_parameterKey][let_lookupKey]
-			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
 		}
 	}}
 
