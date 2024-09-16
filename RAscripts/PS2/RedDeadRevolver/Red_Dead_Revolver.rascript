@@ -138,7 +138,7 @@ memory_dataStructures = {
 			"Bitset_ActivatedCheats": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
-		"pointerChains": {
+		"pointerChains": { 
 			"ASCII_StartChpMenuName": {
 				"addAddressChain": [0x1EC]},
 			"BitFlag_IsStartChpMenuActive": { 
@@ -153,6 +153,10 @@ memory_dataStructures = {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9E4],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9C4]}},
+			"BitFlag_IsFirstPopupMenuDisplayed": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x964],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x944]}},
 			"8Bit_MenuDepth": {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9D4],
@@ -167,8 +171,25 @@ memory_dataStructures = {
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0xA54]}},	 
 			"32BitPointer_2D0": { 
 				"addAddressChain": [0x2D0]},
+			"BitFlag_IsAccuracyStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x814],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F4]}},
+			"BitFlag_IsDamageTakenStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x824],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x804]}},
+			"BitFlag_IsTimeStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x834],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x814]}},
+			"BitFlag_IsBestComboStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x844],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x824]}},
 			"Struct_RewardMenuDisplayText": { 
 				"addAddressChain": [0x2D0, 0x24, 0x34]},
+			
 		}},
 	"Struct_RewardMenuDisplayText": {
 		"offsetToMember": {
@@ -864,7 +885,7 @@ AREA_Campaign_EndOfTheLine = "lvl_train"
 // ------------ AREA_Campaign InnerIdlength = 6
 AREA_Campaign_TheTraitor = "lvl_bridge"
 AREA_Campaign_HellPass = "lvl_msncyn"
-AREA_Campaign_UglyStreetFight = "lvl_sher70" // TODO update - was previously "lvl_sher"
+AREA_Campaign_UglyStreetFight = "lvl_sher70"
 // ------------ AREA_Campaign InnerIdlength = 7
 AREA_Campaign_BullsEye = "lvl_perfnew"
 AREA_Campaign_BattleRoyale = "lvl_roydusk"
@@ -1950,12 +1971,15 @@ function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegio
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuOrStartChpMenuDisplayed",
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
 
-function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
+function current_RewardMenu_MenuDepth(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", let_memAddr_RewardMenuDisplayData,
 		enum_releaseRegion, accessor = byte)
-	return let_memAccessor_MenuDepth == int_depth}
+	return let_memAccessor_MenuDepth}
+
+function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) =>
+	current_RewardMenu_MenuDepth(enum_releaseRegion) == int_depth
 
 function is_RewardMenu_displayed_long(enum_releaseRegion) => // This comparison is bigger than is_RewardMenu_displayed_short()
 	current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) == 1
@@ -2001,10 +2025,10 @@ function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) =>
 	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
 	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
 
-function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => 
+function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => // TODO this function has changes --> update where used
 	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 0
-	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
-	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
+	&& 0x2 - 1 < current_RewardMenu_MenuDepth(enum_releaseRegion) 
+	&& current_RewardMenu_MenuDepth(enum_releaseRegion) < 0x3 + 1
 
 function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 	const_YES = 0
@@ -2020,19 +2044,55 @@ function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
 	let_offsetTo_Accuracy = memory_getDataStructOffset("Struct_RewardMenuDisplayText", "ASCII_Accuracy")
 	return is_ASCII_EqualTo(let_PointerChainTo_Struct_RewardMenuDisplayText + let_offsetTo_Accuracy, string_accuracy)}
 
+function current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsAccuracyStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsDamageTakenStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsTimeStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsTimeStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsBestComboStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsBestComboStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsFirstPopupMenuDisplayed", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return 
+		let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
+
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
 INGAMEMENU_PauseMenu = "pause"
 INGAMEMENU_CheatsMenu = "cheats"
 INGAMEMENU_WarningMenu = "warning"
-function current_IsInGameMenuDisplayed(enum_releaseRegion) =>
+function current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
 
-function prev_IsInGameMenuDisplayed(enum_releaseRegion) => 
-	prev(current_IsInGameMenuDisplayed(enum_releaseRegion))
+function prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) => 
+	prev(current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion))
 
 function current_HighlightedInGameMenuItem(enum_releaseRegion) =>
 	byte(
@@ -2056,19 +2116,29 @@ function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
-		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
+	}
+
+function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) { // TODO new function has replaced !is_InGameMenu_displayed() --> update where used
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return __ornext(
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		|| !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4))
+	}
 
 function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
-		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
+		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
 		
-		|| current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 // <---Block--- Checks when switching between InGameMenu's (eg. RetryMenu goes into GameOverScreen)
+		|| current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 // <---Block--- Checks when switching between InGameMenu's (eg. RetryMenu goes into GameOverScreen)
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4) // <-- check current ascii string
 		&& !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
@@ -2078,8 +2148,8 @@ function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
-		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
 
@@ -2148,7 +2218,7 @@ function is_AnyCheat_active(enum_releaseRegion) {
 			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
 
@@ -2160,7 +2230,7 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 1}
 
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
@@ -2171,7 +2241,7 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 0}
 
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2186,7 +2256,7 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) == length(array_cheatEnums)}
 
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2201,7 +2271,7 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
 
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
@@ -7442,10 +7512,10 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	// "lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-		// "id": 115333, "isLowerBetter": false, 
-		// "leaderboardFormat": "VALUE",
-		// "devInfo": "Best Stats - Chapter 1 - Normal"},
+	"lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		"id": 115333, "isLowerBetter": false, 
+		"leaderboardFormat": "VALUE",
+		"devInfo": "Best Stats - Chapter 1 - Normal"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED
 		"id": 112549, "isLowerBetter": true, 
@@ -7676,7 +7746,7 @@ leaderboards_submitTriggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& once(on_RewardMenu_render_short(enum_releaseRegion))
-			&& repeated(120, is_RewardMenu_displayed_short(enum_releaseRegion))
+			&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
 
 		// [2] ==== Alt Reset GRoup==== 	-> Reset when RewardMenu is not rendered
 			|| never_toAlt( 
@@ -7703,7 +7773,7 @@ function lb_template_ValueMeasure() { // Template
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
-function lb_Chapter1Normal_ValueMeasure() {
+function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a RatingObjectiveStar_UI_Element_Data 
 	function valueMeasureDuringGameplay(enum_releaseRegion) => 
 		measured(
 			current_Cash(enum_releaseRegion)
@@ -7714,7 +7784,9 @@ function lb_Chapter1Normal_ValueMeasure() {
 			+ current_DamageTaken(enum_releaseRegion)
 			+ current_TimeSpentInMission(enum_releaseRegion)
 			+ current_HighestCombo(enum_releaseRegion)
-			+ current_HighestComboMultiplier(enum_releaseRegion), 
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion),
 			when = is_ReleaseRegion(enum_releaseRegion))
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
@@ -7796,7 +7868,13 @@ function lb_Chapter1Normal_ValueMeasure() {
 			+ current_DamageTaken(enum_releaseRegion)
 			+ current_TimeSpentInMission(enum_releaseRegion)
 			+ current_HighestCombo(enum_releaseRegion)
-			+ current_HighestComboMultiplier(enum_releaseRegion), 
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion)
+			+ current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsTimeStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsBestComboStarAchieved(enum_releaseRegion),
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_RewardMenu_displayed_short(enum_releaseRegion))
