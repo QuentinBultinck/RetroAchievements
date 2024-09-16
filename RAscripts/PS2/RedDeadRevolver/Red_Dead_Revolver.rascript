@@ -7773,7 +7773,7 @@ function lb_template_ValueMeasure() { // Template
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
-function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a RatingObjectiveStar_UI_Element_Data 
+function lb_Chapter1Normal_ValueMeasure() {
 	function valueMeasureDuringGameplay(enum_releaseRegion) => 
 		measured(
 			current_Cash(enum_releaseRegion)
@@ -7820,9 +7820,19 @@ function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a Ra
 				24	AddAddress	Mem		32bit	0x763070
 				25	AddAddress	Mem		32bit	0x36c
 				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
-				28	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+				28	AddAddress	Mem		32bit	0x763070
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x763070
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+
+				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
 
 
 			-> OUTPUT (NTSCU)
@@ -7855,9 +7865,19 @@ function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a Ra
 				24	AddAddress	Mem		32bit	0x7608f0
 				25	AddAddress	Mem		32bit	0x36c
 				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				28	AddAddress	Mem		32bit	0x7608f0
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x7608f0
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 
-				28	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
 			*/
 
 	function valueMeasureSubmitted(enum_releaseRegion) => 
@@ -7909,11 +7929,44 @@ function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a Ra
 				23	AddAddress	Mem		32bit	0x763070
 				24	AddAddress	Mem		32bit	0x36c
 				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
-				27	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
-				28	AddAddress	Mem		32bit	0x54caf0
-				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+				27	AddAddress	Mem		32bit	0x763070
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x763070
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54caf0
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x814		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54caf0
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x824		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54caf0
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x834		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54caf0
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x844		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
+				55	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+				56	AddAddress	Mem		32bit	0x54caf0
+				57	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
 
 
 			-> OUTPUT (NTSCU)
@@ -7926,7 +7979,7 @@ function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a Ra
 				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
 				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|	
 
-				9	AddAddress	Mem		32bit	0x54caf0
+				9	AddAddress	Mem		32bit	0x54a370
 				10	AddAddress	Mem		32bit	0xac
 				11	AddAddress	Mem		32bit	0x34
 				12	AddAddress	Mem		32bit	0x1c
@@ -7945,8 +7998,40 @@ function lb_Chapter1Normal_ValueMeasure() { // TODO add bonuses for gaining a Ra
 				23	AddAddress	Mem		32bit	0x7608f0
 				24	AddAddress	Mem		32bit	0x36c
 				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				
 		
+				27	AddAddress	Mem		32bit	0x7608f0
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x7608f0
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54a370
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x7f4		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54a370
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x804		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54a370
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x814		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54a370
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x824		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
 				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
 				28	AddAddress	Mem		32bit	0x54a370
 				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
