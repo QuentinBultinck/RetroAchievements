@@ -1166,76 +1166,23 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"X-Coordinate": 4.17,
 			"Y-Coordinate": 23.11,
 			"Z-Coordinate": 10.97}},
-	"CampaignInnerId_UniqueCharacterIndex_byInnerIdLength": {
-		3: 0, 4: 0, 5: 0, 
-		6: 0, 7: 0,	9: 0},
-	"CampaignInnerId_UniqueSubstring_byInnerIdLength": {
-		8: {"Index": 6, "Length": 2}},
-	"ShowdownStageInnerId_UniqueSubstring": {
-		AREA_Showdown_TheBridge: substring(AREA_Showdown_TheBridge, 4, 3) // "lvl_bridge2" --> "bri"
-		AREA_Showdown_TheMine: substring(AREA_Showdown_TheMine, 4, 3)
-		AREA_Showdown_WidowsPatch: substring(AREA_Showdown_WidowsPatch, 4, 3)
-		AREA_Showdown_TheRanch: substring(AREA_Showdown_TheRanch, 4, 3)
-		AREA_Showdown_Fairground: substring(AREA_Showdown_Fairground, 4, 3)
-		AREA_Showdown_FallenCreek: substring(AREA_Showdown_FallenCreek, 4, 3)
-		AREA_Showdown_GhostTown: substring(AREA_Showdown_GhostTown, 4, 3)
-		AREA_Showdown_SunsetCanyon: substring(AREA_Showdown_SunsetCanyon, 4, 3)
-		AREA_Showdown_BrokenCreek: substring(AREA_Showdown_BrokenCreek, 4, 3)
-		AREA_Showdown_MansionGrounds: substring(AREA_Showdown_MansionGrounds, 4, 3)
-		AREA_Showdown_TheMansion: substring(AREA_Showdown_TheMansion, 4, 3)
-		AREA_Showdown_TwinRocks: substring(AREA_Showdown_TwinRocks, 4, 3)
-		AREA_Showdown_DesertFortress: substring(AREA_Showdown_DesertFortress, 4, 3)
-	}
 	}
 
-function get_AreaCampaign_InnerId(enum_areaId) { 
-	if (length(enum_areaId) < 6)
-		return substring(enum_areaId, 4, 3) // "lvl_bomb" --> "bom"
-	else 
-		return substring(enum_areaId, 6, 4)} // "lvl_traingood" --> "aing"
-
-function get_AreaShowdown_InnerId(enum_areaId) =>
-	substring(enum_areaId, 4, 3) // "lvl_bomb2" --> "bom"
-
-function get_Area_InnerId_UniqueCharacterIndex_byInnerIdLength(int_innerIdLength) {
-	let_UniqueCharacterIndex = const_Area_data["CampaignInnerId_UniqueCharacterIndex_byInnerIdLength"][int_innerIdLength]
-	return let_UniqueCharacterIndex}
-
-function get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(int_innerIdLength) {
-	let_UniqueSubstringIndex = const_Area_data["CampaignInnerId_UniqueSubstring_byInnerIdLength"][int_innerIdLength]["Index"]
-	return let_UniqueSubstringIndex}
-
-function get_Area_InnerId_UniqueSubstringLength_byInnerIdLength(int_innerIdLength) {
-	let_UniqueSubstringLength = const_Area_data["CampaignInnerId_UniqueSubstring_byInnerIdLength"][int_innerIdLength]["Length"]
-	return let_UniqueSubstringLength}
-
-function get_Area_InnerId_UniqueCharacterIndex(string_innerId) {
-	let_UniqueCharacterIndex = get_Area_InnerId_UniqueCharacterIndex_byInnerIdLength(length(string_innerId))
-	return let_UniqueCharacterIndex}
-
-function get_Area_InnerId_UniqueCharacter(enum_areaId) { // Take Nth character from Area_InnerID as this is a unique character in that list of AREA_IDs grouped by InnerId length
-	let_InnerId = get_AreaCampaign_InnerId(enum_areaId)
-	let_UniqueCharacterIndex = get_Area_InnerId_UniqueCharacterIndex(let_InnerId)
-	return substring(let_InnerId, let_UniqueCharacterIndex, 1)} 
-
-function get_Area_InnerId_UniqueCharacter_asHex(enum_areaId) =>
-	memUtil_asciiStringToHex(get_Area_InnerId_UniqueCharacter(enum_areaId))
-
-function get_Area_InnerId_UniqueSubstring(enum_areaId) { // From the Nth character take a substring to uniquely ID the Area_InnerID
-	let_InnerId = get_AreaCampaign_InnerId(enum_areaId)
-	let_UniqueSubstringLength = get_Area_InnerId_UniqueSubstringLength_byInnerIdLength(length(let_InnerId))
-	let_UniqueSubstringIndex = get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(length(let_InnerId))
-	return substring(let_InnerId, let_UniqueSubstringIndex, let_UniqueSubstringLength)} 
-
-function get_Area_InnerId_UniqueSubstring_asHex(enum_areaId) =>
-	memUtil_asciiStringToHex(get_Area_InnerId_UniqueSubstring(enum_areaId))
-
-function get_Area_memAddr_InnerAreaID(enum_releaseRegion) => 
+function get_Area_memAddr_InnerID(enum_releaseRegion) =>
 	memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion) + 0x4
 
-function get_AreaShowdown_InnerId_UniqueSubstring(enum_areaId) =>
-	memUtil_asciiStringToHex(const_Area_data["ShowdownStageInnerId_UniqueSubstring"][enum_areaId])
+function get_AreaCampaign_ShortInnerId(enum_areaId) { 
+	if (length(enum_areaId) >= 10) 
+		util_throwError(format("Area_ID: {0}, is too long to create a short ID", enum_areaId))
+	return memUtil_asciiStringToHex(substring(enum_areaId, 4, 3))}  // "lvl_bomb" --> "bom"
 
+function get_AreaCampaign_LongInnerId(enum_areaId) {
+	if (length(enum_areaId) < 10)
+		util_throwError(format("Area_ID: {0}, is too short to create a long ID", enum_areaId))
+	return memUtil_asciiStringToHex(substring(enum_areaId, 6, 4))} // "lvl_traingood" --> "aing"
+
+function get_AreaShowdown_InnerId(enum_areaId) =>
+	memUtil_asciiStringToHex(substring(enum_areaId, 4, 3)) // "lvl_bomb2" --> "bom"
 // -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
@@ -6933,20 +6880,11 @@ richPresence_text = {
 	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 3rd place"},
 	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 2nd place"},
 	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 1st place"},
-	"rp_BountyHunterMode_3charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_4charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_5charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_6charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_7charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_8charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_BountyHunterMode_9charID":						{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
-	"rp_StoryChapter_3charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
-	"rp_StoryChapter_4charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_StoryChapter_5charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_StoryChapter_6charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_StoryChapter_7charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_StoryChapter_8charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_StoryChapter_9charID":							{"en": "Chapter {0} on {1} | Journal: xxx%"},
+	"rp_BountyHunterMode_AreaShortID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_BountyHunterMode_AreaLongID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: xxx%"},
+	"rp_Story_Brimstone":								{"en": "Time off at Brimstone | Journal: xxx%"},
+	"rp_Story_AreaShortID":								{"en": "Chapter {0} on {1} | Journal: xxx%"},
+	"rp_Story_AreaLongID":								{"en": "Chapter {0} on {1} | Journal: xxx%"},
 	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: {0}%"},
 	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"},
 	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
@@ -7009,43 +6947,38 @@ richPresence_LookupTablesText = {
 		"SissyFess": 					{"en": "'Sissy' Fess"},
 		"RicoPedrosa": 					{"en": "Rico Pedrosa"},
 		"UdoKang": 						{"en": "Udo Kang"},
-	},
-
-	"lup_StoryChapter": {
-		"3charID_Stagecoach": 				{"en": "18 \"Stagecoach\""},
-		"3charID_BountyHunter": 			{"en": "2 \"Bounty Hunter\""},
-
-		"4charID_RogueValley":				{"en": "8 \"Rogue Valley\""},
-		"4charID_Jailbreak":				{"en": "16 \"Jailbreak\""},
-		"4charID_FortDiego":				{"en": "20 \"Fort Diego\""},
-		"4charID_Siege":					{"en": "25 \"Siege\""},
-
-		"5charID_SunsetCanyon":				{"en": "14 \"Sunset Canyon\""},
-		"5charID_CarnivalLife":				{"en": "6 \"Carnival Life\""},
-		"5charID_RangeWar":					{"en": "11 \"Range War\""},
-		"5charID_EndOfTheLine":				{"en": "21 \"End Of The Line\""},
-		"5charID_BearMountain":				{"en": "15 \"Bear Mountain\""},
-
-		"6charID_TheTraitor":  				{"en": "13 \"The Traitor\""},
-		"6charID_HellPass":  				{"en": "19 \"Hell Pass\""},
-		"6charID_UglyStreetFight":  		{"en": "3 \"Ugly StreetFight\""},
-
-		"7charID_BullsEye":  				{"en": "1 \"Bull's Eye\""},
-		"7charID_BattleRoyale":  			{"en": "23 \"Battle Royale\""},
-		"7charID_TheMine":  				{"en": "17 \"The Mine\""},
-
-		"8charID_SaloonFight":  			{"en": "12 \"Bar Fight\""},
-		"8charID_TheCemetery":  			{"en": "10 \"The Cemetery\""},
-		"8charID_FallFromGrace":  			{"en": "27 \"Fall From Grace\""},
-		"8charID_HouseOfCards":  			{"en": "26 \"House Of Cards\""},
-		"8charID_BattleFinale":  			{"en": "24 \"Battle Finale\""},
-		"8charID_Traincar":  				{"en": "4 \"Traincar\""},
-		"8charID_DevilsAndAngels":  		{"en": "22 \"Devils And Angels\""},
-		"8charID_FreakShow":  				{"en": "7 \"Freak Show\""},
-		"8charID_GhostTown":  				{"en": "9 \"Ghost Town\""},
-
-		"9charID_Railroaded":  				{"en": "5 \"Railroaded\""},
-	},
+		},
+	"lup_StoryChapter_ShortID": {
+		"Stagecoach": 				{"en": "18 \"Stagecoach\""},
+		"BountyHunter": 			{"en": "2 \"Bounty Hunter\""},
+		"RogueValley":				{"en": "8 \"Rogue Valley\""},
+		"Jailbreak":				{"en": "16 \"Jailbreak\""},
+		"FortDiego":				{"en": "20 \"Fort Diego\""},
+		"Siege":					{"en": "25 \"Siege\""},
+		"SunsetCanyon":				{"en": "14 \"Sunset Canyon\""},
+		"CarnivalLife":				{"en": "6 \"Carnival Life\""},
+		"RangeWar":					{"en": "11 \"Range War\""},
+		"EndOfTheLine":				{"en": "21 \"End Of The Line\""},
+		"BearMountain":				{"en": "15 \"Bear Mountain\""}
+		},
+	"lup_StoryChapter_LongID": {
+		"TheTraitor":  				{"en": "13 \"The Traitor\""},
+		"HellPass":  				{"en": "19 \"Hell Pass\""},
+		"UglyStreetFight":  		{"en": "3 \"Ugly StreetFight\""},
+		"BullsEye":  				{"en": "1 \"Bull's Eye\""},
+		"BattleRoyale":  			{"en": "23 \"Battle Royale\""},
+		"TheMine":  				{"en": "17 \"The Mine\""},
+		"SaloonFight":  			{"en": "12 \"Bar Fight\""},
+		"TheCemetery":  			{"en": "10 \"The Cemetery\""},
+		"FallFromGrace":  			{"en": "27 \"Fall From Grace\""},
+		"HouseOfCards":  			{"en": "26 \"House Of Cards\""},
+		"BattleFinale":  			{"en": "24 \"Battle Finale\""},
+		"Traincar":  				{"en": "4 \"Traincar\""},
+		"DevilsAndAngels":  		{"en": "22 \"Devils And Angels\""},
+		"FreakShow":  				{"en": "7 \"Freak Show\""},
+		"GhostTown":  				{"en": "9 \"Ghost Town\""},
+		"Railroaded":  				{"en": "5 \"Railroaded\""},
+		},
 	
 	"lup_StoryDifficulty": {
 		"Normal": 						{"en": "Normal"},
@@ -7053,8 +6986,23 @@ richPresence_LookupTablesText = {
 		"VeryHard": 					{"en": "Very Hard"},
 		"RedWoodRevolver": 				{"en": "Red Wood Revolver"},
 		"BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
-	},
-
+		},
+	"lup_ShowdownStage": {
+		"TheBridge":				{"en": "The Bridge"},
+		"TheMine":					{"en": "The Mine"},
+		"WidowsPatch":				{"en": "Widow's Patch"},
+		"TheRanch":					{"en": "The Ranch"},
+		"Fairground":				{"en": "Fairground"},
+		"FallenCreek":				{"en": "Fallen Creek"},
+		"GhostTown":				{"en": "Ghost Town"},
+		"SunsetCanyon":				{"en": "Sunset Canyon"},
+		"BrokenCreek":				{"en": "Boyhood Home"},
+		"MansionGrounds":			{"en": "Tended Gardens"},
+		"TheMansion":				{"en": "Opulent Palace"},
+		"TwinRocks":				{"en": "Twin Rocks"},
+		"DesertFortress":			{"en": "Desert Fortress"},
+		},
+	
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -7116,18 +7064,17 @@ richPresence_lookupTables = {
 			msn // msn
 			man // mans		
 		*/
-		get_AreaCampaign_InnerId(AREA_Campaign_SunsetCanyon): "SunsetCanyon",  
-		get_AreaCampaign_InnerId(AREA_Campaign_BearMountain): "BearMountain",  
-		get_AreaCampaign_InnerId(AREA_Campaign_CarnivalLife): "CarnivalLife",  
-		get_AreaCampaign_InnerId(AREA_Campaign_RangeWar): "RangeWar",  
-		get_AreaCampaign_InnerId(AREA_Campaign_EndOfTheLine): "EndOfTheLine",  
-		get_AreaCampaign_InnerId(AREA_Campaign_RogueValley): "RogueValley",  
-		get_AreaCampaign_InnerId(AREA_Campaign_Jailbreak): "Jailbreak",  
-		get_AreaCampaign_InnerId(AREA_Campaign_FortDiego): "FortDiego",  
-		get_AreaCampaign_InnerId(AREA_Campaign_Siege): "Siege",  
-		get_AreaCampaign_InnerId(AREA_Campaign_Brimstone): "Brimstone",  
-		get_AreaCampaign_InnerId(AREA_Campaign_Stagecoach): "Stagecoach",  
-		get_AreaCampaign_InnerId(AREA_Campaign_BountyHunter): "BountyHunter",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_SunsetCanyon): "SunsetCanyon",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_BearMountain): "BearMountain",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_CarnivalLife): "CarnivalLife",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_RangeWar): "RangeWar",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_EndOfTheLine): "EndOfTheLine",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_RogueValley): "RogueValley",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Jailbreak): "Jailbreak",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_FortDiego): "FortDiego",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Siege): "Siege",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Stagecoach): "Stagecoach",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_BountyHunter): "BountyHunter",  
 	},
 	"lup_StoryChapter_LongID": { // InnerIDs >= 6 characters long
 		/* 6 characters or more
@@ -7148,67 +7095,24 @@ richPresence_lookupTables = {
 			ren // corenew
 			ncy // msncyn
 		*/
-		get_AreaCampaign_InnerId(AREA_Campaign_TheTraitor): "TheTraitor",
-		get_AreaCampaign_InnerId(AREA_Campaign_HellPass): "HellPass",
-		get_AreaCampaign_InnerId(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
-		get_AreaCampaign_InnerId(AREA_Campaign_BullsEye): "BullsEye",
-		get_AreaCampaign_InnerId(AREA_Campaign_BattleRoyale): "BattleRoyale",
-		get_AreaCampaign_InnerId(AREA_Campaign_TheMine): "TheMine",
-		get_AreaCampaign_InnerId(AREA_Campaign_Traincar): "Traincar",
-		get_AreaCampaign_InnerId(AREA_Campaign_FreakShow): "FreakShow",
-		get_AreaCampaign_InnerId(AREA_Campaign_GhostTown): "GhostTown",
-		get_AreaCampaign_InnerId(AREA_Campaign_TheCemetery): "TheCemetery",
-		get_AreaCampaign_InnerId(AREA_Campaign_SaloonFight): "SaloonFight",
-		get_AreaCampaign_InnerId(AREA_Campaign_DevilsAndAngels): "DevilsAndAngels",
-		get_AreaCampaign_InnerId(AREA_Campaign_BattleFinale): "BattleFinale",
-		get_AreaCampaign_InnerId(AREA_Campaign_HouseOfCards): "HouseOfCards",
-		get_AreaCampaign_InnerId(AREA_Campaign_FallFromGrace): "FallFromGrace",
-		get_AreaCampaign_InnerId(AREA_Campaign_Railroaded): "Railroaded",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheTraitor): "TheTraitor",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_HellPass): "HellPass",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BullsEye): "BullsEye",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BattleRoyale): "BattleRoyale",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheMine): "TheMine",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_Traincar): "Traincar",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_FreakShow): "FreakShow",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_GhostTown): "GhostTown",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheCemetery): "TheCemetery",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_SaloonFight): "SaloonFight",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_DevilsAndAngels): "DevilsAndAngels",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BattleFinale): "BattleFinale",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_HouseOfCards): "HouseOfCards",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_FallFromGrace): "FallFromGrace",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_Railroaded): "Railroaded",
 		
-	},
-	
-	"lup_StoryChapter3charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_Stagecoach): "Stagecoach",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_BountyHunter): "BountyHunter"
 	},	
-	"lup_StoryChapter4charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_RogueValley): "RogueValley",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_Jailbreak): "Jailbreak",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_FortDiego): "FortDiego",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_Siege): "Siege"
-		// AREA_Campaign_Brimstone: "Brimstone" // TODO move brimstone in seperate RP display script
-	},	
-	"lup_StoryChapter5charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_SunsetCanyon): "SunsetCanyon",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_CarnivalLife): "CarnivalLife",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_RangeWar): "RangeWar",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_EndOfTheLine): "EndOfTheLine",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_BearMountain): "BearMountain"
-	},	
-	"lup_StoryChapter6charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_TheTraitor): "TheTraitor",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_HellPass): "HellPass",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_UglyStreetFight): "UglyStreetFight"
-	},	
-	"lup_StoryChapter7charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_BullsEye): "BullsEye",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_BattleRoyale): "BattleRoyale",
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_TheMine): "TheMine"
-	},
-	"lup_StoryChapter8charID": { // Take 6th character index from Area_InnerID as this is a unique character in this list of AREA_IDs
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_SaloonFight): "SaloonFight",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_TheCemetery): "TheCemetery",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_FallFromGrace): "FallFromGrace",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_HouseOfCards): "HouseOfCards",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_BattleFinale): "BattleFinale",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_Traincar): "Traincar",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_DevilsAndAngels): "DevilsAndAngels",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_FreakShow): "FreakShow",
-		get_Area_InnerId_UniqueSubstring_asHex(AREA_Campaign_GhostTown): "GhostTown"
-	},
-	"lup_StoryChapter9charID": { 
-		get_Area_InnerId_UniqueCharacter_asHex(AREA_Campaign_Railroaded): "Railroaded"
-	},
 	
 	"lup_CharacterName": { // TODO lup_CharacterName
 		get_CharacterID_asHex(CHARACTER_JackSwift): "JackSwift",
@@ -7324,62 +7228,43 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // • RichPresence DISPLAYS •
 // =========================
 // ------------------rp_StoryChapter-------------------
-function rp_StoryChapter_byAreaInnerIdLength(int_innerIdLength, enum_releaseRegion) { // TODO enhance rp_StoryMode with journal %%
-	function condition(int_innerIdLength, enum_releaseRegion) =>
+function rp_Story_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters long // TODO enhance rp_StoryMode with journal %%
+	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
-		&& is_Area_InnerIdLength(int_innerIdLength, enum_releaseRegion)
+		&& tally(1, [
+			// shorter than 3, doesn't exist
+			once(is_Area_InnerIdLength(3, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(5, enum_releaseRegion))])
 
 	return rich_presence_conditional_display( 
-		condition(int_innerIdLength, enum_releaseRegion),
-		richPresence_getText(format("rp_StoryChapter_{0}charID", int_innerIdLength)),
-		richPresence_callParameterFunction(format("rpp_StoryChapter{0}charID", int_innerIdLength), enum_releaseRegion), 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Story_AreaShortID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_ShortInnerID", enum_releaseRegion), 
 		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
 	}
-function rp_StoryChapter_3charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(3, enum_releaseRegion)
-function rp_StoryChapter_4charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(4, enum_releaseRegion)
-function rp_StoryChapter_5charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(5, enum_releaseRegion)
-function rp_StoryChapter_6charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(6, enum_releaseRegion)
-function rp_StoryChapter_7charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(7, enum_releaseRegion)
-function rp_StoryChapter_8charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(8, enum_releaseRegion)
-function rp_StoryChapter_9charID(enum_releaseRegion) =>
-	rp_StoryChapter_byAreaInnerIdLength(9, enum_releaseRegion)
 
-// ------------------rp_BountyHunterMode-----------------
-function rp_BountyHunterMode_byAreaInnerIdLength(int_innerIdLength, enum_releaseRegion) { // TODO enhance rp_BountyHunterMode with journal %%
-	function condition(int_innerIdLength, enum_releaseRegion) =>
+function rp_Story_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 characters long // TODO enhance rp_StoryMode with journal %%
+	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-		&& is_Playing_BountyHunterMode_short(enum_releaseRegion)
-		&& is_Area_InnerIdLength(int_innerIdLength, enum_releaseRegion)
+		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		&& tally(1, [
+			once(is_Area_InnerIdLength(6, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(7, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(8, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(9, enum_releaseRegion))
+			// longer than 9, doesn't exist
+			])
 
 	return rich_presence_conditional_display( 
-		condition(int_innerIdLength, enum_releaseRegion),
-		richPresence_getText(format("rp_BountyHunterMode_{0}charID", int_innerIdLength)),
-		richPresence_callParameterFunction(format("rpp_StoryChapter{0}charID", int_innerIdLength), enum_releaseRegion), 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Story_AreaLongID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_LongInnerID", enum_releaseRegion), 
 		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
 	}
-function rp_BountyHunterMode_3charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(3, enum_releaseRegion)
-function rp_BountyHunterMode_4charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(4, enum_releaseRegion)
-function rp_BountyHunterMode_5charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(5, enum_releaseRegion)
-function rp_BountyHunterMode_6charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(6, enum_releaseRegion)
-function rp_BountyHunterMode_7charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(7, enum_releaseRegion)
-function rp_BountyHunterMode_8charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(8, enum_releaseRegion)
-function rp_BountyHunterMode_9charID(enum_releaseRegion) =>
-	rp_BountyHunterMode_byAreaInnerIdLength(9, enum_releaseRegion)
 
 // ----------------------------------------------
 function rp_BountyHuntShowdown_First(enum_releaseRegion) {
@@ -7410,20 +7295,8 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_BountyHunterMode_3charID(enum_releaseRegion)
-		rp_BountyHunterMode_4charID(enum_releaseRegion)
-		rp_BountyHunterMode_5charID(enum_releaseRegion)
-		rp_BountyHunterMode_6charID(enum_releaseRegion)
-		rp_BountyHunterMode_7charID(enum_releaseRegion)
-		rp_BountyHunterMode_8charID(enum_releaseRegion)
-		rp_BountyHunterMode_9charID(enum_releaseRegion)
-		rp_StoryChapter_3charID(enum_releaseRegion)
-		rp_StoryChapter_4charID(enum_releaseRegion)
-		rp_StoryChapter_5charID(enum_releaseRegion)
-		rp_StoryChapter_6charID(enum_releaseRegion)
-		rp_StoryChapter_7charID(enum_releaseRegion)
-		rp_StoryChapter_8charID(enum_releaseRegion)
-		rp_StoryChapter_9charID(enum_releaseRegion)
+		rp_Story_AreaShortID(enum_releaseRegion)
+		rp_Story_AreaLongID(enum_releaseRegion)
 		rp_BountyHuntShowdown_First(enum_releaseRegion) // QA rp_BountyHuntShowdown_First
 		// rp_DefaultPlus(enum_releaseRegion) // TODO rp_DefaultPlus
 	}} 
@@ -7435,13 +7308,12 @@ richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpp_Story_ShortInnerID(enum_releaseRegion) =>
+	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
 
-function rpp_StoryChapterName_UniqueCharacter(int_innerIdLength, enum_releaseRegion) =>
-	byte(get_Area_memAddr_InnerAreaID(enum_releaseRegion) + get_Area_InnerId_UniqueCharacterIndex_byInnerIdLength(int_innerIdLength))
-
-function rpp_StoryChapterName_UniqueSubstring(int_innerIdLength, enum_releaseRegion) =>
-	word(get_Area_memAddr_InnerAreaID(enum_releaseRegion) + get_Area_InnerId_UniqueSubstringIndex_byInnerIdLength(int_innerIdLength))
-
+function rpp_Story_LongInnerID(enum_releaseRegion) =>
+	dword(get_Area_memAddr_InnerID(enum_releaseRegion) + 0x2)
+	
 function rpp_StoryDifficulty(enum_releaseRegion) =>
 	current_StoryCampaignDifficulty(enum_releaseRegion)
 
@@ -7489,56 +7361,21 @@ richPresence_parameterData = {
 	//	 		RELEASE_REGION_JPN: () => always_false()},
 	//	 	"MacroFormat": "Number"},	
 
+	"rpp_StoryChapter_ShortInnerID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Story_ShortInnerID(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Story_ShortInnerID(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapter_ShortID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter_LongID", "BullsEye")},
+	"rpp_StoryChapter_LongInnerID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Story_LongInnerID(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Story_LongInnerID(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapter_LongID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter_LongID", "BullsEye")},
 
-	"rpp_StoryChapter3charID": { // TODO Rewrite rpp_StoryChapter3 --> Check tmp.txt
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(3, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(3, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter3charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter4charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(4, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(4, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter4charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter5charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(5, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(5, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter5charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter6charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(6, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(6, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter6charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter7charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(7, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(7, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter7charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter8charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueSubstring(8, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueSubstring(8, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter8charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
-	"rpp_StoryChapter9charID": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_StoryChapterName_UniqueCharacter(9, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_StoryChapterName_UniqueCharacter(9, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_StoryChapter9charID",
-		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter7charID", "BullsEye")},
 	"rpp_StoryDifficulty": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
@@ -7552,14 +7389,14 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: rpp_ShowdownPlayer1Character(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Character(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
-		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LookupFallback")},
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
 	"rpp_ShowdownPlayer2Character": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_ShowdownPlayer2Character(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_ShowdownPlayer2Character(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
-		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LookupFallback")},
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
 
 	"rpp_ShowdownPlayer1Cash": {
 		"RPtype": richPresence_MACRO,
@@ -7601,10 +7438,10 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 // ===============================
 // • RichPresence INITIALIZATION •
-// ===============================
+// =============================== // TODO below function has changed --> update in template
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
-	for let_lookupTableKey in richPresence_lookupTables {
-		let_lookupTable = richPresence_lookupTables[let_parameterKey]
+	for let_lookupTableKey in richPresence_lookupTables { 
+		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
 		for let_lookupKey in let_lookupTable {
 			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
 			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
