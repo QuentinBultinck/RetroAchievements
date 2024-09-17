@@ -6866,7 +6866,7 @@ function achievements_initialize() {
 // • RichPresence TEXT •
 // =====================
 //	- Contains text for the rich presence script
-richPresence_text = {
+richPresence_text = { // TODO RP for showdown modes
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 4th place"},
 	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 3rd place"},
@@ -6885,7 +6885,7 @@ richPresence_text = {
 	"rp_Story_Brimstone":								{"en": "Time off at Brimstone | Journal: xxx%"},
 	"rp_Story_AreaShortID":								{"en": "Chapter {0} on {1} | Journal: xxx%"},
 	"rp_Story_AreaLongID":								{"en": "Chapter {0} on {1} | Journal: xxx%"},
-	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: {0}%"},
+	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: {0}%"}, // TODO rp_MainMenu
 	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"},
 	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
 richPresence_LookupTablesText = {
@@ -7227,7 +7227,6 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
-// ------------------rp_StoryChapter-------------------
 function rp_Story_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters long // TODO enhance rp_StoryMode with journal %%
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -7266,7 +7265,7 @@ function rp_Story_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 characters l
 		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion))
 	}
 
-// ----------------------------------------------
+
 function rp_BountyHuntShowdown_First(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -7276,17 +7275,20 @@ function rp_BountyHuntShowdown_First(enum_releaseRegion) {
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_BountyHuntShowdown_First"),
-		richPresence_callParameterFunction("rpp_ShowdownPlayer1Character", enum_releaseRegion),
-		richPresence_callParameterFunction("rpp_ShowdownPlayer1Cash", enum_releaseRegion))
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Cash", enum_releaseRegion))
 	}
+
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus"))
+		richPresence_getText("rp_DefaultPlus"),
+		richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion))
 	}
+
 function rp_Default() {
 	return rich_presence_display(	
 		richPresence_getText("rp_Default"))
@@ -7296,9 +7298,9 @@ function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
 		rp_Story_AreaShortID(enum_releaseRegion)
-		rp_Story_AreaLongID(enum_releaseRegion)
-		rp_BountyHuntShowdown_First(enum_releaseRegion) // QA rp_BountyHuntShowdown_First
-		// rp_DefaultPlus(enum_releaseRegion) // TODO rp_DefaultPlus
+		rp_Story_AreaLongID(enum_releaseRegion) 
+		rp_BountyHuntShowdown_First(enum_releaseRegion) // QA rp_BountyHuntShowdown_First 
+		rp_DefaultPlus(enum_releaseRegion) // MANUAL_CONSTRUCTION - rpp_JournalCompletionRate via Remember/Recall
 	}} 
 
 // ===========================
@@ -7308,12 +7310,33 @@ richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpp_JournalCompletionRate(enum_releaseRegion) =>
+	achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) // TODO implement this
+	/* MANUAL_CONSTRUCTION 
+		-> Defined Logic (generated via a dummy leaderboard --> Copy Def):
+			AddSource	Mem		Bit0	0xFirstFlag
+			AddSource 	SumOf_FlagsAllPages()
+			AddSource	Mem		Bit0	0xLastFlag
+			Remember	Float			0.0
+			Remember	Recall						/ Float	137.0
+			Remember	Recall						* Float	100.0
+			Measured	Recall
+
+		-> Serialized Logic (PAL):
+			A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall}
+		
+		-> Serialized Logic (NTSCU):
+			A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall}$A:0xO0073de4d_A:0xP0073de4d_A:0xQ0073de4d_A:0xR0073de4d_A:0xS0073de4d_A:0xT0073de4d_A:0xK0073de4e_A:0xM0073de4f_A:0xN0073de4f_A:0xP0073de4f_A:0xQ0073de4f_A:0xR0073de4f_A:0xS0073de4f_A:0xT0073de4f_A:0xM0073de50_A:0xN0073de50_A:0xP0073de50_A:0xR0073de50_A:0xS0073de50_A:0xT0073de50_A:0xM0073de51_A:0xN0073de51_A:0xO0073de51_A:0xP0073de51_A:0xQ0073de51_A:0xS0073de51_A:0xT0073de51_A:0xM0073de52_A:0xN0073de52_A:0xO0073de52_A:0xR0073de52_A:0xT0073de52_A:0xK0073de53_A:0xK0073de54_A:0xK0073de55_A:0xK0073de56_A:0xK0073de57_A:0xK0073de58_A:0xN0073de59_A:0xO0073de59_A:0xP0073de59_A:0xQ0073de59_A:0xR0073de59_A:0xS0073de59_A:0xT0073de59_A:0xM0073de5a_A:0xN0073de5a_A:0xO0073de5a_A:0xQ0073de5a_A:0xR0073de5a_A:0xS0073de5a_A:0xT0073de5a_A:0xM0073de5b_A:0xN0073de5b_A:0xP0073de5b_A:0xQ0073de5b_A:0xR0073de5b_A:0xS0073de5b_A:0xT0073de5b_A:0xK0073de5c_A:0xK0073de5d_A:0xK0073de5e_A:0xM0073de5f_A:0xN0073de5f_A:0xO0073de5f_A:0xP0073de5f_A:0xQ0073de5f_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall}
+		
+
+	*/
+
 function rpp_Story_ShortInnerID(enum_releaseRegion) =>
 	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
 
 function rpp_Story_LongInnerID(enum_releaseRegion) =>
 	dword(get_Area_memAddr_InnerID(enum_releaseRegion) + 0x2)
-	
+
 function rpp_StoryDifficulty(enum_releaseRegion) =>
 	current_StoryCampaignDifficulty(enum_releaseRegion)
 
@@ -7339,26 +7362,26 @@ richPresence_parameterData = {
 	//	"rpp_ValueTemplate": {
 	//	 	"RPtype": richPresence_VALUE,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
 	//	 	"ValueFormat": "VALUE"},
 
 	//	 "rpp_LookupTemplate": {
 	//	 	"RPtype": richPresence_LOOKUP,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
 	//		"LookupTableID": "lup_LookupTableKey",
 	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
 	//	 	"RPtype": richPresence_MACRO,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
 	//	 	"MacroFormat": "Number"},	
 
 	"rpp_StoryChapter_ShortInnerID": {
@@ -7383,22 +7406,29 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: rpp_StoryDifficulty(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryDifficulty",
 		"LookupFallback": richPresence_getLookupTableText("lup_StoryDifficulty", "Normal")},
-	"rpp_ShowdownPlayer1Character": {
+	"rpp_ShowdownPlayer1_Character": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_ShowdownPlayer1Character(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Character(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
 		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
-	"rpp_ShowdownPlayer2Character": {
+	"rpp_ShowdownPlayer2_Character": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_ShowdownPlayer2Character(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_ShowdownPlayer2Character(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
-		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")
+	},
 
-	"rpp_ShowdownPlayer1Cash": {
+	"rpp_JournalCompletionRate": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_JournalCompletionRate(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_JournalCompletionRate(RELEASE_REGION_EUR)},
+		"MacroFormat": "Number"},	
+	"rpp_ShowdownPlayer1_Cash": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
 			RELEASE_REGION_USA: rpp_ShowdownPlayer1Cash(RELEASE_REGION_USA), 
