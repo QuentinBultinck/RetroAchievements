@@ -64,10 +64,11 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
+function util_throwError_RegionNotSupported(enum_releaseRegion) =>
+	util_throwError(format("This functionality is not supported for release region: {0}", enum_releaseRegion))
+
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
-
-
 
 // ***************************************************************************************************************************************************************** \\
 //																																									 \\
@@ -137,7 +138,7 @@ memory_dataStructures = {
 			"Bitset_ActivatedCheats": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
-		"pointerChains": {
+		"pointerChains": { 
 			"ASCII_StartChpMenuName": {
 				"addAddressChain": [0x1EC]},
 			"BitFlag_IsStartChpMenuActive": { 
@@ -152,6 +153,10 @@ memory_dataStructures = {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9E4],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9C4]}},
+			"BitFlag_IsFirstPopupMenuDisplayed": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x964],
+					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x944]}},
 			"8Bit_MenuDepth": {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9D4],
@@ -166,8 +171,25 @@ memory_dataStructures = {
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0xA54]}},	 
 			"32BitPointer_2D0": { 
 				"addAddressChain": [0x2D0]},
+			"BitFlag_IsAccuracyStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x814],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F4]}},
+			"BitFlag_IsDamageTakenStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x824],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x804]}},
+			"BitFlag_IsTimeStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x834],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x814]}},
+			"BitFlag_IsBestComboStarAchieved": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x844],
+					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x824]}},
 			"Struct_RewardMenuDisplayText": { 
 				"addAddressChain": [0x2D0, 0x24, 0x34]},
+			
 		}},
 	"Struct_RewardMenuDisplayText": {
 		"offsetToMember": {
@@ -381,6 +403,21 @@ memory_dataStructures = {
 			"BitFlag_IsPlayerSlotFilled": 0x13,
 			"ASCII_ShowdownAIsetting": 0x139}
 		},		
+	"Struct_ShowdownPlayer_Data": {
+		"sizeInBytes": 16,
+		"offsetToMember": {
+			"Struct_ShowdownPlayer_Data_A": 0x0,
+			"Struct_ShowdownPlayer_Data_B": 0x4,
+			"Struct_ShowdownPlayer_Data_C": 0x8,
+			"Struct_ShowdownPlayer_Data_D": 0xC}
+		},
+	"Struct_ShowdownPlayer_Data_B": {
+		"pointerChains": {
+			"32Bit HighNoonRoundsWon": { 
+				"addAddressChain": [0x30, 0x430]},
+			"32Bit_CashCollected": { 
+				"addAddressChain": [0x30, 0x490]}}
+		},
 	"Struct_MultiplayerRewardMenu_Data": {
 		"pointerChains": {
 			"32BitPointer_28": {
@@ -520,6 +557,7 @@ memory_addresses = {
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x766038, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -537,14 +575,56 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // • Memory UTILITY •
 // ==================
 memUtil_bitIndexToMemAccessor = {
-	0: bit0,
-	1: bit1,
-	2: bit2,
-	3: bit3,
-	4: bit4,
-	5: bit5,
-	6: bit6,
-	7: bit7}
+	0: bit0, 1: bit1, 2: bit2, 3: bit3,
+	4: bit4, 5: bit5, 6: bit6, 7: bit7}	
+
+memUtil_asciiToHex = {
+  "A": 0x41,  "B": 0x42,  "C": 0x43,  "D": 0x44,  "E": 0x45,  "F": 0x46,  "G": 0x47, 
+  "H": 0x48,  "I": 0x49,  "J": 0x4A,  "K": 0x4B,  "L": 0x4C,  "M": 0x4D,  "N": 0x4E, 
+  "O": 0x4F,  "P": 0x50,  "Q": 0x51,  "R": 0x52,  "S": 0x53,  "T": 0x54,  "U": 0x55, 
+  "V": 0x56,  "W": 0x57,  "X": 0x58,  "Y": 0x59,  "Z": 0x5A,  "a": 0x61,  "b": 0x62, 
+  "c": 0x63,  "d": 0x64,  "e": 0x65,  "f": 0x66,  "g": 0x67,  "h": 0x68,  "i": 0x69, 
+  "j": 0x6A,  "k": 0x6B,  "l": 0x6C,  "m": 0x6D,  "n": 0x6E,  "o": 0x6F,  "p": 0x70, 
+  "q": 0x71,  "r": 0x72,  "s": 0x73,  "t": 0x74,  "u": 0x75,  "v": 0x76,  "w": 0x77, 
+  "x": 0x78,  "y": 0x79,  "z": 0x7A,  "0": 0x30,  "1": 0x31,  "2": 0x32,  "3": 0x33, 
+  "4": 0x34,  "5": 0x35,  "6": 0x36,  "7": 0x37,  "8": 0x38,  "9": 0x39,  " ": 0x20, 
+  "!": 0x21,  "#": 0x23,  "$": 0x24,  "%": 0x25,  "&": 0x26,  "\"": 0x27, 
+  "(": 0x28,  ")": 0x29,  "*": 0x2A,  "+": 0x2B,  ",": 0x2C,  "-": 0x2D,  ".": 0x2E, 
+  "/": 0x2F,  ":": 0x3A,  ";": 0x3B,  "<": 0x3C,  "=": 0x3D,  ">": 0x3E,  "?": 0x3F, 
+  "@": 0x40,  "[": 0x5B,  "\\": 0x5C,  "]": 0x5D,  "^": 0x5E,  "_": 0x5F,  "`": 0x60, 
+  "{": 0x7B,  "|": 0x7C,  "}": 0x7D,  "~": 0x7E}
+ 
+memUtil_asciiToFloat = {
+  "A": 65.0, "B": 66.0, "C": 67.0, "D": 68.0, "E": 69.0, "F": 70.0, "G": 71.0,
+  "H": 72.0, "I": 73.0, "J": 74.0, "K": 75.0, "L": 76.0, "M": 77.0, "N": 78.0,
+  "O": 79.0, "P": 80.0, "Q": 81.0, "R": 82.0, "S": 83.0, "T": 84.0, "U": 85.0,
+  "V": 86.0, "W": 87.0, "X": 88.0, "Y": 89.0, "Z": 90.0, "a": 97.0, "b": 98.0,
+  "c": 99.0, "d": 100.0, "e": 101.0, "f": 102.0, "g": 103.0, "h": 104.0, "i": 105.0,
+  "j": 106.0, "k": 107.0, "l": 108.0, "m": 109.0, "n": 110.0, "o": 111.0, "p": 112.0,
+  "q": 113.0, "r": 114.0, "s": 115.0, "t": 116.0, "u": 117.0, "v": 118.0, "w": 119.0,
+  "x": 120.0, "y": 121.0, "z": 122.0, "0": 48.0, "1": 49.0, "2": 50.0, "3": 51.0,
+  "4": 52.0, "5": 53.0, "6": 54.0, "7": 55.0, "8": 56.0, "9": 57.0, " ": 32.0,
+  "!": 33.0, "#": 35.0, "$": 36.0, "%": 37.0, "&": 38.0, "\"": 39.0,
+  "(": 40.0, ")": 41.0, "*": 42.0, "+": 43.0, ",": 44.0, "-": 45.0, ".": 46.0,
+  "/": 47.0, ":": 58.0, ";": 59.0, "<": 60.0, "=": 61.0, ">": 62.0, "?": 63.0,
+  "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
+  "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
+
+function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4
+	let_stringLength = length(string_s)
+
+	if (let_stringLength > 4)
+		util_throwError(format("String length of: {0}, is too large to handle", let_stringLength))
+
+	let_hexValue = 0
+	for let_characterIndex in range(0, length(string_s) - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = let_hexValue + (let_characterAsHex * 0x100)
+		else if (let_characterIndex == 2) let_hexValue = let_hexValue + (let_characterAsHex * 0x10000)
+		else let_hexValue = let_hexValue + (let_characterAsHex * 0x1000000)}
+	return let_hexValue}
+ 
 
 function is_ReleaseRegion(enum_releaseRegion) {
 	let_memAddr_gameID = memory_getAddress(DATATYPE_ASCII, "GameID", enum_releaseRegion)
@@ -786,33 +866,46 @@ function on_PlayerInput_DeadEyeAbility_press(enum_releaseRegion) {
 // '''''''''''
 AREA_loading = "default"
 AREA_MainMenu = "lvl_front"
-AREA_Campaign_BullsEye = "lvl_perfnew"
+
+// ------------ AREA_Campaign InnerIdlength = 3
+AREA_Campaign_Stagecoach = "lvl_msn"
 AREA_Campaign_BountyHunter = "lvl_hng"
-AREA_Campaign_UglyStreetFight = "lvl_sher"
-AREA_Campaign_Traincar = "lvl_triancar"
-AREA_Campaign_Railroaded = "lvl_traingood"
-AREA_Campaign_CarnivalLife = "lvl_ghost"
-AREA_Campaign_FreakShow = "lvl_shernite"
+// ------------ AREA_Campaign InnerIdlength = 4
 AREA_Campaign_RogueValley = "lvl_bomb"
-AREA_Campaign_GhostTown = "lvl_gunsmoke"
-AREA_Campaign_TheCemetery = "lvl_cemetery"
-AREA_Campaign_RangeWar = "lvl_ranch"
-AREA_Campaign_SaloonFight = "lvl_barfight"
-AREA_Campaign_TheTraitor = "lvl_bridge"
+AREA_Campaign_Jailbreak = "lvl_core"
+AREA_Campaign_FortDiego = "lvl_fort"
+AREA_Campaign_Siege = "lvl_mans"
+AREA_Campaign_Brimstone = "lvl_tomb"
+// ------------ AREA_Campaign InnerIdlength = 5
 AREA_Campaign_SunsetCanyon = "lvl_coach"
 AREA_Campaign_BearMountain = "lvl_woods"
-AREA_Campaign_Jailbreak = "lvl_core"
-AREA_Campaign_TheMine = "lvl_corenew"
-AREA_Campaign_Stagecoach = "lvl_msn"
-AREA_Campaign_HellPass = "lvl_msncyn"
-AREA_Campaign_FortDiego = "lvl_fort"
+AREA_Campaign_CarnivalLife = "lvl_ghost"
+AREA_Campaign_RangeWar = "lvl_ranch"
 AREA_Campaign_EndOfTheLine = "lvl_train"
-AREA_Campaign_DevilsAndAngels = "lvl_trainend"
+// ------------ AREA_Campaign InnerIdlength = 6
+AREA_Campaign_TheTraitor = "lvl_bridge"
+AREA_Campaign_HellPass = "lvl_msncyn"
+AREA_Campaign_UglyStreetFight = "lvl_sher70"
+// ------------ AREA_Campaign InnerIdlength = 7
+AREA_Campaign_BullsEye = "lvl_perfnew"
 AREA_Campaign_BattleRoyale = "lvl_roydusk"
+AREA_Campaign_TheMine = "lvl_corenew"
+// ------------ AREA_Campaign InnerIdlength = 8
+AREA_Campaign_Traincar = "lvl_traincar"
+AREA_Campaign_FreakShow = "lvl_shernite"
+AREA_Campaign_GhostTown = "lvl_gunsmoke"
+AREA_Campaign_TheCemetery = "lvl_cemetery"
+AREA_Campaign_SaloonFight = "lvl_barfight"
+AREA_Campaign_DevilsAndAngels = "lvl_trainend"
 AREA_Campaign_BattleFinale = "lvl_royfinal"
-AREA_Campaign_Siege = "lvl_mans"
 AREA_Campaign_HouseOfCards = "lvl_mansintb"
 AREA_Campaign_FallFromGrace = "lvl_mansroof"
+// ------------ AREA_Campaign InnerIdlength = 9
+AREA_Campaign_Railroaded = "lvl_traingood"
+
+// ------------ AREA_Showdown
+AREA_Showdown_TheBridge = "lvl_bridge2"
+AREA_Showdown_TheMine = "lvl_core2"
 AREA_Showdown_WidowsPatch = "lvl_shernit2"
 AREA_Showdown_TheRanch = "lvl_ranch2"
 AREA_Showdown_Fairground = "lvl_ghost2"
@@ -826,7 +919,7 @@ AREA_Showdown_TwinRocks = "lvl_hng2"
 AREA_Showdown_DesertFortress = "lvl_fort2"
 
 const_Area_data = { // TODO put these coordinates inside the code notes??
-	AREA_Campaign_BullsEye: { 
+	AREA_Campaign_BullsEye: { // Documentation nested here
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X-Coordinate": 20.60,
 			"Y-Coordinate": 12.65,
@@ -1075,6 +1168,22 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"Z-Coordinate": 10.97}},
 	}
 
+function get_Area_memAddr_InnerID(enum_releaseRegion) =>
+	memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion) + 0x4
+
+function get_AreaCampaign_ShortInnerId(enum_areaId) { 
+	if (length(enum_areaId) >= 10) 
+		util_throwError(format("Area_ID: {0}, is too long to create a short ID", enum_areaId))
+	return memUtil_asciiStringToHex(substring(enum_areaId, 4, 3))}  // "lvl_bomb" --> "bom"
+
+function get_AreaCampaign_LongInnerId(enum_areaId) {
+	if (length(enum_areaId) < 10)
+		util_throwError(format("Area_ID: {0}, is too short to create a long ID", enum_areaId))
+	return memUtil_asciiStringToHex(substring(enum_areaId, 6, 4))} // "lvl_traingood" --> "aing"
+
+function get_AreaShowdown_InnerId(enum_areaId) =>
+	memUtil_asciiStringToHex(substring(enum_areaId, 4, 3)) // "lvl_bomb2" --> "bom"
+// -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
 
@@ -1107,6 +1216,14 @@ function is_AreaLoading_active(enum_releaseRegion) =>
 
 function is_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId)
+
+function is_Area_InnerIdLength(int_innerIdLength, enum_releaseRegion) {
+	let_memaddr_AreaID = memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion)
+	let_memAddr_LastCharacterOfAreaId = let_memaddr_AreaID + 0x4 + (int_innerIdLength - 1)
+	return 
+		tbyte(let_memAddr_LastCharacterOfAreaId) != 0x00
+		&& byte(let_memAddr_LastCharacterOfAreaId) != 0x00
+		&& byte(let_memAddr_LastCharacterOfAreaId + 0x1) == 0x00}
 
 function wasPrior_Area(enum_areaId, enum_releaseRegion) =>
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), enum_areaId, transform = areaCheckComparison => prior(areaCheckComparison))
@@ -1827,12 +1944,15 @@ function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegio
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuOrStartChpMenuDisplayed",
 		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
 
-function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) {
+function current_RewardMenu_MenuDepth(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", let_memAddr_RewardMenuDisplayData,
 		enum_releaseRegion, accessor = byte)
-	return let_memAccessor_MenuDepth == int_depth}
+	return let_memAccessor_MenuDepth}
+
+function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) =>
+	current_RewardMenu_MenuDepth(enum_releaseRegion) == int_depth
 
 function is_RewardMenu_displayed_long(enum_releaseRegion) => // This comparison is bigger than is_RewardMenu_displayed_short()
 	current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) == 1
@@ -1880,8 +2000,8 @@ function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) =>
 
 function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) => 
 	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 0
-	&& is_RewardMenu_MenuDepth(0x2, enum_releaseRegion)
-	|| is_RewardMenu_MenuDepth(0x3, enum_releaseRegion)
+	&& 0x2 - 1 < current_RewardMenu_MenuDepth(enum_releaseRegion) 
+	&& current_RewardMenu_MenuDepth(enum_releaseRegion) < 0x3 + 1
 
 function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 	const_YES = 0
@@ -1897,19 +2017,55 @@ function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
 	let_offsetTo_Accuracy = memory_getDataStructOffset("Struct_RewardMenuDisplayText", "ASCII_Accuracy")
 	return is_ASCII_EqualTo(let_PointerChainTo_Struct_RewardMenuDisplayText + let_offsetTo_Accuracy, string_accuracy)}
 
+function current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsAccuracyStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsDamageTakenStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsTimeStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsTimeStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function current_FlagState_IsBestComboStarAchieved(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsBestComboStarAchieved", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsStarAchieved}
+
+function on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsFirstPopupMenuDisplayed", 
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+	return 
+		let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
+
 // ------------------InGameMenu---------------------
 INGAMEMENU_RetryMenu = "continue"
 INGAMEMENU_GameOverScreen = "gameover"
 INGAMEMENU_PauseMenu = "pause"
 INGAMEMENU_CheatsMenu = "cheats"
 INGAMEMENU_WarningMenu = "warning"
-function current_IsInGameMenuDisplayed(enum_releaseRegion) =>
+function current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
 
-function prev_IsInGameMenuDisplayed(enum_releaseRegion) => 
-	prev(current_IsInGameMenuDisplayed(enum_releaseRegion))
+function prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) => 
+	prev(current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion))
 
 function current_HighlightedInGameMenuItem(enum_releaseRegion) =>
 	byte(
@@ -1933,19 +2089,29 @@ function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
-		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
+		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
+	}
+
+function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
+	let_memAddr_InGameMenuID = 
+		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
+		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+	return __ornext(
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		|| !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4))
+	}
 
 function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
-		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
+		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
 		
-		|| current_IsInGameMenuDisplayed(enum_releaseRegion) == 1 // <---Block--- Checks when switching between InGameMenu's (eg. RetryMenu goes into GameOverScreen)
+		|| current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 // <---Block--- Checks when switching between InGameMenu's (eg. RetryMenu goes into GameOverScreen)
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4) // <-- check current ascii string
 		&& !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
@@ -1955,8 +2121,8 @@ function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
 		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return
-		current_IsInGameMenuDisplayed(enum_releaseRegion) == 0
-		&& prev_IsInGameMenuDisplayed(enum_releaseRegion) == 1
+		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
+		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c)) // <-- check delta ascii string
 	}
 
@@ -2025,7 +2191,7 @@ function is_AnyCheat_active(enum_releaseRegion) {
 			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
 
@@ -2037,7 +2203,7 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 1}
 
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
@@ -2048,7 +2214,7 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 0}
 
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2063,7 +2229,7 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) == length(array_cheatEnums)}
 
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2078,7 +2244,7 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
 
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
@@ -2096,13 +2262,109 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
-// ------------------------RstarCheat------------------------------
-function is_RStar_Cheat_inActive(enum_releaseRegion) {
-	const_RSTAR_NAME = "Rstar"
+// ------------------------RstarCheat------------------------------ 
+function is_RStar_Cheat_Active_bis(enum_releaseRegion) { // When using with PauseIf -> ResetNextIfs can be replaced by 1 ResetNextIf when the active PlayerProfile changes or when the PlayerProfile is erased (First letter of PlayerProfileName becomes 0x0)
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
-	return is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, const_RSTAR_NAME)}
+		
+	/* is Rstar cheat active + Need ResetNextIf on every hitcount
+	----------------------- Checking 7-byte ASCII for "Rstar__"
+		0xA == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xA == "r"    	(+1)
+		0xB == "S"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xB == "s"    	(+1)
+		...same for "_sta_" chars...
+		0xE == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
+		0xE == "r"    	(+1)
+		0xF == " " 		(+1) --2 lines--> only 1 of these can be true at one given time
+		0xF == 0x0		(+1)
+		0x10 == " " 	(+1) --2 lines--> only 1 of these can be true at one given time
+		0x10 == 0x0		(+1)
+		val == 7       --> Rstar cheat IS active
+	*/
+	
+	return 
+		tally(7, [
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "R")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "r")) && // lowercase check r
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "r")),
+				
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "S")) && // uppercase check S -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "S")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "s")) && // lowercase check s
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "s")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "T")) && // uppercase check T -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "T")), 
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "t")) && // lowercase check t
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "t")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "A")) && // uppercase check A -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "A")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "a")) && // lowercase check a
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "a")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "R")),
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "r")) && // lowercase check r
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "r")),
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x5, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x5, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x5) != 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x5) == 0x0),			
+
+			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x6, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
+				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x6, " ")),
+			once(never(byte(let_memAddr_PlayerProfileName + 0x6) != 0x0) && // 0x0 check
+				byte(let_memAddr_PlayerProfileName + 0x6) == 0x0),
+		])}
+
+function is_RStar_Cheat_active(enum_releaseRegion) {
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
+
+	/* is Rstar cheat active 
+	----------------------- 
+		& 0xDF any alphabetical ASCII character (+ space " ", same as 0x0)
+			--> uppercase ASCII & 0xDF --> would result in uppercase value		eg. "R" & 0xDF -> 0x52 (="R")
+			--> lowercase ASCII & 0xDF --> would result in uppercase value		eg. "r" & 0xDF -> 0x52 (="R")
+	*/
+
+	return 
+		byte(let_memAddr_PlayerProfileName) & 0xdf == memUtil_asciiToHex["R"] // 0x52
+		&& byte(let_memAddr_PlayerProfileName + 0x1) & 0xdf == memUtil_asciiToHex["S"] // 0x53
+		&& byte(let_memAddr_PlayerProfileName + 0x2) & 0xdf == memUtil_asciiToHex["T"] // 0x54
+		&& byte(let_memAddr_PlayerProfileName + 0x3) & 0xdf == memUtil_asciiToHex["A"] // 0x41
+		&& byte(let_memAddr_PlayerProfileName + 0x4) & 0xdf == memUtil_asciiToHex["R"] // 0x52
+		&& byte(let_memAddr_PlayerProfileName + 0x5) & 0xdf == 0x0  // 0x0 or 0x20 (0x20 = space = " ")
+		&& byte(let_memAddr_PlayerProfileName + 0x6) & 0xdf == 0x0 // 0x0 or 0x20 (0x20 = space = " ")
+	}
+		
+function is_RStar_Cheat_inActive(enum_releaseRegion) {
+	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
+	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
+
+	/* is Rstar cheat NOT active 
+	----------------------- 
+		& 0xDF any alphabetical ASCII character (+ space " ", same as 0x0)
+			--> uppercase ASCII & 0xDF --> would result in uppercase value		eg. "R" & 0xDF -> 0x52 (="R")
+			--> lowercase ASCII & 0xDF --> would result in uppercase value		eg. "r" & 0xDF -> 0x52 (="R")
+	*/
+
+	return __ornext( // --> force orNext, this is allowed/this works with other andNext logic, as these are single orNext requirements
+		byte(let_memAddr_PlayerProfileName) & 0xdf != memUtil_asciiToHex["R"] // 0x52
+		|| byte(let_memAddr_PlayerProfileName + 0x1) & 0xdf != memUtil_asciiToHex["S"] // 0x53
+		|| byte(let_memAddr_PlayerProfileName + 0x2) & 0xdf != memUtil_asciiToHex["T"] // 0x54
+		|| byte(let_memAddr_PlayerProfileName + 0x3) & 0xdf != memUtil_asciiToHex["A"] // 0x41
+		|| byte(let_memAddr_PlayerProfileName + 0x4) & 0xdf != memUtil_asciiToHex["R"] // 0x52
+		|| byte(let_memAddr_PlayerProfileName + 0x5) & 0xdf != 0x0  // 0x0 or 0x20 (0x20 = space = " ")
+		|| byte(let_memAddr_PlayerProfileName + 0x6) & 0xdf != 0x0) // 0x0 or 0x20 (0x20 = space = " ")
+	}
 
 // ............................
 // ◦ CHARACTER IDENTIFICATION ◦
@@ -2110,12 +2372,16 @@ function is_RStar_Cheat_inActive(enum_releaseRegion) {
 CHARACTER_GeneralDiego = "dgo"
 CHARACTER_MrKelley = "mrk"
 CHARACTER_JackSwift = "jck"
+CHARACTER_WhiskeyTreadwell = "wsk"
+CHARACTER_HedgehogThornton = "hdh" 
 CHARACTER_AnnieStoakes = "ani"
 CHARACTER_KatieGrady = "kti"
 CHARACTER_UglyChris = "ugl"
+CHARACTER_SmileyFawler = "aka"
 CHARACTER_GigoloHancock = "ggl"
 CHARACTER_ProfessorPerry = "pry"
 CHARACTER_BladeSlade = "bwi"
+CHARACTER_GabrialNavarro = "zzt"
 CHARACTER_SheriffGrady = "cls"
 CHARACTER_SheriffBartlett = "kng"
 CHARACTER_HolsteinHal = "tcb"
@@ -2124,20 +2390,28 @@ CHARACTER_Cooper = "bkt"
 CHARACTER_GovernorGriffon = "wyn"
 CHARACTER_JasonCornet = "sev"
 CHARACTER_BuffaloSoldier = "bfs"
-CHARACTER_ShadowWolf = "tck"
+CHARACTER_Smitty = "ncb"
 CHARACTER_FallingStar = "mom" 
+CHARACTER_Dan = "bdg"
+CHARACTER_DigFowler = "gwk"
+CHARACTER_MannyQuinn = "mok"
 CHARACTER_Grizzly = "mst"
 CHARACTER_StandingSnake = "msk"
 CHARACTER_MrBlack = "blk"
+CHARACTER_ShadowWolf = "ttk"
 CHARACTER_BadBessie = "bty"
 CHARACTER_PigJosh = "pgj"
 CHARACTER_NateHarlow = "dad"
 CHARACTER_ColonelDaren = "ydr"
 CHARACTER_Natalie = "ntl"
 CHARACTER_RedJr = "mrd"
+CHARACTER_Fidgit = "mdg"
+CHARACTER_Christina = "ctn"
+CHARACTER_KidCougar = "ent"
 CHARACTER_Red = "srd"
 CHARACTER_CurlyShaw = "shp"
 CHARACTER_BloodyTom = "gay"
+CHARACTER_Chicken = "chk"
 CHARACTER_BigOaf = "frk"
 CHARACTER_TwiggyPhelps = "twg"
 CHARACTER_SissyFess = "sto"
@@ -2150,10 +2424,12 @@ const_Character_data = {
 	CHARACTER_AnnieStoakes: {
 		"CharacterName": "Annie"},
 	CHARACTER_StageCoach: {
-		"CharacterName": "StageCoach"},
-}
+		"CharacterName": "StageCoach"}}
 function get_CharacterName(enum_character) =>
 	const_Character_data[enum_character]["CharacterName"]
+
+function get_CharacterID_asHex(enum_character) =>
+	memUtil_asciiStringToHex(enum_character)
 
 // -----------------------MajorCharacterData------------------------------
 function current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) {
@@ -2706,7 +2982,7 @@ function prev_TimeSpentInMission(enum_releaseRegion) =>
 SHOWDOWN_TEAM_RED = 0
 SHOWDOWN_TEAM_WHITE = 1
 SHOWDOWN_TEAM_BLUE = 2
-SHOWDOWN_TEAM_YELLOW = 3		
+SHOWDOWN_TEAM_YELLOW = 3
 
 // --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
@@ -2741,7 +3017,7 @@ function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, 
 // --------------------ShowdownPlayer_Settings------------------------
 SHOWDOWN_AI_SETTING_HumanPlayer = "MPplayer"
 
-function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+function ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
@@ -2751,6 +3027,10 @@ function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releas
 		let_memAddr_ShowdownPlayerSettingsArray 
 		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
+	return let_memAddr_CharacterModelID}
+
+function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
+	let_memAddr_CharacterModelID = ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_memAddr_CharacterModelID, enum_character)}
 
 function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -2791,6 +3071,22 @@ function current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // P
 
 function is_ShowdownPlayer_Team(int_playerIndex, enum_showdownTeam, enum_releaseRegion) => // Player Index [1-4]
 	 current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) == enum_showdownTeam
+
+// --------------------ShowdownPlayer_Stats------------------------
+function current_ShowdownPlayer_CashCollected(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1
+	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
+		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+	
+	let_memAccessor_CashCollected = memory_generateAddAddressPointerChain(
+		"Struct_ShowdownPlayer_Data_B", "32Bit_CashCollected", 
+		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+	return let_memAccessor_CashCollected}
 
 // --------------------ShowdownMode_Settings------------------------
 SHOWDOWN_MODE_BountyHunter = 0 
@@ -3016,7 +3312,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = {
+achievements_coreData = { // TODO update all achievements (regarding CheatProtection && on_RewardMenu_Replay_Confirm())
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3099,37 +3395,37 @@ achievements_coreData = {
 		"a_BountyHunterKatie": { // VERIFIED 
 			"id": 454648, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
-		"a_BountyHunterBlade": { // QA a_BountyHunterBlade
+		"a_BountyHunterBlade": { // VERIFIED
 			"id": 455158, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
-		"a_BountyHunterAnnie": { // QA a_BountyHunterAnnie
+		"a_BountyHunterAnnie": { // VERIFIED
 			"id": 455172, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
-		// "a_BountyHunterCooper": { // QA a_BountyHunterCooper // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// "id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
-		"a_BountyHunterWeapons": { // QA a_BountyHunterWeapons
+		"a_BountyHunterWeapons": { // VERIFIED
 			"id": 455443, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
-		"a_SundownFallingStar": { // QA a_SundownFallingStar
+		"a_SundownFallingStar": { // VERIFIED
 			"id": 455174, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
-		"a_SundownBlack": { // QA a_SundownBlack
+		"a_SundownBlack": { // VERIFIED
 			"id": 455175, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill-streak of over 10"},
-		"a_SundownGriffon": { // QA a_SundownGriffon
+		"a_SundownGriffon": { // VERIFIED
 			"id": 455176, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
-		// "a_SundownNate": { // QA a_SundownNate // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// 	"id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
-		"a_SundownFlawless": { // QA a_SundownFlawless
+		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
-		"a_HighNoonNatalie": { // QA a_HighNoonNatalie
+		"a_HighNoonNatalie": { // VERIFIED
 			"id": 455179, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
-		"a_HighNoonCurly": { // QA a_HighNoonCurly
+		"a_HighNoonCurly": { // VERIFIED
 			"id": 455180, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},		
 		},
@@ -3231,7 +3527,7 @@ achievements_coreData = {
 		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Amass an amount of cash on one player profile"},
-		// "a_PerfectAccuracy": { // QA a_PerfectAccuracy // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		// "a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
@@ -3300,10 +3596,10 @@ achievements_coreData = {
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
-		"a_WoodChapter8": { // QA a_WoodChapter8
+		"a_WoodChapter8": { // VERIFIED
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
-		"a_WoodChapter10": { // QA a_WoodChapter10
+		"a_WoodChapter10": { // VERIFIED
 			"id": 453664, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
 		},
@@ -3944,19 +4240,19 @@ achievements_triggers = {
 				/* MANUAL_CONSTRUCTION of Measured(sumOf)
 					OUTPUT (PAL)
 						AddAddress	Mem 32-bit 0x7448d8
-						SubSource 	Mem 32-bit 0x8
+						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x562a20
-						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888			|+ CurrentCashCombo * CurrentCashComboMulitplier|
 						AddAddress	Mem 32-bit 0x562a20
-						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 					
 					OUTPUT (NTSCU)
 						AddAddress	Mem 32-bit 0x742158
-						SubSource 	Mem 32-bit 0x8
+						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x5602a0
-						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+						AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888			|+ CurrentCashCombo * CurrentCashComboMulitplier|
 						AddAddress	Mem 32-bit 0x5602a0
-						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET
+						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 				*/
 			&& trigger_when(always_false())	
 
@@ -4109,13 +4405,10 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-
 			&& unless(once( // <-- Pause Lock: When a health item is used
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_PlayerHP_heal(enum_releaseRegion)))
@@ -6570,32 +6863,309 @@ function achievements_initialize() {
 // =====================
 // • RichPresence TEXT •
 // =====================
-//	- Contains text for the rich presence script // TODO implement rp_Default + rp_DefaultPlus
-richPresence_text = {
+//	- Contains text for the rich presence script
+richPresence_text = { // TODO RP for showdown modes
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_HighNoonShowdown":								{"en": "Playing as {0} in a High Noon multiplayer match | Rounds Won: {1}/{2}"}
-	"rp_SundownShowdown":								{"en": "Playing as {0} in a Sundown multiplayer match | ${1} collected | Time left: {2}"}
-	"rp_BountyHuntShowdown":							{"en": "Playing as {0} in a Bounty Hunter multiplayer match | ${1} collected"}
-	"rp_BountyHunterMode":								{"en": "Chapter {0} '{1}' on Bounty Hunter Mode"}
-	"rp_StoryMode":										{"en": "Chapter {0} '{1}' on {2} | Journal: {3}%"}	// eg. 		Chapter 1 'Bull's Eye' on normal | Journal: 27%			Add player_profile_stats??? money, time played, accuracy???
-	"rp_MainMenu":										{"en": "Main menu of Red Dead Revolver | Journal: {0}%"}	
-	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: {0}%"}	
-	"rp_Default":										{"en": "Playing Red Dead Revolver"}}	
+	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 4th place"},
+	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 3rd place"},
+	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 2nd place"},
+	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 1st place"},
+	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 4th place | Time left: {2}"},
+	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 3rd place | Time left: {2}"},
+	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 2nd place | Time left: {2}"},
+	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 1st place | Time left: {2}"},
+	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 4th place"},
+	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 3rd place"},
+	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 2nd place"},
+	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 1st place"},
+	"rp_Showdown_Default":								{"en": "Playing as {0} in a Showdown match {1}"},
+	"rp_BountyHunterMode_AreaShortID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_BountyHunterMode_AreaLongID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_Story_Brimstone":								{"en": "Time off at Brimstone | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_Story_AreaShortID":								{"en": "Chapter {0} on {1} | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_Story_AreaLongID":								{"en": "Chapter {0} on {1} | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: __rpp_JournalCompletionRate__%"}, // TODO rp_MainMenu
+	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: __rpp_JournalCompletionRate__%"},
+	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
 richPresence_LookupTablesText = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},	
-	// "rp_Template_LookupFallback": 					{"en": "xxxxxxxx"},	
+	// "lup_Template": {
+	// 	"LOOKUP_FALLBACK": 			{"en": "xxxxxxx"},
+	//
+	// 	"AAA": 						{"en": "xxxxxxx"},
+	// 	"BBB":						{"en": "xxxxxxx"},
+	// 	"CCC": 						{"en": "xxxxxxx"},
+	// },
+
+	"lup_CharacterName": {
+		"LOOKUP_FALLBACK": 				{"en": "a gunslinger"},
+		
+		"GeneralDiego": 				{"en": "General Diego"},
+		"MrKelley": 					{"en": "Mr. Kelley"},
+		"JackSwift": 					{"en": "Jack Swift"},
+		"WhiskeyTreadwell":				{"en": "'Whiskey' Treadwell"},
+		"HedgehogThornton": 			{"en": "'Hedgehog' Thornton"},
+		"AnnieStoakes": 				{"en": "Annie Stoakes"},
+		"KatieGrady": 					{"en": "Katie O'Grady"},
+		"UglyChris": 					{"en": "'Ugly' Chris"},
+		"SmileyFawler": 				{"en": "'Smiley' Fawler"},
+		"GigoloHancock": 				{"en": "'Gigolo' Hancock"},
+		"ProfessorPerry": 				{"en": "Professor Perry"},
+		"BladeSlade": 					{"en": "The 'Blade' Slade"},
+		"GabrialNavarro": 				{"en": "Gabrial Navarro"},
+		"SheriffGrady": 				{"en": "Sheriff O'Grady"},
+		"SheriffBartlett": 				{"en": "Sheriff Bartlett"},
+		"HolsteinHal": 					{"en": "Holstein Hal"},
+		"Cooper": 						{"en": "Cooper"},
+		"GovernorGriffon": 				{"en": "Governor Griffon"},
+		"JasonCornet": 					{"en": "Jason Cornet"},
+		"BuffaloSoldier": 				{"en": "Buffalo Soldier"},
+		"Smitty": 						{"en": "Smitty"},
+		"FallingStar": 					{"en": "Falling Star"},
+		"Sam": 							{"en": "Sam"},
+		"Dan": 							{"en": "Dan"},
+		"MannyQuinn": 					{"en": "Manny Quinn"},
+		"Grizzly": 						{"en": "Grizzly"},
+		"StandingSnake": 				{"en": "Standing Snake"},
+		"MrBlack": 						{"en": "Mr. Black"},
+		"ShadowWolf": 					{"en": "Shadow Wolf"},
+		"BadBessie": 					{"en": "Bad Bessie"},
+		"PigJosh": 						{"en": "'Pig' Josh"},
+		"DigFowler": 					{"en": "'Dig' Fowler"},
+		"NateHarlow": 					{"en": "Nate Harlow"},
+		"ColonelDaren": 				{"en": "Colonel Daren"},
+		"Natalie": 						{"en": "Natalie"},
+		"RedJr": 						{"en": "Red Jr."},
+		"Fidgit": 						{"en": "Fidgit"},
+		"Christina": 					{"en": "Christina"},
+		"KidCougar": 					{"en": "'Kid' Cougar"},
+		"Red": 							{"en": "Red"},
+		"CurlyShaw": 					{"en": "'Curly' Shaw"},
+		"BloodyTom":					{"en": "'Bloody' Tom"},
+		"Chicken": 						{"en": "Chicken"},
+		"BigOaf": 						{"en": "'Big Oaf' Whitney"},
+		"TwiggyPhelps":					{"en": "'Twiggy' Phelps"},
+		"SissyFess": 					{"en": "'Sissy' Fess"},
+		"RicoPedrosa": 					{"en": "Rico Pedrosa"},
+		"UdoKang": 						{"en": "Udo Kang"},
+		},
+	"lup_StoryChapter_ShortID": {
+		"Stagecoach": 				{"en": "18 \"Stagecoach\""},
+		"BountyHunter": 			{"en": "2 \"Bounty Hunter\""},
+		"RogueValley":				{"en": "8 \"Rogue Valley\""},
+		"Jailbreak":				{"en": "16 \"Jailbreak\""},
+		"FortDiego":				{"en": "20 \"Fort Diego\""},
+		"Siege":					{"en": "25 \"Siege\""},
+		"SunsetCanyon":				{"en": "14 \"Sunset Canyon\""},
+		"CarnivalLife":				{"en": "6 \"Carnival Life\""},
+		"RangeWar":					{"en": "11 \"Range War\""},
+		"EndOfTheLine":				{"en": "21 \"End Of The Line\""},
+		"BearMountain":				{"en": "15 \"Bear Mountain\""}
+		},
+	"lup_StoryChapter_LongID": {
+		"TheTraitor":  				{"en": "13 \"The Traitor\""},
+		"HellPass":  				{"en": "19 \"Hell Pass\""},
+		"UglyStreetFight":  		{"en": "3 \"Ugly StreetFight\""},
+		"BullsEye":  				{"en": "1 \"Bull's Eye\""},
+		"BattleRoyale":  			{"en": "23 \"Battle Royale\""},
+		"TheMine":  				{"en": "17 \"The Mine\""},
+		"SaloonFight":  			{"en": "12 \"Bar Fight\""},
+		"TheCemetery":  			{"en": "10 \"The Cemetery\""},
+		"FallFromGrace":  			{"en": "27 \"Fall From Grace\""},
+		"HouseOfCards":  			{"en": "26 \"House Of Cards\""},
+		"BattleFinale":  			{"en": "24 \"Battle Finale\""},
+		"Traincar":  				{"en": "4 \"Traincar\""},
+		"DevilsAndAngels":  		{"en": "22 \"Devils And Angels\""},
+		"FreakShow":  				{"en": "7 \"Freak Show\""},
+		"GhostTown":  				{"en": "9 \"Ghost Town\""},
+		"Railroaded":  				{"en": "5 \"Railroaded\""},
+		},
+	
+	"lup_StoryDifficulty": {
+		"Normal": 						{"en": "Normal"},
+		"Hard":							{"en": "Hard"},
+		"VeryHard": 					{"en": "Very Hard"},
+		"RedWoodRevolver": 				{"en": "Red Wood Revolver"},
+		"BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
+		},
+	"lup_ShowdownStage": {
+		"LOOKUP_FALLBACK": 			{"en": "in the Wild West"},
+
+		"TheBridge":				{"en": "on The Bridge"},
+		"TheMine":					{"en": "in The Mine"},
+		"WidowsPatch":				{"en": "in Widow's Patch"},
+		"TheRanch":					{"en": "in The Ranch"},
+		"Fairground":				{"en": "on Fairground"},
+		"FallenCreek":				{"en": "in Fallen Creek"},
+		"GhostTown":				{"en": "in Ghost Town"},
+		"SunsetCanyon":				{"en": "at Sunset Canyon"},
+		"BrokenCreek":				{"en": "at Boyhood Home"},
+		"MansionGrounds":			{"en": "in Tended Gardens"},
+		"TheMansion":				{"en": "in Opulent Palace"},
+		"TwinRocks":				{"en": "at Twin Rocks"},
+		"DesertFortress":			{"en": "at Desert Fortress"},
+		},
+	
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
+function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
+	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	"lup_StoryDifficulty": {
+		DIFFICULTY_Normal: "Normal",
+		DIFFICULTY_Hard: "Hard",
+		DIFFICULTY_VeryHard: "VeryHard",
+		DIFFICULTY_RedWoodRevolver: "RedWoodRevolver"
+		},
+	"lup_ShowdownStage": {
+		/* LookUpKeys
+			brid // bridge2
+			coac // coach2
+			core // core2
+			flas // flash2
+			fort // fort2
+			ghos // ghost2
+			gun2 // gun2
+			hng2 // hng2
+			int2 // int2
+			mans // mans2
+			perf // perf2
+			ranc // ranch2
+			sher // shernit2
+		*/
+		get_AreaShowdown_InnerId(AREA_Showdown_TheBridge): "TheBridge",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheMine): "TheMine",
+		get_AreaShowdown_InnerId(AREA_Showdown_WidowsPatch): "WidowsPatch",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheRanch): "TheRanch",
+		get_AreaShowdown_InnerId(AREA_Showdown_Fairground): "Fairground",
+		get_AreaShowdown_InnerId(AREA_Showdown_FallenCreek): "FallenCreek",
+		get_AreaShowdown_InnerId(AREA_Showdown_GhostTown): "GhostTown",
+		get_AreaShowdown_InnerId(AREA_Showdown_SunsetCanyon): "SunsetCanyon",
+		get_AreaShowdown_InnerId(AREA_Showdown_BrokenCreek): "BrokenCreek",
+		get_AreaShowdown_InnerId(AREA_Showdown_MansionGrounds): "MansionGrounds",
+		get_AreaShowdown_InnerId(AREA_Showdown_TheMansion): "TheMansion",
+		get_AreaShowdown_InnerId(AREA_Showdown_TwinRocks): "TwinRocks",
+		get_AreaShowdown_InnerId(AREA_Showdown_DesertFortress): "DesertFortress",
+		},
+
+	"lup_StoryChapter_ShortID": { // InnerIDs < 6 characters long
+		/*	5 characters or less
+			bom // bomb
+			coa // coach
+			cor // core
+			for // fort
+			gho // ghost
+			hng // hng
+			ran // ranch
+			tom // tomb
+			tra // train
+			woo // woods
+			msn // msn
+			man // mans		
+		*/
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_SunsetCanyon): "SunsetCanyon",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_BearMountain): "BearMountain",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_CarnivalLife): "CarnivalLife",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_RangeWar): "RangeWar",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_EndOfTheLine): "EndOfTheLine",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_RogueValley): "RogueValley",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Jailbreak): "Jailbreak",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_FortDiego): "FortDiego",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Siege): "Siege",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_Stagecoach): "Stagecoach",  
+		get_AreaCampaign_ShortInnerId(AREA_Campaign_BountyHunter): "BountyHunter",  
+		},
+	"lup_StoryChapter_LongID": { // InnerIDs >= 6 characters long
+		/* 6 characters or more
+			idg // bridge
+			rfn // perfnew
+			rfi // barfight
+			met // cemetery
+			nsm // gunsmoke
+			ain // trainend
+			ain // traingood
+			ain // traincar
+			nsi // mansintb
+			nsr // mansroof
+			er7 // sher70
+			ern // shernite
+			ydu // roydusk
+			yfi // royfinal
+			ren // corenew
+			ncy // msncyn
+		*/
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheTraitor): "TheTraitor",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_HellPass): "HellPass",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_UglyStreetFight): "UglyStreetFight",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BullsEye): "BullsEye",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BattleRoyale): "BattleRoyale",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheMine): "TheMine",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_Traincar): "Traincar",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_FreakShow): "FreakShow",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_GhostTown): "GhostTown",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_TheCemetery): "TheCemetery",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_SaloonFight): "SaloonFight",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_DevilsAndAngels): "DevilsAndAngels",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_BattleFinale): "BattleFinale",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_HouseOfCards): "HouseOfCards",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_FallFromGrace): "FallFromGrace",
+		get_AreaCampaign_LongInnerId(AREA_Campaign_Railroaded): "Railroaded",
+		},	
+	"lup_CharacterName": { 
+		get_CharacterID_asHex(CHARACTER_AnnieStoakes): "AnnieStoakes", 
+		get_CharacterID_asHex(CHARACTER_BadBessie): "BadBessie", 
+		get_CharacterID_asHex(CHARACTER_BigOaf): "BigOaf", 
+		get_CharacterID_asHex(CHARACTER_BladeSlade): "BladeSlade", 
+		get_CharacterID_asHex(CHARACTER_BloodyTom): "BloodyTom", 
+		get_CharacterID_asHex(CHARACTER_BuffaloSoldier): "BuffaloSoldier", 
+		get_CharacterID_asHex(CHARACTER_Chicken): "Chicken", 
+		get_CharacterID_asHex(CHARACTER_Christina): "Christina", 
+		get_CharacterID_asHex(CHARACTER_ColonelDaren): "ColonelDaren", 
+		get_CharacterID_asHex(CHARACTER_Cooper): "Cooper", 
+		get_CharacterID_asHex(CHARACTER_CurlyShaw): "CurlyShaw", 
+		get_CharacterID_asHex(CHARACTER_DigFowler): "DigFowler", 
+		get_CharacterID_asHex(CHARACTER_FallingStar): "FallingStar", 
+		get_CharacterID_asHex(CHARACTER_Fidgit): "Fidgit", 
+		get_CharacterID_asHex(CHARACTER_GabrialNavarro): "GabrialNavarro", 
+		get_CharacterID_asHex(CHARACTER_GeneralDiego): "GeneralDiego", 
+		get_CharacterID_asHex(CHARACTER_GigoloHancock): "GigoloHancock", 
+		get_CharacterID_asHex(CHARACTER_GovernorGriffon): "GovernorGriffon", 
+		get_CharacterID_asHex(CHARACTER_Grizzly): "Grizzly", 
+		get_CharacterID_asHex(CHARACTER_HedgehogThornton): "HedgehogThornton", 
+		get_CharacterID_asHex(CHARACTER_HolsteinHal): "HolsteinHal", 
+		get_CharacterID_asHex(CHARACTER_JackSwift): "JackSwift", 
+		get_CharacterID_asHex(CHARACTER_JasonCornet): "JasonCornet", 
+		get_CharacterID_asHex(CHARACTER_KatieGrady): "KatieGrady", 
+		get_CharacterID_asHex(CHARACTER_KidCougar): "KidCougar", 
+		get_CharacterID_asHex(CHARACTER_MannyQuinn): "MannyQuinn", 
+		get_CharacterID_asHex(CHARACTER_MrBlack): "MrBlack", 
+		get_CharacterID_asHex(CHARACTER_MrKelley): "MrKelley", 
+		get_CharacterID_asHex(CHARACTER_Natalie): "Natalie", 
+		get_CharacterID_asHex(CHARACTER_NateHarlow): "NateHarlow", 
+		get_CharacterID_asHex(CHARACTER_PigJosh): "PigJosh", 
+		get_CharacterID_asHex(CHARACTER_ProfessorPerry): "ProfessorPerry", 
+		get_CharacterID_asHex(CHARACTER_Red): "Red", 
+		get_CharacterID_asHex(CHARACTER_RedJr): "RedJr", 
+		get_CharacterID_asHex(CHARACTER_RicoPedrosa): "RicoPedrosa", 
+		get_CharacterID_asHex(CHARACTER_Sam): "Sam", 
+		get_CharacterID_asHex(CHARACTER_Dan): "Dan", 
+		get_CharacterID_asHex(CHARACTER_ShadowWolf): "ShadowWolf", 
+		get_CharacterID_asHex(CHARACTER_SheriffBartlett): "SheriffBartlett", 
+		get_CharacterID_asHex(CHARACTER_SheriffGrady): "SheriffGrady", 
+		get_CharacterID_asHex(CHARACTER_SissyFess): "SissyFess", 
+		get_CharacterID_asHex(CHARACTER_SmileyFawler): "SmileyFawler", 
+		get_CharacterID_asHex(CHARACTER_Smitty): "Smitty", 
+		get_CharacterID_asHex(CHARACTER_StandingSnake): "StandingSnake", 
+		get_CharacterID_asHex(CHARACTER_TwiggyPhelps): "TwiggyPhelps", 
+		get_CharacterID_asHex(CHARACTER_UdoKang): "UdoKang", 
+		get_CharacterID_asHex(CHARACTER_UglyChris): "UglyChris", 
+		get_CharacterID_asHex(CHARACTER_WhiskeyTreadwell): "WhiskeyTreadwell"
+		},
 	}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
+function richPresence_getLookupTable(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -6654,22 +7224,163 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+function rp_Showdown_Default(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Default"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion)
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
+
+function rp_BountyHunterMode_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters long
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_BountyHunterMode(enum_releaseRegion)
+		&& tally(1, [
+			// shorter than 3, doesn't exist
+			once(is_Area_InnerIdLength(3, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(5, enum_releaseRegion))
+			])
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_BountyHunterMode_AreaShortID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_ShortInnerID", enum_releaseRegion)
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+function rp_BountyHunterMode_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 characters long
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& is_Playing_BountyHunterMode(enum_releaseRegion)
+		&& tally(1, [
+			once(is_Area_InnerIdLength(6, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(7, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(8, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(9, enum_releaseRegion))
+			// longer than 9, doesn't exist
+			])
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_BountyHunterMode_AreaLongID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_LongInnerID", enum_releaseRegion)
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
+function rp_Story_Brimstone(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		&& is_Area(AREA_Campaign_Brimstone, enum_releaseRegion)
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Story_Brimstone")
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
+function rp_Story_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters long
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		&& tally(1, [
+			// shorter than 3, doesn't exist
+			once(is_Area_InnerIdLength(3, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(5, enum_releaseRegion))
+			])
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Story_AreaShortID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_ShortInnerID", enum_releaseRegion), 
+		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion)
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
+function rp_Story_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 characters long
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
+		&& tally(1, [
+			once(is_Area_InnerIdLength(6, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(7, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(8, enum_releaseRegion)),
+			once(is_Area_InnerIdLength(9, enum_releaseRegion))
+			// longer than 9, doesn't exist
+			])
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Story_AreaLongID"),
+		richPresence_callParameterFunction("rpp_StoryChapter_LongInnerID", enum_releaseRegion), 
+		richPresence_callParameterFunction("rpp_StoryDifficulty", enum_releaseRegion)
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
+function rp_BountyHuntShowdown_First(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_short(enum_releaseRegion)
+		&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_BountyHuntShowdown_First"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Cash", enum_releaseRegion)
+	)}
+
+function rp_MainMenu(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_AtMainMenu(enum_releaseRegion)
+		&& is_Area(AREA_MainMenu, enum_releaseRegion)
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MainMenu") 
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
+	)}
+
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
-	rich_presence_conditional_display( 
+
+	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
+		richPresence_getText("rp_DefaultPlus") 
+		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
 	)}
+
 function rp_Default() {
-	rich_presence_display(	
-		richPresence_getText("rp_Default")
-	)}
+	return rich_presence_display(	
+		richPresence_getText("rp_Default"))
+	}
 // -------------------------------------
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		rp_Showdown_Default(enum_releaseRegion)
+		rp_BountyHunterMode_AreaShortID(enum_releaseRegion)
+		rp_BountyHunterMode_AreaLongID(enum_releaseRegion)
+		rp_Story_Brimstone(enum_releaseRegion)
+		rp_Story_AreaShortID(enum_releaseRegion)
+		rp_Story_AreaLongID(enum_releaseRegion) 
+		// rp_BountyHuntShowdown_First(enum_releaseRegion) // QA rp_BountyHuntShowdown_First 
+		rp_MainMenu(enum_releaseRegion)
+		rp_DefaultPlus(enum_releaseRegion) // MANUAL_CONSTRUCTION - rpp_JournalCompletionRate via Remember/Recall
 	}} 
 
 // ===========================
@@ -6678,6 +7389,49 @@ function richPresence_initializeDisplays() {
 richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+// -------------------------------------
+function rpp_JournalCompletionRate(enum_releaseRegion) => // TODO implement this
+	achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) 
+	/* MANUAL_CONSTRUCTION 
+		-> Defined Logic (generated via a dummy leaderboard --> Copy Def):
+			AddSource	Mem		Bit0	0xFirstFlag
+			AddSource 	SumOf_FlagsAllPages()
+			AddSource	Mem		Bit0	0xLastFlag
+			Remember	Float			0.0
+			Remember	Recall						/ Float	137.0
+			Remember	Recall						* Float	100.0
+			Measured	Recall
+
+		-> Serialized Logic (PAL) wrapped inside Macro.Number
+			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
+		
+		-> Serialized Logic (NTSCU):
+			@Number(A:0xO0073de4d_A:0xP0073de4d_A:0xQ0073de4d_A:0xR0073de4d_A:0xS0073de4d_A:0xT0073de4d_A:0xK0073de4e_A:0xM0073de4f_A:0xN0073de4f_A:0xP0073de4f_A:0xQ0073de4f_A:0xR0073de4f_A:0xS0073de4f_A:0xT0073de4f_A:0xM0073de50_A:0xN0073de50_A:0xP0073de50_A:0xR0073de50_A:0xS0073de50_A:0xT0073de50_A:0xM0073de51_A:0xN0073de51_A:0xO0073de51_A:0xP0073de51_A:0xQ0073de51_A:0xS0073de51_A:0xT0073de51_A:0xM0073de52_A:0xN0073de52_A:0xO0073de52_A:0xR0073de52_A:0xT0073de52_A:0xK0073de53_A:0xK0073de54_A:0xK0073de55_A:0xK0073de56_A:0xK0073de57_A:0xK0073de58_A:0xN0073de59_A:0xO0073de59_A:0xP0073de59_A:0xQ0073de59_A:0xR0073de59_A:0xS0073de59_A:0xT0073de59_A:0xM0073de5a_A:0xN0073de5a_A:0xO0073de5a_A:0xQ0073de5a_A:0xR0073de5a_A:0xS0073de5a_A:0xT0073de5a_A:0xM0073de5b_A:0xN0073de5b_A:0xP0073de5b_A:0xQ0073de5b_A:0xR0073de5b_A:0xS0073de5b_A:0xT0073de5b_A:0xK0073de5c_A:0xK0073de5d_A:0xK0073de5e_A:0xM0073de5f_A:0xN0073de5f_A:0xO0073de5f_A:0xP0073de5f_A:0xQ0073de5f_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
+		
+
+	*/
+
+function rpp_ShowdownStage(enum_releaseRegion) =>
+	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
+
+function rpp_Story_ShortInnerID(enum_releaseRegion) =>
+	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
+
+function rpp_Story_LongInnerID(enum_releaseRegion) =>
+	dword(get_Area_memAddr_InnerID(enum_releaseRegion) + 0x2)
+
+function rpp_StoryDifficulty(enum_releaseRegion) =>
+	current_StoryCampaignDifficulty(enum_releaseRegion)
+
+function rpp_ShowdownPlayer1Character(enum_releaseRegion) =>
+	tbyte(ASCIIaddress_ShowdownPlayerCharacterId(1, enum_releaseRegion))
+
+function rpp_ShowdownPlayer2Character(enum_releaseRegion) =>
+	tbyte(ASCIIaddress_ShowdownPlayerCharacterId(2, enum_releaseRegion))
+
+function rpp_ShowdownPlayer1Cash(enum_releaseRegion) =>
+	current_ShowdownPlayer_CashCollected(1, enum_releaseRegion)
+
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -6688,32 +7442,89 @@ richPresence_parameterData = {
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	//	 "rpp_ValueTemplate": {
+	//	"rpp_ValueTemplate": {
 	//	 	"RPtype": richPresence_VALUE,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
 	//	 	"ValueFormat": "VALUE"},
 
 	//	 "rpp_LookupTemplate": {
 	//	 	"RPtype": richPresence_LOOKUP,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
-	//	 	"LookupFallback": richPresence_getLookupTableText("rpp_LookupTemplate", "LookupFallback")},
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
+	//		"LookupTableID": "lup_LookupTableKey",
+	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
 
-	//	 "rpp_MacroTemplate": {
+	//	"rpp_MacroTemplate": {
 	//	 	"RPtype": richPresence_MACRO,
 	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: () => always_false(), 
-	//	 		RELEASE_REGION_EUR: () => always_false(),
-	//	 		RELEASE_REGION_JPN: () => always_false()},
-	//	 	"MacroFormat": "Number"},
-	
-	
+	//	 		RELEASE_REGION_USA: always_false(), 
+	//	 		RELEASE_REGION_EUR: always_false(),
+	//	 		RELEASE_REGION_JPN: always_false()},
+	//	 	"MacroFormat": "Number"},	
 
+	"rpp_ShowdownStage": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownStage(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownStage(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownStage",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownStage", "LOOKUP_FALLBACK")},
+	"rpp_StoryChapter_ShortInnerID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Story_ShortInnerID(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Story_ShortInnerID(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapter_ShortID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter_LongID", "BullsEye")},
+	"rpp_StoryChapter_LongInnerID": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Story_LongInnerID(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Story_LongInnerID(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryChapter_LongID",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter_LongID", "BullsEye")},
+
+	"rpp_StoryDifficulty": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_StoryDifficulty(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_StoryDifficulty(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_StoryDifficulty",
+		"LookupFallback": richPresence_getLookupTableText("lup_StoryDifficulty", "Normal")},
+	"rpp_ShowdownPlayer1_Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer1Character(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Character(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer2_Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer2Character(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer2Character(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")
+	},
+
+	"rpp_JournalCompletionRate": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_JournalCompletionRate(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_JournalCompletionRate(RELEASE_REGION_EUR)},
+		"MacroFormat": "Number"},	
+	"rpp_ShowdownPlayer1_Cash": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer1Cash(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Cash(RELEASE_REGION_EUR), 
+			RELEASE_REGION_JPN: () => util_throwError_RegionNotSupported(RELEASE_REGION_JPN)},
+		"MacroFormat": "Number"},
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
@@ -6729,7 +7540,7 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(string_parameterKey)
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
-		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
@@ -6740,20 +7551,20 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
+	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 
 // ===============================
 // • RichPresence INITIALIZATION •
-// ===============================
+// =============================== // TODO below function has changed --> update in template
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
-	for let_parameterKey in richPresence_lookupTables {
-		let_lookupTable = richPresence_lookupTables[let_parameterKey]
+	for let_lookupTableKey in richPresence_lookupTables { 
+		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_parameterKey][let_lookupKey]
-			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
 		}
 	}}
 
@@ -6790,10 +7601,10 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	// "lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-		// "id": 115333, "isLowerBetter": false, 
-		// "leaderboardFormat": "VALUE",
-		// "devInfo": "Best Stats - Chapter 1 - Normal"},
+	"lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		"id": 115333, "isLowerBetter": false, 
+		"leaderboardFormat": "VALUE",
+		"devInfo": "Best Stats - Chapter 1 - Normal"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED
 		"id": 112549, "isLowerBetter": true, 
@@ -7024,7 +7835,7 @@ leaderboards_submitTriggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
 			&& once(on_RewardMenu_render_short(enum_releaseRegion))
-			&& repeated(120, is_RewardMenu_displayed_short(enum_releaseRegion))
+			&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
 
 		// [2] ==== Alt Reset GRoup==== 	-> Reset when RewardMenu is not rendered
 			|| never_toAlt( 
@@ -7052,17 +7863,20 @@ function lb_template_ValueMeasure() { // Template
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_Chapter1Normal_ValueMeasure() {
-	function valueMeasure(enum_releaseRegion) => measured(
-		current_RewardMenu_BountyCollected(enum_releaseRegion)
-		+ current_ShotsFired(enum_releaseRegion)
-		+ current_ShotsHit(enum_releaseRegion)
-		+ current_DamageTaken(enum_releaseRegion)
-		+ current_TimeSpentInMission(enum_releaseRegion)
-		+ current_HighestCombo(enum_releaseRegion)
-		+ current_HighestComboMultiplier(enum_releaseRegion), 
-		when = 
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_RewardMenu_displayed_short(enum_releaseRegion))
+	function valueMeasureDuringGameplay(enum_releaseRegion) => 
+		measured(
+			current_Cash(enum_releaseRegion)
+			+ current_CashCombo(enum_releaseRegion) + current_CashComboMultiplier(enum_releaseRegion)
+			+ current_PlayerProfile_SavedCash(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion),
+			when = is_ReleaseRegion(enum_releaseRegion))
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
 			-> OUTPUT (PAL)
@@ -7072,29 +7886,44 @@ function lb_Chapter1Normal_ValueMeasure() {
 				4	AddAddress	Mem		32bit	0x763070
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
-				9	AddAddress	Mem		32bit	0x54caf0
-				10	AddAddress	Mem		32bit	0xac
-				11	AddAddress	Mem		32bit	0x34
-				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
 
-				14	AddAddress	Mem		32bit	0x763070
-				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
-				17	AddAddress	Mem		32bit	0x7a0788
-				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
 
-				20	AddAddress	Mem		32bit	0x763070
-				21	AddAddress	Mem		32bit	0x36c
-				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				23	AddAddress	Mem		32bit	0x763070
-				24	AddAddress	Mem		32bit	0x36c
-				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+				15	AddAddress	Mem		32bit	0x763070
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x7a0788
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x763070
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x763070
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
+				28	AddAddress	Mem		32bit	0x763070
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x763070
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+
+				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+
+
 			-> OUTPUT (NTSCU)
 				1	AddAddress	Mem		32bit	0x7608f0
 				2	AddAddress	Mem		32bit	0x36c
@@ -7102,20 +7931,155 @@ function lb_Chapter1Normal_ValueMeasure() {
 				4	AddAddress	Mem		32bit	0x7608f0
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			1.7			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			3.0			|accuracyWeighted + 2.0|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
+
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+
+				15	AddAddress	Mem		32bit	0x7608f0
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x79e008
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x7608f0
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x7608f0
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				28	AddAddress	Mem		32bit	0x7608f0
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x7608f0
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+
+				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+			*/
+
+	function valueMeasureSubmitted(enum_releaseRegion) => 
+		measured(
+			current_RewardMenu_BountyCollected(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion)
+			+ current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsTimeStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsBestComboStarAchieved(enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_RewardMenu_displayed_short(enum_releaseRegion))
+
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
+			-> OUTPUT (PAL)
+				1	AddAddress	Mem		32bit	0x763070
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x763070
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
+
+				9	AddAddress	Mem		32bit	0x54caf0
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
+
+				14	AddAddress	Mem		32bit	0x763070
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x7a0788
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x763070
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x763070
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				27	AddAddress	Mem		32bit	0x763070
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x763070
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54caf0
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x814		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54caf0
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x824		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54caf0
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x834		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54caf0
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x844		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
+				55	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+				56	AddAddress	Mem		32bit	0x54caf0
+				57	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+
+			-> OUTPUT (NTSCU)
+				1	AddAddress	Mem		32bit	0x7608f0
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x7608f0
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|	
+
 				9	AddAddress	Mem		32bit	0x54a370
 				10	AddAddress	Mem		32bit	0xac
 				11	AddAddress	Mem		32bit	0x34
 				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 2.0)|
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
 
 				14	AddAddress	Mem		32bit	0x7608f0
 				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			1.7			|RawDamageTaken * 1.7 (= damageTakenWeighted)|
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				17	AddAddress	Mem		32bit	0x79e008
-				18	SubSource	Mem		Float	0x20		*	Float			2.7			|TimeSeconds * 2.7 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				20	AddAddress	Mem		32bit	0x7608f0
 				21	AddAddress	Mem		32bit	0x36c
@@ -7123,12 +8087,51 @@ function lb_Chapter1Normal_ValueMeasure() {
 				23	AddAddress	Mem		32bit	0x7608f0
 				24	AddAddress	Mem		32bit	0x36c
 				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Measured	Recall														|(BountyCollected * (accuracyWeighted + 2.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
-	*/
+				
+		
+				27	AddAddress	Mem		32bit	0x7608f0
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x7608f0
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54a370
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x7f4		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54a370
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x804		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54a370
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x814		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54a370
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x824		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
+				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+				28	AddAddress	Mem		32bit	0x54a370
+				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+			*/
 
 	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED  {
+		array_push(let_array_valueMeasures, valueMeasureDuringGameplay(enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasureSubmitted(enum_releaseRegion))
+	}
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_ShowdownFastestBounty_ValueMeasure() {
