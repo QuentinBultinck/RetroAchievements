@@ -94,7 +94,7 @@
 //          |/
 //          '
 // $4FA50C: [PAL][32-bit Pointer] --(+0x0)--> Undefined_Struct_02
-//          - Contains pointers to other structures
+//          - Contains pointers to other documented structures
 // $4FA558: [PAL][32-bit Timer] Time Spent In Control of Character
 //          - Increments by 3, each 2 frames (same for NTSC, PAL mode)
 //          - Only increments when player can control a character (campaign and showdown mode)
@@ -128,8 +128,10 @@
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - "SLES_524.78" => EUR
 // $54CAC8: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] MultiplayerRewardMenu_Data (Preferred)
-//          [Struct Definition][??-byte] MultiplayerRewardMenu_Data
+//          [Struct Definition][PAL][NTSCU][??-byte] MultiplayerRewardMenu_Data
 //          |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+//          | - This struct has a few differences between PAL and NTSCU
+//          |
 //          |+0x28 - [32-bit Pointer{2}]
 //          |+| - This Pointer{2} is zeroed out when the MultiplayerRewardMenu is NOT displayed
 //          |+|
@@ -202,19 +204,23 @@
 //          |/
 //          '
 //          
-//          [Struct Definition][PAL][??-byte] RewardMenu_DisplayData
+//          [Struct Definition][??-byte] RewardMenu_DisplayData
 //          |============================================
+//          | - This struct has differences between PAL and NTSCU
 //          | - This struct contains UI data logic for the Reward Menu (where the player can see which items he has unlocked from the mission and his mission stats)
 //          |
-//          |+0xE4 - [Bit Flag {32-bit}] bit 0 => Is Quit Confirmation Menu Displayed
+//          |+0xE4 - [PAL][NTSCU][Bit Flag {32-bit}] bit 0 => Is Quit Confirmation Menu Displayed
 //          |+| - bit 0 = 1 => only when YesNoConfirmation Menu is displayed after pressing 'quit', not when pressing 'replay', thus this can be used to identify which confirmation menu is open. The one after quit (bitValue 1) or the one after replay (bitValue 0)
 //          |/
 //          |
-//          |+0x5D4 - [32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID (functional)
+//          |+0x5D4 - [PAL][NTSCU][32-bit Pointer] --(+0x0)--> [Variable Size ASCII] Area_ID (functional)
 //          |+| - Documentation at $0x7a0620
 //          |/
 //          |
-//          |+0x810 - [64-byte Array] List of [(4x) 16-byte Struct:RatingObjectiveStar_UI_Element_Data]
+//          |+0x7F0 - [NTSCU][64-byte Array] List of [(4x) 16-byte Struct:RatingObjectiveStar_UI_Element_Data]
+//          |¨| - Array Definition identical to PAL, but different offset
+//          |/
+//          |+0x810 - [PAL][64-byte Array] List of [(4x) 16-byte Struct:RatingObjectiveStar_UI_Element_Data]
 //          |¨[Array Definition][64-byte]
 //          |¨|'''''''''''''''''''''''''
 //          |¨| - Struct Definition RatingObjectiveStar_UI_Element_Data below
@@ -232,23 +238,36 @@
 //          |¨|¨| - RewardMenu_UI_Element_ID = "pulseOn_combo"
 //          |/
 //          |
-//          |+0x8A4 - [Bit Flag {32-bit}] Highlighted Menu Item
-//          |¨| - 0x0 => Top menu item
-//          |¨| - 0x1 => Bottom menu item
+//          |+0x8A4 - [PAL][NTSCU][Bit Flag {32-bit}] Highlighted Menu Item
+//          |¨| - 0x0 => 1st item (top most item)
+//          |¨| - 0x1 => 2nd Item
+//          |¨| - 0x2 => 3rd item
 //          |/
 //          |
-//          |+0x9D4 - [8-bit {32-bit}] Menu Depth
+//          |+0x9B4 - [NTSCU][8-bit {32-bit}] Menu Depth
+//          |¨| - Identical to PAL, but different offset
+//          |/
+//          |+0x9D4 - [PAL][8-bit {32-bit}] Menu Depth
 //          |¨| - 0x0 => RewardMenu
 //          |¨| - 0x1 => Quit or Replay Popup
 //          |¨| - 0x2 => YesNoConfirmation Popup
 //          |¨| - 0x3 => Logo Loading Screen
 //          |/
 //          |
-//          |+0x9E4 - [32-bit] Bounty Collected
-//          |+0x9F4 - [32-bit] Money Spent
-//          |+0xA04 - [32-bit] Balance
+//          |+0x964 - [PAL][Bit Flag {32-bit}] bit 0 => Is First Popup Menu Displayed
+//          |¨| - This is the popup menu which is rendered when pressing OK
+//          |/
 //          |
-//          |+0xA70 - [48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_Data]
+//          |+0x9C4 - [NTSCU][32-bit] Bounty Collected
+//          |+0x9D4 - [NTSCU][32-bit] Money Spent
+//          |+0x9E4 - [PAL][32-bit] Bounty Collected || [NTSCU][32-bit] Balance
+//          |+0x9F4 - [PAL][32-bit] Money Spent
+//          |+0xA04 - [PAL][32-bit] Balance
+//          |
+//          |+0xA30 - [NTSCU][48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_Data]
+//          |¨| - Array Definition identical to PAL, but different offset
+//          |/
+//          |+0xA70 - [PAL][48-byte Array] List of [(3x) 16-byte Struct:ItemUnlock_UI_Element_Data]
 //          |¨[Array Definition][48-byte]
 //          |¨|'''''''''''''''''''''''''
 //          |¨| - Struct Definition ItemUnlock_UI_Element_Data below
@@ -290,8 +309,9 @@
 //          |/
 //          '
 //          
-//          [ASCII Field Definition][2448-byte] RewardMenu_DisplayText
+//          [ASCII Field Definition][PAL][NTSCU][2448-byte] RewardMenu_DisplayText
 //          |'''''''''''''''''''''''''''''''''''''''''''
+//          | - Definition is the same between NTSCU and PAL
 //          |+0x130 - [7-byte ASCII] Time
 //          |+0x140 - [6-byte ASCII] Damage Taken
 //          |+0x150 - [6-byte ASCII] Accuracy
@@ -332,6 +352,8 @@
 //          |¨| - Can be manned by AI as well as player
 //          |/
 //          '
+// $5602A0: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] Game_Controller
+//          @Regional equivalent of $0x562a20 (PAL)
 // $562A0C: [PAL][Bit Flag {32-bit}] bit 0 => Is Title Menu Displayed (Preferred)
 //          bit 0 = 0 => In-game || Game  Is Booting Up
 //          bit 0 = 1 => Title Menu
@@ -1370,7 +1392,7 @@
 //          |¨|¨| bit 7 => Is Chapter 27 'Fall From Grace' Bounty Mission Completed
 //          |/
 //          |
-//          |+0x7BC - [Variable Size ASCII] Player Profile Name
+//          |+0x7BC - [7-byte ASCII] Player Profile Name
 //          |
 //          |+0x800 - [2-byte Bitset] Activated_Cheats
 //          |¨[Bitset Definition][2-byte] Activated_Cheats
@@ -1391,6 +1413,10 @@
 //          |¨|¨| bit 7 => No Distortion
 //          |/
 //          '
+// $742118: [NTSCU][8-bit {32-bit}] Selected Player_Profile ID
+//          @Regional equivalent of $0x744898 (PAL)
+// $742158: [NTSCU][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
+//          @Regional equivalent of $0x7448d8 (PAL)
 // $7443B0: [NTSCJ][32-bit Pointer] --(+0x0)--> [??-byte Struct] Undefined_Struct_01
 //          @Regional Equivalent of $0x7448a0
 // $7443E8: [NTSCJ][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
@@ -2058,7 +2084,7 @@
 //          |--- Story Campaign ---
 //          | lvl_perfnew => Chapter 1 - Bull's Eye - Intro with Red Jr.
 //          | lvl_hng => Chapter 2 - Bounty Hunter - Bounty for Bloody Tom
-//          | lvl_sher => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
+//          | lvl_sher70 => Chapter 3 - Ugly Streetfight - Bounty for Ugly Chris
 //          | lvl_traincar => Chapter 4 - The Traincar - Red has showdown with train robber inside traincar
 //          | lvl_traingood => Chapter 5 - Railroaded - Red fighting bandits on top of moving train (follow-up of Chapter 4)
 //          | lvl_tomb => Brimstone
