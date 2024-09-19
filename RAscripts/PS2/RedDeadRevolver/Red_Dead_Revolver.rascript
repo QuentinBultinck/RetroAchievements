@@ -2407,7 +2407,7 @@ CHARACTER_Natalie = "ntl"
 CHARACTER_RedJr = "mrd"
 CHARACTER_Fidgit = "mdg"
 CHARACTER_Christina = "ctn"
-CHARACTER_KidCougar = "ent"
+CHARACTER_KidCougar = "elt"
 CHARACTER_Red = "srd"
 CHARACTER_CurlyShaw = "shp"
 CHARACTER_BloodyTom = "gay"
@@ -3016,6 +3016,7 @@ function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, 
 
 // --------------------ShowdownPlayer_Settings------------------------
 SHOWDOWN_AI_SETTING_HumanPlayer = "MPplayer"
+SHOWDOWN_AI_SETTING_PixieBot = "pixiebot"
 
 function ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
@@ -3033,7 +3034,7 @@ function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releas
 	let_memAddr_CharacterModelID = ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_memAddr_CharacterModelID, enum_character)}
 
-function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+function ASCIIaddress_ShowdownPlayer_AIsetting(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
@@ -3043,6 +3044,10 @@ function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Playe
 		let_memAddr_ShowdownPlayerSettingsArray 
 		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
 		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
+	return let_memAddr_ShowdownAIsetting}
+
+function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	let_memAddr_ShowdownAIsetting = ASCIIaddress_ShowdownPlayer_AIsetting(int_playerIndex, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_memAddr_ShowdownAIsetting, SHOWDOWN_AI_SETTING_HumanPlayer)}
 
 function is_ShowdownPlayer_CPU(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3093,17 +3098,19 @@ SHOWDOWN_MODE_BountyHunter = 0
 SHOWDOWN_MODE_Sundown = 1 
 SHOWDOWN_MODE_HighNoon = 2 
 
-function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) {
+function current_Showdown_Mode(enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_GameMode")
-	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_showdownMode}
+	return low4(let_memAddr_Struct + let_offsetTo_Member)}
+
+function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) =>
+	current_Showdown_Mode(enum_releaseRegion) == enum_showdownMode
 
 SHOWDOWN_BOUNTY_LIMIT_3K = 0 
 SHOWDOWN_BOUNTY_LIMIT_5K = 1 
 SHOWDOWN_BOUNTY_LIMIT_10K = 2 
 SHOWDOWN_BOUNTY_LIMIT_15K = 3
 SHOWDOWN_BOUNTY_LIMIT_20K = 4 
-
 function is_Showdown_BountyLimit(enum_showdownBountyLimit, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_BountyLimit")
@@ -3114,7 +3121,6 @@ SHOWDOWN_SUNDOWN_FIGHT_TIME_5min = 1
 SHOWDOWN_SUNDOWN_FIGHT_TIME_10min = 2 
 SHOWDOWN_SUNDOWN_FIGHT_TIME_15min = 3 
 SHOWDOWN_SUNDOWN_FIGHT_TIME_1min = 4 
-
 function is_Showdown_SundownFightTime(enum_sundownFightTime, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_SundownFightTime")
@@ -3125,7 +3131,6 @@ SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5 = 1
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_7 = 2
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 = 3
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_1 = 4
-
 function is_Showdown_HighNoonRequiredWins(enum_highNoonRequiredWins, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_HighNoonRequiredWins")
@@ -3134,7 +3139,6 @@ function is_Showdown_HighNoonRequiredWins(enum_highNoonRequiredWins, enum_releas
 SHOWDOWN_POWER_UPS_SETTING_Off = 0
 SHOWDOWN_POWER_UPS_SETTING_Stud = 1
 SHOWDOWN_POWER_UPS_SETTING_HoldEm = 2 
-
 function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
@@ -6702,7 +6706,7 @@ achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_CompleteChapter1": 					{"en": "Valiantly hold the fort at Harlow's Home in Chapter 1, 'Bull's Eye'"},
 	"a_CompleteChapter2":					{"en": "Tenderize Bloody Tom's beefy ambitions during the events of Chapter 2, 'Bounty Hunter'"},
-	"a_CompleteChapter3":					{"en": "Neatly Nix the Ugly Gang by the end of Chapter 3, 'Ugly Streetfight'"},
+	"a_CompleteChapter3":					{"en": "Neatly nix the Ugly Gang by the end of Chapter 3, 'Ugly Streetfight'"},
 	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, 'RailRoaded'"},
 	"a_CompleteChapter6":					{"en": "Wrangle the dynamite-fiend during the events of Chapter 6, 'Carnival Life'"},
 	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, 'Freak Show'"},
@@ -6865,26 +6869,27 @@ function achievements_initialize() {
 // =====================
 //	- Contains text for the rich presence script
 richPresence_text = { // TODO RP for showdown modes
-	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 4th place"},
-	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 3rd place"},
-	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 2nd place"},
-	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon multiplayer match, vs CPU | Rounds Won: {1}/{2} | 1st place"},
-	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 4th place | Time left: {2}"},
-	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 3rd place | Time left: {2}"},
-	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 2nd place | Time left: {2}"},
-	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown multiplayer match, vs CPU |  ${1} collected | 1st place | Time left: {2}"},
-	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 4th place"},
-	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 3rd place"},
-	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 2nd place"},
-	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter multiplayer match, vs CPU |  ${1} collected | 1st place"},
-	"rp_Showdown_Default":								{"en": "Playing as {0} in a Showdown match {1}"},
+	// "rp_Template": 									{"en": "xxxxxxxx"}, 
+	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"},
+	"rp_HighNoonShowdown_Fourth":						{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {1}/{2} | 4th place"},
+	"rp_HighNoonShowdown_Third":						{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {1}/{2} | 3rd place"},
+	"rp_HighNoonShowdown_Second":						{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {1}/{2} | 2nd place"},
+	"rp_HighNoonShowdown_First":						{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {1}/{2} | 1st place"},
+	"rp_SundownShowdown_Fourth":						{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU |  ${1} collected | 4th place | Time left: {2}"},
+	"rp_SundownShowdown_Third":							{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU |  ${1} collected | 3rd place | Time left: {2}"},
+	"rp_SundownShowdown_Second":						{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU |  ${1} collected | 2nd place | Time left: {2}"},
+	"rp_SundownShowdown_First":							{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU |  ${1} collected | 1st place | Time left: {2}"},
+	"rp_BountyHuntShowdown_Fourth":						{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU |  ${1} collected | 4th place"},
+	"rp_BountyHuntShowdown_Third":						{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU |  ${1} collected | 3rd place"},
+	"rp_BountyHuntShowdown_Second":						{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU |  ${1} collected | 2nd place"},
+	"rp_BountyHuntShowdown_First":						{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU |  ${1} collected | 1st place"},
+	"rp_Showdown_Default":								{"en": "Playing as {0} in a Showdown match {1}, vs CPU"},
 	"rp_BountyHunterMode_AreaShortID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_BountyHunterMode_AreaLongID":					{"en": "Chapter {0} on Bounty Hunter Mode | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_Story_Brimstone":								{"en": "Time off at Brimstone | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_Story_AreaShortID":								{"en": "Chapter {0} on {1} | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_Story_AreaLongID":								{"en": "Chapter {0} on {1} | Journal: __rpp_JournalCompletionRate__%"},
-	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: __rpp_JournalCompletionRate__%"}, // TODO rp_MainMenu
+	"rp_MainMenu":										{"en": "Red Dead Revolver: Main Menu | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_DefaultPlus":									{"en": "Playing Red Dead Revolver | Journal: __rpp_JournalCompletionRate__%"},
 	"rp_Default":										{"en": "Playing Red Dead Revolver"}}
 richPresence_LookupTablesText = {
@@ -6895,7 +6900,23 @@ richPresence_LookupTablesText = {
 	// 	"BBB":						{"en": "xxxxxxx"},
 	// 	"CCC": 						{"en": "xxxxxxx"},
 	// },
+	"lup_ShowdownTeam": {
+		"RED": 		{"en": "🔴"},
+		"WHITE": 	{"en": "🔘"},
+		"BLUE": 	{"en": "🔵"},
+		"YELLOW": 	{"en": "🟡"},
+		},
+	"lup_ShowdownMode": {
+		"LOOKUP_FALLBACK": 	{"en": "Showdown"},
 
+		"BountyHunter":  	{"en": "Bounty Hunter"},
+		"Sundown":  		{"en": "Sundown"},
+		"HighNoon":  		{"en": "High Noon"},
+		},
+	"lup_IsHumanOrCPUPlayer": {
+		"CPU": 					{"en": "CPU"},
+		"Human":				{"en": "Player"},
+		},
 	"lup_CharacterName": {
 		"LOOKUP_FALLBACK": 				{"en": "a gunslinger"},
 		
@@ -7013,6 +7034,21 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	"lup_ShowdownTeam": {
+		SHOWDOWN_TEAM_RED: 	"RED",
+		SHOWDOWN_TEAM_WHITE: "WHITE",
+		SHOWDOWN_TEAM_BLUE: "BLUE",
+		SHOWDOWN_TEAM_YELLOW: "YELLOW",
+		},
+	"lup_ShowdownMode": {
+		SHOWDOWN_MODE_BountyHunter: "BountyHunter",
+		SHOWDOWN_MODE_Sundown: "Sundown",
+		SHOWDOWN_MODE_HighNoon: "HighNoon",
+		},
+	"lup_IsHumanOrCPUPlayer": {
+		// Any other string: "CPU",			as LOOKUP_FALLBACK	
+		memUtil_asciiStringToHex(substring(SHOWDOWN_AI_SETTING_HumanPlayer, 0, 4)): "Human",
+		},
 	"lup_StoryDifficulty": {
 		DIFFICULTY_Normal: "Normal",
 		DIFFICULTY_Hard: "Hard",
@@ -7224,6 +7260,40 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+function rp_Showdown_Multiplayer(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
+		// && tally(2, [ // <--Tally-- check if there is more than 1 HumanPlayer // TODO implement this commented block in final RP
+		// 	once(never(!is_ShowdownPlayer_Human(1, enum_releaseRegion)) &&
+		// 		is_ShowdownPlayer_Human(1, enum_releaseRegion)),
+		// 	once(never(!is_ShowdownPlayer_Human(2, enum_releaseRegion)) &&
+		// 		is_ShowdownPlayer_Human(3, enum_releaseRegion)),
+		// 	once(never(!is_ShowdownPlayer_Human(3, enum_releaseRegion)) &&
+		// 		is_ShowdownPlayer_Human(3, enum_releaseRegion)),
+		// 	once(never(!is_ShowdownPlayer_Human(4, enum_releaseRegion)) &&
+		// 		is_ShowdownPlayer_Human(4, enum_releaseRegion)),
+		// ])
+
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Team", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_IsHumanOrCPUPlayer", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Team", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_IsHumanOrCPUPlayer", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Character", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Team", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_IsHumanOrCPUPlayer", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Character", enum_releaseRegion), // 10
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Team", enum_releaseRegion), // 11
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_IsHumanOrCPUPlayer", enum_releaseRegion), // 12
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Character", enum_releaseRegion) // 13
+	)}
+
 function rp_Showdown_Default(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -7234,9 +7304,7 @@ function rp_Showdown_Default(enum_releaseRegion) {
 		richPresence_getText("rp_Showdown_Default"),
 		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion),
 		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion)
-		// richPresence_callParameterFunction("rpp_JournalCompletionRate", enum_releaseRegion)) // DISABLED - MANUAL_CONSTRUCTION of rpp_JournalCompletionRate: Copy/Paste serialized logic manually into script
 	)}
-
 
 function rp_BountyHunterMode_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters long
 	function condition(enum_releaseRegion) =>
@@ -7244,9 +7312,12 @@ function rp_BountyHunterMode_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 c
 		&& is_Playing_BountyHunterMode(enum_releaseRegion)
 		&& tally(1, [
 			// shorter than 3, doesn't exist
-			once(is_Area_InnerIdLength(3, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(4, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(5, enum_releaseRegion))
+			once(never(!is_Area_InnerIdLength(3, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(4, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(5, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(5, enum_releaseRegion)),
 			])
 
 	return rich_presence_conditional_display( 
@@ -7261,10 +7332,14 @@ function rp_BountyHunterMode_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 c
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& is_Playing_BountyHunterMode(enum_releaseRegion)
 		&& tally(1, [
-			once(is_Area_InnerIdLength(6, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(7, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(8, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(9, enum_releaseRegion))
+			once(never(!is_Area_InnerIdLength(6, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(6, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(7, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(7, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(8, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(8, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(9, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(9, enum_releaseRegion)),
 			// longer than 9, doesn't exist
 			])
 
@@ -7295,9 +7370,12 @@ function rp_Story_AreaShortID(enum_releaseRegion) { // InnerIDs < 6 characters l
 		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
 		&& tally(1, [
 			// shorter than 3, doesn't exist
-			once(is_Area_InnerIdLength(3, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(4, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(5, enum_releaseRegion))
+			once(never(!is_Area_InnerIdLength(3, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(4, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(4, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(5, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(5, enum_releaseRegion)),
 			])
 
 	return rich_presence_conditional_display( 
@@ -7314,10 +7392,14 @@ function rp_Story_AreaLongID(enum_releaseRegion) { // InnerIDs >= 6 characters l
 		&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 		&& !is_Playing_BountyHunterMode_short(enum_releaseRegion)
 		&& tally(1, [
-			once(is_Area_InnerIdLength(6, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(7, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(8, enum_releaseRegion)),
-			once(is_Area_InnerIdLength(9, enum_releaseRegion))
+			once(never(!is_Area_InnerIdLength(6, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(6, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(7, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(7, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(8, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(8, enum_releaseRegion)),
+			once(never(!is_Area_InnerIdLength(9, enum_releaseRegion)) && 
+				is_Area_InnerIdLength(9, enum_releaseRegion)),
 			// longer than 9, doesn't exist
 			])
 
@@ -7372,6 +7454,7 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		rp_Showdown_Multiplayer(enum_releaseRegion)
 		rp_Showdown_Default(enum_releaseRegion)
 		rp_BountyHunterMode_AreaShortID(enum_releaseRegion)
 		rp_BountyHunterMode_AreaLongID(enum_releaseRegion)
@@ -7390,7 +7473,7 @@ richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
-function rpp_JournalCompletionRate(enum_releaseRegion) => // TODO implement this
+function rpp_JournalCompletionRate(enum_releaseRegion) => 
 	achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) 
 	/* MANUAL_CONSTRUCTION 
 		-> Defined Logic (generated via a dummy leaderboard --> Copy Def):
@@ -7405,14 +7488,9 @@ function rpp_JournalCompletionRate(enum_releaseRegion) => // TODO implement this
 		-> Serialized Logic (PAL) wrapped inside Macro.Number
 			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 		
-		-> Serialized Logic (NTSCU):
+		-> Serialized Logic (NTSCU) wrapped inside Macro.Number
 			@Number(A:0xO0073de4d_A:0xP0073de4d_A:0xQ0073de4d_A:0xR0073de4d_A:0xS0073de4d_A:0xT0073de4d_A:0xK0073de4e_A:0xM0073de4f_A:0xN0073de4f_A:0xP0073de4f_A:0xQ0073de4f_A:0xR0073de4f_A:0xS0073de4f_A:0xT0073de4f_A:0xM0073de50_A:0xN0073de50_A:0xP0073de50_A:0xR0073de50_A:0xS0073de50_A:0xT0073de50_A:0xM0073de51_A:0xN0073de51_A:0xO0073de51_A:0xP0073de51_A:0xQ0073de51_A:0xS0073de51_A:0xT0073de51_A:0xM0073de52_A:0xN0073de52_A:0xO0073de52_A:0xR0073de52_A:0xT0073de52_A:0xK0073de53_A:0xK0073de54_A:0xK0073de55_A:0xK0073de56_A:0xK0073de57_A:0xK0073de58_A:0xN0073de59_A:0xO0073de59_A:0xP0073de59_A:0xQ0073de59_A:0xR0073de59_A:0xS0073de59_A:0xT0073de59_A:0xM0073de5a_A:0xN0073de5a_A:0xO0073de5a_A:0xQ0073de5a_A:0xR0073de5a_A:0xS0073de5a_A:0xT0073de5a_A:0xM0073de5b_A:0xN0073de5b_A:0xP0073de5b_A:0xQ0073de5b_A:0xR0073de5b_A:0xS0073de5b_A:0xT0073de5b_A:0xK0073de5c_A:0xK0073de5d_A:0xK0073de5e_A:0xM0073de5f_A:0xN0073de5f_A:0xO0073de5f_A:0xP0073de5f_A:0xQ0073de5f_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
-		
-
 	*/
-
-function rpp_ShowdownStage(enum_releaseRegion) =>
-	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
 
 function rpp_Story_ShortInnerID(enum_releaseRegion) =>
 	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
@@ -7423,14 +7501,23 @@ function rpp_Story_LongInnerID(enum_releaseRegion) =>
 function rpp_StoryDifficulty(enum_releaseRegion) =>
 	current_StoryCampaignDifficulty(enum_releaseRegion)
 
-function rpp_ShowdownPlayer1Character(enum_releaseRegion) =>
-	tbyte(ASCIIaddress_ShowdownPlayerCharacterId(1, enum_releaseRegion))
+function rpp_ShowdownStage(enum_releaseRegion) =>
+	tbyte(get_Area_memAddr_InnerID(enum_releaseRegion))
 
-function rpp_ShowdownPlayer2Character(enum_releaseRegion) =>
-	tbyte(ASCIIaddress_ShowdownPlayerCharacterId(2, enum_releaseRegion))
+function rpp_ShowdownPlayer_Character(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
+	tbyte(ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseRegion))
 
-function rpp_ShowdownPlayer1Cash(enum_releaseRegion) =>
-	current_ShowdownPlayer_CashCollected(1, enum_releaseRegion)
+function rpp_ShowdownPlayer_Cash(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
+	current_ShowdownPlayer_CashCollected(int_playerIndex, enum_releaseRegion)
+
+function rpp_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
+	current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion)
+
+function rpp_ShowdownPlayer_HumanOrCPUPlayer(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
+	dword(ASCIIaddress_ShowdownPlayer_AIsetting(int_playerIndex, enum_releaseRegion))
+
+function rpp_ShowdownMode(enum_releaseRegion) =>
+	current_Showdown_Mode(enum_releaseRegion)
 
 // -------------------------------------
 richPresence_parameterData = {
@@ -7467,13 +7554,6 @@ richPresence_parameterData = {
 	//	 		RELEASE_REGION_JPN: always_false()},
 	//	 	"MacroFormat": "Number"},	
 
-	"rpp_ShowdownStage": {
-		"RPtype": richPresence_LOOKUP,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_ShowdownStage(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_ShowdownStage(RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_ShowdownStage",
-		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownStage", "LOOKUP_FALLBACK")},
 	"rpp_StoryChapter_ShortInnerID": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
@@ -7488,7 +7568,6 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: rpp_Story_LongInnerID(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryChapter_LongID",
 		"LookupFallback": richPresence_getLookupTableText("lup_StoryChapter_LongID", "BullsEye")},
-
 	"rpp_StoryDifficulty": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
@@ -7496,21 +7575,110 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: rpp_StoryDifficulty(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_StoryDifficulty",
 		"LookupFallback": richPresence_getLookupTableText("lup_StoryDifficulty", "Normal")},
+	"rpp_ShowdownStage": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownStage(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownStage(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownStage",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownStage", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownMode": { 
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownMode(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownMode(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownMode",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownMode", "LOOKUP_FALLBACK")},
 	"rpp_ShowdownPlayer1_Character": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
-			RELEASE_REGION_USA: rpp_ShowdownPlayer1Character(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Character(RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Character(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Character(1, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
 		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
 	"rpp_ShowdownPlayer2_Character": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
-			RELEASE_REGION_USA: rpp_ShowdownPlayer2Character(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_ShowdownPlayer2Character(RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Character(2, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Character(2, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_CharacterName",
-		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")
-	},
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer3_Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Character(3, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Character(3, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer4_Character": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Character(4, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Character(4, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer1_Team": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Team(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Team(1, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownTeam",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownTeam", "RED")},
+	"rpp_ShowdownPlayer2_Team": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Team(2, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Team(2, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownTeam",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownTeam", "WHITE")},
+	"rpp_ShowdownPlayer3_Team": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Team(3, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Team(3, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownTeam",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownTeam", "BLUE")},
+	"rpp_ShowdownPlayer4_Team": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Team(4, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Team(4, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_ShowdownTeam",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownTeam", "YELLOW")},
+	"rpp_ShowdownPlayer1_IsHumanOrCPUPlayer": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_HumanOrCPUPlayer(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_HumanOrCPUPlayer(1, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_IsHumanOrCPUPlayer",
+		"LookupFallback": richPresence_getLookupTableText("lup_IsHumanOrCPUPlayer", "Human")},
+	"rpp_ShowdownPlayer2_IsHumanOrCPUPlayer": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_HumanOrCPUPlayer(2, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_HumanOrCPUPlayer(2, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_IsHumanOrCPUPlayer",
+		"LookupFallback": richPresence_getLookupTableText("lup_IsHumanOrCPUPlayer", "CPU")},
+	"rpp_ShowdownPlayer3_IsHumanOrCPUPlayer": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_HumanOrCPUPlayer(3, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_HumanOrCPUPlayer(3, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_IsHumanOrCPUPlayer",
+		"LookupFallback": richPresence_getLookupTableText("lup_IsHumanOrCPUPlayer", "CPU")},
+	"rpp_ShowdownPlayer4_IsHumanOrCPUPlayer": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_HumanOrCPUPlayer(4, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_HumanOrCPUPlayer(4, RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_IsHumanOrCPUPlayer",
+		"LookupFallback": richPresence_getLookupTableText("lup_IsHumanOrCPUPlayer", "CPU")},
+	"rpp_ShowdownPlayer1_Cash": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Cash(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_ShowdownPlayer_Cash(1, RELEASE_REGION_EUR)},
+		"MacroFormat": "Number"},
 
 	"rpp_JournalCompletionRate": {
 		"RPtype": richPresence_MACRO,
@@ -7518,13 +7686,7 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: rpp_JournalCompletionRate(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpp_JournalCompletionRate(RELEASE_REGION_EUR)},
 		"MacroFormat": "Number"},	
-	"rpp_ShowdownPlayer1_Cash": {
-		"RPtype": richPresence_MACRO,
-		"Expression": {
-			RELEASE_REGION_USA: rpp_ShowdownPlayer1Cash(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpp_ShowdownPlayer1Cash(RELEASE_REGION_EUR), 
-			RELEASE_REGION_JPN: () => util_throwError_RegionNotSupported(RELEASE_REGION_JPN)},
-		"MacroFormat": "Number"},
+	
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
