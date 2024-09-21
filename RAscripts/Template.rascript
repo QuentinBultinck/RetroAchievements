@@ -32,10 +32,11 @@
 //	- prior_ 	=> returns a memory accessor to the prior value
 //	- prev_ 	=> returns a memory accessor to the previous/delta value
 //
-//	- is_		=> returns a comparison, which only uses current values					-> eg is_Area(id_area) => id_area == byte(0xAA)
-//	- was_		=> returns a comparison, which only uses prior values					-> eg was_inArea(id_area) => id_area == prior(byte(0xAA))
-//	- has_ 		=> returns a comparison, which uses current AND prior values			-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
-//	- on_		=> returns a comparison, which uses at least one delta/previous values	-> eg on_Area_change() => current_Area() != prev_Area()
+//	- is_		=> returns a comparison, which only uses current values								-> eg is_Area(id_area) => id_area == byte(0xAA)
+//	- wasPrior_	=> returns a comparison, which only uses prior values								-> eg wasPrior_inArea(id_area) => id_area == prior(byte(0xAA))
+//	- has_ 		=> returns a comparison, which uses current AND prior values						-> eg has_movedToArea(id_area) => id_area == prior(byte(0xAA)) && id_area-1 == byte(0xAA)
+//	- wasPrev_	=> returns a comparison, which only uses previous/delta values						-> eg wasPrev_Area(id_area) => id_area == prev(byte(0xAA))
+//	- on_		=> returns a comparison, which checks for a change between delta and current values	-> eg on_Area_change() => current_Area() != prev_Area()
 
 //	Visual Studio Code: specific info
 // ---------------------------------------------
@@ -113,7 +114,7 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 memory_dataStructures = {
 	"Struct_Template_WeaponData": {
 		"sizeInBytes": 18,
-		"offsets": {
+		"offsetsToMembers": {
 			"16Bit_WeaponID": 0x0,
 			"32Bit_WeaponLevel": 0x4,
 			"BitFlag_IsWeaponUnlocked": 0x8,			
@@ -125,7 +126,7 @@ function memory_getDataStructSizeInBytes(string_structKey) =>
 	memory_dataStructures[string_structKey]["sizeInBytes"]
 
 function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
-	memory_dataStructures[string_structKey]["offsets"][string_offsetKey]
+	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
 // ==========================
 // • Memory ADDRESS STORAGE •
 // ==========================
@@ -142,9 +143,9 @@ DATATYPE_Float					= 201
 DATATYPE_ASCII					= 150
 DATATYPE_Struct 				= 100
 memory_addresses = {
-	//	"DATATYPE_xxxxx": {
+	//	DATATYPE_xxxxx: {
 	//		"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	//	}
+	//	},
 	DATATYPE_BitFlag: {
 	},
 	DATATYPE_4Bit: {
@@ -394,7 +395,7 @@ function achievements_generate_Tally_TemplateB() {
 achievements_triggers = {
     // "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 		is_ReleaseRegion(enum_releaseRegion) &&
-		always_false()),    
+		always_false()),
 	"a_Example_WeaponAMaxed": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion) &&
 		on_WeaponAffinityMaxed(WEAPON_a, enum_releaseRegion)),
@@ -550,25 +551,27 @@ richPresence_text = {
 	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default + rp_DefaultPlus
 
 richPresence_LookupTablesText = {
-	"rpp_LookupTemplate_Lookup_A":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_B":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_Lookup_C":						{"en": "xxxxxxxx"},
-	"rpp_LookupTemplate_LookupFallback":				{"en": "xxxxxxxx"},}
+	"lup_LookupTemplate": {
+		"Lookup_A":						{"en": "xxxxxxxx"},
+		"Lookup_B":						{"en": "xxxxxxxx"},
+		"Lookup_C":						{"en": "xxxxxxxx"},
+		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
+		},
+	}
 
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
-function richPresence_getLookupTableText(string_parameterKey, string_lookupValue) {
-	let_lookupTableTextKey = format("{0}_{1}", string_parameterKey, string_lookupValue)
-	return richPresence_LookupTablesText[let_lookupTableTextKey][util_language]}
+function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
+	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
-	"rpp_LookupTemplate": {
+	"lup_LookupTemplate": {
 		0x1: "Lookup_A",
 		0x2: "Lookup_B",
 		0x3: "Lookup_C"}}
-function richPresence_getLookupTable(string_lookupParameterKey) =>
-	richPresence_lookupTables[string_lookupParameterKey]
+function richPresence_getLookupTable(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]
 
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
@@ -632,7 +635,7 @@ function rp_TemplateA(enum_releaseRegion) {
 	function condition(enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		always_false()
-	rich_presence_conditional_display(
+	return rich_presence_conditional_display(
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_TemplateA"),
 		richPresence_callParameterFunction("rpp_Example_PresentTimeHours_ZeroPadding", enum_releaseRegion), // Adds "0" when rpp_PresentTimeHours is < 10
@@ -645,7 +648,7 @@ function rp_TemplateB(enum_releaseRegion) {
 	function condition(enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion) &&
 		always_false()
-	rich_presence_conditional_display(
+	return rich_presence_conditional_display(
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_TemplateB")
 	)}
@@ -653,14 +656,14 @@ function rp_TemplateB(enum_releaseRegion) {
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
-	rich_presence_conditional_display( 
+	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText("rp_DefaultPlus"),
 		richPresence_callParameterFunction("rpp_TemplateZ", enum_releaseRegion)
 	)}
 
 function rp_Default() {
-	rich_presence_display(	
+	return rich_presence_display(	
 		richPresence_getText("rp_Default")
 	)}
 // -------------------------------------
@@ -698,50 +701,51 @@ richPresence_parameterData = {
 	"rpp_ValueTemplate": {
 		"RPtype": richPresence_VALUE,
 		"Expression": {
-			RELEASE_REGION_USA: () => always_false(), 
-			RELEASE_REGION_EUR: () => always_false(),
-			RELEASE_REGION_JPN: () => always_false()},
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
 		"ValueFormat": "VALUE"},
 	"rpp_LookupTemplate": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
-			RELEASE_REGION_USA: () => always_false(), 
-			RELEASE_REGION_EUR: () => always_false(),
-			RELEASE_REGION_JPN: () => always_false()},
-		"LookupFallback": richPresence_getLookupTableText("rpp_LookupTemplate", "LookupFallback")},
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
+		"LookupTableID": "lup_LookupTemplate",
+		"LookupFallback": richPresence_getLookupTableText("lup_LookupTemplate", "LOOKUP_FALLBACK")},
 	"rpp_MacroTemplate": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
-			RELEASE_REGION_USA: () => always_false(), 
-			RELEASE_REGION_EUR: () => always_false(),
-			RELEASE_REGION_JPN: () => always_false()},
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
 		"MacroFormat": "Number"},
 	
 	"rpp_Example_PresentTimeMinutes_ZeroPadding": { // Use in combination with a DateTime. eg. rpp_PresentTimeMinutes => to prepend an extra 0 when the minutes would only evaluate to 1 number 	=> eg. "7" --> "07"
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
-			RELEASE_REGION_USA: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
-			RELEASE_REGION_JPN: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
+			RELEASE_REGION_USA: rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
+			RELEASE_REGION_JPN: rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
 		"LookupFallback": "0"}, // This "0" + "0" from rpp_PresentTimeMinutes => will show "00"
 	"rpp_Example_PresentTimeMinutes": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
-			RELEASE_REGION_USA: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
-			RELEASE_REGION_JPN: () => rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
+			RELEASE_REGION_USA: rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
+			RELEASE_REGION_JPN: rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},
 	"rpp_Example_PresentTimeHours_ZeroPadding": {
 		"RPtype": richPresence_LOOKUP,
 		"Expression": {
-			RELEASE_REGION_USA: () => rpp_PresentTimeHours(RELEASE_REGION_USA), 
-			RELEASE_REGION_JPN: () => rpp_PresentTimeHours(RELEASE_REGION_JPN)},
+			RELEASE_REGION_USA: rpp_PresentTimeHours(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: rpp_PresentTimeHours(RELEASE_REGION_JPN)},
 		"LookupFallback": "0"},
 	"rpp_Example_PresentTimeHours": {
 		"RPtype": richPresence_MACRO,
 		"Expression": {
-			RELEASE_REGION_USA: () => rpp_PresentTimeHours(RELEASE_REGION_USA), 
-			RELEASE_REGION_JPN: () => rpp_PresentTimeHours(RELEASE_REGION_JPN)},
+			RELEASE_REGION_USA: rpp_PresentTimeHours(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: rpp_PresentTimeHours(RELEASE_REGION_JPN)},
 		"MacroFormat": "Number"},
 	
 
@@ -758,9 +762,9 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
 	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
-		let_name = richPresence_createParameterName(string_parameterKey)
+		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
-		let_lookUpTable = richPresence_getLookupTable(string_parameterKey)
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
 	
@@ -771,20 +775,20 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
-	if (let_RPtype == richPresence_VALUE) richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_MACRO) richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
+	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 
 // ===============================
 // • RichPresence INITIALIZATION •
 // ===============================
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
-	for let_parameterKey in richPresence_lookupTables {
-		let_lookupTable = richPresence_lookupTables[let_parameterKey]
+	for let_lookupTableKey in richPresence_lookupTables { 
+		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_parameterKey][let_lookupKey]
-			richPresence_lookupTables[let_parameterKey][let_lookupKey] = richPresence_getLookupTableText(let_parameterKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
 		}
 	}}
 
