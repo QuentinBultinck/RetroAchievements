@@ -7032,7 +7032,7 @@ richPresence_LookupTablesText = {
 		"RedWoodRevolver": 				{"en": "Red Wood Revolver"},
 		"BountyHunterMode": 			{"en": "Bounty Hunter Mode"},
 		},
-	"lup_ShowdownStage": { // TODO update this LUP in RP
+	"lup_ShowdownStage": {
 		"LOOKUP_FALLBACK": 			{"en": "in the \"Wild West\""},
 
 		"TheBridge":				{"en": "at \"The Bridge\""},
@@ -7359,7 +7359,7 @@ function rp_Showdown_Multiplayer(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
-		&& tally(2, [ // <--Tally-- check if there is more than 1 HumanPlayer // TODO implement this commented block in final RP
+		&& tally(2, [ // <--Tally-- check if there is more than 1 HumanPlayer
 			once(never(!is_ShowdownPlayer_Human(1, enum_releaseRegion)) &&
 				is_ShowdownPlayer_Human(1, enum_releaseRegion)),
 			once(never(!is_ShowdownPlayer_Human(2, enum_releaseRegion)) &&
@@ -7858,7 +7858,7 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 
 // ===============================
 // • RichPresence INITIALIZATION •
-// =============================== // TODO below function has changed --> update in template
+// ===============================
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_lookupTableKey in richPresence_lookupTables { 
 		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
