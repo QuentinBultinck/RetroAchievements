@@ -420,8 +420,6 @@ memory_dataStructures = {
 		},
 	"Struct_MultiplayerRewardMenu_Data": {
 		"pointerChains": {
-			"32BitPointer_28": {
-				"addAddressChain": [0x28]},
 			"ASCII_Flag_IsPlayer1Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
@@ -444,13 +442,14 @@ memory_dataStructures = {
 					RELEASE_REGION_USA: 0x1B0}},
 			"ASCII_Flag_IsMultiplayerRewardMenuDisplayed": {
 				"addAddressChain": [0x28, 0x0]},
-		}},
-	"Struct_MultiplayerRewardMenu_UI_Controller": {
-		"pointerChains": {
+			"BitFlag_IsFirstPopupMenuDisplayed": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0xF44],
+					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0x0]}}, // TODO verify USA RAM
 			"32Bit_HighlightedPopupMenuItem": {
 				"addAddressChain": {
-					RELEASE_REGION_EUR: [0x1C, 0x1414],
-					RELEASE_REGION_USA: [0x1C, 0x1044]}},
+					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0x1414],
+					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0x1044]}},
 		}},
 	"Struct_ShowdownMode_Settings": {
 		"offsetToMember": {
@@ -550,7 +549,7 @@ memory_addresses = {
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL},
+		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // Unused
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -738,13 +737,24 @@ function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	}
 	return all_of(let_array_comparisons, c => c)}
 
-function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
+function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) { // TODO the output of this functions to be wrapped __onext() otherwise RATools generates unncessary alt groups
+	/* BUG ASCII_NotEquals()
+		"ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII
+		0xA != "ABCD"
+		&& 0xB != "EF"
+
+		SOLUTION
+		-------
+		return __onext(!ASCII_Equals())
+	*/
+
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
 		let_substring = substring(string_s, let_stepBy4Index, 4)
 		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
 	}
 	return none_of(let_array_comparisons, c => c)}
+
 
 function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s)
@@ -762,8 +772,9 @@ function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
 
 function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
-	ASCII_Equals(memAddr_ASCII, string_s) && 
-	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+	ASCII_Equals(memAddr_ASCII, string_s)  
+	&& wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s)
+	
 
 // .......................
 // ◦ PLAYER INPUT READER ◦
@@ -3162,12 +3173,13 @@ function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_powerUpsSetting}
 
-// --------------------MultiplayerRewardMenu------------------------
+// --------------------MultiplayerRewardMenu------------------------ // TODO Below functions have been updated --> update where uses
+ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpReward" // Full string: "mpRewards_new3"
+ASCII_FLAG_IsPlayerWinner = "Winner"
+
 function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
-		util_throwError(format("Player index: {0} is not in valid range"))
-		
-	ASCII_FLAG_IsPlayerWinner = "Winner"
+		util_throwError(format("Player index: {0} is not in valid range"))	
 	
 	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
@@ -3176,13 +3188,23 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
 
-function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
+function ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
-	return let_memAccessor_InnerPointer > 0}
+	let_memAddr_ASCII = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_BasePointer)
+	return let_memAddr_ASCII}
 
-function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) {
+function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
+	let_memAddr_ASCII = ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion)
+	return is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+
+function on_MultiplayerRewardMenu_render(enum_releaseRegion) {
+	let_memAddr_ASCII = ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion)
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
+		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+
+function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) { // TODO replace usage of this function by on_MultiplayerRewardMenu_render()
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
 	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
 		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
@@ -3190,7 +3212,7 @@ function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) {
 		let_memAccessor_InnerPointer > 0 
 		&& prev(let_memAccessor_InnerPointer) == 0}
 
-function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) {
+function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) { // TODO replace usage of this function by on_MultiplayerRewardMenu_render()
 	ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpRewards_new3"
 
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
@@ -3200,14 +3222,20 @@ function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) {
 		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
 		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
 
+function on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, accessor = bit0)
+	return let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
+
 function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
-	const_REPLAY = 0
+	const_MENU_ITEM_Replay = 0
 
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_UI_Controller", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain_byReleaseRegion(
 		"Struct_MultiplayerRewardMenu_UI_Controller", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
 		enum_releaseRegion, accessor = dword)
-	return let_memAccessor_HighlightedMenuItem == const_REPLAY}
+	return let_memAccessor_HighlightedMenuItem == const_MENU_ITEM_Replay}
 
 function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) => 
 	is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
@@ -8488,9 +8516,9 @@ leaderboards_descriptions = {
 
 	"lb_Chapter1Normal":					{"en": "Master Chapter 1, 'Bull's Eye, with deadly precision, steadfast resilience, swift alacrity and a bounty haul worthy of a Wild West legend, on normal difficulty"},
 
-	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match with 3 CPU's as fast as possible"},
-	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match with 3 CPU's"},
-	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match with 3 CPU's"},
+	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match vs 3 CPU's as quickly as possible"},
+	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match vs 3 CPU's"},
+	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match vs 3 CPU's"},
 	}
 
 // ===============================
