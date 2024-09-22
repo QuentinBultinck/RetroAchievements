@@ -7862,15 +7862,328 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
+
+
 	// "lb_Chapter1Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
 		// "id": 115333, "isLowerBetter": false, 
 		// "leaderboardFormat": "VALUE",
-		// "devInfo": "Best Stats - Chapter 1 - Normal"},
-
+		// "devInfo": "Best Stats - Normal"},
+	// "lb_Chapter2Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118232, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter3Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118242, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter5Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118241, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter6Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118240, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter7Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118239, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter8Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118238, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter10Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118231, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter11Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118230, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter12Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118229, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter13Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118228, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter14Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118227, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter15Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118226, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter17Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118225, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter19Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118237, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter20Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118236, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter22Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118235, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter24Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118234, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter25Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118233, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"}, 
 	// "lb_Chapter27Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
 		// 	"id": 118221, "isLowerBetter": false, 
 		// 	"leaderboardFormat": "VALUE",
-		// 	"devInfo": "Best Stats - Chapter 27 - Normal"},
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter1Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118270, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter2Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118271, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter3Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118272, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter5Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118273, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter6Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118274, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter7Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118275, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter8Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118276, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter10Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118284, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter11Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118283, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter12Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118282, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter13Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118281, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter14Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118280, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter15Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118279, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter17Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118278, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter19Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118277, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter20Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118289, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter22Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118288, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter24Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118287, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter25Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118286, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"}, 
+	// "lb_Chapter27Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118285, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter1VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118290, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter2VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118296, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter3VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118295, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter5VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118294, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter6VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118293, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter7VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118292, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter8VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118291, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter10VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118304, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter11VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118303, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter12VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118302, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter13VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118301, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter14VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118300, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter15VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118299, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter17VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118298, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter19VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118297, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter20VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118309, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter22VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118308, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter24VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118307, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter25VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118306, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"}, 
+	// "lb_Chapter27VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118305, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter1RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118310, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter2RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118311, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter3RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118312, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter5RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118313, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter6RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118314, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter7RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118315, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter8RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118316, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter10RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118317, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter11RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118318, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter12RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118319, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter13RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118320, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter14RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118321, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter15RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118322, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter17RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118323, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter19RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118324, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter20RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118325, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter22RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118326, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter24RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118327, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter25RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118328, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"}, 
+	// "lb_Chapter27RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// "id": 118329, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Red Wood revolver"},
 
 	"lb_ShowdownFastestBounty": { // VERIFIED - Starts at beginning of match with timer RAoverlay
 		"id": 112549, "isLowerBetter": true, 
@@ -8253,8 +8566,164 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() {
 leaderboards_startTriggers = {
 	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_Normal, enum_releaseRegion)),
 	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		const_HUMAN_PLAYER_INDEX_1 = 1
 		const_CPU_PLAYER_INDEX_2 = 2
@@ -8399,7 +8868,163 @@ leaderboards_startTriggers = {
 leaderboards_cancelTriggers = {
 	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
 	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Showdown mode
@@ -8422,7 +9047,163 @@ leaderboards_cancelTriggers = {
 leaderboards_submitTriggers = {
 	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
 	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion)
@@ -8476,7 +9257,85 @@ function lb_ShowdownBestCombo_ValueMeasure() {
 
 leaderboards_valueMeasures = { 
 	"lb_Chapter1Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
 	"lb_Chapter27Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
 
 	"lb_ShowdownFastestBounty": lb_ShowdownFastestBounty_ValueMeasure(),
 	"lb_ShowdownLargestBounty": lb_ShowdownLargestBounty_ValueMeasure(),
@@ -8488,9 +9347,89 @@ leaderboards_valueMeasures = {
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "'Bull's Eye' Normal Bounty Board"},
+	"lb_Chapter1Normal":			{"en": "'Bull's Eye' Normal Bounty Board"},
+	"lb_Chapter2Normal": 			{"en": "'Bounty Hunter' Normal Bounty Board"},
+	"lb_Chapter3Normal": 			{"en": "'Ugly Streetfight' Normal Bounty Board"},
+	"lb_Chapter5Normal": 			{"en": "'Railroaded' Normal Bounty Board"},
+	"lb_Chapter6Normal": 			{"en": "'Carnival Life' Normal Bounty Board"},
+	"lb_Chapter7Normal": 			{"en": "'Freak Show' Normal Bounty Board"},
+	"lb_Chapter8Normal": 			{"en": "'Rogue Valley' Normal Bounty Board"},
+	"lb_Chapter10Normal": 			{"en": "'The Cemetery' Normal Bounty Board"},
+	"lb_Chapter11Normal": 			{"en": "'Range War' Normal Bounty Board"},
+	"lb_Chapter12Normal": 			{"en": "'Bar Fight' Normal Bounty Board"},
+	"lb_Chapter13Normal": 			{"en": "'The Traitor' Normal Bounty Board"},
+	"lb_Chapter14Normal": 			{"en": "'Sunset Canyon' Normal Bounty Board"},
+	"lb_Chapter15Normal": 			{"en": "'Bear Mountain' Normal Bounty Board"},
+	"lb_Chapter17Normal": 			{"en": "'The Mine' Normal Bounty Board"},
+	"lb_Chapter19Normal": 			{"en": "'Hell Pass' Normal Bounty Board"},
+	"lb_Chapter20Normal": 			{"en": "'Fort Diego' Normal Bounty Board"},
+	"lb_Chapter22Normal": 			{"en": "'Devils and Angels' Normal Bounty Board"},
+	"lb_Chapter24Normal": 			{"en": "'Battle Finale' Normal Bounty Board"},
+	"lb_Chapter25Normal": 			{"en": "'Siege' Normal Bounty Board"}, 
+	"lb_Chapter27Normal":			{"en": "'Fall From Grace' Normal Bounty Board"},
 
-	"lb_Chapter27Normal":					{"en": "'Fall From Grace' Normal Bounty Board"},	
+	"lb_Chapter1Hard": 				{"en": "'Bull's Eye' Hard Bounty Board"},
+	"lb_Chapter2Hard": 				{"en": "'Bounty Hunter' Hard Bounty Board"},
+	"lb_Chapter3Hard": 				{"en": "'Ugly Streetfight' Hard Bounty Board"},
+	"lb_Chapter5Hard": 				{"en": "'Railroaded'' Hard Bounty Board"},
+	"lb_Chapter6Hard": 				{"en": "'Carnival Life' Hard Bounty Board"},
+	"lb_Chapter7Hard": 				{"en": "'Freak Show' Hard Bounty Board"},
+	"lb_Chapter8Hard": 				{"en": "'Rogue Valley' Hard Bounty Board"},
+	"lb_Chapter10Hard": 			{"en": "'The Cemetery' Hard Bounty Board"},
+	"lb_Chapter11Hard": 			{"en": "'Range War' Hard Bounty Board"},
+	"lb_Chapter12Hard": 			{"en": "'Bar Fight' Hard Bounty Board"},
+	"lb_Chapter13Hard": 			{"en": "'The Traitor' Hard Bounty Board"},
+	"lb_Chapter14Hard": 			{"en": "'Sunset Canyon' Hard Bounty Board"},
+	"lb_Chapter15Hard": 			{"en": "'Bear Mountain' Hard Bounty Board"},
+	"lb_Chapter17Hard": 			{"en": "'The Mine' Hard Bounty Board"},
+	"lb_Chapter19Hard": 			{"en": "'Hell Pass' Hard Bounty Board"},
+	"lb_Chapter20Hard": 			{"en": "'Fort Diego' Hard Bounty Board"},
+	"lb_Chapter22Hard": 			{"en": "'Devils and Angels' Hard Bounty Board"},
+	"lb_Chapter24Hard": 			{"en": "'Battle Finale' Hard Bounty Board"},
+	"lb_Chapter25Hard": 			{"en": "'Siege' Hard Bounty Board"}, 
+	"lb_Chapter27Hard": 			{"en": "'Fall From Grace' Hard Bounty Board"},
+
+	"lb_Chapter1VeryHard": 			{"en": "'Bull's Eye' Very Hard Bounty Board"},
+	"lb_Chapter2VeryHard": 			{"en": "'Bounty Hunter' Very Hard Bounty Board"},
+	"lb_Chapter3VeryHard": 			{"en": "'Ugly Streetfight' Very Hard Bounty Board"},
+	"lb_Chapter5VeryHard": 			{"en": "'Railroaded'' Very Hard Bounty Board"},
+	"lb_Chapter6VeryHard": 			{"en": "'Carnival Life' Very Hard Bounty Board"},
+	"lb_Chapter7VeryHard": 			{"en": "'Freak Show' Very Hard Bounty Board"},
+	"lb_Chapter8VeryHard": 			{"en": "'Rogue Valley' Very Hard Bounty Board"},
+	"lb_Chapter10VeryHard": 		{"en": "'The Cemetery' Very Hard Bounty Board"},
+	"lb_Chapter11VeryHard": 		{"en": "'Range War' Very Hard Bounty Board"},
+	"lb_Chapter12VeryHard": 		{"en": "'Bar Fight' Very Hard Bounty Board"},
+	"lb_Chapter13VeryHard": 		{"en": "'The Traitor' Very Hard Bounty Board"},
+	"lb_Chapter14VeryHard": 		{"en": "'Sunset Canyon' Very Hard Bounty Board"},
+	"lb_Chapter15VeryHard": 		{"en": "'Bear Mountain' Very Hard Bounty Board"},
+	"lb_Chapter17VeryHard": 		{"en": "'The Mine' Very Hard Bounty Board"},
+	"lb_Chapter19VeryHard": 		{"en": "'Hell Pass' Very Hard Bounty Board"},
+	"lb_Chapter20VeryHard": 		{"en": "'Fort Diego' Very Hard Bounty Board"},
+	"lb_Chapter22VeryHard": 		{"en": "'Devils and Angels' Very Hard Bounty Board"},
+	"lb_Chapter24VeryHard": 		{"en": "'Battle Finale' Very Hard Bounty Board"},
+	"lb_Chapter25VeryHard": 		{"en": "'Siege' Very Hard Bounty Board"}, 
+	"lb_Chapter27VeryHard": 		{"en": "'Fall From Grace' Very Hard Bounty Board"},
+
+	"lb_Chapter1RedWood": 			{"en": "'Bull's Eye' Red Wood Revolver Bounty Board"},
+	"lb_Chapter2RedWood": 			{"en": "'Bounty Hunter' Red Wood Revolver Bounty Board"},
+	"lb_Chapter3RedWood": 			{"en": "'Ugly Streetfight' Red Wood Revolver Bounty Board"},
+	"lb_Chapter5RedWood": 			{"en": "'Railroaded'' Red Wood Revolver Bounty Board"},
+	"lb_Chapter6RedWood": 			{"en": "'Carnival Life' Red Wood Revolver Bounty Board"},
+	"lb_Chapter7RedWood": 			{"en": "'Freak Show' Red Wood Revolver Bounty Board"},
+	"lb_Chapter8RedWood": 			{"en": "'Rogue Valley' Red Wood Revolver Bounty Board"},
+	"lb_Chapter10RedWood": 			{"en": "'The Cemetery' Red Wood Revolver Bounty Board"},
+	"lb_Chapter11RedWood": 			{"en": "'Range War' Red Wood Revolver Bounty Board"},
+	"lb_Chapter12RedWood": 			{"en": "'Bar Fight' Red Wood Revolver Bounty Board"},
+	"lb_Chapter13RedWood": 			{"en": "'The Traitor' Red Wood Revolver Bounty Board"},
+	"lb_Chapter14RedWood": 			{"en": "'Sunset Canyon' Red Wood Revolver Bounty Board"},
+	"lb_Chapter15RedWood": 			{"en": "'Bear Mountain' Red Wood Revolver Bounty Board"},
+	"lb_Chapter17RedWood": 			{"en": "'The Mine' Red Wood Revolver Bounty Board"},
+	"lb_Chapter19RedWood": 			{"en": "'Hell Pass' Red Wood Revolver Bounty Board"},
+	"lb_Chapter20RedWood": 			{"en": "'Fort Diego' Red Wood Revolver Bounty Board"},
+	"lb_Chapter22RedWood": 			{"en": "'Devils and Angels' Red Wood Revolver Bounty Board"},
+	"lb_Chapter24RedWood": 			{"en": "'Battle Finale' Red Wood Revolver Bounty Board"},
+	"lb_Chapter25RedWood": 			{"en": "'Siege' Red Wood Revolver Bounty Board"}, 
+	"lb_Chapter27RedWood": 			{"en": "'Fall From Grace' Red Wood Revolver Bounty Board"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
 	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
@@ -8499,8 +9438,89 @@ leaderboards_titles = {
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
-	"lb_Chapter27Normal":					{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter1Normal":	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter2Normal": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter3Normal": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter5Normal": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter6Normal": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter7Normal": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter8Normal": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter10Normal": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter11Normal": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter12Normal": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter13Normal": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter14Normal": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter15Normal": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter17Normal": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter19Normal": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter20Normal": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter22Normal": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter24Normal": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter25Normal": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"}, 
+	"lb_Chapter27Normal":	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+
+	"lb_Chapter1Hard": 		{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter2Hard": 		{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter3Hard": 		{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter5Hard": 		{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter6Hard": 		{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter7Hard": 		{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter8Hard": 		{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter10Hard": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter11Hard": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter12Hard": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter13Hard": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter14Hard": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter15Hard": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter17Hard": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter19Hard": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter20Hard": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter22Hard": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter24Hard": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter25Hard": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"}, 
+	"lb_Chapter27Hard": 	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+
+	"lb_Chapter1VeryHard": 	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter2VeryHard": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter3VeryHard": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter5VeryHard": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter6VeryHard": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter7VeryHard": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter8VeryHard": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter10VeryHard": {"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter11VeryHard": {"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter12VeryHard": {"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter13VeryHard": {"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter14VeryHard": {"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter15VeryHard": {"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter17VeryHard": {"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter19VeryHard": {"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter20VeryHard": {"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter22VeryHard": {"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter24VeryHard": {"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter25VeryHard": {"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"}, 
+	"lb_Chapter27VeryHard": {"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+
+	"lb_Chapter1RedWood": 	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter2RedWood": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter3RedWood": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter5RedWood": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter6RedWood": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter7RedWood": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter8RedWood": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter10RedWood": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter11RedWood": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter12RedWood": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter13RedWood": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter14RedWood": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter15RedWood": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter17RedWood": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter19RedWood": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter20RedWood": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter22RedWood": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter24RedWood": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter25RedWood": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"}, 
+	"lb_Chapter27RedWood": 	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match vs 3 CPU's as quickly as possible"},
 	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match vs 3 CPU's"},
