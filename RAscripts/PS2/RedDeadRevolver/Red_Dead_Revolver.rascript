@@ -7261,6 +7261,7 @@ function rp_Showdown_HighNoon(enum_releaseRegion) {
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& current_ShowdownPlayer_HighNoonRoundsWon(1, enum_releaseRegion) <= SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers 
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7280,6 +7281,7 @@ function rp_Showdown_Sundown(enum_releaseRegion) {
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& current_ShowdownPlayer_CashCollected(1, enum_releaseRegion) <= 999999 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers; 999 999 cash is max displayable value
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7298,7 +7300,9 @@ function rp_Showdown_BountyHunt(enum_releaseRegion) {
 		&& is_ShowdownPlayer_Human(1, enum_releaseRegion) // <--4 Lines--- Checks if playing solo, without other HumanPlayer
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
-		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)		
+		&& current_ShowdownPlayer_CashCollected(1, enum_releaseRegion) <= 999999 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers; 999 999 cash is max displayable value
+
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
