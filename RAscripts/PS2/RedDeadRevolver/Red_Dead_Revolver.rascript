@@ -445,7 +445,7 @@ memory_dataStructures = {
 			"BitFlag_IsFirstPopupMenuDisplayed": {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0xF44],
-					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0x0]}}, // TODO verify USA RAM
+					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0xB74]}},
 			"32Bit_HighlightedPopupMenuItem": {
 				"addAddressChain": {
 					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0x1414],
@@ -737,24 +737,15 @@ function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	}
 	return all_of(let_array_comparisons, c => c)}
 
-function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) { // TODO the output of this functions to be wrapped __onext() otherwise RATools generates unncessary alt groups
-	/* BUG ASCII_NotEquals()
-		"ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII
-		0xA != "ABCD"
-		&& 0xB != "EF"
-
-		SOLUTION
-		-------
-		return __onext(!ASCII_Equals())
+function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
+	/* NOTE: Consider following ASCII "ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII		
+		Example logic:
+			0xA != "ABCD"
+			|| 0xB != "EF"
 	*/
-
-	let_array_comparisons = []
-	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
-		let_substring = substring(string_s, let_stepBy4Index, 4)
-		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
-	}
-	return none_of(let_array_comparisons, c => c)}
-
+	return __ornext( // --> __ornext() as otherwise RATools may generate unnecessary alt groups for these single orNext requirements
+		!ASCII_Equals(memAddr_ASCII, string_s, wrapper)
+	)}
 
 function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s)
@@ -3204,36 +3195,18 @@ function on_MultiplayerRewardMenu_render(enum_releaseRegion) {
 		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
 		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
 
-function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) { // TODO replace usage of this function by on_MultiplayerRewardMenu_render()
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
-	return 
-		let_memAccessor_InnerPointer > 0 
-		&& prev(let_memAccessor_InnerPointer) == 0}
-
-function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) { // TODO replace usage of this function by on_MultiplayerRewardMenu_render()
-	ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpRewards_new3"
-
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAddr_ASCII = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_BasePointer)
-	return 
-		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
-		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
-
 function on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, accessor = bit0)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, enum_releaseRegion, accessor = bit0)
 	return let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
 
 function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
 	const_MENU_ITEM_Replay = 0
 
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_UI_Controller", enum_releaseRegion)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain_byReleaseRegion(
-		"Struct_MultiplayerRewardMenu_UI_Controller", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
+		"Struct_MultiplayerRewardMenu_Data", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
 		enum_releaseRegion, accessor = dword)
 	return let_memAccessor_HighlightedMenuItem == const_MENU_ITEM_Replay}
 
@@ -5591,7 +5564,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5662,7 +5635,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5731,7 +5704,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5804,7 +5777,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 			
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current damage taken (as this is otherwise not shown during gameplay), This alt group can never unlock the achievement
@@ -5938,7 +5911,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
@@ -6002,7 +5975,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6077,7 +6050,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6146,7 +6119,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6238,7 +6211,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current accuracy percentage (as this is otherwise not shown in-game), This alt group can never unlock the achievement
@@ -6351,7 +6324,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
@@ -6415,7 +6388,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6483,7 +6456,7 @@ achievements_triggers = {
 			&& trigger_when(
 				once(
 					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -7601,6 +7574,10 @@ richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 function rpp_JournalCompletionRate(enum_releaseRegion) => 
 	achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) 
 	/* MANUAL_CONSTRUCTION 
+		// DEV_NOTE: Serialized logic Copy/Paste
+		//	- With RAIntegration UI, copying any code from the "Achievement Editor" window --> copies the serialized logic
+		//		this can be used to quickly copy/paste Serialized Logic for MANUAL_CONSTRUCTION, from the rascript to the "Achievement Editor" window
+
 		-> Defined Logic (generated via a dummy leaderboard --> Copy Def):
 			AddSource	Mem		Bit0	0xFirstFlag
 			AddSource 	SumOf_FlagsAllPages()
@@ -7611,12 +7588,11 @@ function rpp_JournalCompletionRate(enum_releaseRegion) =>
 			Measured	Recall
 
 
-		---- Copy Serialized Logic here & overwrite __rpp_JournalCompletionRate__ in Rich.txt ----
-
-		-> Serialized Logic (PAL) wrapped inside Macro.Number
+		===== Copy Serialized Logic here ---overwrite-->  __rpp_JournalCompletionRate__ (in Rich.txt) =====
+		-> Serialized Logic (PAL) - wrapped inside Macro.Number
 			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 		
-		-> Serialized Logic (NTSCU) wrapped inside Macro.Number
+		-> Serialized Logic (NTSCU) - wrapped inside Macro.Number
 			@Number(A:0xO0073de4d_A:0xP0073de4d_A:0xQ0073de4d_A:0xR0073de4d_A:0xS0073de4d_A:0xT0073de4d_A:0xK0073de4e_A:0xM0073de4f_A:0xN0073de4f_A:0xP0073de4f_A:0xQ0073de4f_A:0xR0073de4f_A:0xS0073de4f_A:0xT0073de4f_A:0xM0073de50_A:0xN0073de50_A:0xP0073de50_A:0xR0073de50_A:0xS0073de50_A:0xT0073de50_A:0xM0073de51_A:0xN0073de51_A:0xO0073de51_A:0xP0073de51_A:0xQ0073de51_A:0xS0073de51_A:0xT0073de51_A:0xM0073de52_A:0xN0073de52_A:0xO0073de52_A:0xR0073de52_A:0xT0073de52_A:0xK0073de53_A:0xK0073de54_A:0xK0073de55_A:0xK0073de56_A:0xK0073de57_A:0xK0073de58_A:0xN0073de59_A:0xO0073de59_A:0xP0073de59_A:0xQ0073de59_A:0xR0073de59_A:0xS0073de59_A:0xT0073de59_A:0xM0073de5a_A:0xN0073de5a_A:0xO0073de5a_A:0xQ0073de5a_A:0xR0073de5a_A:0xS0073de5a_A:0xT0073de5a_A:0xM0073de5b_A:0xN0073de5b_A:0xP0073de5b_A:0xQ0073de5b_A:0xR0073de5b_A:0xS0073de5b_A:0xT0073de5b_A:0xK0073de5c_A:0xK0073de5d_A:0xK0073de5e_A:0xM0073de5f_A:0xN0073de5f_A:0xO0073de5f_A:0xP0073de5f_A:0xQ0073de5f_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 	*/
 
@@ -7929,20 +7905,25 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-		"id": 115333, "isLowerBetter": false, 
-		"leaderboardFormat": "VALUE",
-		"devInfo": "Best Stats - Chapter 1 - Normal"},
+	// "lb_Chapter1Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// "id": 115333, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Chapter 1 - Normal"},
 
-	"lb_ShowdownFastestBounty": { // VERIFIED
+	// "lb_Chapter27Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118221, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Chapter 27 - Normal"},
+
+	"lb_ShowdownFastestBounty": { // VERIFIED - Starts at beginning of match with timer RAoverlay
 		"id": 112549, "isLowerBetter": true, 
 		"leaderboardFormat": "SECS",
 		"devInfo": "Bounty Hunter match with 3 CPUs: Fastest to collect 15k"},
-	"lb_ShowdownLargestBounty": { // VERIFIED
+	"lb_ShowdownLargestBounty": { // VERIFIED - Instant Start/Submit at end of Showdown match
 		"id": 112550, "isLowerBetter": false, 
 		"leaderboardFormat": "VALUE",
 		"devInfo": "Sundown match with 3 CPUs: largest bounty collection in 10 min"},
-	"lb_ShowdownBestCombo": { // VERIFIED
+	"lb_ShowdownBestCombo": { // VERIFIED - Instant Start/Submit at end of Showdown match
 		"id": 112548, "isLowerBetter": false, 
 		"leaderboardFormat": "VALUE",
 		"devInfo": "Any Showdown match with 3 CPUs: highest combo"},
@@ -7953,25 +7934,19 @@ leaderboards_coreData = {
 // ===================================
 //	- For leaderboard logic that's reoccuring across multiple triggers
 
-// =========================
-// • Leaderboards TRIGGERS •
-// =========================
-leaderboards_startTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+function leaderboards_generate_FullStartTrigger_ChapterBoard(enum_areaId, enum_difficulty, enum_releaseRegion) {
 		// NOTE: Only Mission Restart works to reset the leaderboard. RetryMenu should not reset the leaderboard as this uses checkpoints
-		const_MISSION_AREA = AREA_Campaign_BullsEye
-		const_DIFFICULTY = DIFFICULTY_Normal
 
 		return 
 		// [1] ==== Core (Alt) Group ====					-> Start when starting the mission from start/restart
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Area(const_MISSION_AREA, enum_releaseRegion)
-				|| !is_StoryCampaignDifficulty(const_DIFFICULTY, enum_releaseRegion))
+				|| !is_Area(enum_areaId, enum_releaseRegion)
+				|| !is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion))
 
 			&& once( // ---2x Once--> Check if player has started mission from start/restart
-				current_TimeSpentInMission(enum_releaseRegion) >= 1.0
-				&& prev_TimeSpentInMission(enum_releaseRegion) < 1.0)
+				current_TimeSpentInMission(enum_releaseRegion) >= 7.0
+				&& prev_TimeSpentInMission(enum_releaseRegion) < 7.0)
 			&& is_AreaState_InGame(enum_releaseRegion)
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Single Player Campaign (eg. quit to main menu)
@@ -7993,204 +7968,43 @@ leaderboards_startTriggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_RewardMenu_Replay_confirm(enum_releaseRegion))
-		}),
+		}
 
-	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
-		const_HUMAN_PLAYER_INDEX_1 = 1
-		const_CPU_PLAYER_INDEX_2 = 2
-		const_CPU_PLAYER_INDEX_3 = 3
-		const_CPU_PLAYER_INDEX_4 = 4
+function leaderboards_generate_FullCancelTrigger_ChapterBoard(enum_areaId, enum_releaseRegion) => 
+	// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Single Player Campaign (eg. quit to main menu)
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 
-		return 
-		// [1] ==== Core (Alt) Group ====
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
-			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
+	// [2] ==== Cancel (Alt) Group ====		-> Cancel when incorrect AREA_ID is loaded
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Area(enum_areaId, enum_releaseRegion)
 
-			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+	// [3] ==== Cancel (Alt) Group ====		-> Cancel when any cheat is active
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_AnyCheat_active(enum_releaseRegion)
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+	// [4] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_WarningMenu_yes(enum_releaseRegion)
 
-			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
-			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_15K, enum_releaseRegion)
+	// [5] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on RewardMenu->Replay
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_RewardMenu_Replay_confirm(enum_releaseRegion)
+	
+function leaderboards_generate_FullSubmitTrigger_ChapterBoard(enum_areaId, enum_releaseRegion) =>
+	// [1] ==== Core (Alt) Group ==== 	-> Submit when the RewardMenu is rendered
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+		&& once(on_RewardMenu_render_short(enum_releaseRegion))
+		&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
-		
-		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_WarningMenu_yes(enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
-		}),
-	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
-		const_HUMAN_PLAYER_INDEX_1 = 1
-		const_CPU_PLAYER_INDEX_2 = 2
-		const_CPU_PLAYER_INDEX_3 = 3
-		const_CPU_PLAYER_INDEX_4 = 4
-
-		return 
-		// [1] ==== Core (Alt) Group ====
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
-			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
-
-			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
-
-			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
-			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
-
-			&& once(is_AreaState_InGame(enum_releaseRegion))		
-
-			&& once(
-				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
-
-		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
-		
-		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_WarningMenu_yes(enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
-		}),
-	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
-		const_HUMAN_PLAYER_INDEX_1 = 1
-		const_CPU_PLAYER_INDEX_2 = 2
-		const_CPU_PLAYER_INDEX_3 = 3
-		const_CPU_PLAYER_INDEX_4 = 4
-
-		return 
-		// [1] ==== Core (Alt) Group ====
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
-			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
-
-			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
-
-			&& once(is_AreaState_InGame(enum_releaseRegion))
-
-			&& once(
-				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
-
-			&& current_HighestCombo_Showdown(enum_releaseRegion) > 0
-
-		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
-		
-		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_WarningMenu_yes(enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
-	}),
-	}
-leaderboards_cancelTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		return 
-		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Single Player Campaign (eg. quit to main menu)
+	// [2] ==== Alt Reset Group ==== 	-> Reset when RewardMenu is not rendered
+		|| never_toAlt( 
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& !is_RewardMenu_displayed_short(enum_releaseRegion))
 
-		// [2] ==== Cancel (Alt) Group ====		-> Cancel when any cheat is active
-			|| is_ReleaseRegion(enum_releaseRegion)
-			&& is_AnyCheat_active(enum_releaseRegion)
-
-		// [3] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| is_ReleaseRegion(enum_releaseRegion)
-			&& on_WarningMenu_yes(enum_releaseRegion)
-
-		// [4] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on RewardMenu->Replay
-			|| is_ReleaseRegion(enum_releaseRegion)
-			&& on_RewardMenu_Replay_confirm(enum_releaseRegion)
-		}),
-	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		is_ReleaseRegion(enum_releaseRegion)
-		&& (
-			!is_Playing_ShowdownMode_long(enum_releaseRegion)
-			|| on_WarningMenu_yes(enum_releaseRegion)
-			|| on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
-		)),
-	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		always_false()),
-	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		always_false()),
-	}
-leaderboards_submitTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_MISSION_AREA = AREA_Campaign_BullsEye
-		return 
-		// [1] ==== Core (Alt) Group ==== 	-> Submit when the RewardMenu is rendered
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
-			&& once(on_RewardMenu_render_short(enum_releaseRegion))
-			&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
-
-		// [2] ==== Alt Reset GRoup==== 	-> Reset when RewardMenu is not rendered
-			|| never_toAlt( 
-				is_ReleaseRegion(enum_releaseRegion)
-				&& !is_RewardMenu_displayed_short(enum_releaseRegion))
-		}),
-	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		is_ReleaseRegion(enum_releaseRegion)
-		&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion)),
-	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		always_true()),
-	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		always_true()),
-	}
-
-//-----------------------------valueMeasures----------------------------
-function lb_template_ValueMeasure() { // Template
-	function valueMeasure(enum_releaseRegion) => measured(		
-		repeated(100, always_false()), // <-- Logic goes here
-		when = is_ReleaseRegion(enum_releaseRegion))
-
-	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
-		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
-	return max_of(let_array_valueMeasures)}
-//---------------------------------
-function lb_Chapter1Normal_ValueMeasure() {
+function leaderboards_generate_FullValueMeasure_ChapterBoard() {
 	function valueMeasureDuringGameplay(enum_releaseRegion) => 
 		measured(
 			current_Cash(enum_releaseRegion)
@@ -8207,7 +8021,13 @@ function lb_Chapter1Normal_ValueMeasure() {
 			when = is_ReleaseRegion(enum_releaseRegion))
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
-			-> OUTPUT (PAL)
+			-> Serialized Logic (PAL) - [Value Group]
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f7.0_I:0xX007448d8_B:0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_K:{recall}*0xX0000587c_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054c7cc=1397050451
+			
+			-> Serialized Logic (NTSCU) - [Alt 2 Group]
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f7.0_I:0xX00742158_B:0xX00000008_I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_K:{recall}*0xX0000587c_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054a04c=1398099027
+			
+			-> Defined Logic (PAL) - [Value Group]
 				1	AddAddress	Mem		32bit	0x763070
 				2	AddAddress	Mem		32bit	0x36c
 				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
@@ -8252,7 +8072,7 @@ function lb_Chapter1Normal_ValueMeasure() {
 				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
 
 
-			-> OUTPUT (NTSCU)
+			-> Defined Logic (NTSCU) [Alt 2 Group]
 				1	AddAddress	Mem		32bit	0x7608f0
 				2	AddAddress	Mem		32bit	0x36c
 				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
@@ -8295,6 +8115,7 @@ function lb_Chapter1Normal_ValueMeasure() {
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 
 				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+			
 			*/
 
 	function valueMeasureSubmitted(enum_releaseRegion) => 
@@ -8316,8 +8137,14 @@ function lb_Chapter1Normal_ValueMeasure() {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_RewardMenu_displayed_short(enum_releaseRegion))
 
-		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
-			-> OUTPUT (PAL)
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall 
+			-> Serialized Logic (PAL) - [Alt 1 Group]
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f7.0_I:0xX0054caf0_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000834*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000844*f1500.0_M:{recall}_Q:0xX0054c7cc=1397050451_I:0xX0054caf0_Q:0xX000002d0>0
+			
+			-> Serialized Logic (NTSCU) - [Alt 3 Group]
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f7.0_I:0xX0054a370_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM000007f4*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000804*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_M:{recall}_Q:0xX0054a04c=1398099027_I:0xX0054a370_Q:0xX000002d0>0
+			
+			-> Defined Logic (PAL) - [Alt 1 Group]
 				1	AddAddress	Mem		32bit	0x763070
 				2	AddAddress	Mem		32bit	0x36c
 				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
@@ -8386,7 +8213,7 @@ function lb_Chapter1Normal_ValueMeasure() {
 				57	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
 
 
-			-> OUTPUT (NTSCU)
+			-> Defined Logic (NTSCU) - [Alt 3 Group]
 				1	AddAddress	Mem		32bit	0x7608f0
 				2	AddAddress	Mem		32bit	0x36c
 				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
@@ -8461,6 +8288,191 @@ function lb_Chapter1Normal_ValueMeasure() {
 		array_push(let_array_valueMeasures, valueMeasureSubmitted(enum_releaseRegion))
 	}
 	return max_of(let_array_valueMeasures)}
+
+
+// =========================
+// • Leaderboards TRIGGERS •
+// =========================
+leaderboards_startTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_15K, enum_releaseRegion)
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
+			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))		
+
+			&& once(
+				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+				&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+		}),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
+		const_HUMAN_PLAYER_INDEX_1 = 1
+		const_CPU_PLAYER_INDEX_2 = 2
+		const_CPU_PLAYER_INDEX_3 = 3
+		const_CPU_PLAYER_INDEX_4 = 4
+
+		return 
+		// [1] ==== Core (Alt) Group ====
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Once a cheat is active
+				is_AnyCheat_active(enum_releaseRegion)))			
+
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& once(
+				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+				&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
+
+			&& current_HighestCombo_Showdown(enum_releaseRegion) > 0
+
+		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		
+		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_WarningMenu_yes(enum_releaseRegion))
+
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
+	}),
+	}
+leaderboards_cancelTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Showdown mode
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Playing_ShowdownMode_long(enum_releaseRegion) 
+
+		// [2] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_WarningMenu_yes(enum_releaseRegion)
+
+		// [3] ==== Cancel (Alt) Group ====		-> Cancel when confirming MultiplayerRewardMenu->Replay
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
+		),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()),
+	}
+leaderboards_submitTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion)
+		&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion)),
+	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()),
+	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()),
+	}
+
+//-----------------------------valueMeasures----------------------------
+function lb_template_ValueMeasure() { // Template
+	function valueMeasure(enum_releaseRegion) => measured(		
+		repeated(100, always_false()), // <-- Logic goes here
+		when = is_ReleaseRegion(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_ShowdownFastestBounty_ValueMeasure() {
 	function valueMeasure(enum_releaseRegion) => measured(
@@ -8493,7 +8505,8 @@ function lb_ShowdownBestCombo_ValueMeasure() {
 	return max_of(let_array_valueMeasures)}
 
 leaderboards_valueMeasures = { 
-	"lb_Chapter1Normal": lb_Chapter1Normal_ValueMeasure(),
+	"lb_Chapter1Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter27Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
 
 	"lb_ShowdownFastestBounty": lb_ShowdownFastestBounty_ValueMeasure(),
 	"lb_ShowdownLargestBounty": lb_ShowdownLargestBounty_ValueMeasure(),
@@ -8502,10 +8515,12 @@ leaderboards_valueMeasures = {
 // =====================
 // • Leaderboards TEXT •
 // =====================
-leaderboards_titles = { // TODO Leaderboards: creative text
+leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Bull's Eye Bounty Board - Normal"},
+	"lb_Chapter1Normal":					{"en": "'Bull's Eye' Normal Bounty Board"},
+
+	"lb_Chapter27Normal":					{"en": "'Fall From Grace' Normal Bounty Board"},	
 
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
 	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
@@ -8514,7 +8529,8 @@ leaderboards_titles = { // TODO Leaderboards: creative text
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Master Chapter 1, 'Bull's Eye, with deadly precision, steadfast resilience, swift alacrity and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter1Normal":					{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter27Normal":					{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match vs 3 CPU's as quickly as possible"},
 	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match vs 3 CPU's"},
