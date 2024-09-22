@@ -416,7 +416,7 @@ memory_dataStructures = {
 			"32Bit_HighNoonRoundsWon": { 
 				"addAddressChain": [0x30, 0x430]},
 			"32Bit_CashCollected": { 
-				"addAddressChain": [0x30, 0x490]}}
+				"addAddressChain": [0x2B4, 0xC]}}
 		},
 	"Struct_MultiplayerRewardMenu_Data": {
 		"pointerChains": {
@@ -557,7 +557,7 @@ memory_addresses = {
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x766038, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x761138, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
