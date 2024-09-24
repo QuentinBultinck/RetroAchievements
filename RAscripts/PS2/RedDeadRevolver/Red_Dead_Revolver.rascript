@@ -8274,7 +8274,7 @@ function leaderboards_generate_FullSubmitTrigger_ChapterBoard(enum_areaId, enum_
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_RewardMenu_displayed_short(enum_releaseRegion))
 
-function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update ValueMeasures for VeryHard && RedWood // Normal && Hard are already published
+function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update ValueMeasures for VeryHard && RedWood via RAIntegration UI // Normal && Hard are already published
 	function valueMeasureDuringGameplay(enum_releaseRegion) => 
 		measured(
 			current_Cash(enum_releaseRegion)
@@ -8292,10 +8292,10 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
 			-> Serialized Logic (PAL) - [Value Group]
-				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f12.0_I:0xX007448d8_B:{recall}*0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_K:{recall}*0xX0000587c_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054c7cc=1397050451			
-				
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX007448d8_B:{recall}*0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_K:{recall}*0xX0000587c_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054c7cc=1397050451
+
 			-> Serialized Logic (NTSCU) - [Alt 2 Group]
-				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f12.0_I:0xX00742158_B:{recall}*0xX00000008_I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_K:{recall}*0xX0000587c_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054a04c=1398099027
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX00742158_B:{recall}*0xX00000008_I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_K:{recall}*0xX0000587c_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054a04c=1398099027
 
 			-> Defined Logic (PAL) - [Value Group]
 				1	AddAddress	Mem		32bit	0x763070
@@ -8304,22 +8304,22 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				4	AddAddress	Mem		32bit	0x763070
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			12.0			|accuracyWeighted + 12.0|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
 
 				9	AddAddress	Mem 	32-bit 	0x7448d8
 				10	SubSource 	Recall						*	Mem 	32-bit 	0x8			|SavedCash (before mission start)|
 				11	AddAddress	Mem 	32-bit 	0x562a20
 				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
 				13	AddAddress	Mem 	32-bit 	0x562a20	
-				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 12.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 21.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
 
 				15	AddAddress	Mem		32bit	0x763070
 				16	AddAddress	Mem		32bit	0x36c
 				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				18	AddAddress	Mem		32bit	0x7a0788
 				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				21	AddAddress	Mem		32bit	0x763070
 				22	AddAddress	Mem		32bit	0x36c
@@ -8327,7 +8327,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				24	AddAddress	Mem		32bit	0x763070
 				25	AddAddress	Mem		32bit	0x36c
 				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted 
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
 				28	AddAddress	Mem		32bit	0x763070
@@ -8336,7 +8336,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				31	AddAddress	Mem		32bit	0x763070
 				32	AddAddress	Mem		32bit	0x36c
 				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted 
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 
 				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
@@ -8349,22 +8349,22 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				4	AddAddress	Mem		32bit	0x7608f0
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			12.0			|accuracyWeighted + 12.0|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
 
 				9	AddAddress	Mem 	32-bit 	0x7448d8
 				10	SubSource 	Recall						*	Mem 	32-bit 	0x8			|SavedCash (before mission start)|
 				11	AddAddress	Mem 	32-bit 	0x562a20
 				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
 				13	AddAddress	Mem 	32-bit 	0x562a20	
-				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 12.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 21.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
 
 				15	AddAddress	Mem		32bit	0x7608f0
 				16	AddAddress	Mem		32bit	0x36c
 				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				18	AddAddress	Mem		32bit	0x79e008
 				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				21	AddAddress	Mem		32bit	0x7608f0
 				22	AddAddress	Mem		32bit	0x36c
@@ -8372,7 +8372,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				24	AddAddress	Mem		32bit	0x7608f0
 				25	AddAddress	Mem		32bit	0x36c
 				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted 
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
 				28	AddAddress	Mem		32bit	0x7608f0
@@ -8381,7 +8381,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				31	AddAddress	Mem		32bit	0x7608f0
 				32	AddAddress	Mem		32bit	0x36c
 				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted 
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 
 				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
@@ -8409,11 +8409,11 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 
 		/* MANUAL_CONSTRUCTION Measured with Remember/Recall 
 			-> Serialized Logic (PAL) - [Alt 1 Group]
-				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f12.0_I:0xX0054caf0_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000834*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000844*f1500.0_M:{recall}_Q:0xX0054c7cc=1397050451_I:0xX0054caf0_Q:0xX000002d0>0
-
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX0054caf0_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000834*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000844*f1500.0_M:{recall}_Q:0xX0054c7cc=1397050451_I:0xX0054caf0_Q:0xX000002d0>0
+			
 			-> Serialized Logic (NTSCU) - [Alt 3 Group]
-				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f3.0_K:{recall}+f12.0_I:0xX0054a370_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM000007f4*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000804*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_M:{recall}_Q:0xX0054a04c=1398099027_I:0xX0054a370_Q:0xX000002d0>0
-
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX0054a370_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM000007f4*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000804*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_M:{recall}_Q:0xX0054a04c=1398099027_I:0xX0054a370_Q:0xX000002d0>0
+			
 			-> Defined Logic (PAL) - [Alt 1 Group]
 				1	AddAddress	Mem		32bit	0x763070
 				2	AddAddress	Mem		32bit	0x36c
@@ -8421,21 +8421,21 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				4	AddAddress	Mem		32bit	0x763070
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			12.0		|accuracyWeighted + 12.0|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
 
 				9	AddAddress	Mem		32bit	0x54caf0
 				10	AddAddress	Mem		32bit	0xac
 				11	AddAddress	Mem		32bit	0x34
 				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 12.0)|
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 21.0)|
 
 				14	AddAddress	Mem		32bit	0x763070
 				15	AddAddress	Mem		32bit	0x36c
 				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				17	AddAddress	Mem		32bit	0x7a0788
 				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				20	AddAddress	Mem		32bit	0x763070
 				21	AddAddress	Mem		32bit	0x36c
@@ -8443,7 +8443,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				23	AddAddress	Mem		32bit	0x763070
 				24	AddAddress	Mem		32bit	0x36c
 				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted 
+				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
 																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
 		
 				27	AddAddress	Mem		32bit	0x763070
@@ -8452,7 +8452,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				30	AddAddress	Mem		32bit	0x763070
 				31	AddAddress	Mem		32bit	0x36c
 				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
 																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 				
 				34	AddAddress	Mem		32bit	0x54caf0
@@ -8475,7 +8475,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				51	AddAddress	Mem		32bit	0x24
 				52	AddAddress	Mem		32bit	0x1c
 				53	AddSource	Mem		bit0	0x844		*	Float			1500.0		|BestComboStar = 1500|
-				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
 																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
 
 				55	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
@@ -8490,21 +8490,21 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				4	AddAddress	Mem		32bit	0x7608f0
 				5	AddAddress	Mem		32bit	0x36c
 				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			12.0			|accuracyWeighted + 12.0|	
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|	
 
 				9	AddAddress	Mem		32bit	0x54a370
 				10	AddAddress	Mem		32bit	0xac
 				11	AddAddress	Mem		32bit	0x34
 				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 12.0)|
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 21.0)|
 
 				14	AddAddress	Mem		32bit	0x7608f0
 				15	AddAddress	Mem		32bit	0x36c
 				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
 				17	AddAddress	Mem		32bit	0x79e008
 				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
 
 				20	AddAddress	Mem		32bit	0x7608f0
 				21	AddAddress	Mem		32bit	0x36c
@@ -8520,7 +8520,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				30	AddAddress	Mem		32bit	0x7608f0
 				31	AddAddress	Mem		32bit	0x36c
 				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
 																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
 				
 				34	AddAddress	Mem		32bit	0x54a370
@@ -8543,7 +8543,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() { // TODO update 
 				51	AddAddress	Mem		32bit	0x24
 				52	AddAddress	Mem		32bit	0x1c
 				53	AddSource	Mem		bit0	0x824		*	Float			1500.0		|BestComboStar = 1500|
-				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 12.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
 																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
 
 				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
