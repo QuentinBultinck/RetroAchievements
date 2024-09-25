@@ -3288,7 +3288,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = {
+achievements_coreData = { // TODO rescore set, too low currently
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -8732,7 +8732,8 @@ leaderboards_startTriggers = {
 	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
 	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
+	),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		const_HUMAN_PLAYER_INDEX_1 = 1
 		const_CPU_PLAYER_INDEX_2 = 2
@@ -8800,7 +8801,7 @@ leaderboards_startTriggers = {
 			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
-			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
+			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))		
 
