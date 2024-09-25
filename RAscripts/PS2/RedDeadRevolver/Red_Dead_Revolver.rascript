@@ -8746,7 +8746,7 @@ leaderboards_startTriggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
+				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---4 lines---> Check if playing solo
@@ -8757,7 +8757,8 @@ leaderboards_startTriggers = {
 			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
 			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& repeated(300, // ---BugFix--> Delay necessary because CancelTrigger may be true on_WarningMenu_yes() at same time StartTrigger resets --> so both Cancel and Start true at same time, thus never starts
+				is_AreaState_InGame(enum_releaseRegion))
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
 			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_15K, enum_releaseRegion)
@@ -9035,17 +9036,22 @@ leaderboards_cancelTriggers = {
 	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
 	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+	),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Showdown mode
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_Playing_ShowdownMode_long(enum_releaseRegion) 
 
-		// [2] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [2] ==== Cancel (Alt) Group ====		-> Cancel when a cheat is activated
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& is_AnyCheat_active(enum_releaseRegion) 
+
+		// [3] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_WarningMenu_yes(enum_releaseRegion)
 
-		// [3] ==== Cancel (Alt) Group ====		-> Cancel when confirming MultiplayerRewardMenu->Replay
+		// [4] ==== Cancel (Alt) Group ====		-> Cancel when confirming MultiplayerRewardMenu->Replay
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
 		),
