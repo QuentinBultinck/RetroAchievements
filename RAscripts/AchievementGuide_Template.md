@@ -32,7 +32,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + Resource_3
 
 
-#### General tips for unlocking the achievements in this set
+#### General information and tips for unlocking the achievements in this set
 + General_tip_1
 + General_tip_2
 
@@ -90,7 +90,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=lb_placeholderID>**title_placeholder**</div><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br><b>‣ <u>Start</u></b>: info_about_start_trigger <br><b>‣ <u>Cancel</u></b>: info_about_cancel_trigger <br><b>‣ <u>Submit</u></b>: info_about_submit_trigger <br><b>‣ <u>Measured value</u></b>: info_about_measuredValue |
+| <div id=lb_placeholderID>**title_placeholder**</div><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br><b>‣ <u>Start</u></b>: <br> - info_about_start_trigger <br><br><b>‣ <u>Cancel</u></b>: <br> - info_about_cancel_trigger <br><br><b>‣ <u>Submit</u></b>: <br> - info_about_submit_trigger <br><br><b>‣ <u>Measured value</u></b>: <br> - info_about_measuredValue |
 
 
 [^measured]: **Measured achievement**: This achievement has a measured flag. It will show the measurement popup on screen (e.g. 7/12). It will unlock the achievement once the measurement target has been hit (e.g. 12/12).

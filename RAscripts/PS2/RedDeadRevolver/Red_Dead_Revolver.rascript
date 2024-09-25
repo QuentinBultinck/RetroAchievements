@@ -416,12 +416,10 @@ memory_dataStructures = {
 			"32Bit_HighNoonRoundsWon": { 
 				"addAddressChain": [0x30, 0x430]},
 			"32Bit_CashCollected": { 
-				"addAddressChain": [0x30, 0x490]}}
+				"addAddressChain": [0x2B4, 0xC]}}
 		},
 	"Struct_MultiplayerRewardMenu_Data": {
 		"pointerChains": {
-			"32BitPointer_28": {
-				"addAddressChain": [0x28]},
 			"ASCII_Flag_IsPlayer1Winner": {
 				"addAddressChain": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
@@ -443,14 +441,16 @@ memory_dataStructures = {
 					RELEASE_REGION_EUR: 0x30,
 					RELEASE_REGION_USA: 0x1B0}},
 			"ASCII_Flag_IsMultiplayerRewardMenuDisplayed": {
-				"addAddressChain": [0x28, 0x0]},
-		}},
-	"Struct_MultiplayerRewardMenu_UI_Controller": {
-		"pointerChains": {
+				"addAddressChain": [0x28],
+				"offsetToPointedToMember": 0x0},
+			"BitFlag_IsFirstPopupMenuDisplayed": {
+				"addAddressChain": {
+					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0xF44],
+					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0xB74]}},
 			"32Bit_HighlightedPopupMenuItem": {
 				"addAddressChain": {
-					RELEASE_REGION_EUR: [0x1C, 0x1414],
-					RELEASE_REGION_USA: [0x1C, 0x1044]}},
+					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0x1414],
+					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0x1044]}},
 		}},
 	"Struct_ShowdownMode_Settings": {
 		"offsetToMember": {
@@ -550,14 +550,14 @@ memory_addresses = {
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL},
+		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // Unused
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x766038, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
+		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x761138, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
 		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
 		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
@@ -739,12 +739,14 @@ function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	return all_of(let_array_comparisons, c => c)}
 
 function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
-	let_array_comparisons = []
-	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
-		let_substring = substring(string_s, let_stepBy4Index, 4)
-		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
-	}
-	return none_of(let_array_comparisons, c => c)}
+	/* NOTE: Consider following ASCII "ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII		
+		Example logic:
+			0xA != "ABCD"
+			|| 0xB != "EF"
+	*/
+	return __ornext( // --> __ornext() as otherwise RATools may generate unnecessary alt groups for these single orNext requirements
+		!ASCII_Equals(memAddr_ASCII, string_s, wrapper)
+	)}
 
 function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 	ASCII_Equals(memAddr_ASCII, string_s)
@@ -762,8 +764,9 @@ function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
 
 function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
-	ASCII_Equals(memAddr_ASCII, string_s) && 
-	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+	ASCII_Equals(memAddr_ASCII, string_s)  
+	&& wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s)
+	
 
 // .......................
 // ◦ PLAYER INPUT READER ◦
@@ -2263,65 +2266,6 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
 // ------------------------RstarCheat------------------------------ 
-function is_RStar_Cheat_Active_bis(enum_releaseRegion) { // When using with PauseIf -> ResetNextIfs can be replaced by 1 ResetNextIf when the active PlayerProfile changes or when the PlayerProfile is erased (First letter of PlayerProfileName becomes 0x0)
-	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
-	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
-		
-	/* is Rstar cheat active + Need ResetNextIf on every hitcount
-	----------------------- Checking 7-byte ASCII for "Rstar__"
-		0xA == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
-		0xA == "r"    	(+1)
-		0xB == "S"    	(+1) --2 lines--> only 1 of these can be true at one given time
-		0xB == "s"    	(+1)
-		...same for "_sta_" chars...
-		0xE == "R"    	(+1) --2 lines--> only 1 of these can be true at one given time
-		0xE == "r"    	(+1)
-		0xF == " " 		(+1) --2 lines--> only 1 of these can be true at one given time
-		0xF == 0x0		(+1)
-		0x10 == " " 	(+1) --2 lines--> only 1 of these can be true at one given time
-		0x10 == 0x0		(+1)
-		val == 7       --> Rstar cheat IS active
-	*/
-	
-	return 
-		tally(7, [
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "R")),
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName, "r")) && // lowercase check r
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName, "r")),
-				
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "S")) && // uppercase check S -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "S")),
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x1, "s")) && // lowercase check s
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x1, "s")),
-
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "T")) && // uppercase check T -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "T")), 
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x2, "t")) && // lowercase check t
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x2, "t")),
-
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "A")) && // uppercase check A -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "A")),
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x3, "a")) && // lowercase check a
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x3, "a")),
-
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "R")) && // uppercase check R -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "R")),
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x4, "r")) && // lowercase check r
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x4, "r")),
-
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x5, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x5, " ")),
-			once(never(byte(let_memAddr_PlayerProfileName + 0x5) != 0x0) && // 0x0 check
-				byte(let_memAddr_PlayerProfileName + 0x5) == 0x0),			
-
-			once(never(is_ASCII_notEqualTo(let_memAddr_PlayerProfileName + 0x6, " ")) && // ASCII space check -- this once or below once can be true, not both at same time
-				is_ASCII_EqualTo(let_memAddr_PlayerProfileName + 0x6, " ")),
-			once(never(byte(let_memAddr_PlayerProfileName + 0x6) != 0x0) && // 0x0 check
-				byte(let_memAddr_PlayerProfileName + 0x6) == 0x0),
-		])}
-
 function is_RStar_Cheat_active(enum_releaseRegion) {
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
 	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
@@ -2528,7 +2472,7 @@ function current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) => // 
 		current_Cash() - current_PlayerProfile_SavedCash()
 		+ (current_CashCombo() * current_CashComboMultiplier())
 
-		-> OUTPUT (PAL)
+		-> Logic (PAL)
 			AddAddress	Mem 32-bit 0x7448d8
 			SubSource 	Mem 32-bit 0x8
 			AddAddress	Mem 32-bit 0x562a20
@@ -2544,7 +2488,7 @@ function current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) =>
 		current_Cash(enum_releaseRegion) 
 		+ (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
 
-		-> OUTPUT (PAL)
+		-> Logic (PAL)
 			AddAddress	Mem 32-bit 0x562a20
 			AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
 			AddAddress	Mem 32-bit 0x562a20
@@ -2661,7 +2605,7 @@ function current_Calculated_Accuracy(enum_releaseRegion) => // MANUAL_CONSTRUCTI
 		remember(0.0 + current_ShotsFired(enum_releaseRegion)) // <-- to force float
 		current_ShotsHit(enum_releaseRegion) / recall() 
 
-		-> OUTPUT [PAL]
+		-> Logic [PAL]
 			AddAddress	Mem		32-bit	0x763070
 			AddAddress	Mem		32-bit	0x36c
 			Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -2684,7 +2628,7 @@ function current_Calculated_Accuracy_Showdown(enum_releaseRegion) => // MANUAL_C
 		remember(0.0 + current_ShotsFired_Showdown(enum_releaseRegion)) // <-- to force float
 		current_ShotsHit_Showdown(enum_releaseRegion) / recall() 
 
-		-> OUTPUT [PAL]
+		-> Logic [PAL]
 			AddAddress	Mem		32-bit	0x763070
 			AddAddress	Mem		32-bit	0x36c
 			Remember	Float			0.0			+	Mem		32-bit	0x494
@@ -2721,7 +2665,7 @@ function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MAN
 	/* MANUAL_CONSTRUCTION: Remember + Recall
 		current_PlayerMaxHP(enum_releaseRegion) / current_DamageTaken(enum_releaseRegion)
 
-		-> OUTPUT (PAL)
+		-> Logic (PAL)
 			AddAddress	Mem		32-bit	0x00763070
 			AddAddress	Mem		32-bit	0x18
 			Remember	Mem		Float	0x14
@@ -3163,11 +3107,12 @@ function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_powerUpsSetting}
 
 // --------------------MultiplayerRewardMenu------------------------
+ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpReward" // Full string: "mpRewards_new3"
+ASCII_FLAG_IsPlayerWinner = "Winner"
+
 function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
-		util_throwError(format("Player index: {0} is not in valid range"))
-		
-	ASCII_FLAG_IsPlayerWinner = "Winner"
+		util_throwError(format("Player index: {0} is not in valid range"))	
 	
 	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
@@ -3176,41 +3121,50 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
 
-function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
+function ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
-	return let_memAccessor_InnerPointer > 0}
-
-function on_MultiplayerRewardMenu_render_short(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_InnerPointer = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "32BitPointer_28", let_memAddr_BasePointer, accessor = dword)
-	return 
-		let_memAccessor_InnerPointer > 0 
-		&& prev(let_memAccessor_InnerPointer) == 0}
-
-function on_MultiplayerRewardMenu_render_long(enum_releaseRegion) {
-	ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpRewards_new3"
-
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAddr_ASCII = memory_generateAddAddressPointerChain(
+	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
 		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_BasePointer)
+	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember("Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed")
+	return let_pointerChainTo_ASCII + let_offsetTo_ASCII}
+
+function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
+	let_memAddr_ASCII = ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion)
+	return is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+
+function is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion) {
+	let_memAddr_ASCII = ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion)
+	return is_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+
+function on_MultiplayerRewardMenu_render(enum_releaseRegion) {
+	let_memAddr_ASCII = ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion)
 	return 
-		is_ASCII_EqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)
-		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+		on_ASCII_changeTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
+
+function is_MultiplayerRewardMenu_FirstPopupMenu_displayed(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsFirstPopupMenuDisplayed == 1}
+
+function on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, enum_releaseRegion, accessor = bit0)
+	return let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
 
 function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
-	const_REPLAY = 0
+	const_MENU_ITEM_Replay = 0
 
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_UI_Controller", enum_releaseRegion)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain_byReleaseRegion(
-		"Struct_MultiplayerRewardMenu_UI_Controller", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
+		"Struct_MultiplayerRewardMenu_Data", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
 		enum_releaseRegion, accessor = dword)
-	return let_memAccessor_HighlightedMenuItem == const_REPLAY}
+	return let_memAccessor_HighlightedMenuItem == const_MENU_ITEM_Replay}
 
 function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) => 
 	is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+	&& is_MultiplayerRewardMenu_FirstPopupMenu_displayed(enum_releaseRegion)
 	&& is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion)
 	&& is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion)
 
@@ -3334,7 +3288,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = { // TODO update all achievements (regarding CheatProtection && on_RewardMenu_Replay_Confirm())
+achievements_coreData = { // TODO rescore set, too low currently
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3439,8 +3393,8 @@ achievements_coreData = { // TODO update all achievements (regarding CheatProtec
 			"id": 455176, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// 	"id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
+			// "id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
 		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
@@ -3480,7 +3434,7 @@ achievements_coreData = { // TODO update all achievements (regarding CheatProtec
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
-	"c_BountyHunter": { // QA category c_BountyHunter
+	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements; Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
@@ -3680,7 +3634,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 // ------------------ChapterCompletion----------------------
-function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_areaId, enum_releaseRegion) =>
+function achievements_generate_FullTrigger_ChapterCompletion(enum_areaId, enum_releaseRegion) =>
 	// [1] ==== Core (Alt) Group ====
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(!is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -3701,11 +3655,18 @@ function achievements_generate_FullTrigger_ChapterCompletion_anyRating(enum_area
 				|| !is_Area(enum_areaId, enum_releaseRegion)
 			))
 
-	// [3] ==== Alt Pause Lock Reset Group ==== 	-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+	// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 		// NOTE: Don't reset on_RetryMenu_yes(), only on mission restart
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
-			&& on_WarningMenu_yes(enum_releaseRegion))
+			&& once(on_WarningMenu_yes(enum_releaseRegion))
+			&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
+
+	// [4] ==== Alt Pause Lock Reset Group ==== 	-> Reset when pressing 'yes' on RewardMenu->Replay
+	|| never_toAlt(
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
+		&& is_PlayerPosition_atMissionLoadingPoint(enum_areaId, enum_releaseRegion))
 
 // -------------------UnlockWeapons---------------------
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
@@ -3808,45 +3769,45 @@ achievements_triggers = {
 	// 	),
 
 	"a_CompleteChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BullsEye, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_BullsEye, enum_releaseRegion)),
 	"a_CompleteChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_BountyHunter, enum_releaseRegion)),
 	"a_CompleteChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
 	"a_CompleteChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_Railroaded, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_Railroaded, enum_releaseRegion)),
 	"a_CompleteChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
 	"a_CompleteChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FreakShow, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_FreakShow, enum_releaseRegion)),
 	"a_CompleteChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_RogueValley, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_RogueValley, enum_releaseRegion)),
 	"a_CompleteChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_TheCemetery, enum_releaseRegion)),
 	"a_CompleteChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_RangeWar, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_RangeWar, enum_releaseRegion)),
 	"a_CompleteChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_SaloonFight, enum_releaseRegion)),
 	"a_CompleteChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_TheTraitor, enum_releaseRegion)),
 	"a_CompleteChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
 	"a_CompleteChapter15": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BearMountain, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_BearMountain, enum_releaseRegion)),
 	"a_CompleteChapter17": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_TheMine, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_TheMine, enum_releaseRegion)),
 	"a_CompleteChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_HellPass, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_HellPass, enum_releaseRegion)),
 	"a_CompleteChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FortDiego, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_FortDiego, enum_releaseRegion)),
 	"a_CompleteChapter22": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
 	"a_CompleteChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_BattleFinale, enum_releaseRegion)),
 	"a_CompleteChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_Siege, enum_releaseRegion)),
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_Siege, enum_releaseRegion)),
 	"a_CompleteChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_ChapterCompletion_anyRating(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+		achievements_generate_FullTrigger_ChapterCompletion(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 	),
 	// "a_CompleteStoryNormal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // DISABLED - Not incorporated in set as this has no cheat protection
 			// // ==== Core (Alt) Group ====
@@ -4054,15 +4015,19 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(is_AreaState_InGame(enum_releaseRegion)) 
-			&& current_Calculated_CashDuringMission(enum_releaseRegion) >= const_CASH_TARGET // WARNING - RATools cannot generate this sumOf correctly, thus this check is manually edited in via RAIntegration
+			&& current_Calculated_CashDuringMission(enum_releaseRegion) >= const_CASH_TARGET
 			/* MANUAL_CONSTRUCTION sumOf
-				OUTPUT (PAL)
+				-> Logic (PAL)
+					I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_0xX0000587c>=50000
+
 					AddAddress	Mem 32-bit 0x562a20
 					AddSource 	Mem 32-bit 0x5884 		* Mem 32-bit 0x5888
 					AddAddress	Mem 32-bit 0x562a20
 								Mem 32-bit 0x587c	>= Val const_CASH_TARGET
 
-				OUTPUT (NTSCU)
+				-> Logic (NTSCU)
+					I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_0xX0000587c>=50000
+
 					AddAddress	Mem 32-bit 0x5602a0
 					AddSource 	Mem 32-bit 0x5884 		* Mem 32-bit 0x5888
 					AddAddress	Mem 32-bit 0x5602a0
@@ -4081,12 +4046,15 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& on_CashResetToSavedCash(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
+				&& on_CashResetToSavedCash(enum_releaseRegion))
 		}),
 	"a_PerfectAccuracy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_DESIRED_ACCURACY = 0.9 // 90%
-		let_array_AllowedAccuracyStrings = [
-			"90%", "91%", "92%", "93%", "94%", "95%", "96%", "97%", "98%", "99%", 
-			"100%"]
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4104,7 +4072,9 @@ achievements_triggers = {
 			&& once(on_RewardMenu_render_short(enum_releaseRegion))			
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4113,7 +4083,9 @@ achievements_triggers = {
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
 
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4121,14 +4093,6 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
-				*/
-
-				/* This commented code could replace above sumOf line, but this logic contains more lines
-					-----------------------------------------------------------------------------------
-					&& tally_of(let_array_AllowedAccuracyStrings, 1, // <---TallyOf--- checks accuracy string at RewardMenu
-						string_accuracy => once(
-							is_RewardMenu_displayed_short(enum_releaseRegion)
-							&& is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion)))
 				*/
 			&& trigger_when(
 				repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
@@ -4163,7 +4127,7 @@ achievements_triggers = {
 				&& on_CashResetToSavedCash(enum_releaseRegion))
 		}),
 	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====
+		// [1] ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
 			&& is_Area(AREA_Campaign_BullsEye, enum_releaseRegion)
@@ -4177,7 +4141,7 @@ achievements_triggers = {
 			&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
 			&& trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ==== 	-> Reset when the shooting tutorial starts
+		// [2] ==== Alt Pause Lock Reset Group ==== 	-> Reset when the shooting tutorial starts
 			|| never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
@@ -4190,7 +4154,7 @@ achievements_triggers = {
 		const_CURLY_CASH_PICKUP_AREA_THRESHOLD = 8.0
 
 		return 
-		// ==== Core (Alt) Group ====			
+		// [1] ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -4212,22 +4176,13 @@ achievements_triggers = {
 			
 			&& trigger_when(achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion))
 
-		// ==== Alt Reset Group ====  Reset when not in correct Area
+		// [2] ==== Alt Reset Group ====  						-> Reset when not in correct Area
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu on mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion)) 
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu>levelRestart or PauseMenu>quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_CASH_TARGET = 1000
@@ -4253,14 +4208,14 @@ achievements_triggers = {
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
-			&& measured(current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) >= const_CASH_TARGET) // WARNING - RATools cannot generate this sumOf correctly, thus this check is manually edited in via RAIntegration
+			&& measured(current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) >= const_CASH_TARGET, 
 				/* MANUAL_CONSTRUCTION of Measured(sumOf)
-					OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX007448d8_B:0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_M:0xX0000587c>=1000
+					
 						AddAddress	Mem 32-bit 0x7448d8
 						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x562a20
@@ -4268,7 +4223,9 @@ achievements_triggers = {
 						AddAddress	Mem 32-bit 0x562a20
 						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 					
-					OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX00742158_B:0xX00000008_I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_M:0xX0000587c>=1000
+
 						AddAddress	Mem 32-bit 0x742158
 						SubSource 	Mem 32-bit 0x8									|- SavedCash (before mission start)|
 						AddAddress	Mem 32-bit 0x5602a0
@@ -4276,6 +4233,8 @@ achievements_triggers = {
 						AddAddress	Mem 32-bit 0x5602a0
 						Measured	Mem 32-bit 0x587c	>= Val const_CASH_TARGET	|+ CurrentCash (during gameplay)|
 				*/
+				when = once(on_PlayerReset_atMissionStartPoint(AREA_Campaign_BullsEye, enum_releaseRegion)))
+				
 			&& trigger_when(always_false())	
 
 		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -4283,19 +4242,10 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
 
-		// [4] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
-
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_BullsEye, enum_releaseRegion))
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(AREA_Campaign_BullsEye, enum_releaseRegion)
 		}),	
-	"a_ChallengeChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_BountyHunter
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_BiteTheBullet, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
@@ -4315,32 +4265,29 @@ achievements_triggers = {
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion))) 
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-				-> OUTPUT (PAL)
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x36c
-					Remember	Mem		Float	0x70		/	Recall
-					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
 
-				-> OUTPUT (NTSCU)
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x36c
-					Remember	Mem		Float	0x70		/	Recall
-					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
-			*/
-			/* Below commented code is a larger alternative to above Pause Lock (without Remember + Recall)
-			---------------------------
-				&& unless( 
-					tally_of(const_array_MAX_HP_VALUES, 1, float_maxHPvalue => 
-						is_PlayerMaxHP(float_maxHPvalue, enum_releaseRegion)
-						&& current_DamageTaken(enum_releaseRegion) >= float_maxHPvalue * const_MAX_DAMAGE_TAKEN_DECIMAL))
-			*/
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
+
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				*/
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion) 
@@ -4363,29 +4310,35 @@ achievements_triggers = {
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-			/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-				-> OUTPUT (PAL)
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x36c
-					Remember	Mem		Float	0x70		/	Recall
-					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Core (Alt) Logic Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
 
-				-> OUTPUT (NTSCU)
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x14
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x36c
-					Remember	Mem		Float	0x70		/	Recall
-					PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
-			*/
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
+
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x14
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x36c
+						Remember	Mem		Float	0x70		/	Recall
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+				*/
 			
 			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
 				/* MANUAL_CONSTRUCTION (of Measured) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f50.0
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4394,7 +4347,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)
 						
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f50.0
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4423,7 +4378,7 @@ achievements_triggers = {
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -4442,25 +4397,16 @@ achievements_triggers = {
 					never(is_StartChpMenu_active(enum_releaseRegion))
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_UglyStreetFight, enum_releaseRegion))
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(AREA_Campaign_UglyStreetFight, enum_releaseRegion)
 		),	
 	"a_ChallengeChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ==== Core (Alt) Group ====			
+		// [1] ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -4486,22 +4432,13 @@ achievements_triggers = {
 					never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))			
 
-		// ==== Alt Reset Group ====  Reset when not in correct Area
+		// [2] ==== Alt Reset Group ====  Reset when not in correct Area
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(AREA_Campaign_Railroaded, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ==== Reset when pressing 'yes' on retryMenu on mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion)) 
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== Reset when pressing 'yes' on warningMenu accessed through PauseMenu>levelRestart or PauseMenu>quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Railroaded, enum_releaseRegion))
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(AREA_Campaign_Railroaded, enum_releaseRegion)
 		),
 	"a_ChallengeChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		// DEV_NOTE: Alt Group Evaluation Priority
@@ -4544,19 +4481,10 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_FreakShow
 		const_DESIRED_ACCURACY = 0.6 // 60%
 		const_MAX_ACCURACY = 100.0 // 100%
@@ -4575,7 +4503,9 @@ achievements_triggers = {
 
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.6
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4584,7 +4514,9 @@ achievements_triggers = {
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
 									
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.6
+					
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4612,7 +4544,9 @@ achievements_triggers = {
 
 			&& measured(current_Calculated_Accuracy(enum_releaseRegion) >= const_MAX_ACCURACY,
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4622,7 +4556,9 @@ achievements_triggers = {
 						Remember	Recall						*	Float			100.0
 						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
 
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -4690,7 +4626,7 @@ achievements_triggers = {
 		const_array_REQUIRED_CHEAT = [CHEAT_NoHud, CHEAT_NoDistortion, CHEAT_SadStars]
 
 		return
-		// ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -4711,27 +4647,18 @@ achievements_triggers = {
 					never(is_StartChpMenu_active(enum_releaseRegion))
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-		// ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [2]  ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+		// [3]  ==== Alt Reset Group ====  					-> Reset when required cheats are not active
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& is_AnySpecifiedCheats_inactive(const_array_REQUIRED_CHEAT, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_RangeWar
@@ -4791,17 +4718,8 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3] ==== Alt Pause Lock Reset Groups ==== 		-> Reset when pressing 'yes' on retryMenu after mission failure
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_RetryMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
-
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& once(on_WarningMenu_yes(enum_releaseRegion))
-				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
+		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_TheTraitor
@@ -4833,7 +4751,7 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter14": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_SunsetCanyon
 		const_MAX_DAMAGE_TAKEN_DECIMAL = 0.9 // = 90%
 
@@ -4848,8 +4766,10 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-					-> OUTPUT (PAL)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4858,7 +4778,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 						
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4891,8 +4813,10 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-					-> OUTPUT (PAL)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Core (Alt) Logic Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4901,7 +4825,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
 						
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4913,7 +4839,9 @@ achievements_triggers = {
 			
 			&& measured(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0),
 				/* MANUAL_CONSTRUCTION (of Measured) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f90.0
+
 						AddAddress	Mem		32-bit	0x00763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -4922,7 +4850,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						Measured	Recall						>=	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100.0)
 
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f90.0
+
 						AddAddress	Mem		32-bit	0x00763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5307,7 +5237,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+	"a_ChallengeChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		// NOTE: only 1 measured target can be displayed => prefer showing accuracy rating instead of damage taken, because accuracy isn't shown during gameplay, HP bar is shown
 
 		const_MISSION_AREA = AREA_Campaign_FallFromGrace
@@ -5326,8 +5256,10 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-					-> OUTPUT (PAL)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall 	(Same PauseIf as in Alt RAmeasured Handler Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5336,7 +5268,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
 						
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5348,7 +5282,9 @@ achievements_triggers = {
 
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.6
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -5357,7 +5293,9 @@ achievements_triggers = {
 						Remember	Mem		32-bit	0x198		/ 	Recall
 									Recall						>= 	Float			const_DESIRED_ACCURACY
 
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.6
+						
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -5374,7 +5312,7 @@ achievements_triggers = {
 					never(is_StartChpMenu_active(enum_releaseRegion))
 					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 
-		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
@@ -5384,8 +5322,10 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall
-					-> OUTPUT (PAL)
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall 	(Same PauseIf as in Core Alt Group)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5394,7 +5334,9 @@ achievements_triggers = {
 						Remember	Mem		Float	0x70		/	Recall
 						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
 
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5406,7 +5348,9 @@ achievements_triggers = {
 
 			&& measured(current_Calculated_Accuracy(enum_releaseRegion) >= const_MAX_ACCURACY,
 				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -5416,7 +5360,9 @@ achievements_triggers = {
 						Remember	Recall						*	Float			100.0
 						Measured 	Recall						>= 	Float			const_MAX_ACCURACY
 						
-					-> OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x194
@@ -5537,7 +5483,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -5562,8 +5508,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5606,7 +5552,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once killing someone without using knives (Deadeye ability is allowed, as this character's ability also throws knives)
@@ -5633,8 +5579,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5677,7 +5623,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -5702,8 +5648,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -5748,7 +5694,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once flat damage taken exceeds damage allowed; This stops RAmeasured + RAtrigger from showing
@@ -5775,8 +5721,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 			
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current damage taken (as this is otherwise not shown during gameplay), This alt group can never unlock the achievement
@@ -5787,7 +5733,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Once flat damage taken exceeds damage allowed; This stops RAmeasured + RAtrigger from showing
@@ -5796,7 +5742,9 @@ achievements_triggers = {
 			&& measured(
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= (const_MAX_DAMAGE_TAKEN_DECIMAL * 100),
 				/* MANUAL_CONSTRUCTION: Remember + Recall
-					OUTPUT (PAL)
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f250.0
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5806,7 +5754,9 @@ achievements_triggers = {
 						Remember	Recall						*	Float 	100.0
 						Measured	Recall						>=	Float 	(const_MAX_DAMAGE_TAKEN_DECIMAL * 100)
 
-					OUTPUT (NTSCU)
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_K:{recall}*f100.0_M:{recall}>=f250.0
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
@@ -5885,7 +5835,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -5909,8 +5859,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
@@ -5948,7 +5898,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -5973,8 +5923,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6018,7 +5968,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -6048,8 +5998,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6092,7 +6042,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -6117,8 +6067,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6163,7 +6113,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -6188,7 +6138,9 @@ achievements_triggers = {
 
 			&& current_Calculated_Accuracy_Showdown(enum_releaseRegion) >= const_DESIRED_ACCURACY
 			/* MANUAL_CONSTRUCTION (of above line): Remember + Recall
-				-> OUTPUT [PAL]
+				-> Logic (PAL)
+					I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000494_I:0xX00763070_I:0xX0000036c_K:0xX00000498/{recall}_{recall}>=f0.6
+
 					AddAddress	Mem		32-bit	0x763070
 					AddAddress	Mem		32-bit	0x36c
 					Remember	Float			0.0			+	Mem		32-bit	0x494
@@ -6197,7 +6149,9 @@ achievements_triggers = {
 					Remember	Mem		32-bit	0x498		/ 	Recall
 								Recall						>= 	Float			const_DESIRED_ACCURACY
 								
-				-> OUTPUT [NTSCU]
+				-> Logic (NTSCU)
+					I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000494_I:0xX007608f0_I:0xX0000036c_K:0xX00000498/{recall}_{recall}>=f0.6
+
 					AddAddress	Mem		32-bit	0x7608f0
 					AddAddress	Mem		32-bit	0x36c
 					Remember	Float			0.0			+	Mem		32-bit	0x494
@@ -6209,8 +6163,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current accuracy percentage (as this is otherwise not shown in-game), This alt group can never unlock the achievement
@@ -6221,14 +6175,16 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))		
 
 			&& measured(
 				current_Calculated_Accuracy_Showdown(enum_releaseRegion) >= const_MAX_ACCURACY,
 				/* MANUAL_CONSTRUCTION (of measured): Remember + Recall
-					-> OUTPUT [PAL]
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000494_I:0xX00763070_I:0xX0000036c_K:0xX00000498/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x494
@@ -6238,7 +6194,10 @@ achievements_triggers = {
 						Remember	Recall						* 	Float			100.0
 						Measured	Recall						>=	Float			const_MAX_ACCURACY
 
-					-> OUTPUT [NTSCU]
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000494_I:0xX007608f0_I:0xX0000036c_K:0xX00000498/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Float			0.0			+	Mem		32-bit	0x494
@@ -6322,8 +6281,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
@@ -6361,7 +6320,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -6386,8 +6345,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6430,7 +6389,7 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
 				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
@@ -6454,8 +6413,8 @@ achievements_triggers = {
 			
 			&& trigger_when(
 				once(
-					never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
@@ -6776,7 +6735,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter6":					{"en": "In Chapter 6, 'Carnival Life', on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
 	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', on very hard difficulty, with an accuracy of 60% or better"},
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, 'Rogue Valley', on very hard difficulty, with 'Bite the Bullet' cheat enabled"},
-	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty, with following the cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
+	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty, with the following cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
 	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty, with a full health bar at the end"},
 	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty, with at least 5 allied cannons remaining"},
@@ -7307,6 +7266,7 @@ function rp_Showdown_HighNoon(enum_releaseRegion) {
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& current_ShowdownPlayer_HighNoonRoundsWon(1, enum_releaseRegion) <= SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers 
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7326,6 +7286,7 @@ function rp_Showdown_Sundown(enum_releaseRegion) {
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& current_ShowdownPlayer_CashCollected(1, enum_releaseRegion) <= 999999 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers; 999 999 cash is max displayable value
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7344,7 +7305,9 @@ function rp_Showdown_BountyHunt(enum_releaseRegion) {
 		&& is_ShowdownPlayer_Human(1, enum_releaseRegion) // <--4 Lines--- Checks if playing solo, without other HumanPlayer
 		&& is_ShowdownPlayer_CPU(2, enum_releaseRegion)
 		&& is_ShowdownPlayer_CPU(3, enum_releaseRegion)
-		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)
+		&& is_ShowdownPlayer_CPU(4, enum_releaseRegion)		
+		&& current_ShowdownPlayer_CashCollected(1, enum_releaseRegion) <= 999999 // ---> Bugfix: when playing Showdown for first time after game startup, some pointer are not yet initialized, rpp_ShowdownPlayer1_HighNoonRoundsWon may show weird numbers; 999 999 cash is max displayable value
+
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7573,6 +7536,10 @@ richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 function rpp_JournalCompletionRate(enum_releaseRegion) => 
 	achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) 
 	/* MANUAL_CONSTRUCTION 
+		// DEV_NOTE: Serialized logic Copy/Paste
+		//	- With RAIntegration UI, copying any code from the "Achievement Editor" window --> copies the serialized logic
+		//		this can be used to quickly copy/paste Serialized Logic for MANUAL_CONSTRUCTION, from the rascript to the "Achievement Editor" window
+
 		-> Defined Logic (generated via a dummy leaderboard --> Copy Def):
 			AddSource	Mem		Bit0	0xFirstFlag
 			AddSource 	SumOf_FlagsAllPages()
@@ -7583,12 +7550,11 @@ function rpp_JournalCompletionRate(enum_releaseRegion) =>
 			Measured	Recall
 
 
-		---- Copy Serialized Logic here & overwrite __rpp_JournalCompletionRate__ in Rich.txt ----
-
-		-> Serialized Logic (PAL) wrapped inside Macro.Number
+		===== Copy Serialized Logic here ---overwrite-->  __rpp_JournalCompletionRate__ (in Rich.txt) =====
+		-> Serialized Logic (PAL) - wrapped inside Macro.Number
 			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 		
-		-> Serialized Logic (NTSCU) wrapped inside Macro.Number
+		-> Serialized Logic (NTSCU) - wrapped inside Macro.Number
 			@Number(A:0xO0073de4d_A:0xP0073de4d_A:0xQ0073de4d_A:0xR0073de4d_A:0xS0073de4d_A:0xT0073de4d_A:0xK0073de4e_A:0xM0073de4f_A:0xN0073de4f_A:0xP0073de4f_A:0xQ0073de4f_A:0xR0073de4f_A:0xS0073de4f_A:0xT0073de4f_A:0xM0073de50_A:0xN0073de50_A:0xP0073de50_A:0xR0073de50_A:0xS0073de50_A:0xT0073de50_A:0xM0073de51_A:0xN0073de51_A:0xO0073de51_A:0xP0073de51_A:0xQ0073de51_A:0xS0073de51_A:0xT0073de51_A:0xM0073de52_A:0xN0073de52_A:0xO0073de52_A:0xR0073de52_A:0xT0073de52_A:0xK0073de53_A:0xK0073de54_A:0xK0073de55_A:0xK0073de56_A:0xK0073de57_A:0xK0073de58_A:0xN0073de59_A:0xO0073de59_A:0xP0073de59_A:0xQ0073de59_A:0xR0073de59_A:0xS0073de59_A:0xT0073de59_A:0xM0073de5a_A:0xN0073de5a_A:0xO0073de5a_A:0xQ0073de5a_A:0xR0073de5a_A:0xS0073de5a_A:0xT0073de5a_A:0xM0073de5b_A:0xN0073de5b_A:0xP0073de5b_A:0xQ0073de5b_A:0xR0073de5b_A:0xS0073de5b_A:0xT0073de5b_A:0xK0073de5c_A:0xK0073de5d_A:0xK0073de5e_A:0xM0073de5f_A:0xN0073de5f_A:0xO0073de5f_A:0xP0073de5f_A:0xQ0073de5f_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 	*/
 
@@ -7884,8 +7850,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 
-// TODO implement leaderboards
-
 // ==========================
 // • Leaderboards CORE DATA •
 // ==========================
@@ -7901,20 +7865,344 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-	"lb_Chapter1Normal": { // QA lb_Chapter1Normal // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-		"id": 115333, "isLowerBetter": false, 
-		"leaderboardFormat": "VALUE",
-		"devInfo": "Best Stats - Chapter 1 - Normal"},
 
-	"lb_ShowdownFastestBounty": { // VERIFIED
+
+	// "lb_Chapter1Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// "id": 115333, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Normal"},
+	// "lb_Chapter2Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118232, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter3Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118242, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter5Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118241, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter6Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118240, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter7Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118239, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter8Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118238, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter10Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118231, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter11Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118230, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter12Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118229, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter13Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118228, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter14Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118227, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter15Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118226, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter17Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118225, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter19Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118237, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter20Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118236, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter22Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118235, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter24Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118234, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter25Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118233, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"}, 
+	// "lb_Chapter27Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118221, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Normal"},
+	// "lb_Chapter1Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118270, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter2Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118271, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter3Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118272, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter5Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118273, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter6Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118274, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter7Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118275, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter8Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118276, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter10Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118284, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter11Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118283, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter12Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118282, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter13Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118281, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter14Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118280, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter15Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118279, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter17Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118278, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter19Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118277, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter20Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118289, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter22Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118288, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter24Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118287, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter25Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118286, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"}, 
+	// "lb_Chapter27Hard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118285, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Hard"},
+	// "lb_Chapter1VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118290, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter2VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118296, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter3VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118295, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter5VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118294, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter6VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118293, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter7VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118292, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter8VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118291, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter10VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118304, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter11VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118303, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter12VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118302, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter13VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118301, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter14VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118300, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter15VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118299, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter17VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118298, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter19VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118297, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter20VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118309, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter22VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118308, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter24VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118307, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter25VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118306, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"}, 
+	// "lb_Chapter27VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118305, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Very Hard"},
+	// "lb_Chapter1RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118310, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter2RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118311, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter3RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118312, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter5RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118313, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter6RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118314, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter7RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118315, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter8RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118316, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter10RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118317, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter11RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118318, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter12RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118319, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter13RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118320, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter14RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118321, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter15RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118322, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter17RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118323, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter19RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118324, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter20RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118325, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter22RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118326, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter24RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118327, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"},
+	// "lb_Chapter25RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// 	"id": 118328, "isLowerBetter": false, 
+		// 	"leaderboardFormat": "VALUE",
+		// 	"devInfo": "Best Stats - Red Wood revolver"}, 
+	// "lb_Chapter27RedWood": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
+		// "id": 118329, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Red Wood revolver"},
+
+	// "lb_StoryNormal": { // CONCEPT lb_StoryNormal
+	// 	"id": 000000, "isLowerBetter": false, 
+	// 	"leaderboardFormat": "VALUE",
+	// 	"devInfo": "Complete Story on normal (session-based)"},
+	// },
+	
+	"lb_ShowdownFastestBounty": { // VERIFIED - Starts at beginning of match with timer RAoverlay
 		"id": 112549, "isLowerBetter": true, 
 		"leaderboardFormat": "SECS",
 		"devInfo": "Bounty Hunter match with 3 CPUs: Fastest to collect 15k"},
-	"lb_ShowdownLargestBounty": { // VERIFIED
+	"lb_ShowdownLargestBounty": { // VERIFIED - Instant Start/Submit at end of Showdown match
 		"id": 112550, "isLowerBetter": false, 
 		"leaderboardFormat": "VALUE",
 		"devInfo": "Sundown match with 3 CPUs: largest bounty collection in 10 min"},
-	"lb_ShowdownBestCombo": { // VERIFIED
+	"lb_ShowdownBestCombo": { // VERIFIED - Instant Start/Submit at end of Showdown match
 		"id": 112548, "isLowerBetter": false, 
 		"leaderboardFormat": "VALUE",
 		"devInfo": "Any Showdown match with 3 CPUs: highest combo"},
@@ -7925,25 +8213,19 @@ leaderboards_coreData = {
 // ===================================
 //	- For leaderboard logic that's reoccuring across multiple triggers
 
-// =========================
-// • Leaderboards TRIGGERS •
-// =========================
-leaderboards_startTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+function leaderboards_generate_FullStartTrigger_ChapterBoard(enum_areaId, enum_difficulty, enum_releaseRegion) {
 		// NOTE: Only Mission Restart works to reset the leaderboard. RetryMenu should not reset the leaderboard as this uses checkpoints
-		const_MISSION_AREA = AREA_Campaign_BullsEye
-		const_DIFFICULTY = DIFFICULTY_Normal
 
 		return 
 		// [1] ==== Core (Alt) Group ====					-> Start when starting the mission from start/restart
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Area(const_MISSION_AREA, enum_releaseRegion)
-				|| !is_StoryCampaignDifficulty(const_DIFFICULTY, enum_releaseRegion))
+				|| !is_Area(enum_areaId, enum_releaseRegion)
+				|| !is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion))
 
 			&& once( // ---2x Once--> Check if player has started mission from start/restart
-				current_TimeSpentInMission(enum_releaseRegion) >= 1.0
-				&& prev_TimeSpentInMission(enum_releaseRegion) < 1.0)
+				current_TimeSpentInMission(enum_releaseRegion) >= 7.0
+				&& prev_TimeSpentInMission(enum_releaseRegion) < 7.0)
 			&& is_AreaState_InGame(enum_releaseRegion)
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Single Player Campaign (eg. quit to main menu)
@@ -7965,8 +8247,493 @@ leaderboards_startTriggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_RewardMenu_Replay_confirm(enum_releaseRegion))
-		}),
+		}
 
+function leaderboards_generate_FullCancelTrigger_ChapterBoard(enum_areaId, enum_releaseRegion) => 
+	// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Single Player Campaign (eg. quit to main menu)
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+
+	// [2] ==== Cancel (Alt) Group ====		-> Cancel when incorrect AREA_ID is loaded
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Area(enum_areaId, enum_releaseRegion)
+
+	// [3] ==== Cancel (Alt) Group ====		-> Cancel when any cheat is active
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_AnyCheat_active(enum_releaseRegion)
+
+	// [4] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_WarningMenu_yes(enum_releaseRegion)
+
+	// [5] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on RewardMenu->Replay
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_RewardMenu_Replay_confirm(enum_releaseRegion)
+	
+function leaderboards_generate_FullSubmitTrigger_ChapterBoard(enum_areaId, enum_releaseRegion) =>
+	// [1] ==== Core (Alt) Group ==== 	-> Submit when the RewardMenu is rendered
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+		&& once(on_RewardMenu_render_short(enum_releaseRegion))
+		&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
+
+	// [2] ==== Alt Reset Group ==== 	-> Reset when RewardMenu is not rendered
+		|| never_toAlt( 
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_RewardMenu_displayed_short(enum_releaseRegion))
+
+function leaderboards_generate_FullValueMeasure_ChapterBoard() {
+	function valueMeasureDuringGameplay(enum_releaseRegion) => 
+		measured(
+			current_Cash(enum_releaseRegion)
+			+ current_CashCombo(enum_releaseRegion) + current_CashComboMultiplier(enum_releaseRegion)
+			+ current_PlayerProfile_SavedCash(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion),
+			when = is_ReleaseRegion(enum_releaseRegion))
+
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
+			-> Serialized Logic (PAL) - [Value Group]
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX007448d8_B:{recall}*0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_K:{recall}*0xX0000587c_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054c7cc=1397050451
+
+			-> Serialized Logic (NTSCU) - [Alt 2 Group]
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX00742158_B:{recall}*0xX00000008_I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_K:{recall}*0xX0000587c_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054a04c=1398099027
+
+			-> Defined Logic (PAL) - [Value Group]
+				1	AddAddress	Mem		32bit	0x763070
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x763070
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
+
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Recall						*	Mem 	32-bit 	0x8			|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 21.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+
+				15	AddAddress	Mem		32bit	0x763070
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x7a0788
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x763070
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x763070
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				28	AddAddress	Mem		32bit	0x763070
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x763070
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+
+				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+
+
+			-> Defined Logic (NTSCU) [Alt 2 Group]
+				1	AddAddress	Mem		32bit	0x7608f0
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x7608f0
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
+
+				9	AddAddress	Mem 	32-bit 	0x7448d8
+				10	SubSource 	Recall						*	Mem 	32-bit 	0x8			|SavedCash (before mission start)|
+				11	AddAddress	Mem 	32-bit 	0x562a20
+				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
+				13	AddAddress	Mem 	32-bit 	0x562a20	
+				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 21.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
+
+				15	AddAddress	Mem		32bit	0x7608f0
+				16	AddAddress	Mem		32bit	0x36c
+				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				18	AddAddress	Mem		32bit	0x79e008
+				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				21	AddAddress	Mem		32bit	0x7608f0
+				22	AddAddress	Mem		32bit	0x36c
+				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				24	AddAddress	Mem		32bit	0x7608f0
+				25	AddAddress	Mem		32bit	0x36c
+				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				28	AddAddress	Mem		32bit	0x7608f0
+				29	AddAddress	Mem		32bit	0x36c
+				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				31	AddAddress	Mem		32bit	0x7608f0
+				32	AddAddress	Mem		32bit	0x36c
+				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+
+				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+			
+			*/
+
+	function valueMeasureSubmitted(enum_releaseRegion) => 
+		measured(
+			current_RewardMenu_BountyCollected(enum_releaseRegion)
+			+ current_ShotsFired(enum_releaseRegion)
+			+ current_ShotsHit(enum_releaseRegion)
+			+ current_DamageTaken(enum_releaseRegion)
+			+ current_TimeSpentInMission(enum_releaseRegion)
+			+ current_HighestCombo(enum_releaseRegion)
+			+ current_HighestComboMultiplier(enum_releaseRegion)
+			+ current_HeadShots(enum_releaseRegion)
+			+ current_DeathToll(enum_releaseRegion)
+			+ current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsTimeStarAchieved(enum_releaseRegion)
+			+ current_FlagState_IsBestComboStarAchieved(enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_RewardMenu_displayed_short(enum_releaseRegion))
+
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall 
+			-> Serialized Logic (PAL) - [Alt 1 Group]
+				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX0054caf0_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000834*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000844*f1500.0_M:{recall}_Q:0xX0054c7cc=1397050451_I:0xX0054caf0_Q:0xX000002d0>0
+			
+			-> Serialized Logic (NTSCU) - [Alt 3 Group]
+				I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX0054a370_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX007608f0_I:0xX0000036c_B:fF00000070*f4.0_I:0xX0079e008_B:fF00000020*f3.0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX007608f0_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX007608f0_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX007608f0_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM000007f4*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000804*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054a370_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_M:{recall}_Q:0xX0054a04c=1398099027_I:0xX0054a370_Q:0xX000002d0>0
+			
+			-> Defined Logic (PAL) - [Alt 1 Group]
+				1	AddAddress	Mem		32bit	0x763070
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x763070
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|
+
+				9	AddAddress	Mem		32bit	0x54caf0
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 21.0)|
+
+				14	AddAddress	Mem		32bit	0x763070
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x7a0788
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x763070
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x763070
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted 
+																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
+		
+				27	AddAddress	Mem		32bit	0x763070
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x763070
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54caf0
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x814		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54caf0
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x824		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54caf0
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x834		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54caf0
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x844		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
+				55	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
+				56	AddAddress	Mem		32bit	0x54caf0
+				57	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+
+			-> Defined Logic (NTSCU) - [Alt 3 Group]
+				1	AddAddress	Mem		32bit	0x7608f0
+				2	AddAddress	Mem		32bit	0x36c
+				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
+				4	AddAddress	Mem		32bit	0x7608f0
+				5	AddAddress	Mem		32bit	0x36c
+				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
+				7	Remember	Recall						*	Float			4.0			|calculatedAccuracy * 4.0 (= accuracyWeighted)|
+				8	Remember	Recall						+	Float			21.0		|accuracyWeighted + 21.0|	
+
+				9	AddAddress	Mem		32bit	0x54a370
+				10	AddAddress	Mem		32bit	0xac
+				11	AddAddress	Mem		32bit	0x34
+				12	AddAddress	Mem		32bit	0x1c
+				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 21.0)|
+
+				14	AddAddress	Mem		32bit	0x7608f0
+				15	AddAddress	Mem		32bit	0x36c
+				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
+				17	AddAddress	Mem		32bit	0x79e008
+				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
+				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted|
+
+				20	AddAddress	Mem		32bit	0x7608f0
+				21	AddAddress	Mem		32bit	0x36c
+				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				23	AddAddress	Mem		32bit	0x7608f0
+				24	AddAddress	Mem		32bit	0x36c
+				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
+				
+		
+				27	AddAddress	Mem		32bit	0x7608f0
+				28	AddAddress	Mem		32bit	0x36c
+				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
+				30	AddAddress	Mem		32bit	0x7608f0
+				31	AddAddress	Mem		32bit	0x36c
+				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
+				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
+				
+				34	AddAddress	Mem		32bit	0x54a370
+				35	AddAddress	Mem		32bit	0x2d0
+				36	AddAddress	Mem		32bit	0x24
+				37	AddAddress	Mem		32bit	0x1c
+				38	AddSource	Mem		bit0	0x7f4		*	Float			1500.0		|AccuracyStar = 1500|
+				39	AddAddress	Mem		32bit	0x54a370
+				40	AddAddress	Mem		32bit	0x2d0
+				41	AddAddress	Mem		32bit	0x24
+				42	AddAddress	Mem		32bit	0x1c
+				43	AddSource	Mem		bit0	0x804		*	Float			1500.0		|DamageTakenStar = 1500|
+				44	AddAddress	Mem		32bit	0x54a370
+				45	AddAddress	Mem		32bit	0x2d0
+				46	AddAddress	Mem		32bit	0x24
+				47	AddAddress	Mem		32bit	0x1c
+				48	AddSource	Mem		bit0	0x814		*	Float			1500.0		|TimeStar = 1500|
+				49	AddAddress	Mem		32bit	0x54a370
+				50	AddAddress	Mem		32bit	0x2d0
+				51	AddAddress	Mem		32bit	0x24
+				52	AddAddress	Mem		32bit	0x1c
+				53	AddSource	Mem		bit0	0x824		*	Float			1500.0		|BestComboStar = 1500|
+				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 21.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
+																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
+
+				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
+				28	AddAddress	Mem		32bit	0x54a370
+				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
+
+			*/
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED  {
+		array_push(let_array_valueMeasures, valueMeasureDuringGameplay(enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasureSubmitted(enum_releaseRegion))
+	}
+	return max_of(let_array_valueMeasures)}
+
+
+// =========================
+// • Leaderboards TRIGGERS •
+// =========================
+leaderboards_startTriggers = {
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_Normal, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_Hard, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_VeryHard, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BullsEye, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BountyHunter, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Railroaded, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FreakShow, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RogueValley, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheCemetery, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_RangeWar, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SaloonFight, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheTraitor, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BearMountain, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_TheMine, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_HellPass, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FortDiego, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_BattleFinale, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_Siege, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullStartTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, DIFFICULTY_RedWoodRevolver, enum_releaseRegion)
+	),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { 
 		const_HUMAN_PLAYER_INDEX_1 = 1
 		const_CPU_PLAYER_INDEX_2 = 2
@@ -7979,15 +8746,19 @@ leaderboards_startTriggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
+				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---4 lines---> Check if playing solo
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // ---3 lines---> Check if player 1 has no allies
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& repeated(300, // ---BugFix--> Delay necessary because CancelTrigger may be true on_WarningMenu_yes() at same time StartTrigger resets --> so both Cancel and Start true at same time, thus never starts
+				is_AreaState_InGame(enum_releaseRegion))
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
 			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_15K, enum_releaseRegion)
@@ -8022,19 +8793,22 @@ leaderboards_startTriggers = {
 				is_AnyCheat_active(enum_releaseRegion)))			
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---4 lines---> Check if playing solo
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // ---3 lines---> Check if player 1 has no allies
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
-			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
+			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_10min, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))		
 
 			&& once(
-				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
+				&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
 			|| never_toAlt(
@@ -8063,19 +8837,26 @@ leaderboards_startTriggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Once a cheat is active
-				is_AnyCheat_active(enum_releaseRegion)))			
+				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---4 lines---> Check if playing solo
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
 			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // ---3 lines---> Check if player 1 has no allies
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 
 			&& once(
-				never(!is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
-				&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion))
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) &&
+				on_MultiplayerRewardMenu_render(enum_releaseRegion))
+			
+			&& repeated(100, // <-- Delay as to popup after other Showdown leaderboards
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) &&
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion))
 
 			&& current_HighestCombo_Showdown(enum_releaseRegion) > 0
 
@@ -8096,55 +8877,353 @@ leaderboards_startTriggers = {
 	}),
 	}
 leaderboards_cancelTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		return 
-		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Single Player Campaign (eg. quit to main menu)
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullCancelTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)
+	),
+	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		// [1] ==== Cancel (Alt) Group ====		-> Cancel when not playing Showdown mode
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& !is_Playing_ShowdownMode_long(enum_releaseRegion) 
 
-		// [2] ==== Cancel (Alt) Group ====		-> Cancel when any cheat is active
+		// [2] ==== Cancel (Alt) Group ====		-> Cancel when a cheat is activated
 			|| is_ReleaseRegion(enum_releaseRegion)
-			&& is_AnyCheat_active(enum_releaseRegion)
+			&& is_AnyCheat_active(enum_releaseRegion) 
 
 		// [3] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_WarningMenu_yes(enum_releaseRegion)
 
-		// [4] ==== Cancel (Alt) Group ====		-> Cancel when pressing 'yes' on RewardMenu->Replay
+		// [4] ==== Cancel (Alt) Group ====		-> Cancel when confirming MultiplayerRewardMenu->Replay
 			|| is_ReleaseRegion(enum_releaseRegion)
-			&& on_RewardMenu_Replay_confirm(enum_releaseRegion)
-		}),
-	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		is_ReleaseRegion(enum_releaseRegion)
-		&& (
-			!is_Playing_ShowdownMode_long(enum_releaseRegion)
-			|| on_WarningMenu_yes(enum_releaseRegion)
-			|| on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
-		)),
+			&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion)
+		),
 	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		always_false()),
 	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		always_false()),
 	}
 leaderboards_submitTriggers = {
-	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_MISSION_AREA = AREA_Campaign_BullsEye
-		return 
-		// [1] ==== Core (Alt) Group ==== 	-> Submit when the RewardMenu is rendered
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Area(AREA_Campaign_BullsEye, enum_releaseRegion))
-			&& once(on_RewardMenu_render_short(enum_releaseRegion))
-			&& on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion)
-
-		// [2] ==== Alt Reset GRoup==== 	-> Reset when RewardMenu is not rendered
-			|| never_toAlt( 
-				is_ReleaseRegion(enum_releaseRegion)
-				&& !is_RewardMenu_displayed_short(enum_releaseRegion))
-		}),
+	"lb_Chapter1Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Normal": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27Hard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27VeryHard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
+	"lb_Chapter1RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BullsEye, enum_releaseRegion)),
+	"lb_Chapter2RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BountyHunter, enum_releaseRegion)),
+	"lb_Chapter3RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_UglyStreetFight, enum_releaseRegion)),
+	"lb_Chapter5RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Railroaded, enum_releaseRegion)),
+	"lb_Chapter6RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+	"lb_Chapter7RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FreakShow, enum_releaseRegion)),
+	"lb_Chapter8RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RogueValley, enum_releaseRegion)),
+	"lb_Chapter10RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheCemetery, enum_releaseRegion)),
+	"lb_Chapter11RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_RangeWar, enum_releaseRegion)),
+	"lb_Chapter12RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SaloonFight, enum_releaseRegion)),
+	"lb_Chapter13RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheTraitor, enum_releaseRegion)),
+	"lb_Chapter14RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_SunsetCanyon, enum_releaseRegion)),
+	"lb_Chapter15RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BearMountain, enum_releaseRegion)),
+	"lb_Chapter17RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_TheMine, enum_releaseRegion)),
+	"lb_Chapter19RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_HellPass, enum_releaseRegion)),
+	"lb_Chapter20RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FortDiego, enum_releaseRegion)),
+	"lb_Chapter22RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_DevilsAndAngels, enum_releaseRegion)),
+	"lb_Chapter24RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_BattleFinale, enum_releaseRegion)),
+	"lb_Chapter25RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_Siege, enum_releaseRegion)),
+	"lb_Chapter27RedWood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_FullSubmitTrigger_ChapterBoard(AREA_Campaign_FallFromGrace, enum_releaseRegion)),
 	"lb_ShowdownFastestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		is_ReleaseRegion(enum_releaseRegion)
-		&& on_MultiplayerRewardMenu_render_short(enum_releaseRegion)),
+		&& on_MultiplayerRewardMenu_render(enum_releaseRegion)),
 	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		always_true()),
 	"lb_ShowdownBestCombo": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
@@ -8160,278 +9239,6 @@ function lb_template_ValueMeasure() { // Template
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
-	return max_of(let_array_valueMeasures)}
-//---------------------------------
-function lb_Chapter1Normal_ValueMeasure() {
-	function valueMeasureDuringGameplay(enum_releaseRegion) => 
-		measured(
-			current_Cash(enum_releaseRegion)
-			+ current_CashCombo(enum_releaseRegion) + current_CashComboMultiplier(enum_releaseRegion)
-			+ current_PlayerProfile_SavedCash(enum_releaseRegion)
-			+ current_ShotsFired(enum_releaseRegion)
-			+ current_ShotsHit(enum_releaseRegion)
-			+ current_DamageTaken(enum_releaseRegion)
-			+ current_TimeSpentInMission(enum_releaseRegion)
-			+ current_HighestCombo(enum_releaseRegion)
-			+ current_HighestComboMultiplier(enum_releaseRegion)
-			+ current_HeadShots(enum_releaseRegion)
-			+ current_DeathToll(enum_releaseRegion),
-			when = is_ReleaseRegion(enum_releaseRegion))
-
-		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
-			-> OUTPUT (PAL)
-				1	AddAddress	Mem		32bit	0x763070
-				2	AddAddress	Mem		32bit	0x36c
-				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
-				4	AddAddress	Mem		32bit	0x763070
-				5	AddAddress	Mem		32bit	0x36c
-				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
-
-				9	AddAddress	Mem 	32-bit 	0x7448d8
-				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
-				11	AddAddress	Mem 	32-bit 	0x562a20
-				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
-				13	AddAddress	Mem 	32-bit 	0x562a20	
-				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
-
-				15	AddAddress	Mem		32bit	0x763070
-				16	AddAddress	Mem		32bit	0x36c
-				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
-				18	AddAddress	Mem		32bit	0x7a0788
-				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
-
-				21	AddAddress	Mem		32bit	0x763070
-				22	AddAddress	Mem		32bit	0x36c
-				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				24	AddAddress	Mem		32bit	0x763070
-				25	AddAddress	Mem		32bit	0x36c
-				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
-																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
-		
-				28	AddAddress	Mem		32bit	0x763070
-				29	AddAddress	Mem		32bit	0x36c
-				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
-				31	AddAddress	Mem		32bit	0x763070
-				32	AddAddress	Mem		32bit	0x36c
-				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
-																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
-
-				35	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
-
-
-			-> OUTPUT (NTSCU)
-				1	AddAddress	Mem		32bit	0x7608f0
-				2	AddAddress	Mem		32bit	0x36c
-				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
-				4	AddAddress	Mem		32bit	0x7608f0
-				5	AddAddress	Mem		32bit	0x36c
-				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
-
-				9	AddAddress	Mem 	32-bit 	0x7448d8
-				10	SubSource 	Mem 	32-bit 	0x8											|SavedCash (before mission start)|
-				11	AddAddress	Mem 	32-bit 	0x562a20
-				12	AddSource 	Mem 	32-bit 	0x5884 		* 	Mem 	32-bit 	0x5888		|CurrentCashCombo * CurrentCashComboMulitplier|
-				13	AddAddress	Mem 	32-bit 	0x562a20	
-				14	Remember	Recall						*	Mem 	32-bit 	0x587c		|CalculatedCash * (accuracyWeighted + 7.0)|  	|CalculatedCash = CurrentCash (during gameplay) + (CurrentCashCombo * CurrentCashComboMulitplier) - SavedCash|
-
-				15	AddAddress	Mem		32bit	0x7608f0
-				16	AddAddress	Mem		32bit	0x36c
-				17	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
-				18	AddAddress	Mem		32bit	0x79e008
-				19	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				20	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
-
-				21	AddAddress	Mem		32bit	0x7608f0
-				22	AddAddress	Mem		32bit	0x36c
-				23	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				24	AddAddress	Mem		32bit	0x7608f0
-				25	AddAddress	Mem		32bit	0x36c
-				26	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				27	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
-																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
-		
-				28	AddAddress	Mem		32bit	0x7608f0
-				29	AddAddress	Mem		32bit	0x36c
-				30	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
-				31	AddAddress	Mem		32bit	0x7608f0
-				32	AddAddress	Mem		32bit	0x36c
-				33	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				34	Measured	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
-																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
-
-				35	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
-			*/
-
-	function valueMeasureSubmitted(enum_releaseRegion) => 
-		measured(
-			current_RewardMenu_BountyCollected(enum_releaseRegion)
-			+ current_ShotsFired(enum_releaseRegion)
-			+ current_ShotsHit(enum_releaseRegion)
-			+ current_DamageTaken(enum_releaseRegion)
-			+ current_TimeSpentInMission(enum_releaseRegion)
-			+ current_HighestCombo(enum_releaseRegion)
-			+ current_HighestComboMultiplier(enum_releaseRegion)
-			+ current_HeadShots(enum_releaseRegion)
-			+ current_DeathToll(enum_releaseRegion)
-			+ current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion)
-			+ current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion)
-			+ current_FlagState_IsTimeStarAchieved(enum_releaseRegion)
-			+ current_FlagState_IsBestComboStarAchieved(enum_releaseRegion),
-			when = 
-				is_ReleaseRegion(enum_releaseRegion)
-				&& is_RewardMenu_displayed_short(enum_releaseRegion))
-
-		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
-			-> OUTPUT (PAL)
-				1	AddAddress	Mem		32bit	0x763070
-				2	AddAddress	Mem		32bit	0x36c
-				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
-				4	AddAddress	Mem		32bit	0x763070
-				5	AddAddress	Mem		32bit	0x36c
-				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 3.0 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|
-
-				9	AddAddress	Mem		32bit	0x54caf0
-				10	AddAddress	Mem		32bit	0xac
-				11	AddAddress	Mem		32bit	0x34
-				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
-
-				14	AddAddress	Mem		32bit	0x763070
-				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
-				17	AddAddress	Mem		32bit	0x7a0788
-				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
-
-				20	AddAddress	Mem		32bit	0x763070
-				21	AddAddress	Mem		32bit	0x36c
-				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				23	AddAddress	Mem		32bit	0x763070
-				24	AddAddress	Mem		32bit	0x36c
-				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				26	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted 
-																								+ (BestCombo * BestComboMultiplier) + (BestCombo * BestComboMultiplier)|
-		
-				27	AddAddress	Mem		32bit	0x763070
-				28	AddAddress	Mem		32bit	0x36c
-				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
-				30	AddAddress	Mem		32bit	0x763070
-				31	AddAddress	Mem		32bit	0x36c
-				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
-																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
-				
-				34	AddAddress	Mem		32bit	0x54caf0
-				35	AddAddress	Mem		32bit	0x2d0
-				36	AddAddress	Mem		32bit	0x24
-				37	AddAddress	Mem		32bit	0x1c
-				38	AddSource	Mem		bit0	0x814		*	Float			1500.0		|AccuracyStar = 1500|
-				39	AddAddress	Mem		32bit	0x54caf0
-				40	AddAddress	Mem		32bit	0x2d0
-				41	AddAddress	Mem		32bit	0x24
-				42	AddAddress	Mem		32bit	0x1c
-				43	AddSource	Mem		bit0	0x824		*	Float			1500.0		|DamageTakenStar = 1500|
-				44	AddAddress	Mem		32bit	0x54caf0
-				45	AddAddress	Mem		32bit	0x2d0
-				46	AddAddress	Mem		32bit	0x24
-				47	AddAddress	Mem		32bit	0x1c
-				48	AddSource	Mem		bit0	0x834		*	Float			1500.0		|TimeStar = 1500|
-				49	AddAddress	Mem		32bit	0x54caf0
-				50	AddAddress	Mem		32bit	0x2d0
-				51	AddAddress	Mem		32bit	0x24
-				52	AddAddress	Mem		32bit	0x1c
-				53	AddSource	Mem		bit0	0x844		*	Float			1500.0		|BestComboStar = 1500|
-				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
-																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
-
-				55	MeasuredIf	Mem		32bit	0x54c7cc	= 	Val				0x53454c53
-				56	AddAddress	Mem		32bit	0x54caf0
-				57	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
-
-
-			-> OUTPUT (NTSCU)
-				1	AddAddress	Mem		32bit	0x7608f0
-				2	AddAddress	Mem		32bit	0x36c
-				3	Remember	Float			0.0			+	Mem		32bit	0x194		|ShotsFired (force float mode)|
-				4	AddAddress	Mem		32bit	0x7608f0
-				5	AddAddress	Mem		32bit	0x36c
-				6	Remember	Mem		32bit	0x198		/	Recall						|ShotsHit / ShotsFired (= calculatedAccuracy)|
-				7	Remember	Recall						*	Float			3.0			|calculatedAccuracy * 1.7 (= accuracyWeighted)|
-				8	Remember	Recall						+	Float			7.0			|accuracyWeighted + 7.0|	
-
-				9	AddAddress	Mem		32bit	0x54a370
-				10	AddAddress	Mem		32bit	0xac
-				11	AddAddress	Mem		32bit	0x34
-				12	AddAddress	Mem		32bit	0x1c
-				13	Remember	Recall						* 	Mem		32bit	0x9e4		|BountyCollected * (accuracyWeighted + 7.0)|
-
-				14	AddAddress	Mem		32bit	0x7608f0
-				15	AddAddress	Mem		32bit	0x36c
-				16	SubSource	Mem		Float	0x70		*	Float			4.0			|RawDamageTaken * 4.0 (= damageTakenWeighted)|
-				17	AddAddress	Mem		32bit	0x79e008
-				18	SubSource	Mem		Float	0x20		*	Float			3.0			|TimeSeconds * 3.0 (= TimeSecondsWeighted)|
-				19	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted|
-
-				20	AddAddress	Mem		32bit	0x7608f0
-				21	AddAddress	Mem		32bit	0x36c
-				22	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				23	AddAddress	Mem		32bit	0x7608f0
-				24	AddAddress	Mem		32bit	0x36c
-				25	AddSource	Mem		Float	0x1c4		*	Mem		32bit	0x1c0		|BestCombo * BestComboMultiplier|
-				
-		
-				27	AddAddress	Mem		32bit	0x7608f0
-				28	AddAddress	Mem		32bit	0x36c
-				29	AddSource	Mem		32bit	0x30		*	Float			10.0		|Headshots * 10|
-				30	AddAddress	Mem		32bit	0x7608f0
-				31	AddAddress	Mem		32bit	0x36c
-				32	AddSource	Mem		32bit	0x5c		*	Mem				5.0			|DeathToll * 5|
-				33	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
-																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5)|
-				
-				34	AddAddress	Mem		32bit	0x54a370
-				35	AddAddress	Mem		32bit	0x2d0
-				36	AddAddress	Mem		32bit	0x24
-				37	AddAddress	Mem		32bit	0x1c
-				38	AddSource	Mem		bit0	0x7f4		*	Float			1500.0		|AccuracyStar = 1500|
-				39	AddAddress	Mem		32bit	0x54a370
-				40	AddAddress	Mem		32bit	0x2d0
-				41	AddAddress	Mem		32bit	0x24
-				42	AddAddress	Mem		32bit	0x1c
-				43	AddSource	Mem		bit0	0x804		*	Float			1500.0		|DamageTakenStar = 1500|
-				44	AddAddress	Mem		32bit	0x54a370
-				45	AddAddress	Mem		32bit	0x2d0
-				46	AddAddress	Mem		32bit	0x24
-				47	AddAddress	Mem		32bit	0x1c
-				48	AddSource	Mem		bit0	0x814		*	Float			1500.0		|TimeStar = 1500|
-				49	AddAddress	Mem		32bit	0x54a370
-				50	AddAddress	Mem		32bit	0x2d0
-				51	AddAddress	Mem		32bit	0x24
-				52	AddAddress	Mem		32bit	0x1c
-				53	AddSource	Mem		bit0	0x824		*	Float			1500.0		|BestComboStar = 1500|
-				54	Remember	Recall														|(CalculatedCash * (accuracyWeighted + 7.0)) - damageTakenWeighted - TimeSecondsWeighted + (BestCombo * BestComboMultiplier) 
-																								+ (BestCombo * BestComboMultiplier) + (Headshots * 10) + (DeathToll * 5) + (Stars * 4)|
-
-				27	MeasuredIf	Mem		32bit	0x54a04c	= 	Val				0x53554c53
-				28	AddAddress	Mem		32bit	0x54a370
-				29	MeasuredIf	Mem		32bit	0x2d0		> 	Val				0x0
-
-			*/
-
-	let_array_valueMeasures = []
-	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED  {
-		array_push(let_array_valueMeasures, valueMeasureDuringGameplay(enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasureSubmitted(enum_releaseRegion))
-	}
 	return max_of(let_array_valueMeasures)}
 //---------------------------------
 function lb_ShowdownFastestBounty_ValueMeasure() {
@@ -8465,7 +9272,86 @@ function lb_ShowdownBestCombo_ValueMeasure() {
 	return max_of(let_array_valueMeasures)}
 
 leaderboards_valueMeasures = { 
-	"lb_Chapter1Normal": lb_Chapter1Normal_ValueMeasure(),
+	"lb_Chapter1Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27Normal": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27Hard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27VeryHard": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter1RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter2RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter3RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter5RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter6RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter7RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter8RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter10RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter11RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter12RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter13RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter14RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter15RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter17RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter19RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter20RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter22RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter24RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
+	"lb_Chapter25RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(), 
+	"lb_Chapter27RedWood": leaderboards_generate_FullValueMeasure_ChapterBoard(),
 
 	"lb_ShowdownFastestBounty": lb_ShowdownFastestBounty_ValueMeasure(),
 	"lb_ShowdownLargestBounty": lb_ShowdownLargestBounty_ValueMeasure(),
@@ -8474,10 +9360,92 @@ leaderboards_valueMeasures = {
 // =====================
 // • Leaderboards TEXT •
 // =====================
-leaderboards_titles = { // TODO Leaderboards: creative text
+leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Bull's Eye Bounty Board - Normal"},
+	"lb_Chapter1Normal":			{"en": "'Bull's Eye' Normal Bounty Board"},
+	"lb_Chapter2Normal": 			{"en": "'Bounty Hunter' Normal Bounty Board"},
+	"lb_Chapter3Normal": 			{"en": "'Ugly Streetfight' Normal Bounty Board"},
+	"lb_Chapter5Normal": 			{"en": "'Railroaded' Normal Bounty Board"},
+	"lb_Chapter6Normal": 			{"en": "'Carnival Life' Normal Bounty Board"},
+	"lb_Chapter7Normal": 			{"en": "'Freak Show' Normal Bounty Board"},
+	"lb_Chapter8Normal": 			{"en": "'Rogue Valley' Normal Bounty Board"},
+	"lb_Chapter10Normal": 			{"en": "'The Cemetery' Normal Bounty Board"},
+	"lb_Chapter11Normal": 			{"en": "'Range War' Normal Bounty Board"},
+	"lb_Chapter12Normal": 			{"en": "'Bar Fight' Normal Bounty Board"},
+	"lb_Chapter13Normal": 			{"en": "'The Traitor' Normal Bounty Board"},
+	"lb_Chapter14Normal": 			{"en": "'Sunset Canyon' Normal Bounty Board"},
+	"lb_Chapter15Normal": 			{"en": "'Bear Mountain' Normal Bounty Board"},
+	"lb_Chapter17Normal": 			{"en": "'The Mine' Normal Bounty Board"},
+	"lb_Chapter19Normal": 			{"en": "'Hell Pass' Normal Bounty Board"},
+	"lb_Chapter20Normal": 			{"en": "'Fort Diego' Normal Bounty Board"},
+	"lb_Chapter22Normal": 			{"en": "'Devils and Angels' Normal Bounty Board"},
+	"lb_Chapter24Normal": 			{"en": "'Battle Finale' Normal Bounty Board"},
+	"lb_Chapter25Normal": 			{"en": "'Siege' Normal Bounty Board"}, 
+	"lb_Chapter27Normal":			{"en": "'Fall From Grace' Normal Bounty Board"},
+
+	"lb_Chapter1Hard": 				{"en": "'Bull's Eye' Hard Bounty Board"},
+	"lb_Chapter2Hard": 				{"en": "'Bounty Hunter' Hard Bounty Board"},
+	"lb_Chapter3Hard": 				{"en": "'Ugly Streetfight' Hard Bounty Board"},
+	"lb_Chapter5Hard": 				{"en": "'Railroaded'' Hard Bounty Board"},
+	"lb_Chapter6Hard": 				{"en": "'Carnival Life' Hard Bounty Board"},
+	"lb_Chapter7Hard": 				{"en": "'Freak Show' Hard Bounty Board"},
+	"lb_Chapter8Hard": 				{"en": "'Rogue Valley' Hard Bounty Board"},
+	"lb_Chapter10Hard": 			{"en": "'The Cemetery' Hard Bounty Board"},
+	"lb_Chapter11Hard": 			{"en": "'Range War' Hard Bounty Board"},
+	"lb_Chapter12Hard": 			{"en": "'Bar Fight' Hard Bounty Board"},
+	"lb_Chapter13Hard": 			{"en": "'The Traitor' Hard Bounty Board"},
+	"lb_Chapter14Hard": 			{"en": "'Sunset Canyon' Hard Bounty Board"},
+	"lb_Chapter15Hard": 			{"en": "'Bear Mountain' Hard Bounty Board"},
+	"lb_Chapter17Hard": 			{"en": "'The Mine' Hard Bounty Board"},
+	"lb_Chapter19Hard": 			{"en": "'Hell Pass' Hard Bounty Board"},
+	"lb_Chapter20Hard": 			{"en": "'Fort Diego' Hard Bounty Board"},
+	"lb_Chapter22Hard": 			{"en": "'Devils and Angels' Hard Bounty Board"},
+	"lb_Chapter24Hard": 			{"en": "'Battle Finale' Hard Bounty Board"},
+	"lb_Chapter25Hard": 			{"en": "'Siege' Hard Bounty Board"}, 
+	"lb_Chapter27Hard": 			{"en": "'Fall From Grace' Hard Bounty Board"},
+
+	"lb_Chapter1VeryHard": 			{"en": "'Bull's Eye' Very Hard Bounty Board"},
+	"lb_Chapter2VeryHard": 			{"en": "'Bounty Hunter' Very Hard Bounty Board"},
+	"lb_Chapter3VeryHard": 			{"en": "'Ugly Streetfight' Very Hard Bounty Board"},
+	"lb_Chapter5VeryHard": 			{"en": "'Railroaded'' Very Hard Bounty Board"},
+	"lb_Chapter6VeryHard": 			{"en": "'Carnival Life' Very Hard Bounty Board"},
+	"lb_Chapter7VeryHard": 			{"en": "'Freak Show' Very Hard Bounty Board"},
+	"lb_Chapter8VeryHard": 			{"en": "'Rogue Valley' Very Hard Bounty Board"},
+	"lb_Chapter10VeryHard": 		{"en": "'The Cemetery' Very Hard Bounty Board"},
+	"lb_Chapter11VeryHard": 		{"en": "'Range War' Very Hard Bounty Board"},
+	"lb_Chapter12VeryHard": 		{"en": "'Bar Fight' Very Hard Bounty Board"},
+	"lb_Chapter13VeryHard": 		{"en": "'The Traitor' Very Hard Bounty Board"},
+	"lb_Chapter14VeryHard": 		{"en": "'Sunset Canyon' Very Hard Bounty Board"},
+	"lb_Chapter15VeryHard": 		{"en": "'Bear Mountain' Very Hard Bounty Board"},
+	"lb_Chapter17VeryHard": 		{"en": "'The Mine' Very Hard Bounty Board"},
+	"lb_Chapter19VeryHard": 		{"en": "'Hell Pass' Very Hard Bounty Board"},
+	"lb_Chapter20VeryHard": 		{"en": "'Fort Diego' Very Hard Bounty Board"},
+	"lb_Chapter22VeryHard": 		{"en": "'Devils and Angels' Very Hard Bounty Board"},
+	"lb_Chapter24VeryHard": 		{"en": "'Battle Finale' Very Hard Bounty Board"},
+	"lb_Chapter25VeryHard": 		{"en": "'Siege' Very Hard Bounty Board"}, 
+	"lb_Chapter27VeryHard": 		{"en": "'Fall From Grace' Very Hard Bounty Board"},
+
+	"lb_Chapter1RedWood": 			{"en": "'Bull's Eye' Red Wood Revolver Bounty Board"},
+	"lb_Chapter2RedWood": 			{"en": "'Bounty Hunter' Red Wood Revolver Bounty Board"},
+	"lb_Chapter3RedWood": 			{"en": "'Ugly Streetfight' Red Wood Revolver Bounty Board"},
+	"lb_Chapter5RedWood": 			{"en": "'Railroaded'' Red Wood Revolver Bounty Board"},
+	"lb_Chapter6RedWood": 			{"en": "'Carnival Life' Red Wood Revolver Bounty Board"},
+	"lb_Chapter7RedWood": 			{"en": "'Freak Show' Red Wood Revolver Bounty Board"},
+	"lb_Chapter8RedWood": 			{"en": "'Rogue Valley' Red Wood Revolver Bounty Board"},
+	"lb_Chapter10RedWood": 			{"en": "'The Cemetery' Red Wood Revolver Bounty Board"},
+	"lb_Chapter11RedWood": 			{"en": "'Range War' Red Wood Revolver Bounty Board"},
+	"lb_Chapter12RedWood": 			{"en": "'Bar Fight' Red Wood Revolver Bounty Board"},
+	"lb_Chapter13RedWood": 			{"en": "'The Traitor' Red Wood Revolver Bounty Board"},
+	"lb_Chapter14RedWood": 			{"en": "'Sunset Canyon' Red Wood Revolver Bounty Board"},
+	"lb_Chapter15RedWood": 			{"en": "'Bear Mountain' Red Wood Revolver Bounty Board"},
+	"lb_Chapter17RedWood": 			{"en": "'The Mine' Red Wood Revolver Bounty Board"},
+	"lb_Chapter19RedWood": 			{"en": "'Hell Pass' Red Wood Revolver Bounty Board"},
+	"lb_Chapter20RedWood": 			{"en": "'Fort Diego' Red Wood Revolver Bounty Board"},
+	"lb_Chapter22RedWood": 			{"en": "'Devils and Angels' Red Wood Revolver Bounty Board"},
+	"lb_Chapter24RedWood": 			{"en": "'Battle Finale' Red Wood Revolver Bounty Board"},
+	"lb_Chapter25RedWood": 			{"en": "'Siege' Red Wood Revolver Bounty Board"}, 
+	"lb_Chapter27RedWood": 			{"en": "'Fall From Grace' Red Wood Revolver Bounty Board"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},
 	"lb_ShowdownLargestBounty": 			{"en": "Most Wanted"},
@@ -8486,11 +9454,93 @@ leaderboards_titles = { // TODO Leaderboards: creative text
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_Chapter1Normal":					{"en": "Master Chapter 1, 'Bull's Eye, with deadly precision, steadfast resilience, swift alacrity and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter1Normal":	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter2Normal": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter3Normal": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter5Normal": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter6Normal": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter7Normal": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter8Normal": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter10Normal": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter11Normal": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter12Normal": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter13Normal": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter14Normal": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter15Normal": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter17Normal": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter19Normal": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter20Normal": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter22Normal": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter24Normal": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
+	"lb_Chapter25Normal": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"}, 
+	"lb_Chapter27Normal":	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on normal difficulty"},
 
-	"lb_ShowdownFastestBounty": 			{"en": "Complete a 15k target Bounty Hunter match with 3 CPU's as fast as possible"},
-	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match with 3 CPU's"},
-	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match with 3 CPU's"},
+	"lb_Chapter1Hard": 		{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter2Hard": 		{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter3Hard": 		{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter5Hard": 		{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter6Hard": 		{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter7Hard": 		{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter8Hard": 		{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter10Hard": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter11Hard": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter12Hard": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter13Hard": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter14Hard": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter15Hard": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter17Hard": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter19Hard": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter20Hard": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter22Hard": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter24Hard": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+	"lb_Chapter25Hard": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"}, 
+	"lb_Chapter27Hard": 	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on hard difficulty"},
+
+	"lb_Chapter1VeryHard": 	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter2VeryHard": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter3VeryHard": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter5VeryHard": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter6VeryHard": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter7VeryHard": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter8VeryHard": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter10VeryHard": {"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter11VeryHard": {"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter12VeryHard": {"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter13VeryHard": {"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter14VeryHard": {"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter15VeryHard": {"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter17VeryHard": {"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter19VeryHard": {"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter20VeryHard": {"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter22VeryHard": {"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter24VeryHard": {"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+	"lb_Chapter25VeryHard": {"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"}, 
+	"lb_Chapter27VeryHard": {"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on very hard difficulty"},
+
+	"lb_Chapter1RedWood": 	{"en": "Ace Chapter 1 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter2RedWood": 	{"en": "Ace Chapter 2 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter3RedWood": 	{"en": "Ace Chapter 3 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter5RedWood": 	{"en": "Ace Chapter 5 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter6RedWood": 	{"en": "Ace Chapter 6 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter7RedWood": 	{"en": "Ace Chapter 7 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter8RedWood": 	{"en": "Ace Chapter 8 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter10RedWood": 	{"en": "Ace Chapter 10 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter11RedWood": 	{"en": "Ace Chapter 11 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter12RedWood": 	{"en": "Ace Chapter 12 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter13RedWood": 	{"en": "Ace Chapter 13 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter14RedWood": 	{"en": "Ace Chapter 14 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter15RedWood": 	{"en": "Ace Chapter 15 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter17RedWood": 	{"en": "Ace Chapter 17 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter19RedWood": 	{"en": "Ace Chapter 19 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter20RedWood": 	{"en": "Ace Chapter 20 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter22RedWood": 	{"en": "Ace Chapter 22 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter24RedWood": 	{"en": "Ace Chapter 24 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+	"lb_Chapter25RedWood": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"}, 
+	"lb_Chapter27RedWood": 	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
+
+	"lb_ShowdownFastestBounty": 			{"en": "Win a 15k target Bounty Hunter match vs 3 CPU's as quickly as possible"},
+	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match vs 3 CPU's"},
+	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match vs 3 CPU's"},
 	}
 
 // ===============================
