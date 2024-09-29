@@ -7,6 +7,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/11094
+// RATools version: 1.14.1
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -48,6 +49,9 @@
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
+
+// TODO complete RAguide
+// TODO support for 60 fps patch + NTSCJ ????
 
 util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
@@ -610,7 +614,7 @@ memUtil_asciiToFloat = {
   "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
   "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
 
-function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4
+function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4; Returns a little endian hex, not big endian
 	let_stringLength = length(string_s)
 
 	if (let_stringLength > 4)
@@ -3427,7 +3431,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
-		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as this still uses SubSources // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -3435,7 +3439,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions
-		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements; Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
 			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		"a_BountyHuntChapter1": { // VERIFIED
@@ -6556,7 +6560,7 @@ achievements_triggers = {
 
 // =====================
 // • Achievements TEXT •
-// =====================
+// ===================== // TODO update all text from Writing-Requests --> https://discord.com/channels/310192285306454017/1288217265472278609
 achievements_titles = {
 	// Title Idea's
 	// Cavalry Draw - Jack Swift related achievement
@@ -7551,6 +7555,7 @@ function rpp_JournalCompletionRate(enum_releaseRegion) =>
 
 
 		===== Copy Serialized Logic here ---overwrite-->  __rpp_JournalCompletionRate__ (in Rich.txt) =====
+
 		-> Serialized Logic (PAL) - wrapped inside Macro.Number
 			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
 		
