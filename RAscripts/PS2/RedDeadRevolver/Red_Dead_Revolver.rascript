@@ -4006,15 +4006,15 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			&& current_RewardMenu_Balance(enum_releaseRegion) >= const_CASH_TARGET
 			&& trigger_when(
-				achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion)
-				&& repeated(197, // <-- Delay: so the achievement pops when the cash balance UI is displayed 
-					never(is_StartChpMenu_active(enum_releaseRegion)) // <-- ResetNextIf necessary otherwise some StartChpMenu's may add hit counts
-					&& is_RewardMenu_displayed_long(enum_releaseRegion)))
+				once(never(!is_RewardMenu_displayed_short(enum_releaseRegion) && 
+					on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(360, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
+					is_RewardMenu_displayed_short(enum_releaseRegion)))) // <-- Delay: so the achievement pops when the cash balance UI is displayed
 
 		// [2] ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))			
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
