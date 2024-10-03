@@ -526,6 +526,7 @@ memory_addresses = {
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
+		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -2076,6 +2077,13 @@ INGAMEMENU_GameOverScreen = "gameover"
 INGAMEMENU_PauseMenu = "pause"
 INGAMEMENU_CheatsMenu = "cheats"
 INGAMEMENU_WarningMenu = "warning"
+
+function current_FlagState_IsInPauseMenu(enum_releaseRegion) => 
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInPauseMenu", enum_releaseRegion))
+
+function is_inPauseMenu(enum_releaseRegion) =>
+	current_FlagState_IsInPauseMenu(enum_releaseRegion) == 1
+
 function current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
@@ -2197,7 +2205,7 @@ function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_Activa
 		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
 	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
 
-function is_AnyCheat_active(enum_releaseRegion) {
+function is_AnyCheat_active(enum_releaseRegion) { // TODO bugfix --> update all assets which use these cheat check functions (may not be necessary)
 	let_sumOf_AllCheatFlags = 
 		memGenerate_SumOf_BitsetFlags_noSubSource(
 			FlagData_Bitset_ActivatedCheats["Flags_UnlockableCheats"],
@@ -2208,7 +2216,7 @@ function is_AnyCheat_active(enum_releaseRegion) {
 			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 	return 
-		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the cheatsMenu as switching them on/off still requires a confirmation before leaving this subMenu
+		!is_inPauseMenu(enum_releaseRegion) // <--line-- checks if cheats are active outside the PauseMenu as switching them on/off still requires a confirmation before leaving the CheatsMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
 
@@ -2220,7 +2228,7 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		!is_inPauseMenu(enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 1}
 
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
@@ -2231,7 +2239,7 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		!is_inPauseMenu(enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 0}
 
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2246,7 +2254,7 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		!is_inPauseMenu(enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) == length(array_cheatEnums)}
 
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2261,7 +2269,7 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		!is_inPauseMenu(enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
 
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
@@ -2276,7 +2284,7 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_InGameMenu_displayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
+		!is_inPauseMenu(enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
 // ------------------------RstarCheat------------------------------ 
@@ -3541,9 +3549,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter6": { // VERIFIED
 			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
-		"a_ChallengeChapter7": { // BUG a_ChallengeChapter7 - Did not trigger, I had 74% acc. The indicator that shows my acc progress appears but the achievement did not unlock after the end of Chapeter 7. I played with Very Hard diff. But I also, froze my health in book mark // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			"id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
+		// "a_ChallengeChapter7": { // QA a_ChallengeChapter7 - Did not trigger, I had 74% acc. The indicator that shows my acc progress appears but the achievement did not unlock after the end of Chapeter 7. I played with Very Hard diff. But I also, froze my health in book mark // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			// "id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
 		"a_ChallengeChapter8": { // VERIFIED
 			"id": 451482, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
@@ -3559,9 +3567,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter13": { // VERIFIED
 			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
-		// "a_ChallengeChapter14": { // QA a_ChallengeChapter14 - Challenge indicator did not appear nor measured that tracks how much damage I have taken. I played fairly without using health freeze and still nothing shows up even after the end of the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			// "id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
+		"a_ChallengeChapter14": { // QA a_ChallengeChapter14 - Challenge indicator did not appear nor measured that tracks how much damage I have taken. I played fairly without using health freeze and still nothing shows up even after the end of the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
 			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
@@ -4817,7 +4825,7 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
+			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed // BUG - Pause Lock active when loading a level for first time, inactive when restarting level
 				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
@@ -4860,8 +4868,9 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed // TODO BUG --> all pauseLocks using data from Struct:SinglePlayer_Mission_Stats
+				never() // ---ResetNextIf---> Bugfix: this pause lock would be active, when loading this level for the first time. || Struct: SinglePlayer_Data gets remade during loading
+				once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Core (Alt) Logic Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
@@ -6605,32 +6614,32 @@ achievements_triggers = {
 
 // =====================
 // • Achievements TEXT •
-// ===================== // TODO update all text from Writing-Requests --> https://discord.com/channels/310192285306454017/1288217265472278609
+// ===================== // TODO update all text from Writing-Requests (text in rascript is updated, not yet updated on live) --> https://discord.com/channels/310192285306454017/1288217265472278609
 achievements_titles = {
 	// Title Idea's
-	// Cavalry Draw - Jack Swift related achievement
-	// Hammer of the God - weapon of the traitor General Diego
-	// Quite a show - Chapter 12	
-	// Red's Redemption
-	// Vendetta Complete
-	// Last Man Standing
-	// Justice Served Cold
-	// The Final Showdown
-	// Revenge of Red
-	// Nemesis No More
-	// Blood for Blood
-	// End of the Trail
-	// Gunfight at Sunset
-	// Foe Vanquished
-	// Reckoning Day
-	// Wrath Unleashed
-	// Rivalry Ended
-	// Deadly Vengeance
-	// Bullet with a Name
-	// Silent Justice
-	// Legend of Red
-	// Bitter Victory
-	// Westward Justice
+		// Cavalry Draw - Jack Swift related achievement
+		// Hammer of the God - weapon of the traitor General Diego
+		// Quite a show - Chapter 12	
+		// Red's Redemption
+		// Vendetta Complete
+		// Last Man Standing
+		// Justice Served Cold
+		// The Final Showdown
+		// Revenge of Red
+		// Nemesis No More
+		// Blood for Blood
+		// End of the Trail
+		// Gunfight at Sunset
+		// Foe Vanquished
+		// Reckoning Day
+		// Wrath Unleashed
+		// Rivalry Ended
+		// Deadly Vengeance
+		// Bullet with a Name
+		// Silent Justice
+		// Legend of Red
+		// Bitter Victory
+		// Westward Justice
 
 	// "a_Template": 						{"en": "xxxxxxxxx"},
 	"a_CompleteChapter1": 					{"en": "The Scorpion's Scar"},
@@ -6730,80 +6739,80 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_CompleteChapter1": 					{"en": "Valiantly hold the fort at Harlow's Home in Chapter 1, 'Bull's Eye'"},
-	"a_CompleteChapter2":					{"en": "Tenderize Bloody Tom's beefy ambitions during the events of Chapter 2, 'Bounty Hunter'"},
-	"a_CompleteChapter3":					{"en": "Neatly nix the Ugly Gang by the end of Chapter 3, 'Ugly Streetfight'"},
-	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, 'RailRoaded'"},
-	"a_CompleteChapter6":					{"en": "Wrangle the dynamite-fiend during the events of Chapter 6, 'Carnival Life'"},
-	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, 'Freak Show'"},
-	"a_CompleteChapter8":					{"en": "Rein in Bad Bessie's gang of outlaws during Chapter 8, 'Rogue Valley'"},
-	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, 'The Cemetery'"},
-	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, 'Range War'"},
-	"a_CompleteChapter12":					{"en": "Survive a storm of fists, bottles and bullets during Chapter 12, 'Bar Fight'"},
-	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, 'The Traitor'"},
-	"a_CompleteChapter14":					{"en": "Disrupt an illicit gold operation during the events of Chapter 14, 'Sunset Canyon'"},
-	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, 'Bear Mountain'"},
-	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines within Chapter 17, 'The Mine'"},
-	"a_CompleteChapter19": 					{"en": "Make it to Brimstone by stagecoach during Chapter 19, 'Hell's Pass'"},
-	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, 'Fort Diego'"},
-	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, 'Devils and Angels'"},
-	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries in Chapter 24, 'Battle Finale'"},
-	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, 'Siege'"},
-	"a_CompleteChapter27":					{"en": "Conclude Red's story by completing Chapter 27, 'Fall From Grace'"},
+	"a_CompleteChapter1": 					{"en": "Valiantly hold the fort at Harlow's Home in Chapter 1, \"Bull's Eye\""},
+	"a_CompleteChapter2":					{"en": "Tenderize Bloody Tom's beefy ambitions during the events of Chapter 2, \"Bounty Hunter\""},
+	"a_CompleteChapter3":					{"en": "Neatly nix the Ugly Gang by the end of Chapter 3, \"Ugly Streetfight\""},
+	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, \"RailRoaded\""},
+	"a_CompleteChapter6":					{"en": "Wrangle the dynamite-fiend during the events of Chapter 6, \"Carnival Life\""},
+	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, \"Freak Show\""},
+	"a_CompleteChapter8":					{"en": "Rein in Bad Bessie's gang of outlaws during Chapter 8, \"Rogue Valley\""},
+	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, \"The Cemetery\""},
+	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, \"Range War\""},
+	"a_CompleteChapter12":					{"en": "Survive a storm of fists, bottles and bullets during Chapter 12, \"Bar Fight\""},
+	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, \"The Traitor\""},
+	"a_CompleteChapter14":					{"en": "Disrupt an illicit gold operation during the events of Chapter 14, \"Sunset Canyon\""},
+	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, \"Bear Mountain\""},
+	"a_CompleteChapter17": 					{"en": "Escape the labyrinth of the mines within Chapter 17, \"The Mine\""},
+	"a_CompleteChapter19": 					{"en": "Make it to Brimstone by stagecoach during Chapter 19, \"Hell's Pass\""},
+	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, \"Fort Diego\""},
+	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, \"Devils and Angels\""},
+	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries in Chapter 24, \"Battle Finale\""},
+	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, \"Siege\""},
+	"a_CompleteChapter27":					{"en": "Conclude Red's story by completing Chapter 27, \"Fall From Grace\""},
 
-	"a_BountyHuntChapter1": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 1, 'Bull's Eye"},
-	"a_BountyHuntChapter2": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 2, 'Bounty Hunter'"},
-	"a_BountyHuntChapter3": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 3, 'Ugly Streetfight'"},
-	"a_BountyHuntChapter5": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 5, 'Railroaded'"},
-	"a_BountyHuntChapter6": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 6, 'Carnival Life'"},
-	"a_BountyHuntChapter7": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 7, 'Freak Show'"},
-	"a_BountyHuntChapter8": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 8, 'Rogue Valley'"},
-	"a_BountyHuntChapter9": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 9, 'Ghost Town'"},
-	"a_BountyHuntChapter11": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 11, 'Range War'"},
-	"a_BountyHuntChapter12": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 12, 'Bar Fight'"},
-	"a_BountyHuntChapter13": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 13, 'The Traitor'"},
-	"a_BountyHuntChapter14": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 14, 'Sunset Canyon'"},
-	"a_BountyHuntChapter15": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 15, 'Bear Mountain'"},
-	"a_BountyHuntChapter17": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 17, 'The Mine'"},
-	"a_BountyHuntChapter18": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 18, 'Stagecoach'"},
-	"a_BountyHuntChapter20": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 20, 'Fort Diego'"},
-	"a_BountyHuntChapter21": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 21, 'End of the Line'"},
-	"a_BountyHuntChapter24": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 24, 'Battle Finale'"},
-	"a_BountyHuntChapter25": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 25, 'Siege'"},
-	"a_BountyHuntChapter27": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 27, 'Fall From Grace'"},
+	"a_BountyHuntChapter1": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 1, \"Bull's Eye\""},
+	"a_BountyHuntChapter2": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 2, \"Bounty Hunter\""},
+	"a_BountyHuntChapter3": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 3, \"Ugly Streetfight\""},
+	"a_BountyHuntChapter5": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 5, \"Railroaded\""},
+	"a_BountyHuntChapter6": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 6, \"Carnival Life\""},
+	"a_BountyHuntChapter7": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 7, \"Freak Show\""},
+	"a_BountyHuntChapter8": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 8, \"Rogue Valley\""},
+	"a_BountyHuntChapter9": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 9, \"Ghost Town\""},
+	"a_BountyHuntChapter11": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 11, \"Range War\""},
+	"a_BountyHuntChapter12": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 12, \"Bar Fight\""},
+	"a_BountyHuntChapter13": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 13, \"The Traitor\""},
+	"a_BountyHuntChapter14": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 14, \"Sunset Canyon\""},
+	"a_BountyHuntChapter15": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 15, \"Bear Mountain\""},
+	"a_BountyHuntChapter17": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 17, \"The Mine\""},
+	"a_BountyHuntChapter18": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 18, \"Stagecoach\""},
+	"a_BountyHuntChapter20": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 20, \"Fort Diego\""},
+	"a_BountyHuntChapter21": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 21, \"End of the Line\""},
+	"a_BountyHuntChapter24": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 24, \"Battle Finale\""},
+	"a_BountyHuntChapter25": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 25, \"Siege\""},
+	"a_BountyHuntChapter27": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 27, \"Fall From Grace\""},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
 
-	"a_BigMoney":							{"en": "Amass a bank balance of $50 000 at the end of a single player story mission"},
-	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a single player story mission without using your Dead Eye ability"},
-	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1500 reward for saving him during Chapter 8, 'Rogue Valley'"},
-	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, 'Bull's Eye', by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
-	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, 'Bull's Eye', on very hard difficulty, with a collected bounty of $1000 or more"}, // WARNING - Manual creation via RAIntegration
-	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, 'Bounty Hunter', on hard or very hard difficulty, sustaining less than 50% damage and with the 'No HUD' cheat enabled"},
-	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, 'Ugly Streetfight', on very hard difficulty, without picking up any healing items"},
-	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, 'Railroaded', on hard or very hard difficulty, without stumbling off the train even once"},
-	"a_ChallengeChapter6":					{"en": "In Chapter 6, 'Carnival Life', on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
-	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, 'Freak Show', on very hard difficulty, with an accuracy of 60% or better"},
-	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, 'Rogue Valley', on very hard difficulty, with 'Bite the Bullet' cheat enabled"},
-	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, 'The Cemetery', on hard or very hard difficulty, with the following cheats enabled: 'No Distortion', 'Sad Stars' and 'No HUD'"},
-	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, 'Range War', on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
-	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, 'Bar Fight', on very hard difficulty, with a full health bar at the end"},
-	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, 'The Traitor', on hard or very hard difficulty, with at least 5 allied cannons remaining"},
-	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, 'Sunset Canyon', on very hard difficulty, with less than 90% damage taken"},
-	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, 'Bear Mountain', on very hard difficulty, using only the firearm 'Faith' to damage Grizzly"},
-	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, 'The Mine', on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
-	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, 'Hell's Pass', on hard or very hard difficulty, with the stagecoach's HP above 40%, using the 'Infinite DeadEye' cheat as the only means of shooting"},
-	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, 'Fort Diego', on very hard difficulty, with 12 headshot kills"},
-	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, 'Devils and Angels', on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
-	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, 'Battle Finale', on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, 'Siege', on hard or very hard difficulty, with Jack's and Annie's HP above 65%, using the 'Golden Gun' cheat"},
-	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, 'Fall From Grace', on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
-	"a_WoodChapter8":						{"en": "Complete Chapter 8, 'Rogue Valley', on Red Wood Revolver difficulty, with 'Bite the Bullet' cheat enabled"},
-	"a_WoodChapter10":						{"en": "Complete Chapter 10, 'The Cemetery', on Red Wood Revolver difficulty, using the 'Infinite Deadeye' cheat as the only means of doing damage"},
+	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 at the end of a singleplayer story mission"},
+	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Dead Eye ability"},
+	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1,500 reward for saving him during Chapter 8, \"Rogue Valley\""},
+	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, \"Bull's Eye\", by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
+	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, \"Bull's Eye\", on very hard difficulty, with a collected bounty of $1,000 or more"}, // WARNING - Manual creation via RAIntegration
+	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, \"Bounty Hunter\", on hard or very hard difficulty, sustaining less than 50% damage and with the \"No HUD\" cheat enabled"},
+	"a_ChallengeChapter3":					{"en": "Complete Chapter 3, \"Ugly Streetfight\", on very hard difficulty, without picking up any healing items"},
+	"a_ChallengeChapter5":					{"en": "Complete Chapter 5, \"Railroaded\", on hard or very hard difficulty, without stumbling off the train even once"},
+	"a_ChallengeChapter6":					{"en": "In Chapter 6, \"Carnival Life\", on hard or very hard difficulty, achieve a 10-kill streak with the gatling gun in a single, uninterrupted burst without releasing the trigger"},
+	"a_ChallengeChapter7":					{"en": "Complete Chapter 7, \"Freak Show\", on very hard difficulty, with an accuracy of 60% or better"},
+	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, \"Rogue Valley\", on very hard difficulty, with the \"Bite the Bullet\" cheat enabled"},
+	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, \"The Cemetery\", on hard or very hard difficulty, with the following cheats enabled: \"No Distortion\", \"Sad Stars\" and \"No HUD\""},
+	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, \"Range War\", on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
+	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, \"Bar Fight\", on very hard difficulty, with a full health bar at the end"},
+	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, \"The Traitor\", on hard or very hard difficulty, with at least 5 allied cannons remaining"},
+	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, \"Sunset Canyon\", on very hard difficulty, with less than 90% damage taken"},
+	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, \"Bear Mountain\", on very hard difficulty, using only the firearm \"Faith\" to damage Grizzly"},
+	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, \"The Mine\", on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
+	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, with the stagecoach's HP above 40%, using the \"Infinite DeadEye\" cheat as the only means of shooting"},
+	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
+	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
+	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"Siege\", on hard or very hard difficulty, with Jack's and Annie's HP above 65%, using the \"Golden Gun\" cheat"},
+	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
+	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with \"Bite the Bullet\" cheat enabled"},
+	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
 
-	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
-	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
-	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
-	"a_BountyHunterCooper": 				{"en": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
+	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a $10,000 target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
+	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all $10,000 target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
+	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes (P1), win a $10,000 target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
+	"a_BountyHunterCooper": 				{"en": "As Cooper (P1), win a $10,000 target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
 	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match, getting a kill with 7 different weapons"},
 	"a_SundownFallingStar": 				{"en": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
 	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of over 10"},
