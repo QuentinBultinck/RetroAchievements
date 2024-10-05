@@ -38,8 +38,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 #### General information and tips for unlocking the achievements in this set
 + All achievements are single player focused, even the ones for the multiplayer mode, *Showdown*. A potential real multiplayer subset could easily be made if there's enough ask for it, or if another developer wants to create one (most of the necessary RAM has been code noted).
-+ Some achievements will be disabled when using cheats. Make sure no cheat is active in the Cheat Menu prior to restarting or starting the required mission for the achievement. (The Cheat Menu is part of the Pause Menu and is accessible once a cheat has been unlocked via Bounty Hunter Mode.)
-+ General_tip_2
++ All achievements will be disabled when using cheats, unless stated otherwise. Make sure no cheat is active in the *Cheat Menu* prior to restarting or starting the required mission for the achievement. (The Cheat Menu is part of the Pause Menu and is accessible once a cheat has been unlocked via Bounty Hunter Mode.)
 
 ***
 
@@ -47,9 +46,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Story Mode
 </h2>
 
-- The achievements listed under this category will only unlock in Story Mode, not during Bounty Hunter Mode.
-- Any difficulty can be used to unlock these.
-- The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating game.
+> [!NOTE]
+> - The achievements listed under this category will only unlock in Story Mode, not during Bounty Hunter Mode.
+> - Any difficulty can be used to unlock these.
+> - The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating game.
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -72,11 +72,15 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | <h4 id=a_CompleteChapter24>**Battle Royalist**</h4><sub>*a_CompleteChapter24*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - "Complete Chapter 24 'Battle Finale' |
 | <h4 id=a_CompleteChapter25>**Straight Into the Griffon's Den**</h4><sub>*a_CompleteChapter25*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 25 'Seige' |
 | <h4 id=a_CompleteChapter27>**Redemption**</h4><sub>*a_CompleteChapter27*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 27 'Fall From Grace' <br> - This achievement counts as the *win condition* for beating game. |
-
+</details>
 
 <h2 id=StoryChallenges>
     🏆 Story Mission Challenges 
 </h2>
+
+> [!WARNING]
+> - A select few of these custom-made challenge achievements require certain cheats to be active for the trigger indicator to show up. The best way to have the indicator show up, thus make the player eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu.
+> - Don't forget to turn off the cheats if they're not required for certain achievements. 
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -113,8 +117,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Bounty Hunter Mode 
 </h2>
 
-- The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
-- Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
+> [!NOTE]
+> - The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
+> - Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
@@ -124,7 +129,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | <h4 id=a_BountyHuntChapter5>**Railrushed**</h4><sub>*a_BountyHuntChapter5*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 5, "Railroaded": Defeat Hoss within 2 minutes. |
 | <h4 id=a_BountyHuntChapter6>**Roaring Carnival**</h4><sub>*a_BountyHuntChapter6*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 6, "Carnival Life": Get a combo for over \$500 and defeat Pig Josh. |
 | <h4 id=a_BountyHuntChapter7>**Brawny Show**</h4><sub>*a_BountyHuntChapter7*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 7, "Freak Show": Kill Atlas and get a combo for over \$300. |
-| <h4 id=a_BountyHuntChapter8>**Treasure Valley**</h4><sub>*a_BountyHuntChapter8*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 8, "Rogue Valley": Find the 3 treasures. <br> - A measured indicator keeps track of how many boxes are destroyed/found. |
+| <h4 id=a_BountyHuntChapter8>**Treasure Valley**</h4><sub>*a_BountyHuntChapter8*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 8, "Rogue Valley": Find the 3 treasures. <br><br> - A measured indicator keeps track of how many boxes are destroyed/found. |
 | <h4 id=a_BountyHuntChapter9>**Wraith of the West**</h4><sub>*a_BountyHuntChapter9*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 9, "Ghost Town": Complete the level in 4 minutes. |
 | <h4 id=a_BountyHuntChapter11>**Faithful Bronco-buster**</h4><sub>*a_BountyHuntChapter11*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 11, "Range War": Get a combo for over \$200. |
 | <h4 id=a_BountyHuntChapter12>**Three Gals, Zero Wails**</h4><sub>*a_BountyHuntChapter12*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 12, "Saloon Fight": Keep all three girls alive. |
@@ -132,7 +137,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | <h4 id=a_BountyHuntChapter14>**Grand Theft Horse**</h4><sub>*a_BountyHuntChapter14*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 14, "Sunset Canyon": Steal a horse without being spotted. |
 | <h4 id=a_BountyHuntChapter15>**Wolf Mountain**</h4><sub>*a_BountyHuntChapter15*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 15, "Bear Mountain": Get to the source of the river without alerting the patrolling guards. |
 | <h4 id=a_BountyHuntChapter17>**Bound Momentum**</h4><sub>*a_BountyHuntChapter17*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 17, "The Mine": Complete the level in 3 minutes. |
-| <h4 id=a_BountyHuntChapter18>**Buffalo Soldier and the 40 Troopers**</h4><sub>*a_BountyHuntChapter18*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 18, "Stagecoach": Kill 40 enemies. <br> - A measured indicator keeps track of how many enemies are left to kill. |
+| <h4 id=a_BountyHuntChapter18>**Buffalo Soldier and the 40 Troopers**</h4><sub>*a_BountyHuntChapter18*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 18, "Stagecoach": Kill 40 enemies. <br><br> - A measured indicator keeps track of how many enemies are left to kill. |
 | <h4 id=a_BountyHuntChapter20>**Plenty Forte**</h4><sub>*a_BountyHuntChapter20*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 20, "Fort Diego": Get a combo for over \$300. |
 | <h4 id=a_BountyHuntChapter21>**Cessation of the Golden Horse**</h4><sub>*a_BountyHuntChapter21*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 21, "End of the Line": Get a combo for over \$200. |
 | <h4 id=a_BountyHuntChapter24>**Mr. Quickdraw**</h4><sub>*a_BountyHuntChapter24*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Chapter 24, "Battle Finale": Kill Mr. Kelley in under 1 minute. \|\| Kill all of the pedestrians under 1 minute. <br> - Depending on the version which is played, the challenge may be different, or it's a difference between Xbox and PS2. |
@@ -143,6 +148,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 <h2 id=ShowdownChallenges>
     🏆 Showdown Challenges
 </h2>
+
+- All of these multiplayer/Showdown challenge achievements require solo play. Thus when using a second controller, the achievement will not trigger.
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
