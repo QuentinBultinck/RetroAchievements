@@ -3451,7 +3451,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
-		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// "a_UnlockAllWeapons": { // TODO update a_UnlockAllWeapons // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -3593,9 +3593,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter25": { // VERIFIED
 			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 60% , 'Golden Gun' cheat required | Hard or Very Hard"},
-		"a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
+		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
 		"a_WoodChapter8": { // VERIFIED
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
@@ -4025,6 +4025,10 @@ achievements_triggers = {
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			&& current_RewardMenu_Balance(enum_releaseRegion) >= const_CASH_TARGET
+
+			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise it may trigger the achievement when Structs are reconstructed
+			&& !is_AnimationLoading(enum_releaseRegion)
+
 			&& trigger_when(
 				once(never(!is_RewardMenu_displayed_short(enum_releaseRegion) && 
 					on_RewardMenu_render_short(enum_releaseRegion))
@@ -6529,6 +6533,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UnlockCharactersHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -6537,6 +6543,8 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllCharacters) < CHARACTER_COUNT/2
@@ -6553,6 +6561,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_CompleteJournalHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -6562,6 +6572,8 @@ achievements_triggers = {
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
 			&& prev(let_sumOf_FlagsAllPages) < JOURNALPAGE_COUNT
@@ -6578,6 +6590,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion),
 				format = "percent")
 		}),
@@ -6591,7 +6605,9 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_StartChpMenu_active(enum_releaseRegion) // <-- Health upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
+					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> Health upgrades are not unlockable during this menu; this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_MaxDeadEye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -6604,7 +6620,9 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_StartChpMenu_active(enum_releaseRegion) // <-- DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
+					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),	
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
@@ -6619,6 +6637,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UpgradeAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -6632,6 +6652,8 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	}
