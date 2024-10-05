@@ -51,9 +51,9 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Some_explanation_here <br> - Some_explanation_here <sub>(refer to [*a_placeholderID*](#*a_placeholderID*))</sub> <br><br> - Some_explanation_here <br> - Some_explanation_here <br> <sub><i>Measured achievement [^measured]</sub></i> |
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Some_explanation_here <br> - List: <br> -------------------------- <br> <b>list_item_A</b>: explanation_here <br> <b>list_item_B</b>: explanation_here <br> <b>list_item_C</b>: explanation_here <br><br> - [link_to_external_FAQ](https://en.wikipedia.org/wiki/Hoofdpagina "alt_text_here") |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Some_explanation_here <br> - Some_explanation_here <sub>(refer to [*a_placeholderID*](#*a_placeholderID*))</sub> <br><br> - Some_explanation_here <br> - Some_explanation_here <br> <sub><i>Measured achievement [^measured]</sub></i> |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Some_explanation_here <br> - List: <br> -------------------------- <br> <b>list_item_A</b>: explanation_here <br> <b>list_item_B</b>: explanation_here <br> <b>list_item_C</b>: explanation_here <br><br> - [link_to_external_FAQ](https://en.wikipedia.org/wiki/Hoofdpagina "alt_text_here") |
 
 
 <h2 id=WinCondition>
@@ -62,7 +62,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
 
 <h2 id=ExtraContent>
@@ -71,7 +71,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
 
 <h2 id=Misc_AchievementCategory>
@@ -80,7 +80,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=a_placeholderID>**title_placeholder**</div><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h4 id=a_placeholderID>**title_placeholder**</h4><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
 
 
 
@@ -90,7 +90,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <div id=lb_placeholderID>**title_placeholder**</div><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br><b>‣ <u>Start</u></b>: <br> - info_about_start_trigger <br><br><b>‣ <u>Cancel</u></b>: <br> - info_about_cancel_trigger <br><br><b>‣ <u>Submit</u></b>: <br> - info_about_submit_trigger <br><br><b>‣ <u>Measured value</u></b>: <br> - info_about_measuredValue |
+| <h4 id=lb_placeholderID>**title_placeholder**</h4><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br><b>‣ <u>Start</u></b>: <br> - info_about_start_trigger <br><br><b>‣ <u>Cancel</u></b>: <br> - info_about_cancel_trigger <br><br><b>‣ <u>Submit</u></b>: <br> - info_about_submit_trigger <br><br><b>‣ <u>Measured value</u></b>: <br> - info_about_measuredValue |
 
 
 [^measured]: **Measured achievement**: This achievement has a measured flag. It will show the measurement popup on screen (e.g. 7/12). It will unlock the achievement once the measurement target has been hit (e.g. 12/12).
