@@ -526,7 +526,8 @@ memory_addresses = {
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
-		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
+		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM // unused 
+		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -541,6 +542,7 @@ memory_addresses = {
 		},
 	DATATYPE_32Bit: {
 		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
+		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
 		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
@@ -1251,14 +1253,14 @@ function on_Area_change(enum_releaseRegion) {
 // ..............
 // ◦ GAME STATE ◦
 // ''''''''''''''
-// ------------------LoadingDetection------------------- 
+// ------------------LoadingDetection-------------------  // NOTE: ShowdownMatchLoading needs to be checked differently than below 2 options
 // TODO LoadingDetection - Necessary as some Measured popups are shown during loading (bad UX) --> some achievements may pop during this
-	// mostly fix for: BigMoney - False trigger. Yeah, and it happened twice on wrong levels.
-	// FLAG: Logo Screen Loading --> $0x4fd3ec 
-	// FLAG: Twirling Loading --> $0x7478f0
 
+function is_LogoScreenLoading(enum_releaseRegion) =>
+	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLogoScreenLoading", enum_releaseRegion)) == 0
 
-
+function is_AnimationLoading(enum_releaseRegion) =>
+	dword(memory_getAddress(DATATYPE_32Bit, "IsAnimationLoading", enum_releaseRegion)) == 0x00009000
 
 // ------------------AreaState-------------------
 AREASTATE_InGame = 10
@@ -2205,7 +2207,7 @@ function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_Activa
 		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
 	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
 
-function is_AnyCheat_active(enum_releaseRegion) { // TODO bugfix --> update all assets which use these cheat check functions (may not be necessary)
+function is_AnyCheat_active(enum_releaseRegion) {
 	let_sumOf_AllCheatFlags = 
 		memGenerate_SumOf_BitsetFlags_noSubSource(
 			FlagData_Bitset_ActivatedCheats["Flags_UnlockableCheats"],
@@ -2216,7 +2218,7 @@ function is_AnyCheat_active(enum_releaseRegion) { // TODO bugfix --> update all 
 			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 	return 
-		!is_inPauseMenu(enum_releaseRegion) // <--line-- checks if cheats are active outside the PauseMenu as switching them on/off still requires a confirmation before leaving the CheatsMenu
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the PauseMenu as switching them on/off still requires a confirmation before leaving the CheatsMenu
 		&& let_sumOf_AllCheatFlags > 0
 	}
 
@@ -2228,7 +2230,7 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_inPauseMenu(enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 1}
 
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
@@ -2239,7 +2241,7 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
-		!is_inPauseMenu(enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte) == 0}
 
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2254,7 +2256,7 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_inPauseMenu(enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) == length(array_cheatEnums)}
 
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
@@ -2269,7 +2271,7 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_inPauseMenu(enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) > 0}
 
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
@@ -2284,7 +2286,7 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
 	return 
-		!is_inPauseMenu(enum_releaseRegion)
+		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
 		&& sum_of(let_array_memAccessors_toActivatedCheats, memAccessor => memAccessor) < length(array_cheatEnums)}
 
 // ------------------------RstarCheat------------------------------ 
@@ -3521,7 +3523,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 449102, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements // TODO Allow certain Very Hard achievements on Red Wood Revolver difficulty as well??
+	"c_StoryChallenge": { // Category -  Story related challenge achievements
 		// "a_BigMoney": { // QA a_BigMoney - False trigger // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
 			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Amass an amount of cash on one player profile"},
@@ -3567,19 +3569,19 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter13": { // VERIFIED
 			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
-		"a_ChallengeChapter14": { // QA a_ChallengeChapter14 - Challenge indicator did not appear nor measured that tracks how much damage I have taken. I played fairly without using health freeze and still nothing shows up even after the end of the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			"id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
+		// "a_ChallengeChapter14": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+			// "id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
 			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
-		"a_ChallengeChapter17": { // QA a_ChallengeChapter17 - I killed ted and tony as fast as I can, I don't know if I made it under 1 minute cause there's no indicator that shows my progress. Furthermore, the indicator did not show up which determine that I am dealing with a challenge.
+		"a_ChallengeChapter17": { // VERIFIED
 			"id": 450889, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		"a_ChallengeChapter19": { // VERIFIED
 			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite DeadEye' cheat required, melee is allowed | Hard or Very Hard"},
-		"a_ChallengeChapter20": { // VERIFIED 
+		"a_ChallengeChapter20": { // VERIFIED
 			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
 		"a_ChallengeChapter22": { // VERIFIED
@@ -3591,9 +3593,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter25": { // VERIFIED
 			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 60% , 'Golden Gun' cheat required | Hard or Very Hard"},
-		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
+		"a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			"id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
 		"a_WoodChapter8": { // VERIFIED
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
@@ -4182,11 +4184,6 @@ achievements_triggers = {
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
-				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))			
-			&& unless(once( // <-- Pause Lock: when stumbled off the train
-				current_PlayerZCoordinate(enum_releaseRegion) < 0
-				&& is_AreaState_InGame(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
 			
@@ -4198,7 +4195,7 @@ achievements_triggers = {
 			
 			&& trigger_when(achievements_generate_Check_Once_OnRewardMenuRender(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  						-> Reset when not in correct Area
+		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct Area
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
@@ -4287,8 +4284,9 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion))) 
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed 
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
@@ -4332,8 +4330,9 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed 
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Core (Alt) Logic Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.5.1.
@@ -4434,17 +4433,13 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection
 				is_AnyCheat_active(enum_releaseRegion)))
-
 			&& unless(once( // <-- Pause Lock: when RetryMenu is rendered, to hide RATrigger popup
-				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))
-			
+				on_InGameMenu_render(INGAMEMENU_RetryMenu, enum_releaseRegion)))			
 			&& unless(once( // <-- Pause Lock: when stumbled off the train
 				current_PlayerZCoordinate(enum_releaseRegion) < 0
 				&& is_AreaState_InGame(enum_releaseRegion)))
@@ -4479,11 +4474,9 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
@@ -4655,11 +4648,9 @@ achievements_triggers = {
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
-
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
-
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
 
@@ -4825,11 +4816,14 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed // BUG - Pause Lock active when loading a level for first time, inactive when restarting level
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
 				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
 
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
@@ -4841,6 +4835,8 @@ achievements_triggers = {
 						
 					-> Logic (NTSCU)
 						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
 
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
@@ -4868,12 +4864,14 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed // TODO BUG --> all pauseLocks using data from Struct:SinglePlayer_Mission_Stats
-				never() // ---ResetNextIf---> Bugfix: this pause lock would be active, when loading this level for the first time. || Struct: SinglePlayer_Data gets remade during loading
-				once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Core (Alt) Logic Group)
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed 
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
 
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
@@ -4881,10 +4879,12 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 						
 					-> Logic (NTSCU)
 						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.9.1.
+
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
 
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
@@ -4999,14 +4999,17 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
-					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock would trigger when loading the mission for first time
+					&& !is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
 					&& on_MajorCharacterHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
-					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock would trigger when loading the mission for first time
+					&& !is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
 					&& on_MajorCharacterHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
 				]))			
-			&& unless(once( // <-- Pause Lock: When over time limit
-				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+			&& unless( // <-- Pause Lock: When over time limit
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			// && is_Weapon_inInventory(const_REQUIRED_WEAPON, enum_releaseRegion) // <-- This check is very buggy as the pointerChain for this mission is weird
@@ -5026,14 +5029,17 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(tally(1, [ // <-- Pause Lock: When damaging one of the bosses with wrong weapon
 				once( 
-					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock would trigger when loading the mission for first time
+					&& !is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
 					&& on_MajorCharacterHP_decrement(const_BOSS_A_INDEX, enum_releaseRegion)),
 				once( 
-					!is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock would trigger when loading the mission for first time
+					&& !is_PlayerWeapon_equipped(const_REQUIRED_WEAPON, enum_releaseRegion)
 					&& on_MajorCharacterHP_decrement(const_BOSS_B_INDEX, enum_releaseRegion))
-				]))
-			&& unless(once( // <-- Pause Lock: When over time limit
-				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+				]))	
+			&& unless( // <-- Pause Lock: When over time limit
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
 
 			&& measured(
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS, 
@@ -5067,9 +5073,11 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: When using firearm without the deadeye ability
-				is_PlayerInput_AimGun_pressed(enum_releaseRegion)
-				&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: When using firearm without the deadeye ability
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(
+					is_PlayerInput_AimGun_pressed(enum_releaseRegion)
+					&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
@@ -5144,12 +5152,14 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: When over time limit
-				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+			&& unless( // <-- Pause Lock: When over time limit
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
 			&& unless( // <-- Pause Lock: When an enemy other than General Diego was killed
 				tally_of(const_array_ENEMY_ACTOR_DATA_INDICES, 1, int_actorDataindex => 
-					is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
-					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))		
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
+					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 			&& once(is_AreaState_InGame(enum_releaseRegion))
@@ -5167,11 +5177,13 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: When over time limit
-				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
+			&& unless( // <-- Pause Lock: When over time limit
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS))
 			&& unless( // <-- Pause Lock: When an enemy other than General Diego was killed
 				tally_of(const_array_ENEMY_ACTOR_DATA_INDICES, 1, int_actorDataindex => 
-					is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_GeneralDiego, enum_releaseRegion) // <---2 lines--- check if any ActorHP went to 0 
 					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
 			
 			&& measured(
@@ -5204,7 +5216,8 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
 				tally_of(const_array_PEDESTRIAN_ACTOR_DATA_INDICES, 1, int_actorDataindex =>
-					is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+					&& is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
 					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_MrKelley, enum_releaseRegion)
 					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
 			
@@ -5227,7 +5240,8 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless( // <-- Pause Lock: Once a bystander/pedestrian is killed
 				tally_of(const_array_PEDESTRIAN_ACTOR_DATA_INDICES, 1, int_actorDataindex =>
-					is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
+					is_AreaState_InGame(enum_releaseRegion) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+					&& is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion)
 					&& is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, CHARACTER_MrKelley, enum_releaseRegion)
 					&& on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion)))
 			
@@ -5311,12 +5325,15 @@ achievements_triggers = {
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
-				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall 	(Same PauseIf as in Alt RAmeasured Handler Group)
+				is_AnyCheat_active(enum_releaseRegion)))		
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed 
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
+
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
 
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
@@ -5324,18 +5341,20 @@ achievements_triggers = {
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 						
 					-> Logic (NTSCU)
 						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
 
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 				*/
 
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
@@ -5377,31 +5396,36 @@ achievements_triggers = {
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
-				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once DamageTaken >= allowed 
-				current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
-				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall 	(Same PauseIf as in Core Alt Group)
+				is_AnyCheat_active(enum_releaseRegion)))			
+			&& unless( // <-- Pause Lock: Once DamageTaken >= allowed 
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise |Once DamageTaken >= allowed| would trigger pause lock when loading a mission for first time
+				&& once(current_Calculated_DamageTakenPercentage(enum_releaseRegion) >= const_MAX_DAMAGE_TAKEN_DECIMAL))
+				/* MANUAL_CONSTRUCTION (of Pause Lock) with Remember + Recall	(Same PauseIf as in Alt RAmeasured Handler Group)
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000014_I:0xX00763070_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
 
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
+
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
 						AddAddress	Mem		32-bit	0x763070
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
-
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
+						
 					-> Logic (NTSCU)
 						I:0xX007608f0_I:0xX00000018_K:fF00000014_I:0xX007608f0_I:0xX0000036c_K:fF00000070/{recall}_P:{recall}>=f0.75.1.
 
+						AndNext		...on_PlayerReset_atMissionStartPoint()..	(1)
+
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x18
 						Remember	Mem		Float	0x14
 						AddAddress	Mem		32-bit	0x7608f0
 						AddAddress	Mem		32-bit	0x36c
 						Remember	Mem		Float	0x70		/	Recall
-						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL		(1)
+						PauseIf		Recall						>=	Float	const_MAX_DAMAGE_TAKEN_DECIMAL	(1)
 				*/
 
 			&& measured(current_Calculated_Accuracy(enum_releaseRegion) >= const_MAX_ACCURACY,
