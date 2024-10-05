@@ -526,8 +526,8 @@ memory_addresses = {
 	DATATYPE_BitFlag: {
 		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
-		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM // unused 
-		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
+		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
+		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
 		},
 	DATATYPE_8Bit: {
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
@@ -542,7 +542,7 @@ memory_addresses = {
 		},
 	DATATYPE_32Bit: {
 		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
-		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL}, // TODO Verify USA RAM
+		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
@@ -1254,8 +1254,6 @@ function on_Area_change(enum_releaseRegion) {
 // ◦ GAME STATE ◦
 // ''''''''''''''
 // ------------------LoadingDetection-------------------  // NOTE: ShowdownMatchLoading needs to be checked differently than below 2 options
-// TODO LoadingDetection - Necessary as some Measured popups are shown during loading (bad UX) --> some achievements may pop during this
-
 function is_LogoScreenLoading(enum_releaseRegion) =>
 	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLogoScreenLoading", enum_releaseRegion)) == 0
 
@@ -3451,7 +3449,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
-		// "a_UnlockAllWeapons": { // TODO update a_UnlockAllWeapons // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
+		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
@@ -3563,7 +3561,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter11": { // VERIFIED
 			"id": 450845, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
-		// "a_ChallengeChapter12": { // QA a_ChallengeChapter12 - False trigger. It trigger's upon beginning the fight. Note that my health is not frozen neither deadeye. However, activating the cheevo during cutscene. The achievement indicator appears and triggers normally upon finishnig the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		// "a_ChallengeChapter12": { // QA a_ChallengeChapter12 - False trigger. It trigger's upon beginning the fight. Note that my health is not frozen neither Deadeye. However, activating the cheevo during cutscene. The achievement indicator appears and triggers normally upon finishnig the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bar Fight' | Complete will full hp at end | Very Hard"},
 		"a_ChallengeChapter13": { // VERIFIED
@@ -3580,7 +3578,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		"a_ChallengeChapter19": { // VERIFIED
 			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite DeadEye' cheat required, melee is allowed | Hard or Very Hard"},
+			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite Deadeye' cheat required, melee is allowed | Hard or Very Hard"},
 		"a_ChallengeChapter20": { // VERIFIED
 			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
@@ -3913,7 +3911,7 @@ achievements_triggers = {
 		const_array_POINTER_CHAIN_KEYS = const_ExtraMission_data[const_MISSION_AREA]
 
 		return
-		// ==== Core (Alt) Group ====			
+		// [1] ==== Core (Alt) Group ====			
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
@@ -3931,18 +3929,18 @@ achievements_triggers = {
 				never(is_StartChpMenu_active(enum_releaseRegion))
 				&& is_RewardMenu_displayed_long(enum_releaseRegion)))
 		
-		// ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+		// [2] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_AtMainMenu(enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
+		// [3] ==== Alt Pause Lock Reset Groups ====		-> Reset when pressing 'yes' on retryMenu after mission failure
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RetryMenu_yes(enum_releaseRegion))
 				&& is_PlayerPosition_atMissionLoadingPoint(const_MISSION_AREA, enum_releaseRegion))
 
-		// ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [4] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
@@ -4091,7 +4089,7 @@ achievements_triggers = {
 				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once deadeye ability has been used
+			&& unless(once( // <-- Pause Lock: Once Deadeye ability has been used
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion)))
 
@@ -5077,7 +5075,7 @@ achievements_triggers = {
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless( // <-- Pause Lock: When using firearm without the deadeye ability
+			&& unless( // <-- Pause Lock: When using firearm without the Deadeye ability
 				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
 				&& once(
 					is_PlayerInput_AimGun_pressed(enum_releaseRegion)
@@ -5897,7 +5895,7 @@ achievements_triggers = {
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
 		}),
 	"a_BountyHunterWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// NOTE: There should be around 55 weapon_IDs, but added up to 100 for the measured as backup for non-documented weapons which can be acquired only during showdown (eg. special weapons acquired through cards or deadeye abilities)
+		// NOTE: There should be around 55 weapon_IDs, but added up to 100 for the measured as backup for non-documented weapons which can be acquired only during showdown (eg. special weapons acquired through cards or Deadeye abilities)
 
 		const_HUMAN_PLAYER_INDEX_1 = 1 // Human player is always at index 1
 		const_CPU_PLAYER_INDEX_2 = 2
@@ -6622,7 +6620,7 @@ achievements_triggers = {
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
 					&& !is_AnimationLoading(enum_releaseRegion)
-					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> DeadEye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
+					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> Deadeye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),	
 	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
@@ -6846,7 +6844,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, \"Sunset Canyon\", on very hard difficulty, with less than 90% damage taken"},
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, \"Bear Mountain\", on very hard difficulty, using only the firearm \"Faith\" to damage Grizzly"},
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, \"The Mine\", on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
-	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, with the stagecoach's HP above 40%, using the \"Infinite DeadEye\" cheat as the only means of shooting"},
+	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, with the stagecoach's HP above 40%, using the \"Infinite Deadeye\" cheat as the only means of shooting"},
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
