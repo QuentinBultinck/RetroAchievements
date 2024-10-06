@@ -3563,7 +3563,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
 		// "a_ChallengeChapter12": { // QA a_ChallengeChapter12 - False trigger. It trigger's upon beginning the fight. Note that my health is not frozen neither Deadeye. However, activating the cheevo during cutscene. The achievement indicator appears and triggers normally upon finishnig the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Bar Fight' | Complete will full hp at end | Very Hard"},
+			// "devInfo": "Level 'Bar Fight' | Complete with at least 70% HP remaining | Very Hard"},
 		"a_ChallengeChapter13": { // VERIFIED
 			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
@@ -3576,9 +3576,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter17": { // VERIFIED
 			"id": 450889, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
-		"a_ChallengeChapter19": { // VERIFIED
-			"id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Hell Pass' | Complete with the coach's HP above 40%, using only Buffalo Soldier's dead eye ability to shoot, 'infinite Deadeye' cheat required, melee is allowed | Hard or Very Hard"},
+		// "a_ChallengeChapter19": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			// "id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Hell Pass' | Complete without letting the coach's HP drop below 40%, using only Buffalo Soldier's deadeye ability to shoot, 'infinite Deadeye' cheat required, melee is allowed | Hard or Very Hard"},
 		"a_ChallengeChapter20": { // VERIFIED
 			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
@@ -3588,9 +3588,9 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_ChallengeChapter24": { // VERIFIED
 			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
-		"a_ChallengeChapter25": { // VERIFIED
-			"id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			"devInfo": "Level 'Siege' | Complete with both Jack's and Annie's HP above 60% , 'Golden Gun' cheat required | Hard or Very Hard"},
+		// "a_ChallengeChapter25": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			// "id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// "devInfo": "Level 'Siege' | Complete without letting combined HP of hero trio drop below 60%, 'Golden Gun' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
@@ -4712,6 +4712,8 @@ achievements_triggers = {
 		}),
 	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_SaloonFight
+		const_HP_REQUIRED_DECIMAL = 0.7
+		const_HP_REQUIRED_PERCENT = 70.0
 		
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -4724,7 +4726,25 @@ achievements_triggers = {
 				is_AnyCheat_active(enum_releaseRegion)))
 
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
-			&& current_PlayerHP(enum_releaseRegion) >= current_PlayerMaxHP(enum_releaseRegion)
+
+			&& current_PlayerHP(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion) >= const_HP_REQUIRED_DECIMAL
+			/* MANUAL_CONSTRUCTION (of above math) usage of Remember/Recall
+				-> Logic (PAL)
+					I:0xX00763070_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
+
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
+								Recall					>=	const_HP_REQUIRED_DECIMAL
+
+				-> Logic (NTSCU)
+					I:0xX007608f0_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
+
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
+								Recall					>=	const_HP_REQUIRED_DECIMAL
+			*/
 
 			&& trigger_when(
 				once(
@@ -4743,7 +4763,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& measured(current_PlayerHP(enum_releaseRegion) >= 100.0,
+			&& measured(current_PlayerHP(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion) >= const_HP_REQUIRED_PERCENT,
 				/* MANUAL_CONSTRUCTION with Remember + Recall
 					-> Logic (PAL)
 						I:0xX00763070_I:0xX00000018_K:fF00000010/fF00000014_K:{recall}*f100.0_M:{recall}>=f100.0
@@ -5046,7 +5066,7 @@ achievements_triggers = {
 			&& measured(
 				current_TimeSpentInMission(enum_releaseRegion) >= const_TIME_LIMIT_SECONDS, 
 				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)))
-			&& trigger_when(always_false())					
+			&& trigger_when(always_false())	
 
 		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -5056,14 +5076,15 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO update a_ChallengeChapter19 - with HP measured
 		const_MISSION_AREA = AREA_Campaign_HellPass
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
 			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
 		const_REQUIRED_CHEAT = CHEAT_InfiniteDeadeye
 		const_COACH_MAJOR_CHARACTER_INDEX = 3
-		const_COACH_HP_THRESHOLD_PERCENTAGE = 0.40
+		const_COACH_HP_THRESHOLD_DECIMAL = 0.4
+		const_COACH_MAX_HP_PERCENTAGE = 100.0
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -5086,24 +5107,112 @@ achievements_triggers = {
 				&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 
 			&& is_MajorCharacter_CharacterName(const_COACH_MAJOR_CHARACTER_INDEX, CHARACTER_StageCoach, enum_releaseRegion)
-			&& current_Calculated_MajorCharacterHPPercentage(const_COACH_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_COACH_HP_THRESHOLD_PERCENTAGE
+
+			&& current_Calculated_MajorCharacterHPPercentage(const_COACH_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_COACH_HP_THRESHOLD_DECIMAL 
+			/* MANUAL_CONSTRUCTION (of above line/summation) usage of Remember/Recall
+				-> Logic (PAL)
+					I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
+
+					AddAddress	Mem		32-bit	0x4fa3a0
+					AddAddress	Mem		32-bit	0x18
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+								Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+
+				-> Logic (NTSCU)
+					I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
+
+					AddAddress	Mem		32-bit	0x4f7d20
+					AddAddress	Mem		32-bit	0x18
+					AddAddress	Mem		32-bit	0x18
+					Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+								Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+			*/
 
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured indicator to the stagecoach's HP in percentage; This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: When using firearm without the Deadeye ability
+				once(is_AreaState_InGame(enum_releaseRegion)) // --> is_AreaState_InGame() necessary as otherwise this pauseLock may trigger when loading the mission for first time
+				&& once(
+					is_PlayerInput_AimGun_pressed(enum_releaseRegion)
+					&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
+
+			&& measured(
+				current_Calculated_MajorCharacterHPPercentage(const_COACH_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_COACH_MAX_HP_PERCENTAGE,
+				/* MANUAL_CONSTRUCTION (of above measured) usage of Remember/Recall
+					-> Logic (PAL)
+						I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+						Remember	Recall						* 	Float			100.0
+						Measured	Recall						>=	Float			const_COACH_MAX_HP_PERCENTAGE
+
+					-> Logic (NTSCU)
+						I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+						Remember	Recall						* 	Float			100.0
+						Measured	Recall						>=	Float			const_COACH_MAX_HP_PERCENTAGE
+				*/
+
+				when = 
+					once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
+						is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
+						&& on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+					&& is_MajorCharacter_CharacterName(const_COACH_MAJOR_CHARACTER_INDEX, CHARACTER_StageCoach, enum_releaseRegion)
+
+					&& current_Calculated_MajorCharacterHPPercentage(const_COACH_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_COACH_HP_THRESHOLD_DECIMAL,
+					/* MANUAL_CONSTRUCTION (of above line/summation) usage of Remember/Recall
+						-> Logic (PAL)
+							I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_Q:{recall}>=f0.4
+
+							AddAddress	Mem		32-bit	0x4fa3a0
+							AddAddress	Mem		32-bit	0x18
+							AddAddress	Mem		32-bit	0x18
+							Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+							MeasuredIf	Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+
+						-> Logic (NTSCU)
+							I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
+
+							AddAddress	Mem		32-bit	0x4f7d20
+							AddAddress	Mem		32-bit	0x18
+							AddAddress	Mem		32-bit	0x18
+							Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+							MeasuredIf	Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+					*/
+				format = "percent")
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& !is_Area(const_MISSION_AREA, enum_releaseRegion))
 
-		// [3] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
+		// [4] ==== Alt Reset Group ====  					-> Reset when required cheats are not active
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& is_SpecifiedCheat_inactive(const_REQUIRED_CHEAT, enum_releaseRegion))
 
-		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+		// [5+6+7] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
 	"a_ChallengeChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -5270,7 +5379,16 @@ achievements_triggers = {
 		const_REQUIRED_CHEAT = CHEAT_GoldenGun
 		const_JACK_MAJOR_CHARACTER_INDEX = 3
 		const_ANNIE_MAJOR_CHARACTER_INDEX = 4
-		const_ALLIED_HP_THRESHOLD_PERCENTAGE = 0.65
+
+		const_TRIO_HP_PERCENT_THRESHOLD_DECIMAL = 0.6
+		const_TRIO_HP_THRESHOLD_DECIMAL = const_TRIO_HP_PERCENT_THRESHOLD_DECIMAL * 3 // == 1.8
+		const_TRIO_MAX_HP_DECIMAL = 3.0 // == 1.0 * 3
+		const_MAX_PERCENT = 100.0
+
+		function current_Calculated_HeroTrioHPpercent(int_jackCharacterIndex, int_annieCharacterIndex, enum_releaseRegion) =>
+			current_PlayerHP(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion)
+			+ current_Calculated_MajorCharacterHPPercentage(int_jackCharacterIndex, enum_releaseRegion) 
+			+ current_Calculated_MajorCharacterHPPercentage(int_annieCharacterIndex, enum_releaseRegion) 
 
 		return
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
@@ -5286,17 +5404,109 @@ achievements_triggers = {
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 
 			&& is_MajorCharacter_CharacterName(const_JACK_MAJOR_CHARACTER_INDEX, CHARACTER_JackSwift, enum_releaseRegion) 
-			&& current_Calculated_MajorCharacterHPPercentage(const_JACK_MAJOR_CHARACTER_INDEX, enum_releaseRegion) 
-				>= const_ALLIED_HP_THRESHOLD_PERCENTAGE
-
 			&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion) 
-			&& current_Calculated_MajorCharacterHPPercentage(const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) 
-				>= const_ALLIED_HP_THRESHOLD_PERCENTAGE
+
+			&& current_Calculated_HeroTrioHPpercent(const_JACK_MAJOR_CHARACTER_INDEX, const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_TRIO_HP_THRESHOLD_DECIMAL
+			/* MANUAL_CONSTRUCTION (of above sumOf) with Remember/Recall
+				-> Logic (PAL)
+					I:0xX00763070_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
+
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+					AddAddress	Mem		32-bit	0x4fa3a0
+					AddAddress	Mem		32-bit	0x18
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+					AddAddress	Mem		32-bit	0x4fa3a0
+					AddAddress	Mem		32-bit	0x20
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+					Remember	Float			0.0
+								Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL
+
+				-> Logic (NTSCU)
+					I:0xX007608f0_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
+
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+					AddAddress	Mem		32-bit	0x4f7d20
+					AddAddress	Mem		32-bit	0x18
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+					AddAddress	Mem		32-bit	0x4f7d20
+					AddAddress	Mem		32-bit	0x20
+					AddAddress	Mem		32-bit	0x18
+					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+					Remember	Float			0.0
+								Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL			
+				*/
 
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to combined HP of hero trio; This group can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+			&& unless(
+				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
+				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection 
+				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
+
+			&& measured(
+				// (current_Calculated_HeroTrioHPpercent(const_JACK_MAJOR_CHARACTER_INDEX, const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) / const_TRIO_MAX_HP_THRESHOLD_PERCENTAGE) * 100.0 >= const_MAX_PERCENT,
+				current_Calculated_HeroTrioHPpercent(const_JACK_MAJOR_CHARACTER_INDEX, const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_MAX_PERCENT,
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember/Recall
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_K:{recall}/f3.0_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x20
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+						Remember	Float			0.0
+						Remember	Recall						/ 	Float			const_TRIO_MAX_HP_DECIMAL
+						Remember	Recall						* 	Float			const_MAX_PERCENT
+						Measured	Recall						>= 	Float 			const_MAX_PERCENT
+
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_K:{recall}/f3.0_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x20
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+						Remember	Float			0.0
+						Remember	Recall						/ 	Float			const_TRIO_MAX_HP_DECIMAL
+						Remember	Recall						* 	Float			const_MAX_PERCENT
+						Measured	Recall						>= 	Float 			const_MAX_PERCENT
+					*/
+				when = 
+					once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
+					&& is_MajorCharacter_CharacterName(const_JACK_MAJOR_CHARACTER_INDEX, CHARACTER_JackSwift, enum_releaseRegion) 
+					&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion)
+				format = "percent")
+
+			&& trigger_when(always_false())
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6751,7 +6961,7 @@ achievements_titles = {
 	"a_ChallengeChapter20": 				{"en": "You Done Kill 'em All!"},
 	"a_ChallengeChapter22":					{"en": "Ándale, Ándale!"},
 	"a_ChallengeChapter24":					{"en": "High-Fashioned Cleanup"},
-	"a_ChallengeChapter25":					{"en": "Vigilante"},
+	"a_ChallengeChapter25":					{"en": "The Golden Triad"},
 	"a_ChallengeChapter27":					{"en": "Bullet with a Name"},
 	"a_WoodChapter8":						{"en": "Wood You Believe It?"},
 	"a_WoodChapter10":						{"en": "Cremation at Sundawn"},
@@ -6826,7 +7036,7 @@ achievements_descriptions = {
 	"a_BountyHuntChapter27": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 27, \"Fall From Grace\""},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
 
-	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 at the end of a singleplayer story mission"},
+	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 or more at the end of a singleplayer story mission"},
 	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Dead Eye ability"},
 	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1,500 reward for saving him during Chapter 8, \"Rogue Valley\""},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, \"Bull's Eye\", by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
@@ -6839,16 +7049,16 @@ achievements_descriptions = {
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, \"Rogue Valley\", on very hard difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, \"The Cemetery\", on hard or very hard difficulty, with the following cheats enabled: \"No Distortion\", \"Sad Stars\" and \"No HUD\""},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, \"Range War\", on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
-	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, \"Bar Fight\", on very hard difficulty, with a full health bar at the end"},
+	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, \"Bar Fight\", on very hard difficulty, with at least 70% HP remaining at the end"},
 	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, \"The Traitor\", on hard or very hard difficulty, with at least 5 allied cannons remaining"},
 	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, \"Sunset Canyon\", on very hard difficulty, with less than 90% damage taken"},
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, \"Bear Mountain\", on very hard difficulty, using only the firearm \"Faith\" to damage Grizzly"},
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, \"The Mine\", on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
-	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, with the stagecoach's HP above 40%, using the \"Infinite Deadeye\" cheat as the only means of shooting"},
+	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, without letting the stagecoach's HP drop below 40% and using the \"Infinite Deadeye\" cheat as the only means of shooting"},
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"Siege\", on hard or very hard difficulty, with Jack's and Annie's HP above 65%, using the \"Golden Gun\" cheat"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"Siege\", on hard or very hard difficulty, without letting the combined HP of the heroes drop below 60%, and whilst using the \"Golden Gun\" cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with \"Bite the Bullet\" cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
