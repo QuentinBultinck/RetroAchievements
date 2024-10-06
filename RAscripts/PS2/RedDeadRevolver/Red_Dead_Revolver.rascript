@@ -7,7 +7,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/11094
-// RATools version: 1.14.1
+// RATools version: 1.14.1 - (some achievements coded in 1.15.0)
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -50,7 +50,7 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO complete RAguide
+// TODO badges into RAguide
 // TODO support for 60 fps patch + NTSCJ ????
 
 util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
@@ -2426,7 +2426,7 @@ function is_MajorCharacter_CharacterName(int_majorCharacterIndex, enum_character
 	return is_ASCII_EqualTo(let_memAddr_CharacterName + let_offsetTo_CharacterName, get_CharacterName(enum_character))}
 
 function current_Calculated_MajorCharacterHPPercentage(int_majorCharacterIndex, enum_releaseRegion) => 
-	current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) / current_MajorCharacterMaxHP(int_majorCharacterIndex, enum_releaseRegion)
+	(current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) / current_MajorCharacterMaxHP(int_majorCharacterIndex, enum_releaseRegion))
 
 
 // ...................
@@ -3456,7 +3456,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
-	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions
+	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions // TODO c_BountyHunter - add measured indicator where applicable - for combo's AND a_BountyHuntChapter25: Jack's HP percent 
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
 			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
@@ -3472,10 +3472,10 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_BountyHuntChapter5": { // VERIFIED
 			"id": 449110, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
-		"a_BountyHuntChapter6": { // VERIFIED
+		"a_BountyHuntChapter6": { // VERIFIED (RATools v1.15.0)
 			"id": 449109, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
-		"a_BountyHuntChapter7": { // VERIFIED
+		"a_BountyHuntChapter7": { // VERIFIED (RATools v1.15.0)
 			"id": 444682, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
 		"a_BountyHuntChapter8": { // VERIFIED
@@ -3484,7 +3484,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_BountyHuntChapter9": { // VERIFIED
 			"id": 449107, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
-		"a_BountyHuntChapter11": { // VERIFIED
+		"a_BountyHuntChapter11": { // VERIFIED (RATools v1.15.0)
 			"id": 449101, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
 		"a_BountyHuntChapter12": { // VERIFIED
@@ -3505,18 +3505,18 @@ achievements_coreData = { // TODO rescore set, too low currently
 		"a_BountyHuntChapter18": { // VERIFIED
 			"id": 449064, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
-		"a_BountyHuntChapter20": { // VERIFIED
+		"a_BountyHuntChapter20": { // VERIFIED (RATools v1.15.0)
 			"id": 449106, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
-		"a_BountyHuntChapter21": { // VERIFIED
+		"a_BountyHuntChapter21": { // VERIFIED (RATools v1.15.0)
 			"id": 449105, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
 		"a_BountyHuntChapter24": { // VERIFIED
 			"id": 449104, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
-		"a_BountyHuntChapter25": { // VERIFIED
-			"id": 449103, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "Complete Bounty Hunter mission for Chapter 25"},
+		// "a_BountyHuntChapter25": { // VERIFIED (RATools v1.15.0) // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 449103, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "devInfo": "Complete Bounty Hunter mission for Chapter 25"},
 		"a_BountyHuntChapter27": { // VERIFIED
 			"id": 449102, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
@@ -3653,6 +3653,75 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 			&& is_AtMainMenu(enum_releaseRegion))
 
 	// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
+
+function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(enum_areaId, float_comboTarget, enum_releaseRegion) => 
+	// [1] ==== Core (Alt) Group ====					->This group is  responsible for unlocking the achievement
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
+
+		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+		
+		&& tally(1, [ // ---Tally---> OrNext with Hitcounts
+			once(never(current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion) < float_comboTarget) && // Current combo
+				current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion) >= float_comboTarget),
+			once(never(current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) < float_comboTarget) && // Highest achieved combo
+				current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget)
+			])
+		
+		&& trigger_when(
+			is_RatingBounty_achieved(enum_releaseRegion)
+			&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
+				on_RewardMenu_render_short(enum_releaseRegion))
+			&& repeated(600, // --> Delay: so the achievement pops when the reward unlocks UI is displayed 
+				never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
+				is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+	// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for CURRENT combo achieved in the mission; It can never unlock the achievement
+		|| unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
+
+		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+		
+		&& measured(
+			current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion) >= float_comboTarget,
+			when = 
+				once(is_AreaState_InGame(enum_releaseRegion))
+				&& !is_LogoScreenLoading(enum_releaseRegion)
+				&& !is_AnimationLoading(enum_releaseRegion)) 
+		&& trigger_when(always_false())
+
+	// [3] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for HIGHEST combo achieved in the mission; It can never unlock the achievement
+		|| unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+			|| !is_Area(enum_areaId, enum_releaseRegion))
+		&& unless(once( // <-- Pause Lock: Cheat Protection
+			is_AnyCheat_active(enum_releaseRegion)))
+
+		&& once(on_PlayerReset_atMissionStartPoint(enum_areaId, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+		
+		&& measured(current_HighestCombo(enum_releaseRegion) * current_HighestComboMultiplier(enum_releaseRegion) >= float_comboTarget,
+			when = 
+				once(is_AreaState_InGame(enum_releaseRegion))
+				&& !is_LogoScreenLoading(enum_releaseRegion)
+				&& !is_AnimationLoading(enum_releaseRegion)) 
+		&& trigger_when(always_false())
+
+	// [4] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_AtMainMenu(enum_releaseRegion))
+
+	// [5+6+7] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 // ------------------ChapterCompletion----------------------
@@ -3901,9 +3970,9 @@ achievements_triggers = {
 	"a_BountyHuntChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Railroaded, enum_releaseRegion)),
 	"a_BountyHuntChapter6": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_CarnivalLife, enum_releaseRegion)),
+		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_CarnivalLife, 500.0, enum_releaseRegion)),
 	"a_BountyHuntChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FreakShow, enum_releaseRegion)),
+		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_FreakShow, 300.0, enum_releaseRegion)),
 	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion). This add an RAmeasured
 		
@@ -3950,7 +4019,7 @@ achievements_triggers = {
 	"a_BountyHuntChapter9": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_GhostTown, enum_releaseRegion)),
 	"a_BountyHuntChapter11": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RangeWar, enum_releaseRegion)),
+		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_RangeWar, 200.0, enum_releaseRegion)),
 	"a_BountyHuntChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_SaloonFight, enum_releaseRegion)),
 	"a_BountyHuntChapter13": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -4000,13 +4069,80 @@ achievements_triggers = {
 				&& is_PlayerPosition_atMissionLoadingPoint(AREA_Campaign_Stagecoach, enum_releaseRegion))
 		),
 	"a_BountyHuntChapter20": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FortDiego, enum_releaseRegion)),
+		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_FortDiego, 300.0, enum_releaseRegion)),
 	"a_BountyHuntChapter21": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_EndOfTheLine, enum_releaseRegion)),
+		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_EndOfTheLine, 200.0, enum_releaseRegion)),
 	"a_BountyHuntChapter24": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_BattleFinale, enum_releaseRegion)),
-	"a_BountyHuntChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_Siege, enum_releaseRegion)),
+	"a_BountyHuntChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_Siege
+		const_JACK_MAJOR_CHARACTER_INDEX = 3
+
+		return 
+		// [1] ==== Core (Alt) Group ====					-> This group is responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+				|| !is_Area(const_MISSION_AREA, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))
+
+			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+			
+			&& trigger_when(
+				is_RatingBounty_achieved(enum_releaseRegion)
+				&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
+					on_RewardMenu_render_short(enum_releaseRegion))
+				&& repeated(600, // --> Delay: so the achievement pops when the reward unlocks UI is displayed 
+					never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
+
+		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying Jack's HP in percent in an RAmeasured popup; It can never unlock the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_Playing_BountyHunterMode(enum_releaseRegion)
+				|| !is_Area(const_MISSION_AREA, enum_releaseRegion))
+			&& unless(once( // <-- Pause Lock: Cheat Protection
+				is_AnyCheat_active(enum_releaseRegion)))			
+			
+			&& measured(current_Calculated_MajorCharacterHPPercentage(const_JACK_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= 100.0, 				
+			 	/* MANUAL_CONSTRUCTION (of above measured) with Remember/Recall
+					- PCSX2 nightly build v1.7.5782 (May 5) can't handle the following logic: |current_Calculated_MajorCharacterHPPercentage(const_JACK_MAJOR_CHARACTER_INDEX, enum_releaseRegion) * 100.0 >= 100.0|
+					
+					-> Logic (PAL)
+						I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	|currentHP/maxHP|
+						Remember	Recall						*	Float			100.0
+						Measured	Recall						>=	Float			100.0
+
+					-> Logic (NTSCU)
+						I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_K:{recall}*f100.0_M:{recall}>=f100.0
+
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	|currentHP/maxHP|
+						Remember	Recall						*	Float			100.0
+						Measured	Recall						>=	Float			100.0
+					*/
+				when = 
+					once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)) // <-- this prevents usage of mid-mission checkpoints via RetryMenu in Story Mode (Bounty Hunter mode always respawns back at start of mission)
+					&& is_MajorCharacter_CharacterName(const_JACK_MAJOR_CHARACTER_INDEX, CHARACTER_JackSwift, enum_releaseRegion),
+				format = "percent") 
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_AtMainMenu(enum_releaseRegion))
+
+		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
+			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
+		}), 
 	"a_BountyHuntChapter27": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_FallFromGrace, enum_releaseRegion)
 	),
@@ -5076,7 +5212,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // TODO update a_ChallengeChapter19 - with HP measured
+	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_HellPass
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
@@ -5503,7 +5639,7 @@ achievements_triggers = {
 				when = 
 					once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 					&& is_MajorCharacter_CharacterName(const_JACK_MAJOR_CHARACTER_INDEX, CHARACTER_JackSwift, enum_releaseRegion) 
-					&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion)
+					&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion),
 				format = "percent")
 
 			&& trigger_when(always_false())
@@ -6868,7 +7004,7 @@ achievements_triggers = {
 
 // =====================
 // • Achievements TEXT •
-// ===================== // TODO update all text from Writing-Requests (text in rascript is updated, not yet updated on live) --> https://discord.com/channels/310192285306454017/1288217265472278609
+// ===================== // TODO update all text to live (everything in rascript is already up to date) --> https://discord.com/channels/310192285306454017/1288217265472278609
 achievements_titles = {
 	// Title Idea's
 		// Cavalry Draw - Jack Swift related achievement
@@ -9851,7 +9987,7 @@ leaderboards_descriptions = {
 	"lb_Chapter25RedWood": 	{"en": "Ace Chapter 25 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"}, 
 	"lb_Chapter27RedWood": 	{"en": "Ace Chapter 27 with lethal accuracy, swift action, unyielding resilience and a bounty haul worthy of a Wild West legend, on red wood revolver difficulty"},
 
-	"lb_ShowdownFastestBounty": 			{"en": "Win a 15k target Bounty Hunter match vs 3 CPU's as quickly as possible"},
+	"lb_ShowdownFastestBounty": 			{"en": "Win a $15,000 target Bounty Hunter match vs 3 CPU's as quickly as possible"},
 	"lb_ShowdownLargestBounty": 			{"en": "Collect the largest bounty in a 10 minute Sundown match vs 3 CPU's"},
 	"lb_ShowdownBestCombo": 				{"en": "Achieve the highest combo in a Showdown match vs 3 CPU's"},
 	}
