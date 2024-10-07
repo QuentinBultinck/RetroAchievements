@@ -43,7 +43,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ***
 
 <h2 id=Progression>
-    🏆 Story Mode
+    🏆 Story Mode <i><sub><sub>(20)</sub></sub></i>
 </h2>
 
 > [!NOTE]
@@ -53,15 +53,15 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 | Title <sub><i>+ (dev_id)</i></sub><br> | Guidance & Insights |
 |:---:|---|
-| <h4 id=a_CompleteChapter1>**The Scorpion's Scar**</h4><sub>*a_CompleteChapter1*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 1 'Bull's Eye' |
-| <h4 id=a_CompleteChapter2>**Prime Cut**</h4><sub>*a_CompleteChapter2*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 2 'Bounty Hunter' |
-| <h4 id=a_CompleteChapter3>**First Marks**</h4><sub>*a_CompleteChapter3*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 3 'Ugly Streetfight' <br>  |
-| <h4 id=a_CompleteChapter5>**Train Warden**</h4><sub>*a_CompleteChapter5*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 5 'Railroaded' |
-| <h4 id=a_CompleteChapter7>**Perry's Peculiar Predicament**</h4><sub>*a_CompleteChapter7*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 7 'Freak Show' |
+| <h4 id=a_CompleteChapter1>**The Scorpion's Scar**</h4><sub>*a_CompleteChapter1*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/531650.png "Achievement badge icon") | - Complete Chapter 1 'Bull's Eye' |
+| <h4 id=a_CompleteChapter2>**Prime Cut**</h4><sub>*a_CompleteChapter2*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/531651.png "Achievement badge icon") | - Complete Chapter 2 'Bounty Hunter' |
+| <h4 id=a_CompleteChapter3>**First Marks**</h4><sub>*a_CompleteChapter3*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/531652.png "Achievement badge icon") | - Complete Chapter 3 'Ugly Streetfight' <br>  |
+| <h4 id=a_CompleteChapter5>**Train Warden**</h4><sub>*a_CompleteChapter5*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/531653.png "Achievement badge icon") | - Complete Chapter 5 'Railroaded' |
+| <h4 id=a_CompleteChapter7>**Perry's Peculiar Predicament**</h4><sub>*a_CompleteChapter7*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/531654.png "Achievement badge icon") | - Complete Chapter 7 'Freak Show' |
 | <h4 id=a_CompleteChapter8>**Bovine Beatdown**</h4><sub>*a_CompleteChapter8*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 8 'Rogue Valley' |
 | <h4 id=a_CompleteChapter10>**One Hell of a Bounty Hunter**</h4><sub>*a_CompleteChapter10*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 10 'The Cemetery' |
 | <h4 id=a_CompleteChapter11>**Faithful Rancher**</h4><sub>*a_CompleteChapter11*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 11 'Range War' |
-| <h4 id=a_CompleteChapter12>**The Final Curtain**</h4><sub>*a_CompleteChapter12*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 12 'Bar Fight' |
+| <h4 id=a_CompleteChapter12>**The Final Curtain**</h4><sub>*a_CompleteChapter12*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 12 'Saloon Fight' |
 | <h4 id=a_CompleteChapter13>**Pact of Perdition**</h4><sub>*a_CompleteChapter13*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 13 'The Traitor' |
 | <h4 id=a_CompleteChapter14>**Bullion's Folly**</h4><sub>*a_CompleteChapter14*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 14 'Sunset Canyon' |
 | <h4 id=a_CompleteChapter15>**Wolf Mountain**</h4><sub>*a_CompleteChapter15*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 15 'Bear Mountain' |
@@ -70,12 +70,12 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | <h4 id=a_CompleteChapter20>**Red Wolf**</h4><sub>*a_CompleteChapter20*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 20 'Fort Diego' |
 | <h4 id=a_CompleteChapter22>**Pact of Payback**</h4><sub>*a_CompleteChapter22*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 22 'Devils and Angels' |
 | <h4 id=a_CompleteChapter24>**Battle Royalist**</h4><sub>*a_CompleteChapter24*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - "Complete Chapter 24 'Battle Finale' |
-| <h4 id=a_CompleteChapter25>**Straight Into the Griffon's Den**</h4><sub>*a_CompleteChapter25*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 25 'Seige' |
+| <h4 id=a_CompleteChapter25>**Straight Into the Griffon's Den**</h4><sub>*a_CompleteChapter25*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 25 'The Siege' |
 | <h4 id=a_CompleteChapter27>**Redemption**</h4><sub>*a_CompleteChapter27*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Complete Chapter 27 'Fall From Grace' <br> - This achievement counts as the *win condition* for beating game. |
 </details>
 
 <h2 id=StoryChallenges>
-    🏆 Story Mission Challenges 
+    🏆 Story Mission Challenges <i><sub><sub>(26)</sub></sub></i>
 </h2>
 
 > [!WARNING]
@@ -119,8 +119,10 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 <h2 id=BountyHunterChallenges>
-    🏆 Bounty Hunter Mode 
+    🏆 Bounty Hunter Mode <i><sub><sub>(20)</sub></sub></i>
 </h2>
+
+    
 
 > [!NOTE]
 > - The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
@@ -151,7 +153,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 <h2 id=ShowdownChallenges>
-    🏆 Showdown Challenges
+    🏆 Showdown Challenges <i><sub><sub>(12)</sub></sub></i>
 </h2>
 
 > [!IMPORTANT]
@@ -174,7 +176,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 <h2 id=Unlocks>
-    🏆 Unlocks
+    🏆 Unlocks <i><sub><sub>(9)</sub></sub></i>
 </h2>
 
 > [!WARNING]
@@ -189,7 +191,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 | <h4 id=a_UnlockAllWeapons>**It Never Was About the Money**</h4><sub>*a_UnlockAllWeapons*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 24 unique weapons in story mode <br> - Weapons are retained when starting a new story playthough on an existing player profile, although the upgraded versions need to be re-acquired <br> - The achievement may only unlock/measured indicator may only update on save (after a mission ends) <br> - Please refer to [Red Dead Revolver Wiki Fandom](https://reddead.fandom.com/wiki/Weapons_in_Revolver "Red Dead Revolver Wiki Fandom") on how to where to find all weapons. <br><br> <b><u>Side Arms</u></b> (8) <br> ∙ Old Pistol<br> ∙ Revolver<br> ∙ Twin Revolvers<br> ∙ Widowmaker<br> ∙ Scorpion<br> ∙ Six Shooter<br> ∙ Pacificador<br> ∙ Inquisitor<br><br> <b><u>Long Arms</u></b> (12) <br> ∙ Breech Loader <br> ∙ The Lion<br> ∙ Twelve Gauge<br> ∙ Owl Rifle<br> ∙ Repeater Rifle<br> ∙ High Caliber<br> ∙ Halcon Rifle<br> ∙ Bayonet Rifle<br> ∙ Oppressor<br> ∙ Sawn Off<br> ∙ Escopeta<br> ∙ Zwei Fasser<br><br> <b><u>Thrown Weapons</u></b> (4) <br> ∙ Knife<br> ∙ Dynamite<br> ∙ Fire Bottle<br> ∙ Snake Oil |
 | <h4 id=a_UpgradeAllWeapons>**Finest in the West**</h4><sub>*a_UpgradeAllWeapons*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Upgrade or unlock all 16 upgradable weapons in story mode in a single playthrough. Weapons can be upgraded in the gunsmith at Brimstone. Whilst other weapon upgrades are given for free for earning certain rewards in the post-mission reward menu. <br> - Upgraded weapons are not retained when starting a new story playthrough on an existing player profile <br> - The achievement may only unlock/measured indicator may only update on save (after a mission ends) <br><br> <b><u>Upgradable Side Arms</u></b> (6) <br> ∙ Old Pistol<br> ∙ Revolver<br> ∙ Twin Revolvers<br> ∙ Widowmaker<br> ∙ Six Shooter<br> ∙ Pacificador<br><br> <b><u>Upgradable Long Arms</u></b> (10) <br> ∙ Breech Loader <br> ∙ The Lion<br> ∙ Twelve Gauge<br> ∙ Owl Rifle<br> ∙ Repeater Rifle<br> ∙ High Caliber<br> ∙ Halcon Rifle<br> ∙ Bayonet Rifle<br> ∙ Sawn Off<br> ∙ Escopeta|
 | <h4 id=a_UnlockStagesAll>**Showdown Trailblazer**</h4><sub>*a_UnlockStagesAll*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 13 Showdown stages <br> - Refer to [Red Dead Wiki - Showdown Mode](https://reddead.fandom.com/wiki/Showdown_Mode#Maps "Red Dead Fandom Wiki - Showdown Mode") on how to unlock each Showdown stage/map <br> - The achievement may only unlock/measured indicator may only update on save (after a mission ends) <br><br> <u><b>Stages</b></u> <br> ⁍ Twin Rocks - Ancient Monoliths <br> ⁍ Desert Fortress - Giant Fortress <br> ⁍ Widow's Patch - Terrified Town <br> ⁍ The Bridge - Contested Structure <br> ⁍ Fairground - Ruined Homestead <br> ⁍ Sunset Canyon - Desert Badlands <br> ⁍ Broken Creek - Boyhood Home <br> ⁍ The Ranch - Fertile Lane <br> ⁍ The Mine - Lost Inheritance <br> ⁍ Ghost Town - Abandoned Settlement <br> ⁍ Fallen Creek - Snow-topped Mountain <br> ⁍ Mansion Grounds - Tended Gardens <br> ⁍ The Mansion - Opulent Palace |
-| <h4 id=a_MaxHealth>**Peak Condition**</h4><sub>*a_MaxHealth*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 7 health upgrades for Red in story mode <br> - Health upgrades are retained when starting a new story playthrough on an existing player profile <br> - The achievement triggers/measured indicator updates on acquiring a health upgrade during gameplay <br><br> <u><b>HP Upgrades</b></u> <br> <b>1 -- </b> Chapter 7 'Freak Show', by simply completing the mission you'll receive a good rating, unlocking the HP upgrade <br> <b>2 -- </b> Midway during Chapter 8 'Rogue Valley' you can find the same shop guy from Chapter 2 'Bounty Hunter'. To make this guy appear. You need to head straight forward after the duel vs 2 opponents. Do not go through the shadowy passage to the right, doing this will not make him spawn. After he crawls out of a few rocks he'll sell you the 'Snakebite Kit' as an HP upgrade <br> <b>3 -- </b> 3rd visit to Brimstone, after Chapter 8 'Rogue Valley'. Find Jack Swift walking around Brimstone like the other NPC's. Talk to Jack four times in a row and then buy his Lucky Flask for \$1,500 <br> <b>4 -- </b> During Chapter 12 'Bar Fight'. Talk to the girls taking a bath in one of the rooms upstairs and purchase 'Hot Bath' for \$1,500 <br> <b>5 -- </b> Chapter 13 'The Traitor', achieve an excellent rating <br> <b>6 -- </b> Chapter 16 'Jail Break', free a lady from jail with a key. Talk to her twice and then purchase a kiss for \$1 <br> <b>7 -- </b> Chapter 20 'Fort Diego', achieve a good rating |
+| <h4 id=a_MaxHealth>**Peak Condition**</h4><sub>*a_MaxHealth*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 7 health upgrades for Red in story mode <br> - Health upgrades are retained when starting a new story playthrough on an existing player profile <br> - The achievement triggers/measured indicator updates on acquiring a health upgrade during gameplay <br><br> <u><b>HP Upgrades</b></u> <br> <b>1 -- </b> Chapter 7 'Freak Show', by simply completing the mission you'll receive a good rating, unlocking the HP upgrade <br> <b>2 -- </b> Midway during Chapter 8 'Rogue Valley' you can find the same shop guy from Chapter 2 'Bounty Hunter'. To make this guy appear. You need to head straight forward after the duel vs 2 opponents. Do not go through the shadowy passage to the right, doing this will not make him spawn. After he crawls out of a few rocks he'll sell you the 'Snakebite Kit' as an HP upgrade <br> <b>3 -- </b> 3rd visit to Brimstone, after Chapter 8 'Rogue Valley'. Find Jack Swift walking around Brimstone like the other NPC's. Talk to Jack four times in a row and then buy his Lucky Flask for \$1,500 <br> <b>4 -- </b> During Chapter 12 'Saloon Fight'. Talk to the girls taking a bath in one of the rooms upstairs and purchase 'Hot Bath' for \$1,500 <br> <b>5 -- </b> Chapter 13 'The Traitor', achieve an excellent rating <br> <b>6 -- </b> Chapter 16 'Jail Break', free a lady from jail with a key. Talk to her twice and then purchase a kiss for \$1 <br> <b>7 -- </b> Chapter 20 'Fort Diego', achieve a good rating |
 | <h4 id=a_MaxDeadEye>**Red Eye**</h4><sub>*a_MaxDeadEye*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | - Unlock all 5 dead eye upgrades for Red in story mode <br> - Dead eye upgrades are retained when starting a new story playthrough on an existing player profile <br> - The achievement triggers/measured indicator updates on acquiring a Dead Eye upgrade during gameplay <br><br> <u><b>Dead Eye Upgrades</b></u> <br> <b>1 -- </b> Chapter 6 'Carnival Life', by simply completing the mission you'll receive a good rating, unlocking the Dead Eye upgrade <br> <b>2 -- </b> 4th visit to Brimstone, after Chapter 10 'The Cemetery'. Talk to the boy selling newspapers and buy the 'Pocket Watch' for \$1,500 <br> <b>3 -- </b> Chapter 14 'Sunset Canyon', get an excellent rating <br> <b>4 -- </b> Chapter 24 'Battle Finale', achieve a good rating <br> <b>5 -- </b> In Brimstone buy a 'strong drink' for \$1,500 from the barman in the Saloon |
 
 
