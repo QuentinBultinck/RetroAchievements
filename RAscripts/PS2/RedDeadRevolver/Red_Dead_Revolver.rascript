@@ -50,7 +50,6 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO badges into RAguide
 // TODO support for 60 fps patch + NTSCJ ????
 
 util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
@@ -521,10 +520,9 @@ DATATYPE_Struct 				= 100
 memory_addresses = {
 	// DATATYPE_xxxxx: {
 	// 	"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	// 	},0x501a38
+	// 	},
 
 	DATATYPE_BitFlag: {
-		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
 		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
@@ -544,6 +542,9 @@ memory_addresses = {
 		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
 		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL},
 		},
+	DATATYPE_Float: {
+		"IsInGame": {RELEASE_REGION_USA: 0x4F9F2C, RELEASE_REGION_EUR: 0x4fc5ac, RELEASE_REGION_JPN: sNULL},
+		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
@@ -557,7 +558,6 @@ memory_addresses = {
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // Unused
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -672,7 +672,7 @@ function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This f
 	}
 
 function memGenerate_SumOf_BitsetFlags(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
-	// BUG RATools - using memGenerate_SumOf_BitsetFlags() may put RATools into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503)
+	// BUG_RATools - using memGenerate_SumOf_BitsetFlags() may put RATools into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503)
 	// As a workaround use memGenerate_SumOf_BitsetFlags_noSubSource()
 	let_array_memAccessorsToSum = []
 	let_array_memAccessorsToSub = [] 
@@ -2479,7 +2479,7 @@ function current_CashComboMultiplier(enum_releaseRegion) {
 
 function current_Calculated_CashDuringMission(enum_releaseRegion) => // WARNING - RATools cannot generate this sumOf correctly, thus achievements making use of this logic should be manually edited in
 	current_Cash(enum_releaseRegion)
-	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
+	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG_RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
 	
 	// Full SumOf would look like this [PAL]:
 	// -------------------------------
@@ -2491,7 +2491,7 @@ function current_Calculated_CashDuringMission(enum_releaseRegion) => // WARNING 
 function current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) => // WARNING - RATools cannot generate this sumOf correctly, thus achievements making use of this logic should be manually edited in
 	current_Cash(enum_releaseRegion)  // <-- Cash which updates during the mission
 	- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is only updated on save (on mission end)
-	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
+	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG_RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
 	/* MANUAL_CONSTRUCTION 
 		current_Cash() - current_PlayerProfile_SavedCash()
 		+ (current_CashCombo() * current_CashComboMultiplier())
@@ -2867,16 +2867,22 @@ function on_EndingCreditsVideo_start(enum_releaseRegion) {
 
 // ------------------------------------------------------
 function current_FlagState_IsInGame(enum_releaseRegion) =>
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion))
+	float(memory_getAddress(DATATYPE_Float, "IsInGame", enum_releaseRegion))
 
 function prev_FlagState_IsInGame(enum_releaseRegion) =>
 	prev(current_FlagState_IsInGame(enum_releaseRegion))
 
-function is_InGame(enum_releaseRegion) => 
-	current_FlagState_IsInGame(enum_releaseRegion) == 1
+function is_InGame(enum_releaseRegion) {
+	const_FLOAT_FLAG_InGame = 1.0
+	return 
+		current_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_InGame}
 
-function on_InGame_start(enum_releaseRegion) =>
-	current_FlagState_IsInGame(enum_releaseRegion) > prev_FlagState_IsInGame(enum_releaseRegion)
+function on_InGame_start(enum_releaseRegion) {
+	const_FLOAT_FLAG_InGame = 1.0
+	const_FLOAT_FLAG_NotInGame = 0.0
+	return 
+		prev_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_NotInGame
+		&& current_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_InGame}
 
 // ......................
 // ◦ EXTRA MISSION DATA ◦
@@ -3450,7 +3456,7 @@ achievements_coreData = {
 			"devInfo": "Unlock all 7 health upgrades for Red"},
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
+			"devInfo": "Unlock all 5 Deadeye upgrades for Red"},
 		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
@@ -3523,13 +3529,13 @@ achievements_coreData = {
 			"id": 449102, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements (26)
-		// "a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Amass an amount of cash on one player profile"},
-		// "a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// "id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
+	"c_StoryChallenge": { // Category -  Story related challenge achievements (26) 
+		"a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Amass an amount of cash on one player profile"},
+		"a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			"id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Finish a mission an accuracy of 90% or higher, without using deadeye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
@@ -3592,7 +3598,7 @@ achievements_coreData = {
 			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
 		// "a_ChallengeChapter25": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'The Siege' | Complete without letting combined HP of hero trio drop below 60%, 'Golden Gun' cheat required | Hard or Very Hard"},
+			// "devInfo": "Level 'The Siege' | Complete with combined HP of hero trio at 60% or above, with 'Golden Gun' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
@@ -4159,17 +4165,18 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& once(on_InGame_start(enum_releaseRegion))
 			&& current_RewardMenu_Balance(enum_releaseRegion) >= const_CASH_TARGET
 
 			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise it may trigger the achievement when Structs are reconstructed
 			&& !is_AnimationLoading(enum_releaseRegion)
 
+			&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && 
+				on_RewardMenu_render_short(enum_releaseRegion))
+
 			&& trigger_when(
-				once(never(!is_RewardMenu_displayed_short(enum_releaseRegion) && 
-					on_RewardMenu_render_short(enum_releaseRegion))
-				&& repeated(360, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed
-					is_RewardMenu_displayed_short(enum_releaseRegion)))) 
+				repeated(360, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
 
 		// [2] ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
@@ -4178,7 +4185,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion)) 
+			&& once(on_InGame_start(enum_releaseRegion))
 			&& current_Calculated_CashDuringMission(enum_releaseRegion) >= const_CASH_TARGET
 			/* MANUAL_CONSTRUCTION sumOf
 				-> Logic (PAL)
@@ -4204,14 +4211,19 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_AtMainMenu(enum_releaseRegion))
 
-		// [4] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [4] ==== Alt Reset Group ==== 					-> Reset when changing AREA's
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_Area_change(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			// NOTE: Reset on RetryMenu restart => is not allowed for cheats being used...
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& on_CashResetToSavedCash(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
+		// [6] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
@@ -4231,35 +4243,38 @@ achievements_triggers = {
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
-			
-			&& once(on_RewardMenu_render_short(enum_releaseRegion))			
+			&& once(on_InGame_start(enum_releaseRegion))
+					
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
-				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> Logic (PAL)
-						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+			/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+				-> Logic (PAL)
+					I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
 
-						AddAddress	Mem		32-bit	0x763070
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Float			0.0			+	Mem		32-bit	0x194
-						AddAddress	Mem		32-bit	0x763070
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Mem		32-bit	0x198		/ 	Recall
-									Recall						>= 	Float			const_DESIRED_ACCURACY
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Float			0.0			+	Mem		32-bit	0x194
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		32-bit	0x198		/ 	Recall
+								Recall						>= 	Float			const_DESIRED_ACCURACY
 
-					-> Logic (NTSCU)
-						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+				-> Logic (NTSCU)
+					I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
 
-						AddAddress	Mem		32-bit	0x7608f0
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Float			0.0			+	Mem		32-bit	0x194
-						AddAddress	Mem		32-bit	0x7608f0
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Mem		32-bit	0x198		/ 	Recall
-									Recall						>= 	Float			const_DESIRED_ACCURACY
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Float			0.0			+	Mem		32-bit	0x194
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		32-bit	0x198		/ 	Recall
+								Recall						>= 	Float			const_DESIRED_ACCURACY
 				*/
+			
+			&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && 
+				on_RewardMenu_render_short(enum_releaseRegion))
+
 			&& trigger_when(
-				repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+				repeated(190, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 			
 		// [2] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
@@ -5816,7 +5831,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_RogueValley
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
@@ -5854,8 +5869,8 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_WoodChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
-		const_MISSION_AREA = AREA_Campaign_HellPass
+	"a_WoodChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_TheCemetery
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
 			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
@@ -5870,9 +5885,12 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once a firearm is used
-				is_PlayerInput_AimGun_pressed(enum_releaseRegion)
-				&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: Once a firearm is used
+				once(
+					is_AreaState_InGame(enum_releaseRegion))
+				&& once(
+					is_PlayerInput_AimGun_pressed(enum_releaseRegion)
+					&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
@@ -6976,7 +6994,7 @@ achievements_triggers = {
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
 		return 
 		// ==== Core (Alt) Group ==== 
-			// BUG RATools - infinite processing error --> Manual creation via RAIntegration
+			// BUG_RATools - infinite processing error --> Manual creation via RAIntegration
 			// prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT // <---2Lines--- Break RATools
 			// && prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT*5/8
 			measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
@@ -7078,7 +7096,7 @@ achievements_titles = {
 	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
 
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
-	"a_PerfectAccuracy":					{"en": "Deadeye"},
+	"a_PerfectAccuracy":					{"en": "Deadeye"}, 
 	"a_SaveCurly":							{"en": "A Curly Deal for Carbine Zeal"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_ChallengeChapter1": 					{"en": "Budding Prize"}, // WARNING - Manual creation via RAIntegration
@@ -7091,7 +7109,7 @@ achievements_titles = {
 	"a_ChallengeChapter10":					{"en": "Tall-Tale"},
 	"a_ChallengeChapter11":					{"en": "Savage Saddle"},
 	"a_ChallengeChapter12":					{"en": "Quite the Show"},
-	"a_ChallengeChapter13":					{"en": "Hammer of the Gods"},
+	"a_ChallengeChapter13":					{"en": "Hammers of the Gods"},
 	"a_ChallengeChapter14":					{"en": "Carnage at Sunset"},
 	"a_ChallengeChapter15":					{"en": "Roaring Bane"},
 	"a_ChallengeChapter17": 				{"en": "Melee Minehem"},
@@ -7114,7 +7132,7 @@ achievements_titles = {
 	"a_SundownGriffon": 					{"en": "I've Come To Finish the Job"},
 	"a_SundownNate": 						{"en": "Harlow's Reckoning"},
 	"a_SundownFlawless": 					{"en": "Untouchable at Twilight"},
-	"a_HighNoonNatalie": 					{"en": "Familiar Standoff"},
+	"a_HighNoonNatalie": 					{"en": "Professional Familiarity"}, // Reference to movie "Léon: The Professional" (1994)
 	"a_HighNoonCurly": 						{"en": "Supplies Depleted, Trigger Repeated"},	
 
 	"a_UnlockStagesAll": 					{"en": "Frontier Sojourn"},
@@ -7175,7 +7193,7 @@ achievements_descriptions = {
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
 
 	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 or more at the end of a singleplayer story mission"},
-	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Dead Eye ability"},
+	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Deadeye ability"},
 	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1,500 reward for saving him during Chapter 8, \"Rogue Valley\""},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, \"Bull's Eye\", by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, \"Bull's Eye\", on very hard difficulty, with a collected bounty of $1,000 or more"}, // WARNING - Manual creation via RAIntegration
@@ -7196,7 +7214,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"The Siege\", on hard or very hard difficulty, without letting the combined HP of the heroes drop below 60%, and whilst using the \"Golden Gun\" cheat"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"The Siege\", on hard or very hard difficulty, with the combined HP of all three heroes at 60% or above, and whilst using the \"Golden Gun\" cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with \"Bite the Bullet\" cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
@@ -7210,7 +7228,7 @@ achievements_descriptions = {
 	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of over 10"},
 	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
-	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match without dying once"},
+	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match vs without dying once"},
 	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
 	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},
 
@@ -7220,7 +7238,7 @@ achievements_descriptions = {
 	"a_CompleteJournalHalf":				{"en": "Unlock half of Sheriff Bartlett's journal"},
 	"a_CompleteJournalAll":					{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
-	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
+	"a_MaxDeadEye":							{"en": "Max out Red's Deadeye in the story campaign"},
 	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"}, // WARNING - Manual creation via RAIntegration
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
