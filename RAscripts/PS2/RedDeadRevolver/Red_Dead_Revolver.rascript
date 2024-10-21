@@ -50,7 +50,6 @@
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-// TODO badges into RAguide
 // TODO support for 60 fps patch + NTSCJ ????
 
 util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
@@ -521,10 +520,9 @@ DATATYPE_Struct 				= 100
 memory_addresses = {
 	// DATATYPE_xxxxx: {
 	// 	"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	// 	},0x501a38
+	// 	},
 
 	DATATYPE_BitFlag: {
-		"IsInGame": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x501a38, RELEASE_REGION_JPN: sNULL}, // unused
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
 		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
@@ -544,6 +542,9 @@ memory_addresses = {
 		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
 		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL},
 		},
+	DATATYPE_Float: {
+		"IsInGame": {RELEASE_REGION_USA: 0x4F9F2C, RELEASE_REGION_EUR: 0x4fc5ac, RELEASE_REGION_JPN: sNULL},
+		},
 	DATATYPE_32BitPointer: {
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
@@ -557,7 +558,6 @@ memory_addresses = {
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
-		"MultiplayerRewardMenu_UI_Controller": {RELEASE_REGION_USA: 0x780b0, RELEASE_REGION_EUR: 0x780b0, RELEASE_REGION_JPN: sNULL}, // Unused
 		},
 	DATATYPE_Struct: {
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
@@ -672,7 +672,7 @@ function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This f
 	}
 
 function memGenerate_SumOf_BitsetFlags(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
-	// BUG RATools - using memGenerate_SumOf_BitsetFlags() may put RATools into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503)
+	// BUG_RATools - using memGenerate_SumOf_BitsetFlags() may put RATools into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503)
 	// As a workaround use memGenerate_SumOf_BitsetFlags_noSubSource()
 	let_array_memAccessorsToSum = []
 	let_array_memAccessorsToSub = [] 
@@ -733,6 +733,8 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 			always_false()
 		)
 	)
+
+
 
 // ----------------CustomASCIIcomparitors---------------------
 // Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
@@ -2477,7 +2479,7 @@ function current_CashComboMultiplier(enum_releaseRegion) {
 
 function current_Calculated_CashDuringMission(enum_releaseRegion) => // WARNING - RATools cannot generate this sumOf correctly, thus achievements making use of this logic should be manually edited in
 	current_Cash(enum_releaseRegion)
-	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
+	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG_RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
 	
 	// Full SumOf would look like this [PAL]:
 	// -------------------------------
@@ -2489,7 +2491,7 @@ function current_Calculated_CashDuringMission(enum_releaseRegion) => // WARNING 
 function current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) => // WARNING - RATools cannot generate this sumOf correctly, thus achievements making use of this logic should be manually edited in
 	current_Cash(enum_releaseRegion)  // <-- Cash which updates during the mission
 	- current_PlayerProfile_SavedCash(enum_releaseRegion) // <-- Cash which is only updated on save (on mission end)
-	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
+	// + (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)) >= const_CASH_TARGET // BUG_RATools - this line is supposed to be added to this AddSource chain, but RATools would replace this sumOf with an always_false()
 	/* MANUAL_CONSTRUCTION 
 		current_Cash() - current_PlayerProfile_SavedCash()
 		+ (current_CashCombo() * current_CashComboMultiplier())
@@ -2865,16 +2867,22 @@ function on_EndingCreditsVideo_start(enum_releaseRegion) {
 
 // ------------------------------------------------------
 function current_FlagState_IsInGame(enum_releaseRegion) =>
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInGame", enum_releaseRegion))
+	float(memory_getAddress(DATATYPE_Float, "IsInGame", enum_releaseRegion))
 
 function prev_FlagState_IsInGame(enum_releaseRegion) =>
 	prev(current_FlagState_IsInGame(enum_releaseRegion))
 
-function is_InGame(enum_releaseRegion) => 
-	current_FlagState_IsInGame(enum_releaseRegion) == 1
+function is_InGame(enum_releaseRegion) {
+	const_FLOAT_FLAG_InGame = 1.0
+	return 
+		current_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_InGame}
 
-function on_InGame_start(enum_releaseRegion) =>
-	current_FlagState_IsInGame(enum_releaseRegion) > prev_FlagState_IsInGame(enum_releaseRegion)
+function on_InGame_start(enum_releaseRegion) {
+	const_FLOAT_FLAG_InGame = 1.0
+	const_FLOAT_FLAG_NotInGame = 0.0
+	return 
+		prev_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_NotInGame
+		&& current_FlagState_IsInGame(enum_releaseRegion) == const_FLOAT_FLAG_InGame}
 
 // ......................
 // ◦ EXTRA MISSION DATA ◦
@@ -3310,7 +3318,7 @@ achievement_POINTS_Hard = 25 		// Completing the game
 achievement_POINTS_VeryHard = 50 	// Achieving 100% completion
 achievement_POINTS_Impossible = 100 // Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets) 
 // -----------------------------------------------------------
-achievements_coreData = { // TODO rescore set, too low currently
+achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 		// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 		// ------------------------------------------------
@@ -3327,7 +3335,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 	//	"id": 0000000, "points": achievement_POINTS_xxxxxxx, "type": achievements_TYPE_xxxxxxx,
 	//	"devInfo": "xxxxxxx"},
 	
-	"c_Story": { // Category - Story Progression
+	"c_Story": { // Category - Story Progression (20)
 		"a_CompleteChapter1": { // VERIFIED
 			"id": 448757, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 1"},
@@ -3365,71 +3373,71 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 448764, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 14"},
 		"a_CompleteChapter15": { // VERIFIED
-			"id": 447273, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447273, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 15"},
 		"a_CompleteChapter17": { // VERIFIED
-			"id": 447274, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447274, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 17"},
 		"a_CompleteChapter19": { // VERIFIED
-			"id": 447275, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447275, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 19"},
 		"a_CompleteChapter20": { // VERIFIED
-			"id": 447276, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447276, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 20"},
 		"a_CompleteChapter22": { // VERIFIED
-			"id": 447277, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447277, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 22"},
 		"a_CompleteChapter24": { // VERIFIED
-			"id": 447278, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 447278, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 24"},
 		"a_CompleteChapter25": { // VERIFIED
-			"id": 443871, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Progression,
+			"id": 443871, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Progression,
 			"devInfo": "Complete Chapter 25"},
 		"a_CompleteChapter27": { // VERIFIED
-			"id": 443703, "points": achievement_POINTS_Basic, "type": achievements_TYPE_WinCondition,
+			"id": 443703, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_WinCondition,
 			"devInfo": "Complete Chapter 27"},
 		},
-	"c_Showdown": { // Category - Showdown related achievements
+	"c_Showdown": { // Category - Showdown related achievements (12)
 		"a_BountyHunterKatie": { // VERIFIED 
-			"id": 454648, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 454648, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
 		"a_BountyHunterBlade": { // VERIFIED
-			"id": 455158, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 455158, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
 		"a_BountyHunterAnnie": { // VERIFIED
-			"id": 455172, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 455172, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// "id": 455173, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "id": 455173, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
 		"a_BountyHunterWeapons": { // VERIFIED
-			"id": 455443, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 455443, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
 		"a_SundownFallingStar": { // VERIFIED
-			"id": 455174, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 455174, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
 		"a_SundownBlack": { // VERIFIED
-			"id": 455175, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 455175, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill-streak of over 10"},
 		"a_SundownGriffon": { // VERIFIED
-			"id": 455176, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 455176, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// "id": 455178, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "id": 455178, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
 		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
 		"a_HighNoonNatalie": { // VERIFIED
-			"id": 455179, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 455179, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
 		"a_HighNoonCurly": { // VERIFIED
-			"id": 455180, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 455180, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},		
 		},
-	"c_Unlocks": { // Category - Unlocking items
+	"c_Unlocks": { // Category - Unlocking items (9)
 		"a_UnlockStagesAll": { // VERIFIED
-			"id": 444065, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"id": 444065, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 13 Showdown stages"},
 		"a_UnlockCharactersHalf": { // VERIFIED
 			"id": 447034, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
@@ -3441,14 +3449,14 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 444490, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete 50% of the journal"},
 		"a_CompleteJournalAll": { // VERIFIED
-			"id": 444489, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
+			"id": 444489, "points": achievement_POINTS_VeryHard, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete 100% of the journal"},
 		"a_MaxHealth": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444063, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 7 health upgrades for Red"},
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 5 Dead Eye upgrades for Red"},
+			"devInfo": "Unlock all 5 Deadeye upgrades for Red"},
 		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
@@ -3456,141 +3464,141 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
 		},
-	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions // TODO c_BountyHunter - add measured indicator where applicable - for combo's AND a_BountyHuntChapter25: Jack's HP percent 
+	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions (20)
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
 			// 	"id": 0000000, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			// 	"devInfo": "Complete all the Bounty Hunter Mode Missions"},
 		"a_BountyHuntChapter1": { // VERIFIED
-			"id": 444681, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 444681, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 1"},
 		"a_BountyHuntChapter2": { // VERIFIED
-			"id": 443870, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 443870, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 2"},
 		"a_BountyHuntChapter3": { // VERIFIED
-			"id": 443872, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 443872, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 3"},
 		"a_BountyHuntChapter5": { // VERIFIED
-			"id": 449110, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449110, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 5"},
 		"a_BountyHuntChapter6": { // VERIFIED (RATools v1.15.0)
-			"id": 449109, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449109, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 6"},
 		"a_BountyHuntChapter7": { // VERIFIED (RATools v1.15.0)
-			"id": 444682, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 444682, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 7"},
 		"a_BountyHuntChapter8": { // VERIFIED
-			"id": 449108, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449108, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 8"},
 		"a_BountyHuntChapter9": { // VERIFIED
-			"id": 449107, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449107, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 9"},
 		"a_BountyHuntChapter11": { // VERIFIED (RATools v1.15.0)
-			"id": 449101, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449101, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 11"},
 		"a_BountyHuntChapter12": { // VERIFIED
-			"id": 449100, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449100, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 12"},
 		"a_BountyHuntChapter13": { // VERIFIED
-			"id": 449099, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449099, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 13"},
 		"a_BountyHuntChapter14": { // VERIFIED
-			"id": 449098, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449098, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 14"},
 		"a_BountyHuntChapter15": { // VERIFIED
-			"id": 449097, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449097, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 15"},
 		"a_BountyHuntChapter17": { // VERIFIED
-			"id": 449096, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449096, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 17"},
 		"a_BountyHuntChapter18": { // VERIFIED
-			"id": 449064, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449064, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 18"},
 		"a_BountyHuntChapter20": { // VERIFIED (RATools v1.15.0)
-			"id": 449106, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449106, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 20"},
 		"a_BountyHuntChapter21": { // VERIFIED (RATools v1.15.0)
-			"id": 449105, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449105, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 21"},
 		"a_BountyHuntChapter24": { // VERIFIED
-			"id": 449104, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449104, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
 		// "a_BountyHuntChapter25": { // VERIFIED (RATools v1.15.0) // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 449103, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "id": 449103, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Complete Bounty Hunter mission for Chapter 25"},
 		"a_BountyHuntChapter27": { // VERIFIED
-			"id": 449102, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 449102, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 27"},
 		},
-	"c_StoryChallenge": { // Category -  Story related challenge achievements
-		// "a_BigMoney": { // QA a_BigMoney - False trigger // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
-			// "id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Amass an amount of cash on one player profile"},
-		// "a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// "id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Finish a mission an accuracy of 90% or higher, without using dead eye ability"},
+	"c_StoryChallenge": { // Category -  Story related challenge achievements (26) 
+		"a_BigMoney": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools 
+			"id": 447721, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Amass an amount of cash on one player profile"},
+		"a_PerfectAccuracy": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+			"id": 455472, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			"devInfo": "Finish a mission an accuracy of 90% or higher, without using deadeye ability"},
 		"a_PerfectShootingTutorial": { // VERIFIED
 			"id": 438301, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Bull's Eye' | Finish tutorial without wasting ammo (13 targets to hit)"},
 		"a_SaveCurly": { // VERIFIED
-			"id": 449378, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Missable,
+			"id": 449378, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Missable,
 			"devInfo": "Level 'Rogue Valley' | After saving Curly Shaw, pick up the $1500 pouch he drops near him"},
 		// "a_ChallengeChapter1": { // VERIFIED // DISABLED - Manual edit via RAIntegration - as an AddSource chain is unable to generated by RATools  
-			// "id": 438677, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			// "id": 438677, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bull's Eye' | Complete with a bounty collected of $1000 or greater | Very Hard"},
 		// "a_ChallengeChapter2": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			// "id": 450183, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			// "id": 450183, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat and with damage taken less than 50% | Hard or Very Hard"},
 		"a_ChallengeChapter3": { // VERIFIED
-			"id": 450198, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 450198, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
 		"a_ChallengeChapter5": { // VERIFIED
-			"id": 439585, "points": achievement_POINTS_Minor, "type": achievements_TYPE_Standard,
+			"id": 439585, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Railroaded' | Complete the mission without falling of the train | Hard or Very Hard"},
 		"a_ChallengeChapter6": { // VERIFIED
-			"id": 450325, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 450325, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Carinval Life' | Get a killstreak of 10 using the gatling gun without letting go of the trigger | Hard or Very Hard"},
-		// "a_ChallengeChapter7": { // QA a_ChallengeChapter7 - Did not trigger, I had 74% acc. The indicator that shows my acc progress appears but the achievement did not unlock after the end of Chapeter 7. I played with Very Hard diff. But I also, froze my health in book mark // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
+		// "a_ChallengeChapter7": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
 			// "id": 450393, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Freak Show' | Complete with 60% accuracy or higher | Very Hard"},
 		"a_ChallengeChapter8": { // VERIFIED
 			"id": 451482, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat | Very Hard"},
 		"a_ChallengeChapter10": { // VERIFIED
-			"id": 450554, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 450554, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Cemetery' | Complete with 'No Distortion', 'Sad Stars' and 'No HUD' cheats | Hard or Very Hard"}, 
 		"a_ChallengeChapter11": { // VERIFIED
-			"id": 450845, "points": achievement_POINTS_Basic, "type": achievements_TYPE_Standard,
+			"id": 450845, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Range War' | Ride a bison and kill 15 enemies | Hard or Very Hard"},
-		// "a_ChallengeChapter12": { // QA a_ChallengeChapter12 - False trigger. It trigger's upon beginning the fight. Note that my health is not frozen neither Deadeye. However, activating the cheevo during cutscene. The achievement indicator appears and triggers normally upon finishnig the Chapter. // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
+		// "a_ChallengeChapter12": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450557, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Bar Fight' | Complete with at least 70% HP remaining | Very Hard"},
+			// "devInfo": "Level 'Saloon Fight' | Complete with at least 70% HP remaining | Very Hard"},
 		"a_ChallengeChapter13": { // VERIFIED
-			"id": 450844, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 450844, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Traitor' | Win the battle with 5 allied cannons still operational | Hard or Very Hard"},
 		// "a_ChallengeChapter14": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
-			// "id": 450691, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "id": 450691, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Sunset Canyon' | Complete with less than 90% damage taken | Very Hard"},
 		"a_ChallengeChapter15": { // VERIFIED
-			"id": 450888, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 450888, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Bear Mountain' | Kill Grizzly only using gun 'Faith' | Very Hard"},
 		"a_ChallengeChapter17": { // VERIFIED
-			"id": 450889, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 450889, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Mine' | Complete using only a knife to damage enemies, in under 1 minute | Hard or Very Hard"},
 		// "a_ChallengeChapter19": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
-			// "id": 451499, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			// "id": 451499, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Hell Pass' | Complete without letting the coach's HP drop below 40%, using only Buffalo Soldier's deadeye ability to shoot, 'infinite Deadeye' cheat required, melee is allowed | Hard or Very Hard"},
 		"a_ChallengeChapter20": { // VERIFIED
 			"id": 451481, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Fort Diego' | Kill 12 enemies with head shots | Very Hard"},
 		"a_ChallengeChapter22": { // VERIFIED
-			"id": 450943, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 450943, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Devils and Angels' | Complete in under 3 minutes and only killing General Diego | Hard or Very Hard"},
 		"a_ChallengeChapter24": { // VERIFIED
-			"id": 451042, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
+			"id": 451042, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Battle Finale' | Complete scoring 5 headshots on Mr. Kelley and without letting any bystanders die | Very Hard"},
 		// "a_ChallengeChapter25": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 451044, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "Level 'Siege' | Complete without letting combined HP of hero trio drop below 60%, 'Golden Gun' cheat required | Hard or Very Hard"},
+			// "devInfo": "Level 'The Siege' | Complete with combined HP of hero trio at 60% or above, with 'Golden Gun' cheat required | Hard or Very Hard"},
 		// "a_ChallengeChapter27": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall
 			// "id": 450558, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Fall From Grace' | Complete with an accuracy of 60% or higher AND damage taken less than 75% | Very Hard"},
@@ -3598,7 +3606,7 @@ achievements_coreData = { // TODO rescore set, too low currently
 			"id": 453665, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Rogue Valley' | Complete with 'Bite the Bullet' cheat enabled | Red Wood Revolver"},
 		"a_WoodChapter10": { // VERIFIED
-			"id": 453664, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
+			"id": 453664, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'The Cemetery' | Only damage enemies with the 'Infinite Deadeye' cheat, melee attacks allowed, shooting isn't | Red Wood Revolver"},
 		},
 	}
@@ -4157,17 +4165,18 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& once(on_InGame_start(enum_releaseRegion))
 			&& current_RewardMenu_Balance(enum_releaseRegion) >= const_CASH_TARGET
 
 			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise it may trigger the achievement when Structs are reconstructed
 			&& !is_AnimationLoading(enum_releaseRegion)
 
+			&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && 
+				on_RewardMenu_render_short(enum_releaseRegion))
+
 			&& trigger_when(
-				once(never(!is_RewardMenu_displayed_short(enum_releaseRegion) && 
-					on_RewardMenu_render_short(enum_releaseRegion))
-				&& repeated(360, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed
-					is_RewardMenu_displayed_short(enum_releaseRegion)))) 
+				repeated(360, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay: so the achievement pops when the cash balance UI is displayed
+					is_RewardMenu_displayed_short(enum_releaseRegion)))
 
 		// [2] ==== Alt Trigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
@@ -4176,7 +4185,7 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion)) 
+			&& once(on_InGame_start(enum_releaseRegion))
 			&& current_Calculated_CashDuringMission(enum_releaseRegion) >= const_CASH_TARGET
 			/* MANUAL_CONSTRUCTION sumOf
 				-> Logic (PAL)
@@ -4202,14 +4211,19 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_AtMainMenu(enum_releaseRegion))
 
-		// [4] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [4] ==== Alt Reset Group ==== 					-> Reset when changing AREA's
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_Area_change(enum_releaseRegion))
+
+		// [5] ==== Alt Pause Lock Reset Group ====			-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			// NOTE: Reset on RetryMenu restart => is not allowed for cheats being used...
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_WarningMenu_yes(enum_releaseRegion))
 				&& on_CashResetToSavedCash(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
+		// [6] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on RewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
@@ -4229,35 +4243,38 @@ achievements_triggers = {
 				is_AreaState_InGame(enum_releaseRegion)
 				&& on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion)))
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
-			
-			&& once(on_RewardMenu_render_short(enum_releaseRegion))			
+			&& once(on_InGame_start(enum_releaseRegion))
+					
 			&& current_Calculated_Accuracy(enum_releaseRegion) >= const_DESIRED_ACCURACY 
-				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
-					-> Logic (PAL)
-						I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+			/* MANUAL_CONSTRUCTION (of above sumOf) with Remember + Recall
+				-> Logic (PAL)
+					I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
 
-						AddAddress	Mem		32-bit	0x763070
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Float			0.0			+	Mem		32-bit	0x194
-						AddAddress	Mem		32-bit	0x763070
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Mem		32-bit	0x198		/ 	Recall
-									Recall						>= 	Float			const_DESIRED_ACCURACY
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Float			0.0			+	Mem		32-bit	0x194
+					AddAddress	Mem		32-bit	0x763070
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		32-bit	0x198		/ 	Recall
+								Recall						>= 	Float			const_DESIRED_ACCURACY
 
-					-> Logic (NTSCU)
-						I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
+				-> Logic (NTSCU)
+					I:0xX007608f0_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX007608f0_I:0xX0000036c_K:0xX00000198/{recall}_{recall}>=f0.9
 
-						AddAddress	Mem		32-bit	0x7608f0
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Float			0.0			+	Mem		32-bit	0x194
-						AddAddress	Mem		32-bit	0x7608f0
-						AddAddress	Mem		32-bit	0x36c
-						Remember	Mem		32-bit	0x198		/ 	Recall
-									Recall						>= 	Float			const_DESIRED_ACCURACY
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Float			0.0			+	Mem		32-bit	0x194
+					AddAddress	Mem		32-bit	0x7608f0
+					AddAddress	Mem		32-bit	0x36c
+					Remember	Mem		32-bit	0x198		/ 	Recall
+								Recall						>= 	Float			const_DESIRED_ACCURACY
 				*/
+			
+			&& once(never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && 
+				on_RewardMenu_render_short(enum_releaseRegion))
+
 			&& trigger_when(
-				repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
+				repeated(190, never(!is_RewardMenu_displayed_short(enum_releaseRegion)) && // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 			
 		// [2] ==== Alt Reset Group ==== 					-> Reset everything when at main menu
@@ -5814,7 +5831,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
+	"a_WoodChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MISSION_AREA = AREA_Campaign_RogueValley
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
@@ -5852,8 +5869,8 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_WoodChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion)  {
-		const_MISSION_AREA = AREA_Campaign_HellPass
+	"a_WoodChapter10": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MISSION_AREA = AREA_Campaign_TheCemetery
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
 			CHEAT_NoDistortion, CHEAT_SadStars, CHEAT_Debug_ShowPlayerPosition, CHEAT_Debug_ShowAIInfo]
@@ -5868,9 +5885,12 @@ achievements_triggers = {
 				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnySpecifiedCheats_active(const_array_DISALLOWED_CHEATS, enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Once a firearm is used
-				is_PlayerInput_AimGun_pressed(enum_releaseRegion)
-				&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
+			&& unless( // <-- Pause Lock: Once a firearm is used
+				once(
+					is_AreaState_InGame(enum_releaseRegion))
+				&& once(
+					is_PlayerInput_AimGun_pressed(enum_releaseRegion)
+					&& on_PlayerInput_FireGun_press(enum_releaseRegion)))
 
 			&& once( // <---Once--- Specifies that the required cheats must be active prior to (re-)starting the mission
 				is_SpecifiedCheat_active(const_REQUIRED_CHEAT, enum_releaseRegion)
@@ -6974,7 +6994,7 @@ achievements_triggers = {
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
 		return 
 		// ==== Core (Alt) Group ==== 
-			// BUG RATools - infinite processing error --> Manual creation via RAIntegration
+			// BUG_RATools - infinite processing error --> Manual creation via RAIntegration
 			// prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT // <---2Lines--- Break RATools
 			// && prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT*5/8
 			measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
@@ -7004,7 +7024,7 @@ achievements_triggers = {
 
 // =====================
 // • Achievements TEXT •
-// ===================== // TODO update all text to live (everything in rascript is already up to date) --> https://discord.com/channels/310192285306454017/1288217265472278609
+// =====================
 achievements_titles = {
 	// Title Idea's
 		// Cavalry Draw - Jack Swift related achievement
@@ -7076,7 +7096,7 @@ achievements_titles = {
 	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
 
 	"a_BigMoney":							{"en": "It Was Always About the Money"},
-	"a_PerfectAccuracy":					{"en": "Deadeye"},
+	"a_PerfectAccuracy":					{"en": "Deadeye"}, 
 	"a_SaveCurly":							{"en": "A Curly Deal for Carbine Zeal"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
 	"a_ChallengeChapter1": 					{"en": "Budding Prize"}, // WARNING - Manual creation via RAIntegration
@@ -7089,7 +7109,7 @@ achievements_titles = {
 	"a_ChallengeChapter10":					{"en": "Tall-Tale"},
 	"a_ChallengeChapter11":					{"en": "Savage Saddle"},
 	"a_ChallengeChapter12":					{"en": "Quite the Show"},
-	"a_ChallengeChapter13":					{"en": "Hammer of the Gods"},
+	"a_ChallengeChapter13":					{"en": "Hammers of the Gods"},
 	"a_ChallengeChapter14":					{"en": "Carnage at Sunset"},
 	"a_ChallengeChapter15":					{"en": "Roaring Bane"},
 	"a_ChallengeChapter17": 				{"en": "Melee Minehem"},
@@ -7112,7 +7132,7 @@ achievements_titles = {
 	"a_SundownGriffon": 					{"en": "I've Come To Finish the Job"},
 	"a_SundownNate": 						{"en": "Harlow's Reckoning"},
 	"a_SundownFlawless": 					{"en": "Untouchable at Twilight"},
-	"a_HighNoonNatalie": 					{"en": "Familiar Standoff"},
+	"a_HighNoonNatalie": 					{"en": "Professional Familiarity"}, // Reference to movie "Léon: The Professional" (1994)
 	"a_HighNoonCurly": 						{"en": "Supplies Depleted, Trigger Repeated"},	
 
 	"a_UnlockStagesAll": 					{"en": "Frontier Sojourn"},
@@ -7138,7 +7158,7 @@ achievements_descriptions = {
 	"a_CompleteChapter8":					{"en": "Rein in Bad Bessie's gang of outlaws during Chapter 8, \"Rogue Valley\""},
 	"a_CompleteChapter10":					{"en": "Close out all of Sheriff Bartlett's bounties by the end of Chapter 10, \"The Cemetery\""},
 	"a_CompleteChapter11":					{"en": "Accomplish the defense of Annie's cattle from the raiders in Chapter 11, \"Range War\""},
-	"a_CompleteChapter12":					{"en": "Survive a storm of fists, bottles and bullets during Chapter 12, \"Bar Fight\""},
+	"a_CompleteChapter12":					{"en": "Survive a storm of fists, bottles and bullets during Chapter 12, \"Saloon Fight\""},
 	"a_CompleteChapter13":					{"en": "Unearth the deceitful secrets behind Red's parents' fate by the end of Chapter 13, \"The Traitor\""},
 	"a_CompleteChapter14":					{"en": "Disrupt an illicit gold operation during the events of Chapter 14, \"Sunset Canyon\""},
 	"a_CompleteChapter15":					{"en": "Successfully navigate the twisting creek in Chapter 15, \"Bear Mountain\""},
@@ -7147,7 +7167,7 @@ achievements_descriptions = {
 	"a_CompleteChapter20": 					{"en": "Bring down the senior officer donning the shoulder-mounted armcannon in Chapter 20, \"Fort Diego\""},
 	"a_CompleteChapter22":					{"en": "Deal the final blow to the Renegade Army during Chapter 22, \"Devils and Angels\""},
 	"a_CompleteChapter24":					{"en": "Emerge triumphant after vanquishing all Battle Royale adversaries in Chapter 24, \"Battle Finale\""},
-	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, \"Siege\""},
+	"a_CompleteChapter25":					{"en": "Breach the opulent manor within Chapter 25, \"The Siege\""},
 	"a_CompleteChapter27":					{"en": "Conclude Red's story by completing Chapter 27, \"Fall From Grace\""},
 
 	"a_BountyHuntChapter1": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 1, \"Bull's Eye\""},
@@ -7159,7 +7179,7 @@ achievements_descriptions = {
 	"a_BountyHuntChapter8": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 8, \"Rogue Valley\""},
 	"a_BountyHuntChapter9": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 9, \"Ghost Town\""},
 	"a_BountyHuntChapter11": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 11, \"Range War\""},
-	"a_BountyHuntChapter12": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 12, \"Bar Fight\""},
+	"a_BountyHuntChapter12": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 12, \"Saloon Fight\""},
 	"a_BountyHuntChapter13": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 13, \"The Traitor\""},
 	"a_BountyHuntChapter14": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 14, \"Sunset Canyon\""},
 	"a_BountyHuntChapter15": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 15, \"Bear Mountain\""},
@@ -7168,12 +7188,12 @@ achievements_descriptions = {
 	"a_BountyHuntChapter20": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 20, \"Fort Diego\""},
 	"a_BountyHuntChapter21": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 21, \"End of the Line\""},
 	"a_BountyHuntChapter24": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 24, \"Battle Finale\""},
-	"a_BountyHuntChapter25": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 25, \"Siege\""},
+	"a_BountyHuntChapter25": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 25, \"The Siege\""},
 	"a_BountyHuntChapter27": 				{"en": "Complete the Bounty Hunter Mode challenge for Chapter 27, \"Fall From Grace\""},
 	"a_BountyCompletionAll":				{"en": "Complete all Bounty Hunter Mode missions on one player profile"},
 
 	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 or more at the end of a singleplayer story mission"},
-	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Dead Eye ability"},
+	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Deadeye ability"},
 	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1,500 reward for saving him during Chapter 8, \"Rogue Valley\""},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, \"Bull's Eye\", by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, \"Bull's Eye\", on very hard difficulty, with a collected bounty of $1,000 or more"}, // WARNING - Manual creation via RAIntegration
@@ -7185,7 +7205,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter8":					{"en": "Complete Chapter 8, \"Rogue Valley\", on very hard difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_ChallengeChapter10":					{"en": "Complete Chapter 10, \"The Cemetery\", on hard or very hard difficulty, with the following cheats enabled: \"No Distortion\", \"Sad Stars\" and \"No HUD\""},
 	"a_ChallengeChapter11":					{"en": "Complete Chapter 11, \"Range War\", on hard or very hard difficulty, dispatching 15 enemies while riding a bison"},
-	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, \"Bar Fight\", on very hard difficulty, with at least 70% HP remaining at the end"},
+	"a_ChallengeChapter12":					{"en": "Complete Chapter 12, \"Saloon Fight\", on very hard difficulty, with at least 70% HP remaining at the end"},
 	"a_ChallengeChapter13":					{"en": "Complete Chapter 13, \"The Traitor\", on hard or very hard difficulty, with at least 5 allied cannons remaining"},
 	"a_ChallengeChapter14":					{"en": "Complete Chapter 14, \"Sunset Canyon\", on very hard difficulty, with less than 90% damage taken"},
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, \"Bear Mountain\", on very hard difficulty, using only the firearm \"Faith\" to damage Grizzly"},
@@ -7194,7 +7214,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
-	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"Siege\", on hard or very hard difficulty, without letting the combined HP of the heroes drop below 60%, and whilst using the \"Golden Gun\" cheat"},
+	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"The Siege\", on hard or very hard difficulty, with the combined HP of all three heroes at 60% or above, and whilst using the \"Golden Gun\" cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with \"Bite the Bullet\" cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
@@ -7208,7 +7228,7 @@ achievements_descriptions = {
 	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of over 10"},
 	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
-	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match without dying once"},
+	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match vs without dying once"},
 	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
 	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},
 
@@ -7218,7 +7238,7 @@ achievements_descriptions = {
 	"a_CompleteJournalHalf":				{"en": "Unlock half of Sheriff Bartlett's journal"},
 	"a_CompleteJournalAll":					{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
-	"a_MaxDeadEye":							{"en": "Max out Red's Dead Eye in the story campaign"},
+	"a_MaxDeadEye":							{"en": "Max out Red's Deadeye in the story campaign"},
 	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"}, // WARNING - Manual creation via RAIntegration
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
@@ -7406,7 +7426,7 @@ richPresence_LookupTablesText = {
 		"RogueValley":				{"en": "8, \"Rogue Valley\","},
 		"Jailbreak":				{"en": "16, \"Jailbreak\","},
 		"FortDiego":				{"en": "20, \"Fort Diego\","},
-		"Siege":					{"en": "25, \"Siege\","},
+		"Siege":					{"en": "25, \"The Siege\","},
 		"SunsetCanyon":				{"en": "14, \"Sunset Canyon\","},
 		"CarnivalLife":				{"en": "6, \"Carnival Life\","},
 		"RangeWar":					{"en": "11, \"Range War\","},
@@ -7420,7 +7440,7 @@ richPresence_LookupTablesText = {
 		"BullsEye":  				{"en": "1, \"Bull's Eye\","},
 		"BattleRoyale":  			{"en": "23, \"Battle Royale\","},
 		"TheMine":  				{"en": "17, \"The Mine\","},
-		"SaloonFight":  			{"en": "12, \"Bar Fight\","},
+		"SaloonFight":  			{"en": "12, \"Saloon Fight\","},
 		"TheCemetery":  			{"en": "10, \"The Cemetery\","},
 		"FallFromGrace":  			{"en": "27, \"Fall From Grace\","},
 		"HouseOfCards":  			{"en": "26, \"House Of Cards\","},
@@ -8314,8 +8334,6 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 
-
-
 	// "lb_Chapter1Normal": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
 		// "id": 115333, "isLowerBetter": false, 
 		// "leaderboardFormat": "VALUE",
@@ -8477,9 +8495,9 @@ leaderboards_coreData = {
 		// 	"leaderboardFormat": "VALUE",
 		// 	"devInfo": "Best Stats - Hard"},
 	// "lb_Chapter1VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
-		// 	"id": 118290, "isLowerBetter": false, 
-		// 	"leaderboardFormat": "VALUE",
-		// 	"devInfo": "Best Stats - Very Hard"},
+		// "id": 118290, "isLowerBetter": false, 
+		// "leaderboardFormat": "VALUE",
+		// "devInfo": "Best Stats - Very Hard"},
 	// "lb_Chapter2VeryHard": { // VERIFIED // DISABLED - Manual edit via RAIntegration - ValueMeasure has usage of Remember/Recall
 		// 	"id": 118296, "isLowerBetter": false, 
 		// 	"leaderboardFormat": "VALUE",
@@ -8748,7 +8766,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() {
 			+ current_DeathToll(enum_releaseRegion),
 			when = is_ReleaseRegion(enum_releaseRegion))
 
-		/* MANUAL_CONSTRUCTION Measured with Remember/Recall
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall - Math too complicated to be generated correctly by RATools
 			-> Serialized Logic (PAL) - [Value Group]
 				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX007448d8_B:{recall}*0xX00000008_I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_K:{recall}*0xX0000587c_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_M:{recall}_Q:0xX0054c7cc=1397050451
 
@@ -8865,7 +8883,7 @@ function leaderboards_generate_FullValueMeasure_ChapterBoard() {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_RewardMenu_displayed_short(enum_releaseRegion))
 
-		/* MANUAL_CONSTRUCTION Measured with Remember/Recall 
+		/* MANUAL_CONSTRUCTION Measured with Remember/Recall - Math too complicated to be generated correctly by RATools
 			-> Serialized Logic (PAL) - [Alt 1 Group]
 				I:0xX00763070_I:0xX0000036c_K:f0.0+0xX00000194_I:0xX00763070_I:0xX0000036c_K:0xX00000198/{recall}_K:{recall}*f4.0_K:{recall}+f21.0_I:0xX0054caf0_I:0xX000000ac_I:0xX00000034_I:0xX0000001c_K:{recall}*0xX000009e4_I:0xX00763070_I:0xX0000036c_B:fF00000070*f4.0_I:0xX007a0788_B:fF00000020*f3.0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_I:0xX00763070_I:0xX0000036c_A:fF000001c4*0xX000001c0_K:{recall}_I:0xX00763070_I:0xX0000036c_A:0xX00000030*f10.0_I:0xX00763070_I:0xX0000036c_A:0xX0000005c*f5.0_K:{recall}_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000814*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000824*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000834*f1500.0_I:0xX0054caf0_I:0xX000002d0_I:0xX00000024_I:0xX0000001c_A:0xM00000844*f1500.0_M:{recall}_Q:0xX0054c7cc=1397050451_I:0xX0054caf0_Q:0xX000002d0>0
 			
@@ -9821,7 +9839,7 @@ leaderboards_titles = {
 	"lb_Chapter8Normal": 			{"en": "'Rogue Valley' Normal Bounty Board"},
 	"lb_Chapter10Normal": 			{"en": "'The Cemetery' Normal Bounty Board"},
 	"lb_Chapter11Normal": 			{"en": "'Range War' Normal Bounty Board"},
-	"lb_Chapter12Normal": 			{"en": "'Bar Fight' Normal Bounty Board"},
+	"lb_Chapter12Normal": 			{"en": "'Saloon Fight' Normal Bounty Board"},
 	"lb_Chapter13Normal": 			{"en": "'The Traitor' Normal Bounty Board"},
 	"lb_Chapter14Normal": 			{"en": "'Sunset Canyon' Normal Bounty Board"},
 	"lb_Chapter15Normal": 			{"en": "'Bear Mountain' Normal Bounty Board"},
@@ -9830,7 +9848,7 @@ leaderboards_titles = {
 	"lb_Chapter20Normal": 			{"en": "'Fort Diego' Normal Bounty Board"},
 	"lb_Chapter22Normal": 			{"en": "'Devils and Angels' Normal Bounty Board"},
 	"lb_Chapter24Normal": 			{"en": "'Battle Finale' Normal Bounty Board"},
-	"lb_Chapter25Normal": 			{"en": "'Siege' Normal Bounty Board"}, 
+	"lb_Chapter25Normal": 			{"en": "'The Siege' Normal Bounty Board"}, 
 	"lb_Chapter27Normal":			{"en": "'Fall From Grace' Normal Bounty Board"},
 
 	"lb_Chapter1Hard": 				{"en": "'Bull's Eye' Hard Bounty Board"},
@@ -9842,7 +9860,7 @@ leaderboards_titles = {
 	"lb_Chapter8Hard": 				{"en": "'Rogue Valley' Hard Bounty Board"},
 	"lb_Chapter10Hard": 			{"en": "'The Cemetery' Hard Bounty Board"},
 	"lb_Chapter11Hard": 			{"en": "'Range War' Hard Bounty Board"},
-	"lb_Chapter12Hard": 			{"en": "'Bar Fight' Hard Bounty Board"},
+	"lb_Chapter12Hard": 			{"en": "'Saloon Fight' Hard Bounty Board"},
 	"lb_Chapter13Hard": 			{"en": "'The Traitor' Hard Bounty Board"},
 	"lb_Chapter14Hard": 			{"en": "'Sunset Canyon' Hard Bounty Board"},
 	"lb_Chapter15Hard": 			{"en": "'Bear Mountain' Hard Bounty Board"},
@@ -9851,7 +9869,7 @@ leaderboards_titles = {
 	"lb_Chapter20Hard": 			{"en": "'Fort Diego' Hard Bounty Board"},
 	"lb_Chapter22Hard": 			{"en": "'Devils and Angels' Hard Bounty Board"},
 	"lb_Chapter24Hard": 			{"en": "'Battle Finale' Hard Bounty Board"},
-	"lb_Chapter25Hard": 			{"en": "'Siege' Hard Bounty Board"}, 
+	"lb_Chapter25Hard": 			{"en": "'The Siege' Hard Bounty Board"}, 
 	"lb_Chapter27Hard": 			{"en": "'Fall From Grace' Hard Bounty Board"},
 
 	"lb_Chapter1VeryHard": 			{"en": "'Bull's Eye' Very Hard Bounty Board"},
@@ -9863,7 +9881,7 @@ leaderboards_titles = {
 	"lb_Chapter8VeryHard": 			{"en": "'Rogue Valley' Very Hard Bounty Board"},
 	"lb_Chapter10VeryHard": 		{"en": "'The Cemetery' Very Hard Bounty Board"},
 	"lb_Chapter11VeryHard": 		{"en": "'Range War' Very Hard Bounty Board"},
-	"lb_Chapter12VeryHard": 		{"en": "'Bar Fight' Very Hard Bounty Board"},
+	"lb_Chapter12VeryHard": 		{"en": "'Saloon Fight' Very Hard Bounty Board"},
 	"lb_Chapter13VeryHard": 		{"en": "'The Traitor' Very Hard Bounty Board"},
 	"lb_Chapter14VeryHard": 		{"en": "'Sunset Canyon' Very Hard Bounty Board"},
 	"lb_Chapter15VeryHard": 		{"en": "'Bear Mountain' Very Hard Bounty Board"},
@@ -9872,7 +9890,7 @@ leaderboards_titles = {
 	"lb_Chapter20VeryHard": 		{"en": "'Fort Diego' Very Hard Bounty Board"},
 	"lb_Chapter22VeryHard": 		{"en": "'Devils and Angels' Very Hard Bounty Board"},
 	"lb_Chapter24VeryHard": 		{"en": "'Battle Finale' Very Hard Bounty Board"},
-	"lb_Chapter25VeryHard": 		{"en": "'Siege' Very Hard Bounty Board"}, 
+	"lb_Chapter25VeryHard": 		{"en": "'The Siege' Very Hard Bounty Board"}, 
 	"lb_Chapter27VeryHard": 		{"en": "'Fall From Grace' Very Hard Bounty Board"},
 
 	"lb_Chapter1RedWood": 			{"en": "'Bull's Eye' Red Wood Revolver Bounty Board"},
@@ -9884,7 +9902,7 @@ leaderboards_titles = {
 	"lb_Chapter8RedWood": 			{"en": "'Rogue Valley' Red Wood Revolver Bounty Board"},
 	"lb_Chapter10RedWood": 			{"en": "'The Cemetery' Red Wood Revolver Bounty Board"},
 	"lb_Chapter11RedWood": 			{"en": "'Range War' Red Wood Revolver Bounty Board"},
-	"lb_Chapter12RedWood": 			{"en": "'Bar Fight' Red Wood Revolver Bounty Board"},
+	"lb_Chapter12RedWood": 			{"en": "'Saloon Fight' Red Wood Revolver Bounty Board"},
 	"lb_Chapter13RedWood": 			{"en": "'The Traitor' Red Wood Revolver Bounty Board"},
 	"lb_Chapter14RedWood": 			{"en": "'Sunset Canyon' Red Wood Revolver Bounty Board"},
 	"lb_Chapter15RedWood": 			{"en": "'Bear Mountain' Red Wood Revolver Bounty Board"},
@@ -9893,7 +9911,7 @@ leaderboards_titles = {
 	"lb_Chapter20RedWood": 			{"en": "'Fort Diego' Red Wood Revolver Bounty Board"},
 	"lb_Chapter22RedWood": 			{"en": "'Devils and Angels' Red Wood Revolver Bounty Board"},
 	"lb_Chapter24RedWood": 			{"en": "'Battle Finale' Red Wood Revolver Bounty Board"},
-	"lb_Chapter25RedWood": 			{"en": "'Siege' Red Wood Revolver Bounty Board"}, 
+	"lb_Chapter25RedWood": 			{"en": "'The Siege' Red Wood Revolver Bounty Board"}, 
 	"lb_Chapter27RedWood": 			{"en": "'Fall From Grace' Red Wood Revolver Bounty Board"},
 
 	"lb_ShowdownFastestBounty": 			{"en": "Bounty Rush"},

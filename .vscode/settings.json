@@ -28,6 +28,8 @@
         "BUG",
         "ERROR",
 
+        "BUG_RATools",
+
         "DISABLED",
         "OFF",
         "INACTIVE",
@@ -161,6 +163,12 @@
             "background": "#612c03",
             "type": "text-and-comment",
             "icon": "stop"
+        },
+        "BUG_RATools": {
+            "foreground": "#fc5353",
+            "background": "#612c03",
+            "type": "text-and-comment",
+            "icon": "bug"
         },
         "DISABLED": {
             "foreground": "#c7c7c7",
