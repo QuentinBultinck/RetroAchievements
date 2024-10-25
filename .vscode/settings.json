@@ -168,6 +168,8 @@
             "foreground": "#fc5353",
             "background": "#612c03",
             "type": "text-and-comment",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
             "icon": "bug"
         },
         "DISABLED": {
