@@ -7,7 +7,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/11094
-// RATools version: 1.14.1 - (some achievements coded in 1.15.0)
+// RATools version: 1.15.0 - (some achievements were coded in 1.14.1)
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -51,11 +51,11 @@
 //#####################################################################################################\\
 
 // TODO support for 60 fps patch + NTSCJ ????
-// TODO Before launch: remove debugMode Text + reset leaderboard entries
+// TODO Before launch: reset leaderboard entries
 // TODO RAguide spelling check 
 // TODO verify journal unlocks bitset
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -261,20 +261,32 @@ memory_dataStructures = {
 				"addAddressChain": [0xC0, 0x48, 0xFD]},
 			"BitFlag_IsShowdownPlayerSlot1Filled": { 
 				"addAddressChain": [0xC0, 0x7C, 0xFD]},
+			"8Bit_ShowdownPlayer1TeamId": { 
+				"addAddressChain": [0xC0, 0x53C]},
 			"ASCII_ShowdownPlayer1CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x7C, 0x13D]},
+				"addAddressChain": [0xC0, 0x7C],
+				"offsetToPointedToMember": 0x13D},
 			"BitFlag_IsShowdownPlayerSlot2Filled": { 
 				"addAddressChain": [0xC0, 0x80, 0xFD]},
 			"ASCII_ShowdownPlayer2CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x80, 0x13D]},
+				"addAddressChain": [0xC0, 0x80],
+				"offsetToPointedToMember": 0x13D},
+			"8Bit_ShowdownPlayer2TeamId": { 
+				"addAddressChain": [0xC0, 0x588]},
 			"BitFlag_IsShowdownPlayerSlot3Filled": { 
 				"addAddressChain": [0xC0, 0x84, 0xFD]},
 			"ASCII_ShowdownPlayer3CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x84, 0x13D]},
+				"addAddressChain": [0xC0, 0x84],
+				"offsetToPointedToMember": 0x13D},
+			"8Bit_ShowdownPlayer3TeamId": { 
+				"addAddressChain": [0xC0, 0x5D4]},
 			"BitFlag_IsShowdownPlayerSlot4Filled": { 
 				"addAddressChain": [0xC0, 0x88, 0xFD]},
 			"ASCII_ShowdownPlayer4CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x88, 0x13D]},
+				"addAddressChain": [0xC0, 0x88],
+				"offsetToPointedToMember": 0x13D},
+			"8Bit_ShowdownPlayer4TeamId": { 
+				"addAddressChain": [0xC0, 0x620]},
 			"8Bit_TeamIdPlayer1": { 
 				"addAddressChain": [0x53C]},
 			"8Bit_TeamIdPlayer2": { 
@@ -477,7 +489,7 @@ function memory_getDataStructOffset(string_structKey, string_memberKey) =>
 function memory_getPointerChainOffsetToMember(string_structKey, string_pointerChainKey) => 
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"]
 	
-	function memory_getPointerChainOffsetToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
+function memory_getPointerChainOffsetToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
 function memory_getAddressChain(string_structKey, string_pointerChainKey) =>
@@ -539,11 +551,12 @@ memory_addresses = {
 	DATATYPE_ASCII: {
 		"GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
 		"AreaID": {RELEASE_REGION_USA: 0x79dea0, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
-		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in disabled achievements
+		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in discontinued achievements
 		},
 	DATATYPE_32Bit: {
 		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
 		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL},
+		"PosterMenu_SelectedShowdownStageID": {RELEASE_REGION_USA: 0x74f500, RELEASE_REGION_EUR: 0x751c80, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Float: {
 		"IsInGame": {RELEASE_REGION_USA: 0x4F9F2C, RELEASE_REGION_EUR: 0x4fc5ac, RELEASE_REGION_JPN: sNULL},
@@ -1181,6 +1194,33 @@ const_Area_data = { // TODO put these coordinates inside the code notes??
 			"X-Coordinate": 4.17,
 			"Y-Coordinate": 23.11,
 			"Z-Coordinate": 10.97}},
+	
+	AREA_Showdown_TheBridge: {
+		"PosterMenuStageID": 0xA479363B},
+	AREA_Showdown_TheMine: {
+		"PosterMenuStageID": 0xB62B6570},
+	AREA_Showdown_WidowsPatch: {
+		"PosterMenuStageID": 0x8D4B4164},
+	AREA_Showdown_TheRanch: {
+		"PosterMenuStageID": 0x1BBD6301},
+	AREA_Showdown_Fairground: {
+		"PosterMenuStageID": 0xBDF1A8C6},
+	AREA_Showdown_FallenCreek: {
+		"PosterMenuStageID": 0x2F5BB19C},
+	AREA_Showdown_GhostTown: {
+		"PosterMenuStageID": 0x6FA2063E},
+	AREA_Showdown_SunsetCanyon: {
+		"PosterMenuStageID": 0x7C52F704},
+	AREA_Showdown_BrokenCreek: {
+		"PosterMenuStageID": 0x2014BFB6},
+	AREA_Showdown_MansionGrounds: {
+		"PosterMenuStageID": 0xE89F9670},
+	AREA_Showdown_TheMansion: {
+		"PosterMenuStageID": 0x4858C414},
+	AREA_Showdown_TwinRocks: {
+		"PosterMenuStageID": 0x4E8ED0A3},
+	AREA_Showdown_DesertFortress: {
+		"PosterMenuStageID": 0xE92D2DF4},
 	}
 
 function get_Area_memAddr_InnerID(enum_releaseRegion) =>
@@ -1198,6 +1238,10 @@ function get_AreaCampaign_LongInnerId(enum_areaId) {
 
 function get_AreaShowdown_InnerId(enum_areaId) =>
 	memUtil_asciiStringToHex(substring(enum_areaId, 4, 3)) // "lvl_bomb2" --> "bom"
+
+function get_AreaShowdown_PosterMenuStageId(enum_areaId) =>
+	const_Area_data[enum_areaId]["PosterMenuStageID"]
+
 // -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
 	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
@@ -2966,11 +3010,12 @@ SHOWDOWN_TEAM_WHITE = 1
 SHOWDOWN_TEAM_BLUE = 2
 SHOWDOWN_TEAM_YELLOW = 3
 
+// TODO c_Showdown --> add trigger indicator when at PosterMenu when all settings are correct
 // --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain(
-		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_BasePointer)}
+		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_BasePointer, accessor = byte)}
 
 function is_ShowdownPosterMenu_displayed(enum_releaseRegion) =>
 	current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) == 1
@@ -2984,17 +3029,27 @@ function current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex
 function is_PosterMenu_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
 	current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) == 1
 
-function current_Calculated_PosterMenu_ActiveShowdownPlayers(enum_releaseRegion) {
-	let_array_ShowdownPlayerIndices = [1,2,3,4]
-	return sum_of(let_array_ShowdownPlayerIndices, int_playerIndex => 
-		current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion))}
-
 function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
 	let_string_pointerChainKey = format("ASCII_ShowdownPlayer{0}CharacterModelId", int_playerIndex)
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_PointerChainTo_ShowdownPlayerCharacterModelId = memory_generateAddAddressPointerChain(
+	let_PointerChain_ShowdownPlayerCharacterModelId = memory_generateAddAddressPointerChain(
 		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer)
-	return is_ASCII_EqualTo(let_PointerChainTo_ShowdownPlayerCharacterModelId, enum_character)}
+	let_offsetTo_ShowdownPlayerCharacterModelId = memory_getPointerChainOffsetToMember("Struct_GameController", let_string_pointerChainKey)
+	return is_ASCII_EqualTo(let_PointerChain_ShowdownPlayerCharacterModelId + let_offsetTo_ShowdownPlayerCharacterModelId, enum_character)}
+
+function current_PosterMenu_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	let_string_pointerChainKey = format("8Bit_ShowdownPlayer{0}TeamId", int_playerIndex)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAccessor_ShowdownPlayerTeamId = memory_generateAddAddressPointerChain(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer, 
+		accessor = byte)
+	return let_memAccessor_ShowdownPlayerTeamId}
+
+function current_PosterMenu_SelectedShowdownStageId(enum_releaseRegion) =>
+	dword(memory_getAddress(DATATYPE_32Bit, "PosterMenu_SelectedShowdownStageID", enum_releaseRegion))
+
+function is_PosterMenu_ShowdownStage(enum_areaId, enum_releaseRegion) =>
+	current_PosterMenu_SelectedShowdownStageId(enum_releaseRegion) == get_AreaShowdown_PosterMenuStageId(enum_areaId) 
 
 // --------------------ShowdownPlayer_Settings------------------------
 SHOWDOWN_AI_SETTING_HumanPlayer = "MPplayer"
@@ -3141,7 +3196,8 @@ function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 
 // --------------------MultiplayerRewardMenu------------------------
 ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpReward" // Full string: "mpRewards_new3"
-ASCII_FLAG_IsPlayerWinner = "Winner"
+ASCII_FLAG_IsPlayerWinner = "Winn" // "Winner"
+ASCII_FLAG_IsPlayerNotWinner = "okLa" // "okLable"
 
 function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
@@ -3153,6 +3209,21 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
 	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
+
+function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	const_OFFSET_TO_FLAG_NotWinner = 0x1
+
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))	
+	
+	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
+		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
+	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
+	return is_ASCII_EqualTo(
+		let_pointerChainTo_ASCII + let_offsetTo_ASCII + const_OFFSET_TO_FLAG_NotWinner, 
+		ASCII_FLAG_IsPlayerNotWinner)}
 
 function ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
@@ -3199,7 +3270,7 @@ function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) =>
 	is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 	&& is_MultiplayerRewardMenu_FirstPopupMenu_displayed(enum_releaseRegion)
 	&& is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion)
-	&& is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion)
+	&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)
 
 
 // .........
@@ -5931,24 +6002,26 @@ achievements_triggers = {
 		const_HUMAN_PLAYER_CHARACTER = CHARACTER_KatieGrady
 		const_ALLIED_CPU_CHARACTER = CHARACTER_SheriffGrady
 		const_ENEMY_CPU_CHARACTER_1 = CHARACTER_UglyChris
-		const_ENEMY_CPU_CHARACTER_2 = CHARACTER_ProfessorPerry
+		const_ENEMY_CPU_CHARACTER_2 = CHARACTER_GigoloHancock
 		const_HUMAN_PLAYER_INDEX_1 = 1 // Human player is always at index 1
 		const_CPU_PLAYER_INDEX_2 = 2
 		const_CPU_PLAYER_INDEX_3 = 3
 		const_CPU_PLAYER_INDEX_4 = 4
 
 		return
-		// [1] ==== Core (Alt) Group ====
+		// [1] ==== Core (Alt) Group ====							-> This group is responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion)
+				|| !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion)) // TODO addeed this line
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win // TODO edited once pause lock - implement this logic into all c_Showdown
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -5967,30 +6040,47 @@ achievements_triggers = {
 			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
 			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+			&& once(never(!is_Playing_ShowdownMode_long(enum_releaseRegion)) && // TODO edited once
+				is_AreaState_InGame(enum_releaseRegion))
 			
-			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+			&& trigger_when( // TODO edited trigger_when()
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settins are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& is_AtMainMenu(enum_releaseRegion)
+			&& is_ShowdownPosterMenu_displayed(enum_releaseRegion)
 
-		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---8 Lines---> Check if all 4 player slots are filled with the correct characters
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) 
+			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
+			
+			&& current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
+			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
+
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
+			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
+
+			&& is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion)
+
+			&& trigger_when(always_false())
 		
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+		// [4] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
@@ -6013,8 +6103,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6041,10 +6131,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6084,8 +6173,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6110,10 +6199,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6155,8 +6243,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6183,10 +6271,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 			
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current damage taken (as this is otherwise not shown during gameplay), This alt group can never unlock the achievement
 			|| unless(
@@ -6194,8 +6281,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6296,8 +6383,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6321,10 +6408,9 @@ achievements_triggers = {
 						&& on_DeathToll_increment(enum_releaseRegion))))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
 			|| never_toAlt(
@@ -6359,8 +6445,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6385,10 +6471,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6429,8 +6514,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6460,10 +6545,9 @@ achievements_triggers = {
 				&& on_DeathToll_increment(enum_releaseRegion)))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6503,8 +6587,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6529,10 +6613,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6574,8 +6657,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6625,10 +6708,9 @@ achievements_triggers = {
 			*/
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt RAmeasured Popup Handler Group ====			-> This alt is purely responsible for displaying the current accuracy percentage (as this is otherwise not shown in-game), This alt group can never unlock the achievement
 			|| unless(
@@ -6636,11 +6718,11 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))		
+					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
 			&& measured(
 				current_Calculated_Accuracy_Showdown(enum_releaseRegion) >= const_MAX_ACCURACY,
@@ -6743,10 +6825,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
 			|| never_toAlt(
@@ -6781,8 +6862,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6807,10 +6888,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -6850,8 +6930,8 @@ achievements_triggers = {
 				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Disable RAtrigger popup from showing when the MultiplayerRewardMenu is displayed AND the player has not won the match
-				repeated(100, // <---Repeated--- necessary as once() in trigger_when() may not trigger correctly as is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) may turn true a few frames later => thus achievement would never unlocked
+			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
+				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
 					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
 					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
@@ -6875,10 +6955,9 @@ achievements_triggers = {
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				once(
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& on_MultiplayerRewardMenu_render(enum_releaseRegion))
-				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
 		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
 			|| never_toAlt(
@@ -7111,7 +7190,7 @@ achievements_titles = {
 	"a_BountyHuntChapter14": 				{"en": "Grand Theft Horse"},
 	"a_BountyHuntChapter15": 				{"en": "Wolf Mountain"},
 	"a_BountyHuntChapter17": 				{"en": "Bound Momentum"},
-	"a_BountyHuntChapter18": 				{"en": "Buffalo Soldier and the 40 Troopers"},
+	"a_BountyHuntChapter18": 				{"en": "Buffalo Country"},
 	"a_BountyHuntChapter20": 				{"en": "Plenty Forte"},
 	"a_BountyHuntChapter21": 				{"en": "Cessation of the Golden Horse"},
 	"a_BountyHuntChapter24": 				{"en": "Mr. Quickdraw"},
@@ -7176,7 +7255,7 @@ achievements_descriptions = {
 	"a_CompleteChapter1": 					{"en": "Valiantly hold the fort at Harlow's Home in Chapter 1, \"Bull's Eye\""},
 	"a_CompleteChapter2":					{"en": "Tenderize Bloody Tom's beefy ambitions during the events of Chapter 2, \"Bounty Hunter\""},
 	"a_CompleteChapter3":					{"en": "Neatly nix the Ugly Gang by the end of Chapter 3, \"Ugly Streetfight\""},
-	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, \"RailRoaded\""},
+	"a_CompleteChapter5":					{"en": "Derail the Pedrosa Brothers' train heist during Chapter 5, \"Railroaded\""},
 	"a_CompleteChapter6":					{"en": "Wrangle the dynamite-fiend during the events of Chapter 6, \"Carnival Life\""},
 	"a_CompleteChapter7":					{"en": "Topple Perry's eccentric circus troupe in Chapter 7, \"Freak Show\""},
 	"a_CompleteChapter8":					{"en": "Rein in Bad Bessie's gang of outlaws during Chapter 8, \"Rogue Valley\""},
@@ -7240,7 +7319,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"The Siege\", on hard or very hard difficulty, with the combined HP of all three heroes at 60% or above, and whilst using the \"Golden Gun\" cheat"},
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
-	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with \"Bite the Bullet\" cheat enabled"},
+	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
 
 	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a $10,000 target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
