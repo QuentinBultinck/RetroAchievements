@@ -28,6 +28,7 @@
         "BUG",
         "ERROR",
 
+        "BUG_minor",
         "BUG_RATools",
 
         "DISABLED",
@@ -164,6 +165,14 @@
             "type": "text-and-comment",
             "icon": "stop"
         },
+        "BUG_minor": {
+            "foreground": "#fc5353",
+            "background": "#612c03",
+            "type": "text-and-comment",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
+            "icon": "bug"
+        }, 
         "BUG_RATools": {
             "foreground": "#fc5353",
             "background": "#612c03",
