@@ -255,33 +255,35 @@ memory_dataStructures = {
 		}},
 	"Struct_GameController": {
 		"pointerChains": {
+			"32BitPointer_ShowdownPosterMenuController": {
+				"addAddressChain": [0xC0]},
 			"32Bit_EquippedWeapon_ReserveAmmo": { 
 				"addAddressChain": [0x2C, 0x14]},
 			"BitFlag_IsShowdownPosterMenuDisplayed": { 
 				"addAddressChain": [0xC0, 0x48, 0xFD]},
 			"BitFlag_IsShowdownPlayerSlot1Filled": { 
-				"addAddressChain": [0xC0, 0x7C, 0xFD]},
+				"addAddressChain": [0xC0, 0x7C, 0xFE]},
 			"8Bit_ShowdownPlayer1TeamId": { 
 				"addAddressChain": [0xC0, 0x53C]},
 			"ASCII_ShowdownPlayer1CharacterModelId": { 
 				"addAddressChain": [0xC0, 0x7C],
 				"offsetToPointedToMember": 0x13D},
 			"BitFlag_IsShowdownPlayerSlot2Filled": { 
-				"addAddressChain": [0xC0, 0x80, 0xFD]},
+				"addAddressChain": [0xC0, 0x80, 0xFE]},
 			"ASCII_ShowdownPlayer2CharacterModelId": { 
 				"addAddressChain": [0xC0, 0x80],
 				"offsetToPointedToMember": 0x13D},
 			"8Bit_ShowdownPlayer2TeamId": { 
 				"addAddressChain": [0xC0, 0x588]},
 			"BitFlag_IsShowdownPlayerSlot3Filled": { 
-				"addAddressChain": [0xC0, 0x84, 0xFD]},
+				"addAddressChain": [0xC0, 0x84, 0xFE]},
 			"ASCII_ShowdownPlayer3CharacterModelId": { 
 				"addAddressChain": [0xC0, 0x84],
 				"offsetToPointedToMember": 0x13D},
 			"8Bit_ShowdownPlayer3TeamId": { 
 				"addAddressChain": [0xC0, 0x5D4]},
 			"BitFlag_IsShowdownPlayerSlot4Filled": { 
-				"addAddressChain": [0xC0, 0x88, 0xFD]},
+				"addAddressChain": [0xC0, 0x88, 0xFE]},
 			"ASCII_ShowdownPlayer4CharacterModelId": { 
 				"addAddressChain": [0xC0, 0x88],
 				"offsetToPointedToMember": 0x13D},
@@ -3011,7 +3013,13 @@ SHOWDOWN_TEAM_BLUE = 2
 SHOWDOWN_TEAM_YELLOW = 3
 
 // TODO c_Showdown --> add trigger indicator when at PosterMenu when all settings are correct
-// --------------------Showdown_PosterMenu_Controller------------------------ // Unused code
+// --------------------Showdown_PosterMenu_Controller------------------------ 
+function is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAccessor_Pointer = memory_generateAddAddressPointerChain(
+		"Struct_GameController", "32BitPointer_ShowdownPosterMenuController", let_memAddr_BasePointer, accessor = dword)
+	return let_memAccessor_Pointer != 0}
+
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return memory_generateAddAddressPointerChain(
@@ -3472,42 +3480,42 @@ achievements_coreData = {
 			"devInfo": "Complete Chapter 27"},
 		},
 	"c_Showdown": { // Category - Showdown related achievements (12)
-		"a_BountyHunterKatie": { // VERIFIED 
+		"a_BountyHunterKatie": { // TODO
 			"id": 454648, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
-		"a_BountyHunterBlade": { // VERIFIED
+		"a_BountyHunterBlade": { // TODO
 			"id": 455158, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As The Blade Slade (P1), win a free-for-all 10k target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
-		"a_BountyHunterAnnie": { // VERIFIED
+		"a_BountyHunterAnnie": { // TODO
 			"id": 455172, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
-		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_BountyHunterCooper": { // TODO // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// "id": 455173, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
-		"a_BountyHunterWeapons": { // VERIFIED
+		"a_BountyHunterWeapons": { // TODO
 			"id": 455443, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
-		"a_SundownFallingStar": { // VERIFIED
+		"a_SundownFallingStar": { // TODO
 			"id": 455174, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
-		"a_SundownBlack": { // VERIFIED
+		"a_SundownBlack": { // TODO
 			"id": 455175, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill-streak of over 10"},
-		"a_SundownGriffon": { // VERIFIED
+		"a_SundownGriffon": { // TODO
 			"id": 455176, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
-		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_SundownNate": { // TODO // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// "id": 455178, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
-		"a_SundownFlawless": { // VERIFIED
+		"a_SundownFlawless": { // TODO
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all sundown match without dying once"},
 		"a_HighNoonNatalie": { // VERIFIED
 			"id": 455179, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
-			"devInfo": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
-		"a_HighNoonCurly": { // VERIFIED
+			"devInfo": "As Natalie (P1), complete a first to 5, free-for-all High Noon match against Mr. Kelley (P2), Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds + achieve 3 kills + either Natalie or Mr. Kelley wins the match"},
+		"a_HighNoonCurly": { // VERIFIED a_HighNoonCurly - new logic
 			"id": 455180, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
-			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},		
+			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks + score 5 headshots"},		
 		},
 	"c_Unlocks": { // Category - Unlocking items (9)
 		"a_UnlockStagesAll": { // VERIFIED
@@ -3923,7 +3931,7 @@ function achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegio
 	let_PlayerSlot2_Index = 2
 	let_PlayerSlot3_Index = 3
 	let_PlayerSlot4_Index = 4
-	return tally_of(let_array_ALL_SHOWDOWN_TEAM_IDs, length(let_array_ALL_SHOWDOWN_TEAM_IDs), int_showdownTeamId => // <---TallyOf--- Count if all 4 unique teams are present 
+	return tally_of(let_array_ALL_SHOWDOWN_TEAM_IDs, length(let_array_ALL_SHOWDOWN_TEAM_IDs), int_showdownTeamId => // <---TallyOf--- Count if all 4 unique team IDs are present 
 		once(
 			is_ShowdownPlayer_Team(let_PlayerSlot1_Index, int_showdownTeamId, enum_releaseRegion)
 			|| is_ShowdownPlayer_Team(let_PlayerSlot2_Index, int_showdownTeamId, enum_releaseRegion)
@@ -6036,12 +6044,12 @@ achievements_triggers = {
 			
 			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
 			&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) // <-- Check if allied team =/= enemy team
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
 			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
 
-			&& once(never(!is_Playing_ShowdownMode_long(enum_releaseRegion)) && // TODO edited once
-				is_AreaState_InGame(enum_releaseRegion))
+			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when( // TODO edited trigger_when()
 				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
@@ -6051,28 +6059,98 @@ achievements_triggers = {
 				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settins are correct; This group can never unlock the achievement.
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
 			|| is_ReleaseRegion(enum_releaseRegion) 
-			&& is_AtMainMenu(enum_releaseRegion)
-			&& is_ShowdownPosterMenu_displayed(enum_releaseRegion)
+			&& tally(14, [ // ---Tally---> Checks if all settings are correct; Tally is necessary as otherwise the RAtrigger indicator will not stay active during the loading screen of the Showdown match... Therefor each hit/tallyCount has a ResetNextIf
+				// once(is_AtMainMenu(enum_releaseRegion) && is_ShowdownPosterMenu_displayed(enum_releaseRegion) && // ---Commented Block---> Unnecessary check, as this is already checked by below Once()
+					// 	never(
+					// 		is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+					// 		!is_AtMainMenu(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && 
+					//		!is_ShowdownPosterMenu_displayed(enum_releaseRegion))
+					// 	),
+				
+				// Check Player Slots
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && // ---Once---> This not only checks if PlayerSlot 1 is filled, but also checks when leaving the ShowdownPosterMenu through "backing out" the menu. PlayerSlot 1 is always empty when not in the ShowdownPosterMenu 
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion))
+					),
 
-			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) // ---8 Lines---> Check if all 4 player slots are filled with the correct characters
-			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
-			&& is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) 
-			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion)
-			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion)
-			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
-			
-			&& current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
-			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
+				// Check Player Characters
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion))
+					),
 
-			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) 
-			&& is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion)
+				// Check Teams
+				once(current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) && // <-- Check allied team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&  // <-- Check enemy team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) )
+					),
+				once(current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) && // <-- Check if allied team =/= enemy team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
 
-			&& is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion)
+				// Check misc settings
+				once(is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion))
+					),
+				once(is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_BountyLimit(SHOWDOWN_BOUNTY_LIMIT_10K, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion) && // BUG_minor (same for 10/12 c_Showdown achievements) - This RAtrigger Indicator may not display properly when changing Showdown Stages too quickly when in the PosterMenu (going left and right really quickly when selecting stages, sometimes the RAM doesn't update fast enough)
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion))
+					),				
 
+				// ---Deduct---> Prevents this RAtrigger indicator from displaying when the match starts. To universally hide this RAtrigger indicator across all c_Showndown achievements, because some need the RAtrigger indicator to only display once something is achieved (eg. achieve 3 kill in a match, only then show the RAtrigger indicator again)
+				deduct(repeated(14, is_AreaState_InGame(enum_releaseRegion) && 
+					never(!is_Playing_ShowdownMode_short(enum_releaseRegion))))
+				])
 			&& trigger_when(always_false())
 		
 		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
@@ -6439,17 +6517,19 @@ achievements_triggers = {
 		const_CPU_PLAYER_INDEX_4 = 4
 
 		return
-		// [1] ==== Core (Alt) Group ====
+		// [1] ==== Core (Alt) Group ====							-> This group is responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion)
+				|| !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion)) 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
-				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -6464,33 +6544,113 @@ achievements_triggers = {
 			
 			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
 			&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
+			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) // <-- Check if allied team =/= enemy team
 			
 			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion) 
-			&& is_Showdown_BountyLimit(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion)
+			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
 			
 			&& trigger_when(
-				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& tally(14, [ // ---Tally---> Checks if all settings are correct; Tally is necessary as otherwise the RAtrigger indicator will not stay active during the loading screen of the Showdown match... Therefor each hit/tallyCount has a ResetNextIf
+				// once(is_AtMainMenu(enum_releaseRegion) && is_ShowdownPosterMenu_displayed(enum_releaseRegion) && // ---Commented Block---> Not necessary, as this is already checked by below Once()
+					// 	never(
+					// 		is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+					// 		!is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+					// 	),
 
-		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && // ---Once---> This not only checks if PlayerSlot 1 is filled, but also checks when leaving the ShowdownPosterMenu through "backing out" the menu. PlayerSlot 1 is always empty when not in the ShowdownPosterMenu 
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion))
+					),
+
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion))
+					),
+
+				once(current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) && // <-- Check allied team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&  // <-- Check enemy team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) )
+					),
+				once(current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) && // <-- Check if allied team =/= enemy team
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
+
+				once(is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion))
+					),
+				once(is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion))
+					),
+			])
+			&& !is_AreaState_InGame(enum_releaseRegion) // ---> Prevents RAtrigger indicator from displaying when the match starts. Universally hide this RAtrigger indicator across all c_Showndown achievements, because some need the RAtrigger indicator to only display once something is achieved (eg. achieve 3 kill in a match, only then show the RAtrigger indicator again)
+			&& trigger_when(always_false())
 		
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+		// [4] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
@@ -6854,19 +7014,20 @@ achievements_triggers = {
 		const_CPU_PLAYER_INDEX_2 = 2
 		const_CPU_PLAYER_INDEX_3 = 3
 		const_CPU_PLAYER_INDEX_4 = 4
+		const_KILLS_REQUIRED = 3
 
 		return
-		// [1] ==== Core (Alt) Group ====
+		// [1] ==== Core (Alt) Group ====							-> This group is responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion)
+				|| !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion)) 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
-				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND player 3 or 4 won
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -6878,36 +7039,113 @@ achievements_triggers = {
 			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion)
 			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion)
 			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
-			
-			&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <-- Check allied team
-			&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  // <-- Check enemy team
+
+			// && achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion) // ---> Unnecessary, as High Noon mode defaults to free-for-all regardless of selected teams at ShowdownPosterMenu at MainMenu  
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion) 
-			&& is_Showdown_BountyLimit(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion)
+			&& is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& once(current_DeathToll(enum_releaseRegion) == 0)
+			&& measured(current_DeathToll(enum_releaseRegion) >= const_KILLS_REQUIRED)
 			
 			&& trigger_when(
-				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& tally(1, [ // ---Tally---> Check if either Player 1 OR Player 2 has won (in this free-for-all)
+					once(is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && 
+						never(!is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))),
+					once(is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) && 
+						never(!is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)))
+					])
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& tally(11, [ // ---Tally---> Checks if all settings are correct; Tally is necessary as otherwise the RAtrigger indicator will not stay active during the loading screen of the Showdown match... Therefor each hit/tallyCount has a ResetNextIf
+				// once(is_AtMainMenu(enum_releaseRegion) && is_ShowdownPosterMenu_displayed(enum_releaseRegion) && // ---Commented Block---> Unnecessary check, as this is already checked by below Once()
+					// 	never(
+					// 		is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+					// 		!is_AtMainMenu(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && 
+					//		!is_ShowdownPosterMenu_displayed(enum_releaseRegion))
+					// 	),
+				
+				// Check Player Slots
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && // ---Once---> This not only checks if PlayerSlot 1 is filled, but also checks when leaving the ShowdownPosterMenu through "backing out" the menu. PlayerSlot 1 is always empty when not in the ShowdownPosterMenu
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion))
+					),
 
-		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+				// Check Player Characters
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ALLIED_CPU_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion))
+					),
+
+				// Check Teams ---> Unnecessary, as High Noon mode defaults to free-for-all regardless of selected teams at ShowdownPosterMenu at MainMenu  
+				// Check misc settings
+				once(is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion))
+					),
+				once(is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion))
+					),				
+
+				// ---Deduct---> Prevents this RAtrigger indicator from displaying when the match starts. To universally hide this RAtrigger indicator across all c_Showndown achievements, because some need the RAtrigger indicator to only display once something is achieved (eg. achieve 3 kill in a match, only then show the RAtrigger indicator again)
+				deduct(repeated(11, is_AreaState_InGame(enum_releaseRegion) && 
+					never(!is_Playing_ShowdownMode_short(enum_releaseRegion))))
+				])
+			&& trigger_when(always_false())
 		
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+		// [4] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
@@ -6922,19 +7160,21 @@ achievements_triggers = {
 		const_CPU_PLAYER_INDEX_2 = 2
 		const_CPU_PLAYER_INDEX_3 = 3
 		const_CPU_PLAYER_INDEX_4 = 4
+		const_HEADSHOTS_REQUIRED = 5
 
 		return
-		// [1] ==== Core (Alt) Group ====
+		// [1] ==== Core (Alt) Group ====							-> This group is responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_ShowdownMode_short(enum_releaseRegion))
+				|| !is_Playing_ShowdownMode_short(enum_releaseRegion)
+				|| !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion)) 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless( // <-- Pause: Hide trigger indicator when the match is finished and player did not won
-				repeated(500, // <---Repeated--- necessary as is_ShowdownPlayer_Winner() becomes true later than is_MultiplayerRewardMenu_displayed() --> could otherwise cause pause lock to activate before trigger_when() could become true
-					never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion))
-					&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-					&& !is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND any enemy player has won
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -6947,34 +7187,108 @@ achievements_triggers = {
 			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion)
 			&& is_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_3, enum_releaseRegion)
 
-			&& achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion)
+			// && achievements_generate_TallyOf_ShowdownTeamsFreeForAll(enum_releaseRegion) // ---> Unnecessary, as High Noon mode defaults to free-for-all regardless of selected teams at ShowdownPosterMenu at MainMenu  
 
 			&& is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion) 
-			&& is_Showdown_BountyLimit(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion)
+			&& is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& once(current_HeadShots(enum_releaseRegion) == 0)
+			&& measured(current_HeadShots(enum_releaseRegion) >= const_HEADSHOTS_REQUIRED)
 			
 			&& trigger_when(
-				is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_Winner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not in correct AREA
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion))
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& tally(11, [ // ---Tally---> Checks if all settings are correct; Tally is necessary as otherwise the RAtrigger indicator will not stay active during the loading screen of the Showdown match... Therefor each hit/tallyCount has a ResetNextIf
+				// once(is_AtMainMenu(enum_releaseRegion) && is_ShowdownPosterMenu_displayed(enum_releaseRegion) && // ---Commented Block---> Unnecessary check, as this is already checked by below Once()
+					// 	never(
+					// 		is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+					// 		!is_AtMainMenu(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && 
+					//		!is_ShowdownPosterMenu_displayed(enum_releaseRegion))
+					// 	),
+				
+				// Check Player Slots
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) && // ---Once---> This not only checks if PlayerSlot 1 is filled, but also checks when leaving the ShowdownPosterMenu through "backing out" the menu. PlayerSlot 1 is always empty when not in the ShowdownPosterMenu
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion))
+					),
 
-		// [3] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+				// Check Player Characters
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_HUMAN_PLAYER_INDEX_1, const_HUMAN_PLAYER_CHARACTER, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_2, const_ENEMY_CPU_CHARACTER_1, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_3, const_ENEMY_CPU_CHARACTER_2, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_3, enum_releaseRegion) &&
+					never(
+						is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_3, enum_releaseRegion))
+					),
+
+				// Check Teams ---> Unnecessary, as High Noon mode defaults to free-for-all regardless of selected teams at ShowdownPosterMenu at MainMenu  
+				// Check misc settings
+				once(is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_Mode(SHOWDOWN_MODE_HighNoon, enum_releaseRegion))
+					),
+				once(is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_Showdown_HighNoonRequiredWins(SHOWDOWN_HIGH_NOON_REQUIRED_WINS_5, enum_releaseRegion))
+					),
+				once(is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion) &&
+					never(
+						is_ShowdownPosterMenu_displayed(enum_releaseRegion) &&
+						!is_PosterMenu_ShowdownStage(const_SHOWDOWN_STAGE, enum_releaseRegion))
+					),				
+
+				// ---Deduct---> Prevents this RAtrigger indicator from displaying when the match starts. To universally hide this RAtrigger indicator across all c_Showndown achievements, because some need the RAtrigger indicator to only display once something is achieved (eg. achieve 3 kill in a match, only then show the RAtrigger indicator again)
+				deduct(repeated(11, is_AreaState_InGame(enum_releaseRegion) && 
+					never(!is_Playing_ShowdownMode_short(enum_releaseRegion))))
+				])
+			&& trigger_when(always_false())
 		
-		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
 
-		// [5] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
+		// [4] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on MultiplayerRewardMenu->Replay
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
@@ -7321,8 +7635,9 @@ achievements_descriptions = {
 	"a_ChallengeChapter27":					{"en": "Complete Chapter 27, \"Fall From Grace\", on very hard difficulty, sustaining less than 75% damage and achieving an accuracy of 60% or higher"},
 	"a_WoodChapter8":						{"en": "Complete Chapter 8, \"Rogue Valley\", on Red Wood Revolver difficulty, with the \"Bite the Bullet\" cheat enabled"},
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
-
-	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a $10,000 target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) in Widow's Patch"},
+	
+	// TODO update text for all c_Showdown
+	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a $10,000 target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) on Widow's Patch"},
 	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all $10,000 target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
 	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes (P1), win a $10,000 target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 	"a_BountyHunterCooper": 				{"en": "As Cooper (P1), win a $10,000 target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 250%"},
@@ -7332,8 +7647,8 @@ achievements_descriptions = {
 	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
 	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 60% or higher"},
 	"a_SundownFlawless": 					{"en": "Win a 4 player free-for-all Sundown match vs without dying once"},
-	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), with Mr. Kelley (P2) as your ally, win a best of 5 High Noon match against a team of Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds"},
-	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks"},
+	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), complete a first-to-5 free-for-all High Noon match on Mansion Grounds against Mr. Kelley (P2), Red Jr. (P3), and Nate Harlow (P4). Achieve at least 3 kills, with either Natalie or Mr. Kelley winning the match"},
+	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a first-to-5 free-for-all High Noon match on Twin Rocks against Bloody Tom (P2), Big Oaf Whitney (P3), and Twiggy Phelps (P4), scoring at least 5 headshots"},
 
 	"a_UnlockStagesAll": 					{"en": "Unlock all Showdown stages"},
 	"a_UnlockCharactersHalf":				{"en": "Unlock half the Showdown characters"},
