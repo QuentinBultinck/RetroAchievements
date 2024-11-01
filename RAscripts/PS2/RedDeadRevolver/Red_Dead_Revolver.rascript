@@ -2571,19 +2571,36 @@ function current_Calculated_CashAcquiredDuringMission(enum_releaseRegion) => // 
 						Mem 32-bit 0x587c
 	*/
 
-function current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) =>
-	current_Cash(enum_releaseRegion) 
-	+ (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
-	/* MANUAL_CONSTRUCTION 
-		current_Cash(enum_releaseRegion) 
-		+ (current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion))
+function current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) => /* MANUAL_CONSTRUCTION of sumOf
+	-> General Logic
+		( current_CashCombo(enum_releaseRegion) * current_CashComboMultiplier(enum_releaseRegion)	)
+		+ current_CashAcquiredByOtherMeans(enum_releaseRegion)
+		+ current_Cash(enum_releaseRegion) 
 
-		-> Logic (PAL)
-			AddAddress	Mem 32-bit 0x562a20
-			AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
-			AddAddress	Mem 32-bit 0x562a20
-						Mem 32-bit 0x587c
+	-> Logic (PAL)
+		I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_M:0xX0000587c
+
+		AddAddress	Mem 32-bit 0x562a20
+		AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888		|current_CashCombo * current_CashComboMultiplier|
+		AddAddress	Mem 32-bit 0x562a20	
+		AddSource 	Mem 32-bit 0x5880							|current_CashAcquiredByOtherMeans|
+		AddAddress	Mem 32-bit 0x562a20
+		Measured	Mem 32-bit 0x587c							|current_Cash|
+
+	-> Logic (NTSCU)
+		I:0xX005602a0_A:0xX00005884*0xX00005888_I:0xX005602a0_M:0xX0000587c
+
+		AddAddress	Mem 32-bit 0x5602a0
+		AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888
+		AddAddress	Mem 32-bit 0x5602a0
+		AddSource 	Mem 32-bit 0x5880 
+		AddAddress	Mem 32-bit 0x5602a0
+		Measured	Mem 32-bit 0x587c
 	*/
+	current_CashCombo(enum_releaseRegion) 
+	+ current_CashComboMultiplier(enum_releaseRegion)
+	+ current_CashAcquiredByOtherMeans(enum_releaseRegion)
+	+ current_Cash(enum_releaseRegion) 
 		
 
 function on_CashResetToSavedCash(enum_releaseRegion) =>
@@ -3684,7 +3701,7 @@ achievements_coreData = {
 			"id": 443703, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_WinCondition,
 			"devInfo": "Complete Chapter 27"},
 		},
-	"c_Showdown": { // Category - Showdown related achievements (12)
+	"c_Showdown": { // Category - Showdown related achievements (12) // TODO update RAguide with changes to c_Showdown
 		"a_BountyHunterKatie": { // VERIFIED
 			"id": 454648, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a 10k target Bounty Hunter match against a team of Ugly Chris (P3) and Professor Perry (P4) in Widow's Patch"},
@@ -3706,19 +3723,19 @@ achievements_coreData = {
 		"a_SundownBlack": { // VERIFIED
 			"id": 455175, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill streak of at least 15"},
-		"a_SundownGriffon": { // TODO a_SundownGriffon - Add Logic: Sundown VS team of 3 --> Enforce respawns OR target bounty, otherwise player can get highest bounty, then die and never respawn (wait till time over)
+		"a_SundownGriffon": { // VERIFIED
 			"id": 455176, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
-		// "a_SundownNate": { // TODO a_SundownNate - Add Logic: Sundown VS team of 3 --> Enforce respawns OR target bounty // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
+		// "a_SundownNate": { // TODO a_SundownNate - Add Logic: Sundown VS team of 3 --> add target bounty of 10k (look at a_SundownGriffon) // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
 			// "id": 455178, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher"},
-		"a_SundownFlawless": { // TODO a_SundownFlawless - new logic
+		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "1 min Sundown match vs team of 3 CPUs, without dying and kill every enemy once"},
 		"a_HighNoonNatalie": { // VERIFIED
 			"id": 455179, "points": achievement_POINTS_Easy, "type": achievements_TYPE_Standard,
 			"devInfo": "As Natalie (P1), complete a first to 5, free-for-all High Noon match against Mr. Kelley (P2), Red Jr. (P3) and Nate Harlow (P4) on Mansion Grounds + achieve 3 kills + either Natalie or Mr. Kelley wins the match"},
-		"a_HighNoonCurly": { // VERIFIED a_HighNoonCurly - new logic
+		"a_HighNoonCurly": { // VERIFIED
 			"id": 455180, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "As Curly Shaw (P1), win a best of 5, free-for-all High Noon match against Bloody Tom (P2), Big Oaf Whitney (P3) and Twiggy Phelps (P4) in Twin Rocks + score 5 headshots"},		
 		},
@@ -6929,6 +6946,7 @@ achievements_triggers = {
 		const_CPU_PLAYER_INDEX_2 = 2
 		const_CPU_PLAYER_INDEX_3 = 3
 		const_CPU_PLAYER_INDEX_4 = 4
+		const_REQUIRED_BOUNTY_COLLECTED = 15000
 
 		return
 		// [1] ==== Core (Alt) Group ====							-> This group is responsible for unlocking the achievement
@@ -6964,6 +6982,44 @@ achievements_triggers = {
 			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion)
 
 			&& once(is_AreaState_InGame(enum_releaseRegion))
+
+			&& once(current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) == 0)
+			&& measured(current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion) >= const_REQUIRED_BOUNTY_COLLECTED)
+			/* MANUAL_CONSTRUCTION (of above 2 lines)
+				-> logic (PAL)
+					I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_A:0xX00005880_I:0xX00562a20_0xX0000587c=0.1._I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_A:0xX00005880_I:0xX00562a20_M:0xX0000587c>=15000
+
+					AddAddress	Mem 32-bit 0x562a20
+					AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888		|current_CashCombo * current_CashComboMultiplier|
+					AddAddress	Mem 32-bit 0x562a20	
+					AddSource 	Mem 32-bit 0x5880							|current_CashAcquiredByOtherMeans|
+					AddAddress	Mem 32-bit 0x562a20
+								Mem 32-bit 0x587c	==	0				(1)	|current_Cash|
+
+					AddAddress	Mem 32-bit 0x562a20
+					AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888		|current_CashCombo * current_CashComboMultiplier|
+					AddAddress	Mem 32-bit 0x562a20	
+					AddSource 	Mem 32-bit 0x5880							|current_CashAcquiredByOtherMeans|
+					AddAddress	Mem 32-bit 0x562a20
+					Measured	Mem 32-bit 0x587c							|current_Cash|
+
+				-> logic (NTSCU)
+					I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_A:0xX00005880_I:0xX00562a20_0xX0000587c=0.1._I:0xX00562a20_A:0xX00005884*0xX00005888_I:0xX00562a20_A:0xX00005880_I:0xX00562a20_M:0xX0000587c>=15000
+
+					AddAddress	Mem 32-bit 0x5602a0
+					AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888		|current_CashCombo * current_CashComboMultiplier|
+					AddAddress	Mem 32-bit 0x5602a0	
+					AddSource 	Mem 32-bit 0x5880							|current_CashAcquiredByOtherMeans|
+					AddAddress	Mem 32-bit 0x5602a0
+								Mem 32-bit 0x587c	==	0				(1)	|current_Cash|
+
+					AddAddress	Mem 32-bit 0x5602a0
+					AddSource 	Mem 32-bit 0x5884 	* Mem 32-bit 0x5888		|current_CashCombo * current_CashComboMultiplier|
+					AddAddress	Mem 32-bit 0x5602a0	
+					AddSource 	Mem 32-bit 0x5880							|current_CashAcquiredByOtherMeans|
+					AddAddress	Mem 32-bit 0x5602a0
+					Measured	Mem 32-bit 0x587c							|current_Cash|			
+				*/
 			
 			&& trigger_when(
 				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
@@ -7171,8 +7227,8 @@ achievements_triggers = {
 			&& is_PosterMenu_ShowdownPlayerCharacter(const_CPU_PLAYER_INDEX_4, const_ENEMY_CPU_CHARACTER_3, enum_releaseRegion)
 					
 			&& current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <---3 Lines--- Check 3 player enemy team
-			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion) 
-			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)  
+			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 	
 			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion) 
 			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_5min, enum_releaseRegion)
@@ -7213,18 +7269,31 @@ achievements_triggers = {
 				)))
 			&& unless(once( // <-- Pause Lock: When HP drops to 0
 				is_AreaState_InGame(enum_releaseRegion)
-				&& on_PlayerHP_zero(enum_releaseRegion)))
+				&& on_ShowdownPlayer_HP_zero(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)))
 
-			&& current_NumberOfPlayers(enum_releaseRegion) == 4
-			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-			&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
-			
-			&& is_ShowdownTeams_FreeForAll(enum_releaseRegion)
-			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
+			&& measured(tally_of( // ---Measured TallyOf---> Count each unique player kill
+				[const_CPU_PLAYER_INDEX_2, const_CPU_PLAYER_INDEX_3, const_CPU_PLAYER_INDEX_4], 3, int_CPUplayerIndex =>
+					once(
+						is_AreaState_InGame(enum_releaseRegion)
+						&& on_ShowdownPlayer_HP_zero(int_CPUplayerIndex, enum_releaseRegion)
+						&& on_ShowdownPlayer_DeathToll_increment(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				)),
+				when = 
+					current_NumberOfPlayers(enum_releaseRegion) == 4
+					&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+					&& is_ShowdownPlayer_CPU(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+										
+					&& current_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <---3 Lines--- Check 3 player enemy team
+					&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+					&& current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 
-			&& once(is_AreaState_InGame(enum_releaseRegion))
+					&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion)
+					&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_1min, enum_releaseRegion)
+
+					&& once(is_AreaState_InGame(enum_releaseRegion))
+				)			
 			
 			&& trigger_when(
 				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
@@ -7234,12 +7303,27 @@ achievements_triggers = {
 				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
-		
-		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& is_AtMainMenu(enum_releaseRegion)
+			&& is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion)
+			&& is_ShowdownPosterMenu_displayed(enum_releaseRegion)
+
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+					
+			&& current_PosterMenu_ShowdownPlayer_Team(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion) != current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) // <---3 Lines--- Check 3 player enemy team
+			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_2, enum_releaseRegion) == current_PosterMenu_ShowdownPlayer_Team(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+	
+			&& is_Showdown_Mode(SHOWDOWN_MODE_Sundown, enum_releaseRegion) 
+			&& is_Showdown_SundownFightTime(SHOWDOWN_SUNDOWN_FIGHT_TIME_1min, enum_releaseRegion)
+
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
@@ -7776,11 +7860,11 @@ achievements_descriptions = {
 	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes (P1), win a $10,000 target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 	"a_BountyHunterCooper": 				{"en": "As Cooper (P1), win a $10,000 target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
 	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match, getting a kill with 7 different weapons"},
-	"a_SundownFallingStar": 				{"en": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5 minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
-	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of at least 15"},
-	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek"},
-	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher"},
-	"a_SundownFlawless": 					{"en": "Win a 1 minute Sundown match against a team of 3 enemies without dying and killing each enemy at least once"},
+	"a_SundownFallingStar": 				{"en": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5-minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
+	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5-minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of at least 15"},
+	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5-minute Sundown match in Broken Creek against a team of Nate Harlow (P2), Falling Star (P3), and Red (P4), collecting at least $15,000."},
+	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5-minute Sundown match in The Mansion against a team of Governor Griffon (P2), Colonel Daren (P3), and General Diego (P4), with 70% accuracy or higher and at least $10,000 collected"},
+	"a_SundownFlawless": 					{"en": "Win a 1-minute Sundown match against a team of 3 enemies without dying and killing each enemy at least once"},
 	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), complete a first-to-5 free-for-all High Noon match on Mansion Grounds against Mr. Kelley (P2), Red Jr. (P3), and Nate Harlow (P4). Achieve at least 3 kills, with either Natalie or Mr. Kelley winning the match"},
 	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a first-to-5 free-for-all High Noon match on Twin Rocks against Bloody Tom (P2), Big Oaf Whitney (P3), and Twiggy Phelps (P4), scoring at least 5 headshots"},
 
@@ -10323,7 +10407,7 @@ function lb_ShowdownFastestBounty_ValueMeasure() {
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
 
-function lb_ShowdownLargestBounty_ValueMeasure() {
+function lb_ShowdownLargestBounty_ValueMeasure() { // TODO update this - current_Calculated_CashAcquiredDuringShowdown() has new logic
 	function valueMeasure(enum_releaseRegion) => measured(
 		current_Calculated_CashAcquiredDuringShowdown(enum_releaseRegion),
 		when = is_ReleaseRegion(enum_releaseRegion))
