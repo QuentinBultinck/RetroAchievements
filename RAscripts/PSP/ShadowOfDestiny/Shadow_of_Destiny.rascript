@@ -8,6 +8,7 @@
 // Platform: PlayStation Portable
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Shadow-of-Destiny-(PlayStation-Portable)
 // RA Game Page: https://retroachievements.org/game/3945
+// #MinimumVersion v1.13.0		- Created with RATools v1.13.0
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
