@@ -6740,17 +6740,28 @@ achievements_triggers = {
 				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 				&& on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion))
 
-		// [2] ==== Alt Reset Group ====  					-> Reset when not playing Showdown Mode
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion) 
-				&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
+		// [2] ==== Alt PosterMenu RAtrigger Indicator Group ====	-> This group is purely responsible for showing the RAtrigger indicator when at the PosterMenu when all settings are correct; This group can never unlock the achievement.
+			|| is_ReleaseRegion(enum_releaseRegion) 
+			&& is_AtMainMenu(enum_releaseRegion)
+			&& is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion)
+			&& is_ShowdownPosterMenu_displayed(enum_releaseRegion)
+
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+			&& is_PosterMenu_ShowdownPlayerSlot_filled(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+
+			&& is_PosterMenu_ShowdownTeams_FreeForAll(enum_releaseRegion)
+			&& is_Showdown_Mode(SHOWDOWN_MODE_BountyHunter, enum_releaseRegion)
+
+			&& trigger_when(always_false())
 		
 		// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_WarningMenu_yes(enum_releaseRegion))
 
-		// [4] ==== Alt Pause Lock Reset Group ==== 				-> Reset when pressing 'yes' on MultiplayerRewardMenu->AnyButton (Replay, Multiplayer Settings OR Quit)
+		// [4] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on MultiplayerRewardMenu->AnyButton (Replay, Multiplayer Settings OR Quit)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion) 
 				&& on_MultiplayerRewardPopupMenu_ConfirmBtn_press(enum_releaseRegion))
