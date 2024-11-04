@@ -69,7 +69,7 @@
 //          '
 // $4FA3A0: [PAL][32-bit Pointer{1}] --(+0x0)--> [112-byte Array] List of [(14x) 8-byte Struct] Major_Character_Data{1}
 //          - This array stores pointers to Actor_Data
-//          - This pointer chain is a preferable alternative to using the Actor_Data Array at $0x7621d0, as not all Major Characters (eg. Grizzly on Chapter 15 'Bear Mountain') are contained inside that array + the actor data could be in multiple indices of the array
+//          - This pointer chain is a preferable alternative to using the Actor_Data Array at $0x7621d0, as not all Major Characters (eg. Grizzly on Chapter 15 'Bear Mountain') are contained inside that array + the actor data could be in multiple indices of that array. In this array, the Actor_Data is always at the same index
 //          
 //          [Struct Definition][8-byte] Major_Character_Data{1}
 //          |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
@@ -184,8 +184,8 @@
 //          |+0x30 - [12-byte ASCII Flag:IsWinner] Player 4
 //          |[ASCII Flag Definition][12-byte] IsWinner
 //          ||'''''''''''''''''''''''''''
-//          || - ASCIIvalue = "Winner" --> Player is part of the winning team
-//          || - ASCIIvalue = " okLable" --> Player is NOT part of winning team
+//          || - ASCIIvalue = "Winner" --> Player is part of the winning team (This ASCII overwrites the default value below, a few frames after the ASCII Field creation)
+//          || - ASCIIvalue = " okLable" --> Player is NOT part of winning team (This ASCII is the default value which is set on ASCII Field creation)
 //          ''
 // $54CAF0: [PAL][32-bit Pointer{1}] --> RewardMenu and StartChpMenu Display Data (Preferred)
 //          |+0xAC - [32-bit Pointer{2}]
@@ -474,7 +474,8 @@
 //          |¨|¨| - Stored as a signed integer, max properly displayable value on the HUD is 0xF423F (=999 999)
 //          |¨|/
 //          |¨|+0xC - [32-bit] Cash Acquired By Other Means
-//          |¨|¨| - Cash picked up on ground or through other ways other than killing/hitting enemies??
+//          |¨|¨| - Cash picked up on ground (story mode)
+//          |¨|¨| - Cash acquired by kills (Showdown mode); Each kill is $500
 //          |¨|/
 //          |¨|+0x10 - [32-bit] Combo (= Cash Awarded for Hitting Targets)
 //          |¨|
@@ -852,15 +853,15 @@
 //          # InGame_Menu_IDs (string) - Highlighted_MenuItem_IDs
 //          |(list incomplete)
 //          |'''''''''''''''''
-//          | pause (InGame_Menu_ID) = PauseMenu
+//          | pause (InGame_Menu_ID) => PauseMenu
 //          | - 0x4 (Highlighted_MenuItem_ID) => Return to Game
 //          | - 0x5 => Options
 //          | - 0x9 => Restart Level
 //          | - 0xA => Quit
-//          | continue = RetryMenu
+//          | continue => RetryMenu
 //          | - 0x5 => No
 //          | - 0x4 => Yes
-//          | gameover = GameOverScreen
+//          | gameover => GameOverScreen
 //          | warning => PauseMenu->YesNoConfirmationMenu (opened when quiting or restarting level)
 //          | - 0x3 => No
 //          | - 0x4 => Yes
@@ -2010,7 +2011,7 @@
 //          |/
 //          |
 //          |+0xC - [32-bit Pointer{1}] --> ShowdownPlayer_Data_D
-//          |+| - This pointer is only functional for Player 1; This pointer is non-existent (= 0x0) for other Players
+//          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (may be zeroed out for CPU players)
 //          
 //          [Struct Definition][176-byte] Weapon_Manager
 //          |'''''''''''''''''''''''''''''''''''''
@@ -2040,10 +2041,12 @@
 //          | - Data stored here is dynamically updated during gameplay
 //          | - Most 32-bit values stored are signed integers, but the scoreboard only displays a limited amount of characters (refer to $0x6b18b4)
 //          |
-//          |+0x0 - [32-bit] Shots Fired
+//          |+0x0 - [32-bit] Shots Fired (copy)
 //          |¨| - Depending on weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
 //          |/
-//          |+0x2C - [32-bit] Shots Hit
+//          |+0x2C - [32-bit] Shots Hit (copy)
+//          |
+//          |+0x5C - [32-bit] Death Toll (Kill count)
 //          |
 //          |+0x70 - [32-bit Float] Raw Total Damage Taken
 //          |
@@ -2055,9 +2058,9 @@
 //          |¨| - This value may only be updated on certain occassions, it doesn't update during gameplay
 //          |¨| - Copies value stored via pointer at $0x562a20
 //          |/
-//          |+0x494 - [32-bit] Shots Fired (copy)
+//          |+0x494 - [32-bit] Shots Fired (functional)
 //          |
-//          |+0x498 - [32-bit] Shots Hit (copy)
+//          |+0x498 - [32-bit] Shots Hit (functional)
 //          |
 //          |+0x49C - [32-bit] Arm Shots
 //          |
@@ -2210,7 +2213,7 @@
 // $7A0694: [PAL][32-bit Pointer] --(+0x0)--> [Variable Size Struct] Main_Mission_Data (preferred)
 //          - Main_Mission_Data is dependent on mission
 //          - Main_Mission_Data stores various information about enemy spawn flags, checkpoint flags, event flags, cutscene flags (stored as floats)
-//          - Floats: 1.0 (=0x3f800000) => flag/checkpoint is activated || 0.0 (0x0) => flag/checkpoint is inactive, perhaps certain inactive flags are stored as -1.0
+//          - Floats: 1.0 (=0x3f800000) => flag/checkpoint is activated || 0.0 (0x0) => flag/checkpoint is inactive || certain inactive flags may be stored as -1.0
 //          - Turning these flags on/off during mission can trigger enemy spawns, checkpoint, cutscenes... (some event flags may bug out the mission when manually turning them on)
 //          
 //          [Struct Definition][??-byte] Main_Mission_Data.BountyHunter (Chapter 2)
@@ -2253,8 +2256,7 @@
 //          
 //          [Struct Definition][160-byte] Puppetshow_Manager
 //          |'''''''''''''''''''''''''''''''''''''''
-//          | - This struct controls different aspects of a Puppetshow, which is a cutscene which is not a pre-rendered video file (refer to $0x74a34f), but an in-engine cutscene
-//          | - Probably named like this as these types of cutscenes involve more detailed animation work
+//          | - This struct controls different aspects of a Puppetshow, which is a type of cutscene that is not a pre-rendered video file (refer to $0x74a34f), but an in-engine cutscene
 //          |
 //          |+0x4 - [32-bit] Last CameraAction_ID of Puppetshow
 //          |
@@ -2271,22 +2273,6 @@
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
 // $E36118: could be important
-// $11E54C0: [PAL][64-byte ASCII Field] ShowdownMode_ScoreboardWinnerDisplay_Text
-//           - Use this field only when the showdown mode scoreboard is displayed, otherwise these 64 bytes may be in use by other data
-//           
-//           [ASCII Field Definition][64-byte] ShowdownMode_ScoreboardWinnerDisplay_Text
-//           |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
-//           |+0x0 - [12-byte ASCII Field:Winner_Text] Player 1
-//           |¨[ASCII Field Definition][12-byte] Winner_Text
-//           |¨|'''''''''''''''''''''''''''
-//           |¨| - ASCII = "Winner" => Player is a part of the winning team
-//           |¨| - ASCII = " okLable" => Player is NOT part of the winning team
-//           |/
-//           |+0x10 - [12-byte ASCII Field:Winner_Text] Player 2
-//           |
-//           |+0x20 - [12-byte ASCII Field:Winner_Text] Player 3
-//           |
-//           |+0x30 - [12-byte ASCII Field:Winner_Text] Player 4
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $19B7FD4: [8-bit] Chapter 1 - Shots left
 // $1A88434: [8-bit] Chapter 3 - Shots left
