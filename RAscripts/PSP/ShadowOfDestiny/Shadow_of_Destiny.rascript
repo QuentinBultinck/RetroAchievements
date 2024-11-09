@@ -1661,23 +1661,21 @@ function is_Video_active(enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "VideoData", enum_releaseRegion))
 	return 
 		dword(let_maskedPointer + 0x18) == 0x101 &&	
-		dword(let_maskedPointer + 0x2c) == 0x41}
+		low4(let_maskedPointer + 0x2c) == 0x1}
 
 function on_Video_end(enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "VideoData", enum_releaseRegion))
 	return
 		prev(dword(let_maskedPointer + 0x18)) == 0x101 	&&
 		dword(let_maskedPointer + 0x18)	!= 0x101		&&
-		prev(dword(let_maskedPointer + 0x2c)) == 0x41 	&&
-		dword(let_maskedPointer + 0x2c)	!= 0x41}
+		prev(low4(let_maskedPointer + 0x2c)) == 0x1}
 
 function on_Video_start(enum_releaseRegion) {
 	let_maskedPointer = memUtil_maskPointer(memory_getAddress(DATATYPE_25BitPointer, "VideoData", enum_releaseRegion))
 	return
 		prev(dword(let_maskedPointer + 0x18)) != 0x101 	&&
 		dword(let_maskedPointer + 0x18)	== 0x101		&&
-		prev(dword(let_maskedPointer + 0x2c)) != 0x41 	&&
-		dword(let_maskedPointer + 0x2c)	== 0x41}
+		low4(let_maskedPointer + 0x2c) == 0x1}
 
 // ................
 // ◦ ENDING LOGIC ◦
