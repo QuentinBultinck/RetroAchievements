@@ -1626,7 +1626,7 @@ function on_ChapterCompletionMenu_render(enum_releaseRegion) {
 			is_GameStateA(GAMESTATE_A_ChapterCompletionMenu, enum_releaseRegion) // <-- This is fix for Chapter 3 & Chapter 7: Chapter Completion Menu's not registering with above line 
 		)} 
 
-function on_ChapterCompletionMenu_render_Chapter7(enum_releaseRegion) {	//  For Chapter 7: as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2 for Chapter 7; should be prior check first true then delta check last true
+function on_ChapterCompletionMenu_render_long(enum_releaseRegion) {	//  For Chapter 7: as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2 for Chapter 7; should be prior check first true then delta check last true
 
 	let_memAccessor_MenuID = dword(memory_getAddress(DATATYPE_32Bit, "MenuID", enum_releaseRegion))
 	let_memAccessor_IsChapterCompletionScreenActive = dword(memory_getAddress(DATATYPE_32Bit, "IsChapterCompletionScreenActive", enum_releaseRegion))
@@ -6708,7 +6708,7 @@ leaderboards_startTriggers = {
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter8, enum_releaseRegion)		
 		),		
 	"lb_ClearTimeChapter7": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		// This one needs a custom trigger as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2
+		// NOTE: This one needs a custom trigger as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
@@ -6719,7 +6719,7 @@ leaderboards_startTriggers = {
 			is_Chapter(CHAPTER_Chapter7, enum_releaseRegion) &&
 			!is_Loading(enum_releaseRegion)
 		) &&
-		on_ChapterCompletionMenu_render_Chapter7(enum_releaseRegion)),
+		on_ChapterCompletionMenu_render_long(enum_releaseRegion)),
 	"lb_ClearTimeChapter6": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter6, enum_releaseRegion)
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter6, enum_releaseRegion)
@@ -6733,9 +6733,18 @@ leaderboards_startTriggers = {
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter4, enum_releaseRegion)
 		),
 	"lb_ClearTimeChapter3": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
-		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter3, enum_releaseRegion)
-		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter3, enum_releaseRegion)
-		),
+		// NOTE: This one needs a custom trigger as the delta & prior checks inside on_ChapterCompletionMenu_render() are faulty. Delta checks are true frame 1 and prior check is true frame 2
+		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
+		never(
+			!is_InGame(enum_releaseRegion) ||
+			!is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) 
+		) &&
+		repeated(100, 	// <-- Delay FIX for: leaderboard starting+submitting when moving from one chapter to the next OR when loading a save from chapter completion menu, depending on load time
+			is_InGame(enum_releaseRegion) &&
+			is_Chapter(CHAPTER_Chapter3, enum_releaseRegion) &&
+			!is_Loading(enum_releaseRegion)
+		) &&
+		on_ChapterCompletionMenu_render_long(enum_releaseRegion)),
 	"lb_ClearTimeChapter2": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		leaderboards_generate_StartTrigger_ClearTimeChapter_alt(CHAPTER_Chapter2, enum_releaseRegion)
 		// leaderboards_generate_StartTrigger_ClearTimeChapter(CHAPTER_Chapter2, enum_releaseRegion)
