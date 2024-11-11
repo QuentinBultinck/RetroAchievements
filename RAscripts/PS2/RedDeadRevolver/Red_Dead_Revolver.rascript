@@ -52,7 +52,6 @@
 
 /* TODO list (before launch)
 	- Reset leaderboard entries
-	- // TODO Challenge achievements on ANY difficulty must be allowed on Bounty Hunter mode - Other difficulties NOT
 	- // TODO lb_BountyBoards must not be allowed in Bounty Hunter mode...
 	- (Optional) support for 60 fps patch + NTSCJ ????
 
@@ -4002,7 +4001,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 				never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
 				is_RewardMenu_displayed_short(enum_releaseRegion)))
 
-	// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for CURRENT combo achieved in the mission; It can never unlock the achievement
+	// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for CURRENT combo achieved in the mission; It can never unlock the achievement; max_of(this measuredAltGroup or below measuredAltGroup)
 		|| unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
@@ -4020,7 +4019,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjecti
 				&& !is_AnimationLoading(enum_releaseRegion)) 
 		&& trigger_when(always_false())
 
-	// [3] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for HIGHEST combo achieved in the mission; It can never unlock the achievement
+	// [3] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for HIGHEST combo achieved in the mission; It can never unlock the achievement; max_of(this measuredAltGroup or above measuredAltGroup)
 		|| unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
@@ -4316,7 +4315,7 @@ achievements_triggers = {
 	"a_BountyHuntChapter7": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(AREA_Campaign_FreakShow, 300.0, enum_releaseRegion)),
 	"a_BountyHuntChapter8": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion). This add an RAmeasured
+		// NOTE: Custom version of achievements_generate_FullTrigger_BountyHuntCompletion(AREA_Campaign_RogueValley, enum_releaseRegion). This adds an RAmeasured
 		
 		const_MISSION_AREA = AREA_Campaign_RogueValley
 		const_array_POINTER_CHAIN_KEYS = const_ExtraMission_data[const_MISSION_AREA]
@@ -4738,7 +4737,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -4754,7 +4754,8 @@ achievements_triggers = {
 		// [2] ==== Alt RATrigger Popup Handler Group ==== 	-> This alt handles the trigger popup during the mission; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -4806,7 +4807,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -4852,7 +4854,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for DamageTaken; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -4932,7 +4935,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -4957,10 +4961,11 @@ achievements_triggers = {
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(AREA_Campaign_UglyStreetFight, enum_releaseRegion)
 		),	
 	"a_ChallengeChapter5": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [1] ==== Core (Alt) Group ====			
+		// [1] ==== Core (Alt) Group ====
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5001,7 +5006,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5038,7 +5044,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5082,7 +5089,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5137,7 +5145,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5175,7 +5184,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5212,7 +5222,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5236,7 +5247,7 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter12": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_SaloonFight
 		const_HP_REQUIRED_DECIMAL = 0.7
 		const_HP_REQUIRED_PERCENT = 70.0
@@ -5245,7 +5256,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5254,23 +5266,23 @@ achievements_triggers = {
 			&& once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion))
 
 			&& current_PlayerHP(enum_releaseRegion) / current_PlayerMaxHP(enum_releaseRegion) >= const_HP_REQUIRED_DECIMAL
-			/* MANUAL_CONSTRUCTION (of above math) usage of Remember/Recall
-				-> Logic (PAL)
-					I:0xX00763070_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
+				/* MANUAL_CONSTRUCTION (of above math) usage of Remember/Recall
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
 
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
-								Recall					>=	const_HP_REQUIRED_DECIMAL
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
+									Recall					>=	const_HP_REQUIRED_DECIMAL
 
-				-> Logic (NTSCU)
-					I:0xX007608f0_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_K:0xX00000010/fF00000014_{recall}>=f0.7
 
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
-								Recall					>=	const_HP_REQUIRED_DECIMAL
-			*/
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10	/	Mem		Float	0x14	|currentHP/maxHP|
+									Recall					>=	const_HP_REQUIRED_DECIMAL
+					*/
 
 			&& trigger_when(
 				once(
@@ -5280,10 +5292,11 @@ achievements_triggers = {
 					never(!is_RewardMenu_displayed_short(enum_releaseRegion)) &&
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 
-		// [2] ==== Alt RAmeasured Handler Grop ==== 			-> This group is purely responsible for displaying HP as percentage. This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Grop ==== 		-> This group is purely responsible for displaying HP as percentage. This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5308,7 +5321,7 @@ achievements_triggers = {
 						Remember	Mem		Float	0x10		/	Mem		Float	0x14			|HP / maxHP|
 						Remember	Recall						*	Float			100.0
 						Measured 	Recall						>= 	Float			100.0
-				*/
+					*/
 				when = once(on_PlayerReset_atMissionStartPoint(const_MISSION_AREA, enum_releaseRegion)),
 				format = "percent")
 			&& trigger_when(always_false())
@@ -5329,7 +5342,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5359,7 +5373,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5407,7 +5422,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group is purely responsible for displaying an RAmeasured popup for DamageTaken; It can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5489,7 +5505,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5539,7 +5556,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5566,10 +5584,11 @@ achievements_triggers = {
 				&& repeated(190, // <-- Delay achievement unlock to coincide with game UI effects
 					is_RewardMenu_displayed_short(enum_releaseRegion)))
 			
-		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
+		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5602,7 +5621,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter19": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_HellPass
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_NoHud, CHEAT_GoldenGun, CHEAT_BiteTheBullet, CHEAT_Invincibility, 
@@ -5616,7 +5635,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5635,25 +5655,25 @@ achievements_triggers = {
 			&& is_MajorCharacter_CharacterName(const_COACH_MAJOR_CHARACTER_INDEX, CHARACTER_StageCoach, enum_releaseRegion)
 
 			&& current_Calculated_MajorCharacterHPPercentage(const_COACH_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_COACH_HP_THRESHOLD_DECIMAL 
-			/* MANUAL_CONSTRUCTION (of above line/summation) usage of Remember/Recall
-				-> Logic (PAL)
-					I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
+				/* MANUAL_CONSTRUCTION (of above line/summation) usage of Remember/Recall
+					-> Logic (PAL)
+						I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
 
-					AddAddress	Mem		32-bit	0x4fa3a0
-					AddAddress	Mem		32-bit	0x18
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x10		/	Mem		Float	0x14	
-								Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+									Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
 
-				-> Logic (NTSCU)
-					I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
+					-> Logic (NTSCU)
+						I:0xX004f7d20_I:0xX00000018_I:0xX00000018_K:fF00000010/fF00000014_{recall}>=f0.4
 
-					AddAddress	Mem		32-bit	0x4f7d20
-					AddAddress	Mem		32-bit	0x18
-					AddAddress	Mem		32-bit	0x18
-					Remember	Mem		Float	0x10		/	Mem		Float	0x14	
-								Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
-			*/
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						Remember	Mem		Float	0x10		/	Mem		Float	0x14	
+									Recall						>=	Float			const_COACH_HP_THRESHOLD_DECIMAL
+					*/
 
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
@@ -5663,7 +5683,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured indicator to the stagecoach's HP in percentage; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5749,7 +5770,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5783,7 +5805,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5808,7 +5831,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 		-> This group handles RAmeasured popup to display time left in challenge; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5846,7 +5870,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5870,7 +5895,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to display headshot count on Mr Kelley; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -5897,7 +5923,7 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Pause Lock Reset Groups ==== 	-> Reset when restart mission (3 alts = 3 ways to restart the mission)
 			|| achievements_generate_3x_AltResetGroup_OnRestartMission(const_MISSION_AREA, enum_releaseRegion)
 		}),
-	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_ChallengeChapter25": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
 		const_MISSION_AREA = AREA_Campaign_Siege
 		const_array_DISALLOWED_CHEATS = [ 
 			CHEAT_BiteTheBullet, CHEAT_NoHud, CHEAT_InfiniteDeadeye, CHEAT_Invincibility, 
@@ -5920,7 +5946,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -5933,41 +5960,41 @@ achievements_triggers = {
 			&& is_MajorCharacter_CharacterName(const_ANNIE_MAJOR_CHARACTER_INDEX, CHARACTER_AnnieStoakes, enum_releaseRegion) 
 
 			&& current_Calculated_HeroTrioHPpercent(const_JACK_MAJOR_CHARACTER_INDEX, const_ANNIE_MAJOR_CHARACTER_INDEX, enum_releaseRegion) >= const_TRIO_HP_THRESHOLD_DECIMAL
-			/* MANUAL_CONSTRUCTION (of above sumOf) with Remember/Recall
-				-> Logic (PAL)
-					I:0xX00763070_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
+				/* MANUAL_CONSTRUCTION (of above sumOf) with Remember/Recall
+					-> Logic (PAL)
+						I:0xX00763070_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004fa3a0_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
 
-					AddAddress	Mem		32-bit	0x763070
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
-					AddAddress	Mem		32-bit	0x4fa3a0
-					AddAddress	Mem		32-bit	0x18
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
-					AddAddress	Mem		32-bit	0x4fa3a0
-					AddAddress	Mem		32-bit	0x20
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
-					Remember	Float			0.0
-								Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL
+						AddAddress	Mem		32-bit	0x763070
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+						AddAddress	Mem		32-bit	0x4fa3a0
+						AddAddress	Mem		32-bit	0x20
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+						Remember	Float			0.0
+									Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL
 
-				-> Logic (NTSCU)
-					I:0xX007608f0_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
+					-> Logic (NTSCU)
+						I:0xX007608f0_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000018_I:0xX00000018_A:fF00000010/fF00000014_I:0xX004f7d20_I:0xX00000020_I:0xX00000018_A:fF00000010/fF00000014_K:f0.0_{recall}>=f2.1
 
-					AddAddress	Mem		32-bit	0x7608f0
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
-					AddAddress	Mem		32-bit	0x4f7d20
-					AddAddress	Mem		32-bit	0x18
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
-					AddAddress	Mem		32-bit	0x4f7d20
-					AddAddress	Mem		32-bit	0x20
-					AddAddress	Mem		32-bit	0x18
-					AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
-					Remember	Float			0.0
-								Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL			
-				*/
+						AddAddress	Mem		32-bit	0x7608f0
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Red_HP/Red_maxHP|
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x18
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Jack_HP/Jack_maxHP|
+						AddAddress	Mem		32-bit	0x4f7d20
+						AddAddress	Mem		32-bit	0x20
+						AddAddress	Mem		32-bit	0x18
+						AddSource	Mem		Float	0x10		/	Mem		Float	0x14	|+ Annie_HP/Annie_maxHP|
+						Remember	Float			0.0
+									Recall						>= 	Float 			const_TRIO_HP_THRESHOLD_DECIMAL			
+					*/
 
 			&& trigger_when(
 				once(on_RewardMenu_render_short(enum_releaseRegion))
@@ -5977,7 +6004,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group handles RAmeasured popup to combined HP of hero trio; This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_Hard, enum_releaseRegion)
 				&& !is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
@@ -6059,7 +6087,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -6130,7 +6159,8 @@ achievements_triggers = {
 		// [2] ==== Alt RAmeasured Handler Group ==== 			-> This group is purely responsible for displaying accuracy rating (otherwise not shown during gameplay). This group can never unlock the achievement
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_VeryHard, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -6215,7 +6245,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -6253,7 +6284,8 @@ achievements_triggers = {
 		// [1] ==== Core (Alt) Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion))
+				|| !is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion))
 			&& unless(
 				!is_StoryCampaignDifficulty(DIFFICULTY_RedWoodRevolver, enum_releaseRegion))
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
@@ -9460,10 +9492,11 @@ function leaderboards_generate_FullStartTrigger_ChapterBoard(enum_areaId, enum_d
 		// [1] ==== Core (Alt) Group ====					-> Start when starting the mission from start/restart
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Playing_BountyHunterMode_short(enum_releaseRegion)
 				|| !is_Area(enum_areaId, enum_releaseRegion)
 				|| !is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion))
 
-			&& once( // ---2x Once--> Check if player has started mission from start/restart
+			&& once( // ---Once--> Check if player has started mission from start/restart
 				current_TimeSpentInMission(enum_releaseRegion) >= 7.0
 				&& prev_TimeSpentInMission(enum_releaseRegion) < 7.0)
 			&& is_AreaState_InGame(enum_releaseRegion)
