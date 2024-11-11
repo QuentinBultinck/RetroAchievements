@@ -8,7 +8,7 @@
 // Platform: PlayStation Portable
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Shadow-of-Destiny-(PlayStation-Portable)
 // RA Game Page: https://retroachievements.org/game/3945
-// #MinimumVersion v1.13.0		- Created with RATools v1.13.0
+// #MinimumVersion v1.13.0		- RAscript most likely only functional with RATools v1.13.0
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -3556,7 +3556,7 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_B, enum_releaseRegion) &&
 			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
 		)),
-	"a_EndingC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_EndingC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
