@@ -51,10 +51,19 @@
 //#####################################################################################################\\
 
 /* TODO list (before launch)
-	- support for 60 fps patch + NTSCJ ????
-	- reset leaderboard entries
-	- RAguide spelling check 
-	- verify journal unlocks bitset
+	- Reset leaderboard entries
+	- // TODO Challenge achievements on ANY difficulty must be allowed on Bounty Hunter mode - Other difficulties NOT
+	- // TODO lb_BountyBoards must not be allowed in Bounty Hunter mode...
+	- (Optional) support for 60 fps patch + NTSCJ ????
+
+	- Hubs to Add
+		[Feature - PvP]  							- https://retroachievements.org/game/9377
+		[Feature - New Game+] 						- https://retroachievements.org/game/2722		<--- is it truely NG+ ??
+		[Feature - Multiple Perspective Story] 		- https://retroachievements.org/game/24261
+		[Game Mechanic - Splitscreen Multiplayer] 	- https://retroachievements.org/game/1195		<--- prefer this one, compared to below
+		[Game Mechanic - Multiplayer] 				- https://retroachievements.org/game/14727
+		[Perspective - 3rd-Person] 					- https://retroachievements.org/game/4725
+
 */
 
 util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
@@ -511,7 +520,7 @@ function memory_getPointerChainOffsetToMember(string_structKey, string_pointerCh
 function memory_getPointerChainOffsetToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
-function memory_getAddressChain(string_structKey, string_pointerChainKey) =>
+function memory_getAddAddressChain(string_structKey, string_pointerChainKey) =>
 	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
 
 function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToMember = 0, accessor = dword) {
@@ -2675,7 +2684,7 @@ function is_PlayerWeapon_equipped(enum_weapon, enum_releaseRegion) =>
 	current_PlayerWeaponEquipped(enum_releaseRegion) == enum_weapon
 
 function current_FlagState_IsWeaponInInventory(enum_weapon, enum_releaseRegion) {
-	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getAddressChain("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
+	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getAddAddressChain("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
 	let_offsetTo_WeaponData = (enum_weapon * memory_getDataStructSizeInBytes("Struct_Weapon_Data")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
 
 	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
@@ -3852,7 +3861,7 @@ achievements_coreData = {
 		// "a_ChallengeChapter2": { // VERIFIED // DISABLED - Manual edit via RAIntegration - usage of Remember/Recall 
 			// "id": 450183, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Level 'Bounty Hunter' | Complete with 'No HUD' cheat and with damage taken less than 50% | Hard or Very Hard"},
-		"a_ChallengeChapter3": { // VERIFIED
+		"a_ChallengeChapter3": { // VERIFIED 
 			"id": 450198, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Level 'Ugly Streetfight' | Complete without using any healing items | Very Hard"},
 		"a_ChallengeChapter5": { // VERIFIED
@@ -3968,7 +3977,7 @@ function achievements_generate_FullTrigger_BountyHuntCompletion(enum_areaId, enu
 		|| achievements_generate_3x_AltResetGroup_OnRestartMission(enum_areaId, enum_releaseRegion)
 
 function achievements_generate_FullTrigger_BountyHuntCompletion_withComboObjective(enum_areaId, float_comboTarget, enum_releaseRegion) => 
-	// [1] ==== Core (Alt) Group ====					->This group is  responsible for unlocking the achievement
+	// [1] ==== Core (Alt) Group ====					-> This group is  responsible for unlocking the achievement
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| !is_Playing_BountyHunterMode(enum_releaseRegion)
@@ -4640,25 +4649,54 @@ achievements_triggers = {
 				&& once(on_RewardMenu_Replay_confirm(enum_releaseRegion))
 				&& on_CashResetToSavedCash(enum_releaseRegion))
 		}),
-	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [1] ==== Core (Alt) Group ====
+	"a_PerfectShootingTutorial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ALLOWED_BULLETS = 13
+
+		return
+		// [1] ==== Core (Alt) Group ====					-> This group is responsible for unlocking the achievement
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
 			&& is_Area(AREA_Campaign_BullsEye, enum_releaseRegion)
 			// && !is_AnyCheat_active(enum_releaseRegion) // <-- usage of cheats for this achievement makes no difference
 
-			&& unless( // <-- Pause Lock achievement when more than 13 bullets were used
-				repeated(14, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
+			&& unless( // <-- Pause Lock: when more than 13 bullets were used
+				repeated(const_ALLOWED_BULLETS + 1, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
 				|| once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion))
 				|| once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion)))
 
 			&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
 			&& trigger_when(on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_GoodCompletion, enum_releaseRegion))
 
-		// [2] ==== Alt Pause Lock Reset Group ==== 	-> Reset when the shooting tutorial starts
+		// [2] ==== Alt RAmeasured Indicator Group ====		-> This group is purely responsible for displaying shots left during the tutorial
+			|| unless( // <-- Pause Lock: when more than 13 bullets were used
+				repeated(const_ALLOWED_BULLETS + 1, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion)) 
+				|| once(is_PlayerXCoordinate_notStationaryNearCoordinate(17.4, enum_releaseRegion))
+				|| once(is_PlayerYCoordinate_notStationaryNearCoordinate(-10.5, enum_releaseRegion)))
+			&& measured( // ---Measured--> Display bullets left/allowed for challenge achievement
+				tally(const_ALLOWED_BULLETS, [
+					repeated(6, always_true()), // ---3 Lines---> Add 13 bullets (3x repeated, to add hits faster)
+					repeated(6, always_true()),
+					repeated(1, always_true()),
+					deduct(repeated(const_ALLOWED_BULLETS, on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion))) // ---> Deduct each bullet fired
+				]),
+				when = 
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion) 
+					&& is_Area(AREA_Campaign_BullsEye, enum_releaseRegion)
+					&& once(is_GameTrigger(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+
+		// [3] ==== Alt Reset Group ==== 					-> Reset when the shooting tutorial starts
 			|| never_toAlt( 
 				is_ReleaseRegion(enum_releaseRegion) 
-				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))),
+				&& on_GameTrigger_changeTo(GAMETRIGGER_ShootingTutorial_Start, enum_releaseRegion))
+
+		// [4] ==== Alt Reset Group ==== 					-> Reset when at MainMenu
+			|| never_toAlt( 
+				is_ReleaseRegion(enum_releaseRegion) 
+				&& is_AtMainMenu(enum_releaseRegion))
+		}),
 	"a_SaveCurly": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_CURLY_CASH_AWARD = 1500
 		const_MISSION_AREA = AREA_Campaign_RogueValley
@@ -7758,7 +7796,7 @@ achievements_titles = {
 	"a_CompleteChapter17": 					{"en": "Ore-some Parole"},
 	"a_CompleteChapter19": 					{"en": "Coach Under Sundown"},
 	"a_CompleteChapter20": 					{"en": "The Courage of Red Wolves"},
-	"a_CompleteChapter22":					{"en": "Pact of Payback"}, 
+	"a_CompleteChapter22":					{"en": "Pact of Retribution"}, 
 	"a_CompleteChapter24":					{"en": "Dust Settler"},
 	"a_CompleteChapter25":					{"en": "Straight Into the Griffon's Den"},
 	"a_CompleteChapter27":					{"en": "Redemption"},
