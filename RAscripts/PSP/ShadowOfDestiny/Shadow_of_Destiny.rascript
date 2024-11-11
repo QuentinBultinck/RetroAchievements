@@ -3556,7 +3556,7 @@ achievements_triggers = {
 			is_Ending_achieved(ENDING_B, enum_releaseRegion) &&
 			on_Video_end(enum_releaseRegion) // Trigger when Credits video is over/skipped
 		)),
-	"a_EndingC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+	"a_EndingC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		unless(!is_ReleaseRegion(enum_releaseRegion)) &&
 		never(
 			!is_InGame(enum_releaseRegion) ||
