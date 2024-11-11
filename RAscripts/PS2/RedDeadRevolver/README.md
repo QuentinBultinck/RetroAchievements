@@ -50,10 +50,11 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Story Mode <i><sub><sup>(20 achievements)</sup></sub></i>
 </h2>
 
-> [!NOTE]
-> - The achievements listed under this category will only unlock in Story Mode, not during Bounty Hunter Mode.
-> - Any difficulty can be used to unlock these.
-> - The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating the game.
+- These are the player's bread-and-butter achievements for progressing through the story. 
+- The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating the game.
+
+- The achievements listed under this category will only unlock in Story Mode, not during Bounty Hunter Mode.
+- Any difficulty can be used to unlock these.
 
 ### Story Mode Guide
 
@@ -87,32 +88,33 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 🔗 [Back to Top of Achievement Category](#Progression)
 
-</details>
-
 ---
+
+</details>
 
 
 <h2 id=StoryChallenges>
     🏆 Story Challenges <i><sub><sup>(26 achievements)</sup></sub></i>
 </h2>
 
-> [!WARNING]
-> - All achievements under this category are cheat protected. The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
-> - Cheats must first be unlocked through playing the Bounty Hunter Singleplayer Challenge mode, which is unlocked once the selected player profile has completed the game once. A full list explaining how to unlock all cheats can be found on [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats")
+- These achievements are a set of custom-made challenge achievements for a few select story missions. 
+- The challenge achievements which are allowed on *any* difficulty can also be achieved in [Bounty Hunter Mode](#BountyHunterChallenges), any others are not allowed in that mode.
+
+- Most achievements in this category require specific difficulty levels. Achievements can always be unlocked on higher difficulties than the minimum required.
+    - *Hard* is unlocked by completing the game on *Normal*.
+    - *Very Hard* and *Red Wood Revolver* are both unlocked by completing the game on *Hard*.
+
+> [!NOTE]
+> - The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
+> - Cheats must first be unlocked through playing the bounty hunter challenge mode, which is unlocked once the selected player profile has completed the game once. A full list explaining how to unlock all cheats can be found on [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats")
 > - Don't forget to turn off the cheats if they're not required for certain achievements.
 > - As long as the [trigger indicator](#RA_Trigger) is active the player is eligible for unlocking the achievements under this category when the post-mission reward menu is displayed. Specific details on trigger and [measured indicators](#RA_Measure)  are documented per achievement. 
 > - If for some reason the achievement doesn't unlock, or the [trigger indicator](#RA_Trigger) is not displayed. Double check the difficulty, mission and cheat requirements of the achievement then restart the level when all requirements are set correctly.
-> - The challenge achievements which are allowed on *any* difficulty can also be achieved in [Bounty Hunter Mode](#BountyHunterChallenges), any others are not allowed in that mode.
 
 ### Story Challenges Grouped by Difficulty
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
-
-Most achievements in this category require specific difficulty levels. Achievements can always be unlocked on higher difficulties than the minimum required.
-- *Hard* is unlocked by completing the game on *Normal*.
-- *Very Hard* and *Red Wood Revolver* are both unlocked by completing the game on *Hard*.
-
 
 | Difficulty | Achievements <sub><sub>Required Chapter + (achievement_link)</sub></sub> |
 |:---:|---|
@@ -165,19 +167,19 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 🔗 [Back to Top of Achievement Category](#StoryChallenges)
 
+---
+
 </details>
 
----
 
 
 <h2 id=BountyHunterChallenges>
     🏆 Bounty Hunter Mode <i><sub><sup>(20 achievements)</sup></sub></i>
 </h2>
 
-> [!NOTE]
-> - The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
-> - All achievements under this category are cheat protected. The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
-> - Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
+- The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
+- The player is required to finish a bounty hunter mission from start to finish without using any cheats. 
+- Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
 
 ### Bounty Hunter Mode Guide
 
@@ -211,19 +213,24 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 🔗 [Back to Top of Achievement Category](#BountyHunterChallenges)
 
+---
+
 </details>
 
----
+
 
 
 <h2 id=ShowdownChallenges>
     🏆 Showdown Challenges <i><sub><sup>(12 achievements)</sup></sub></i>
 </h2>
 
+- All of these challenge achievements revolve around the multiplayer mode called '*Showdown*'
+
 > [!IMPORTANT]
-> - All of these multiplayer/Showdown challenge achievements require solo play. Thus when using a second controller, the achievement will not trigger.
+> - All of these multiplayer/Showdown challenge achievements require solo play. Thus when using a multiple controllers, the achievements will not trigger. A proper multiplayer subset could possible be made.
+>
 > - A [trigger indicator](#RA_Trigger) will be shown on the showdown menu/at the main menu when all required settings for a showdown achievement are correct. This indicator will hide once the loading screen starts or when any settings are incorrect. Although this indicator is not necessary to have been displayed for the achievement to be unlocked. Only the [trigger indicator](#RA_Trigger) which is shown during the match is of importance.
-> - When a [trigger indicator](#RA_Trigger) is displayed on the post-match overview menu, the player has completed the Showdown challenge. On pressing OK to display the continue popup window, should unlock the correpsonding achievement.
+> - When a [trigger indicator](#RA_Trigger) is displayed on the post-match overview menu, the player has completed the Showdown challenge. On pressing OK, to display the continue popup window, the achievement should unlock.
 > - **GAME BUG**: The [trigger indicator](#RA_Trigger) shown when setting up the Showdown match at the main menu may not display properly when shifting through the showdown stages too fast <sub>(the ID which checks for the selected showdown stage may not update properly when shifting through the stages too fast...)</sub> To make the [trigger indicator](#RA_Trigger) appear properly, just don't shift through the showdown stages too quickly. Although as mentioned above as well. This indicator is not necessary to have been displayed.
 
 ### Showdown Challenges Guide
@@ -250,17 +257,21 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
 
+---
+
 </details>
 
----
+
 
 
 <h2 id=Unlocks>
     🏆 Unlocks <i><sub><sup>(9 achievements)</sup></sub></i>
 </h2>
 
+- The achievements under this category revolve around unlocking various gameplay mechanics and filling up the journal on the main menu, which is pretty much the *BIG* completionist objective.
+
 > [!WARNING]
-> - Using the 'Rstar' name cheat will disable the achievements under this category for that player profile 
+> A player profile with the name '*Rstar*' is not allowed to unlock any of these achievements. Creating a profile with this name unlocks a few items for free, which is pretty much cheating. 
 
 ### Unlocks Guide
 
@@ -283,9 +294,10 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 🔗 [Back to Top of Achievement Category](#Unlocks)
 
+---
+
 </details>
 
----
 
 
 <h1 id=LeaderboardGuide>
@@ -302,19 +314,31 @@ Most achievements in this category require specific difficulty levels. Achieveme
 | <h3 id=lb_ShowdownLargestBounty>**Most Wanted**</h3><sub>*lb_ShowdownLargestBounty*</sub> <br><br> | - A leaderboard which showcases who can achieve the largest sum of money in a 15 minute Sundown multiplayer match against 3 CPUs. <br> - This leaderboard will start/submit on the same frame as the match ends, because the game already shows how much money the player has gathered. <br><br> <h4>Start Requirements</h4> - The player must have started a Sundown match with a fight time of 10 minutes. <br> - All 4 player slots must have been filled, the human player in slot 1 and 3 CPU's in the other slots. <br> - The human player must not have any allies. <br> - Any characters and any stage is allowed. <br> - Activating a cheat will disable/lock the leaderboard. To reset this lock, you'll need to disable all cheat with the correct requirements listed here prior to starting the match. <br><br> <h4><s>Cancel Conditions</s></h4> <br> <h4>Submit Conditions</h4> - Instant submit when the post-match overview menu is displayed. <br><br> <h4>Measured Value</h4> - The money/bounty collected during the match. |
 | <h3 id=lb_ShowdownBestCombo>**Unstoppable String**</h3><sub>*lb_ShowdownBestCombo*</sub> <br><br> | - A leaderboard which showcases who can achieve the highest combo in a Showdown/multiplayer match vs 3 CPU's. <br> - This leaderboard will start/submit on the same frame as the match ends, because the game already shows the combo above the money counter, the money which is shown when hitting + the multiplier when killing players, not the money which is awarded for getting a kill. <br><br> <h4>Start Requirements</h4> - The player must have started a Showdown/multiplayer match, any game mode is allowed. <br> - All 4 player slots must have been filled, the human player in slot 1 and 3 CPU's in the other slots. <br> - The human player must not have any allies. <br> - Any characters and any stage is allowed. <br> - Activating a cheat will disable/lock the leaderboard. To reset this lock, you'll need to disable all cheat with the correct requirements listed here prior to starting the match. <br><br> <h4><s>Cancel Conditions</s></h4> <br> <h4>Submit Conditions</h4> - Instant submit when the post-match overview menu is displayed. This leaderboard will be submitted with a small delay (1 second) after the post-match menu is displayed. <br><br> <h4>Measured Value</h4> - The value which is submitted is the one shown under *Combo* on the post-match menu. This value is calculated from hitting other players and is multiplied by a killstreak counter. |
 
-[Back to Table of Contents](#ToC)
+🔗 [Back to Table of Contents](#ToC)
+
+🔗 [Back to Top of Leaderboard Guide](#LeaderboardGuide)
+
+---
 
 </details>
 
----
+
+
 
 <h2 id=Credits>
     Credits
 </h2>
 
-*Core Achievement Set Developer*, *Badge Design* & *RAguide writer*: [ASolidSnack](https://retroachievements.org/user/ASolidSnack)
+[ASolidSnack](https://retroachievements.org/user/ASolidSnack) - *Core Achievement Set Developer*, *Badge Design* & *RAguide writer*
 
-*Testers* & *Contributors*: [TheWTFdude](https://retroachievements.org/user/TheWTFdude) + [Yoshimallow](https://retroachievements.org/user/Yoshimallow)
+[TheWTFdude](https://retroachievements.org/user/TheWTFdude) - *Contributor* & *Tester*
+- Did a whole playthrough, testing most story achievements.
+- Helped out a bit with badge art
+
+[Yoshimallow](https://retroachievements.org/user/Yoshimallow)  - *Contributor* & *Tester* 
+- Helped a lot with creating the concept of the showdown challenges.
+- Tested the initial challenge achievements for viability
+
 
 
 <h2 id=Footnotes>
