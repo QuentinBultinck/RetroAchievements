@@ -7,17 +7,17 @@
 This guide contains information on how to unlock each achievement in the core set, as well as some general information on the leaderboards.
 <br><sub>This guide mirrors the one available on the achievement set developer's [Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/RedDeadRevolver "Red Dead Revolver (PS2) - Achievement Guide")</sub>
 
-<h3 id=ToC> 📑 Table of contents</h3>
+<h3 id=ToC> 📑 Table of Contents</h3>
 
-- [Achievement Guide](#AchievementGuide) (divided by category)
-    - [Story Mode](#Progression)
-    - [Story Mission Challenges](#StoryChallenges)
-    - [Bounty Hunter Mode](#BountyHunterChallenges)
-    - [Showdown Challenges](#ShowdownChallenges)
-    - [Unlocks](#Unlocks)
-- [Leaderboard Guide](#LeaderboardGuide)
-- [Credits](#Credits)
-- [Footnotes](#Footnotes)
+- **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
+    - *[Story Mode](#Progression)*
+    - *[Story Mission Challenges](#StoryChallenges)*
+    - *[Bounty Hunter Mode](#BountyHunterChallenges)*
+    - *[Showdown Challenges](#ShowdownChallenges)*
+    - *[Unlocks](#Unlocks)*
+- **[Leaderboard Guide](#LeaderboardGuide)**
+- **[Credits](#Credits)**
+- **[Footnotes](#Footnotes)**
 
 ---
 
@@ -39,12 +39,15 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 + [Longplay (PS2) | Hosted by Youtube](https://www.youtube.com/watch?v=lPr1dGHpsFQ "RDR - Longplay (PS2) | Hosted by Youtube")
 
 
-#### General information and tips
+#### Essential Info & Tips
 
 + Links to specific sections in this guide may only work if that specific section is opened *(eg. a link to an achievement in a specific category won't work if that category's guide is not open).*
-<br>
+
 + All achievements are single player focused, even the ones for the multiplayer mode, *Showdown*. A potential real multiplayer subset could easily be made if there's enough ask for it, or if another developer wants to create one (most of the necessary RAM has been code noted).
-+ All achievements will be disabled when using cheats, unless stated otherwise. Make sure no cheat is active in the *Cheat Menu* prior to restarting or starting the required mission for the achievement. (The Cheat Menu is part of the Pause Menu and is accessible once a cheat has been unlocked via Bounty Hunter Mode.)
+
+> [!IMPORTANT]
+> - All achievements will be disabled when using cheats, unless stated otherwise. Make sure no cheat is active in the *Cheat Menu* prior to restarting or starting the required mission for the achievement. Usually a whole mission should be should be completed from start to finish without using cheats.
+> - The Cheat Menu is part of the Pause Menu and is accessible once at least 1 cheat has been unlocked via Bounty Hunter Mode.
 
 ---
 
@@ -52,16 +55,16 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Story Mode <i><sub><sup>(20 achievements)</sup></sub></i>
 </h2>
 
-- These are the player's bread-and-butter achievements for progressing through the story. 
-- The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating the game.
+#### General information regarding this category
 
-- The achievements listed under this category will only unlock in Story Mode, not during Bounty Hunter Mode.
-- Any difficulty can be used to unlock these.
+These are the player's bread-and-butter achievements for progressing through the story. The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for beating the game.
+
+These achievements will only unlock in Story Mode, not in Bounty Hunter Mode. Any difficulty can be used to unlock these.
 
 ### Story Mode Guide
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -99,14 +102,16 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Story Challenges <i><sub><sup>(26 achievements)</sup></sub></i>
 </h2>
 
-- These achievements are a set of custom-made challenge achievements for a few select story missions. 
-- The challenge achievements which are allowed on *any* difficulty can also be achieved in [Bounty Hunter Mode](#BountyHunterChallenges), any others are not allowed in that mode.
+#### General information regarding this category
+
+These achievements are a set of custom-made challenge achievements for a few select story missions. 
+The challenge achievements which are allowed on *any* difficulty can also be achieved in [Bounty Hunter Mode](#BountyHunterChallenges), any others are not allowed in that mode.
 
 - Most achievements in this category require specific difficulty levels. Achievements can always be unlocked on higher difficulties than the minimum required.
     - *Hard* is unlocked by completing the game on *Normal*.
     - *Very Hard* and *Red Wood Revolver* are both unlocked by completing the game on *Hard*.
 
-> [!NOTE]
+> ### Additional Notes
 > - The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
 >
 > - Cheats must first be unlocked through playing the bounty hunter challenge mode, which is unlocked once the selected player profile has completed the game once. A full list explaining how to unlock all cheats can be found on [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats")
@@ -134,7 +139,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### Story Challenges Guide
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -179,12 +184,13 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Bounty Hunter Mode <i><sub><sup>(20 achievements)</sup></sub></i>
 </h2>
 
-- The bounty hunter mode is unlocked when the selected player profile has completed the game once. 
-- The player is required to finish a bounty hunter mission from start to finish without using any cheats. 
-- Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
+#### General information regarding this category
 
+The bounty hunter mode is unlocked when the selected player profile has completed the story mode once. The player is required to finish a bounty hunter mission from start to finish without using any cheats. Even if a bounty hunter mission is already marked as *completed* on the main menu. The player can still replay the mission as a way to unlock the achievement. 
 
-> [!NOTE]
+Some of these bounty hunter mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
+
+> ### Additional Notes
 > - A [trigger indicator](#RA_Trigger) will be displayed at the post-mission overview menu when the bounty hunter objective has been reached. The achievement should pop around the same time that the game shows which item the player has unlocked. 
 >
 > - Bounty Hunter Missions which require a certain cash combo to be achieved will display a [trigger indicator](#RA_Trigger) during the mission once the required combo has been achieved. Finish any other objectives and the mission itself to unlock the achievement.
@@ -192,7 +198,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### Bounty Hunter Mode Guide
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -232,11 +238,14 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Showdown Challenges <i><sub><sup>(12 achievements)</sup></sub></i>
 </h2>
 
-- All of these challenge achievements revolve around the multiplayer mode called '*Showdown*'.
+#### General information regarding this category
 
-> [!IMPORTANT]
+All of these challenge achievements revolve around the multiplayer mode called '*Showdown*'.
+
+> [!NOTE]
 > - All of these multiplayer/Showdown challenge achievements require solo play. Thus when using a multiple controllers, the achievements will not trigger. A proper multiplayer subset could possibly be made.
->
+
+> ### Additional Notes
 > - A [trigger indicator](#RA_Trigger) will be shown on the showdown menu/at the main menu when all required settings for a showdown achievement are correct. This indicator will hide once the loading screen starts or when any settings are incorrect. Although this indicator is not necessary to have been displayed for the achievement to be unlocked. Only the [trigger indicator](#RA_Trigger) which is shown during the match is of importance.
 >
 > - When a [trigger indicator](#RA_Trigger) is displayed on the post-match overview menu, the player has completed the Showdown challenge. On pressing OK, to display the continue popup window, the achievement should unlock.
@@ -246,7 +255,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### Showdown Challenges Guide
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -278,6 +287,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Unlocks <i><sub><sup>(9 achievements)</sup></sub></i>
 </h2>
 
+#### General information regarding this category
+
 - The achievements under this category revolve around unlocking various gameplay mechanics and pages from the journal on the main menu.
 
 > [!WARNING]
@@ -286,7 +297,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 ### Unlocks Guide
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -315,7 +326,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 </h1>
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open the guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -358,18 +369,18 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 <h4 id=RA_Measure> • Measured Indicator </h4>
 
 An indicator displayed by the Retro Achievements overlay, often used to track specific progress within an achievement.
-**Examples**: 
-- *Headshots* - 7/12 
-- *Enemies left* - 11/100 
-- *Accuracy* - 47% 
-- *Coins collected* - 88%
+> **Examples**: 
+> - *Headshots* - 7/12 
+> - *Enemies left* - 11/100 
+> - *Accuracy* - 47% 
+> - *Coins collected* - 88%
 
 <h4 id=RA_Trigger> • Triggered Indicator </h4>
 
 An indicator displayed by the Retro Achievements overlay, typically used to show when a challenge achievement is available for unlocking or when it is currently active. If this indicator disappears before the achievement unlocks, it often signals a failure, indicating that a retry is necessary.
-**Examples**: 
-- Enough headshots acquired, finish the mission 
-- All enemies killed, kill the boss
-- Player has not yet taken a hit - for a hitless achievement
-- All requirements are met, continue the game to unlock...
+> **Examples**: 
+> - Enough headshots acquired, finish the mission 
+> - All enemies killed, kill the boss
+> - Player has not yet taken a hit - for a hitless achievement
+> - All requirements are met, continue the game to unlock...
 <br>
