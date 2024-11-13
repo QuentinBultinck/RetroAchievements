@@ -103,11 +103,11 @@ These achievements will only unlock in Story Mode, not in Bounty Hunter Mode. An
 These achievements are a set of custom-made challenge achievements for a few select story missions. 
 The challenge achievements which are allowed on *any* difficulty can also be achieved in [Bounty Hunter Mode](#BountyHunterChallenges), any others are not allowed in that mode.
 
-- Most achievements in this category require specific difficulty levels. Achievements can always be unlocked on higher difficulties than the minimum required.
-    - *Hard* is unlocked by completing the game on *Normal*.
-    - *Very Hard* and *Red Wood Revolver* are both unlocked by completing the game on *Hard*.
+Most achievements in this category require specific difficulty levels. Achievements can always be unlocked on higher difficulties than the minimum required.
+- *Hard* is unlocked by completing the game on *Normal*.
+- *Very Hard* and *Red Wood Revolver* are both unlocked by completing the game on *Hard*.
 
-> ### Additional Notes
+> #### Additional Notes
 > - The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
 >
 > - Cheats must first be unlocked through playing the Bounty Hunter Mode, which is unlocked once the selected player profile has completed the game once. A full list explaining how to unlock all cheats can be found on [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats")
@@ -184,7 +184,7 @@ The Bounty Hunter Mode is unlocked when the selected player profile has complete
 
 Some of these Bounty Hunter Mode challenges can be pretty hard. If you're having trouble please refer to [Walkthroughs & Resources](#WalkthroughsResources) or search any youtube video's. 
 
-> ### Additional Notes
+> #### Additional Notes
 > - A [trigger indicator](#RA_Trigger) will be displayed at the post-mission overview menu when the Bounty Hunter objective has been reached. The achievement should pop around the same time that the game shows which item the player has unlocked. 
 >
 > - Bounty Hunter Missions which require a certain cash combo to be achieved will display a [trigger indicator](#RA_Trigger) during the mission once the required combo has been achieved. Finish any other objectives and the mission itself to unlock the achievement.
@@ -237,7 +237,7 @@ All of these challenge achievements revolve around the Multiplayer Mode called '
 > [!NOTE]
 > - All of these Multiplayer/Showdown challenge achievements require solo play. Thus when using a multiple controllers, the achievements will not trigger. A proper Multiplayer subset could possibly be made.
 
-> ### Additional Notes
+> #### Additional Notes
 > - A [trigger indicator](#RA_Trigger) will be shown on the Showdown menu/at the main menu when all required settings for a Showdown achievement are correct. This indicator will hide once the loading screen starts or when any settings are incorrect. Although this indicator is not necessary to have been displayed for the achievement to be unlocked. Only the [trigger indicator](#RA_Trigger) which is shown during the match is of importance.
 >
 > - When a [trigger indicator](#RA_Trigger) is displayed on the post-match overview menu, the player has completed the Showdown challenge. On pressing OK, to display the continue popup window, the achievement should unlock.
