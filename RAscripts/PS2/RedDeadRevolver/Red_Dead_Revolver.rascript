@@ -104,35 +104,35 @@ memory_regionOffsets = {
 function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
-memory_dataStructures = {
-	"PS2Vector": {
+memory_StructDefs = {
+	"Struct:PS2Vector": {
 		"offsetToMember": {
-			"W-Component": 0x0,
-			"Y-Coordinate": 0x4,
-			"Z-Coordinate": 0x8,
-			"X-Coordinate": 0xC	}
+			"Float:W-Component": 0x0,
+			"Float:Y_Coordinate": 0x4,
+			"Float:Z_Coordinate": 0x8,
+			"Float:X_Coordinate": 0xC	}
 		},
-	"Struct_ActorData_0": {
+	"Struct:ActorData_0": {
 		"sizeInBytes": 8,
 		"offsetToMember": {
 			"Struct_ActorData_A": 0x0,
-			"Struct_ActorData_B": 0x4} 
+			"Struct:ActorData_B": 0x4} 
 		},
-	"Struct_ActorData_B": {
-		"pointerChains": {
+	"Struct:ActorData_B": {
+		"pointerChainToMember": {
 			"Float_ActorHP": { 
-				"addAddressChain": [0x4, 0x18, 0x10]},
+				"pointerChainOffsets": [0x4, 0x18, 0x10]},
 			"Float_ActorMaxHP": { 
-				"addAddressChain": [0x4, 0x18, 0x14]},
+				"pointerChainOffsets": [0x4, 0x18, 0x14]},
 			"8Bit_UniversalWeaponState": { 
-				"addAddressChain": [0x80, 0xA8]},
+				"pointerChainOffsets": [0x80, 0xA8]},
 			"PS2Vector_ActorLocation": { 
-				"addAddressChain": [0xC, 0x90]},
+				"pointerChainOffsets": [0xC, 0x90]},
 			"ASCII_CharacterModelID": { 
-				"addAddressChain": [0x24, 0x4], 
+				"pointerChainOffsets": [0x24, 0x4], 
 				"offsetToPointedToMember": 0x4},
 			"BitFlag_IsRidingAnimal": { 
-				"addAddressChain": [0xC, 0xC0]},
+				"pointerChainOffsets": [0xC, 0xC0]},
 		}},
 	"Struct_PlayerInputReader": {
 		"offsetToMember": {
@@ -153,57 +153,57 @@ memory_dataStructures = {
 			"Bitset_ActivatedCheats": 0x800}
 		},
 	"Struct_RewardMenu_StartChpMenu_DisplayData": {
-		"pointerChains": { 
+		"pointerChainToMember": { 
 			"ASCII_StartChpMenuName": {
-				"addAddressChain": [0x1EC]},
+				"pointerChainOffsets": [0x1EC]},
 			"BitFlag_IsStartChpMenuActive": { 
-				"addAddressChain": [0x214]},
+				"pointerChainOffsets": [0x214]},
 			"BitFlag_IsRewardMenuOrStartChpMenuDisplayed": { 
-				"addAddressChain": [0xAC, 0x38]},
+				"pointerChainOffsets": [0xAC, 0x38]},
 			"BitFlag_IsQuitConfirmationMenuDisplayed": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0xE4]},
+				"pointerChainOffsets": [0xAC, 0x34, 0x1C, 0xE4]},
 			"BitFlag_HighlightedMenuItem": { 
-				"addAddressChain": [0xAC, 0x34, 0x1C, 0x8A4]},
+				"pointerChainOffsets": [0xAC, 0x34, 0x1C, 0x8A4]},
 			"32Bit_BountyCollected": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9E4],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9C4]}},
 			"BitFlag_IsFirstPopupMenuDisplayed": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x964],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x944]}},
 			"8Bit_MenuDepth": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0x9D4],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9B4]}},
 			"32Bit_Balance": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA04],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9E4]}},
 			"ASCII_BountyRating_ItemUnlock_UI_Element_ID": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA94],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0xA54]}},	 
 			"32BitPointer_2D0": { 
-				"addAddressChain": [0x2D0]},
+				"pointerChainOffsets": [0x2D0]},
 			"BitFlag_IsAccuracyStarAchieved": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x814],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F4]}},
 			"BitFlag_IsDamageTakenStarAchieved": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x824],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x804]}},
 			"BitFlag_IsTimeStarAchieved": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x834],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x814]}},
 			"BitFlag_IsBestComboStarAchieved": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x844],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x824]}},
 			"Struct_RewardMenuDisplayText": { 
-				"addAddressChain": [0x2D0, 0x24, 0x34]},
+				"pointerChainOffsets": [0x2D0, 0x24, 0x34]},
 			
 		}},
 	"Struct_RewardMenuDisplayText": {
@@ -217,180 +217,184 @@ memory_dataStructures = {
 			"8Bit_HighlightedMenuItemID": 0x318},
 		},
 	"Struct_SinglePlayerData": {
-		"pointerChains": {
+		"pointerChainToMember": {
 			"Float_PlayerHP": { 
-				"addAddressChain": [0x18, 0x10]},
+				"pointerChainOffsets": [0x18, 0x10]},
 			"Float_PlayerMaxHP": { 
-				"addAddressChain": [0x18, 0x14]},
+				"pointerChainOffsets": [0x18, 0x14]},
 			"ASCII_GameTriggerID": { 
-				"addAddressChain": [0x168, 0xEC],
+				"pointerChainOffsets": [0x168, 0xEC],
 				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
 			"32Bit_HeadShots": { 
-				"addAddressChain": [0x36C, 0x30]},
+				"pointerChainOffsets": [0x36C, 0x30]},
 			"32Bit_DeathToll": { 
-				"addAddressChain": [0x36C, 0x5C]},
+				"pointerChainOffsets": [0x36C, 0x5C]},
 			"Float_DamageTaken": { 
-				"addAddressChain": [0x36C, 0x70]},
+				"pointerChainOffsets": [0x36C, 0x70]},
 			"32Bit_ShotsFired": { 
-				"addAddressChain": [0x36C, 0x194]},
+				"pointerChainOffsets": [0x36C, 0x194]},
 			"32Bit_ShotsHit": { 
-				"addAddressChain": [0x36C, 0x198]},
+				"pointerChainOffsets": [0x36C, 0x198]},
 			"32Bit_DeadEyeAbilitiesUsed": { 
-				"addAddressChain": [0x36C, 0x1BC]},
+				"pointerChainOffsets": [0x36C, 0x1BC]},
 			"32Bit_HighestComboMultiplier": { 
-				"addAddressChain": [0x36C, 0x1C0]},
+				"pointerChainOffsets": [0x36C, 0x1C0]},
 			"Float_HighestCombo": { 
-				"addAddressChain": [0x36C, 0x1C4]},
+				"pointerChainOffsets": [0x36C, 0x1C4]},
 			"32Bit_HighestComboMultiplierShowdown": { 
-				"addAddressChain": [0x36C, 0x4C0]},
+				"pointerChainOffsets": [0x36C, 0x4C0]},
 			"Float_HighestComboShowdown": { 
-				"addAddressChain": [0x36C, 0x4C4]},
+				"pointerChainOffsets": [0x36C, 0x4C4]},
 			"PS2Vector_PlayerLocation": { 
-				"addAddressChain": [0xC, 0xC, 0x90]},
+				"pointerChainOffsets": [0xC, 0xC, 0x90]},
 			"BitFlag_IsRidingAnimal": { 
-				"addAddressChain": [0xC, 0xC, 0xC0]},
+				"pointerChainOffsets": [0xC, 0xC, 0xC0]},
 			"8Bit_EquippedWeaponID": { 
-				"addAddressChain": [0xC, 0x80, 0x48]},
+				"pointerChainOffsets": [0xC, 0x80, 0x48]},
 			"8Bit_UniversalWeaponState": { 
-				"addAddressChain": [0xC, 0x80, 0xA8]},
+				"pointerChainOffsets": [0xC, 0x80, 0xA8]},
 			"Array_Weapon_Data": { 
-				"addAddressChain": [0xC, 0x80, 0x20, 0x0, 0x4]},
+				"pointerChainOffsets": [0xC, 0x80, 0x20, 0x0, 0x4]},
 			"Bitset_PlayerProfileUnlocks": { 
-				"addAddressChain": [0x5C8]},
+				"pointerChainOffsets": [0x5C8]},
 		}},
 	"Struct_GameController": {
-		"pointerChains": {
+		"pointerChainToMember": {
 			"32BitPointer_ShowdownPosterMenuController": {
-				"addAddressChain": [0xC0]},
+				"pointerChainOffsets": [0xC0]},
 			"32Bit_EquippedWeapon_ReserveAmmo": { 
-				"addAddressChain": [0x2C, 0x14]},
+				"pointerChainOffsets": [0x2C, 0x14]},
 			"BitFlag_IsShowdownPosterMenuDisplayed": { 
-				"addAddressChain": [0xC0, 0x48, 0xFD]},
+				"pointerChainOffsets": [0xC0, 0x48, 0xFD]},
 			"BitFlag_IsShowdownPlayerSlot1Filled": { 
-				"addAddressChain": [0xC0, 0x7C, 0xFE]},
+				"pointerChainOffsets": [0xC0, 0x7C, 0xFE]},
 			"8Bit_ShowdownPlayer1TeamId": { 
-				"addAddressChain": [0xC0, 0x53C]},
+				"pointerChainOffsets": [0xC0, 0x53C]},
 			"ASCII_ShowdownPlayer1CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x7C],
+				"pointerChainOffsets": [0xC0, 0x7C],
 				"offsetToPointedToMember": 0x13D},
 			"BitFlag_IsShowdownPlayerSlot2Filled": { 
-				"addAddressChain": [0xC0, 0x80, 0xFE]},
+				"pointerChainOffsets": [0xC0, 0x80, 0xFE]},
 			"ASCII_ShowdownPlayer2CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x80],
+				"pointerChainOffsets": [0xC0, 0x80],
 				"offsetToPointedToMember": 0x13D},
 			"8Bit_ShowdownPlayer2TeamId": { 
-				"addAddressChain": [0xC0, 0x588]},
+				"pointerChainOffsets": [0xC0, 0x588]},
 			"BitFlag_IsShowdownPlayerSlot3Filled": { 
-				"addAddressChain": [0xC0, 0x84, 0xFE]},
+				"pointerChainOffsets": [0xC0, 0x84, 0xFE]},
 			"ASCII_ShowdownPlayer3CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x84],
+				"pointerChainOffsets": [0xC0, 0x84],
 				"offsetToPointedToMember": 0x13D},
 			"8Bit_ShowdownPlayer3TeamId": { 
-				"addAddressChain": [0xC0, 0x5D4]},
+				"pointerChainOffsets": [0xC0, 0x5D4]},
 			"BitFlag_IsShowdownPlayerSlot4Filled": { 
-				"addAddressChain": [0xC0, 0x88, 0xFE]},
+				"pointerChainOffsets": [0xC0, 0x88, 0xFE]},
 			"ASCII_ShowdownPlayer4CharacterModelId": { 
-				"addAddressChain": [0xC0, 0x88],
+				"pointerChainOffsets": [0xC0, 0x88],
 				"offsetToPointedToMember": 0x13D},
 			"8Bit_ShowdownPlayer4TeamId": { 
-				"addAddressChain": [0xC0, 0x620]},
+				"pointerChainOffsets": [0xC0, 0x620]},
 			"8Bit_TeamIdPlayer1": { 
-				"addAddressChain": [0x53C]},
+				"pointerChainOffsets": [0x53C]},
 			"8Bit_TeamIdPlayer2": { 
-				"addAddressChain": [0x588]},
+				"pointerChainOffsets": [0x588]},
 			"8Bit_TeamIdPlayer3": { 
-				"addAddressChain": [0x5D4]},
+				"pointerChainOffsets": [0x5D4]},
 			"8Bit_TeamIdPlayer4": { 
-				"addAddressChain": [0x620]},
+				"pointerChainOffsets": [0x620]},
 			"32Bit_Cash": { 
-				"addAddressChain": [0x5874],
+				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x8},
 			"32Bit_CashAcquireByOtherMeans": { 
-				"addAddressChain": [0x5874],
+				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0xC},
 			"32Bit_CashCombo": { 
-				"addAddressChain": [0x5874],
+				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x10},
 			"32Bit_CashComboMultiplier": { 
-				"addAddressChain": [0x5874],
+				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x14},
 		}},
-	"Undefined_Struct_03": {
+	"Struct:Undefined_03": {
 		"offsetToMember": {
-			"32Bit_MissionKillcount": 0xD8}
+			"32-bit:MissionKillcount": 0xD8}
 		},
-	"Struct_Extra_Mission_Data.RogueValley": {
-		"pointerChains": {
-			"BitFlag_IsTreasureAOpened": { 
-				"addAddressChain": [0x4, 0x4C]},
-			"BitFlag_IsTreasureBOpened": { 
-				"addAddressChain": [0x8, 0x4C]},
-			"BitFlag_IsTreasureCOpened": { 
-				"addAddressChain": [0xC, 0x4C]}}
+	"Struct:ExtraMissionData.RogueValley_Ch8": {
+		"pointerChainToMember": {
+			"BitFlag:IsTreasureOpened-A": { 
+				"pointerChainOffsets": [0x4, 0x4C]},
+			"BitFlag:IsTreasureOpened-B": { 
+				"pointerChainOffsets": [0x8, 0x4C]},
+			"BitFlag:IsTreasureOpened-C": { 
+				"pointerChainOffsets": [0xC, 0x4C]}}
 		},
-	"Struct_Extra_Mission_Data.TheTraitor": {
-		"pointerChains": {
-			"BitFlag_IsAlliedCannonA_Destroyed": { 
-				"addAddressChain": [0x4, 0x4C]},
-			"BitFlag_IsAlliedCannonB_Destroyed": { 
-				"addAddressChain": [0x8, 0x4C]},
-			"BitFlag_IsAlliedCannonC_Destroyed": { 
-				"addAddressChain": [0xC, 0x4C]},
-			"BitFlag_IsAlliedCannonD_Destroyed": { 
-				"addAddressChain": [0x10, 0x4C]},
-			"BitFlag_IsAlliedCannonE_Destroyed": { 
-				"addAddressChain": [0x14, 0x4C]},
-			"BitFlag_IsAlliedCannonF_Destroyed": { 
-				"addAddressChain": [0x18, 0x4C]},
-			"BitFlag_IsAlliedCannonG_Destroyed": { 
-				"addAddressChain": [0x1C, 0x4C]},
-			"BitFlag_IsAlliedCannonH_Destroyed": { 
-				"addAddressChain": [0x20, 0x4C]}}
+	"Struct:ExtraMissionData.TheTraitor_Ch13": {
+		"pointerChainToMember": {
+			"BitFlag:IsAlliedCannonDestroyed-A": { 
+				"pointerChainOffsets": [0x4, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-B": { 
+				"pointerChainOffsets": [0x8, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-C": { 
+				"pointerChainOffsets": [0xC, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-D": { 
+				"pointerChainOffsets": [0x10, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-E": { 
+				"pointerChainOffsets": [0x14, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-F": { 
+				"pointerChainOffsets": [0x18, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-G": { 
+				"pointerChainOffsets": [0x1C, 0x4C]},
+			"BitFlag:IsAlliedCannonDestroyed-H": { 
+				"pointerChainOffsets": [0x20, 0x4C]}}
 		},
-	"Struct_MajorCharacter_Data": {
-		"sizeInBytes": 8,
-		"pointerChains": {
-			"Float_MajorCharacter0_HP": { 
-				"addAddressChain": [0x0, 0x18, 0x10]},
-			"Float_MajorCharacter0_MaxHP": { 
-				"addAddressChain": [0x0, 0x18, 0x14]},
-			"ASCII_MajorCharacter0_CharacterName": { 
-				"addAddressChain": [0x0, 0x4],
+	"Array:MajorCharacterData": {
+		"pointerChainToMember": {
+			"Float:MajorCharacterHP-0": { 
+				"pointerChainOffsets": [0x0, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-0": { 
+				"pointerChainOffsets": [0x0, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-0": { 
+				"pointerChainOffsets": [0x0, 0x4],
 				"offsetToPointedToMember": 0x0},
-			"Float_MajorCharacter1_HP": { 
-				"addAddressChain": [0x8, 0x18, 0x10]},
-			"Float_MajorCharacter1_MaxHP": { 
-				"addAddressChain": [0x8, 0x18, 0x14]},
-			"ASCII_MajorCharacter1_CharacterName": { 
-				"addAddressChain": [0x8, 0x4],
+
+			"Float:MajorCharacterHP-1": { 
+				"pointerChainOffsets": [0x8, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-1": { 
+				"pointerChainOffsets": [0x8, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-1": { 
+				"pointerChainOffsets": [0x8, 0x4],
 				"offsetToPointedToMember": 0x0},
-			"Float_MajorCharacter2_HP": { 
-				"addAddressChain": [0x10, 0x18, 0x10]},
-			"Float_MajorCharacter2_MaxHP": { 
-				"addAddressChain": [0x10, 0x18, 0x14]},
-			"ASCII_MajorCharacter2_CharacterName": { 
-				"addAddressChain": [0x10, 0x4],
+
+			"Float:MajorCharacterHP-2": { 
+				"pointerChainOffsets": [0x10, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-2": { 
+				"pointerChainOffsets": [0x10, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-2": { 
+				"pointerChainOffsets": [0x10, 0x4],
 				"offsetToPointedToMember": 0x0},
-			"Float_MajorCharacter3_HP": { 
-				"addAddressChain": [0x18, 0x18, 0x10]},
-			"Float_MajorCharacter3_MaxHP": { 
-				"addAddressChain": [0x18, 0x18, 0x14]},
-			"ASCII_MajorCharacter3_CharacterName": { 
-				"addAddressChain": [0x18, 0x4],
+
+			"Float:MajorCharacterHP-3": { 
+				"pointerChainOffsets": [0x18, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-3": { 
+				"pointerChainOffsets": [0x18, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-3": { 
+				"pointerChainOffsets": [0x18, 0x4],
 				"offsetToPointedToMember": 0x0},
-			"Float_MajorCharacter4_HP": { 
-				"addAddressChain": [0x20, 0x18, 0x10]},
-			"Float_MajorCharacter4_MaxHP": { 
-				"addAddressChain": [0x20, 0x18, 0x14]},
-			"ASCII_MajorCharacter4_CharacterName": { 
-				"addAddressChain": [0x20, 0x4],
+
+			"Float:MajorCharacterHP-4": { 
+				"pointerChainOffsets": [0x20, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-4": { 
+				"pointerChainOffsets": [0x20, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-4": { 
+				"pointerChainOffsets": [0x20, 0x4],
 				"offsetToPointedToMember": 0x0},
-			"Float_MajorCharacter5_HP": { 
-				"addAddressChain": [0x28, 0x18, 0x10]},
-			"Float_MajorCharacter5_MaxHP": { 
-				"addAddressChain": [0x28, 0x18, 0x14]},
-			"ASCII_MajorCharacter5_CharacterName": { 
-				"addAddressChain": [0x28, 0x4],
+
+			"Float:MajorCharacterHP-5": { 
+				"pointerChainOffsets": [0x28, 0x18, 0x10]},
+			"Float:MajorCharacterMaxHP-5": { 
+				"pointerChainOffsets": [0x28, 0x18, 0x14]},
+			"ASCII:MajorCharacterName-5": { 
+				"pointerChainOffsets": [0x28, 0x4],
 				"offsetToPointedToMember": 0x0},
 		}},
 	"Struct_GatlingGunZone_Data": {
@@ -404,9 +408,9 @@ memory_dataStructures = {
 		},
 	"Struct_Weapon_Data": {
 		"sizeInBytes": 8,
-		"pointerChains": {
+		"pointerChainToMember": {
 			"BitFlag_IsWeaponInInventory": {
-				"addAddressChain": [0x4, 0x1D0]},
+				"pointerChainOffsets": [0x4, 0x1D0]},
 		}},
 	"Struct_Mission_Timers": {
 		"offsetToMember": {
@@ -437,62 +441,62 @@ memory_dataStructures = {
 			"Struct_ShowdownPlayer_Data_D": 0xC}
 		},
 	"Struct_ShowdownPlayer_Data_B": {
-		"pointerChains": {
+		"pointerChainToMember": {
 			"32Bit_DeathToll": { 
-				"addAddressChain": [0x30, 0x5C]},
+				"pointerChainOffsets": [0x30, 0x5C]},
 			"Float_DamageTaken": { 
-				"addAddressChain": [0x30, 0x70]},
+				"pointerChainOffsets": [0x30, 0x70]},
 			"32Bit_HighNoonRoundsWon": { 
-				"addAddressChain": [0x30, 0x430]},
+				"pointerChainOffsets": [0x30, 0x430]},
 			"32Bit_ShotsFired": { 
-				"addAddressChain": [0x30, 0x494]},
+				"pointerChainOffsets": [0x30, 0x494]},
 			"32Bit_ShotsHit": { 
-				"addAddressChain": [0x30, 0x498]},
+				"pointerChainOffsets": [0x30, 0x498]},
 			"32Bit_HeadShots": { 
-				"addAddressChain": [0x30, 0x4A4]},				
+				"pointerChainOffsets": [0x30, 0x4A4]},				
 			"32Bit_CashCollected": { 
-				"addAddressChain": [0x2B4, 0xC]},			
+				"pointerChainOffsets": [0x2B4, 0xC]},			
 			"32Bit_EquippedWeaponId": { 
-				"addAddressChain": [0x18, 0x80, 0x48]}}
+				"pointerChainOffsets": [0x18, 0x80, 0x48]}}
 		},
 	"Struct_ShowdownPlayer_Data_C": {
-		"pointerChains": {
+		"pointerChainToMember": {
 			"Float_HP": { 
-				"addAddressChain": [0x18, 0x10]},
+				"pointerChainOffsets": [0x18, 0x10]},
 			"Float_MaxHP": { 
-				"addAddressChain": [0x18, 0x14]}
+				"pointerChainOffsets": [0x18, 0x14]}
 		}},
 	"Struct_MultiplayerRewardMenu_Data": {
-		"pointerChains": {
+		"pointerChainToMember": {
 			"ASCII_Flag_IsPlayer1Winner": {
-				"addAddressChain": [0x28, 0x24, 0x34],
+				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x0,
 					RELEASE_REGION_USA: 0x180}},
 			"ASCII_Flag_IsPlayer2Winner": {
-				"addAddressChain": [0x28, 0x24, 0x34],
+				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x10,
 					RELEASE_REGION_USA: 0x190}},
 			"ASCII_Flag_IsPlayer3Winner": {
-				"addAddressChain": [0x28, 0x24, 0x34],
+				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x20,
 					RELEASE_REGION_USA: 0x1A0}},
 			"ASCII_Flag_IsPlayer4Winner": {
-				"addAddressChain": [0x28, 0x24, 0x34],
+				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x30,
 					RELEASE_REGION_USA: 0x1B0}},
 			"ASCII_Flag_IsMultiplayerRewardMenuDisplayed": {
-				"addAddressChain": [0x28],
+				"pointerChainOffsets": [0x28],
 				"offsetToPointedToMember": 0x0},
 			"BitFlag_IsFirstPopupMenuDisplayed": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0xF44],
 					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0xB74]}},
 			"32Bit_HighlightedPopupMenuItem": {
-				"addAddressChain": {
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x28, 0x24, 0x1c, 0x1414],
 					RELEASE_REGION_USA: [0x28, 0x24, 0x1c, 0x1044]}},
 		}},
@@ -506,38 +510,41 @@ memory_dataStructures = {
 		},
 	}
 
-function memory_getDataStructSizeInBytes(string_structKey) =>
-	memory_dataStructures[string_structKey]["sizeInBytes"]
+function memory_getStruct_SizeInBytes(string_structKey) =>
+	memory_StructDefs[string_structKey]["sizeInBytes"]
 
-function memory_getDataStructOffset(string_structKey, string_memberKey) =>
-	memory_dataStructures[string_structKey]["offsetToMember"][string_memberKey]
+function memory_getStruct_OffsetToMember(string_structKey, string_memberKey) =>
+	memory_StructDefs[string_structKey]["offsetToMember"][string_memberKey]
 
-function memory_getPointerChainOffsetToMember(string_structKey, string_pointerChainKey) => 
-	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"]
+function memory_getStuct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
+
+function memory_getStuct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
+
+function memory_getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
 	
-function memory_getPointerChainOffsetToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
-	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
+function memory_getStruct_OffsetToPointedToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
-function memory_getAddAddressChain(string_structKey, string_pointerChainKey) =>
-	memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
-
-function memory_generateAddAddressPointerChain(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToMember = 0, accessor = dword) {
-	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"]
-	let_addAddressPointerChain = dword(memAdrr_basePointer)
+function memGenerate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorType_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStuct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
+	let_addAddressChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
 		if (let_index == length(let_array_pointerChainOffsets) - 1)
-			return accessor(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index] + int_offsetToMember)
-		else let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
+			return accessor(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
 	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
-function memory_generateAddAddressPointerChain_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToMember = 0, accessor = dword) {
-	let_array_pointerChainOffsets = memory_dataStructures[string_structKey]["pointerChains"][string_pointerChainKey]["addAddressChain"][enum_releaseRegion]
-	let_addAddressPointerChain = dword(memAdrr_basePointer)
+function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToPointedToMember = 0, memAccessorType_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStuct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion)
+	let_addAddressChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
 		if (let_index == length(let_array_pointerChainOffsets) - 1)
-			return accessor(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index] + int_offsetToMember)
-		else let_addAddressPointerChain = dword(let_addAddressPointerChain + let_array_pointerChainOffsets[let_index])
+			return accessor(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
 	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
@@ -564,39 +571,44 @@ memory_addresses = {
 	// 	},
 
 	DATATYPE_BitFlag: {
+		"InvertedBitFlag:IsLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
+
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
-		"IsNotLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
 		},
 	DATATYPE_8Bit: {
+		"Bitfield:GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
+
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
-		"GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
 		"SelectedPlayerProfileId": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
 		"AreaState": {RELEASE_REGION_USA: 0x6aaa9c, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
 		},	
 	DATATYPE_ASCII: {
-		"GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+		"ASCII:PS2GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
+		
 		"AreaID": {RELEASE_REGION_USA: 0x79dea0, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
 		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in discontinued achievements
 		},
 	DATATYPE_32Bit: {
-		"AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
+		"32-bit:AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
+
 		"IsAnimationLoading": {RELEASE_REGION_USA: 0x745170, RELEASE_REGION_EUR: 0x7478f0, RELEASE_REGION_JPN: sNULL},
 		"PosterMenu_SelectedShowdownStageID": {RELEASE_REGION_USA: 0x74f500, RELEASE_REGION_EUR: 0x751c80, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Float: {
-		"IsInGame": {RELEASE_REGION_USA: 0x4F9F2C, RELEASE_REGION_EUR: 0x4fc5ac, RELEASE_REGION_JPN: sNULL},
+		"FloatFlag:IsInGame(preferred)": {RELEASE_REGION_USA: 0x4F9F2C, RELEASE_REGION_EUR: 0x4fc5ac, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_32BitPointer: {
+		"Pointer:UndefinedStruct_03(preferred)": {RELEASE_REGION_USA: 0x4f7cf0, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
+		"Pointer:ExtraMissionData": {RELEASE_REGION_USA: 0x4f792c, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
+		"Pointer:MajorCharacterData": {RELEASE_REGION_USA: 0x4f7d20, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
+
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
-		"Undefined_Struct_03": {RELEASE_REGION_USA: 0x4f7cf0, RELEASE_REGION_EUR: 0x4fa370, RELEASE_REGION_JPN: sNULL},
-		"Extra_Mission_Data": {RELEASE_REGION_USA: 0x4f792c, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
 		"GatlingGunZone_Data": {RELEASE_REGION_USA: 0x55b6a8, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
-		"MajorCharacter_Data": {RELEASE_REGION_USA: 0x4f7d20, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		"MultiplayerRewardMenu_Data": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
@@ -614,6 +626,7 @@ memory_addresses = {
 		"PlayerInputReader": {RELEASE_REGION_USA: 0x73b7c2, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
 		"ShowdownMode_Settings": {RELEASE_REGION_USA: 0x73de30, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
 	}}
+
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
@@ -676,7 +689,7 @@ function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4; R
  
 
 function is_ReleaseRegion(enum_releaseRegion) {
-	let_memAddr_gameID = memory_getAddress(DATATYPE_ASCII, "GameID", enum_releaseRegion)
+	let_memAddr_gameID = memory_getAddress(DATATYPE_ASCII, "ASCII:PS2GameID", enum_releaseRegion)
 	let_string_gameID = sNULL
 
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
@@ -701,10 +714,10 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
 function memUtil_memAddrTo_AlwaysNull(enum_releaseRegion) =>
-	memory_getAddress(DATATYPE_32Bit, "AlwaysNULL", enum_releaseRegion)
+	memory_getAddress(DATATYPE_32Bit, "32-bit:AlwaysNULL", enum_releaseRegion)
 
-function memUtil_bitwiseOR(memAccessor_bitFlagAccessor, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
-	memAccessor_bitFlagAccessor + memAccessor_B - (memAccessor_bitFlagAccessor & memAccessor_B)
+function memUtil_bitwiseOR(memAccessor_A, memAccessor_B) => // A OR B => A + B - A AND B (workaround as rCheevos doesn't support bitwise-OR out-of-the-box)
+	memAccessor_A + memAccessor_B - (memAccessor_A & memAccessor_B)
 
 function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This function should be used when counting flags via a bitcount, where not all bits should be counted (eg. bitcount(0xA) - bit0(0xA) - bit1(0xA))
 		let_array_bitIndicesToSub = [0,1,2,3,4,5,6,7]
@@ -713,32 +726,41 @@ function memUtil_createArrayOfBitIndicesToSub(array_bitIndicesToAdd) { // This f
 		return let_array_bitIndicesToSub
 	}
 
-function memGenerate_SumOf_BitsetFlags(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
-	// BUG_RATools - using memGenerate_SumOf_BitsetFlags() may put RATools into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503)
-	// As a workaround use memGenerate_SumOf_BitsetFlags_noSubSource()
+function memGenerate_SumOf_BitsetFlags(dict_bitsetFlagData, function_memAccessorGeneratorToBitset, enum_releaseRegion) { // function_memAccessorGeneratorToBitset should require parameters: (int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion)
+	// BUG_RATools - using memGenerate_SumOf_BitsetFlags() may put RATools v1.14.1 into infinite processing (refer to https://github.com/Jamiras/RATools/issues/503) - As a workaround use memGenerate_SumOf_BitsetFlags_noSubSource()
 	let_array_memAccessorsToSum = []
 	let_array_memAccessorsToSub = [] 
-	for let_byteIndex in dict_FlagData {
-		let_array_bitIndices = dict_FlagData[let_byteIndex]
+	for let_byteIndex in dict_bitsetFlagData {
+		let_array_bitIndices = dict_bitsetFlagData[let_byteIndex]
 		let_bitCount = length(let_array_bitIndices)
-		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
-		} else if (8 > let_bitCount && let_bitCount > 4) { // AddSource bitcount [byte] + SubSource [each bit] (which aren't part of the bitset)
-			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
+
+		// --- AddSource bitcount [byte] ---
+		if (let_bitCount == 8) { 
+			let_memAccessor_bitcount_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount_toBitset)
+		} 
+
+		 // --- AddSource bitcount [byte] + SubSource [each bit] (which isn't part of the required flags) ---
+		else if (8 > let_bitCount && let_bitCount > 4) {
+			let_memAccessor_bitcount_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount_toBitset)
 			for let_bitIndexToSub in memUtil_createArrayOfBitIndicesToSub(let_array_bitIndices) {
 				if (let_bitIndexToSub != iNULL)	{
-					let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
-					array_push(let_array_memAccessorsToSub, let_memAccessor_bit)
+					let_memAccessor_bit_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndexToSub], enum_releaseRegion)
+					array_push(let_array_memAccessorsToSub, let_memAccessor_bit_toBitset)
 				}
 			}
-		} else if (let_bitCount <= 4) { // AddSource [each bit]
+		}
+
+		// --- AddSource [each bit] ---
+		else if (let_bitCount <= 4) { 
 			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
-				array_push(let_array_memAccessorsToSum, let_memAccessor_bit)
+				let_memAccessor_bit_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				array_push(let_array_memAccessorsToSum, let_memAccessor_bit_toBitset)
 			}
-		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+		} 
+		
+		else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
 	}
 	
 	return
@@ -746,20 +768,27 @@ function memGenerate_SumOf_BitsetFlags(dict_FlagData, function_bitFlagMemAccesso
 		- sum_of(let_array_memAccessorsToSub, memAccessor => memAccessor) // Subtract flags which aren't part of bitset, because of usage of bitcount to lower amount of lines necessary
 	}
 
-function memGenerate_SumOf_BitsetFlags_noSubSource(dict_FlagData, function_bitFlagMemAccessorGenerator, enum_releaseRegion) { // function_bitFlagMemAccessorGenerator should require parameters: (int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion)
+function memGenerate_SumOf_BitsetFlags_noSubSource(dict_bitsetFlagData, function_memAccessorGeneratorToBitset, enum_releaseRegion) { // function_memAccessorGeneratorToBitset should require parameters: (int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion)
 	let_array_memAccessorsToSum = []
-	for let_byteIndex in dict_FlagData {
-		let_array_bitIndices = dict_FlagData[let_byteIndex]
+	for let_byteIndex in dict_bitsetFlagData {
+		let_array_bitIndices = dict_bitsetFlagData[let_byteIndex]
 		let_bitCount = length(let_array_bitIndices)
-		if (let_bitCount == 8) { // AddSource bitcount [byte]
-			let_memAccessor_bitcount = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, bitcount, enum_releaseRegion)
-			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount)
-		} else if (let_bitCount < 8) { // AddSource [each bit]
+
+		// --- AddSource bitcount [byte] ---
+		if (let_bitCount == 8) {
+			let_memAccessor_bitcount_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, bitcount, enum_releaseRegion)
+			array_push(let_array_memAccessorsToSum, let_memAccessor_bitcount_toBitset)
+		} 
+
+		// --- AddSource [each bit] ---
+		else if (let_bitCount < 8) { 
 			for let_bitIndex in let_array_bitIndices {
-				let_memAccessor_bit = function_bitFlagMemAccessorGenerator(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
-				array_push(let_array_memAccessorsToSum, let_memAccessor_bit)
+				let_memAccessor_bit_toBitset = function_memAccessorGeneratorToBitset(let_byteIndex - 1, memUtil_bitIndexToMemAccessor[let_bitIndex], enum_releaseRegion)
+				array_push(let_array_memAccessorsToSum, let_memAccessor_bit_toBitset)
 			}
-		} else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
+		} 
+		
+		else util_throwError(format("Was not able to evaluate byte index: {0}", let_byteIndex))
 	}
 	
 	return sum_of(let_array_memAccessorsToSum, memAccessor => memAccessor) 
@@ -825,22 +854,22 @@ function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 function current_FlagState_PlayerInput_X(enum_releaseRegion) => 
 	bit6( 
 		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
 function current_FlagState_PlayerInput_R1(enum_releaseRegion) => 
 	bit3( 
 		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
 function current_FlagState_PlayerInput_L1(enum_releaseRegion) =>
 	bit2( 
 		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
 function current_FlagState_PlayerInput_R2(enum_releaseRegion) =>
 	bit1( 
 		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getDataStructOffset("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
 
 
 function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) { // Check playerInput based on region, as Confirm button for JPN version is not same button as for the EUR and USA
@@ -975,251 +1004,251 @@ AREA_Showdown_DesertFortress = "lvl_fort2"
 const_Area_data = { // TODO put these coordinates inside the code notes??
 	AREA_Campaign_BullsEye: { // Documentation nested here
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
-			"X-Coordinate": 20.60,
-			"Y-Coordinate": 12.65,
-			"Z-Coordinate": -4.46},
+			"X_Coordinate": 20.60,
+			"Y_Coordinate": 12.65,
+			"Z_Coordinate": -4.46},
 		"PlayerStartCoordinates": { // These are the coordinates of the player_location on mission start
-			"X-Coordinate": 20.64,
-			"Y-Coordinate": -8.00,
-			"Z-Coordinate": -5.12}},
+			"X_Coordinate": 20.64,
+			"Y_Coordinate": -8.00,
+			"Z_Coordinate": -5.12}},
 	AREA_Campaign_BountyHunter: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 3.05,
-			"Y-Coordinate": 13.39,
-			"Z-Coordinate": -0.08},
+			"X_Coordinate": 3.05,
+			"Y_Coordinate": 13.39,
+			"Z_Coordinate": -0.08},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -2.62,
-			"Y-Coordinate": 41.20,
-			"Z-Coordinate": 0.01}},
+			"X_Coordinate": -2.62,
+			"Y_Coordinate": 41.20,
+			"Z_Coordinate": 0.01}},
 	AREA_Campaign_UglyStreetFight: { 
 		"PlayerLoadCoordinates": {
-			"X-Coordinate": 34.35,
-			"Y-Coordinate": -14.90,
-			"Z-Coordinate": 2.27},
+			"X_Coordinate": 34.35,
+			"Y_Coordinate": -14.90,
+			"Z_Coordinate": 2.27},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 41.83,
-			"Y-Coordinate": 7.72,
-			"Z-Coordinate": 1.90}},
+			"X_Coordinate": 41.83,
+			"Y_Coordinate": 7.72,
+			"Z_Coordinate": 1.90}},
 	AREA_Campaign_Traincar: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -0.05,
-			"Y-Coordinate": 6.99,
-			"Z-Coordinate": 0.00},
+			"X_Coordinate": -0.05,
+			"Y_Coordinate": 6.99,
+			"Z_Coordinate": 0.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -0.05,
-			"Y-Coordinate": 6.99,
-			"Z-Coordinate": 0.00}},
+			"X_Coordinate": -0.05,
+			"Y_Coordinate": 6.99,
+			"Z_Coordinate": 0.00}},
 	AREA_Campaign_Railroaded: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 2.03,
-			"Y-Coordinate": 104.04,
-			"Z-Coordinate": 1.63},
+			"X_Coordinate": 2.03,
+			"Y_Coordinate": 104.04,
+			"Z_Coordinate": 1.63},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 0.06,
-			"Y-Coordinate": -1.63,
-			"Z-Coordinate": 1.13}},
+			"X_Coordinate": 0.06,
+			"Y_Coordinate": -1.63,
+			"Z_Coordinate": 1.13}},
 	AREA_Campaign_CarnivalLife: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 8.45,
-			"Y-Coordinate": -5.12,
-			"Z-Coordinate": 4.62},
+			"X_Coordinate": 8.45,
+			"Y_Coordinate": -5.12,
+			"Z_Coordinate": 4.62},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -7.46,
-			"Y-Coordinate": -4.67,
-			"Z-Coordinate": 4.83},
+			"X_Coordinate": -7.46,
+			"Y_Coordinate": -4.67,
+			"Z_Coordinate": 4.83},
 		"Zone_GatlingGunA": {
-			"X-Coordinate": -14.96,
-			"Y-Coordinate": 0.68,
-			"Z-Coordinate": 9.37}},
+			"X_Coordinate": -14.96,
+			"Y_Coordinate": 0.68,
+			"Z_Coordinate": 9.37}},
 	AREA_Campaign_FreakShow: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 21.19,
-			"Y-Coordinate": -15.16,
-			"Z-Coordinate": 2.39},
+			"X_Coordinate": 21.19,
+			"Y_Coordinate": -15.16,
+			"Z_Coordinate": 2.39},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 24.66,
-			"Y-Coordinate": -15.32,
-			"Z-Coordinate": 2.42}},
+			"X_Coordinate": 24.66,
+			"Y_Coordinate": -15.32,
+			"Z_Coordinate": 2.42}},
 	AREA_Campaign_RogueValley: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 138.79,
-			"Y-Coordinate": 39.72,
-			"Z-Coordinate": -46.58},
+			"X_Coordinate": 138.79,
+			"Y_Coordinate": 39.72,
+			"Z_Coordinate": -46.58},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 138.79,
-			"Y-Coordinate": 39.72,
-			"Z-Coordinate": -46.58}},
+			"X_Coordinate": 138.79,
+			"Y_Coordinate": 39.72,
+			"Z_Coordinate": -46.58}},
 	AREA_Campaign_GhostTown: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 50.32,
-			"Y-Coordinate": 6.83,
-			"Z-Coordinate": -0.13},
+			"X_Coordinate": 50.32,
+			"Y_Coordinate": 6.83,
+			"Z_Coordinate": -0.13},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 46.48,
-			"Y-Coordinate": 5.43,
-			"Z-Coordinate": -0.28}},
+			"X_Coordinate": 46.48,
+			"Y_Coordinate": 5.43,
+			"Z_Coordinate": -0.28}},
 	AREA_Campaign_TheCemetery: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -58.15,
-			"Y-Coordinate": 31.69,
-			"Z-Coordinate": 7.48},
+			"X_Coordinate": -58.15,
+			"Y_Coordinate": 31.69,
+			"Z_Coordinate": 7.48},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -58.42,
-			"Y-Coordinate": 40.00,
-			"Z-Coordinate": 7.48}},
+			"X_Coordinate": -58.42,
+			"Y_Coordinate": 40.00,
+			"Z_Coordinate": 7.48}},
 	AREA_Campaign_RangeWar: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 0.90,
-			"Y-Coordinate": -15.37,
-			"Z-Coordinate": 0.41},
+			"X_Coordinate": 0.90,
+			"Y_Coordinate": -15.37,
+			"Z_Coordinate": 0.41},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 26.45,
-			"Y-Coordinate": 0.48,
-			"Z-Coordinate": 0.00}},
+			"X_Coordinate": 26.45,
+			"Y_Coordinate": 0.48,
+			"Z_Coordinate": 0.00}},
 	AREA_Campaign_SaloonFight: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -6.9,
-			"Y-Coordinate": -3.64,
-			"Z-Coordinate": -2.5},
+			"X_Coordinate": -6.9,
+			"Y_Coordinate": -3.64,
+			"Z_Coordinate": -2.5},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -3.15,
-			"Y-Coordinate": 1.12,
-			"Z-Coordinate": -2.46}},
+			"X_Coordinate": -3.15,
+			"Y_Coordinate": 1.12,
+			"Z_Coordinate": -2.46}},
 	AREA_Campaign_TheTraitor: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": {
-			"X-Coordinate": 36.82,
-			"Y-Coordinate": 1.30,
-			"Z-Coordinate": 4.16},
+			"X_Coordinate": 36.82,
+			"Y_Coordinate": 1.30,
+			"Z_Coordinate": 4.16},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 36.82,
-			"Y-Coordinate": 1.30,
-			"Z-Coordinate": 4.16}},
+			"X_Coordinate": 36.82,
+			"Y_Coordinate": 1.30,
+			"Z_Coordinate": 4.16}},
 	AREA_Campaign_SunsetCanyon: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -2.02,
-			"Y-Coordinate": -93.09,
-			"Z-Coordinate": -2.40},
+			"X_Coordinate": -2.02,
+			"Y_Coordinate": -93.09,
+			"Z_Coordinate": -2.40},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -3.6,
-			"Y-Coordinate": -90.51,
-			"Z-Coordinate": -2.90}},
+			"X_Coordinate": -3.6,
+			"Y_Coordinate": -90.51,
+			"Z_Coordinate": -2.90}},
 	AREA_Campaign_BearMountain: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 40.93,
-			"Y-Coordinate": -24.63,
-			"Z-Coordinate": -15.40},
+			"X_Coordinate": 40.93,
+			"Y_Coordinate": -24.63,
+			"Z_Coordinate": -15.40},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 40.93,
-			"Y-Coordinate": -24.63,
-			"Z-Coordinate": -15.40}},
+			"X_Coordinate": 40.93,
+			"Y_Coordinate": -24.63,
+			"Z_Coordinate": -15.40}},
 	AREA_Campaign_Jailbreak: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -65.31,
-			"Y-Coordinate": -8.43,
-			"Z-Coordinate": -2.00},
+			"X_Coordinate": -65.31,
+			"Y_Coordinate": -8.43,
+			"Z_Coordinate": -2.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -65.31,
-			"Y-Coordinate": -8.43,
-			"Z-Coordinate": -2.00}},
+			"X_Coordinate": -65.31,
+			"Y_Coordinate": -8.43,
+			"Z_Coordinate": -2.00}},
 	AREA_Campaign_TheMine: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -25.64,
-			"Y-Coordinate": 23.10,
-			"Z-Coordinate": 0.64},
+			"X_Coordinate": -25.64,
+			"Y_Coordinate": 23.10,
+			"Z_Coordinate": 0.64},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -9.52,
-			"Y-Coordinate": 20.53,
-			"Z-Coordinate": 2.03}},
+			"X_Coordinate": -9.52,
+			"Y_Coordinate": 20.53,
+			"Z_Coordinate": 2.03}},
 	AREA_Campaign_Stagecoach: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 0.76,
-			"Y-Coordinate": -1.17,
-			"Z-Coordinate": 2.97},
+			"X_Coordinate": 0.76,
+			"Y_Coordinate": -1.17,
+			"Z_Coordinate": 2.97},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 0.76,
-			"Y-Coordinate": -1.17,
-			"Z-Coordinate": 2.91}},
+			"X_Coordinate": 0.76,
+			"Y_Coordinate": -1.17,
+			"Z_Coordinate": 2.91}},
 	AREA_Campaign_HellPass: { // Both these coordinates are pretty identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -0.02,
-			"Y-Coordinate": 0.18,
-			"Z-Coordinate": 2.85},
+			"X_Coordinate": -0.02,
+			"Y_Coordinate": 0.18,
+			"Z_Coordinate": 2.85},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -0.02,
-			"Y-Coordinate": 0.18,
-			"Z-Coordinate": 2.84}},
+			"X_Coordinate": -0.02,
+			"Y_Coordinate": 0.18,
+			"Z_Coordinate": 2.84}},
 	AREA_Campaign_FortDiego: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": -11.20,
-			"Y-Coordinate": -14.12,
-			"Z-Coordinate": 0.85},
+			"X_Coordinate": -11.20,
+			"Y_Coordinate": -14.12,
+			"Z_Coordinate": 0.85},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -19.93,
-			"Y-Coordinate": -21.89,
-			"Z-Coordinate": 0.70}},
+			"X_Coordinate": -19.93,
+			"Y_Coordinate": -21.89,
+			"Z_Coordinate": 0.70}},
 	AREA_Campaign_EndOfTheLine: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 39.79,
-			"Y-Coordinate": 29.36,
-			"Z-Coordinate": 0.44},
+			"X_Coordinate": 39.79,
+			"Y_Coordinate": 29.36,
+			"Z_Coordinate": 0.44},
 		"PlayerStartCoordinates": { // These are zero'd because player spawns in on horseback
-			"X-Coordinate": 0.0,
-			"Y-Coordinate": 0.0,
-			"Z-Coordinate": 0.0}},
+			"X_Coordinate": 0.0,
+			"Y_Coordinate": 0.0,
+			"Z_Coordinate": 0.0}},
 	AREA_Campaign_DevilsAndAngels: { // Both these coordinates are identical
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 32.22,
-			"Y-Coordinate": 25.42,
-			"Z-Coordinate": 0.33},
+			"X_Coordinate": 32.22,
+			"Y_Coordinate": 25.42,
+			"Z_Coordinate": 0.33},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 32.22,
-			"Y-Coordinate": 25.42,
-			"Z-Coordinate": 0.33}},
+			"X_Coordinate": 32.22,
+			"Y_Coordinate": 25.42,
+			"Z_Coordinate": 0.33}},
 	AREA_Campaign_BattleRoyale: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 29.74,
-			"Y-Coordinate": -13.06,
-			"Z-Coordinate": 0.00},
+			"X_Coordinate": 29.74,
+			"Y_Coordinate": -13.06,
+			"Z_Coordinate": 0.00},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 26.99,
-			"Y-Coordinate": -12.30,
-			"Z-Coordinate": 0.00}},
+			"X_Coordinate": 26.99,
+			"Y_Coordinate": -12.30,
+			"Z_Coordinate": 0.00}},
 	AREA_Campaign_BattleFinale: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 11.44,
-			"Y-Coordinate": -23.70,
-			"Z-Coordinate": 0.80},
+			"X_Coordinate": 11.44,
+			"Y_Coordinate": -23.70,
+			"Z_Coordinate": 0.80},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 26.92,
-			"Y-Coordinate": -10.52,
-			"Z-Coordinate": 0.00}},
+			"X_Coordinate": 26.92,
+			"Y_Coordinate": -10.52,
+			"Z_Coordinate": 0.00}},
 	AREA_Campaign_Siege: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 44.11,
-			"Y-Coordinate": 0.00,
-			"Z-Coordinate": 0.01},
+			"X_Coordinate": 44.11,
+			"Y_Coordinate": 0.00,
+			"Z_Coordinate": 0.01},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 34.84,
-			"Y-Coordinate": 0.00,
-			"Z-Coordinate": 0.49}},
+			"X_Coordinate": 34.84,
+			"Y_Coordinate": 0.00,
+			"Z_Coordinate": 0.49}},
 	AREA_Campaign_HouseOfCards: {
 		"PlayerLoadCoordinates": {
-			"X-Coordinate": -3.82,
-			"Y-Coordinate": 0.15,
-			"Z-Coordinate": 0.99},
+			"X_Coordinate": -3.82,
+			"Y_Coordinate": 0.15,
+			"Z_Coordinate": 0.99},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": -1.98,
-			"Y-Coordinate": 1.23,
-			"Z-Coordinate": 0.99}},
+			"X_Coordinate": -1.98,
+			"Y_Coordinate": 1.23,
+			"Z_Coordinate": 0.99}},
 	AREA_Campaign_FallFromGrace: { 
 		"PlayerLoadCoordinates": { 
-			"X-Coordinate": 9.15,
-			"Y-Coordinate": 25.34,
-			"Z-Coordinate": 11.22},
+			"X_Coordinate": 9.15,
+			"Y_Coordinate": 25.34,
+			"Z_Coordinate": 11.22},
 		"PlayerStartCoordinates": {
-			"X-Coordinate": 4.17,
-			"Y-Coordinate": 23.11,
-			"Z-Coordinate": 10.97}},
+			"X_Coordinate": 4.17,
+			"Y_Coordinate": 23.11,
+			"Z_Coordinate": 10.97}},
 	
 	AREA_Showdown_TheBridge: {
 		"PosterMenuStageID": 0xA479363B},
@@ -1270,31 +1299,31 @@ function get_AreaShowdown_PosterMenuStageId(enum_areaId) =>
 
 // -------------------------------------
 function get_Area_PlayerSpawnXCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["X_Coordinate"]
 
 function get_Area_PlayerSpawnYCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Y-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Y_Coordinate"]
 
 function get_Area_PlayerSpawnZCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Z-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerStartCoordinates"]["Z_Coordinate"]
 
 function get_Area_PlayerLoadXCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["X-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["X_Coordinate"]
 
 function get_Area_PlayerLoadYCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Y-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Y_Coordinate"]
 
 function get_Area_PlayerLoadZCoordinate(enum_areaId) =>
-	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Z-Coordinate"]
+	const_Area_data[enum_areaId]["PlayerLoadCoordinates"]["Z_Coordinate"]
 
 function get_Area_GatlingGunXCoordinate(enum_areaId) => 
-	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["X-Coordinate"]
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["X_Coordinate"]
 
 function get_Area_GatlingGunYCoordinate(enum_areaId) => 
-	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Y-Coordinate"]
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Y_Coordinate"]
 
 function get_Area_GatlingGunZCoordinate(enum_areaId) => 
-	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Z-Coordinate"]
+	const_Area_data[enum_areaId]["Zone_GatlingGunA"]["Z_Coordinate"]
 
 function is_AreaLoading_active(enum_releaseRegion) => 
 	ascii_string_equals(memory_getAddress(DATATYPE_ASCII, "AreaID", enum_releaseRegion), AREA_loading)
@@ -1330,7 +1359,7 @@ function on_Area_change(enum_releaseRegion) {
 // ''''''''''''''
 // ------------------LoadingDetection-------------------  // NOTE: ShowdownMatchLoading needs to be checked differently than below 2 options
 function is_LogoScreenLoading(enum_releaseRegion) =>
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsNotLogoScreenLoading", enum_releaseRegion)) == 0
+	bit0(memory_getAddress(DATATYPE_BitFlag, "InvertedBitFlag:IsLogoScreenLoading", enum_releaseRegion)) == 0
 
 function is_AnimationLoading(enum_releaseRegion) =>
 	dword(memory_getAddress(DATATYPE_32Bit, "IsAnimationLoading", enum_releaseRegion)) == 0x00009000
@@ -1384,8 +1413,8 @@ const_GameTrigger_asHex = {
 function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
+		memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getStruct_OffsetToPointedToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
 	// return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
@@ -1394,8 +1423,8 @@ function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
 function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getPointerChainOffsetToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
+		memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getStruct_OffsetToPointedToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
 	// return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
@@ -1410,28 +1439,28 @@ PLAYER_GATLING_GUN_THRESHOLD = 0.3
 function current_PlayerXCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "X-Coordinate"), 
-			accessor = float)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:X_Coordinate"), 
+			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
 
 function current_PlayerYCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Y-Coordinate"), 
-			accessor = float)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:Y_Coordinate"), 
+			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
 	
 function current_PlayerZCoordinate(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = memory_getDataStructOffset("PS2Vector", "Z-Coordinate"), 
-			accessor = float)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:Z_Coordinate"), 
+			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
 
 function prev_PlayerXCoordinate(enum_releaseRegion) =>
@@ -1567,7 +1596,7 @@ STAGE_COUNT = 13
 CHARACTER_COUNT = 48
 JOURNALPAGE_COUNT = 137
 // ----------------JournalPages--------------------
-FlagData_Bitset_JournalPageUnlocks = { // 137 flags
+BitsetFlagData_JournalPageUnlocks = { // 137 flags
 	1: [2,3,4,5,6,7],
 	2: [0,1,2,3,4,5,6,7],
 	3: [0,1,3,4,5,6,7],
@@ -1588,7 +1617,7 @@ FlagData_Bitset_JournalPageUnlocks = { // 137 flags
 	18: [0,1,2,3,4,5,6,7],
 	19: [0,1,2,3,4]}
 // ----------------ShowdownCharacters--------------------
-FlagData_Bitset_ShowdownCharactersUnlocks = { // 48 flags
+BitsetFlagData_ShowdownCharactersUnlocks = { // 48 flags
 	1: [5,6,7],
 	2: [0,1,2,3,4,5,6,7],
 	3: [0,1,2,3,4,5,6,7],
@@ -1597,13 +1626,13 @@ FlagData_Bitset_ShowdownCharactersUnlocks = { // 48 flags
 	6: [0,1,2,3,4,5,6,7],
 	7: [0,1,2,3,4]}
 // ----------------ShowdownStages--------------------
-FlagData_Bitset_ShowdownMapUnlocks = { // 13 flags
+BitsetFlagData_ShowdownMapUnlocks = { // 13 flags
 	1: [5,6,7],
 	2: [0,1,2,3,4,5,7],
 	3: [0,1,3]}
 
 // ----------------Cheats--------------------
-FlagData_Bitset_CheatUnlocks = { // 10 flags
+BitsetFlagData_CheatUnlocks = { // 10 flags
 	"Flags_UnlockableCheats": { // 7 flags
 		1: [1,2,3,6,7],
 		2: [0,1]},
@@ -1621,18 +1650,18 @@ function is_SelectedPlayerProfile(int_playerProfileNumber, enum_releaseRegion) {
 // ----------------PlayerProfile STATISTICS--------------------
 function current_PlayerProfile_SavedCash(enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_Cash = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_Cash")
+	let_offsetTo_Cash = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32Bit_Cash")
 	return dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Cash)}
 
 function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
+	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32BitFloat_TimeSpentPlaying")
 	let_memAccessor_Statistic = float(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic != prev(let_memAccessor_Statistic)}
 
 function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_Statistic = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_StoryModeRetries")
+	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32Bit_StoryModeRetries")
 	let_memAccessor_Statistic = dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
 
@@ -1643,7 +1672,7 @@ WEAPON_COUNT = 24
 UPGRADEABLE_WEAPON_COUNT = 16
 HP_UPGRADE_COUNT = 7
 DEADEYE_UPGRADE_COUNT = 5 
-FlagData_Bitset_PlayerProfileUnlocks = {
+BitsetFlagData_PlayerProfileUnlocks = {
 	// FlagData Dictionary Definition:
 		// Dictionary key --> refers to byte index in bitset
 		// Dictionary value --> refers to bit indices
@@ -1865,99 +1894,32 @@ FlagData_Bitset_PlayerProfileUnlocks = {
 				"Flag_B": {"ByteIndex": 23, "BitIndex": 2}}}},
 	}
 
-function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_SelectedPlayerProfileUnlocks =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
+		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
+	return memAccessor_toByteInBitset(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
 
-function bitFlagMemAccessorGenerator_toDynamicBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function MemAccessorGeneratorToBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_memAccessor = memory_generateAddAddressPointerChain(
+	let_memAccessor = memGenerate_pointerChainAccessor(
 			"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
-			int_offsetToMember = int_offsetToByte, accessor = memAccessor_bitFlagAccessor)
+			int_offsetToPointedToMember = int_offsetToByte, memAccessorType_toPointedToMember = memAccessor_toByteInBitset)
 	return let_memAccessor}
-
-// ----------------UnusedCodeBelow--------------------
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile1Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 0
-	let_memAddr_Bitset_BountyHunterMissionsCompleted =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_BountyHunterMissionsCompleted")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_BountyHunterMissionsCompleted + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile2Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 1
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile3Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 2
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile4Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 3
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile5Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 4
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile6Unlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
-	let_playerProfileNumber = 5
-	let_memAddr_Bitset_PlayerProfileUnlocks =
-		memory_getAddress(DATATYPE_Struct, "Array_PlayerProfileData", enum_releaseRegion) 
-		+ memory_getDataStructSizeInBytes("Struct_PlayerProfileData") * let_playerProfileNumber
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_PlayerProfileUnlocks")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_PlayerProfileUnlocks + int_offsetToByte)}
-
-function lookup_bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfileUnlocks(int_playerProfileNumber) {
-	if (int_playerProfileNumber == 0) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile1Unlocks
-	else if (int_playerProfileNumber == 1) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile2Unlocks
-	else if (int_playerProfileNumber == 2) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile3Unlocks
-	else if (int_playerProfileNumber == 3) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile4Unlocks
-	else if (int_playerProfileNumber == 4) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile5Unlocks
-	else if (int_playerProfileNumber == 5) 
-		return bitFlagMemAccessorGenerator_toStaticBitset_PlayerProfile6Unlocks
-	else
-		util_throwError(format("Player profile number ({0}) is out of range [0-5]", int_playerProfileNumber))
-	}
-// ----------------UnusedCodeAbove--------------------
 
 // ----------------PlayerProfile BOUNTY HUNTER MODE--------------------
 BOUNTY_HUNTER_MISSON_COUNT = 20
-FlagData_Bitset_BountyHunterMissionsCompleted = {
+BitsetFlagData_BountyHunterMissionsCompleted = {
 	1: [0,1,2,4,6,7],
 	2: [1,3,6,7],
 	3: [0,1,2,4,5,7],
 	4: [0,4,5,7]}
 
-function bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function memAccessorGeneratorToBitset_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_BountyHunterMissionsCompleted =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_BountyHunterMissionsCompleted")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_BountyHunterMissionsCompleted + int_offsetToByte)}
+		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_BountyHunterMissionsCompleted")
+	return memAccessor_toByteInBitset(let_memAddr_Bitset_BountyHunterMissionsCompleted + int_offsetToByte)}
 
 // -------------------------PlayerProfile CAMPAIGN SETTINGS-----------------------------
 DIFFICULTY_Normal = 0x0
@@ -1967,7 +1929,7 @@ DIFFICULTY_RedWoodRevolver = 0x3
 
 function current_StoryCampaignDifficulty(enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "32Bit_CurrentPlaythroughDifficulty") 
+	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32Bit_CurrentPlaythroughDifficulty") 
 	return byte(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting)}
 
 function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) =>
@@ -1976,7 +1938,7 @@ function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) =>
 function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 	let_offset = 1 // <-- because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof")
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_CampaignSetting = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + let_offset  
+	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII_FurthestCompletedStoryChapter") + let_offset  
 	let_areaId_fixed = substring(enum_areaId, let_offset)
 	return is_ASCII_EqualTo(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
 
@@ -1986,9 +1948,9 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 // ------------------StartChpMenu---------------------
 function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
 	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
+	return memGenerate_pointerChainAccessor(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsStartChpMenuActive", 
-		let_memAddr_StartChpMenuDisplayData, accessor = bit0)}
+		let_memAddr_StartChpMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
 
 function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) => 
 	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
@@ -1997,7 +1959,7 @@ function is_StartChpMenu_active(enum_releaseRegion) {
 	// const_STRING_STARTCHPMENU = "startChpMenu"
 	// const_STRING_SHORT_STARTCHPMENU = "startChp"
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	// let_pointerChainTo_StartChpMenuName = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_StartChpMenuName", let_memAddr_RewardMenuDisplayData)	
+	// let_pointerChainTo_StartChpMenuName = memGenerate_pointerChainAccessor("Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_StartChpMenuName", let_memAddr_RewardMenuDisplayData)	
 	return 
 		// is_ASCII_EqualTo(let_pointerChainTo_StartChpMenuName, const_STRING_SHORT_STARTCHPMENU)
 		current_FlagState_IsStartChpMenuActive(enum_releaseRegion) == 1}
@@ -2008,40 +1970,40 @@ function on_StartChpMenu_initialize(enum_releaseRegion) =>
 // ------------------RewardMenu---------------------
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain(
+	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_HighlightedMenuItem", 
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_HighlightedMenuItem}
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain_byReleaseRegion(
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_Balance", let_memAddr_RewardMenuDisplayData, 
-		enum_releaseRegion, accessor = dword)}
+		enum_releaseRegion, memAccessorType_toPointedToMember = dword)}
 
 function current_RewardMenu_BountyCollected(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain_byReleaseRegion(
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "32Bit_BountyCollected", let_memAddr_RewardMenuDisplayData, 
-		enum_releaseRegion, accessor = dword)}
+		enum_releaseRegion, memAccessorType_toPointedToMember = dword)}
 
 function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
+	return memGenerate_pointerChainAccessor(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsQuitConfirmationMenuDisplayed", 
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
+		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
 
 function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
+	return memGenerate_pointerChainAccessor(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsRewardMenuOrStartChpMenuDisplayed",
-		let_memAddr_RewardMenuDisplayData, accessor = bit0)}
+		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
 
 function current_RewardMenu_MenuDepth(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_MenuDepth = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_MenuDepth = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "8Bit_MenuDepth", let_memAddr_RewardMenuDisplayData,
-		enum_releaseRegion, accessor = byte)
+		enum_releaseRegion, memAccessorType_toPointedToMember = byte)
 	return let_memAccessor_MenuDepth}
 
 function is_RewardMenu_MenuDepth(int_depth, enum_releaseRegion) =>
@@ -2053,7 +2015,7 @@ function is_RewardMenu_displayed_long(enum_releaseRegion) => // This comparison 
 
 function is_RewardMenu_displayed_short(enum_releaseRegion) { // This comparison is shorter than is_RewardMenu_displayed_long() (prefer using this){
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_Pointer = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
+	let_memAccessor_Pointer = memGenerate_pointerChainAccessor("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
 	return let_memAccessor_Pointer > 0}
 	
 function on_RewardMenu_render_long(enum_releaseRegion) {
@@ -2065,7 +2027,7 @@ function on_RewardMenu_render_long(enum_releaseRegion) {
 
 function on_RewardMenu_render_short(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_Pointer = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
+	let_memAccessor_Pointer = memGenerate_pointerChainAccessor("Struct_RewardMenu_StartChpMenu_DisplayData", "32BitPointer_2D0", let_memAddr_RewardMenuDisplayData)
 	return 
 		let_memAccessor_Pointer > 0
 		&& prev(let_memAccessor_Pointer) == 0}
@@ -2081,7 +2043,7 @@ function is_RatingBounty_achieved(enum_releaseRegion) {
 
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
 	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = 
-		memory_generateAddAddressPointerChain_byReleaseRegion(
+		memGenerate_pointerChainAccessor_byReleaseRegion(
 			"Struct_RewardMenu_StartChpMenu_DisplayData", "ASCII_BountyRating_ItemUnlock_UI_Element_ID", let_memAddr_RewardMenuDisplayData, 
 			enum_releaseRegion)
 	return is_ASCII_notEqualTo(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
@@ -2106,43 +2068,43 @@ function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 
 function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_PointerChainTo_Struct_RewardMenuDisplayText = memory_generateAddAddressPointerChain("Struct_RewardMenu_StartChpMenu_DisplayData", "Struct_RewardMenuDisplayText", let_memAddr_RewardMenuDisplayData)
-	let_offsetTo_Accuracy = memory_getDataStructOffset("Struct_RewardMenuDisplayText", "ASCII_Accuracy")
+	let_PointerChainTo_Struct_RewardMenuDisplayText = memGenerate_pointerChainAccessor("Struct_RewardMenu_StartChpMenu_DisplayData", "Struct_RewardMenuDisplayText", let_memAddr_RewardMenuDisplayData)
+	let_offsetTo_Accuracy = memory_getStruct_OffsetToMember("Struct_RewardMenuDisplayText", "ASCII_Accuracy")
 	return is_ASCII_EqualTo(let_PointerChainTo_Struct_RewardMenuDisplayText + let_offsetTo_Accuracy, string_accuracy)}
 
 function current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsAccuracyStarAchieved", 
-		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsDamageTakenStarAchieved", 
-		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsTimeStarAchieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsTimeStarAchieved", 
-		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsBestComboStarAchieved(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsStarAchieved = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsBestComboStarAchieved", 
-		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
-	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
+	let_memAccessor_IsFirstPopupMenuDisplayed = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct_RewardMenu_StartChpMenu_DisplayData", "BitFlag_IsFirstPopupMenuDisplayed", 
-		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, accessor = bit0)
+		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return 
 		let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
 
@@ -2162,7 +2124,7 @@ function is_inPauseMenu(enum_releaseRegion) =>
 function current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
 
 function prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) => 
 	prev(current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion))
@@ -2170,24 +2132,24 @@ function prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 function current_HighlightedInGameMenuItem(enum_releaseRegion) =>
 	byte(
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "8Bit_HighlightedMenuItemID"))
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "8Bit_HighlightedMenuItemID"))
 
 function is_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
 
 function wasPrev_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c))}
 
 function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
@@ -2196,7 +2158,7 @@ function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return __ornext(
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		|| !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4))
@@ -2205,7 +2167,7 @@ function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
 function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return 
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
 		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
@@ -2219,7 +2181,7 @@ function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
 		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
 	return
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1
@@ -2256,7 +2218,7 @@ CHEAT_SadStars = 70
 CHEAT_Debug_ShowPlayerPosition = 210
 CHEAT_Debug_ShowAIInfo = 220
 
-FlagData_Bitset_ActivatedCheats = {
+BitsetFlagData_ActivatedCheats = {
 	"Flags_UnlockableCheats": {
 		1: [6,7],
 		2: [2,4,5,6,7]},
@@ -2274,21 +2236,21 @@ FlagData_Bitset_ActivatedCheats = {
 		CHEAT_NoDistortion: {"ByteIndex": 2, "BitIndex": 7}}
 	}
 
-function bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function MemAccessorGeneratorToBitset_SelectedPlayerProfile_ActivatedCheats(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-		+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
-	return memAccessor_bitFlagAccessor(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
+		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	return memAccessor_toByteInBitset(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
 
 function is_AnyCheat_active(enum_releaseRegion) {
 	let_sumOf_AllCheatFlags = 
 		memGenerate_SumOf_BitsetFlags_noSubSource(
-			FlagData_Bitset_ActivatedCheats["Flags_UnlockableCheats"],
-			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			BitsetFlagData_ActivatedCheats["Flags_UnlockableCheats"],
+			MemAccessorGeneratorToBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 		+ memGenerate_SumOf_BitsetFlags_noSubSource(
-			FlagData_Bitset_ActivatedCheats["Flags_DebugCheats"],
-			bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfile_ActivatedCheats,
+			BitsetFlagData_ActivatedCheats["Flags_DebugCheats"],
+			MemAccessorGeneratorToBitset_SelectedPlayerProfile_ActivatedCheats,
 			enum_releaseRegion)
 	return 
 		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion) // <--line-- checks if cheats are active outside the PauseMenu as switching them on/off still requires a confirmation before leaving the CheatsMenu
@@ -2298,9 +2260,9 @@ function is_AnyCheat_active(enum_releaseRegion) {
 function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
-	let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
-	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+	let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
 		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
@@ -2309,9 +2271,9 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
-	let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
-	let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+	let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+	let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 	return 
 		is_InGameMenu_notDisplayed(INGAMEMENU_CheatsMenu, enum_releaseRegion)
@@ -2320,11 +2282,11 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
-		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
-		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
@@ -2335,11 +2297,11 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
-		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
-		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
@@ -2350,11 +2312,11 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)) 
-			+ memory_getDataStructOffset("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset_ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
-		let_offsetToByte = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
-		let_bitIndex = FlagData_Bitset_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
+		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
+		let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 		let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
 		array_push(let_array_memAccessors_toActivatedCheats, let_memAccessor_toBitFlag(let_memAddr_Bitset_ActivatedCheats + let_offsetToByte))
 	}
@@ -2365,7 +2327,7 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 // ------------------------RstarCheat------------------------------ 
 function is_RStar_Cheat_active(enum_releaseRegion) {
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
 
 	/* is Rstar cheat active 
@@ -2387,7 +2349,7 @@ function is_RStar_Cheat_active(enum_releaseRegion) {
 		
 function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	let_memAddr_SelectedPlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_PlayerProfileName = memory_getDataStructOffset("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
+	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII_PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_SelectedPlayerProfile) + let_offsetTo_PlayerProfileName
 
 	/* is Rstar cheat NOT active 
@@ -2474,17 +2436,17 @@ function get_CharacterID_asHex(enum_character) =>
 
 // -----------------------MajorCharacterData------------------------------
 function current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
-	let_string_pointerChainKey = format("Float_MajorCharacter{0}_HP", int_majorCharacterIndex)
-	return memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = float)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MajorCharacterData", enum_releaseRegion)
+	let_string_pointerChainKey = format("Float:MajorCharacterHP-{0}", int_majorCharacterIndex)
+	return memGenerate_pointerChainAccessor("Array:MajorCharacterData", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = float)}
 
 function prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) =>
 	prev(current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion))
 
 function current_MajorCharacterMaxHP(int_majorCharacterIndex, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
-	let_string_pointerChainKey = format("Float_MajorCharacter{0}_MaxHP", int_majorCharacterIndex)
-	return memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = float)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MajorCharacterData", enum_releaseRegion)
+	let_string_pointerChainKey = format("Float:MajorCharacterMaxHP-{0}", int_majorCharacterIndex)
+	return memGenerate_pointerChainAccessor("Array:MajorCharacterData", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = float)}
 
 function on_MajorCharacterHP_decrement(int_majorCharacterIndex, enum_releaseRegion) => 
 	current_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) < prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion)
@@ -2494,10 +2456,10 @@ function on_MajorCharacterHP_zero(int_majorCharacterIndex, enum_releaseRegion) =
 	&& prev_MajorCharacterHP(int_majorCharacterIndex, enum_releaseRegion) > 0
 
 function is_MajorCharacter_CharacterName(int_majorCharacterIndex, enum_character, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MajorCharacter_Data", enum_releaseRegion)
-	let_string_pointerChainKey = format("ASCII_MajorCharacter{0}_CharacterName", int_majorCharacterIndex)
-	let_offsetTo_CharacterName = memory_getPointerChainOffsetToMember("Struct_MajorCharacter_Data", let_string_pointerChainKey)
-	let_memAddr_CharacterName = memory_generateAddAddressPointerChain("Struct_MajorCharacter_Data", let_string_pointerChainKey, let_memAddr_BasePointer)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MajorCharacterData", enum_releaseRegion)
+	let_string_pointerChainKey = format("ASCII:MajorCharacterName-{0}", int_majorCharacterIndex)
+	let_offsetTo_CharacterName = memory_getStruct_OffsetToPointedToMember("Array:MajorCharacterData", let_string_pointerChainKey)
+	let_memAddr_CharacterName = memGenerate_pointerChainAccessor("Array:MajorCharacterData", let_string_pointerChainKey, let_memAddr_basePointer)
 	return is_ASCII_EqualTo(let_memAddr_CharacterName + let_offsetTo_CharacterName, get_CharacterName(enum_character))}
 
 function current_Calculated_MajorCharacterHPPercentage(int_majorCharacterIndex, enum_releaseRegion) => 
@@ -2511,19 +2473,19 @@ function current_Calculated_MajorCharacterHPPercentage(int_majorCharacterIndex, 
 function current_Cash(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_Cash"),
-			accessor = dword)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_Cash"),
+			memAccessorType_toPointedToMember = dword)
 	}
 
 function current_CashAcquiredByOtherMeans(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_GameController", "32Bit_CashAcquireByOtherMeans", let_memAddr_GameController, 
-			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_CashAcquireByOtherMeans"),
-			accessor = dword)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashAcquireByOtherMeans"),
+			memAccessorType_toPointedToMember = dword)
 	}
 
 function prev_CashAcquiredByOtherMeans(enum_releaseRegion) =>
@@ -2535,19 +2497,19 @@ function on_CashAcquiredByOtherMeans_increasesBy(int_i, enum_releaseRegion) =>
 function current_CashCombo(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_CashCombo"),
-			accessor = dword)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashCombo"),
+			memAccessorType_toPointedToMember = dword)
 	}
 
 function current_CashComboMultiplier(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
 	return 
-		memory_generateAddAddressPointerChain(
+		memGenerate_pointerChainAccessor(
 			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToMember = memory_getPointerChainOffsetToMember("Struct_GameController", "32Bit_CashComboMultiplier"),
-			accessor = dword)
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashComboMultiplier"),
+			memAccessorType_toPointedToMember = dword)
 	}
 
 function current_Calculated_CashDuringMission(enum_releaseRegion) => // WARNING - RATools cannot generate this sumOf correctly, thus achievements making use of this logic should be manually edited in
@@ -2616,12 +2578,12 @@ function on_CashResetToSavedCash(enum_releaseRegion) =>
 // ------------------------AmmoCounter_HUDController------------------------------
 function is_AmmoHUDControllerReserveAmmo(int_ammoCount, enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_pointerChainto_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	let_pointerChainto_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
 	return let_memAccessor_EquippedWeaponReserveAmmo == int_ammoCount}
 	
 function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
 	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_memAccessor_EquippedWeaponReserveAmmo = memory_generateAddAddressPointerChain("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	let_memAccessor_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
 	return let_memAccessor_EquippedWeaponReserveAmmo < prev(let_memAccessor_EquippedWeaponReserveAmmo)}
 
 // ......................
@@ -2631,14 +2593,14 @@ const_array_MAX_HP_VALUES = [250.0, 300.0, 350.0, 400.0, 450.0, 500.0, 550.0, 60
 
 function current_PlayerHP(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_PlayerHP", let_memAddr_SinglePlayerData, accessor = float)} 
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_PlayerHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
 
 function prev_PlayerHP(enum_releaseRegion) =>
 	prev(current_PlayerHP(enum_releaseRegion))
 	
 function current_PlayerMaxHP(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_PlayerMaxHP", let_memAddr_SinglePlayerData, accessor = float)} 
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_PlayerMaxHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
 
 function is_PlayerMaxHP(float_value, enum_releaseRegion) =>
 	current_PlayerMaxHP(enum_releaseRegion) == float_value
@@ -2652,7 +2614,7 @@ function on_PlayerHP_zero(enum_releaseRegion) =>
 
 function current_FlagState_IsPlayerRidingAnimal(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "BitFlag_IsRidingAnimal", let_memAddr_SinglePlayerData, accessor = bit0)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "BitFlag_IsRidingAnimal", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = bit0)}
 
 function is_PlayerRidingAnimal(enum_releaseRegion) =>
 	current_FlagState_IsPlayerRidingAnimal(enum_releaseRegion) == 1
@@ -2664,8 +2626,8 @@ UNIVERSAL_WEAPON_STATE_Aiming = 0x3
 UNIVERSAL_WEAPON_STATE_Reloading = 0x4
 
 function current_PlayerUniversalWeaponState(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "8Bit_UniversalWeaponState", let_memAddr_BasePointer)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "8Bit_UniversalWeaponState", let_memAddr_basePointer)}
 
 function prev_PlayerUniversalWeaponState(enum_releaseRegion) => 
 	prev(current_PlayerUniversalWeaponState(enum_releaseRegion))
@@ -2675,18 +2637,18 @@ function on_PlayerUniversalWeaponState_changeTo(enum_universalWeaponState, enum_
 	&& prev_PlayerUniversalWeaponState(enum_releaseRegion) != enum_universalWeaponState
 
 function current_PlayerWeaponEquipped(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "8Bit_EquippedWeaponID", let_memAddr_BasePointer)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "8Bit_EquippedWeaponID", let_memAddr_basePointer)}
 
 function is_PlayerWeapon_equipped(enum_weapon, enum_releaseRegion) =>
 	current_PlayerWeaponEquipped(enum_releaseRegion) == enum_weapon
 
 function current_FlagState_IsWeaponInInventory(enum_weapon, enum_releaseRegion) {
-	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getAddAddressChain("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
-	let_offsetTo_WeaponData = (enum_weapon * memory_getDataStructSizeInBytes("Struct_Weapon_Data")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
+	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStuct_offsetSequenceToMember("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
+	let_offsetTo_WeaponData = (enum_weapon * memory_getStruct_SizeInBytes("Struct_Weapon_Data")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
 
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChainTo_ArrayWeaponData = memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Array_Weapon_Data", let_memAddr_BasePointer)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_pointerChainTo_ArrayWeaponData = memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Array_Weapon_Data", let_memAddr_basePointer)
 	let_pointerChainTo_IsWeaponInInventory = dword(let_pointerChainTo_ArrayWeaponData + let_offsetTo_WeaponData)
 	return bit0(let_pointerChainTo_IsWeaponInInventory + let_array_AddAddressChainTo_IsWeaponInInventory[1])}
 
@@ -2702,14 +2664,14 @@ function on_Weapon_pickup(enum_weapon, enum_releaseRegion) =>
 // ------------------------SinglePlayer_Mission_Stats------------------------------
 function current_ShotsFired(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)}
 
 function prev_ShotsFired(enum_releaseRegion) =>
 	prev(current_ShotsFired(enum_releaseRegion))
 
 function current_ShotsHit(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)}
 
 function prev_ShotsHit(enum_releaseRegion) =>
 	prev(current_ShotsHit(enum_releaseRegion))
@@ -2740,7 +2702,7 @@ function on_ShotsHit_change(enum_releaseRegion) =>
 
 function current_DeathToll(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)}
 
 function prev_DeathToll(enum_releaseRegion) =>
 	prev(current_DeathToll(enum_releaseRegion))
@@ -2750,7 +2712,7 @@ function on_DeathToll_increment(enum_releaseRegion) => // WARNING This value doe
 
 function current_DamageTaken(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, accessor = float)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MANUAL_CONSTRUCTION necessary for RATools 1.14.1
 	/* MANUAL_CONSTRUCTION: Remember + Recall
@@ -2769,7 +2731,7 @@ function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MAN
 
 function current_HeadShots(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HeadShots", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HeadShots", let_memAddr_SinglePlayerData)}
 
 function prev_HeadShots(enum_releaseRegion) =>
 	prev(current_HeadShots(enum_releaseRegion))
@@ -2779,7 +2741,7 @@ function on_HeadShots_increment(enum_releaseRegion) =>
 
 function current_DeadEyeAbilitiesUsed(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_DeadEyeAbilitiesUsed", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_DeadEyeAbilitiesUsed", let_memAddr_SinglePlayerData)}
 
 function prev_DeadEyeAbilitiesUsed(enum_releaseRegion) =>
 	prev(current_DeadEyeAbilitiesUsed(enum_releaseRegion))
@@ -2789,27 +2751,27 @@ function on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion) =>
 
 function current_HighestCombo(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_HighestCombo", let_memAddr_SinglePlayerData, accessor = float)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_HighestCombo", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_HighestComboMultiplier(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HighestComboMultiplier", let_memAddr_SinglePlayerData, accessor = dword)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HighestComboMultiplier", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
 
 function current_HighestCombo_Showdown(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "Float_HighestComboShowdown", let_memAddr_SinglePlayerData, accessor = float)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_HighestComboShowdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_HighestComboMultiplier_Showdown(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_SinglePlayerData", "32Bit_HighestComboMultiplierShowdown", let_memAddr_SinglePlayerData, accessor = dword)}
+	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HighestComboMultiplierShowdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
 
 // ..............
 // ◦ ACTOR DATA ◦ // May be unsued code
 // ''''''''''''''
 function get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion) {
 	let_memAddr_ActorDataArray = memory_getAddress(DATATYPE_Struct, "Array_ActorData", enum_releaseRegion)
-	let_memAddr_ActorData0 = let_memAddr_ActorDataArray + (memory_getDataStructSizeInBytes("Struct_ActorData_0") * int_actorDataindex)
-	return let_memAddr_ActorData0 + memory_getDataStructOffset("Struct_ActorData_0", "Struct_ActorData_B")}
+	let_memAddr_ActorData0 = let_memAddr_ActorDataArray + (memory_getStruct_SizeInBytes("Struct:ActorData_0") * int_actorDataindex)
+	return let_memAddr_ActorData0 + memory_getStruct_OffsetToMember("Struct:ActorData_0", "Struct:ActorData_B")}
 
 // ------------------------HealthPoints------------------------------
 function is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion) => // This checks if this index in the Array_ActorData is filled
@@ -2817,7 +2779,7 @@ function is_ActorDataSlot_active(int_actorDataindex, enum_releaseRegion) => // T
 
 function current_Actor_HP(int_actorDataindex, enum_releaseRegion) {
 	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
-	return memory_generateAddAddressPointerChain("Struct_ActorData_B", "Float_ActorHP", let_memAddr_ActorDataB)}
+	return memGenerate_pointerChainAccessor("Struct:ActorData_B", "Float_ActorHP", let_memAddr_ActorDataB)}
 
 function prev_Actor_HP(int_actorDataindex, enum_releaseRegion) =>
 	prev(current_Actor_HP(int_actorDataindex, enum_releaseRegion))
@@ -2831,16 +2793,16 @@ function on_Actor_HP_zero(int_actorDataindex, enum_releaseRegion) =>
 
 function is_Actor_CharacterModelId_equalTo(int_actorDataindex, enum_characterModelId, enum_releaseRegion) {
 	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
-	let_offsetTo_CharacterModelID = memory_getPointerChainOffsetToMember("Struct_ActorData_B", "ASCII_CharacterModelID")
-	let_memAddr_CharacterModelID = memory_generateAddAddressPointerChain(
-		"Struct_ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
+	let_offsetTo_CharacterModelID = memory_getStruct_OffsetToPointedToMember("Struct:ActorData_B", "ASCII_CharacterModelID")
+	let_memAddr_CharacterModelID = memGenerate_pointerChainAccessor(
+		"Struct:ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
 	return is_ASCII_EqualTo(let_memAddr_CharacterModelID + let_offsetTo_CharacterModelID, enum_characterModelId)}
 
 function is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, enum_characterModelId, enum_releaseRegion) {
 	let_memAddr_ActorDataB = get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion)
-	let_offsetTo_CharacterModelID = memory_getPointerChainOffsetToMember("Struct_ActorData_B", "ASCII_CharacterModelID")
-	let_memAddr_CharacterModelID = memory_generateAddAddressPointerChain(
-		"Struct_ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
+	let_offsetTo_CharacterModelID = memory_getStruct_OffsetToPointedToMember("Struct:ActorData_B", "ASCII_CharacterModelID")
+	let_memAddr_CharacterModelID = memGenerate_pointerChainAccessor(
+		"Struct:ActorData_B", "ASCII_CharacterModelID", let_memAddr_ActorDataB)
 	return is_ASCII_notEqualTo(let_memAddr_CharacterModelID + let_offsetTo_CharacterModelID, enum_characterModelId)}
 
 // .............
@@ -2850,13 +2812,13 @@ function is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, enum_character
 PUPPETSHOW_BearMountain_PreBoss = "lvl_waterfall_pupshow_02"
 
 function is_PuppetshowID(string_puppetshowId, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
-	let_memAddr_PuppetshowId = dword(let_memAddr_BasePointer) + memory_getDataStructOffset("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
+	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
 	return is_ASCII_EqualTo(let_memAddr_PuppetshowId, string_puppetshowId)}
 
 function wasPrev_PuppetshowID(string_puppetshowId, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
-	let_memAddr_PuppetshowId = dword(let_memAddr_BasePointer) + memory_getDataStructOffset("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
+	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
 	return wasPrev_ASCII_EqualTo(let_memAddr_PuppetshowId, string_puppetshowId)}
 
 function on_Puppetshow_start(string_puppetshowId, enum_releaseRegion) {
@@ -2891,7 +2853,7 @@ function get_GameMode_ID(enum_gameState) =>
 	const_GameMode_data[enum_gameState]["ID"]
 
 function current_GameMode(enum_releaseRegion) => 
-	byte(memory_getAddress(DATATYPE_8Bit, "GameMode", enum_releaseRegion))
+	byte(memory_getAddress(DATATYPE_8Bit, "Bitfield:GameMode", enum_releaseRegion))
 
 function prev_GameMode(enum_releaseRegion) => 
 	prev(current_GameMode(enum_releaseRegion))
@@ -2934,7 +2896,7 @@ function on_EndingCreditsVideo_start(enum_releaseRegion) {
 
 // ------------------------------------------------------
 function current_FlagState_IsInGame(enum_releaseRegion) =>
-	float(memory_getAddress(DATATYPE_Float, "IsInGame", enum_releaseRegion))
+	float(memory_getAddress(DATATYPE_Float, "FloatFlag:IsInGame(preferred)", enum_releaseRegion))
 
 function prev_FlagState_IsInGame(enum_releaseRegion) =>
 	prev(current_FlagState_IsInGame(enum_releaseRegion))
@@ -2955,33 +2917,33 @@ function on_InGame_start(enum_releaseRegion) {
 // ◦ EXTRA MISSION DATA ◦
 // ''''''''''''''''''''''
 const_ExtraMission_data = {
-	AREA_Campaign_TheTraitor: [
-		"BitFlag_IsAlliedCannonA_Destroyed",
-		"BitFlag_IsAlliedCannonB_Destroyed",
-		"BitFlag_IsAlliedCannonC_Destroyed",
-		"BitFlag_IsAlliedCannonD_Destroyed",
-		"BitFlag_IsAlliedCannonE_Destroyed",
-		"BitFlag_IsAlliedCannonF_Destroyed",
-		"BitFlag_IsAlliedCannonG_Destroyed",
-		"BitFlag_IsAlliedCannonH_Destroyed"],
+	AREA_Campaign_TheTraitor: [		
+		"BitFlag:IsAlliedCannonDestroyed-A",
+		"BitFlag:IsAlliedCannonDestroyed-B",
+		"BitFlag:IsAlliedCannonDestroyed-C",
+		"BitFlag:IsAlliedCannonDestroyed-D",
+		"BitFlag:IsAlliedCannonDestroyed-E",
+		"BitFlag:IsAlliedCannonDestroyed-F",
+		"BitFlag:IsAlliedCannonDestroyed-G",
+		"BitFlag:IsAlliedCannonDestroyed-H"],
 	AREA_Campaign_RogueValley: [
-		"BitFlag_IsTreasureAOpened",
-		"BitFlag_IsTreasureBOpened",
-		"BitFlag_IsTreasureCOpened"]
+		"BitFlag:IsTreasureOpened-A",
+		"BitFlag:IsTreasureOpened-B",
+		"BitFlag:IsTreasureOpened-C"]
 	}
 
 function on_RogueValley_Treasure_find(string_pointerChainKey, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
-	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.RogueValley", string_pointerChainKey, 
-		let_memAddr_basePointer, accessor = bit0)		
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ExtraMissionData", enum_releaseRegion)
+	let_memAccessor_IsTreasureFound = memGenerate_pointerChainAccessor(
+		"Struct:ExtraMissionData.RogueValley_Ch8", string_pointerChainKey, 
+		let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)		
 	return let_memAccessor_IsTreasureFound > prev(let_memAccessor_IsTreasureFound)}
 
 function is_RogueValley_Treasure_opened(string_pointerChainKey, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
-	let_memAccessor_IsTreasureFound = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.RogueValley", string_pointerChainKey, 
-		let_memAddr_basePointer, accessor = bit0)		
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ExtraMissionData", enum_releaseRegion)
+	let_memAccessor_IsTreasureFound = memGenerate_pointerChainAccessor(
+		"Struct:ExtraMissionData.RogueValley_Ch8", string_pointerChainKey, 
+		let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)		
 	return let_memAccessor_IsTreasureFound}
 
 function current_Calculated_RogueValley_TreasuresOpenedCount(enum_releaseRegion) =>
@@ -2989,17 +2951,17 @@ function current_Calculated_RogueValley_TreasuresOpenedCount(enum_releaseRegion)
 		is_RogueValley_Treasure_opened(string_pointerChainKey, enum_releaseRegion))
 
 function on_TheTraitor_AllyCannon_destroy(string_pointerChainKey, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
-	let_memAccessor_IsCannonDestroyed = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey, 
-		let_memAddr_basePointer, accessor = bit0)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ExtraMissionData", enum_releaseRegion)
+	let_memAccessor_IsCannonDestroyed = memGenerate_pointerChainAccessor(
+		"Struct:ExtraMissionData.TheTraitor_Ch13", string_pointerChainKey, 
+		let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsCannonDestroyed > prev(let_memAccessor_IsCannonDestroyed)}
 
 function is_TheTraitor_AllyCannon_destroyed(string_pointerChainKey, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Extra_Mission_Data", enum_releaseRegion)
-	let_memAccessor_IsCannonDestroyed = memory_generateAddAddressPointerChain(
-		"Struct_Extra_Mission_Data.TheTraitor", string_pointerChainKey, 
-		let_memAddr_basePointer, accessor = bit0)		
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ExtraMissionData", enum_releaseRegion)
+	let_memAccessor_IsCannonDestroyed = memGenerate_pointerChainAccessor(
+		"Struct:ExtraMissionData.TheTraitor_Ch13", string_pointerChainKey, 
+		let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)		
 	return let_memAccessor_IsCannonDestroyed}
 
 function current_Calculated_TheTraitor_AllyCannonsDestroyedCount(enum_releaseRegion) =>
@@ -3010,17 +2972,17 @@ function current_Calculated_TheTraitor_AllyCannonsDestroyedCount(enum_releaseReg
 // ◦ TIMERS ◦
 // ''''''''''
 function current_TimeSpentInMission(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion)
-	let_offsetTo_TimeSpentInMission = memory_getDataStructOffset("Struct_Mission_Timers", "Float_TimeSpentinMission")
-	return float(dword(let_memAddr_BasePointer) + let_offsetTo_TimeSpentInMission)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion)
+	let_offsetTo_TimeSpentInMission = memory_getStruct_OffsetToMember("Struct_Mission_Timers", "Float_TimeSpentinMission")
+	return float(dword(let_memAddr_basePointer) + let_offsetTo_TimeSpentInMission)}
 
 function prev_TimeSpentInMission(enum_releaseRegion) =>
 	prev(current_TimeSpentInMission(enum_releaseRegion))
 
 function current_CountDownTimer_TimeLeft(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion) 
-	let_offsetTo_CountDownTimer = memory_getDataStructOffset("Struct_Mission_Timers", "Float_CountdownTimer")
-	return float(dword(let_memAddr_BasePointer) + let_offsetTo_CountDownTimer)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion) 
+	let_offsetTo_CountDownTimer = memory_getStruct_OffsetToMember("Struct_Mission_Timers", "Float_CountdownTimer")
+	return float(dword(let_memAddr_basePointer) + let_offsetTo_CountDownTimer)}
 
 // ............
 // ◦ SHOWDOWN ◦
@@ -3032,42 +2994,42 @@ SHOWDOWN_TEAM_YELLOW = 3
 
 // --------------------Showdown_PosterMenu_Controller------------------------ 
 function is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_memAccessor_Pointer = memory_generateAddAddressPointerChain(
-		"Struct_GameController", "32BitPointer_ShowdownPosterMenuController", let_memAddr_BasePointer, accessor = dword)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAccessor_Pointer = memGenerate_pointerChainAccessor(
+		"Struct_GameController", "32BitPointer_ShowdownPosterMenuController", let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_Pointer != 0}
 
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
-		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_BasePointer, accessor = byte)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_basePointer, memAccessorType_toPointedToMember = byte)}
 
 function is_ShowdownPosterMenu_displayed(enum_releaseRegion) =>
 	current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) == 1
 
 function current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	let_string_pointerChainKey = format("BitFlag_IsShowdownPlayerSlot{0}Filled", int_playerIndex)
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	return memory_generateAddAddressPointerChain(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = bit0)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)}
 
 function is_PosterMenu_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
 	current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) == 1
 
 function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
 	let_string_pointerChainKey = format("ASCII_ShowdownPlayer{0}CharacterModelId", int_playerIndex)
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_PointerChain_ShowdownPlayerCharacterModelId = memory_generateAddAddressPointerChain(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer)
-	let_offsetTo_ShowdownPlayerCharacterModelId = memory_getPointerChainOffsetToMember("Struct_GameController", let_string_pointerChainKey)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_PointerChain_ShowdownPlayerCharacterModelId = memGenerate_pointerChainAccessor(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer)
+	let_offsetTo_ShowdownPlayerCharacterModelId = memory_getStruct_OffsetToPointedToMember("Struct_GameController", let_string_pointerChainKey)
 	return is_ASCII_EqualTo(let_PointerChain_ShowdownPlayerCharacterModelId + let_offsetTo_ShowdownPlayerCharacterModelId, enum_character)}
 
 function current_PosterMenu_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	let_string_pointerChainKey = format("8Bit_ShowdownPlayer{0}TeamId", int_playerIndex)
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_memAccessor_ShowdownPlayerTeamId = memory_generateAddAddressPointerChain(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_BasePointer, 
-		accessor = byte)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAccessor_ShowdownPlayerTeamId = memGenerate_pointerChainAccessor(
+		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer, 
+		memAccessorType_toPointedToMember = byte)
 	return let_memAccessor_ShowdownPlayerTeamId}
 
 function prev_PosterMenu_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3113,8 +3075,8 @@ function ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseReg
 	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
 	let_memAddr_CharacterModelID = 
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
 	return let_memAddr_CharacterModelID}
 
 function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
@@ -3129,8 +3091,8 @@ function ASCIIaddress_ShowdownPlayer_AIsetting(int_playerIndex, enum_releaseRegi
 	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
 	let_memAddr_ShowdownAIsetting = 
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
 	return let_memAddr_ShowdownAIsetting}
 
 function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3149,8 +3111,8 @@ function current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // P
 	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
 	let_memAddr_TeamId =
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Settings_B", "Lower4_TeamId")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "Lower4_TeamId")
 	return low4(let_memAddr_TeamId)}
 
 function prev_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3185,14 +3147,14 @@ function current_ShowdownPlayer_HP(int_playerIndex, enum_releaseRegion) { // Pla
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataC = 	
+	let_memAddr_basePointer_ShowdownPlayerDataC = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
 	
-	let_memAccessor_HP = memory_generateAddAddressPointerChain(
+	let_memAccessor_HP = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_C", "Float_HP", 
-		let_memAddr_BasePointer_ShowdownPlayerDataC, accessor = float)
+		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_HP}
 
 function prev_ShowdownPlayer_HP(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3207,14 +3169,14 @@ function current_ShowdownPlayer_MaxHP(int_playerIndex, enum_releaseRegion) { // 
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataC = 	
+	let_memAddr_basePointer_ShowdownPlayerDataC = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
 	
-	let_memAccessor_MaxHP = memory_generateAddAddressPointerChain(
+	let_memAccessor_MaxHP = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_C", "Float_MaxHP", 
-		let_memAddr_BasePointer_ShowdownPlayerDataC, accessor = float)
+		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_MaxHP}
 
 
@@ -3223,14 +3185,14 @@ function current_ShowdownPlayer_CashCollected(int_playerIndex, enum_releaseRegio
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_CashCollected = memory_generateAddAddressPointerChain(
+	let_memAccessor_CashCollected = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_CashCollected", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_CashCollected}
 
 function current_ShowdownPlayer_HighNoonRoundsWon(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3238,14 +3200,14 @@ function current_ShowdownPlayer_HighNoonRoundsWon(int_playerIndex, enum_releaseR
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_HighNoonRoundsWon = memory_generateAddAddressPointerChain(
+	let_memAccessor_HighNoonRoundsWon = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_HighNoonRoundsWon", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_HighNoonRoundsWon}
 
 function current_ShowdownPlayer_DeathToll(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3253,14 +3215,14 @@ function current_ShowdownPlayer_DeathToll(int_playerIndex, enum_releaseRegion) {
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_DeathToll = memory_generateAddAddressPointerChain(
+	let_memAccessor_DeathToll = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_DeathToll", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_DeathToll}
 
 function prev_ShowdownPlayer_DeathToll(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3274,14 +3236,14 @@ function current_ShowdownPlayer_HeadShots(int_playerIndex, enum_releaseRegion) {
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_HeadShots = memory_generateAddAddressPointerChain(
+	let_memAccessor_HeadShots = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_HeadShots", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_HeadShots}
 
 function current_ShowdownPlayer_DamageTaken(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3289,14 +3251,14 @@ function current_ShowdownPlayer_DamageTaken(int_playerIndex, enum_releaseRegion)
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_DamageTaken = memory_generateAddAddressPointerChain(
+	let_memAccessor_DamageTaken = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "Float_DamageTaken", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = float)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_DamageTaken}
 
 function prev_ShowdownPlayer_DamageTaken(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3316,14 +3278,14 @@ function current_ShowdownPlayer_Weapon_equipped(int_playerIndex, enum_releaseReg
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataB = 	
+	let_memAddr_basePointer_ShowdownPlayerDataB = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_EquippedWeaponId = memory_generateAddAddressPointerChain(
+	let_memAccessor_EquippedWeaponId = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_EquippedWeaponId", 
-		let_memAddr_BasePointer_ShowdownPlayerDataB, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_EquippedWeaponId}
 
 function is_ShowdownPlayer_Weapon_equipped(int_playerIndex, enum_weapon, enum_releaseRegion) => // Player Index [1-4]
@@ -3334,14 +3296,14 @@ function current_ShowdownPlayer_ShotsFired(int_playerIndex, enum_releaseRegion) 
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataC = 	
+	let_memAddr_basePointer_ShowdownPlayerDataC = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_ShotsFired = memory_generateAddAddressPointerChain(
+	let_memAccessor_ShotsFired = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_ShotsFired", 
-		let_memAddr_BasePointer_ShowdownPlayerDataC, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_ShotsFired}
 
 function current_ShowdownPlayer_ShotsHit(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3349,14 +3311,14 @@ function current_ShowdownPlayer_ShotsHit(int_playerIndex, enum_releaseRegion) { 
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_BasePointer_ShowdownPlayerDataC = 	
+	let_memAddr_basePointer_ShowdownPlayerDataC = 	
 		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getDataStructSizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getDataStructOffset("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
+		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
 	
-	let_memAccessor_ShotsHit = memory_generateAddAddressPointerChain(
+	let_memAccessor_ShotsHit = memGenerate_pointerChainAccessor(
 		"Struct_ShowdownPlayer_Data_B", "32Bit_ShotsHit", 
-		let_memAddr_BasePointer_ShowdownPlayerDataC, accessor = dword)
+		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_ShotsHit}	
 
 function current_Calculated_ShowdownPlayer_Accuracy(int_playerIndex, enum_releaseRegion) => /* Player Index [1-4]  // MANUAL_CONSTRUCTION with R/R
@@ -3376,7 +3338,7 @@ SHOWDOWN_MODE_HighNoon = 2
 
 function current_Showdown_Mode(enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_GameMode")
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_GameMode")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) =>
@@ -3389,7 +3351,7 @@ SHOWDOWN_BOUNTY_LIMIT_15K = 3
 SHOWDOWN_BOUNTY_LIMIT_20K = 4 
 function current_Showdown_BountyLimit(enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_BountyLimit")
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_BountyLimit")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_BountyLimit(enum_showdownBountyLimit, enum_releaseRegion) =>
@@ -3402,7 +3364,7 @@ SHOWDOWN_SUNDOWN_FIGHT_TIME_15min = 3
 SHOWDOWN_SUNDOWN_FIGHT_TIME_1min = 4 
 function is_Showdown_SundownFightTime(enum_sundownFightTime, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_SundownFightTime")
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_SundownFightTime")
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_sundownFightTime}
 
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_3 = 0
@@ -3412,7 +3374,7 @@ SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 = 3
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_1 = 4
 function current_Showdown_HighNoonRequiredWins(enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_HighNoonRequiredWins")
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_HighNoonRequiredWins")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_HighNoonRequiredWins(enum_highNoonRequiredWins, enum_releaseRegion) =>
@@ -3423,7 +3385,7 @@ SHOWDOWN_POWER_UPS_SETTING_Stud = 1
 SHOWDOWN_POWER_UPS_SETTING_HoldEm = 2 
 function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getDataStructOffset("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_powerUpsSetting}
 
 // --------------------MultiplayerRewardMenu------------------------
@@ -3436,10 +3398,10 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 		util_throwError(format("Player index: {0} is not in valid range"))	
 	
 	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
-	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
+		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_pointerChainTo_ASCII + let_offsetTo_ASCII, ASCII_FLAG_IsPlayerWinner)}
 
 function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3449,19 +3411,19 @@ function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // P
 		util_throwError(format("Player index: {0} is not in valid range"))	
 	
 	let_string_pointerChainKey = format("ASCII_Flag_IsPlayer{0}Winner", int_playerIndex)
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_BasePointer, accessor = dword)
-	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
+		"Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember_byReleaseRegion("Struct_MultiplayerRewardMenu_Data", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(
 		let_pointerChainTo_ASCII + let_offsetTo_ASCII + const_OFFSET_TO_FLAG_NotWinner, 
 		ASCII_FLAG_IsPlayerNotWinner)}
 
 function ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_pointerChainTo_ASCII = memory_generateAddAddressPointerChain(
-		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_BasePointer)
-	let_offsetTo_ASCII = memory_getPointerChainOffsetToMember("Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
+		"Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed", let_memAddr_basePointer)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Struct_MultiplayerRewardMenu_Data", "ASCII_Flag_IsMultiplayerRewardMenuDisplayed")
 	return let_pointerChainTo_ASCII + let_offsetTo_ASCII}
 
 function is_MultiplayerRewardMenu_displayed(enum_releaseRegion) {
@@ -3478,24 +3440,24 @@ function on_MultiplayerRewardMenu_render(enum_releaseRegion) {
 		on_ASCII_changeTo(let_memAddr_ASCII, ASCII_FLAG_IsMultiplayerRewardMenuDisplayed)}
 
 function is_MultiplayerRewardMenu_FirstPopupMenu_displayed(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
-		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, enum_releaseRegion, accessor = bit0)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_basePointer, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsFirstPopupMenuDisplayed == 1}
 
 function on_MultiplayerRewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_IsFirstPopupMenuDisplayed = memory_generateAddAddressPointerChain_byReleaseRegion(
-		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_BasePointer, enum_releaseRegion, accessor = bit0)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_IsFirstPopupMenuDisplayed = memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "BitFlag_IsFirstPopupMenuDisplayed", let_memAddr_basePointer, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsFirstPopupMenuDisplayed > prev(let_memAccessor_IsFirstPopupMenuDisplayed)}
 
 function is_MultiplayerRewardPopupMenu_Replay_Highlighted(enum_releaseRegion) {
 	const_MENU_ITEM_Replay = 0
 
-	let_memAddr_BasePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
-	let_memAccessor_HighlightedMenuItem = memory_generateAddAddressPointerChain_byReleaseRegion(
-		"Struct_MultiplayerRewardMenu_Data", "32Bit_HighlightedPopupMenuItem", let_memAddr_BasePointer, 
-		enum_releaseRegion, accessor = dword)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "MultiplayerRewardMenu_Data", enum_releaseRegion)
+	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct_MultiplayerRewardMenu_Data", "32Bit_HighlightedPopupMenuItem", let_memAddr_basePointer, 
+		enum_releaseRegion, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_HighlightedMenuItem == const_MENU_ITEM_Replay}
 
 function on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion) =>
@@ -3519,14 +3481,14 @@ function is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion) {
 	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
 	let_pointerChainTo_InteractableZoneID = 
 		dword(let_memAddr_GatlingGunZoneData)
-		+ memory_getDataStructOffset("Struct_GatlingGunZone_Data", "ASCII_InteractableZoneID")
+		+ memory_getStruct_OffsetToMember("Struct_GatlingGunZone_Data", "ASCII_InteractableZoneID")
 	return is_ASCII_EqualTo(let_pointerChainTo_InteractableZoneID, const_INTERACTABLE_ZONE_ID)}
 
 function current_FlagState_IsGatlingGunManned(enum_releaseRegion) {
 	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
 	return bit0(
 		dword(let_memAddr_GatlingGunZoneData)
-		+ memory_getDataStructOffset("Struct_GatlingGunZone_Data", "BitFlag_IsGatlingGunManned")
+		+ memory_getStruct_OffsetToMember("Struct_GatlingGunZone_Data", "BitFlag_IsGatlingGunManned")
 	)}
 
 function prev_FlagState_IsGatlingGunManned(enum_releaseRegion) =>
@@ -3566,10 +3528,10 @@ function on_PlayerGatlingGun_dismount(enum_areaId, enum_releaseRegion) =>
 
 // --------------------MissionKillcount------------------------
 function current_MissionKillcount(enum_releaseRegion) {
-	let_memAddr_UndefinedStruct = memory_getAddress(DATATYPE_32BitPointer, "Undefined_Struct_03", enum_releaseRegion)
+	let_memAddr_UndefinedStruct = memory_getAddress(DATATYPE_32BitPointer, "Pointer:UndefinedStruct_03(preferred)", enum_releaseRegion)
 	let_PointerChainTo_MissionKillcount = 
 		dword(let_memAddr_UndefinedStruct)
-		+ memory_getDataStructOffset("Undefined_Struct_03", "32Bit_MissionKillcount")
+		+ memory_getStruct_OffsetToMember("Struct:Undefined_03", "32-bit:MissionKillcount")
 	return dword(let_PointerChainTo_MissionKillcount)}
 
 function prev_MissionKillcount(enum_releaseRegion) =>
@@ -4065,7 +4027,7 @@ function achievements_generate_FullTrigger_ChapterCompletion(enum_areaId, enum_r
 				|| !is_Area(enum_areaId, enum_releaseRegion)
 			))
 
-	// [3] ==== Alt Pause Lock Reset Group ==== 		-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
+	// [3] ==== Alt Pause Lock Reset Group ==== 	-> Reset when pressing 'yes' on warningMenu accessed through PauseMenu->levelRestart or PauseMenu->quit
 		// NOTE: Don't reset on_RetryMenu_yes(), only on mission restart
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
@@ -4082,14 +4044,14 @@ function achievements_generate_FullTrigger_ChapterCompletion(enum_areaId, enum_r
 function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 	function generate_SumOf_NonUniqueWeaponFlags(enum_releaseRegion) {
 		let_array_memAccessorsToSub_NonUniqueFlags = [] // SubSource Flag_Normal & Flag_Normal (with bitwise AND)
-		for let_weaponKey in FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"] {
-			let_flagNormal = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Normal"]			
-			let_flagUpgraded = FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
+		for let_weaponKey in BitsetFlagData_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"] {
+			let_flagNormal = BitsetFlagData_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Normal"]			
+			let_flagUpgraded = BitsetFlagData_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
 			
-			let_memAccessor_flagNormal = bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks(
+			let_memAccessor_flagNormal = MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(
 				let_flagNormal["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]], 
 				enum_releaseRegion)			
-			let_memAccessor_flagUpgraded = bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks(
+			let_memAccessor_flagUpgraded = MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(
 				let_flagUpgraded["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], 
 				enum_releaseRegion)
 
@@ -4099,8 +4061,8 @@ function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 	}	
 
 	let_sumOf_AllWeaponFlags = memGenerate_SumOf_BitsetFlags_noSubSource(
-		FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["AllFlags"],
-		bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks, 
+		BitsetFlagData_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["AllFlags"],
+		MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, 
 		enum_releaseRegion)
 	let_sumOf_NonUniqueWeaponFlags = generate_SumOf_NonUniqueWeaponFlags(enum_releaseRegion)
 
@@ -4110,49 +4072,49 @@ function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 	}
 
 function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], bitFlagMemAccessorGenerator_toStaticBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
 
 // -------------------UnlocksOther---------------------
 function achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) =>
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllHealthUpgrades"], bitFlagMemAccessorGenerator_toDynamicBitset_PlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_PlayerProfileUnlocks["Flags_AllHealthUpgrades"], MemAccessorGeneratorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
 
 function achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion) =>
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_PlayerProfileUnlocks["Flags_AllDeadEyeUpgrades"], bitFlagMemAccessorGenerator_toDynamicBitset_PlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_PlayerProfileUnlocks["Flags_AllDeadEyeUpgrades"], MemAccessorGeneratorToBitset_PlayerProfileUnlocks, enum_releaseRegion)
 
 // ------------------ShowdownStages----------------------
-function memAccessorGeneratorToBitset_ShowdownMapUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function memAccessorGeneratorToBitset_ShowdownMapUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_ShowdownMapUnlocks", enum_releaseRegion)
-	return memAccessor_bitFlagAccessor(let_memAddr_toBitset + int_offsetToByte)}
+	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion) =>
 	 memGenerate_SumOf_BitsetFlags_noSubSource(
-		FlagData_Bitset_ShowdownMapUnlocks, 
+		BitsetFlagData_ShowdownMapUnlocks, 
 		memAccessorGeneratorToBitset_ShowdownMapUnlocks, 
 		enum_releaseRegion)
 // ------------------ShowdownCharacters----------------------
-function memAccessorGeneratorToBitset_ShowdownCharactersUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function memAccessorGeneratorToBitset_ShowdownCharactersUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_ShowdownCharacterUnlocks", enum_releaseRegion)
-	return memAccessor_bitFlagAccessor(let_memAddr_toBitset + int_offsetToByte)}
+	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion) =>
 	 memGenerate_SumOf_BitsetFlags_noSubSource(
-		FlagData_Bitset_ShowdownCharactersUnlocks, 
+		BitsetFlagData_ShowdownCharactersUnlocks, 
 		memAccessorGeneratorToBitset_ShowdownCharactersUnlocks, 
 		enum_releaseRegion)
 // ------------------JournalPages----------------------
-function memAccessorGeneratorToBitset_JournalPageUnlocks(int_offsetToByte, memAccessor_bitFlagAccessor, enum_releaseRegion) {
+function memAccessorGeneratorToBitset_JournalPageUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_JournalPageUnlocks", enum_releaseRegion)
-	return memAccessor_bitFlagAccessor(let_memAddr_toBitset + int_offsetToByte)}
+	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
 	 memGenerate_SumOf_BitsetFlags_noSubSource(
-		FlagData_Bitset_JournalPageUnlocks, 
+		BitsetFlagData_JournalPageUnlocks, 
 		memAccessorGeneratorToBitset_JournalPageUnlocks, 
 		enum_releaseRegion)
 
 // ------------------BountyHunterMissions----------------------
 function achievements_generate_SumOf_FlagsAllBountyMissionsCompleted(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(FlagData_Bitset_BountyHunterMissionsCompleted, bitFlagMemAccessorGenerator_toStaticBitset_BountyHunterMissionsCompleted, enum_releaseRegion) 
+	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_BountyHunterMissionsCompleted, memAccessorGeneratorToBitset_BountyHunterMissionsCompleted, enum_releaseRegion) 
 
 /* function achievements_generate_TallyOf_ShowdownTeamsFreeForAll_InGame(enum_releaseRegion) { // DISABLED function - Prefer using is_ShowdownTeams_FreeForAll()
 	let_array_ALL_SHOWDOWN_TEAM_IDs = [SHOWDOWN_TEAM_RED, SHOWDOWN_TEAM_WHITE, SHOWDOWN_TEAM_BLUE, SHOWDOWN_TEAM_YELLOW]
@@ -8073,7 +8035,7 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = { 
 	// "rp_Template": 									{"en": "xxxxxxxx"}, 
-	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"},
+	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"},
 	"rp_Showdown_HighNoon":								{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {2}/{3}"},
 	"rp_Showdown_Sundown":								{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU | ${2} collected | Time left: {3}"},
 	"rp_Showdown_BountyHunt":							{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU | ${2}/{3} collected"},
@@ -8120,7 +8082,7 @@ richPresence_LookupTablesText = {
 
 		"BountyHunter":  	{"en": "Bounty Hunter"},
 		"Sundown":  		{"en": "Sundown"},
-		"HighNoon":  		{"en": "High Noon"},
+		"HighNoon":  		{"en": "High Noon"}, 
 		},
 	"lup_IsHumanOrCPUPlayer": {
 		"CPU": 					{"en": "CPU"},
