@@ -483,9 +483,9 @@
 //          |+| - Definition of [Struct:ShowdownPosterMenuController] below
 //          |/
 //          |
-//          |+0x2C9 - [1344-byte Array] List of (4x) [Struct:ShowdownPlayer_Settings_B]
+//          |+0x2C9 - [1344-byte Array:ShowdownPlayerSettings_B] List of (4x) [Struct:ShowdownPlayerSettings_B]
 //          |+| - This array is only functional during a Showdown match
-//          |¨| - Definition of [Struct:ShowdownPlayer_Settings_B] at $0x73d819
+//          |¨| - Definition of [Struct:ShowdownPlayerSettings_B] at $0x73d819
 //          |/
 //          |
 //          |+0x808 - [Variable Size ASCII:AreaID(alt)]
@@ -495,11 +495,11 @@
 //          |+0x8FC - [32-bit (layer-1) Pointer]
 //          |+| - This pointer is only functional during a Showdown match
 //          |+|
-//          |+|+0x50 - [584-byte Array] List of (4x) [Struct:ShowdownPlayer_Settings_A]
-//          |+|¨| - Definition of [Struct:ShowdownPlayer_Settings_A] at $0x740438
+//          |+|+0x50 - [584-byte Array] List of (4x) [Struct:ShowdownPlayerSettings_A]
+//          |+|¨| - Definition of [Struct:ShowdownPlayerSettings_A] at $0x740438
 //          |+|
-//          |+|+0x1C8 - [28-byte Struct:ShowdownMode_Settings]
-//          |+|¨| - Definition of [Struct:ShowdownMode_Settings] at $0x7405b0
+//          |+|+0x1C8 - [28-byte Struct:ShowdownModeSettings]
+//          |+|¨| - Definition of [Struct:ShowdownModeSettings] at $0x7405b0
 //          |/
 //          |
 //          |+0x5874 - [140-byte Struct:CashController]
@@ -804,56 +804,58 @@
 // $6B48D0: [NTSCJ][96-byte ASCIIField(ShowdownPlayerStatsText):Player4]
 //          @Member of [ASCIIField:MultiplayerScoreboardDisplayText] ($0x6b4634)
 //          @Regional Equivalent of $0x6b1b50
-// $73AF04: [NTSCU][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] InGame_Menu_Controller
+// $73AF04: [NTSCU][32-bit (base) Pointer:InGameMenuController(preferred)] -> [Struct:InGameMenuController]
 //          @Regional equivalent of $0x73d684 (PAL)
 // $73AF0C: [NTSCU][bit0 BitFlag:IsInPauseMenu |32-bit]
 //          @Regional equivalent of $0x73d68c
-// $73B099: [NTSCU][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_B]
+// $73B099: [NTSCU][1344-byte Array:ShowdownPlayerSettings_B] List of (4x) [Struct:ShowdownPlayerSettings_B]
 //          @Regional equivalent of $0x73d819 (PAL)
-// $73B5EC: [NTSCU][8-bit {32-bit}] Number of Players
+// $73B5EC: [NTSCU][8-bit:NumberOfPlayers |32-bit]
 //          @Regional equivalent of $0x73dd6c (PAL)
-// $73B7C2: [NTSCU][30-byte Struct] Player_Input_Reader
+// $73B7C2: [NTSCU][30-byte Struct:PlayerInputReader]
 //          @Regional equivalent of $0x73df42 (PAL)
-// $73D60C: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] InGame_Menu_Controller (MainMenu)
+// $73D60C: [PAL][32-bit Pointer:InGameMenuController(alt)] -> [Struct:InGameMenuController]
 //          @Fixed Memory Location. Although pointed to by one of the pointers at [$0x562a20-$0x562a60]
-//          - Pointer is only functional when an InGame_Menu has been displayed at least once
-//          - This pointer only changes value whenever the pauseMenu, RetryMenu/continueMenu or GameOverScreen is rendered (aka the "main menu's")
-//          - SubMenu's can't be Identified via this pointer, prefer using pointer at $0x73d684
-// $73D684: [PAL][32-bit Pointer{1}] --(+0x0)--> [??-byte Struct] InGame_Menu_Controller (preferred)
+//          - This pointer is only functional when an InGameMenu has been displayed at least once
+//          - This pointer only changes values/points to another/new [Struct:InGameMenuController] whenever the pauseMenu, RetryMenu/continueMenu or GameOverScreen is rendered. Therefor any "SubMenu's" can't be identified via this pointer, prefer using [Pointer:InGameMenuController(preferred)] at $0x73d684
+// $73D684: [PAL][32-bit (base) Pointer:InGameMenuController(preferred)] -> [Struct:InGameMenuController]
 //          @Fixed Memory Location. Although pointed to by one of the pointers at [$0x562a20-$0x562a60]
-//          - Pointer{1} is only functional when an InGame_Menu has been displayed at least once
+//          - This pointer is only functional when an InGameMenu has been displayed at least once
+//          - This pointer changes values/points to another/new [Struct:InGameMenuController] whenever another menu is opened
 //          
-//          [Struct Definition][??-byte] InGame_Menu_Controller
+//          [Definition Struct:InGameMenuController |??-byte]
 //          |============================================
-//          |+0x18 - [Variable size ASCII] InGame_Menu_ID
-//          |¨| - IDs listed below
+//          |+0x18 - [Variable size ASCII:InGameMenuID]
+//          |¨| - InGameMenuIDs listed below
 //          |/
-//          |+0x38 - [Bit Flag {8-bit}] bit 0 => Is InGameMenu Active
-//          |¨| 1 => InGameMenu is displayed
-//          |¨| 0 => InGameMenu not displayed
+//          |+0x38 - [bit0 BitFlag:IsInGameMenuDisplayed |8-bit]
+//          |¨| - bit0 = 1 => InGameMenu IS displayed
+//          |¨| - bit0 = 0 => InGameMenu is NOT displayed
 //          |/
-//          |+0x39 - [Bit Flag {8-bit}] bit 0 => Is SubMenu NOT Displayed
-//          |¨| 1 => No SubMenu displayed
-//          |¨| 0 => Any SubMenu is displayed
+//          |+0x39 - [bit0 InvertedBitFlag:IsInGameSubMenuDisplayed |8-bit]
+//          |¨| - bit0 =  1 => No SubMenu displayed
+//          |¨| - bit0 =  0 => Any SubMenu is displayed
 //          |/
-//          |+0x3C - [28-byte Array] List of [(7x) 32-bit Pointer{2}]
-//          |¨| - Some of these pointers point to structs storing ASCII text which are used as the displaytext for the Retry Menu
+//          |+0x3C - [28-byte Array] List of (7x) [32-bit (layer-1) Pointer]
+//          |¨| - These pointers mostly point to miscellaneous data
+//          |¨| - Some of these pointers point to structs storing ASCII text which are used as the displaytext for the InGameMenu
 //          |/
-//          |+0x318 - [8-bit] Highlighted_MenuItem_ID
-//          |¨| - MenuItem_IDs are dependent on InGame_Menu_ID
+//          |+0x318 - [8-bit:HighlightedMenuItemID]
+//          |¨| - HighlightedMenuItemIDs are dependent on InGameMenu
+//          |¨| - HighlightedMenuItemIDs listed below
 //          |/
-//          |+0x450 - [32-bit Float] Retry Countdown Timer
-//          |¨| - Value range [9.9-0.0]; When this hits 0 --> 'Game Over' screen
+//          |+0x450 - [32-bit Float:RetryMenuCountdownTimer]
+//          |¨| - Value range [9.9-0.0]; When this hits 0 => 'Game Over' screen
 //          |¨| - Decrements each frame
 //          |¨| - This value in only functional when the RetryMenu is rendered
 //          |/
 //          '
 //          
-//          # InGame_Menu_IDs (string) - Highlighted_MenuItem_IDs
+//          # InGameMenuIDs (string) - HighlightedMenuItemIDs (hex)
 //          |(list incomplete)
 //          |'''''''''''''''''
-//          | pause (InGame_Menu_ID) => PauseMenu
-//          | - 0x4 (Highlighted_MenuItem_ID) => Return to Game
+//          | pause (InGameMenuID) => PauseMenu
+//          | - 0x4 (HighlightedMenuItemID) => Return to Game
 //          | - 0x5 => Options
 //          | - 0x9 => Restart Level
 //          | - 0xA => Quit
@@ -874,126 +876,158 @@
 // $73D68C: [PAL][bit0 BitFlag:IsInPauseMenu |32-bit]
 //          - PauseMenu during gameplay
 //          - Also counts for sub-menu's
-// $73D819: [PAL][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings_B]
-//          @Fixed Memory Location. Although pointed to by $0x562a20
-//          - This array is populated on start of a Showdown match
+// $73D819: [PAL][1344-byte Array:ShowdownPlayerSettings_B] List of (4x) [Struct:ShowdownPlayerSettings_B]
+//          @Fixed Memory Location. Although pointed to by [Pointer:GameController] $0x562a20
 //          
-//          [Struct Definition][336-byte] ShowdownPlayer_Settings_B
+//          [Definition Array:ShowdownPlayerSettings_B |1344-byte]
 //          |''''''''''''''''''''''''''''''''''''''''''''''''''
-//          | - Very similar to Struct:ShowdownPlayer_Settings_A ($0x740438)
+//          | - This array is populated on the start of a Showdown match; it remains populated after the match ends and also when the game goes back to MainMenu; It is only overwritten when starting a new Showdown match.
+//          | - Each showdown player slot has a dedicated [Struct:ShowdownPlayerSettings_B] even if that player slot is empty
 //          |
-//          |+0x1 - [3-byte ASCII] Character_Model_ID
-//          |¨| - Preceding [1-byte ASCII] = "m"; This "m" is removed when no player fills this player slot
-//          |¨| - IDs listed at $0x562a20
-//          |/
-//          +0xB- [Lower4 {32-bit}] Team_ID
-//          |¨| 0 =&gt; Team Red
-//          |¨| 1 =&gt; Team White
-//          |¨| 2 =&gt; Team Blue
-//          |¨| 3 =&gt; Team Yellow
-//          |/
-//          +0xF - [Lower4 {32-bit}] Player Number
-//          |¨| - Value range [0-3]
-//          |/
-//          |+0x13 - [Bit Flag {32-bit}] bit 0 =&gt; Is Player Slot filled
+//          |+0x0 - [Struct(ShowdownPlayerSettings_B):Player1]
+//          |+0x150 - [Struct(ShowdownPlayerSettings_B):Player2]
+//          |+0x2A0 - [Struct(ShowdownPlayerSettings_B):Player3]
+//          |+0x3F0 - [Struct(ShowdownPlayerSettings_B):Player4]
 //          |
-//          |+0x139 - [Variable Size ASCII] ShowdownAI_Setting
-//          |¨| - ShowdownAI_Settings listed below
-//          |/
-//          '
+//          |[Definition Struct:ShowdownPlayerSettings_B |336-byte]
+//          ||''''''''''''''''''''''''''''''''''''''''''''''''''
+//          || - Very similar to [Struct:ShowdownPlayerSettings_A], refer to $0x740438
+//          ||
+//          ||+0x1 - [3-byte ASCII:CharacterModelID]
+//          ||¨| - Preceding [1-byte ASCII] = "m"; This "m" is zeroed when no player fills this player slot
+//          ||¨| - CharacterModelIDs listed at $0x562a20
+//          ||/
+//          |+0xB- [Lower4:TeamID |32-bit]
+//          ||¨| - 0 => Team Red
+//          ||¨| - 1 => Team White
+//          ||¨| - 2 => Team Blue
+//          ||¨| - 3 => Team Yellow
+//          ||/
+//          |+0xF - [Lower4:ShowdownPlayerID |32-bit]
+//          ||¨| - Value range [0-3] => [Player1-Player4]
+//          ||/
+//          ||+0x13 - [bit0 BitFlag:IsShowdownPlayerSlotFilled |32-bit]
+//          ||
+//          ||+0x139 - [Variable Size ASCII:ShowdownAISetting]
+//          ||¨| - This probably identifies which AI script is used for the CPU player
+//          ||¨| - Practically this value could be used to check which showdown player are human controlled
+//          ||¨| - ShowdownAISettings listed below
+//          ||
+//          ''
 //          
-//          # ShowdownAI_Settings (string)
+//          # ShowdownAISettings (string)
 //          |(list incomplete)
 //          |''''''''''''''''''''''''''''''
-//          | MPplayer =&gt; no AI, Human player controlled
+//          | MPplayer => no AI, Human player controlled
 //          | defaultbot
 //          | bigbot
 //          | pixiebot
 //          | sniperbot
 //          | sneakybot
-//          | ...??
+//          | ...
 //          '
-// $73DCB8: [NTSCU][365-byte Array] List of [(4x) 92-byte Struct:ShowdownPlayer_Settings_A]
+// $73DCB8: [NTSCU][365-byte Array:ShowdownPlayerSettings_A] List of (4x) [Struct:ShowdownPlayerSettings_A]
 //          @Regional equivalent of $0x740438 (PAL)
-// $73DD6C: [PAL][8-bit {32-bit}] Number of Players
-//          - 0x1 => Single player campaign
-//          - [0x2-0x4] => Showdown Mode
+// $73DD6C: [PAL][8-bit:NumberOfPlayers |32-bit]
 //          - This value does not reset to a default value on title screen
-// $73DE30: [NTSCU[28-byte Struct] ShowdownMode_Settings
+//          
+//          # Values
+//          |''''''''
+//          | - 0x1 => Single player campaign
+//          | - [0x2-0x4] => Showdown Mode
+// $73DE30: [NTSCU][32-bit (base) Pointer:ShowdownModeSettings]
 //          @Regional equivalent of $0x7405b0 (PAL)
-// $73DE4C: [NTSCU][28-byte Bitset] Shared_Unlocks
+// $73DE4C: [NTSCU][28-byte Bitset:SharedUnlocks]
 //          @Regional equivalent of $0x7405cc (PAL)
 // $73DE88: [NTSCU][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
 //          @Regional equivalent of $0x740608 (PAL)
-// $73DF42: [PAL][30-byte Struct] Player_Input_Reader
-//          [Struct Definition][30-byte] Player_Input_Reader
-//          |'''''''''''''''''''''''''''''''''''''''
-//          | - Flags are inverted: bitValue = 1 -> button not pressed; bitValue = 0 -> button is pressed
+// $73DF42: [PAL][30-byte Struct:PlayerInputReader]
+//          [Definition Struct:PlayerInputReader|30-byte]
+//          |°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
 //          |
-//          |+0x0 - [Inverted Bit Flags] Player Input A - Buttons Pressed
-//          |¨| bit 0 => Select
-//          |¨| bit 1 => L3
-//          |¨| bit 2 => R3
-//          |¨| bit 2 => Start
-//          |¨| bit 4 => D-pad up
-//          |¨| bit 5 => D-pad right
-//          |¨| bit 6 => D-pad down
-//          |¨| bit 7 => D-pad left
+//          |+0x0 - [2-byte Bitset:ControllerButtonsPressed]
+//          |[Definition Bitset:ControllerButtonsPressed |2-byte]
+//          ||''''''''''''''''''''''''''''''''''''''''''''
+//          || - Bitset consists of Inverted Bit Flags: bitValue = 1 => button is NOT pressed; bitValue = 0 => button IS pressed
+//          ||
+//          ||+0x0 - [InvertedBitFlags of Bitset(byte1):ControllerButtonsPressed]
+//          ||¨| bit0 => Select
+//          ||¨| bit1 => L3
+//          ||¨| bit2 => R3
+//          ||¨| bit2 => Start
+//          ||¨| bit4 => D-pad up
+//          ||¨| bit5 => D-pad right
+//          ||¨| bit6 => D-pad down
+//          ||¨| bit7 => D-pad left
+//          ||
+//          ||+0x1 - [InvertedBitFlags of Bitset(byte2):ControllerButtonsPressed]
+//          ||¨| bit0 => L2
+//          ||¨| bit1 => R2
+//          ||¨| bit2 => L1
+//          ||¨| bit3 => R1
+//          ||¨| bit4 => 🛆
+//          ||¨| bit5 => ◌
+//          ||¨| bit6 => X
+//          ||¨| bit7 => ⬚
 //          |/
-//          |+0x1 - [Inverted Bit Flags] Player Input B - Buttons Pressed
-//          |¨| bit 0 => L2
-//          |¨| bit 1 => R2
-//          |¨| bit 2 => L1
-//          |¨| bit 3 => R1
-//          |¨| bit 4 => 🛆
-//          |¨| bit 5 => ◌
-//          |¨| bit 6 => X
-//          |¨| bit 7 => ⬚
-//          |+0x2 - [16-bit] Right-Joystick Angle + Tilt
-//          |+0x4 - [16-bit] Left-Joystick Angle + Tilt
+//          |
+//          |+0x2 - [16-bit:RightJoystickAngleAndTilt]
+//          |
+//          |+0x4 - [16-bit:LeftJoystickAngleAndTilt]
 // $73ED98: [NTSCJ][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings]
 //          @Regional Equivalent of $0x73d819
-// $73F2EC: [NTSCJ][8-bit {32-bit}] Number of Players
+// $73F2EC: [NTSCJ][8-bit:NumberOfPlayers |32-bit]
 //          @Regional Equivalent of $0x73dd6c
 // $740118: [NTSCJ][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
 //          @Regional Equivalent of $0x740608
 //          @Fixed Memory Location. Although pointed to by $0x7443e8
-// $740438: [PAL][365-byte Array] List of [(4x) 92-byte Struct:ShowdownPlayer_Settings_A]
-//          @Fixed Memory Location. Although pointed to by $0x562a20
-//          - This array is populated on start of a Showdown match, each player has an entry
-//          - This array is also populated in Single Player Campaign, with one (first) entry for the controlled character in the mission
+// $740438: [PAL][368-byte Array:ShowdownPlayerSettings_A] List of (4x) [Struct:ShowdownPlayerSettings_A]
+//          @Fixed Memory Location. Although pointed to by [Pointer:GameController] ($0x562a20)
 //          
-//          [Struct Definition][92-byte] ShowdownPlayer_Settings_A
+//          [Definition Array:ShowdownPlayerSettings_A |368-byte]
 //          |''''''''''''''''''''''''''''''''''''''''''''''''''
-//          | - Very similar to Struct:ShowdownPlayer_Settings_B ($0x73d819)
+//          | - This array is populated on the start of a Showdown match; it remains populated after the match ends and also when the game goes back to MainMenu; It is only overwritten when starting a new Showdown match.
+//          | - This array is also populated in Single Player Campaign, with one (first) entry for the protagonist character
+//          | - Each showdown player slot has a dedicated [Struct:ShowdownPlayerSettings_A] even if that player slot is empty
 //          |
-//          |+0x0 - [Lower4 {32-bit}] Team_ID
-//          |¨| 0 => Team Red
-//          |¨| 1 => Team White
-//          |¨| 2 => Team Blue
-//          |¨| 3 => Team Yellow
-//          |¨| F => Player Slot is Empty (whole 32-bit value is 0xFFFFFFFF)
-//          |/
-//          |+0x5 - [3-byte ASCII] Character_Model_ID
-//          |¨| - Preceding [1-byte ASCII] = "m" (for multiplayer)
-//          |¨| - IDs listed at $0x562a20
-//          |/
-//          |+0x36 - [Variable Size ASCII] ShowdownAI_Setting
-//          |¨| - This is only populated in a Showdown match
-//          |¨| - ShowdownAI_Settings listed at $0x73d819
+//          |+0x0 - [Struct(ShowdownPlayerSettings_A):Player1]
+//          |+0x5C - [Struct(ShowdownPlayerSettings_A):Player2]
+//          |+0xB8 - [Struct(ShowdownPlayerSettings_A):Player3]
+//          |+0x114 - [Struct(ShowdownPlayerSettings_A):Player4]
+//          |
+//          |[Definition Struct:ShowdownPlayerSettings_A |92-byte]
+//          ||''''''''''''''''''''''''''''''''''''''''''''''''''
+//          || - Very similar to [Struct:ShowdownPlayerSettings_B] ($0x73d819)
+//          ||
+//          ||+0x0 - [Lower4:TeamID |32-bit]
+//          ||¨| - 0 => Team Red
+//          ||¨| - 1 => Team White
+//          ||¨| - 2 => Team Blue
+//          ||¨| - 3 => Team Yellow
+//          ||¨| - F => Player Slot is Empty (whole 32-bit value is 0xFFFFFFFF)
+//          ||/
+//          ||+0x5 - [3-byte ASCII:CharacterModelID]
+//          ||¨| - Preceding [1-byte ASCII] = "m"; This "m" is zeroed when no player fills this player slot
+//          ||¨| - CharacterModelID listed at $0x562a20
+//          ||/
+//          ||+0x36 - [Variable Size ASCII:ShowdownAISetting]
+//          ||¨| - This probably identifies which AI script is used for the CPU player
+//          ||¨| - Practically this value could be used to check which showdown player are human controlled
+//          ||¨| - This is only populated in a Showdown match
+//          ||¨| - ShowdownAISettings listed at $0x73d819
 //          |/
 //          '
-// $7405B0: [PAL][28-byte Struct] ShowdownMode_Settings
-//          @Fixed Memory Location. Although pointed to by $0x562a20 and [Pointer:UndefinedStruct_01] ($0x7448a0)
+// $7405B0: [PAL][28-byte Struct:ShowdownModeSettings]
+//          @Fixed Memory Location. Although pointed to by [Pointer:GameController] ($0x562a20) and [Pointer:UndefinedStruct_01] ($0x7448a0)
 //          
-//          [Struct Defintion][28-byte] ShowdownMode_Settings
+//          [Defintion Struct:ShowdownModeSettings |28-byte]
 //          |''''''''''''''''''''''''''''''''''''''
-//          |+0x0 - [Lower4 {32-bit}] Game Mode
+//          |+0x0 - [Lower4:GameMode |32-bit]
 //          |"| 0 => Bounty Hunter (achieve bounty/cash target)
 //          |"| 1 => Sundown (most bounty/cash at end of timer)
 //          |"| 2 => High Noon (standoff/face-off)
 //          |/
-//          |+0x4 - [Lower4 {32-bit}] Bounty Hunter Mode | Bounty Limit Setting
+//          |+0x4 - [Lower4:BountyHunterModeBountyLimitSetting |32-bit]
 //          |"| - Functional bounty limit amount is stored at $0x7448a8
 //          |"| 0 => 3 000
 //          |"| 1 => 5 000
@@ -1001,7 +1035,7 @@
 //          |"| 2 => 15 000
 //          |"| 4 => 20 000
 //          |/
-//          |+0x8 - [Lower4 {32-bit}] Sundown Mode | Fight Time Setting
+//          |+0x8 - [Lower4:SundownModeFightTimeSetting |32-bit]
 //          |"| - Functional Fight Time Timer through $0x562a30
 //          |"| 0 => 3 min.
 //          |"| 1 => 5 min.
@@ -1009,54 +1043,57 @@
 //          |"| 3 => 15 min.
 //          |"| 4 => 1 min.
 //          |/
-//          |+0xC - [Lower4 {32-bit}] High Noon Mode | Number of Wins Setting
+//          |+0xC - [Lower4:HighNoonModeNumberOfWinsSetting |32-bit]
 //          |"| 0 => 3 wins
 //          |"| 1 => 5 wins
 //          |"| 2 => 7 wins
 //          |"| 3 => 10 wins
 //          |"| 4 => 1 wins
 //          |/
-//          |+0x18 - [Lower4 {32-bit}] Powers Ups Setting
+//          |+0x18 - [Lower4:PowersUpsSetting |32-bit]
 //          |"| 0 => Off
 //          |"| 1 => Stud
 //          |"| 2 => Hold 'Em
 //          |/
 //          '
-// $7405CC: [PAL][28-byte Bitset] Shared_Unlocks
+// $7405CC: [PAL][28-byte Bitset:SharedUnlocks]
 //          @Fixed Memory Location. Although pointed to by [Pointer:UndefinedStruct_01] ($0x7448a0)
-//          - This bitset is updated on save according to the bitset Player_Profile_Unlocks ($0x763070)
+//          - This bitset is saved to the main/global save file. It is shared across multiple PlayerProfiles. Deleting all PlayerProfiles would still keep the unlocks, unless the main save file is deleted.
 //          - This bitset handles unlocks for cheats, showdown characters, showdown maps and journal pages
+//          - This bitset is updated on save according to [Bitset:Player_Profile_Unlocks] ($0x763070)
 //          
-//          [PAL][2-byte Bitset] Cheat_Unlocks (7 unlockable flags + 3 non-unlockable flags)
-//          @Sub-bitset in Bitset: Shared_Unlocks $0x7405cd
+//          [PAL][2-byte Bitset:CheatUnlocks]
+//          @Sub-bitset of [Bitset:SharedUnlocks] ($0x7405cc)
+//          - This Sub-bitset consists of 7 unlockable flags and 3 non-unlockable "debug" flags
 //          
-//          [PAL][Bit Flags] @Byte1 in Bitset Cheat_Unlocks 0x7405cc
-//          bit 0 => Cheat (non-unlockable debug feature) - Big Money (gain $10 000)
-//          bit 1 => Cheat - Golden Gun (significantly increases damage vs AI)
-//          bit 2 => Cheat - Infinite Deadeye
-//          bit 3 => Cheat - Invincibility
-//          bit 4 => Cheat (non-unlockable debug feature) - Show AI Info (doesn't work out-of-the-box)
-//          bit 5 => Cheat (non-unlockable debug feature) - Show Player Position (doesn't work out-of-the-box)
-//          bit 6 => Cheat - Bite the Bullet (hardcore mode, significantly increases damage vs player and AI)
-//          bit 7 => Cheat - Sad Stars (replaces blood splatters with a special effect)
-// $7405CD: [PAL][19-byte Bitset] JournalPage_Unlocks (137 flags total)
-//          @Sub-bitset in Bitset: Shared_Unlocks $0x7405cc
-//          - This bitset handles the unlocks for journal pages
+//          [PAL][BitFlags of Bitset(byte1):CheatUnlocks] ($0x7405cc)
+//          bit0 => Cheat (non-unlockable debug feature) - Big Money (gain $10 000)
+//          bit1 => Cheat - Golden Gun (significantly increases damage vs AI)
+//          bit2 => Cheat - Infinite Deadeye
+//          bit3 => Cheat - Invincibility
+//          bit4 => Cheat (non-unlockable debug feature) - Show AI Info (doesn't work out-of-the-box)
+//          bit5 => Cheat (non-unlockable debug feature) - Show Player Position (doesn't work out-of-the-box)
+//          bit6 => Cheat - Bite the Bullet (hardcore mode, significantly increases damage vs player and AI)
+//          bit7 => Cheat - Sad Stars (replaces blood splatters with a special effect)
+// $7405CD: [PAL][19-byte Bitset:JournalPageUnlocks]
+//          @Sub-bitset of [Bitset:SharedUnlocks] ($0x7405cc)
+//          - This Sub-bitset consists of 137 flags; although the Journal consists of 138 sections; [bit6 BitFlag of Bitset(byte13):SharedUnlocks] unlocks 2 journal sections.
+//          - This Sub-bitset handles the unlocks for journal pages
 //          
-//          [PAL][Bit Flags]
-//          @Byte2 in Bitset: Cheat_Unlocks $0x7405cc
-//          @Byte1 in Bitset: JournalPage_Unlocks $0x7405cc
+//          [PAL]
+//          [BitFlags of Bitset(byte2):CheatUnlocks] ($0x7405cc)
+//          [BitFlags of Bitset(byte1):JournalPageUnlocks] ($0x7405cd)
 //          ---- Cheats ----
-//          bit 0 => Cheat - No HUD
-//          bit 1 => Cheat - No Distortion
+//          bit0 => Cheat - No HUD
+//          bit1 => Cheat - No Distortion
 //          ---- JournalPages ----
-//          bit 2 => Outlaws in Twelve States - Smiley Fawler
-//          bit 3 => Outlaws in Twelve States - Bandito
-//          bit 4 => Heroes of the Frontier - Annie
-//          bit 5 => Ranged Weapons - Bayonet Rifle
-//          bit 6 => Wanted Dead or Alive - Dan
-//          bit 7 => Heroes of the Frontier - Buffalo
-// $7405CE: [PAL][Bit Flags] @Byte2 in Bitset: JournalPage_Unlocks $0x7405cd
+//          bit2 => Outlaws in Twelve States - Smiley Fawler
+//          bit3 => Outlaws in Twelve States - Bandito
+//          bit4 => Heroes of the Frontier - Annie
+//          bit5 => Ranged Weapons - Bayonet Rifle
+//          bit6 => Wanted Dead or Alive - Dan
+//          bit7 => Heroes of the Frontier - Buffalo
+// $7405CE: [PAL][BitFlags of Bitset(byte2):JournalPageUnlocks] ($0x7405cd)
 //          bit 0 => Outlaws in Twelve States - Cooper
 //          bit 1 => Citizens of the Wilderness - Black Elk Tribe
 //          bit 2 => Wanted Dead or Alive - Mr. Black
@@ -1065,249 +1102,253 @@
 //          bit 5 => Wanted Dead or Alive - Roberto Pedrosa
 //          bit 6 => Prof. Perry's Peculiarities - Asada
 //          bit 7 => Ranged Weapons - Breech Loader
-// $7405CF: [PAL][Bit Flags] @Byte3 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Protectors of Brimstone - Sergeant Marquez
-//          bit 1 => Citizens of the Wilderness - Fred Kenyon
-//          bit 2 => /
-//          bit 3 => Wanted Dead or Alive - Bad Bessie
-//          bit 4 => Prof. Perry's Peculiarities - Clyde Slade
-//          bit 5 => Citizens of the Wilderness - Running Moon
-//          bit 6 => Ugly Chris Gang - Chicken
-//          bit 7 => Citizens of the Wilderness - Sheriff O'Grady
-// $7405D0: [PAL][Bit Flags] @Byte4 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Good People of Brimstone - Christina
-//          bit 1 => Memories of the Past - Falling Star + Young Red Harlow + Nate Harlow (unlocks 3 pages, but this bit flag effectively counts for: Nate Harlow)
-//          bit 2 => /
-//          bit 3 => Renegade Army - General Javier Diego
-//          bit 4 => /
-//          bit 5 => Thrown Weapons - Dynamite
-//          bit 6 => Battle Royale Contestants - Kid Cougar
-//          bit 7 => Ranged Weapons - Escopeta
-// $7405D1: [PAL][Bit Flags] @Byte5 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Wanted Dead or Alive - Loaf Whitney
-//          bit 1 => Wanted Dead or Alive - Greg 'Big Oaf' Whitney
-//          bit 2 => Wanted Dead or Alive - Bloody Tom
-//          bit 3 => Ugly Chris Gang - Whiskey
-//          bit 4 => Prof. Perry's Peculiarities - Lightning Larouche
-//          bit 5 => /
-//          bit 6 => Outlaws in Twelve States - Gordon "Digs" Fowler
-//          bit 7 => Ranged Weapons - Halcon Rifle
-// $7405D2: [PAL][Bit Flags] @Byte6 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Ugly Chris Gang - Hedgehog
-//          bit 1 => Ranged Weapons - High Caliber
-//          bit 2 => Wanted Dead or Alive - Harry 'Hatchet' Schultz
-//          bit 3 => /
-//          bit 4 => /
-//          bit 5 => Side Arms - Inquisitor
-//          bit 6 => /
-//          bit 7 => Heroes of the Frontier - Jack Swift
-// $7405D3: [PAL][Bit Flags] @Byte7 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Good People of Brimstone - Jody
-//          bit 1 => Wanted Dead or Alive - Jesse Lynch
-//          bit 2 => Protectors of Brimstone - Sherrif Bartlett
-//          bit 3 => Thrown Weapons - Knife
-//          bit 4 => Citizens of the Wilderness - Katie O'Grady
-//          bit 5 => Renegade Army - The Duellist
-//          bit 6 => Frontier Places - Brimstone Saloon
-//          bit 7 => Frontier Places - Border Bridge
-// $7405D4: [PAL][Bit Flags] @Byte8 in Bitset: JournalPage_Unlocks $0x7405cd
+// $7405CF: [PAL][BitFlags of Bitset(byte3):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Protectors of Brimstone - Sergeant Marquez
+//          bit1 => Citizens of the Wilderness - Fred Kenyon
+//          bit2 => /
+//          bit3 => Wanted Dead or Alive - Bad Bessie
+//          bit4 => Prof. Perry's Peculiarities - Clyde Slade
+//          bit5 => Citizens of the Wilderness - Running Moon
+//          bit6 => Ugly Chris Gang - Chicken
+//          bit7 => Citizens of the Wilderness - Sheriff O'Grady
+// $7405D0: [PAL][BitFlags of Bitset(byte4):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Good People of Brimstone - Christina
+//          bit1 => Memories of the Past - Falling Star + Young Red Harlow + Nate Harlow (unlocks 3 pages, but this bitflag effectively counts for: Nate Harlow)
+//          bit2 => /
+//          bit3 => Renegade Army - General Javier Diego
+//          bit4 => /
+//          bit5 => Thrown Weapons - Dynamite
+//          bit6 => Battle Royale Contestants - Kid Cougar
+//          bit7 => Ranged Weapons - Escopeta
+// $7405D1: [PAL][BitFlags of Bitset(byte5):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Wanted Dead or Alive - Loaf Whitney
+//          bit1 => Wanted Dead or Alive - Greg 'Big Oaf' Whitney
+//          bit2 => Wanted Dead or Alive - Bloody Tom
+//          bit3 => Ugly Chris Gang - Whiskey
+//          bit4 => Prof. Perry's Peculiarities - Lightning Larouche
+//          bit5 => /
+//          bit6 => Outlaws in Twelve States - Gordon "Digs" Fowler
+//          bit7 => Ranged Weapons - Halcon Rifle
+// $7405D2: [PAL][BitFlags of Bitset(byte6):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Ugly Chris Gang - Hedgehog
+//          bit1 => Ranged Weapons - High Caliber
+//          bit2 => Wanted Dead or Alive - Harry 'Hatchet' Schultz
+//          bit3 => /
+//          bit4 => /
+//          bit5 => Side Arms - Inquisitor
+//          bit6 => /
+//          bit7 => Heroes of the Frontier - Jack Swift
+// $7405D3: [PAL][BitFlags of Bitset(byte7):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Good People of Brimstone - Jody
+//          bit1 => Wanted Dead or Alive - Jesse Lynch
+//          bit2 => Protectors of Brimstone - Sherrif Bartlett
+//          bit3 => Thrown Weapons - Knife
+//          bit4 => Citizens of the Wilderness - Katie O'Grady
+//          bit5 => Renegade Army - The Duellist
+//          bit6 => Frontier Places - Brimstone Saloon
+//          bit7 => Frontier Places - Border Bridge
+// $7405D4: [PAL][BitFlags of Bitset(byte8):JournalPageUnlocks] ($0x7405cd)
 //          ---- Frontier Places ----
-//          bit 0 => Sunset Canyon
-//          bit 1 => The Jail
-//          bit 2 => Fort Diego
-//          bit 3 => Fairgrounds
-//          bit 4 => Tarnation
-//          bit 5 => Twin Rocks
-//          bit 6 => Mansion
-//          bit 7 => Broken Creek
-// $7405D5: [PAL][Bit Flags] @Byte9 in Bitset: JournalPage_Unlocks $0x7405cd
+//          bit0 => Sunset Canyon
+//          bit1 => The Jail
+//          bit2 => Fort Diego
+//          bit3 => Fairgrounds
+//          bit4 => Tarnation
+//          bit5 => Twin Rocks
+//          bit6 => Mansion
+//          bit7 => Broken Creek
+// $7405D5: [PAL][BitFlags of Bitset(byte9):JournalPageUnlocks] ($0x7405cd)
 //          ---- Frontier Places ----
-//          bit 0 => Annie's Ranch
-//          bit 1 => Widow's Patch
-//          bit 2 => Widow's Patch, Night
-//          bit 3 => Brimstone
-//          bit 4 => Diego's Railroad
-//          bit 5 => Pan-Atllantic Railroad
-//          bit 6 => Bear Mountain
+//          bit0 => Annie's Ranch
+//          bit1 => Widow's Patch
+//          bit2 => Widow's Patch, Night
+//          bit3 => Brimstone
+//          bit4 => Diego's Railroad
+//          bit5 => Pan-Atllantic Railroad
+//          bit6 => Bear Mountain
 //          ---- Other ----
-//          bit 7 => Prof. Perry's Peculiarities - The Clowns
-// $7405D6: [PAL][Bit Flags] @Byte10 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Merchants of Brimstone - Manny Quinn
-//          bit 1 => Thrown Weapons - Fire Bottle
-//          bit 2 => Memories of the Past - Falling Star + Young Red Harlow (unlocks 2 pages, but this bit flag  effectively counts for: Falling Star)
-//          bit 3 => Outlaws in Twelve States - Udo Kang
-//          bit 4 => Memories of the Past - Falling Star + Young Red Harlow (unlocks 2 pages, but this bit flag  effectively counts for: Young Red Harlow)
-//          bit 5 => Battle Royale Contestants - Mr. Kelley
-//          bit 6 => Outlaws in Twelve States - Standing Snake
-//          bit 7 => Citizens of the Wilderness - Grizzly
-// $7405D7: [PAL][Bit Flags] @Byte11 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Outlaws in Twelve States - Smitty
-//          bit 1 => Outlaws in Twelve States - Juan "Loco" Sanchez
-//          bit 2 => Citizens of the Wilderness - Blind Willy Wilson
-//          bit 3 => Good People of Brimstone - Jebidah Cole
-//          bit 4 => Good People of Brimstone - Mathias Lampry
-//          bit 5 => Good People of Brimstone - Sandy Dodge
-//          bit 6 => Good People of Brimstone - Verne Wiggins
-//          bit 7 => Good People of Brimstone - Abigail
-// $7405D8: [PAL][Bit Flags] @Byte12 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Good People of Brimstone - Lily Belle
-//          bit 1 => Renegade Army - Pvt. 'Ripper' Hernandez
-//          bit 2 => Good People of Brimstone - Natalie
-//          bit 3 => Side Arms - Old Pistol
-//          bit 4 => Ranged Weapons - Oppressor
-//          bit 5 => Ranged Weapons - Owl Rifle
-//          bit 6 => Merchants of Brimstone - Doc Weatherby + Percy Merriweather (unlocks 2 pages)
-//          bit 7 => Merchants of Brimstone - Carnaby Peabody
-// $7405D9: [PAL][Bit Flags] @Byte13 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => /
-//          bit 1 => Merchant of Brimstone - Ralph Clover
-//          bit 2 => Merchant of Brimstone - Woodrow Klein
-//          bit 3 => Merchant of Brimstone - Fitch
-//          bit 4 => Merchant of Brimstone - Hanz Kenyon
-//          bit 5 => Side Arms - Pacificador
-//          bit 6 => Renegade Army - Pick Axe Miller
-//          bit 7 => Outlaws in Twelve States - Father Driscoll
-// $7405DA: [PAL][Bit Flags] @Byte14 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Prof. Perry's Peculiarities - Pig Josh
-//          bit 1 => Outlaws in Twelve States - Bad Bob Larson
-//          bit 2 => Prof. Perry's Peculiarities - Professor Perry
-//          bit 3 => /
-//          bit 4 => Citizens of the Wilderness - Red Wolf Tribe
-//          bit 5 => Ranged Weapons - Repeater Rifle
-//          bit 6 => Side Arms - Revolver
-//          bit 7 => Outlaws in Twelve States - Jethro Greensleves
-// $7405DB: [PAL][Bit Flags] @Byte15 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Prof. Perry's Peculiarities - Atlas Jones
-//          bit 1 => Renegade Army - Lieutenant Cleu
-//          bit 2 => /
-//          bit 3 => Ranged Weapons - Sawn Off
-//          bit 4 => Citizens of the Wilderness - Gabby Brennan
-//          bit 5 => Side Arms - Scorpion
-//          bit 6 => Renegade Army - Private Hanson
-//          bit 7 => Protectors of Brimstone - Rat Chavez
-// $7405DC: [PAL][Bit Flags] @Byte16 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Protectors of Brimstone - Mad Dog Jones
-//          bit 1 => Protectors of Brimstone - The Cornet Brothers
-//          bit 2 => Protectors of Brimstone - Jason Cornet
-//          bit 3 => Renegade Army - Captain Bufias
-//          bit 4 => Citizens of the Wilderness - Curly Shaw
-//          bit 5 => Side Arms - Six Shooter
-//          bit 6 => Thrown Weapons - Snake Oil
-//          bit 7 => Outlaws in Twelve States - Jacques
-// $7405DD: [PAL][Bit Flags] @Byte17 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Heroes of the Frontier - Red
-//          bit 1 => Outlaws in Twelve States - Sidney "Sissy" Fess
-//          bit 2 => Wanted Dead or Alive - Longhorn Luke
-//          bit 3 => Wanted Dead or Alive - Holstein Hal
-//          bit 4 => Wanted Dead or Alive - Sam
-//          bit 5 => Citizens of the Wilderness - Hank Pullman
-//          bit 6 => Ranged Weapons - The Lion
-//          bit 7 => Heroes of the Frontier - Shadow Wolf
-// $7405DE: [PAL][Bit Flags] @Byte18 in Bitset: JournalPage_Unlocks $0x7405cd
-//          bit 0 => Ranged Weapons - Twelve Gauge
-//          bit 1 => Outlaws in Twelve States - Twiggy Phelps
-//          bit 2 => Side Arms - Twin Revolvers
-//          bit 3 => Ugly Chris Gang - Ugly Chris
-//          bit 4 => Side Arms - Widowmaker
-//          bit 5 => Ugly Chris Gang - Gigolo
-//          bit 6 => Protectors of Brimstone - Governor Griffon
-//          bit 7 => Good People of Brimstone - Tameri
-// $7405DF: [PAL][3-byte Bitset] ShowdownMap_Unlocks (13 flags total)
-//          @Sub-bitset in Bitset: Shared_Unlocks $0x7405cc
-//          - This bitset handles the unlocks for showdown maps
+//          bit7 => Prof. Perry's Peculiarities - The Clowns
+// $7405D6: [PAL][BitFlags of Bitset(byte10):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Merchants of Brimstone - Manny Quinn
+//          bit1 => Thrown Weapons - Fire Bottle
+//          bit2 => Memories of the Past - Falling Star + Young Red Harlow (unlocks 2 pages, but this bit flag  effectively counts for: Falling Star)
+//          bit3 => Outlaws in Twelve States - Udo Kang
+//          bit4 => Memories of the Past - Falling Star + Young Red Harlow (unlocks 2 pages, but this bit flag  effectively counts for: Young Red Harlow)
+//          bit5 => Battle Royale Contestants - Mr. Kelley
+//          bit6 => Outlaws in Twelve States - Standing Snake
+//          bit7 => Citizens of the Wilderness - Grizzly
+// $7405D7: [PAL][BitFlags of Bitset(byte11):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Outlaws in Twelve States - Smitty
+//          bit1 => Outlaws in Twelve States - Juan "Loco" Sanchez
+//          bit2 => Citizens of the Wilderness - Blind Willy Wilson
+//          bit3 => Good People of Brimstone - Jebidah Cole
+//          bit4 => Good People of Brimstone - Mathias Lampry
+//          bit5 => Good People of Brimstone - Sandy Dodge
+//          bit6 => Good People of Brimstone - Verne Wiggins
+//          bit7 => Good People of Brimstone - Abigail
+// $7405D8: [PAL]
+//          [BitFlags of Bitset(byte13):SharedUnlocks] ($0x7405cc)
+//          [BitFlags of Bitset(byte12):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Good People of Brimstone - Lily Belle
+//          bit1 => Renegade Army - Pvt. 'Ripper' Hernandez
+//          bit2 => Good People of Brimstone - Natalie
+//          bit3 => Side Arms - Old Pistol
+//          bit4 => Ranged Weapons - Oppressor
+//          bit5 => Ranged Weapons - Owl Rifle
+//          bit6 => Merchants of Brimstone - Doc Weatherby + Percy Merriweather (unlocks 2 pages)
+//          bit7 => Merchants of Brimstone - Carnaby Peabody
+// $7405D9: [PAL][BitFlags of Bitset(byte13):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => /
+//          bit1 => Merchant of Brimstone - Ralph Clover
+//          bit2 => Merchant of Brimstone - Woodrow Klein
+//          bit3 => Merchant of Brimstone - Fitch
+//          bit4 => Merchant of Brimstone - Hanz Kenyon
+//          bit5 => Side Arms - Pacificador
+//          bit6 => Renegade Army - Pick Axe Miller
+//          bit7 => Outlaws in Twelve States - Father Driscoll
+// $7405DA: [PAL][BitFlags of Bitset(byte14):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Prof. Perry's Peculiarities - Pig Josh
+//          bit1 => Outlaws in Twelve States - Bad Bob Larson
+//          bit2 => Prof. Perry's Peculiarities - Professor Perry
+//          bit3 => /
+//          bit4 => Citizens of the Wilderness - Red Wolf Tribe
+//          bit5 => Ranged Weapons - Repeater Rifle
+//          bit6 => Side Arms - Revolver
+//          bit7 => Outlaws in Twelve States - Jethro Greensleves
+// $7405DB: [PAL][BitFlags of Bitset(byte15):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Prof. Perry's Peculiarities - Atlas Jones
+//          bit1 => Renegade Army - Lieutenant Cleu
+//          bit2 => /
+//          bit3 => Ranged Weapons - Sawn Off
+//          bit4 => Citizens of the Wilderness - Gabby Brennan
+//          bit5 => Side Arms - Scorpion
+//          bit6 => Renegade Army - Private Hanson
+//          bit7 => Protectors of Brimstone - Rat Chavez
+// $7405DC: [PAL][BitFlags of Bitset(byte16):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Protectors of Brimstone - Mad Dog Jones
+//          bit1 => Protectors of Brimstone - The Cornet Brothers
+//          bit2 => Protectors of Brimstone - Jason Cornet
+//          bit3 => Renegade Army - Captain Bufias
+//          bit4 => Citizens of the Wilderness - Curly Shaw
+//          bit5 => Side Arms - Six Shooter
+//          bit6 => Thrown Weapons - Snake Oil
+//          bit7 => Outlaws in Twelve States - Jacques
+// $7405DD: [PAL][BitFlags of Bitset(byte17):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Heroes of the Frontier - Red
+//          bit1 => Outlaws in Twelve States - Sidney "Sissy" Fess
+//          bit2 => Wanted Dead or Alive - Longhorn Luke
+//          bit3 => Wanted Dead or Alive - Holstein Hal
+//          bit4 => Wanted Dead or Alive - Sam
+//          bit5 => Citizens of the Wilderness - Hank Pullman
+//          bit6 => Ranged Weapons - The Lion
+//          bit7 => Heroes of the Frontier - Shadow Wolf
+// $7405DE: [PAL][BitFlags of Bitset(byte18):JournalPageUnlocks] ($0x7405cd)
+//          bit0 => Ranged Weapons - Twelve Gauge
+//          bit1 => Outlaws in Twelve States - Twiggy Phelps
+//          bit2 => Side Arms - Twin Revolvers
+//          bit3 => Ugly Chris Gang - Ugly Chris
+//          bit4 => Side Arms - Widowmaker
+//          bit5 => Ugly Chris Gang - Gigolo
+//          bit6 => Protectors of Brimstone - Governor Griffon
+//          bit7 => Good People of Brimstone - Tameri
+// $7405DF: [PAL][3-byte Bitset:ShowdownMapUnlocks]
+//          @Sub-bitset of [Bitset:SharedUnlocks] ($0x7405cc)
+//          - This Sub-bitset handles the unlocks for showdown maps
+//          - This Sub-bitset consists of 13 flags
 //          - The Xbox version may have 1 extra showdown map/stage
 //          
-//          [PAL][Bit Flags]
-//          @Byte19 in Bitset: JournalPage_Unlocks $0x7405cd
-//          @Byte1 in Bitset: ShowdownMap_Unlocks $0x7405df
+//          [PAL]
+//          [BitFlags of Bitset(byte19):JournalPageUnlocks] ($0x7405cd)
+//          [BitFlags of Bitset(byte1):ShowdownMapUnlocks] ($0x7405df)
 //          ---- Journal Pages ----
-//          bit 0 => Renegade Army - Colonel Daren
-//          bit 1 => Ranged Weapons - Zwei Fasser
-//          bit 2 => Outlaws in Twelve States - Oscar Navarro
-//          bit 3 => Outlaws in Twelve States - Paul "Swig" Bennet
-//          bit 4 => Battle Royale Contestant - Gabriel Navarro
+//          bit0 => Renegade Army - Colonel Daren
+//          bit1 => Ranged Weapons - Zwei Fasser
+//          bit2 => Outlaws in Twelve States - Oscar Navarro
+//          bit3 => Outlaws in Twelve States - Paul "Swig" Bennet
+//          bit4 => Battle Royale Contestant - Gabriel Navarro
 //          ---- Showdown Maps ----
-//          bit 5 => The Bridge - Contested Structure
-//          bit 6 => Sunset Canyon - Desert Badlands
-//          bit 7 => The Mine - Lost Inheritance
-// $7405E0: [PAL][Bit Flags] @Byte2 in Bitset: ShowdownMap_Unlocks $0x7405df
-//          bit 0 => Fallen Creek - Snow-topped Mountain
-//          bit 1 => Desert Fortress - Giant Fortress
-//          bit 2 => Fairground - Ruined Homestead
-//          bit 3 => Ghost Town - Abandoned Settlement
-//          bit 4 => Twin Rocks - Ancient Monoliths
-//          bit 5 => The Mansion - Opulent Palace
-//          bit 6 => /
-//          bit 7 => Mansion Grounds - Tended Gardens
-// $7405E1: [PAL][7-byte Bitset] ShowdownCharacter_Unlocks (48 flags total)
-//          @Sub-bitset in Bitset: Shared_Unlocks $0x7405cc
-//          - This bitset handles only the unlocks for showdown characters
+//          bit5 => The Bridge - Contested Structure
+//          bit6 => Sunset Canyon - Desert Badlands
+//          bit7 => The Mine - Lost Inheritance
+// $7405E0: [BitFlags of Bitset(byte2):ShowdownMapUnlocks] ($0x7405df)
+//          bit0 => Fallen Creek - Snow-topped Mountain
+//          bit1 => Desert Fortress - Giant Fortress
+//          bit2 => Fairground - Ruined Homestead
+//          bit3 => Ghost Town - Abandoned Settlement
+//          bit4 => Twin Rocks - Ancient Monoliths
+//          bit5 => The Mansion - Opulent Palace
+//          bit6 => /
+//          bit7 => Mansion Grounds - Tended Gardens
+// $7405E1: [PAL][7-byte Bitset:ShowdownCharacterUnlocks]
+//          @Sub-bitset of [Bitset:SharedUnlocks] ($0x7405cc)
+//          - This sub-bitset handles the unlocks for showdown characters
+//          - This sub-bitset consists of 48 flags
 //          
-//          [PAL][Bit Flags]
-//          @Byte3 in Bitset: ShowdownMap_Unlocks $0x7405df
-//          @Byte1 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
+//          [PAL]
+//          [BitFlags of Bitset(byte3):ShowdownMapUnlocks] ($0x7405df)
+//          [BitFlags of Bitset(byte1):ShowdownCharacterUnlocks] ($0x7405e1)
 //          ---- Showdown Maps ----
-//          bit 0 => Broken Creek - Boyhood Home
-//          bit 1 => The Ranch - Fertile Land
-//          bit 2 => /
-//          bit 3 => Widows Patch - Terrified Town
-//          bit 4 => /
+//          bit0 => Broken Creek - Boyhood Home
+//          bit1 => The Ranch - Fertile Land
+//          bit2 => /
+//          bit3 => Widows Patch - Terrified Town
+//          bit4 => /
 //          ---- Showdown Characters ----
-//          bit 5 => "Smiley" Fawler
-//          bit 6 => Annie Stoakes
-//          bit 7 => Dan
-// $7405E2: [PAL][Bit Flags] @Byte2 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => Buffalo
-//          bit 1 => Cooper
-//          bit 2 => Mr. Black
-//          bit 3 => Rico Pedrosa
-//          bit 4 => Bad Bessie
-//          bit 5 => "The Blade" Slade
-//          bit 6 => Chicken
-//          bit 7 => Sheriff O'Grady
-// $7405E3: [PAL][Bit Flags] @Byte3 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => Christina
-//          bit 1 => Nate Harlow
-//          bit 2 => General Diego
-//          bit 3 => "Kid" Cougar
-//          bit 4 => "Big Oaf" Whitney
-//          bit 5 => "Bloody" Tom
-//          bit 6 => "Gigolo" Hancock
-//          bit 7 => "Dig" Fowler
-// $7405E4: [PAL][Bit Flags] @Byte4 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => "Hedgehog" Thornton
-//          bit 1 => Jack Swift
-//          bit 2 => Sheriff Bartlett
-//          bit 3 => Katie O'Grady
-//          bit 4 => Fidgit
-//          bit 5 => Manny Quinn
-//          bit 6 => Falling Star
-//          bit 7 => Udo Kang
-// $7405E5: [PAL][Bit Flags] @Byte5 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => Red Jr.
-//          bit 1 => Mr. Kelley
-//          bit 2 => Standing Snake
-//          bit 3 => Grizzly
-//          bit 4 => Smitty
-//          bit 5 => Natalie
-//          bit 6 => "Pig" Josh
-//          bit 7 => Professor Perry
-// $7405E6: [PAL][Bit Flags] @Byte6 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => Jason Cornet
-//          bit 1 => "Curly" Shaw
-//          bit 2 => Red
-//          bit 3 => "Sissy" Fess
-//          bit 4 => Holstein Hal
-//          bit 5 => Sam
-//          bit 6 => Shadow Wolf
-//          bit 7 => "Twiggy" Phelps
-// $7405E7: [PAL][Bit Flags] @Byte7 in Bitset: ShowdownCharacter_Unlocks $0x7405e1
-//          bit 0 => "Ugly" Chris
-//          bit 1 => "Whiskey" Treadwell
-//          bit 2 => Governor Griffon
-//          bit 3 => Colonel Daren
-//          bit 4 => Gabriel Navarro
-//          bits [5-7] => /
+//          bit5 => "Smiley" Fawler
+//          bit6 => Annie Stoakes
+//          bit7 => Dan
+// $7405E2: [PAL][BitFlags of Bitset(byte2):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => Buffalo
+//          bit1 => Cooper
+//          bit2 => Mr. Black
+//          bit3 => Rico Pedrosa
+//          bit4 => Bad Bessie
+//          bit5 => "The Blade" Slade
+//          bit6 => Chicken
+//          bit7 => Sheriff O'Grady
+// $7405E3: [PAL][BitFlags of Bitset(byte3):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => Christina
+//          bit1 => Nate Harlow
+//          bit2 => General Diego
+//          bit3 => "Kid" Cougar
+//          bit4 => "Big Oaf" Whitney
+//          bit5 => "Bloody" Tom
+//          bit6 => "Gigolo" Hancock
+//          bit7 => "Dig" Fowler
+// $7405E4: [PAL][BitFlags of Bitset(byte4):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => "Hedgehog" Thornton
+//          bit1 => Jack Swift
+//          bit2 => Sheriff Bartlett
+//          bit3 => Katie O'Grady
+//          bit4 => Fidgit
+//          bit5 => Manny Quinn
+//          bit6 => Falling Star
+//          bit7 => Udo Kang
+// $7405E5: [PAL][BitFlags of Bitset(byte5):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => Red Jr.
+//          bit1 => Mr. Kelley
+//          bit2 => Standing Snake
+//          bit3 => Grizzly
+//          bit4 => Smitty
+//          bit5 => Natalie
+//          bit6 => "Pig" Josh
+//          bit7 => Professor Perry
+// $7405E6: [PAL][BitFlags of Bitset(byte6):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => Jason Cornet
+//          bit1 => "Curly" Shaw
+//          bit2 => Red
+//          bit3 => "Sissy" Fess
+//          bit4 => Holstein Hal
+//          bit5 => Sam
+//          bit6 => Shadow Wolf
+//          bit7 => "Twiggy" Phelps
+// $7405E7: [PAL][BitFlags of Bitset(byte7):ShowdownCharacterUnlocks] ($0x7405e1)
+//          bit0 => "Ugly" Chris
+//          bit1 => "Whiskey" Treadwell
+//          bit2 => Governor Griffon
+//          bit3 => Colonel Daren
+//          bit4 => Gabriel Navarro
+//          bits[5-7] => /
 // $740608: [PAL][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
 //          @Fixed Memory Location. Although pointed to by [Pointer:UndefinedStruct_01] ($0x7448a0)
 //          - The active (or last used, on Main Menu) Player_Profile is pointed to by $0x7448d8
@@ -1479,11 +1520,11 @@
 //          |'''''''''''''''''''''''''''''''''''
 //          | - This struct points to other documented structures
 //          |
-//          |+0x8 - [28-byte Struct:ShowdownMode_Settings]
-//          |¨| - Definition of [Struct:ShowdownMode_Settings] at $0x7405b0
+//          |+0x8 - [28-byte Struct:ShowdownModeSettings]
+//          |¨| - Definition of [Struct:ShowdownModeSettings] at $0x7405b0
 //          |/
-//          |+0x24 - [28-byte Bitset:Shared_Unlocks]
-//          |¨| - Definition of [Bitset:Shared_Unlocks] at $0x7405cd
+//          |+0x24 - [28-byte Bitset:SharedUnlocks]
+//          |¨| - Definition of [Bitset:SharedUnlocks] at $0x7405cd
 //          |/
 //          |+0x60 - [PAL][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
 //          |¨| - Definition of [Array:PlayerProfileData] at $0x740608
@@ -1684,7 +1725,7 @@
 //          |+|¨| - Only counts when in control of character or during small interactive cutscenes (also counts for a few frames in-between loading cutscenes)
 //          |+|
 //          |+|+0x190 - [32-bit] Bounty/Cash Collected
-//          |+|¨| - Copies value stored via pointer at $0x562a20
+//          |+|¨| - Copies value stored via [Pointer:GameController] ($0x562a20)
 //          |+|
 //          |+|+0x194 - [32-bit] Shots Fired (functional)
 //          |+|¨| - This value is used to calculate accuracy statistic on the Reward Menu
@@ -1718,7 +1759,7 @@
 //          |
 //          |+0x5C8 - [32-byte Bitset] Player_Profile_Unlocks
 //          |¨| - Each Player_Profile has its own bitset storing which items are unlocked
-//          |¨| - Newly acquired items are saved to the Shared_Unlocks ($0x7405cd)
+//          |¨| - Newly acquired items are saved to the [Bitset:SharedUnlocks] ($0x7405cc)
 //          |¨| - This bitset also handles which weapons are in the weapon inventory, during weapon selection
 //          |¨| - This bitset is updated whenever something is picked up, unlocked/bought through shops and on the Reward Menu
 //          |¨| - Bitset Definition below
@@ -1931,7 +1972,7 @@
 //          |¨| bit 0 => (PAGE) Prof. Perry's Peculiarities - Clyde Slade || (CHAR) "The Blade" Slade
 //          |¨| bit 1 => (PAGE) Protectors of Brimstone - Governor Griffon || (CHAR) Governor Griffon
 //          |¨| bit 2 => (STAGE) Ghost Town - Abandoned Settlement
-//          |¨| bit 3 => // -> flips a unknown bit @Byte3 in Bitset:Player_Profile_Unlocks:ShowdownMap_Unlocks
+//          |¨| bit 3 => // -> flips a unknown bit at [Bitset(byte3):ShowdownMapUnlocks]
 //          |¨| bit 4 => (PAGE) Wanted Dead or Alive - Mr. Black || (CHAR) Mr. Black
 //          |¨| bit 5 => (PAGE) Citizens of the Wilderness - Red Wolf Tribe |⚠|--> This page is also unlocked by bit6@Byte24
 //          |¨| bit 6 => (PAGE) Citizens of the Wilderness || (CHAR) "Curly" Shaw
@@ -1940,15 +1981,15 @@
 //          |+0x15 - [Bit Flags] @Byte22 in Bitset:Player_Profile_Unlocks
 //          |¨| bit 0 => (PAGE) Renegade Army - Pvt. 'Ripper' Hernandez
 //          |¨| bit 1 => (PAGE) Citizens of the Wilderness - Gabby Brennan
-//          |¨| bit 2 => // -> flips a bit 1 byte before Bitset:Shared_Unlocks
-//          |¨| bit 3 => // -> flips a bit 1 byte before Bitset:Shared_Unlocks
-//          |¨| bit 4 => // -> flips a bit 1 byte before Bitset:Shared_Unlocks
-//          |¨| bit 5 => // -> flips a bit 1 byte before Bitset:Shared_Unlocks
-//          |¨| bit 6 => // -> flips a bit 1 byte before Bitset:Shared_Unlocks
-//          |¨| bit 7 => // -> flips an unknown bit @Byte0 in Bitset:Player_Profile_Unlocks:Shared_Unlocks
+//          |¨| bit 2 => // -> flips a unknown bit 1 byte before [Bitset:SharedUnlocks] ($0x7405cb)
+//          |¨| bit 3 => // -> flips a unknown bit 1 byte before [Bitset:SharedUnlocks] ($0x7405cb)
+//          |¨| bit 4 => // -> flips a unknown bit 1 byte before [Bitset:SharedUnlocks] ($0x7405cb)
+//          |¨| bit 5 => // -> flips a unknown bit 1 byte before [Bitset:SharedUnlocks] ($0x7405cb)
+//          |¨| bit 6 => // -> flips a unknown bit 1 byte before [Bitset:SharedUnlocks] ($0x7405cb)
+//          |¨| bit 7 => // -> flips an unknown bit at [Bitset(byte1):SharedUnlocks] ($0x7405cc)
 //          |/
 //          |+0x16 - [Bit Flags] @Byte23 in Bitset:Player_Profile_Unlocks
-//          |¨| bit 0 => // -> flips an unknown bit @Byte0 in Bitset:Player_Profile_Unlocks:Shared_Unlocks
+//          |¨| bit 0 => // -> flips an unknown bit at [Bitset(byte1):SharedUnlocks] ($0x7405cc)
 //          |¨| bit 1 => (PAGE) Outlaws in Twelve States - Oscar Navarro || (PAGE) Outlaws in Twelve States - Paul "Swig" Bennet |⚠|--> These are also unlocked by bit5@Byte10
 //          |¨| bit 2 => (PAGE) Citizens of the Wilderness - Grizzly || (CHAR) Grizzly |⚠|--> These are also unlocked by bit6@Byte10
 //          |¨| bit 3 => (PAGE) Wanted Dead or Alive - Sam || (CHAR) Sam |⚠|--> These are also unlocked by bit7@Byte10

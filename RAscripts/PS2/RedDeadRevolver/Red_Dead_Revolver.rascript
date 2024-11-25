@@ -134,10 +134,10 @@ memory_StructDefs = {
 			"BitFlag_IsRidingAnimal": { 
 				"pointerChainOffsets": [0xC, 0xC0]},
 		}},
-	"Struct_PlayerInputReader": {
+	"Struct:PlayerInputReader": {
 		"offsetToMember": {
-			"BitFlags_PlayerInputA": 0x0,
-			"BitFlags_PlayerInputB": 0x1}
+			"Bitset(byte1):ControllerButtonsPressed": 0x0,
+			"Bitset(byte2):ControllerButtonsPressed": 0x1}
 		},
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
@@ -208,11 +208,11 @@ memory_StructDefs = {
 		"offsetToMember": {
 			"ASCII:Accuracy": 0x150}
 		},
-	"Struct_InGameMenuController": {
+	"Struct:InGameMenuController": {
 		"offsetToMember": {
-			"ASCII_InGameMenuID": 0x18,
-			"BitFlag_IsInGameMenuDisplayed": 0x38,
-			"8Bit_HighlightedMenuItemID": 0x318},
+			"ASCII:InGameMenuID": 0x18,
+			"InvertedBitFlag:IsInGameMenuDisplayed": 0x38,
+			"8-bit:HighlightedMenuItemID": 0x318},
 		},
 	"Struct_SinglePlayerData": {
 		"pointerChainToMember": {
@@ -412,20 +412,20 @@ memory_StructDefs = {
 			"Float_CountdownTimer": 0x1C,
 			"Float_TimeSpentinMission": 0x20}
 		},
-	"Struct_ShowdownPlayer_Settings_A": {
+	"Struct:ShowdownPlayerSettings_A": {
 		"sizeInBytes": 92,
 		"offsetToMember": {
-			"Lower4_TeamId": 0x0,
-			"ASCII_CharacterModelId": 0x5,
-			"ASCII_ShowdownAIsetting": 0x36}
+			"Lower4:TeamID": 0x0,
+			"ASCII:CharacterModelID": 0x5,
+			"ASCII:ShowdownAISetting": 0x36}
 		},
-	"Struct_ShowdownPlayer_Settings_B": {
+	"Struct:ShowdownPlayerSettings_B": {
 		"sizeInBytes": 336,
 		"offsetToMember": {
-			"ASCII_CharacterModelId": 0x1,
-			"Lower4_TeamId": 0xB,
-			"BitFlag_IsPlayerSlotFilled": 0x13,
-			"ASCII_ShowdownAIsetting": 0x139}
+			"ASCII:CharacterModelID": 0x1,
+			"Lower4:TeamID": 0xB,
+			"BitFlag:IsShowdownPlayerSlotFilled": 0x13,
+			"ASCII:ShowdownAISetting": 0x139}
 		},		
 	"Struct_ShowdownPlayer_Data": {
 		"sizeInBytes": 16,
@@ -497,11 +497,11 @@ memory_StructDefs = {
 		}},
 	"Struct_ShowdownMode_Settings": {
 		"offsetToMember": {
-			"Lower4_GameMode": 0x0,
-			"Lower4_BountyLimit": 0x4,
-			"Lower4_SundownFightTime": 0x8,
-			"Lower4_HighNoonRequiredWins": 0xC,
-			"Lower4_PowerUpSetting": 0x18} 
+			"Lower4:GameMode": 0x0,
+			"Lower4:BountyHunterModeBountyLimitSetting": 0x4,
+			"Lower4:SundownModeFightTimeSetting": 0x8,
+			"Lower4:HighNoonModeNumberOfWinsSetting": 0xC,
+			"Lower4:PowersUpsSetting": 0x18} 
 		},
 	}
 
@@ -574,8 +574,8 @@ memory_addresses = {
 	DATATYPE_8Bit: {
 		"Bitfield:GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
 		"Bitfield:AreaState": {RELEASE_REGION_USA: 0x6aaa9c, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
+		"8-bit:NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
 
-		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
 		"SelectedPlayerProfileId": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
 		},	
 	DATATYPE_ASCII: {
@@ -601,25 +601,26 @@ memory_addresses = {
 		"Pointer:GatlingGunZoneData": {RELEASE_REGION_USA: 0x55b6a8, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
 		"Pointer:GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
 		"Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
+		"Pointer:InGameMenuController(preferred)": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
-		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
+		"Array:ShowdownPlayerSettings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
+		"Array:ShowdownPlayerSettings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
+		"Struct:PlayerInputReader": {RELEASE_REGION_USA: 0x73b7c2, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
+		"Struct:ShowdownModeSettings": {RELEASE_REGION_USA: 0x73de30, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
+		"Bitset:ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
+		"Bitset:ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
+		"Bitset:JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
+		"Bitset:CheatUnlocks": {RELEASE_REGION_USA: 0x73de4c, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL}, // Unused
+
 		"Array_PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL},
 		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Settings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
-		"Array_ShowdownPlayer_Settings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
 		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x761138, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
-		"Bitset_ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
-		"Bitset_ShowdownMapUnlocks": {RELEASE_REGION_USA: 0x73de5f, RELEASE_REGION_EUR: 0x7405df, RELEASE_REGION_JPN: sNULL},
-		"Bitset_JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
-		"Bitset_CheatUnlocks": {RELEASE_REGION_USA: 0x73de4c, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL},
-		"PlayerInputReader": {RELEASE_REGION_USA: 0x73b7c2, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
-		"ShowdownMode_Settings": {RELEASE_REGION_USA: 0x73de30, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
 	}}
 
 
@@ -848,23 +849,23 @@ function on_ASCII_changeTo(memAddr_ASCII, string_s) =>
 // '''''''''''''''''''''''
 function current_FlagState_PlayerInput_X(enum_releaseRegion) => 
 	bit6( 
-		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		memory_getAddress(DATATYPE_Struct, "Struct:PlayerInputReader", enum_releaseRegion) 
+		+ memory_getStruct_OffsetToMember("Struct:PlayerInputReader", "Bitset(byte2):ControllerButtonsPressed"))
 
 function current_FlagState_PlayerInput_R1(enum_releaseRegion) => 
 	bit3( 
-		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		memory_getAddress(DATATYPE_Struct, "Struct:PlayerInputReader", enum_releaseRegion) 
+		+ memory_getStruct_OffsetToMember("Struct:PlayerInputReader", "Bitset(byte2):ControllerButtonsPressed"))
 
 function current_FlagState_PlayerInput_L1(enum_releaseRegion) =>
 	bit2( 
-		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		memory_getAddress(DATATYPE_Struct, "Struct:PlayerInputReader", enum_releaseRegion) 
+		+ memory_getStruct_OffsetToMember("Struct:PlayerInputReader", "Bitset(byte2):ControllerButtonsPressed"))
 
 function current_FlagState_PlayerInput_R2(enum_releaseRegion) =>
 	bit1( 
-		memory_getAddress(DATATYPE_Struct, "PlayerInputReader", enum_releaseRegion) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerInputReader", "BitFlags_PlayerInputB"))
+		memory_getAddress(DATATYPE_Struct, "Struct:PlayerInputReader", enum_releaseRegion) 
+		+ memory_getStruct_OffsetToMember("Struct:PlayerInputReader", "Bitset(byte2):ControllerButtonsPressed"))
 
 
 function is_PlayerInput_ConfirmBtn_pressed(enum_releaseRegion) { // Check playerInput based on region, as Confirm button for JPN version is not same button as for the EUR and USA
@@ -2114,33 +2115,33 @@ function is_inPauseMenu(enum_releaseRegion) =>
 
 function current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) =>
 	bit0(
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "BitFlag_IsInGameMenuDisplayed"))
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion))
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "InvertedBitFlag:IsInGameMenuDisplayed"))
 
 function prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) => 
 	prev(current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion))
 
 function current_HighlightedInGameMenuItem(enum_releaseRegion) =>
 	byte(
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion))
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "8Bit_HighlightedMenuItemID"))
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion))
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "8-bit:HighlightedMenuItemID"))
 
 function is_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)}
 
 function wasPrev_InGameMenuID(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4, transform = c => prev(c))}
 
 function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return 
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1 
 		&& ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4)
@@ -2148,8 +2149,8 @@ function is_InGameMenu_displayed(enum_inGameMenu, enum_releaseRegion) {
 
 function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return __ornext(
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		|| !ascii_string_equals(let_memAddr_InGameMenuID, enum_inGameMenu, 4))
@@ -2157,8 +2158,8 @@ function is_InGameMenu_notDisplayed(enum_inGameMenu, enum_releaseRegion) {
 
 function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return 
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1	// <---Block--- Checks when an InGameMenu is rendered
 		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
@@ -2171,8 +2172,8 @@ function on_InGameMenu_render(enum_inGameMenu, enum_releaseRegion) {
 
 function on_InGameMenu_close(enum_inGameMenu, enum_releaseRegion) {
 	let_memAddr_InGameMenuID = 
-		dword(memory_getAddress(DATATYPE_32BitPointer, "InGameMenuController", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_InGameMenuController", "ASCII_InGameMenuID")
+		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:InGameMenuController(preferred)", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:InGameMenuController", "ASCII:InGameMenuID")
 	return
 		current_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 0
 		&& prev_FlagState_IsInGameMenuDisplayed(enum_releaseRegion) == 1
@@ -2838,7 +2839,7 @@ const_GameMode_data = {
 	GAMEMODE_MainMenu: {"ID": 0xA}}
 
 function current_NumberOfPlayers(enum_releaseRegion) =>
-	byte(memory_getAddress(DATATYPE_8Bit, "NumberOfPlayers", enum_releaseRegion))
+	byte(memory_getAddress(DATATYPE_8Bit, "8-bit:NumberOfPlayers", enum_releaseRegion))
 
 function get_GameMode_ID(enum_gameState) =>
 	const_GameMode_data[enum_gameState]["ID"]
@@ -3063,11 +3064,11 @@ function ASCIIaddress_ShowdownPlayerCharacterId(int_playerIndex, enum_releaseReg
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1	
-	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerSettings_B", enum_releaseRegion)
 	let_memAddr_CharacterModelID = 
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "ASCII_CharacterModelId")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerSettings_B"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerSettings_B", "ASCII:CharacterModelID")
 	return let_memAddr_CharacterModelID}
 
 function is_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
@@ -3079,11 +3080,11 @@ function ASCIIaddress_ShowdownPlayer_AIsetting(int_playerIndex, enum_releaseRegi
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1	
-	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerSettings_B", enum_releaseRegion)
 	let_memAddr_ShowdownAIsetting = 
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "ASCII_ShowdownAIsetting")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerSettings_B"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerSettings_B", "ASCII:ShowdownAISetting")
 	return let_memAddr_ShowdownAIsetting}
 
 function is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -3099,11 +3100,11 @@ function current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // P
 		util_throwError(format("Player index: {0} is not in valid range"))
 
 	let_playerIndex = int_playerIndex - 1
-	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Settings_B", enum_releaseRegion)
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerSettings_B", enum_releaseRegion)
 	let_memAddr_TeamId =
 		let_memAddr_ShowdownPlayerSettingsArray 
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Settings_B"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Settings_B", "Lower4_TeamId")
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerSettings_B"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerSettings_B", "Lower4:TeamID")
 	return low4(let_memAddr_TeamId)}
 
 function prev_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
@@ -3328,8 +3329,8 @@ SHOWDOWN_MODE_Sundown = 1
 SHOWDOWN_MODE_HighNoon = 2 
 
 function current_Showdown_Mode(enum_releaseRegion) {
-	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_GameMode")
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "Struct:ShowdownModeSettings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4:GameMode")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_Mode(enum_showdownMode, enum_releaseRegion) =>
@@ -3341,8 +3342,8 @@ SHOWDOWN_BOUNTY_LIMIT_10K = 2
 SHOWDOWN_BOUNTY_LIMIT_15K = 3
 SHOWDOWN_BOUNTY_LIMIT_20K = 4 
 function current_Showdown_BountyLimit(enum_releaseRegion) {
-	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_BountyLimit")
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "Struct:ShowdownModeSettings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4:BountyHunterModeBountyLimitSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_BountyLimit(enum_showdownBountyLimit, enum_releaseRegion) =>
@@ -3354,8 +3355,8 @@ SHOWDOWN_SUNDOWN_FIGHT_TIME_10min = 2
 SHOWDOWN_SUNDOWN_FIGHT_TIME_15min = 3 
 SHOWDOWN_SUNDOWN_FIGHT_TIME_1min = 4 
 function is_Showdown_SundownFightTime(enum_sundownFightTime, enum_releaseRegion) {
-	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_SundownFightTime")
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "Struct:ShowdownModeSettings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4:SundownModeFightTimeSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_sundownFightTime}
 
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_3 = 0
@@ -3364,8 +3365,8 @@ SHOWDOWN_HIGH_NOON_REQUIRED_WINS_7 = 2
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_10 = 3
 SHOWDOWN_HIGH_NOON_REQUIRED_WINS_1 = 4
 function current_Showdown_HighNoonRequiredWins(enum_releaseRegion) {
-	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_HighNoonRequiredWins")
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "Struct:ShowdownModeSettings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4:HighNoonModeNumberofWinsSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member)}
 
 function is_Showdown_HighNoonRequiredWins(enum_highNoonRequiredWins, enum_releaseRegion) =>
@@ -3375,8 +3376,8 @@ SHOWDOWN_POWER_UPS_SETTING_Off = 0
 SHOWDOWN_POWER_UPS_SETTING_Stud = 1
 SHOWDOWN_POWER_UPS_SETTING_HoldEm = 2 
 function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
-	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "ShowdownMode_Settings", enum_releaseRegion)
-	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4_PowerUpSetting")
+	let_memAddr_Struct = memory_getAddress(DATATYPE_Struct, "Struct:ShowdownModeSettings", enum_releaseRegion)
+	let_offsetTo_Member = memory_getStruct_OffsetToMember("Struct_ShowdownMode_Settings", "Lower4:PowersUpsSetting")
 	return low4(let_memAddr_Struct + let_offsetTo_Member) == enum_powerUpsSetting}
 
 // --------------------MultiplayerRewardMenu------------------------
@@ -4074,7 +4075,7 @@ function achievements_generate_SumOf_FlagsAllDeadEyeUpgrades(enum_releaseRegion)
 
 // ------------------ShowdownStages----------------------
 function memAccessorGeneratorToBitset_ShowdownMapUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
-	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_ShowdownMapUnlocks", enum_releaseRegion)
+	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset:ShowdownMapUnlocks", enum_releaseRegion)
 	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion) =>
@@ -4084,7 +4085,7 @@ function achievements_generate_SumOf_FlagsAllStages(enum_releaseRegion) =>
 		enum_releaseRegion)
 // ------------------ShowdownCharacters----------------------
 function memAccessorGeneratorToBitset_ShowdownCharactersUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
-	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_ShowdownCharacterUnlocks", enum_releaseRegion)
+	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset:ShowdownCharacterUnlocks", enum_releaseRegion)
 	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion) =>
@@ -4094,7 +4095,7 @@ function achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion) =>
 		enum_releaseRegion)
 // ------------------JournalPages----------------------
 function memAccessorGeneratorToBitset_JournalPageUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
-	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset_JournalPageUnlocks", enum_releaseRegion)
+	let_memAddr_toBitset = memory_getAddress(DATATYPE_Struct, "Bitset:JournalPageUnlocks", enum_releaseRegion)
 	return memAccessor_toByteInBitset(let_memAddr_toBitset + int_offsetToByte)}
 
 function achievements_generate_SumOf_FlagsAllPages(enum_releaseRegion) =>
