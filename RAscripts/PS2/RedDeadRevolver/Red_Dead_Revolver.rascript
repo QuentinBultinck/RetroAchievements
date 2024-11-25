@@ -142,7 +142,7 @@ memory_StructDefs = {
 	"Struct_PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
-			"32Bit_Cash": 0x8,
+			"32Bit_SavedCash": 0x8,
 			"Bitset_PlayerProfileUnlocks": 0xC,
 			"ASCII(AreaID):FurthestCompletedStoryChapter(alt1)": 0x23C,
 			"32Bit_StoryModeRetries": 0x28C,
@@ -256,60 +256,57 @@ memory_StructDefs = {
 			"Bitset_PlayerProfileUnlocks": { 
 				"pointerChainOffsets": [0x5C8]},
 		}},
-	"Struct_GameController": {
+	"Struct:GameController": {
 		"pointerChainToMember": {
-			"32BitPointer_ShowdownPosterMenuController": {
-				"pointerChainOffsets": [0xC0]},
-			"32Bit_EquippedWeapon_ReserveAmmo": { 
+			"32-bit:EquippedWeaponReserveAmmo": { 
 				"pointerChainOffsets": [0x2C, 0x14]},
-			"BitFlag_IsShowdownPosterMenuDisplayed": { 
+			"Pointer:ShowdownPosterMenuController": {
+				"pointerChainOffsets": [0xC0]},
+			"BitFlag:IsShowdownPosterMenuDisplayed": { 
 				"pointerChainOffsets": [0xC0, 0x48, 0xFD]},
-			"BitFlag_IsShowdownPlayerSlot1Filled": { 
-				"pointerChainOffsets": [0xC0, 0x7C, 0xFE]},
-			"8Bit_ShowdownPlayer1TeamId": { 
+
+			"8-bit:ShowdownPlayerTeamID-1": { 
 				"pointerChainOffsets": [0xC0, 0x53C]},
-			"ASCII_ShowdownPlayer1CharacterModelId": { 
+			"BitFlag:IsShowdownPlayerSlotFilled-1": { 
+				"pointerChainOffsets": [0xC0, 0x7C, 0xFE]},
+			"ASCII:CharacterModelID-1": { 
 				"pointerChainOffsets": [0xC0, 0x7C],
 				"offsetToPointedToMember": 0x13D},
-			"BitFlag_IsShowdownPlayerSlot2Filled": { 
+
+			"8-bit:ShowdownPlayerTeamID-2": { 
+				"pointerChainOffsets": [0xC0, 0x588]},
+			"BitFlag:IsShowdownPlayerSlotFilled-2": { 
 				"pointerChainOffsets": [0xC0, 0x80, 0xFE]},
-			"ASCII_ShowdownPlayer2CharacterModelId": { 
+			"ASCII:CharacterModelID-2": { 
 				"pointerChainOffsets": [0xC0, 0x80],
 				"offsetToPointedToMember": 0x13D},
-			"8Bit_ShowdownPlayer2TeamId": { 
-				"pointerChainOffsets": [0xC0, 0x588]},
-			"BitFlag_IsShowdownPlayerSlot3Filled": { 
+
+			"8-bit:ShowdownPlayerTeamID-3": { 
+				"pointerChainOffsets": [0xC0, 0x5D4]},
+			"BitFlag:IsShowdownPlayerSlotFilled-3": { 
 				"pointerChainOffsets": [0xC0, 0x84, 0xFE]},
-			"ASCII_ShowdownPlayer3CharacterModelId": { 
+			"ASCII:CharacterModelID-3": { 
 				"pointerChainOffsets": [0xC0, 0x84],
 				"offsetToPointedToMember": 0x13D},
-			"8Bit_ShowdownPlayer3TeamId": { 
-				"pointerChainOffsets": [0xC0, 0x5D4]},
-			"BitFlag_IsShowdownPlayerSlot4Filled": { 
+
+			"8-bit:ShowdownPlayerTeamID-4": { 
+				"pointerChainOffsets": [0xC0, 0x620]},
+			"BitFlag:IsShowdownPlayerSlotFilled-4": { 
 				"pointerChainOffsets": [0xC0, 0x88, 0xFE]},
-			"ASCII_ShowdownPlayer4CharacterModelId": { 
+			"ASCII:CharacterModelID-4": { 
 				"pointerChainOffsets": [0xC0, 0x88],
 				"offsetToPointedToMember": 0x13D},
-			"8Bit_ShowdownPlayer4TeamId": { 
-				"pointerChainOffsets": [0xC0, 0x620]},
-			"8Bit_TeamIdPlayer1": { 
-				"pointerChainOffsets": [0x53C]},
-			"8Bit_TeamIdPlayer2": { 
-				"pointerChainOffsets": [0x588]},
-			"8Bit_TeamIdPlayer3": { 
-				"pointerChainOffsets": [0x5D4]},
-			"8Bit_TeamIdPlayer4": { 
-				"pointerChainOffsets": [0x620]},
-			"32Bit_Cash": { 
+
+			"32-bit:Cash(functional)": { 
 				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x8},
-			"32Bit_CashAcquireByOtherMeans": { 
+			"32-bit:CashAcquiredByOtherMeans": { 
 				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0xC},
-			"32Bit_CashCombo": { 
+			"32-bit:Combo": { 
 				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x10},
-			"32Bit_CashComboMultiplier": { 
+			"32-bit:ComboMultiplier": { 
 				"pointerChainOffsets": [0x5874],
 				"offsetToPointedToMember": 0x14},
 		}},
@@ -395,10 +392,10 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x28, 0x4],
 				"offsetToPointedToMember": 0x0},
 		}},
-	"Struct_GatlingGunZone_Data": {
+	"Struct:InteractableZone.GatlingGun": {
 		"offsetToMember": {
-			"ASCII_InteractableZoneID": 0x1C,
-			"BitFlag_IsGatlingGunManned": 0x169}
+			"ASCII:InteractableZoneID": 0x1C,
+			"BitFlag:IsGatlingGunManned": 0x169}
 		},
 	"Struct_Puppetshow_Manager": {
 		"offsetToMember": {
@@ -570,16 +567,16 @@ memory_addresses = {
 
 	DATATYPE_BitFlag: {
 		"InvertedBitFlag:IsLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
+		"BitFlag:IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
 
 		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
-		"IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
 		},
 	DATATYPE_8Bit: {
 		"Bitfield:GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
+		"Bitfield:AreaState": {RELEASE_REGION_USA: 0x6aaa9c, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
 
 		"NumberOfPlayers": {RELEASE_REGION_USA: 0x73b5ec, RELEASE_REGION_EUR: 0x73dd6c, RELEASE_REGION_JPN: 0x73f2ec},
 		"SelectedPlayerProfileId": {RELEASE_REGION_USA: 0x742118, RELEASE_REGION_EUR: 0x744898, RELEASE_REGION_JPN: sNULL},
-		"AreaState": {RELEASE_REGION_USA: 0x6aaa9c, RELEASE_REGION_EUR: 0x6b0a1c, RELEASE_REGION_JPN: sNULL},
 		},	
 	DATATYPE_ASCII: {
 		"ASCII:PS2GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
@@ -601,13 +598,13 @@ memory_addresses = {
 		"Pointer:ExtraMissionData": {RELEASE_REGION_USA: 0x4f792c, RELEASE_REGION_EUR: 0x4f9fac, RELEASE_REGION_JPN: sNULL},
 		"Pointer:MajorCharacterData": {RELEASE_REGION_USA: 0x4f7d20, RELEASE_REGION_EUR: 0x4fa3a0, RELEASE_REGION_JPN: sNULL},
 		"Pointer:MultiplayerRewardMenuData(preferred)": {RELEASE_REGION_USA: 0x54a348, RELEASE_REGION_EUR: 0x54cac8, RELEASE_REGION_JPN: sNULL},
+		"Pointer:GatlingGunZoneData": {RELEASE_REGION_USA: 0x55b6a8, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
+		"Pointer:GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
+		"Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 
 		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Selected_PlayerProfileData": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
-		"GameController": {RELEASE_REGION_USA: 0x5602a0, RELEASE_REGION_EUR: 0x562a20, RELEASE_REGION_JPN: sNULL},
-		"RewardMenu_StartChpMenu_DisplayData": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"InGameMenuController": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
-		"GatlingGunZone_Data": {RELEASE_REGION_USA: 0x55b6a8, RELEASE_REGION_EUR: 0x55de28, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
@@ -1375,7 +1372,7 @@ function get_AreaStateId(enum_areaState) =>
 	const_GameState_data[enum_areaState]["ID"]
 
 function current_AreaState(enum_releaseRegion) => 
-	byte(memory_getAddress(DATATYPE_8Bit, "AreaState", enum_releaseRegion))
+	byte(memory_getAddress(DATATYPE_8Bit, "Bitfield:AreaState", enum_releaseRegion))
 
 function prev_AreaState(enum_releaseRegion) => 
 	prev(current_AreaState(enum_releaseRegion))
@@ -1648,7 +1645,7 @@ function is_SelectedPlayerProfile(int_playerProfileNumber, enum_releaseRegion) {
 // ----------------PlayerProfile STATISTICS--------------------
 function current_PlayerProfile_SavedCash(enum_releaseRegion) {
 	let_memAddrPointerTo_SelectedPlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Selected_PlayerProfileData", enum_releaseRegion)
-	let_offsetTo_Cash = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32Bit_Cash")
+	let_offsetTo_Cash = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32Bit_SavedCash")
 	return dword(dword(let_memAddrPointerTo_SelectedPlayerProfileData) + let_offsetTo_Cash)}
 
 function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
@@ -1945,7 +1942,7 @@ function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 // ''''''''''''''''
 // ------------------StartChpMenu---------------------
 function current_FlagState_IsStartChpMenuActive(enum_releaseRegion) {
-	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_StartChpMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsStartChpMenuActive", 
 		let_memAddr_StartChpMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
@@ -1954,7 +1951,7 @@ function prev_FlagState_IsStartChpMenuActive(enum_releaseRegion) =>
 	prev(current_FlagState_IsStartChpMenuActive(enum_releaseRegion))
 
 function is_StartChpMenu_active(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return 
 		current_FlagState_IsStartChpMenuActive(enum_releaseRegion) == 1}
 	
@@ -1963,38 +1960,38 @@ function on_StartChpMenu_initialize(enum_releaseRegion) =>
 	current_FlagState_IsStartChpMenuActive(enum_releaseRegion) > prev_FlagState_IsStartChpMenuActive(enum_releaseRegion)
 // ------------------RewardMenu---------------------
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor( // TODO this should not be a bit0 memAccessor but 8bit or perhaps lower4
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag_HighlightedMenuItem", 
 		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_HighlightedMenuItem}
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "32-bit:Balance", let_memAddr_RewardMenuDisplayData, 
 		enum_releaseRegion, memAccessorType_toPointedToMember = dword)}
 
 function current_RewardMenu_BountyCollected(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "32-bit:BountyCollected", let_memAddr_RewardMenuDisplayData, 
 		enum_releaseRegion, memAccessorType_toPointedToMember = dword)}
 
 function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag_IsQuitConfirmationMenuDisplayed", 
 		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
 
 function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsRewardMenuOrStartChpMenuDisplayed",
 		let_memAddr_RewardMenuDisplayData, memAccessorType_toPointedToMember = bit0)}
 
 function current_RewardMenu_MenuDepth(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_MenuDepth = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "8Bit:MenuDepth", let_memAddr_RewardMenuDisplayData,
 		enum_releaseRegion, memAccessorType_toPointedToMember = byte)
@@ -2008,7 +2005,7 @@ function is_RewardMenu_displayed_long(enum_releaseRegion) => // This comparison 
 	&& !is_StartChpMenu_active(enum_releaseRegion)
 
 function is_RewardMenu_displayed_short(enum_releaseRegion) { // This comparison is shorter than is_RewardMenu_displayed_long() (prefer using this){
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_Pointer = memGenerate_pointerChainAccessor("Struct:RewardMenuAndStartChpMenuDisplayData", "Pointer:RewardMenuAndStartChpMenuDisplayData_L1-2d0", let_memAddr_RewardMenuDisplayData)
 	return let_memAccessor_Pointer > 0}
 	
@@ -2020,7 +2017,7 @@ function on_RewardMenu_render_long(enum_releaseRegion) {
 		}
 
 function on_RewardMenu_render_short(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_Pointer = memGenerate_pointerChainAccessor("Struct:RewardMenuAndStartChpMenuDisplayData", "Pointer:RewardMenuAndStartChpMenuDisplayData_L1-2d0", let_memAddr_RewardMenuDisplayData)
 	return 
 		let_memAccessor_Pointer > 0
@@ -2035,7 +2032,7 @@ function on_RewardMenu_close(enum_releaseRegion) {
 function is_RatingBounty_achieved(enum_releaseRegion) {
 	REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
 
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = 
 		memGenerate_pointerChainAccessor_byReleaseRegion(
 			"Struct:RewardMenuAndStartChpMenuDisplayData", "ASCII:ItemUnlockID-BountyRating", let_memAddr_RewardMenuDisplayData, 
@@ -2061,41 +2058,41 @@ function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_PointerChainTo_Struct_RewardMenuDisplayText = memGenerate_pointerChainAccessor("Struct:RewardMenuAndStartChpMenuDisplayData", "ASCIIField:RewardMenuDisplayText", let_memAddr_RewardMenuDisplayData)
 	let_offsetTo_Accuracy = memory_getStruct_OffsetToMember("ASCIIField:RewardMenuDisplayText", "ASCII:Accuracy")
 	return is_ASCII_EqualTo(let_PointerChainTo_Struct_RewardMenuDisplayText + let_offsetTo_Accuracy, string_accuracy)}
 
 function current_FlagState_IsAccuracyStarAchieved(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsRatingObjectiveStarDisplayed-Accuracy", 
 		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsDamageTakenStarAchieved(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsRatingObjectiveStarDisplayed-DamageTaken", 
 		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsTimeStarAchieved(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsRatingObjectiveStarDisplayed-Time", 
 		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function current_FlagState_IsBestComboStarAchieved(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_IsStarAchieved = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsRatingObjectiveStarDisplayed-BestCombo", 
 		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
 	return let_memAccessor_IsStarAchieved}
 
 function on_RewardMenu_FirstPopupMenu_render(enum_releaseRegion) {
-	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "RewardMenu_StartChpMenu_DisplayData", enum_releaseRegion)
+	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_IsFirstPopupMenuDisplayed = memGenerate_pointerChainAccessor_byReleaseRegion(
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsFirstPopupMenuDisplayed", 
 		let_memAddr_RewardMenuDisplayData, enum_releaseRegion, memAccessorType_toPointedToMember = bit0)
@@ -2110,7 +2107,7 @@ INGAMEMENU_CheatsMenu = "cheats"
 INGAMEMENU_WarningMenu = "warning"
 
 function current_FlagState_IsInPauseMenu(enum_releaseRegion) => 
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsInPauseMenu", enum_releaseRegion))
+	bit0(memory_getAddress(DATATYPE_BitFlag, "BitFlag:IsInPauseMenu", enum_releaseRegion))
 
 function is_inPauseMenu(enum_releaseRegion) =>
 	current_FlagState_IsInPauseMenu(enum_releaseRegion) == 1
@@ -2465,20 +2462,20 @@ function current_Calculated_MajorCharacterHPPercentage(int_majorCharacterIndex, 
 // '''''''''''''''''''
 // ------------------------Cash_HUDController------------------------------
 function current_Cash(enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return 
 		memGenerate_pointerChainAccessor(
-			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_Cash"),
+			"Struct:GameController", "32-bit:Cash(functional)", let_memAddr_GameController, 
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct:GameController", "32-bit:Cash(functional)"),
 			memAccessorType_toPointedToMember = dword)
 	}
 
 function current_CashAcquiredByOtherMeans(enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return 
 		memGenerate_pointerChainAccessor(
-			"Struct_GameController", "32Bit_CashAcquireByOtherMeans", let_memAddr_GameController, 
-			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashAcquireByOtherMeans"),
+			"Struct:GameController", "32-bit:CashAcquiredByOtherMeans", let_memAddr_GameController, 
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct:GameController", "32-bit:CashAcquiredByOtherMeans"),
 			memAccessorType_toPointedToMember = dword)
 	}
 
@@ -2489,20 +2486,20 @@ function on_CashAcquiredByOtherMeans_increasesBy(int_i, enum_releaseRegion) =>
 	current_CashAcquiredByOtherMeans(enum_releaseRegion) - prev_CashAcquiredByOtherMeans(enum_releaseRegion) == int_i
 
 function current_CashCombo(enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return 
 		memGenerate_pointerChainAccessor(
-			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashCombo"),
+			"Struct:GameController", "32-bit:Combo", let_memAddr_GameController, 
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct:GameController", "32-bit:Combo"),
 			memAccessorType_toPointedToMember = dword)
 	}
 
 function current_CashComboMultiplier(enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return 
 		memGenerate_pointerChainAccessor(
-			"Struct_GameController", "32Bit_Cash", let_memAddr_GameController, 
-			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct_GameController", "32Bit_CashComboMultiplier"),
+			"Struct:GameController", "32-bit:ComboMultiplier", let_memAddr_GameController, 
+			int_offsetToPointedToMember = memory_getStruct_OffsetToPointedToMember("Struct:GameController", "32-bit:ComboMultiplier"),
 			memAccessorType_toPointedToMember = dword)
 	}
 
@@ -2571,13 +2568,13 @@ function on_CashResetToSavedCash(enum_releaseRegion) =>
 
 // ------------------------AmmoCounter_HUDController------------------------------
 function is_AmmoHUDControllerReserveAmmo(int_ammoCount, enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_pointerChainto_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
+	let_pointerChainto_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct:GameController", "32-bit:EquippedWeaponReserveAmmo", let_memAddr_GameController)
 	return let_memAccessor_EquippedWeaponReserveAmmo == int_ammoCount}
 	
 function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
-	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
-	let_memAccessor_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct_GameController", "32Bit_EquippedWeapon_ReserveAmmo", let_memAddr_GameController)
+	let_memAddr_GameController = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
+	let_memAccessor_EquippedWeaponReserveAmmo = memGenerate_pointerChainAccessor("Struct:GameController", "32-bit:EquippedWeaponReserveAmmo", let_memAddr_GameController)
 	return let_memAccessor_EquippedWeaponReserveAmmo < prev(let_memAccessor_EquippedWeaponReserveAmmo)}
 
 // ......................
@@ -2988,41 +2985,41 @@ SHOWDOWN_TEAM_YELLOW = 3
 
 // --------------------Showdown_PosterMenu_Controller------------------------ 
 function is_Pointer_ShowdownPosterMenuController_active(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	let_memAccessor_Pointer = memGenerate_pointerChainAccessor(
-		"Struct_GameController", "32BitPointer_ShowdownPosterMenuController", let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
+		"Struct:GameController", "Pointer:ShowdownPosterMenuController", let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_Pointer != 0}
 
 function current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
-		"Struct_GameController", "BitFlag_IsShowdownPosterMenuDisplayed", let_memAddr_basePointer, memAccessorType_toPointedToMember = byte)}
+		"Struct:GameController", "BitFlag:IsShowdownPosterMenuDisplayed", let_memAddr_basePointer, memAccessorType_toPointedToMember = byte)}
 
 function is_ShowdownPosterMenu_displayed(enum_releaseRegion) =>
 	current_FlagState_IsShowdownPosterMenuDisplayed(enum_releaseRegion) == 1
 
 function current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
-	let_string_pointerChainKey = format("BitFlag_IsShowdownPlayerSlot{0}Filled", int_playerIndex)
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_string_pointerChainKey = format("BitFlag:IsShowdownPlayerSlotFilled-{0}", int_playerIndex)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)}
+		"Struct:GameController", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = bit0)}
 
 function is_PosterMenu_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
 	current_FlagState_PosterMenu_IsShowdownPlayerSlotFilled(int_playerIndex, enum_releaseRegion) == 1
 
 function is_PosterMenu_ShowdownPlayerCharacter(int_playerIndex, enum_character, enum_releaseRegion) { // Player Index [1-4]
-	let_string_pointerChainKey = format("ASCII_ShowdownPlayer{0}CharacterModelId", int_playerIndex)
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_string_pointerChainKey = format("ASCII:CharacterModelID-{0}", int_playerIndex)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	let_PointerChain_ShowdownPlayerCharacterModelId = memGenerate_pointerChainAccessor(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer)
-	let_offsetTo_ShowdownPlayerCharacterModelId = memory_getStruct_OffsetToPointedToMember("Struct_GameController", let_string_pointerChainKey)
+		"Struct:GameController", let_string_pointerChainKey, let_memAddr_basePointer)
+	let_offsetTo_ShowdownPlayerCharacterModelId = memory_getStruct_OffsetToPointedToMember("Struct:GameController", let_string_pointerChainKey)
 	return is_ASCII_EqualTo(let_PointerChain_ShowdownPlayerCharacterModelId + let_offsetTo_ShowdownPlayerCharacterModelId, enum_character)}
 
 function current_PosterMenu_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
-	let_string_pointerChainKey = format("8Bit_ShowdownPlayer{0}TeamId", int_playerIndex)
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "GameController", enum_releaseRegion)
+	let_string_pointerChainKey = format("8-bit:ShowdownPlayerTeamID-{0}", int_playerIndex)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameController", enum_releaseRegion)
 	let_memAccessor_ShowdownPlayerTeamId = memGenerate_pointerChainAccessor(
-		"Struct_GameController", let_string_pointerChainKey, let_memAddr_basePointer, 
+		"Struct:GameController", let_string_pointerChainKey, let_memAddr_basePointer, 
 		memAccessorType_toPointedToMember = byte)
 	return let_memAccessor_ShowdownPlayerTeamId}
 
@@ -3472,17 +3469,17 @@ function on_MultiplayerRewardPopupMenu_ConfirmBtn_press(enum_releaseRegion) =>
 // --------------------GatlingGunZone------------------------
 function is_PointerTo_GatlingGunZoneData_valid(enum_releaseRegion) {
 	const_INTERACTABLE_ZONE_ID = "zone_gunA_01"
-	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
+	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GatlingGunZoneData", enum_releaseRegion)
 	let_pointerChainTo_InteractableZoneID = 
 		dword(let_memAddr_GatlingGunZoneData)
-		+ memory_getStruct_OffsetToMember("Struct_GatlingGunZone_Data", "ASCII_InteractableZoneID")
+		+ memory_getStruct_OffsetToMember("Struct:InteractableZone.GatlingGun", "ASCII:InteractableZoneID")
 	return is_ASCII_EqualTo(let_pointerChainTo_InteractableZoneID, const_INTERACTABLE_ZONE_ID)}
 
 function current_FlagState_IsGatlingGunManned(enum_releaseRegion) {
-	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "GatlingGunZone_Data", enum_releaseRegion)
+	let_memAddr_GatlingGunZoneData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GatlingGunZoneData", enum_releaseRegion)
 	return bit0(
 		dword(let_memAddr_GatlingGunZoneData)
-		+ memory_getStruct_OffsetToMember("Struct_GatlingGunZone_Data", "BitFlag_IsGatlingGunManned")
+		+ memory_getStruct_OffsetToMember("Struct:InteractableZone.GatlingGun", "BitFlag:IsGatlingGunManned")
 	)}
 
 function prev_FlagState_IsGatlingGunManned(enum_releaseRegion) =>
@@ -8029,7 +8026,7 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = { 
 	// "rp_Template": 									{"en": "xxxxxxxx"}, 
-	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"},
+	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"}, // TODO implement this line with 3-2 players; This line only works with 4 players 
 	"rp_Showdown_HighNoon":								{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {2}/{3}"},
 	"rp_Showdown_Sundown":								{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU | ${2} collected | Time left: {3}"},
 	"rp_Showdown_BountyHunt":							{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU | ${2}/{3} collected"},
