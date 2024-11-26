@@ -939,7 +939,7 @@
 //          @Regional equivalent of $0x7405b0 (PAL)
 // $73DE4C: [NTSCU][28-byte Bitset:SharedUnlocks]
 //          @Regional equivalent of $0x7405cc (PAL)
-// $73DE88: [NTSCU][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
+// $73DE88: [NTSCU][17040-byte Array:PlayerProfileData] List of (6x) [Struct:PlayerProfileData]
 //          @Regional equivalent of $0x740608 (PAL)
 // $73DF42: [PAL][30-byte Struct:PlayerInputReader]
 //          [Definition Struct:PlayerInputReader|30-byte]
@@ -978,7 +978,7 @@
 //          @Regional Equivalent of $0x73d819
 // $73F2EC: [NTSCJ][8-bit:NumberOfPlayers |32-bit]
 //          @Regional Equivalent of $0x73dd6c
-// $740118: [NTSCJ][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
+// $740118: [NTSCJ][17040-byte Array:PlayerProfileData] List of (6x) [Struct:PlayerProfileData]
 //          @Regional Equivalent of $0x740608
 //          @Fixed Memory Location. Although pointed to by $0x7443e8
 // $740438: [PAL][368-byte Array:ShowdownPlayerSettings_A] List of (4x) [Struct:ShowdownPlayerSettings_A]
@@ -1020,8 +1020,10 @@
 // $7405B0: [PAL][28-byte Struct:ShowdownModeSettings]
 //          @Fixed Memory Location. Although pointed to by [Pointer:GameController] ($0x562a20) and [Pointer:UndefinedStruct_01] ($0x7448a0)
 //          
-//          [Defintion Struct:ShowdownModeSettings |28-byte]
+//          [PAL][NTSCU][Defintion Struct:ShowdownModeSettings |28-byte]
 //          |''''''''''''''''''''''''''''''''''''''
+//          | - This definition is only valid for PAL and NTSCU; for NTSCJ refer to $0x563fa0
+//          |
 //          |+0x0 - [Lower4:GameMode |32-bit]
 //          |"| 0 => Bounty Hunter (achieve bounty/cash target)
 //          |"| 1 => Sundown (most bounty/cash at end of timer)
@@ -1065,6 +1067,7 @@
 //          [PAL][2-byte Bitset:CheatUnlocks]
 //          @Sub-bitset of [Bitset:SharedUnlocks] ($0x7405cc)
 //          - This Sub-bitset consists of 7 unlockable flags and 3 non-unlockable "debug" flags
+//          - Related [Bitset:ActivatedCheats], defined at $0x740608
 //          
 //          [PAL][BitFlags of Bitset(byte1):CheatUnlocks] ($0x7405cc)
 //          bit0 => Cheat (non-unlockable debug feature) - Big Money (gain $10 000)
@@ -1349,172 +1352,190 @@
 //          bit3 => Colonel Daren
 //          bit4 => Gabriel Navarro
 //          bits[5-7] => /
-// $740608: [PAL][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
+// $740608: [PAL][17040-byte Array:PlayerProfileData] List of (6x) [Struct:PlayerProfileData]
 //          @Fixed Memory Location. Although pointed to by [Pointer:UndefinedStruct_01] ($0x7448a0)
-//          - The active (or last used, on Main Menu) Player_Profile is pointed to by $0x7448d8
-//          - Each Player_Profile has his own data storage
-//          - Player_Profile_Data is updated on save/on end of missions
-//          - Struct Definition Player_Profile_Data below
 //          
-//          [Array Definition][17040-byte] List of Player_Profile_Data
+//          [Definition Array:PlayerProfileData |17040-byte]
 //          |''''''''''''''''''''''''''''''''''''''''''
-//          |+0x0 - [2840-byte Struct:Player_Profile_Data] Profile Slot 1
-//          |+0xB18 - [2840-byte Struct:Player_Profile_Data] Profile Slot 2
-//          |+0x1630 - [2840-byte Struct:Player_Profile_Data] Profile Slot 3
-//          |+0x2148 - [2840-byte Struct:Player_Profile_Data] Profile Slot 4
-//          |+0x2C60 - [2840-byte Struct:Player_Profile_Data] Profile Slot 5
-//          |+0x3778 - [2840-byte Struct:Player_Profile_Data] Profile Slot 6
+//          | - A max of 6 PlayerProfiles can be made (for the story mode); Each PlayerProfile has its own data storage.
+//          | - The active or last used PlayerProfile is pointed to by [Pointer:ActivePlayerProfile] at $0x7448d8
+//          | - Defintion of [Struct:PlayerProfileData] below
+//          |
+//          |+0x0 - [2840-byte Struct(PlayerProfileData):ProfileSlot1]
+//          |+0xB18 - [2840-byte Struct(PlayerProfileData):ProfileSlot2]
+//          |+0x1630 - [2840-byte Struct(PlayerProfileData):ProfileSlot3]
+//          |+0x2148 - [2840-byte Struct(PlayerProfileData):ProfileSlot4]
+//          |+0x2C60 - [2840-byte Struct(PlayerProfileData):ProfileSlot5]
+//          |+0x3778 - [2840-byte Struct(PlayerProfileData):ProfileSlot6]
 //          '
 //          
-//          [Struct Definition][2840-byte] Player_Profile_Data
+//          [Definition Struct:PlayerProfileData |2840-byte]
 //          |''''''''''''''''''''''''''''''''''''''''''
-//          | - Some of these values are Player_Profile statistics which can be viewed in the Journal - Frontier Battles section
+//          | - This struct only updated on certain instances; most values/members of this struct do not update at runtime/during gameplay; mostly on save this struct updates
+//          | - Some of members/values of this struct are used to display PlayerProfile stats in the Journal at the MainMenu, in the last section/Chapter called "Frontier Battles"
 //          |
-//          |+0x0 - [32-bit Float] Max HP
+//          |+0x0 - [32-bit Float:MaxHP]
 //          |¨| - This is the value which is read to initialize [Struct:GameController].[Struct:HealthBarHUDController] ($0x562a20) and the HP at [Struct:SinglePlayer_Data] ($0x763070)
 //          |/
-//          |+0x4 - [32-bit Float] Special Meter Max Gauge
+//          |+0x4 - [32-bit Float:SpecialMeterMaxGauge]
 //          |¨| - This is the value which is read to initialize [Struct:GameController].[Struct:SpecialMeterGuageController] ($0x562a20)
 //          |/
-//          |+0x8 - [32-bit] Saved Cash
+//          |+0x8 - [32-bit:SavedCash]
 //          |¨| - This is the value which is read to initialize [Struct:GameController].[Struct:CashController] ($0x562a20)
 //          |¨| - This value only updated on save
 //          |/
-//          |+0xC - [24-byte Bitset] Player_Profile_Unlocks
-//          |¨| - This is a copy of the bitset stored via $0x763070, the bitset here is updated on save, based on that bitset
-//          |¨| - Bitset Definition at $0x763070
+//          |+0xC - [24-byte Bitset:Player_Profile_Unlocks]
+//          |¨| - This is a copy of [Bitset:Player_Profile_Unlocks] stored via $0x763070, the bitset here is updated on save, based on that bitset
+//          |¨| - Defintion of [Bitset:Player_Profile_Unlocks] at $0x763070
 //          |/
 //          |+0x23C - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt1) | 16-byte]
 //          |¨| - The first ASCII letter of this AreaID may be zeroed out (eg. "lvl_mansroof" => " vl_mansroof")
 //          |¨| - Documentation on [ASCII:AreaID] at $0x7a0620
 //          |/
 //          |
-//          |+0x28C - [32-bit] Story Mode - Retries
-//          |
-//          |+0x290 - [8-bit {16-bit}] Current Playthrough Difficulty (DifficultyStatModifier??)
-//          |¨| - This value scales enemy and player stats to create differing difficulties for the current playthrough
+//          |+0x28C - [32-bit:StoryModeRetryCount]
+//          |¨| - This value only counts retries that went through the RetryMenu (refer to [Struct:InGameMenuController].[ASCII:InGameMenuID]); This value does not count 'restarts' or 'replays'
 //          |/
-//          |+0x292 - [8-bit {16-bit}] Current Playthrough Difficulty (Difficulty_ID)
+//          |
+//          |+0x290 - (unverified) [8-bit:CurrentDifficultyStatModifier |16-bit]
+//          |¨| - This value may correlate to enemy and player stat scaling
+//          |/
+//          |+0x292 - [8-bit:CurrentDifficultyID |16-bit]
 //          |¨| - This value determines which difficulty is selected for the current playthrough
-//          |¨| - Changing this value manually mid playthrough, will change the difficulty on the next mission load
-//          |¨| 0x0 => Normal
-//          |¨| 0x1 => Hard
-//          |¨| 0x2 => Very Hard
-//          |¨| 0x3 => Red Wood Revolver
+//          |¨| - Difficulty is only selectable when starting a 'New Game' of Story Mode
+//          |¨| - Changing this value manually mid-playthrough, will change the difficulty on the next mission/chapter load
+//          |¨|
+//          |¨|# DifficultyIDs
+//          |¨||'''''''''''''''
+//          |¨|| - 0x0 => Normal
+//          |¨|| - 0x1 => Hard
+//          |¨|| - 0x2 => Very Hard
+//          |¨|| - 0x3 => Red Wood Revolver
 //          |/
 //          |
-//          |+0x294 - [32-bit] Story Mode - Enemies Killed A
-//          |+0x298 - [32-bit] Story Mode - Enemies Killed B
-//          |¨| - Formula: Total number of Enemies Killed (Story Mode) = Enemies Killed A + Enemies Killed B
+//          |+0x294 - [32-bit:StoryModeEnemiesKilled_A]
+//          |+0x298 - [32-bit:StoryModeEnemiesKilled_B]
+//          |¨| - For some reason, in some chapters or for certain instances: [32-bit:StoryModeEnemiesKilled_A] increments for each kill and in other instances [32-bit:StoryModeEnemiesKilled_B] increments
+//          |¨| - Formula: TotalNumberOfEnemiesKilled(StoryMode) = [32-bit:StoryModeEnemiesKilled_A] + [32-bit:StoryModeEnemiesKilled_B]
 //          |/
-//          |+0x384 - [32-bit] Distance Travelled
-//          |+0x388 - [32-bit Float] Time Spent Playing (in seconds)
+//          |+0x384 - [32-bit:DistanceTravelled]
+//          |+0x388 - [32-bit Float:TimeSpentPlaying]
+//          |¨| - Time in seconds
 //          |¨| - Max Float Value = 0x7F7FFFFF, does not overflow/reset back to 0, which is practically millions of billions of years
 //          |¨| - This float value initializes the display value in the Journal as a signed int, which is probably why the max displayable value is 596523h 14m 07s
 //          |¨| - This value is updated whenever the game saves/a mission is manually restarted via the pause menu/a mission is quit/prior to the retry menu being displayed
 //          |/
-//          |+0x39C - [32-bit] Total Money Collected
-//          |+0x3A0 - [32-bit] Total Bullet Fired
-//          |+0x3A4 - [32-bit] Total Bullet Hits
-//          |+0x3BC - [32-bit] Total Money Spent
-//          |+0x3B0 - [32-bit] Total Head Shots
-//          |+0x3C8 - [32-bit] Number of DeadEye Abilities/Special Moves Used
-//          |+0x3CC - [32-bit] Highest Combo Multiplier
-//          |+0x3D0 - [32-bit Float] Highest Combo
+//          |+0x39C - [32-bit:TotalMoneyCollected]
+//          |+0x3A0 - [32-bit:TotalBulletFired]
+//          |+0x3A4 - [32-bit:TotalBulletHits]
+//          |+0x3BC - [32-bit:TotalMoneySpent]
+//          |+0x3B0 - [32-bit:TotalHeadShots]
+//          |+0x3C8 - [32-bit:DeadeyeOrSpecialMoveUseCount]
+//          |+0x3CC - [32-bit:HighestComboMultiplier]
+//          |+0x3D0 - [32-bit Float:HighestCombo]
 //          |
 //          |+0x611 - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt2) | 16-byte]
 //          |¨| - The first ASCII letter of this AreaID may be zeroed out (eg. "lvl_mansroof" => " vl_mansroof")
 //          |¨| - Documentation on [ASCII:AreaID] at $0x7a0620
 //          |/
-//          |+0x7AC - [8-bit {32-bit}] bit 0 => Is Bounty Hunter Mode Unlocked
-//          |¨| - Availability of this mode is only unlocked for this Player_Profile not the others once this Player_Profile has completed the story mode once
+//          |+0x7AC - [bit0 BitFlag:IsBountyHunterModeUnlocked |32-bit]
+//          |¨| - This refers to the Bounty Hunter Mode which unlocks for the PlayerProfile once it has completed the Story Mode at least once
+//          |¨| - Manually editing this value in RAM works as a shortcut for unlocking this mode
 //          |/
-//          |+0x7B8 - [8-bit {32-bit}] Unlocked Difficulties
+//          |+0x7B8 - [8-bit:UnlockedDifficulties |32-bit]
 //          |¨| - This value practically counts how many of the 4 difficulties are selectable when starting a 'New Game' (story campaign)
 //          |¨| - These difficulties unlock by completing the story mode on lower difficulties, one by one (Very Hard and Red Wood Revolver are both unlocked by completion of Hard)
-//          |¨| - Available difficulties are only unlocked for this Player_Profile not the others
-//          |¨| 0x0 => Normal (No difficulty select available on 'New Game', defaults to Normal)
-//          |¨| 0x1 => Normal, Hard
-//          |¨| 0x2 => Normal, Hard, Very Hard
-//          |¨| >= 0x3 => Normal, Hard, Very Hard, Red Wood Revolver
-//          |/
-//          |
-//          |+0x7B0 - [4-byte Bitset] BountyHunterMissions_Completed
-//          |¨[Bitset Definition][4-byte] BountyHunterMissions_Completed
-//          |¨|'''''''''''''''''''''''''''''''''''''
-//          |¨| - Each player profile saves his own Bounty Hunter Mode Data
-//          |¨| - This bitset only updates on save after a successful Bounty Hunter Mission
+//          |¨| - Available difficulties are only unlocked for this PlayerProfile not the others
 //          |¨|
-//          |¨|+0x0 - [Bit Flags] @Byte1 in Bitset:BountyHunterMissions_Completed
-//          |¨|¨| bit 0 => Is Chapter 1 'Bull's Eye' Bounty Mission Completed
-//          |¨|¨| bit 1 => Is Chapter 2 'Bounty Hunter' Bounty Mission Completed
-//          |¨|¨| bit 2 => Is Chapter 3 'Ugly Streetfight' Bounty Mission Completed
-//          |¨|¨| bit 3 => //
-//          |¨|¨| bit 4 => Is Chapter 5 'Railroaded' Bounty Mission Completed
-//          |¨|¨| bit 5 => //
-//          |¨|¨| bit 6 => Is Chapter 6 'Carnival Life' Bounty Mission Completed
-//          |¨|¨| bit 7 => Is Chapter 7 'Freak Show' Bounty Mission Completed
-//          |¨|/
-//          |¨|+0x1 - [Bit Flags] @Byte2 in Bitset:BountyHunterMissions_Completed
-//          |¨|¨| bit 0 => //
-//          |¨|¨| bit 1 => Is Chapter 8 'Rogue Valley' Bounty Mission Completed
-//          |¨|¨| bit 2 => //
-//          |¨|¨| bit 3 => Is Chapter 9 'Ghost Town' Bounty Mission Completed
-//          |¨|¨| bits [4-5] => //
-//          |¨|¨| bit 6 => Is Chapter 11 'Range War' Bounty Mission Completed
-//          |¨|¨| bit 7 => Is Chapter 12 'Saloon Fight' Bounty Mission Completed
-//          |¨|/
-//          |¨|+0x2 - [Bit Flags] @Byte3 in Bitset:BountyHunterMissions_Completed
-//          |¨|¨| bit 0 => Is Chapter 13 'The Traitor' Bounty Mission Completed
-//          |¨|¨| bit 1 => Is Chapter 14 'Sunset Canyon' Bounty Mission Completed
-//          |¨|¨| bit 2 => Is Chapter 15 'Bear Mountain' Bounty Mission Completed
-//          |¨|¨| bit 3 => //
-//          |¨|¨| bit 4 => Is Chapter 17 'The Mine' Bounty Mission Completed
-//          |¨|¨| bit 5 => Is Chapter 18 'Stagecoach' Bounty Mission Completed
-//          |¨|¨| bit 6 => //
-//          |¨|¨| bit 7 => Is Chapter 20 'Fort Diego' Bounty Mission Completed
-//          |¨|/
-//          |¨|+0x3 - [Bit Flags] @Byte4 in Bitset:BountyHunterMissions_Completed
-//          |¨|¨| bit 0 => Is Chapter 21 'End of the Line' Bounty Mission Completed
-//          |¨|¨| bits [1-3] => //
-//          |¨|¨| bit 4 => Is Chapter 24 'Battle Finale' Bounty Mission Completed
-//          |¨|¨| bit 5 => Is Chapter 25 'The Siege' Bounty Mission Completed
-//          |¨|¨| bit 6 => //
-//          |¨|¨| bit 7 => Is Chapter 27 'Fall From Grace' Bounty Mission Completed
+//          |¨|# Values
+//          |¨||'''''''''
+//          |¨|| - 0x0 => Normal (No difficulty select available on 'New Game', defaults to Normal)
+//          |¨|| - 0x1 => Normal, Hard
+//          |¨|| - 0x2 => Normal, Hard, Very Hard
+//          |¨|| - (value >= 0x3) => Normal, Hard, Very Hard, Red Wood Revolver
 //          |/
 //          |
-//          |+0x7BC - [7-byte ASCII] Player Profile Name
-//          |
-//          |+0x800 - [2-byte Bitset] Activated_Cheats
-//          |¨[Bitset Definition][2-byte] Activated_Cheats
+//          |+0x7B0 - [4-byte Bitset:BountyHunterMissionsCompleted]
+//          |¨[Definition Bitset:BountyHunterMissionsCompleted |4-byte]
 //          |¨|'''''''''''''''''''''''''''''''''''''
-//          |¨|+0x0 - [Bit Flags] @Byte1 in Bitset:Activated_Cheats
-//          |¨|¨| bits [0-5] => //
-//          |¨|¨| bit 6 => Invincibility
-//          |¨|¨| bit 7 => Golden Gun
+//          |¨| - Each PlayerProfile saves his own [Bitset:BountyHunterMissionsCompleted]
+//          |¨| - This bitset only updates on save, after a successful Bounty Hunter Mission
+//          |¨| - This bitset consists of 20 flags
+//          |¨|
+//          |¨|+0x0 - [BitFlags of Bitset(byte1):BountyHunterMissionsCompleted]
+//          |¨|¨| bit0 => Chapter 1 'Bull's Eye' Completed
+//          |¨|¨| bit1 => Chapter 2 'Bounty Hunter' Completed
+//          |¨|¨| bit2 => Chapter 3 'Ugly Streetfight' Completed
+//          |¨|¨| bit3 => //
+//          |¨|¨| bit4 => Chapter 5 'Railroaded' Completed
+//          |¨|¨| bit5 => //
+//          |¨|¨| bit6 => Chapter 6 'Carnival Life' Completed
+//          |¨|¨| bit7 => Chapter 7 'Freak Show' Completed
 //          |¨|/
-//          |¨|+0x1 - [Bit Flags] @Byte2 in Bitset:Activated_Cheats
-//          |¨|¨| bit 0 => Show Player Position (non-unlockable debug feature)
-//          |¨|¨| bit 1 => Show AI Info (non-unlockable debug feature)
-//          |¨|¨| bit 2 => Infinite Deadeye
-//          |¨|¨| bit 3 => //
-//          |¨|¨| bit 4 => Bite the Bullet
-//          |¨|¨| bit 5 => Sad Stars
-//          |¨|¨| bit 6 => No HUD
-//          |¨|¨| bit 7 => No Distortion
+//          |¨|+0x1 - [BitFlags of Bitset(byte2):BountyHunterMissionsCompleted]
+//          |¨|¨| bit0 => //
+//          |¨|¨| bit1 => Chapter 8 'Rogue Valley' Completed
+//          |¨|¨| bit2 => //
+//          |¨|¨| bit3 => Chapter 9 'Ghost Town' Completed
+//          |¨|¨| bits[4-5] => //
+//          |¨|¨| bit6 => Chapter 11 'Range War' Completed
+//          |¨|¨| bit7 => Chapter 12 'Saloon Fight' Completed
+//          |¨|/
+//          |¨|+0x2 - [BitFlags of Bitset(byte3):BountyHunterMissionsCompleted]
+//          |¨|¨| bit0 => Chapter 13 'The Traitor' Completed
+//          |¨|¨| bit1 => Chapter 14 'Sunset Canyon' Completed
+//          |¨|¨| bit2 => Chapter 15 'Bear Mountain' Completed
+//          |¨|¨| bit3 => //
+//          |¨|¨| bit4 => Chapter 17 'The Mine' Completed
+//          |¨|¨| bit5 => Chapter 18 'Stagecoach' Completed
+//          |¨|¨| bit6 => //
+//          |¨|¨| bit7 => Chapter 20 'Fort Diego' Completed
+//          |¨|/
+//          |¨|+0x3 - [BitFlags of Bitset(byte4):BountyHunterMissionsCompleted]
+//          |¨|¨| bit0 => Chapter 21 'End of the Line' Completed
+//          |¨|¨| bits[1-3] => //
+//          |¨|¨| bit4 => Chapter 24 'Battle Finale' Completed
+//          |¨|¨| bit5 => Chapter 25 'The Siege' Completed
+//          |¨|¨| bit6 => //
+//          |¨|¨| bit7 => Chapter 27 'Fall From Grace' Completed
+//          |/
+//          |
+//          |+0x7BC - [7-byte ASCII:PlayerProfileName]
+//          |¨| - Max size of name is 7 characters
+//          |/
+//          |
+//          |+0x800 - [2-byte Bitset:ActivatedCheats]
+//          |¨[Definition Bitset:ActivatedCheats |2-byte]
+//          |¨|'''''''''''''''''''''''''''''''''''''
+//          |¨| - Related [Bitset:CheatUnlocks], defined at $0x7405cc
+//          |¨|
+//          |¨|+0x0 - [BitFlags of Bitset(byte1):ActivatedCheats]
+//          |¨|¨| bits[0-5] => //
+//          |¨|¨| bit6 => Invincibility
+//          |¨|¨| bit7 => Golden Gun
+//          |¨|/
+//          |¨|+0x1 - [BitFlags of Bitset(byte2):ActivatedCheats]
+//          |¨|¨| bit0 => Show Player Position (non-unlockable debug feature)
+//          |¨|¨| bit1 => Show AI Info (non-unlockable debug feature)
+//          |¨|¨| bit2 => Infinite Deadeye
+//          |¨|¨| bit3 => //
+//          |¨|¨| bit4 => Bite the Bullet
+//          |¨|¨| bit5 => Sad Stars
+//          |¨|¨| bit6 => No HUD
+//          |¨|¨| bit7 => No Distortion
 //          |/
 //          '
-// $742118: [NTSCU][8-bit {32-bit}] Selected Player_Profile ID
+// $742118: [NTSCU][8-bit:ActivePlayerProfileID |32-bit]
 //          @Regional equivalent of $0x744898 (PAL)
-// $742158: [NTSCU][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
+// $742158: [NTSCU][32-bit (base) Pointer:ActivePlayerProfile] -> [Struct:PlayerProfileData]
 //          @Regional equivalent of $0x7448d8 (PAL)
 // $7443B0: [NTSCJ][32-bit (base) Pointer:UndefinedStruct_01] -> [Struct:Undefined_01]
 //          @Regional Equivalent of $0x7448a0 (PAL)
-// $7443E8: [NTSCJ][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
+// $7443E8: [NTSCJ][32-bit (base) Pointer:ActivePlayerProfile] -> [Struct:PlayerProfileData]
 //          @Regional Equivalent of $0x7448d8 (PAL)
-// $744898: [PAL][8-bit {32-bit}] Selected Player_Profile ID
-//          - Value range [0x0-0x5], there's a total of 6 player profile slots
-//          - Each Player_Profile saves its own data (refer to $0x7448d8)
+// $744898: [PAL][8-bit:ActivePlayerProfileID |32-bit]
+//          - Value range [0x0-0x5] => [PlayerProfileSlot1-PlayerProfileSlot6]
+//          - Each PlayerProfile saves its own data in [Array:PlayerProfileData] ($0x740608)
 // $7448A0: [PAL][32-bit (base) Pointer:UndefinedStruct_01] -> [Struct:Undefined_01]
 //          [Definition Struct:Undefined_01 |??-byte]
 //          |'''''''''''''''''''''''''''''''''''
@@ -1526,48 +1547,57 @@
 //          |+0x24 - [28-byte Bitset:SharedUnlocks]
 //          |¨| - Definition of [Bitset:SharedUnlocks] at $0x7405cd
 //          |/
-//          |+0x60 - [PAL][17040-byte Array:PlayerProfileData] List of (6x) [Struct:Player_Profile_Data]
+//          |+0x60 - [17040-byte Array:PlayerProfileData] List of (6x) [Struct:PlayerProfileData]
 //          |¨| - Definition of [Array:PlayerProfileData] at $0x740608
 //          |/
 //          '
-// $7448A8: [PAL][32-bit] Showdown - Bounty Hunter Mode - Bounty Target Limit
-//          - The required Bounty/Cash a player needs to collect to win the game
-// $7448D8: [PAL][32-bit Pointer] --(+0x0)--> [2840-byte Struct] Selected Player_Profile_Data
-//          - This pointer points to the currently selected Player_Profile_Data
-//          - Each Player_Profile has his own data storage
-//          - Player_Profile_Data is updated on save/on end of missions
-//          - Struct Definition Player_Profile_Data at $0x740608
-// $744C78: [PAL][24-byte Bitset] Temporary Selected Player_Profile_Unlocks
-// $745170: [NTSCU][32-bit Flag] 0x9000 => Animation Loading Is Active
-//          @Regional equivalent of $0x7478f0
+// $7448A8: [PAL][32-bit:ShowdownBountyHunterModeBountyTargetLimit]
+//          - Related [Struct:ShowdownModeSettings].[Lower4:BountyHunterModeBountyLimitSetting], which sets the limit before match starts. ($0x7405b0)
+//          - This value refers to the exact required cash a player needs to collect to win the game
+// $7448D8: [PAL][32-bit (base) Pointer:ActivePlayerProfile] -> [Struct:PlayerProfileData]
+//          - This pointer points to the currently active/selected PlayerProfile
+//          - All PlayerProfiles are stored at [Array:PlayerProfileData] at $0x740608
+//          - Definition of [Struct:PlayerProfileData] at $0x740608
+// $744C78: [PAL][24-byte Bitset:Player_Profile_Unlocks(tempCopy)]
+//          - In some instances during gameplay, mostly during loading screens. the bitset which is stored at [Pointer:ActivePlayerProfile].[Struct:PlayerProfileData].[Bitset:Player_Profile_Unlocks] is temporarily copied to this location, whilst [Pointer:ActivePlayerProfile] temporarily points to miscellaneous data.
+// $745170: [NTSCU][32-bitFlag:IsAnimationLoading]
+//          @Regional equivalent of $0x7478f0 (PAL)
+//          - 32-bit = 0x9000 => Animation Loading Is Active
 // $747408: [PAL][32-bit (base) Pointer:RewardMenuAndStartChpMenuDisplayData(alt2)]
 //          -> [Struct:RewardMenuAndStartChpMenuDisplayData]
 //          
 //          - Prefer using (base) pointer at $0x54caf0
-// $7478F0: [PAL][32-bit Flag] 0x9000 => Animation Loading Is Active
-//          - Animation Loading = loading screen when loading a story mission, where the protagonist is shown
-//          - Don't use this as a single Bit Flag as that would be unstable
-// $747BCD: [NTSCU][6-byte ASCII {Variable Size}] Video File Name ID
-//          @Regional equivalent of $0x74a34d (PAL)
-// $74A34D: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - NTSC Mode
-//          - Preceding [13-byte ASCII] = "cdrom0:\/pss/"
-//          - VideoFileName_IDs and further documentation at $0x74a34f
-// $74A34F: [PAL][6-byte ASCII {Variable Size}] Video File Name ID - PAL Mode
-//          - Identifies the current/last PRE-RENDERED video played
-//          - Preceding [15-byte ASCII] = "cdrom0:\/pss50/" -> pss files are ps2 video/image files; There's a folder on the ROM "pss50" which stores 50Hz video's for PAL mode and a folder "pss" for NTSC mode
+// $7478F0: [PAL][32-bitFlag:IsAnimationLoading]
+//          - 32-bit = 0x9000 => Animation Loading Is Active
 //          
-//          # VideoFileName_IDs (list incomplete)
+//          - 'Animation Loading' is the loading screen when loading a story mission, where the protagonist is shown. (eg. when the protagonist is Red: he twirls his pistol with a red background)
+//          - Don't use this address as a single BitFlag as that would be unstable
+// $747BCD: [NTSCU][6-byte ASCII:VideoFileNameID]
+//          @Regional equivalent of $0x74a34d (PAL)
+//          - NTSCU doesn't offer PAL mode, only NTSC mode
+// $74A34D: [PAL][6-byte ASCII:VideoFileNameID_NTSC]
+//          - Preceding [13-byte ASCII] = "cdrom0:\/pss/"
+//          - VideoFileNameID is only stored here when in NTSC (60Hz) mode
+//          - IDs and further documentation at $0x74a34f
+// $74A34F: [PAL][6-byte ASCII:VideoFileNameID_PAL]
+//          - Identifies the current/last PRE-RENDERED video played
+//          - Preceding [15-byte ASCII] = "cdrom0:\/pss50/" ---> pss files are ps2 video/image files; There's a folder on the ROM "pss50" which stores 50Hz video's for PAL mode and a folder "pss" for NTSC mode
+//          - VideoFileNameID is only stored here when in PAL (50Hz) mode
+//          
+//          # VideoFileNameIDs (list incomplete)
 //          |'''''''''''''''''''''''''
 //          | rslogo.pss => Rockstar Logo on game boot
 //          | titles.pss => Game Title Intro Video (plays after selecting language)
 //          | sher7001.pss => Chapter 3 (Ugly Streetfight) - Intro video: Red talks with sheriff about bounty reward + bandit shoots dog
-// $74F500: [NTSCU][32-bit] PosterMenu Selected Showdown Stage ID
+// $74F500: [NTSCU][32-bit:SelectedPosterMenuShowdownStageID]
 //          @Regional equivalent of $0x751c80 (PAL)
-// $751C80: [PAL][32-bit] PosterMenu Selected Showdown Stage ID
-//          - This can be used to ID the selected Showdown Stage
+// $751C80: [PAL][32-bit:SelectedPosterMenuShowdownStageID]
+//          - This can be used to identify which Showdown Stage is selected
+//          - This value does not directly control which Showdown Stage is loaded
+//          - This value may not always update if the player rapidly switches back and forth when selecting a showdown stage at the ShowdownPosterMenu at the MainMenu. (eg. rapidly shifting from stage1 to stage2 to stage1 to stage 2...)
 //          - This memory address is the start of a memory region which probably correlates to the image data of the stage
 //          
-//          # PosterMenu_Selected_Showdown_Stage_IDs
+//          # PosterMenuShowdownStageIDs
 //          |'''''''''''''''''''''''''''''''''
 //          | 0x4E8ED0A3 => Twin Rocks
 //          | 0xE92D2DF4 => Desert Fortress
@@ -1661,7 +1691,7 @@
 //          |/
 //          |
 //          |+0x80 - [32-bit (layer-1) Pointer] -> [Struct:Weapon_Manager]
-//          |+|¨| - Definition of [Struct:Weapon_Manager] below at $0x7638b8
+//          |+|¨| - Definition of [Struct:Weapon_Manager] at $0x7638b8
 //          |/
 //          '
 // $763070: [PAL][32-bit Pointer{1}] --(+0x0)--> [3008-byte Struct] SinglePlayer_Data
@@ -1672,8 +1702,8 @@
 //          | - This struct is very similar to ShowdownPlayer_Data_C ($0x7638b8)
 //          | - This also points to ShowdownPlayer_Data of Player 1 during a Showdown Match
 //          |
-//          |+0xC - [32-bit Pointer{2}] --(+0x0)--> [??-byte Struct] Actor_Data_B
-//          |+| - Struct:Actor_Data_B Definition at $0x7621d0
+//          |+0xC - [32-bit Pointer{2}] -> [Struct:ActorData_B]
+//          |+| - Definition of [Struct:ActorData_B] at $0x7621d0
 //          |/
 //          |
 //          |+0x18 - [32-bit Pointer{2}]
@@ -2093,9 +2123,9 @@
 //          |++++| - Definition of [Struct:WeaponData] below
 //          |/
 //          |
-//          |+0xA8 - [8-bit Bitfield {32-bit}] Universal_Weapon_State
+//          |+0xA8 - [8-bit Bitfield:UniversalWeaponState |32-bit]
 //          |¨| - This state is valid to use for all weapons, this in comparison to [Struct:WeaponData].[Bitfield:WeaponState]
-//          |¨| - Universal_Weapon_States listed below
+//          |¨| - UniversalWeaponStates listed below
 //          |/
 //          '
 //          
@@ -2194,7 +2224,7 @@
 //          | 0x31 =&gt; Sacred Bow
 //          '
 //          
-//          # Universal_Weapon_States (list complete)
+//          # UniversalWeaponStates (list complete)
 //          |'''''''''''''''''''''''
 //          | 0x0 =&gt; Holstered
 //          | 0x1 =&gt; Drawing Weapon (first half of animation)
