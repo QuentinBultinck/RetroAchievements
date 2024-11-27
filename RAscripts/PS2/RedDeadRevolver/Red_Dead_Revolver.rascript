@@ -214,46 +214,55 @@ memory_StructDefs = {
 			"InvertedBitFlag:IsInGameMenuDisplayed": 0x38,
 			"8-bit:HighlightedMenuItemID": 0x318},
 		},
-	"Struct_SinglePlayerData": {
+	"Struct:SinglePlayerData": {
 		"pointerChainToMember": {
-			"Float_PlayerHP": { 
+			"Float:PlayerHP": { 
 				"pointerChainOffsets": [0x18, 0x10]},
-			"Float_PlayerMaxHP": { 
+			"Float:PlayerMaxHP": { 
 				"pointerChainOffsets": [0x18, 0x14]},
-			"ASCII_GameTriggerID": { 
+			"ASCII:GameTriggerID": { 
 				"pointerChainOffsets": [0x168, 0xEC],
 				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
-			"32Bit_HeadShots": { 
+
+			// Via: +0x36C - [32-bit (layer-1) Pointer:GameplayStats] -> [Struct:SinglePlayerMissionStats]
+			"32-bit:HeadShots(kills)": { // TODO verify if this memAddr counts 'Headshot Kills' or 'Headshots' -- otherwise try using [Struct:SinglePlayerData].[32-bit:HeadShots]
 				"pointerChainOffsets": [0x36C, 0x30]},
-			"32Bit_DeathToll": { 
+			"32-bit:DeathToll": { 
 				"pointerChainOffsets": [0x36C, 0x5C]},
-			"Float_DamageTaken": { 
+			"Float:RawTotalDamageTaken": { 
 				"pointerChainOffsets": [0x36C, 0x70]},
-			"32Bit_ShotsFired": { 
+			"32-bit:ShotsFired(functional)": { 
 				"pointerChainOffsets": [0x36C, 0x194]},
-			"32Bit_ShotsHit": { 
+			"32-bit:ShotsHit(functional)": { 
 				"pointerChainOffsets": [0x36C, 0x198]},
-			"32Bit_DeadEyeAbilitiesUsed": { 
+			"32-bit:DeadeyeOrSpecialMoveUseCount": { 
 				"pointerChainOffsets": [0x36C, 0x1BC]},
-			"32Bit_HighestComboMultiplier": { 
+			"32-bit:HighestComboMultiplier": { 
 				"pointerChainOffsets": [0x36C, 0x1C0]},
-			"Float_HighestCombo": { 
+			"Float:HighestCombo": { 
 				"pointerChainOffsets": [0x36C, 0x1C4]},
-			"32Bit_HighestComboMultiplierShowdown": { 
+
+			// Via: +0x36C - [32-bit (layer-1) Pointer:GameplayStats] -> [Struct:ShowdownPlayerStats]
+			"32-bit:HighestComboMultiplier_Showdown": { 
 				"pointerChainOffsets": [0x36C, 0x4C0]},
-			"Float_HighestComboShowdown": { 
+			"Float:HighestCombo_Showdown": { 
 				"pointerChainOffsets": [0x36C, 0x4C4]},
-			"PS2Vector_PlayerLocation": { 
+
+			// Via: +0xC - [32-bit (layer-1) Pointer] -> [Struct:ActorData_B]
+			"Struct(PS2Vector):ActorLocation": { 
 				"pointerChainOffsets": [0xC, 0xC, 0x90]},
 			"BitFlag:IsRidingAnimal": { 
 				"pointerChainOffsets": [0xC, 0xC, 0xC0]},
-			"8Bit_EquippedWeaponID": { 
+
+			// Via: +0xC - [32-bit (layer-1) Pointer] -> [Struct:ActorData_B] +0x80 - [32-bit (layer-1) Pointer] -> [Struct:WeaponManager]
+			"8-bit:EquippedWeaponID": { 
 				"pointerChainOffsets": [0xC, 0x80, 0x48]},
 			"Bitfield:UniversalWeaponState": { 
 				"pointerChainOffsets": [0xC, 0x80, 0xA8]},
-			"Array_Weapon_Data": { 
+			"Array:WeaponData": { 
 				"pointerChainOffsets": [0xC, 0x80, 0x20, 0x0, 0x4]},
-			"Bitset_PlayerProfileUnlocks": { 
+
+			"Bitset:PlayerProfileUnlocks": { 
 				"pointerChainOffsets": [0x5C8]},
 		}},
 	"Struct:GameController": {
@@ -463,22 +472,22 @@ memory_StructDefs = {
 		}},
 	"Struct:MultiplayerRewardMenuData": {
 		"pointerChainToMember": {
-			"ASCIIFlag:IsWinner-P1": {
+			"ASCIIFlag(IsWinner):Player-1": {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x0,
 					RELEASE_REGION_USA: 0x180 + 0x0}},
-			"ASCIIFlag:IsWinner-P2": {
+			"ASCIIFlag(IsWinner):Player-2": {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x10,
 					RELEASE_REGION_USA: 0x180 + 0x10}},
-			"ASCIIFlag:IsWinner-P3": {
+			"ASCIIFlag(IsWinner):Player-3": {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x20,
 					RELEASE_REGION_USA: 0x180 + 0x20}},
-			"ASCIIFlag:IsWinner-P4": {
+			"ASCIIFlag(IsWinner):Player-4": {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x30,
@@ -602,8 +611,8 @@ memory_addresses = {
 		"Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)": {RELEASE_REGION_USA: 0x54a370, RELEASE_REGION_EUR: 0x54caf0, RELEASE_REGION_JPN: sNULL},
 		"Pointer:InGameMenuController(preferred)": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Pointer:ActivePlayerProfile": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
+		"Pointer:SinglePlayerData(preferred)": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 
-		"SinglePlayerData": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
@@ -1406,20 +1415,20 @@ const_GameTrigger_asHex = {
 	}}
 
 function is_GameTrigger(enum_gameTrigger, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getStruct_OffsetToPointedToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
+		memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "ASCII:GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getStruct_OffsetToPointedToMember("Struct:SinglePlayerData", "ASCII:GameTriggerID")
 	// return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return is_ASCII_EqualTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
 	}
 
 function on_GameTrigger_changeTo(enum_gameTrigger, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_GameTriggerID = 
-		memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "ASCII_GameTriggerID", let_memAddr_SinglePlayerData) + 
-		memory_getStruct_OffsetToPointedToMember("Struct_SinglePlayerData", "ASCII_GameTriggerID")
+		memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "ASCII:GameTriggerID", let_memAddr_SinglePlayerData) + 
+		memory_getStruct_OffsetToPointedToMember("Struct:SinglePlayerData", "ASCII:GameTriggerID")
 	// return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, const_GameTrigger_asHex[enum_gameTrigger]["Short"])
 	return on_ASCII_changeTo(let_pointerChainTo_GameTriggerID, enum_gameTrigger)
 	
@@ -1432,28 +1441,28 @@ PLAYER_STATIONARY_THRESHOLD = 0.7
 PLAYER_SPAWN_THRESHOLD = 0.5
 PLAYER_GATLING_GUN_THRESHOLD = 0.3
 function current_PlayerXCoordinate(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
 		memGenerate_pointerChainAccessor(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			"Struct:SinglePlayerData", "Struct(PS2Vector):ActorLocation", let_memAddr_SinglePlayerData, 
 			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:X_Coordinate"), 
 			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
 
 function current_PlayerYCoordinate(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
 		memGenerate_pointerChainAccessor(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			"Struct:SinglePlayerData", "Struct(PS2Vector):ActorLocation", let_memAddr_SinglePlayerData, 
 			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:Y_Coordinate"), 
 			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
 	
 function current_PlayerZCoordinate(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_memAccessor_PlayerCoordinate = 
 		memGenerate_pointerChainAccessor(
-			"Struct_SinglePlayerData", "PS2Vector_PlayerLocation", let_memAddr_SinglePlayerData, 
+			"Struct:SinglePlayerData", "Struct(PS2Vector):ActorLocation", let_memAddr_SinglePlayerData, 
 			int_offsetToPointedToMember = memory_getStruct_OffsetToMember("Struct:PS2Vector", "Float:Z_Coordinate"), 
 			memAccessorType_toPointedToMember = float)
 	return let_memAccessor_PlayerCoordinate}
@@ -1896,9 +1905,9 @@ function MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(int_offsetToB
 	return memAccessor_toByteInBitset(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
 
 function MemAccessorGeneratorToBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_memAccessor = memGenerate_pointerChainAccessor(
-			"Struct_SinglePlayerData", "Bitset_PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
+			"Struct:SinglePlayerData", "Bitset:PlayerProfileUnlocks", let_memAddr_SinglePlayerData, 
 			int_offsetToPointedToMember = int_offsetToByte, memAccessorType_toPointedToMember = memAccessor_toByteInBitset)
 	return let_memAccessor}
 
@@ -2583,15 +2592,15 @@ function on_AmmoHUDControllerReserveAmmo_decrement(enum_releaseRegion) {
 const_array_MAX_HP_VALUES = [250.0, 300.0, 350.0, 400.0, 450.0, 500.0, 550.0, 600.0] // 8 max hp values as there's 7 HP upgrades
 
 function current_PlayerHP(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_PlayerHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Float:PlayerHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
 
 function prev_PlayerHP(enum_releaseRegion) =>
 	prev(current_PlayerHP(enum_releaseRegion))
 	
 function current_PlayerMaxHP(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_PlayerMaxHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Float:PlayerMaxHP", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)} 
 
 function is_PlayerMaxHP(float_value, enum_releaseRegion) =>
 	current_PlayerMaxHP(enum_releaseRegion) == float_value
@@ -2604,8 +2613,8 @@ function on_PlayerHP_zero(enum_releaseRegion) =>
 	&& prev_PlayerHP(enum_releaseRegion) > 0
 
 function current_FlagState_IsPlayerRidingAnimal(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "BitFlag:IsRidingAnimal", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = bit0)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "BitFlag:IsRidingAnimal", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = bit0)}
 
 function is_PlayerRidingAnimal(enum_releaseRegion) =>
 	current_FlagState_IsPlayerRidingAnimal(enum_releaseRegion) == 1
@@ -2617,8 +2626,8 @@ UNIVERSAL_WEAPON_STATE_Aiming = 0x3
 UNIVERSAL_WEAPON_STATE_Reloading = 0x4
 
 function current_PlayerUniversalWeaponState(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Bitfield:UniversalWeaponState", let_memAddr_basePointer)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Bitfield:UniversalWeaponState", let_memAddr_basePointer)}
 
 function prev_PlayerUniversalWeaponState(enum_releaseRegion) => 
 	prev(current_PlayerUniversalWeaponState(enum_releaseRegion))
@@ -2628,8 +2637,8 @@ function on_PlayerUniversalWeaponState_changeTo(enum_universalWeaponState, enum_
 	&& prev_PlayerUniversalWeaponState(enum_releaseRegion) != enum_universalWeaponState
 
 function current_PlayerWeaponEquipped(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "8Bit_EquippedWeaponID", let_memAddr_basePointer)}
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "8-bit:EquippedWeaponID", let_memAddr_basePointer)}
 
 function is_PlayerWeapon_equipped(enum_weapon, enum_releaseRegion) =>
 	current_PlayerWeaponEquipped(enum_releaseRegion) == enum_weapon
@@ -2638,8 +2647,8 @@ function current_FlagState_IsWeaponInInventory(enum_weapon, enum_releaseRegion) 
 	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStuct_offsetSequenceToMember("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
 	let_offsetTo_WeaponData = (enum_weapon * memory_getStruct_SizeInBytes("Struct_Weapon_Data")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
 
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	let_pointerChainTo_ArrayWeaponData = memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Array_Weapon_Data", let_memAddr_basePointer)
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	let_pointerChainTo_ArrayWeaponData = memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Array:WeaponData", let_memAddr_basePointer)
 	let_pointerChainTo_IsWeaponInInventory = dword(let_pointerChainTo_ArrayWeaponData + let_offsetTo_WeaponData)
 	return bit0(let_pointerChainTo_IsWeaponInInventory + let_array_AddAddressChainTo_IsWeaponInInventory[1])}
 
@@ -2654,15 +2663,15 @@ function on_Weapon_pickup(enum_weapon, enum_releaseRegion) =>
 
 // ------------------------SinglePlayer_Mission_Stats------------------------------
 function current_ShotsFired(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_ShotsFired", let_memAddr_SinglePlayerData)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:ShotsFired(functional)", let_memAddr_SinglePlayerData)}
 
 function prev_ShotsFired(enum_releaseRegion) =>
 	prev(current_ShotsFired(enum_releaseRegion))
 
 function current_ShotsHit(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_ShotsHit", let_memAddr_SinglePlayerData)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:ShotsHit(functional)", let_memAddr_SinglePlayerData)}
 
 function prev_ShotsHit(enum_releaseRegion) =>
 	prev(current_ShotsHit(enum_releaseRegion))
@@ -2692,8 +2701,8 @@ function on_ShotsHit_change(enum_releaseRegion) =>
 	current_ShotsHit(enum_releaseRegion) != prev_ShotsHit(enum_releaseRegion)
 
 function current_DeathToll(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_DeathToll", let_memAddr_SinglePlayerData)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:DeathToll", let_memAddr_SinglePlayerData)}
 
 function prev_DeathToll(enum_releaseRegion) =>
 	prev(current_DeathToll(enum_releaseRegion))
@@ -2702,8 +2711,8 @@ function on_DeathToll_increment(enum_releaseRegion) => // WARNING This value doe
 	current_DeathToll(enum_releaseRegion) > prev_DeathToll(enum_releaseRegion)
 
 function current_DamageTaken(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_DamageTaken", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Float:RawTotalDamageTaken", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MANUAL_CONSTRUCTION necessary for RATools 1.14.1
 	/* MANUAL_CONSTRUCTION: Remember + Recall
@@ -2721,8 +2730,8 @@ function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MAN
 	+ current_DamageTaken(enum_releaseRegion)
 
 function current_HeadShots(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HeadShots", let_memAddr_SinglePlayerData)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:HeadShots(kills)", let_memAddr_SinglePlayerData)}
 
 function prev_HeadShots(enum_releaseRegion) =>
 	prev(current_HeadShots(enum_releaseRegion))
@@ -2731,8 +2740,8 @@ function on_HeadShots_increment(enum_releaseRegion) =>
 	current_HeadShots(enum_releaseRegion) > prev_HeadShots(enum_releaseRegion)
 
 function current_DeadEyeAbilitiesUsed(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_DeadEyeAbilitiesUsed", let_memAddr_SinglePlayerData)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:DeadeyeOrSpecialMoveUseCount", let_memAddr_SinglePlayerData)}
 
 function prev_DeadEyeAbilitiesUsed(enum_releaseRegion) =>
 	prev(current_DeadEyeAbilitiesUsed(enum_releaseRegion))
@@ -2741,20 +2750,20 @@ function on_DeadEyeAbilitiesUsed_increment(enum_releaseRegion) =>
 	current_DeadEyeAbilitiesUsed(enum_releaseRegion) > prev_DeadEyeAbilitiesUsed(enum_releaseRegion)
 
 function current_HighestCombo(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_HighestCombo", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Float:HighestCombo", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_HighestComboMultiplier(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HighestComboMultiplier", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:HighestComboMultiplier", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
 
 function current_HighestCombo_Showdown(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "Float_HighestComboShowdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Float:HighestCombo_Showdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = float)}
 
 function current_HighestComboMultiplier_Showdown(enum_releaseRegion) {
-	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "SinglePlayerData", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct_SinglePlayerData", "32Bit_HighestComboMultiplierShowdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
+	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:HighestComboMultiplier_Showdown", let_memAddr_SinglePlayerData, memAccessorType_toPointedToMember = dword)}
 
 // ..............
 // ◦ ACTOR DATA ◦ // May be unsued code
@@ -3388,7 +3397,7 @@ function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Play
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))	
 	
-	let_string_pointerChainKey = format("ASCIIFlag:IsWinner-P{0}", int_playerIndex)
+	let_string_pointerChainKey = format("ASCIIFlag(IsWinner):Player-{0}", int_playerIndex)
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MultiplayerRewardMenuData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
 		"Struct:MultiplayerRewardMenuData", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
@@ -3401,7 +3410,7 @@ function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // P
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
 		util_throwError(format("Player index: {0} is not in valid range"))	
 	
-	let_string_pointerChainKey = format("ASCIIFlag:IsWinner-P{0}", int_playerIndex)
+	let_string_pointerChainKey = format("ASCIIFlag(IsWinner):Player-{0}", int_playerIndex)
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MultiplayerRewardMenuData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_ASCII = memGenerate_pointerChainAccessor(
 		"Struct:MultiplayerRewardMenuData", let_string_pointerChainKey, let_memAddr_basePointer, memAccessorType_toPointedToMember = dword)
