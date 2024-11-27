@@ -410,10 +410,10 @@ memory_StructDefs = {
 		"offsetToMember": {
 			"ASCII_PuppetshowID": 0x68}
 		},
-	"Struct_Weapon_Data": {
+	"Struct:WeaponData": {
 		"sizeInBytes": 8,
 		"pointerChainToMember": {
-			"BitFlag_IsWeaponInInventory": {
+			"BitFlag:IsWeaponInInventory": {
 				"pointerChainOffsets": [0x4, 0x1D0]},
 		}},
 	"Struct_Mission_Timers": {
@@ -436,38 +436,42 @@ memory_StructDefs = {
 			"BitFlag:IsShowdownPlayerSlotFilled": 0x13,
 			"ASCII:ShowdownAISetting": 0x139}
 		},		
-	"Struct_ShowdownPlayer_Data": {
+	"Struct:ShowdownPlayerData_0": {
 		"sizeInBytes": 16,
 		"offsetToMember": {
-			"Struct_ShowdownPlayer_Data_A": 0x0,
-			"Struct_ShowdownPlayer_Data_B": 0x4,
-			"Struct_ShowdownPlayer_Data_C": 0x8,
-			"Struct_ShowdownPlayer_Data_D": 0xC}
+			"Struct:ShowdownPlayerData_A": 0x0,
+			"Struct:ShowdownPlayerData_B": 0x4,
+			"Struct:ShowdownPlayerData_C": 0x8,
+			"Struct:ShowdownPlayerData_D": 0xC}
 		},
-	"Struct_ShowdownPlayer_Data_B": {
+	"Struct:ShowdownPlayerData_B": {
 		"pointerChainToMember": {
-			"32Bit_DeathToll": { 
+			"32-bit:CashCollected": { 
+				"pointerChainOffsets": [0x2B4, 0xC]},
+
+			// Via: [Struct:ShowdownPlayerStats]
+			"32-bit:DeathToll": { 
 				"pointerChainOffsets": [0x30, 0x5C]},
-			"Float_DamageTaken": { 
+			"Float:RawTotalDamageTaken": { 
 				"pointerChainOffsets": [0x30, 0x70]},
-			"32Bit_HighNoonRoundsWon": { 
+			"32-bit:HighNoonRoundsWon": { 
 				"pointerChainOffsets": [0x30, 0x430]},
-			"32Bit_ShotsFired": { 
+			"32-bit:ShotsFired(functional)": { 
 				"pointerChainOffsets": [0x30, 0x494]},
-			"32Bit_ShotsHit": { 
+			"32-bit:ShotsHit(functional)": { 
 				"pointerChainOffsets": [0x30, 0x498]},
-			"32Bit_HeadShots": { 
-				"pointerChainOffsets": [0x30, 0x4A4]},				
-			"32Bit_CashCollected": { 
-				"pointerChainOffsets": [0x2B4, 0xC]},			
-			"32Bit_EquippedWeaponId": { 
+			"32-bit:HeadShots": { 
+				"pointerChainOffsets": [0x30, 0x4A4]},
+
+			// Via: [Struct:WeaponManager]		
+			"8-bit:EquippedWeaponID": { 
 				"pointerChainOffsets": [0x18, 0x80, 0x48]}}
 		},
-	"Struct_ShowdownPlayer_Data_C": {
+	"Struct:ShowdownPlayerData_C": {
 		"pointerChainToMember": {
-			"Float_HP": { 
+			"Float:PlayerHP": { 
 				"pointerChainOffsets": [0x18, 0x10]},
-			"Float_MaxHP": { 
+			"Float:PlayerMaxHP": { 
 				"pointerChainOffsets": [0x18, 0x14]}
 		}},
 	"Struct:MultiplayerRewardMenuData": {
@@ -620,6 +624,7 @@ memory_addresses = {
 		"Array:ShowdownPlayerSettings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
 		"Array:ShowdownPlayerSettings_B": {RELEASE_REGION_USA: 0x73b099, RELEASE_REGION_EUR: 0x73d819, RELEASE_REGION_JPN: sNULL},
 		"Array:PlayerProfileData": {RELEASE_REGION_USA: 0x73de88, RELEASE_REGION_EUR: 0x740608, RELEASE_REGION_JPN: sNULL}, // Unused
+		"Array:ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
 		"Struct:PlayerInputReader": {RELEASE_REGION_USA: 0x73b7c2, RELEASE_REGION_EUR: 0x73df42, RELEASE_REGION_JPN: sNULL},
 		"Struct:ShowdownModeSettings": {RELEASE_REGION_USA: 0x73de30, RELEASE_REGION_EUR: 0x7405b0, RELEASE_REGION_JPN: sNULL},
 		"Bitset:ShowdownCharacterUnlocks": {RELEASE_REGION_USA: 0x73de61, RELEASE_REGION_EUR: 0x7405e1, RELEASE_REGION_JPN: sNULL},
@@ -627,8 +632,7 @@ memory_addresses = {
 		"Bitset:JournalPageUnlocks": {RELEASE_REGION_USA: 0x73de4d, RELEASE_REGION_EUR: 0x7405cd, RELEASE_REGION_JPN: sNULL},
 		"Bitset:CheatUnlocks": {RELEASE_REGION_USA: 0x73de4c, RELEASE_REGION_EUR: 0x7405cc, RELEASE_REGION_JPN: sNULL}, // Unused
 
-		"Array_ActorData": {RELEASE_REGION_USA: 0x75fa50, RELEASE_REGION_EUR: 0x7621d0, RELEASE_REGION_JPN: sNULL},
-		"Array_ShowdownPlayer_Data": {RELEASE_REGION_USA: 0x761138, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
+		"Array:ShowdownPlayerData": {RELEASE_REGION_USA: 0x761138, RELEASE_REGION_EUR: 0x7638b8, RELEASE_REGION_JPN: sNULL},
 	}}
 
 
@@ -2644,8 +2648,8 @@ function is_PlayerWeapon_equipped(enum_weapon, enum_releaseRegion) =>
 	current_PlayerWeaponEquipped(enum_releaseRegion) == enum_weapon
 
 function current_FlagState_IsWeaponInInventory(enum_weapon, enum_releaseRegion) {
-	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStuct_offsetSequenceToMember("Struct_Weapon_Data", "BitFlag_IsWeaponInInventory")
-	let_offsetTo_WeaponData = (enum_weapon * memory_getStruct_SizeInBytes("Struct_Weapon_Data")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
+	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStuct_offsetSequenceToMember("Struct:WeaponData", "BitFlag:IsWeaponInInventory")
+	let_offsetTo_WeaponData = (enum_weapon * memory_getStruct_SizeInBytes("Struct:WeaponData")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
 
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
 	let_pointerChainTo_ArrayWeaponData = memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "Array:WeaponData", let_memAddr_basePointer)
@@ -2769,7 +2773,7 @@ function current_HighestComboMultiplier_Showdown(enum_releaseRegion) {
 // ◦ ACTOR DATA ◦ // May be unsued code
 // ''''''''''''''
 function get_PointerAddr_ActorDataB(int_actorDataindex, enum_releaseRegion) {
-	let_memAddr_ActorDataArray = memory_getAddress(DATATYPE_Struct, "Array_ActorData", enum_releaseRegion)
+	let_memAddr_ActorDataArray = memory_getAddress(DATATYPE_Struct, "Array:ActorData", enum_releaseRegion)
 	let_memAddr_ActorData0 = let_memAddr_ActorDataArray + (memory_getStruct_SizeInBytes("Struct:ActorData_0") * int_actorDataindex)
 	return let_memAddr_ActorData0 + memory_getStruct_OffsetToMember("Struct:ActorData_0", "Struct:ActorData_B")}
 
@@ -3148,12 +3152,12 @@ function current_ShowdownPlayer_HP(int_playerIndex, enum_releaseRegion) { // Pla
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataC = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_C")
 	
 	let_memAccessor_HP = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_C", "Float_HP", 
+		"Struct:ShowdownPlayerData_C", "Float:PlayerHP", 
 		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_HP}
 
@@ -3170,12 +3174,12 @@ function current_ShowdownPlayer_MaxHP(int_playerIndex, enum_releaseRegion) { // 
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataC = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_C")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_C")
 	
 	let_memAccessor_MaxHP = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_C", "Float_MaxHP", 
+		"Struct:ShowdownPlayerData_C", "Float:PlayerMaxHP", 
 		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_MaxHP}
 
@@ -3186,12 +3190,12 @@ function current_ShowdownPlayer_CashCollected(int_playerIndex, enum_releaseRegio
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_CashCollected = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_CashCollected", 
+		"Struct:ShowdownPlayerData_B", "32-bit:CashCollected", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_CashCollected}
 
@@ -3201,12 +3205,12 @@ function current_ShowdownPlayer_HighNoonRoundsWon(int_playerIndex, enum_releaseR
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_HighNoonRoundsWon = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_HighNoonRoundsWon", 
+		"Struct:ShowdownPlayerData_B", "32-bit:HighNoonRoundsWon", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_HighNoonRoundsWon}
 
@@ -3216,12 +3220,12 @@ function current_ShowdownPlayer_DeathToll(int_playerIndex, enum_releaseRegion) {
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_DeathToll = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_DeathToll", 
+		"Struct:ShowdownPlayerData_B", "32-bit:DeathToll", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_DeathToll}
 
@@ -3237,12 +3241,12 @@ function current_ShowdownPlayer_HeadShots(int_playerIndex, enum_releaseRegion) {
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_HeadShots = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_HeadShots", 
+		"Struct:ShowdownPlayerData_B", "32-bit:HeadShots", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_HeadShots}
 
@@ -3252,12 +3256,12 @@ function current_ShowdownPlayer_DamageTaken(int_playerIndex, enum_releaseRegion)
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_DamageTaken = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "Float_DamageTaken", 
+		"Struct:ShowdownPlayerData_B", "Float:RawTotalDamageTaken", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = float)
 	return let_memAccessor_DamageTaken}
 
@@ -3279,12 +3283,12 @@ function current_ShowdownPlayer_Weapon_equipped(int_playerIndex, enum_releaseReg
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataB = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_EquippedWeaponId = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_EquippedWeaponId", 
+		"Struct:ShowdownPlayerData_B", "8-bit:EquippedWeaponID", 
 		let_memAddr_basePointer_ShowdownPlayerDataB, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_EquippedWeaponId}
 
@@ -3297,12 +3301,12 @@ function current_ShowdownPlayer_ShotsFired(int_playerIndex, enum_releaseRegion) 
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataC = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_ShotsFired = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_ShotsFired", 
+		"Struct:ShowdownPlayerData_B", "32-bit:ShotsFired(functional)", 
 		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_ShotsFired}
 
@@ -3312,12 +3316,12 @@ function current_ShowdownPlayer_ShotsHit(int_playerIndex, enum_releaseRegion) { 
 
 	let_playerIndex = int_playerIndex - 1
 	let_memAddr_basePointer_ShowdownPlayerDataC = 	
-		memory_getAddress(DATATYPE_Struct, "Array_ShowdownPlayer_Data", enum_releaseRegion)
-		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct_ShowdownPlayer_Data"))
-		+ memory_getStruct_OffsetToMember("Struct_ShowdownPlayer_Data", "Struct_ShowdownPlayer_Data_B")
+		memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerData", enum_releaseRegion)
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerData_0"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerData_0", "Struct:ShowdownPlayerData_B")
 	
 	let_memAccessor_ShotsHit = memGenerate_pointerChainAccessor(
-		"Struct_ShowdownPlayer_Data_B", "32Bit_ShotsHit", 
+		"Struct:ShowdownPlayerData_B", "32-bit:ShotsHit(functional)", 
 		let_memAddr_basePointer_ShowdownPlayerDataC, memAccessorType_toPointedToMember = dword)
 	return let_memAccessor_ShotsHit}	
 

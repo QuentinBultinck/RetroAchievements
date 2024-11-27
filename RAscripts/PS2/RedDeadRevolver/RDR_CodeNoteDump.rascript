@@ -759,7 +759,7 @@
 //          |
 //          |+0x14 - [7-byte ASCII:DamageTaken]
 //          |¨| - Succeeding [1-byte ASCII] = "%"
-//          |¨| - This value is calculated from data stored at [Struct:ShowdownPlayer_Data], using formula: (dmgTaken/MaxHP)*100; where default MaxHP = 150.0
+//          |¨| - This value is calculated from data stored at [Struct:ShowdownPlayerData], using formula: (dmgTaken/MaxHP)*100; where default MaxHP = 150.0
 //          |
 //          |+0x1C - [3-byte ASCII:ShotsFired]
 //          |
@@ -1637,7 +1637,7 @@
 //          +0x8 - [32-bit (layer-1) Pointer]
 //          ++0x10 - [160-byte Array:ActorData]
 //          ++| - Defintion of [Array:ActorData] at $0x7621d0
-// $75FA50: [NTSCU][160-byte Array] List of [(20x) 8-byte Struct:Actor_Data]
+// $75FA50: [NTSCU][160-byte Array:ActorData]
 //          @Regional equivalent of $0x7621d0 (PAL)
 // $7608F0: [NTSCU][32-bit Pointer:SinglePlayerData(preferred)] -> [Struct:SinglePlayerData]
 //          @Regional equivalent of $0x763070 (PAL)
@@ -1701,9 +1701,9 @@
 //          
 //          [Definition Struct:SinglePlayerData |3008-byte]
 //          |=====================================
-//          | - This struct is very similar to [Struct:ShowdownPlayer_Data_C] ($0x7638b8)
+//          | - This struct is very similar to [Struct:ShowdownPlayerData_C] ($0x7638b8)
 //          |
-//          |+0xC - [32-bit (layer-1) Pointer] -> [Struct:ActorData_B]
+//          |+0xC - [32-bit (layer-1) Pointer:ActorData_B] -> [Struct:ActorData_B]
 //          |+| - Definition of [Struct:ActorData_B] at $0x7621d0
 //          |/
 //          |
@@ -1744,7 +1744,7 @@
 //          |+||¨| - This value copies value [32-bit:ShotsFired(functional)], documented further below
 //          |+||
 //          |+||+0x2C - [32-bit:ShotsHit(copy)]
-//          |+||¨| - This value is not always an exact copy [32-bit:ShotsHit(functional)], documented further below
+//          |+||¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |+||
 //          |+||+0x30 - [32-bit:HeadShots(kills)]
 //          |+||¨| - This value may only count the enemies killed by head shots, NOT enemies hit in the head
@@ -2057,64 +2057,65 @@
 //          | OKComp_Phase4_NoCine2 => "Not bad, but you could've done better." -> during shooting tutorial, shooting bottles/pans
 //          | GoodComp_Phase4_NoCine2 => "You've got them all! Nice shooting!" -> during shooting tutorial, shooting bottles/pans
 //          '
-// $7638B8: [PAL][64-byte Array] List of [(2x-4x) ShowdownPlayer_Data]
+// $7638B8: [PAL][64-byte Array:ShowdownPlayerData] List of (2-4x) [Struct:ShowdownPlayerData_0]
 //          - This array is only functional during a showdown match
-//          - Minimum 2 players (Player 1 + another); Maximum 4 players
-//          - Player 1 is always the first [ShowdownPlayer_Data] struct in the array
+//          - Minimum required players for a Showdown Match: 2 --- Maximum players: 4
+//          - Each player stores its own [Struct:ShowdownPlayerData_0]. Player 1 is always the first [Struct:ShowdownPlayerData_0] in the array
 //          
-//          [Struct Definition][16-byte] ShowdownPlayer_Data
+//          [Definition Struct:ShowdownPlayerData_0 |16-byte]
 //          |'''''''''''''''''''''''''''''
-//          |+0x0 - [32-bit Pointer{1}] --(+0x0)--> [2512-byte Struct] ShowdownPlayer_Data_A
+//          |+0x0 - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_A |2512-byte]
 //          |
-//          |+0x4 - [32-bit Pointer{1}] --(+0x0)--> [1312-byte Struct] ShowdownPlayer_Data_B
-//          |+[Struct Definition][1312-byte] ShowdownPlayer_Data_B
+//          |+0x4 - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_B |1312-byte]
+//          |+[Definition Struct:ShowdownPlayerData_B |1312-byte]
 //          |+|'''''''''''''''''''''''''''''''''''''
-//          |+|+0x18 - [32-bit Pointer{2}]
-//          |+|++0x80 - [32-bit Pointer{3}] --(+0x0)--> [176-byte Struct] WeaponManager
-//          |+|++| - Struct Definition below
+//          |+|+0x18 - [32-bit (layer-1) Pointer]
+//          |+|++0x80 - [32-bit (layer-2) Pointer] -> [Struct:WeaponManager]
+//          |+|++| - Definition of [Struct:WeaponManager] below
 //          |+|/
-//          |+|+0x28C - [32-byte Bitset] Might be correlated to weapon pickups or power ups?
+//          |+|+0x28C - (unverified) [32-byte Bitset] Might be correlated to weapon pickups or power ups?
 //          |+|
-//          |+|+0x30 - [32-bit Pointer{2}] --(+0x0)--> [1224-byte Struct] ShowdownPlayerStats
-//          |+|+| - Contains stats used for the scoreboard as well as some other misc unused stats
-//          |+|+| - Struct Definition below
+//          |+|+0x30 - [32-bit (layer-2) Pointer] -> [Struct:ShowdownPlayerStats]
+//          |+|+| - Contains stats used for the post-match scoreboard menu
+//          |+|+| - Definition of [Struct:ShowdownPlayerStats] below
 //          |+|/
-//          |+|+0x2B4 - [32-bit Pointer{2}]
-//          |+|++0xC - [32-bit] Bounty/Cash Collected
+//          |+|+0x2B4 - [32-bit (layer-2) Pointer]
+//          |+|++0xC - [32-bit:CashCollected]
 //          |/
 //          |
-//          |+0x8 - [32-bit (layer-1) Pointer:ShowdownPlayerData_C] --(+0x0)--> [3008-byte Struct] ShowdownPlayer_Data_C
-//          |+[Struct Definition][464-byte] ShowdownPlayer_Data_C
+//          |+0x8 - [32-bit (layer-0) Pointer:ShowdownPlayerData_C] -> [Struct:ShowdownPlayerData_C |3008-byte]
+//          |+[Definition Struct:ShowdownPlayerData_C |3008-byte]
 //          |+|'''''''''''''''''''''''''''''''''''''
 //          |+| - This struct is very similar to [Struct:SinglePlayerData] ($0x763070)
 //          |+|
-//          |+|+0xC - [32-bit Pointer{1}]
-//          |+|++0xC - [32-bit Pointer{2}]
-//          |+|++|+0x90 - [16-byte PS2Vector] ShowdownPlayer_Location
-//          |+|++|¨| - PS2Vector Definition at $0x763070
+//          |+|+0xC - [32-bit (layer-1) Pointer:ActorData_B] -> [Struct:ActorData_B]
+//          |+|++0xC - [32-bit (layer-2) Pointer]
+//          |+|++|+0x90 - [16-byte Struct(PS2Vector):ShowdownPlayerLocation]
+//          |+|++|¨| - Defintion of [Struct:PS2Vector] at $0x763070
 //          |+|/
 //          |+|
-//          |+|+0x18 - [32-bit Pointer{2}]
-//          |+|++0x10 - [32-bit Float] Player HP
-//          |+|++0x14 - [32-bit Float] Player Max HP
+//          |+|+0x18 - [32-bit (layer-1) Pointer]
+//          |+|++0x10 - [32-bit Float:PlayerHP]
+//          |+|++0x14 - [32-bit Float:PlayerMaxHP]
 //          |+|
-//          |+|+0x94 - [32-bit Pointer{2}]
-//          |+|++0x10 - [8-bit {32-bit}] Amount of Guns in Inventory
+//          |+|+0x94 - [32-bit (layer-1) Pointer]
+//          |+|++0x10 - [8-bit:NumberOfGunsInInventory |32-bit]
 //          |+|
-//          |+|+0x168 - [32-bit Pointer{2}]
-//          |+|++0xF4 - [32-bit Pointer{3}]
+//          |+|+0x168 - [32-bit (layer-1) Pointer]
+//          |+|++0xF4 - [32-bit (layer-2) Pointer]
 //          |+|+|+0x30 - [660-byte Struct:AmmunitionInventory]
 //          |+|+|¨| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, the data in this struct does not.
 //          |+|+|¨| - Functional values for ammunition are also stored in [Array:WeaponData], these 2 structs may target the same data.
 //          |+|/
-//          |+|+0x5C8 - [32-byte Bitset] Acquired_Weapons
+//          |+|+0x5C8 - (unverified) [32-byte Bitset:AcquiredWeapons]
 //          |+|¨| - This bitset does not have any neccesary function inside Showdown Mode, it's probably something that is inherited from the singlePlayer
+//          |+|¨| - This bitset is somewhat similar to [Bitset:PlayerProfileUnlocks]
 //          |+|¨| - This bitset handles which weapons are available to pick before mission start
 //          |+|¨| - This bitset is updated whenever something is unlocked/bought in-game, in shops and on the Reward Menu
 //          |/
 //          |
-//          |+0xC - [32-bit Pointer{1}] --> ShowdownPlayer_Data_D
-//          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (may be zeroed out for CPU players)
+//          |+0xC - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_D |??-byte]
+//          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (this may only be the case for CPU players, since player 1 is always a 'human' player)
 //          
 //          [Struct Definition][176-byte] WeaponManager
 //          |'''''''''''''''''''''''''''''''''''''
@@ -2126,10 +2127,11 @@
 //          |¨| - WeaponIDs are equal to the index of the weapon inside the [Array:WeaponData]
 //          |/
 //          |
-//          |+0x20 - [32-bit Pointer{1}]
-//          |++0x0 - [32-bit Pointer{2}]
-//          |+++0x4 - [32-bit Pointer{3}]
-//          |++++0x0 - [440-byte Array:WeaponData] List of (55x) [32-bit Pointer{4}] -> [Struct:WeaponData]
+//          |+0x20 - [32-bit (layer-1) Pointer]
+//          |++0x0 - [32-bit (layer-2) Pointer]
+//          |+++0x4 - [32-bit (layer-3) Pointer]
+//          |++++0x0 - [440-byte Array:WeaponData] List of (55x) [32-bit (layer-4) Pointer] -> [Struct:WeaponData]
+//          |++++| - Each weapon has a [Struct:WeaponData] inside this array
 //          |++++| - Definition of [Struct:WeaponData] below
 //          |/
 //          |
@@ -2139,43 +2141,51 @@
 //          |/
 //          '
 //          
-//          [Struct Definition][1224-byte] ShowdownPlayerStats
+//          [Definition Struct:ShowdownPlayerStats |1224-byte]
 //          |''''''''''''''''''''''''''''''''''''''
-//          | - Data stored here is dynamically updated during gameplay
+//          | - This struct stores various stats which are displayed on the post-match scoreboard menu.
+//          | - Data stored in this struct is updated during runtime/gameplay
+//          | - This struct is very similar to [Struct:SinglePlayerMissionStats] ($0x763070)
 //          | - Most 32-bit values stored are signed integers, but the scoreboard only displays a limited amount of characters (refer to $0x6b18b4)
 //          |
-//          |+0x0 - [32-bit] Shots Fired (copy)
-//          |¨| - Depending on weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
+//          |+0x0 - [32-bit:ShotsFired(copy)]
+//          |¨| - This value copies value [32-bit:ShotsFired(functional)], documented further below
 //          |/
-//          |+0x2C - [32-bit] Shots Hit (copy)
+//          |+0x2C - [32-bit:ShotsHit(copy)]
+//          |¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |
-//          |+0x5C - [32-bit] Death Toll (Kill count)
+//          |+0x5C - [32-bit:DeathToll]
+//          |¨| - This value counts enemies killed
 //          |
-//          |+0x70 - [32-bit Float] Raw Total Damage Taken
+//          |+0x70 - [32-bit Float:RawTotalDamageTaken]
 //          |
-//          |+0x418 - [32-bit] Death Count (own deaths)
+//          |+0x418 - [32-bit:DeathCount]
+//          |¨| - This value counts the player's deaths, NOT enemy deaths/kills
 //          |
-//          |+0x430 - [32-bit] High Noon Rounds Won
+//          |+0x430 - [32-bit:HighNoonRoundsWon]
 //          |
-//          |+0x490 - [32-bit] Bounty/Cash Collected
-//          |¨| - This value may only be updated on certain occassions, it doesn't update during gameplay
-//          |¨| - Copies value stored via pointer at $0x562a20
+//          |+0x490 - [32-bit:CashCollected]
+//          |+||¨| - For player 1: this values copies the value stored at [Struct:GameController].[Struct:CashController].[32-bit:Cash(functional)] ($0x562a20)
 //          |/
-//          |+0x494 - [32-bit] Shots Fired (functional)
+//          |+0x494 - [32-bit:ShotsFired(functional)]
+//          |+||¨| - Depending on the type of weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
+//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
 //          |
-//          |+0x498 - [32-bit] Shots Hit (functional)
+//          |+0x498 - [32-bit:ShotsHit(functional)]
+//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
+//          |+||¨| - The formula would be = ShotsHit/ShotsFired
 //          |
-//          |+0x49C - [32-bit] Arm Shots
+//          |+0x49C - [32-bit:ArmShots]
 //          |
-//          |+0x4A0 - [32-bit] Body Shots
+//          |+0x4A0 - [32-bit:BodyShots]
 //          |
-//          |+0x4A4 - [32-bit] Head Shots
+//          |+0x4A4 - [32-bit:HeadShots]
 //          |
-//          |+0x4A8 - [32-bit] Leg Shots
+//          |+0x4A8 - [32-bit:LegShots]
 //          |
-//          |+0x4B4 - [32-bit] Melee Hits
+//          |+0x4B4 - [32-bit:MeleeHits]
 //          |
-//          |+0x4B8 - [32-bit] Back Shots
+//          |+0x4B8 - [32-bit:BackShots]
 //          |
 //          |+0x4C0 - [32-bit:HighestComboMultiplier]
 //          |
@@ -2184,7 +2194,6 @@
 //          
 //          [Definition Struct:WeaponData |8-byte]
 //          |'''''''''''''''''''''''''''''''''''''
-//          | - Each weapon has a [Struct:WeaponData] inside the [Array:WeaponData]
 //          | - There's about 55 weapons in the list
 //          | - Changing ammunition stats here work, although UI needs to be handled through $0x562a20
 //          |
@@ -2194,21 +2203,28 @@
 //          |+|¨| 0x3 => Firing
 //          |+|¨| 0x4 => Reloading
 //          |+|/
-//          |+|+0x20 - [8-bit {32-bit}] Maximum Ammunition Capacity (functional)
-//          |+|+0x24 - [8-bit {32-bit}] Current Loaded Ammunition (functional)
+//          |+|+0x20 - [8-bit:MaximumAmmunitionCapacity(functional) |32-bit]
+//          |+|¨| - This value determines how many bullets can be loaded inside a Weapon
 //          |+|
-//          |+|+0x28 - [32-bit Pointer{2}] --(+0x0)--> [12-byte?? Struct] Weapon_Ammunition
-//          |+|+[Struct Definition][12-byte??] Weapon_Ammunition
+//          |+|+0x24 - [8-bit:CurrentLoadedAmmunition(functional) |32-bit]
+//          |+|¨| - This value determines how many bullets are loaded inside the equipped Weapon
+//          |+|¨| - This is a functional value, the visual display may not work/update correctly when RAM tampering this address.
+//          |+|
+//          |+|+0x28 - [32-bit Pointer{2}] -> [Struct:WeaponAmmunition]
+//          |+|+[Definition Struct:WeaponAmmunition |12-byte??]
 //          |+|+|'''''''''''''''''''''''''''''''''''''
 //          |+|+| - Some ammunition might be shared between weapons
-//          |+|+| - Ammunition values here don't count the ammo loaded inside the gun, ammunition count on HUD does (refer to $0x562a20)
+//          |+|+| - The ammunition values stored in this struct do NOT count the ammo loaded inside the gun, ammunition count on HUD does (refer to $0x562a20)
 //          |+|+|
-//          |+|+|+0x4 - [8-bit {32-bit}] Reserve Ammuniton on Spawn
-//          |+|+|¨| - Ammunition shown on the HUD always has counts
-//          |+|+|+0x8 - [8-bit {32-bit}] Current Reserve Ammuniton
+//          |+|+|+0x4 - [8-bit:ReserveAmmunitonOnSpawn |32-bit]
+//          |+|+|¨| - This value determines how many bullets the player spawns with for this Weapon
+//          |+|+|
+//          |+|+|+0x8 - [8-bit:CurrentReserveAmmuniton |32-bit]
+//          |+|+|¨| - This value determines how many bullets the player has left for this Weapon
+//          |+|+|¨| - This value is updated whenever bullets are used or bullets are picked up (by picking up the same Weapon)
 //          |+|/
 //          |+|
-//          |+|+0x1D0 - [Bit Flag {32-bit}] bit 0 => Is Weapon In Inventory
+//          |+|+0x1D0 - [bit0 BitFlag:IsWeaponInInventory |32-bit]
 //          |/
 //          '
 //          
