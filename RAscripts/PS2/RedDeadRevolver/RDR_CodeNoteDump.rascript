@@ -1641,6 +1641,7 @@
 //          @Regional equivalent of $0x7621d0 (PAL)
 // $7608F0: [NTSCU][32-bit Pointer:SinglePlayerData(preferred)] -> [Struct:SinglePlayerData]
 //          @Regional equivalent of $0x763070 (PAL)
+// $761138: [NTSCU][64-byte Array:ShowdownPlayerData] List of (2-4x) [Struct:ShowdownPlayerData_0]
 // $7621D0: [PAL][160-byte Array:ActorData]
 //          @Fixed Memory Location, Although pointed to by $0x754a90
 //          
@@ -2117,10 +2118,11 @@
 //          |+0xC - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_D |??-byte]
 //          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (this may only be the case for CPU players, since player 1 is always a 'human' player)
 //          
-//          [Struct Definition][176-byte] WeaponManager
+//          [Definition Struct:WeaponManager |176-byte]
 //          |'''''''''''''''''''''''''''''''''''''
 //          |+0x44 - [8-bit:DefaultWeaponID |32-bit]
 //          |¨| - This value decides which weapon is equipped by default on (re)spawn
+//          |¨| - Differing characters spawn with different weapons
 //          |¨| - WeaponIDs listed below
 //          |/
 //          |+0x48 - [8-bit:EquippedWeaponID |32-bit]
@@ -2260,15 +2262,15 @@
 //          | 0x5 => Holstering (during most frames of animation)
 //          | 0x6 => Holstering (last few frames of animation)
 //          '
-// $7638F8: [PAL][8-bit {32-bit}] Showdown Mode Playercount
-//          - Value range [0x2-0x4], minimum 2 players, max 4 players
+// $7638F8: [PAL][8-bit:ShowdownPlayerCount |32-bit]
+//          - Value range [0x2-0x4]
 // $79DEA0: [NTSCU][Variable Size ASCII:AreaID(functional) | 16-byte]
 //          @Regional equivalent of $0x7a0620 (PAL)
-// $79E008: [NTSCU][32-bit Pointer] --(+0x0)--> [??-byte Struct] Mission_Timers
+// $79E008: [NTSCU][32-bit Pointer:GameplayTimers] -> [Struct:GameplayTimers]
 //          @Regional equivalent of $0x7a0788 (PAL)
-// $79E21C: [NTSCU][Bit Flag {32-bit}] bit 0 => Is Playing Bounty Hunter Mode
+// $79E21C: [NTSCU][bit0 BitFlag:IsPlayingBountyHunterMode |32-bit]
 //          @Regional equivalent of $0x7a099c (PAL)
-// $7A0280: [NTSCU][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
+// $7A0280: [NTSCU][32-bit Pointer:PuppetshowManager] -> [Struct:PuppetshowManager]
 //          @Regional equivalent of $0x7a2a00 (PAL)
 // $7A0620: [PAL][Variable Size ASCII:AreaID(functional) | 16-byte]
 //          - The AreaID that needs to be loaded is stored here
@@ -2341,23 +2343,24 @@
 //          |¨| - Float = 0.0 => not finished
 //          |/
 //          '
-// $7A0788: [PAL][32-bit Pointer] --(+0x0)--> [??-byte Struct] Mission_Timers
-//          [Struct Definition][??-byte] Mission_Timers
+// $7A0788: [PAL][32-bit Pointer:GameplayTimers] -> [Struct:GameplayTimers]
+//          [Definition Struct:GameplayTimers |??-byte]
 //          |'''''''''''''''''''''''''''''''''''''''''
-//          |+0x1C - [32-bit Float] Time Spent in Mission/Level (copy) || Countdown timer (functional) (in seconds)
-//          |¨| - When there's no countdown active, this value is a copy of Time Spent in Mission/Level. Else this is the functional countdown timer
-//          |¨| - This value is responsible for ending sundown mode (When this value hits 0.0 --> triggers end of sundown mode)
-//          |¨| - This value is also used as a countdown timer for some Single Player mission objectives
+//          |+0x1C - [32-bit Float:TimeSpentInGame(copy)] || [32-bit Float:CountdownTimer(functional)]
+//          |¨| - Both timers count in seconds
+//          |¨| - This float is [Float:TimeSpentInGame(copy)] when this float doesn't count down; It copies [Float:TimeSpentInGame(functional)]
+//          |¨| - This float is [Float:CountdownTimer(functional)] when this float counts down; It is used for certain Story or Bounty Hunter missions as well as the countdown timer for Sundown mode in Showdown/Multiplayer. Functional value means it effectively controls the game (eg. this hits 0.0 => Sundown mode ends)
 //          |/
 //          |
-//          |+0x20 - [32-bit Float] Time Spent in Mission/Level (functional) (in seconds)
-//          |¨| - This is the value which is shown on the Reward Menu (campaign)
+//          |+0x20 - [32-bit Float:TimeSpentInGame(functional)]
+//          |¨| - Time in seconds
+//          |¨| - This is the value which is shown on the post-mission RewardMenu (in Story Mode). It is also used to update [Struct:PlayerProfileData].[Float:TimeSpentPlaying] of the corresponding PlayerProfile in [Array:PlayerProfileData]
 //          |/
 //          '
-// $7A099C: [PAL][Bit Flag {32-bit}] bit 0 => Is Playing Bounty Hunter Mode
-//          - This needs to be combined with $0x4fbaf0 to determine if player is effectively playing Bounty Hunter Mode
-//          - Values becomes 1, when pressing 'accept' on 'Bounty Hunter'
-//          - Values returns only back to 0, when pressing 'accept' on 'New Game' or on 'Continue'
+// $7A099C: [PAL][bit0 BitFlag:IsPlayingBountyHunterMode |32-bit]
+//          - This value needs to be combined with [Bitfield:GameMode] ($0x4fbaf0) to determine if player is effectively playing the Singleplayer Bounty Hunter Mode
+//          - Values becomes 1, when pressing 'accept' on 'Bounty Hunter' at the MainMenu
+//          - Values returns only back to 0, when pressing 'accept' after pressing 'New Game' or after 'Continue' at the MainMenu
 // $7A09C0: [PAL][32-bit Pointer:SinglePlayerData(alt)] -> [Struct:SinglePlayerData]
 //          - Identical pointer at $0x763070
 // $7A1870: [PAL][32-bit (base) Pointer:RewardMenuAndStartChpMenuDisplayData(alt1)]
@@ -2372,31 +2375,45 @@
 // $7A1920: [PAL][32-bit Pointer] --(+0x0)--> [Variable Size Struct] Main_Mission_Data (alt)
 // $7A1948: [PAL][32-bit (base) Pointer:UndefinedStruct_03(alt)] -> [Struct:Undefined_03]
 //          - Documentation at $0x4fa370
-// $7A2A00: [PAL][32-bit Pointer] --(+0x0)--> [160-byte Struct] Puppetshow_Manager
-//          - Pointer is zeroed out when there no Puppetshow active
+// $7A2A00: [PAL][32-bit Pointer:PuppetshowManager] -> [Struct:PuppetshowManager]
+//          - This pointer is zeroed out when there is no Puppetshow active
+//          - A 'Puppetshow' is an in-engine cutscene; It is not a pre-rendered video (refer to [ASCII:VideoFileNameID_PAL] at $0x74a34f)
 //          
-//          [Struct Definition][160-byte] Puppetshow_Manager
+//          [Definition Struct:PuppetshowManager |160-byte]
 //          |'''''''''''''''''''''''''''''''''''''''
-//          | - This struct controls different aspects of a Puppetshow, which is a type of cutscene that is not a pre-rendered video file (refer to $0x74a34f), but an in-engine cutscene
+//          | - This struct controls different aspects of a Puppetshow
 //          |
-//          |+0x4 - [32-bit] Last CameraAction_ID of Puppetshow
+//          |+0x4 - [32-bit:LastCameraActionID]
+//          |¨| - A 'CameraAction' refers to a change in the camera's behavior, such as switching angles, transitioning from a static hold to a movement or rotation, or the reverse. Each CameraAction can be identified with an ID.
+//          |¨| - This value refers to the previous CameraAction occurs.
 //          |
-//          |+0x10 - [32-bit] Current CameraAction_ID
-//          |¨| - Each time the camera switches angles or goes from a hold to a move/rotation or vice versa, this value changes
+//          |+0x10 - [32-bit:CurrentCameraActionID]
+//          |¨| - This value refers to the current CameraAction.
 //          |/
-//          |+0x14 - [32-bit] Animation Keyframe
-//          |¨| - Gets glitchy when changing/freezing
+//          |+0x14 - [32-bit:AnimationKeyframe]
+//          |¨| - An 'AnimationKeyframe' represents a specific point in time within an animation sequence where particular properties (eg. position, rotation, scale) of an object are defined. These keyframes act as markers, and the animation engine interpolates the transitions between them to create smooth motion or transformations over time.
+//          |¨| - This value gets glitchy when changing/freezing it
 //          |/
-//          |+0x18 - [32-bit] Count of CameraAction_ID Changes
-//          |¨| - Starts to count at 0 (eg. CameraAction_ID: 0x14->0x24->0x37 => count = 2)
+//          |+0x18 - [32-bit:CameraActionCount]
+//          |¨| - This value increments by 1 each CameraAction (eg. Starts to count at 0, [32-bit:CurrentCameraActionID] changes from 0x14 to 0x24 and then to 0x37. ---> [32-bit:CameraActionCount] = 2)
 //          |/
-//          |+0x68 - [Variable Size ASCII] Puppetshow ID
+//          |+0x68 - [Variable Size ASCII:PuppetshowID]
+//          |¨| - This value is used to identify a Puppetshow
+//          |¨| - IDs listed below
+//          |/
+//          '
+//          
+//          # PuppetshowID (string)
+//          | (list only contains IDs used in achievements)
+//          |''''''''''''''
+//          | lvl_waterfall_pupshow_02 => Chapter 14 'Bear Mountain', intro cutscene for boss Grizzly. Starts when entering the boss arena.
+//          '
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
 // $E36118: could be important
 // $18C97D4: [8-bit] Chapter 2 - Shots left
 // $19B7FD4: [8-bit] Chapter 1 - Shots left
 // $1A88434: [8-bit] Chapter 3 - Shots left
-// $1F7EC20: [PAL][18-byte ASCII] Ending Credits Flag
+// $1F7EC20: [PAL][18-byte ASCIIFlag:IsEndingCreditsPlaying]
 //           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing
 //           (this is the audio file name, which is played during the Ending Credits Video)

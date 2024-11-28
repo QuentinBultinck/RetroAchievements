@@ -139,7 +139,7 @@ memory_StructDefs = {
 			"Bitset(byte1):ControllerButtonsPressed": 0x0,
 			"Bitset(byte2):ControllerButtonsPressed": 0x1}
 		},
-	"Struct_PlayerProfileData": {
+	"Struct:PlayerProfileData": {
 		"sizeInBytes": 2840,
 		"offsetToMember": {
 			"32-bit:SavedCash": 0x8,
@@ -406,9 +406,9 @@ memory_StructDefs = {
 			"ASCII:InteractableZoneID": 0x1C,
 			"BitFlag:IsGatlingGunManned": 0x169}
 		},
-	"Struct_Puppetshow_Manager": {
+	"Struct:PuppetshowManager": {
 		"offsetToMember": {
-			"ASCII_PuppetshowID": 0x68}
+			"ASCII:PuppetshowID": 0x68}
 		},
 	"Struct:WeaponData": {
 		"sizeInBytes": 8,
@@ -416,10 +416,10 @@ memory_StructDefs = {
 			"BitFlag:IsWeaponInInventory": {
 				"pointerChainOffsets": [0x4, 0x1D0]},
 		}},
-	"Struct_Mission_Timers": {
+	"Struct:GameplayTimers": {
 		"offsetToMember": {
-			"Float_CountdownTimer": 0x1C,
-			"Float_TimeSpentinMission": 0x20}
+			"Float:CountdownTimer(functional)": 0x1C,
+			"Float:TimeSpentInGame(functional)": 0x20}
 		},
 	"Struct:ShowdownPlayerSettings_A": {
 		"sizeInBytes": 92,
@@ -580,9 +580,8 @@ memory_addresses = {
 
 	DATATYPE_BitFlag: {
 		"InvertedBitFlag:IsLogoScreenLoading": {RELEASE_REGION_USA: 0x4FAD6C, RELEASE_REGION_EUR: 0x4fd3ec, RELEASE_REGION_JPN: sNULL}, 
+		"BitFlag:IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		"BitFlag:IsInPauseMenu": {RELEASE_REGION_USA: 0x73AF0C, RELEASE_REGION_EUR: 0x73d68c, RELEASE_REGION_JPN: sNULL}, // unused 
-
-		"IsPlayingBountyHunterMode": {RELEASE_REGION_USA: 0x79e21c, RELEASE_REGION_EUR: 0x7a099c, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_8Bit: {
 		"Bitfield:GameMode": {RELEASE_REGION_USA: 0x4f9470, RELEASE_REGION_EUR: 0x4fbaf0, RELEASE_REGION_JPN: sNULL},
@@ -592,9 +591,8 @@ memory_addresses = {
 		},	
 	DATATYPE_ASCII: {
 		"ASCII:PS2GameID": {RELEASE_REGION_USA: 0x54a04c, RELEASE_REGION_EUR: 0x54c7cc, RELEASE_REGION_JPN: 0x54dd4c},
-		"ASCII:AreaID(functional)": {RELEASE_REGION_USA: 0x79dea0, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},
-		
-		"EndingCreditsFlag": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in discontinued achievements
+		"ASCII:AreaID(functional)": {RELEASE_REGION_USA: 0x79dea0, RELEASE_REGION_EUR: 0x7a0620, RELEASE_REGION_JPN: sNULL},		
+		"ASCIIFlag:IsEndingCreditsPlaying": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x1f7ec20, RELEASE_REGION_JPN: sNULL}, // Used in discontinued achievements
 		},
 	DATATYPE_32Bit: {
 		"32-bit:AlwaysNULL": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x40, RELEASE_REGION_JPN: sNULL}, // Unused
@@ -617,8 +615,8 @@ memory_addresses = {
 		"Pointer:ActivePlayerProfile": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"Pointer:SinglePlayerData(preferred)": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
 
-		"Puppetshow_Manager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
-		"Mission_Timers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
+		"Pointer:PuppetshowManager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
+		"Pointer:GameplayTimers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
 	DATATYPE_Struct: {
 		"Array:ShowdownPlayerSettings_A": {RELEASE_REGION_USA: 0x73dcb8, RELEASE_REGION_EUR: 0x740438, RELEASE_REGION_JPN: sNULL}, // Unused
@@ -1658,18 +1656,18 @@ function is_SelectedPlayerProfile(int_playerProfileNumber, enum_releaseRegion) {
 // ----------------PlayerProfile STATISTICS--------------------
 function current_PlayerProfile_SavedCash(enum_releaseRegion) {
 	let_memAddrPointerTo_ActivePlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_Cash = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32-bit:SavedCash")
+	let_offsetTo_Cash = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "32-bit:SavedCash")
 	return dword(dword(let_memAddrPointerTo_ActivePlayerProfileData) + let_offsetTo_Cash)}
 
 function on_PlayerProfileStat_TimeSpentPlaying_change(enum_releaseRegion)	{
 	let_memAddrPointerTo_ActivePlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Float:TimeSpentPlaying")
+	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Float:TimeSpentPlaying")
 	let_memAccessor_Statistic = float(dword(let_memAddrPointerTo_ActivePlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic != prev(let_memAccessor_Statistic)}
 
 function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 	let_memAddrPointerTo_ActivePlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "32-bit:StoryModeRetryCount")
+	let_offsetTo_Statistic = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "32-bit:StoryModeRetryCount")
 	let_memAccessor_Statistic = dword(dword(let_memAddrPointerTo_ActivePlayerProfileData) + let_offsetTo_Statistic)
 	return let_memAccessor_Statistic > prev(let_memAccessor_Statistic)}
 
@@ -1905,7 +1903,7 @@ BitsetFlagData_PlayerProfileUnlocks = {
 function MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_SelectedPlayerProfileUnlocks =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:PlayerProfileUnlocks")
+		+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:PlayerProfileUnlocks")
 	return memAccessor_toByteInBitset(let_memAddr_Bitset_SelectedPlayerProfileUnlocks + int_offsetToByte)}
 
 function MemAccessorGeneratorToBitset_PlayerProfileUnlocks(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
@@ -1926,7 +1924,7 @@ BitsetFlagData_BountyHunterMissionsCompleted = {
 function memAccessorGeneratorToBitset_BountyHunterMissionsCompleted(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_BountyHunterMissionsCompleted =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:BountyHunterMissionsCompleted")
+		+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:BountyHunterMissionsCompleted")
 	return memAccessor_toByteInBitset(let_memAddr_Bitset_BountyHunterMissionsCompleted + int_offsetToByte)}
 
 // -------------------------PlayerProfile CAMPAIGN SETTINGS-----------------------------
@@ -1937,7 +1935,7 @@ DIFFICULTY_RedWoodRevolver = 0x3
 
 function current_StoryCampaignDifficulty(enum_releaseRegion) {
 	let_memAddrPointerTo_ActivePlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "8-bit:CurrentDifficultyID") 
+	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "8-bit:CurrentDifficultyID") 
 	return byte(dword(let_memAddrPointerTo_ActivePlayerProfileData) + let_offsetTo_CampaignSetting)}
 
 function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) =>
@@ -1946,7 +1944,7 @@ function is_StoryCampaignDifficulty(enum_difficulty, enum_releaseRegion) =>
 function is_FurthestCompletedStoryChapter(enum_areaId, enum_releaseRegion) {
 	let_offset = 1 // <-- because the first ASCII letter of this Area_ID may be zeroed out for this value (eg. "lvl_mansroof" => " vl_mansroof")
 	let_memAddrPointerTo_ActivePlayerProfileData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII(AreaID):FurthestCompletedStoryChapter(alt1)") + let_offset  
+	let_offsetTo_CampaignSetting = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "ASCII(AreaID):FurthestCompletedStoryChapter(alt1)") + let_offset  
 	let_areaId_fixed = substring(enum_areaId, let_offset)
 	return is_ASCII_EqualTo(dword(let_memAddrPointerTo_ActivePlayerProfileData) + let_offsetTo_CampaignSetting, let_areaId_fixed)}
 
@@ -2243,7 +2241,7 @@ BitsetFlagData_ActivatedCheats = {
 function MemAccessorGeneratorToBitset_SelectedPlayerProfile_ActivatedCheats(int_offsetToByte, memAccessor_toByteInBitset, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 		dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-		+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+		+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	return memAccessor_toByteInBitset(let_memAddr_Bitset_ActivatedCheats + int_offsetToByte)}
 
 function is_AnyCheat_active(enum_releaseRegion) {
@@ -2264,7 +2262,7 @@ function is_AnyCheat_active(enum_releaseRegion) {
 function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
 	let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
@@ -2275,7 +2273,7 @@ function is_SpecifiedCheat_active(enum_cheat, enum_releaseRegion) {
 function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
 	let_bitIndex = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["BitIndex"]
 	let_memAccessor_toBitFlag = memUtil_bitIndexToMemAccessor[let_bitIndex]
@@ -2286,7 +2284,7 @@ function is_SpecifiedCheat_inactive(enum_cheat, enum_releaseRegion) {
 function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
 		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
@@ -2301,7 +2299,7 @@ function is_AllSpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
 		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
@@ -2316,7 +2314,7 @@ function is_AnySpecifiedCheats_active(array_cheatEnums, enum_releaseRegion) {
 function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 	let_memAddr_Bitset_ActivatedCheats =
 			dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)) 
-			+ memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "Bitset:ActivatedCheats")
+			+ memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "Bitset:ActivatedCheats")
 	let_array_memAccessors_toActivatedCheats = []
 	for enum_cheat in array_cheatEnums {
 		let_offsetToByte = BitsetFlagData_ActivatedCheats["Flags_ByCheat"][enum_cheat]["ByteIndex"] - 1
@@ -2331,7 +2329,7 @@ function is_AnySpecifiedCheats_inactive(array_cheatEnums, enum_releaseRegion) {
 // ------------------------RstarCheat------------------------------ 
 function is_RStar_Cheat_active(enum_releaseRegion) {
 	let_memAddr_ActivePlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII:PlayerProfileName")
+	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "ASCII:PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_ActivePlayerProfile) + let_offsetTo_PlayerProfileName
 
 	/* is Rstar cheat active 
@@ -2353,7 +2351,7 @@ function is_RStar_Cheat_active(enum_releaseRegion) {
 		
 function is_RStar_Cheat_inActive(enum_releaseRegion) {
 	let_memAddr_ActivePlayerProfile = memory_getAddress(DATATYPE_32BitPointer, "Pointer:ActivePlayerProfile", enum_releaseRegion)
-	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct_PlayerProfileData", "ASCII:PlayerProfileName")
+	let_offsetTo_PlayerProfileName = memory_getStruct_OffsetToMember("Struct:PlayerProfileData", "ASCII:PlayerProfileName")
 	let_memAddr_PlayerProfileName = dword(let_memAddr_ActivePlayerProfile) + let_offsetTo_PlayerProfileName
 
 	/* is Rstar cheat NOT active 
@@ -2816,24 +2814,24 @@ function is_Actor_CharacterModelId_notEqualTo(int_actorDataindex, enum_character
 PUPPETSHOW_BearMountain_PreBoss = "lvl_waterfall_pupshow_02"
 
 function is_PuppetshowID(string_puppetshowId, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
-	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:PuppetshowManager", enum_releaseRegion)
+	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct:PuppetshowManager", "ASCII:PuppetshowID")
 	return is_ASCII_EqualTo(let_memAddr_PuppetshowId, string_puppetshowId)}
 
 function wasPrev_PuppetshowID(string_puppetshowId, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion)
-	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct_Puppetshow_Manager", "ASCII_PuppetshowID")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:PuppetshowManager", enum_releaseRegion)
+	let_memAddr_PuppetshowId = dword(let_memAddr_basePointer) + memory_getStruct_OffsetToMember("Struct:PuppetshowManager", "ASCII:PuppetshowID")
 	return wasPrev_ASCII_EqualTo(let_memAddr_PuppetshowId, string_puppetshowId)}
 
 function on_Puppetshow_start(string_puppetshowId, enum_releaseRegion) {
-	let_memAccessor_PuppetshowManagerPointer = dword(memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion))
+	let_memAccessor_PuppetshowManagerPointer = dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:PuppetshowManager", enum_releaseRegion))
 	return 
 		is_PuppetshowID(string_puppetshowId, enum_releaseRegion)
 		&& let_memAccessor_PuppetshowManagerPointer > 0 // <-- When this pointer is functional, the puppetshow is active
 		&& prev(let_memAccessor_PuppetshowManagerPointer) == 0}
 
 function on_Puppetshow_end(string_puppetshowId, enum_releaseRegion) {
-	let_memAccessor_PuppetshowManagerPointer = dword(memory_getAddress(DATATYPE_32BitPointer, "Puppetshow_Manager", enum_releaseRegion))
+	let_memAccessor_PuppetshowManagerPointer = dword(memory_getAddress(DATATYPE_32BitPointer, "Pointer:PuppetshowManager", enum_releaseRegion))
 	return 
 		wasPrev_PuppetshowID(string_puppetshowId, enum_releaseRegion)
 		&& let_memAccessor_PuppetshowManagerPointer == 0 // <-- When this pointer is functional, the puppetshow is active
@@ -2887,15 +2885,15 @@ function is_Playing_ShowdownMode_long(enum_releaseRegion) =>
 	&& current_NumberOfPlayers(enum_releaseRegion) > 1
 
 function is_Playing_BountyHunterMode(enum_releaseRegion) =>
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
+	bit0(memory_getAddress(DATATYPE_BitFlag, "BitFlag:IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
 	&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
 
 function is_Playing_BountyHunterMode_short(enum_releaseRegion) =>
-	bit0(memory_getAddress(DATATYPE_BitFlag, "IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
+	bit0(memory_getAddress(DATATYPE_BitFlag, "BitFlag:IsPlayingBountyHunterMode", enum_releaseRegion)) == 1
 // ------------------------------------------------------
-CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
 function on_EndingCreditsVideo_start(enum_releaseRegion) {
-	let_memAddr_EndingCreditsFlag = memory_getAddress(DATATYPE_ASCII, "EndingCreditsFlag", enum_releaseRegion)
+	cons_CREDITS_AUDIO_FILE_NAME = "ENDCREDITS_PS2.stm"
+	let_memAddr_EndingCreditsFlag = memory_getAddress(DATATYPE_ASCII, "ASCIIFlag:IsEndingCreditsPlaying", enum_releaseRegion)
 	return on_ASCII_changeTo(let_memAddr_EndingCreditsFlag, CREDITS_AUDIO_FILE_NAME)} 
 
 // ------------------------------------------------------
@@ -2976,16 +2974,16 @@ function current_Calculated_TheTraitor_AllyCannonsDestroyedCount(enum_releaseReg
 // ◦ TIMERS ◦
 // ''''''''''
 function current_TimeSpentInMission(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion)
-	let_offsetTo_TimeSpentInMission = memory_getStruct_OffsetToMember("Struct_Mission_Timers", "Float_TimeSpentinMission")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameplayTimers", enum_releaseRegion)
+	let_offsetTo_TimeSpentInMission = memory_getStruct_OffsetToMember("Struct:GameplayTimers", "Float:TimeSpentInGame(functional)")
 	return float(dword(let_memAddr_basePointer) + let_offsetTo_TimeSpentInMission)}
 
 function prev_TimeSpentInMission(enum_releaseRegion) =>
 	prev(current_TimeSpentInMission(enum_releaseRegion))
 
 function current_CountDownTimer_TimeLeft(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Mission_Timers", enum_releaseRegion) 
-	let_offsetTo_CountDownTimer = memory_getStruct_OffsetToMember("Struct_Mission_Timers", "Float_CountdownTimer")
+	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:GameplayTimers", enum_releaseRegion) 
+	let_offsetTo_CountDownTimer = memory_getStruct_OffsetToMember("Struct:GameplayTimers", "Float:CountdownTimer(functional)")
 	return float(dword(let_memAddr_basePointer) + let_offsetTo_CountDownTimer)}
 
 // ............
