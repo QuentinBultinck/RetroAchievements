@@ -8,15 +8,15 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
-- **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
-    - *[Story Mode](#Progression)*
-    - *[Story Mission Challenges](#StoryChallenges)*
-    - *[Bounty Hunter Mode](#BountyHunterChallenges)*
-    - *[Showdown Challenges](#ShowdownChallenges)*
-    - *[Unlocks](#Unlocks)*
-- **[Leaderboard Guide](#LeaderboardGuide)**
-- **[Credits](#Credits)**
-- **[Footnotes](#Footnotes)**
+- 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
+    - 🏆 *[Story Mode](#Progression)*
+    - 🏆 *[Story Mission Challenges](#StoryChallenges)*
+    - 🏆 *[Bounty Hunter Mode](#BountyHunterChallenges)*
+    - 🏆 *[Showdown Challenges](#ShowdownChallenges)*
+    - 🏆 *[Unlocks](#Unlocks)*
+- 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
+- 📜 **[Credits](#Credits)**
+- ✏️ **[Footnotes](#Footnotes)**
 
 <h1 id=AchievementGuide>
     💎 Achievement Guide
@@ -104,7 +104,7 @@ Most achievements in this category require specific difficulty levels. Achieveme
 > #### Additional Notes
 > - The player is required to finish a mission from start to finish without using any cheats. Although a select few of these custom-made challenge achievements require certain cheats to be active for the [trigger indicator](#RA_Trigger) to show up. The best way to be eligible for unlocking the achievement, is to activate the cheat once the mission starts. Then restart the level through the pause menu. If everything is in order, a [trigger indicator](#RA_Trigger) should be displayed, telling the player he's eligible for unlocking the achievement.
 >
-> - Cheats must first be unlocked through playing the Bounty Hunter Mode, which is unlocked once the selected player profile has completed the game once. A full list explaining how to unlock all cheats can be found on [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats")
+> - To access cheats, players must first unlock them by completing missions in Bounty Hunter Mode, which becomes available after finishing the game once on the selected player profile. A detailed list of which cheats correspond to specific Bounty Hunter missions can be found on the [Red Dead Fandom Wiki - Cheats](https://reddead.fandom.com/wiki/Cheats_in_Revolver "Red Dead Fandom Wiki - Cheats"). Each unlockable cheat is tied to at least one achievement in this category.
 >
 > - Don't forget to turn off the cheats if they're not required for certain achievements.
 >
@@ -306,7 +306,7 @@ The achievements under this category revolve around unlocking various gameplay m
 
 
 <h1 id=LeaderboardGuide>
-    🏅 Leaderboard Guide 
+    🥇 Leaderboard Guide 
 </h1>
 
 <details>
@@ -331,23 +331,18 @@ The achievements under this category revolve around unlocking various gameplay m
 
 
 <h1 id=Credits>
-    Credits
+    📜 Credits
 </h1>
 
-[ASolidSnack](https://retroachievements.org/user/ASolidSnack) - *Achievement Set Developer*, *Badge Design* & *RAguide Writer*
-
-[TheWTFdude](https://retroachievements.org/user/TheWTFdude) - *Contributor* & *Tester*
-> - Did a whole playthrough, testing most story achievements.
-> - Helped out a bit with badge art.
-
-[Yoshimallow](https://retroachievements.org/user/Yoshimallow)  - *Contributor* & *Tester* 
-> - Helped a lot with creating different concepts for Showdown challenge scenarios.
-> - Tested the viability/difficulty of initial custom-made challenge achievements.
-
+| RA-User | Role |
+|:---:|---|
+| <h4>[ASolidSnack](https://retroachievements.org/user/ASolidSnack)</h4> <img src="https://media.retroachievements.org/UserPic/ASolidSnack.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Achievement Set Developer* \| *Badge Design* \| *RA-Guide Author* </b> <br><br> |
+| <h4>[TheWTFdude](https://retroachievements.org/user/TheWTFdude)</h4> <img src="https://media.retroachievements.org/UserPic/TheWTFdude.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed to badge art: primarily helped with creating the border for the badges as well as coming up with idea's/concepts for several achievement badges. <br> - Tested most story achievements by doing a full playthrough.  |
+| <h4>[TheWTFdude](https://retroachievements.org/user/Yoshimallow)</h4> <img src="https://media.retroachievements.org/UserPic/Yoshimallow.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by creating different scenarios/concepts for the Showdown challenge achievements. <br> - Tested the viability/difficulty of initial custom-made challenge achievements. |
 
 
 <h1 id=Footnotes>
-    Footnotes
+    ✏️ Footnotes
 </h1>
 
 <h4 id=RA_Measure> • Measured Indicator </h4>
