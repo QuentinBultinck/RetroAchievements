@@ -292,8 +292,8 @@
 //          |
 //          |+0x8A4 - [PAL][NTSCU][8-bit:HighlightedMenuItem |32-bit]
 //          |¨| - 0x0 => 1st item (top most item)
-//          |¨| - 0x1 => 2nd Item
-//          |¨| - 0x2 => 3rd item
+//          |¨| - 0x1 => 2nd item
+//          |¨| - 0x2 => 3rd item (bottom most item)
 //          |/
 //          |
 //          |+0x9B4 - [NTSCU][8-bit:MenuDepth |32-bit]
@@ -933,7 +933,7 @@
 //          
 //          # Values
 //          |''''''''
-//          | - 0x1 => Single player campaign
+//          | - 0x1 => Single Player Campaign
 //          | - [0x2-0x4] => Showdown Mode
 // $73DE30: [NTSCU][32-bit (base) Pointer:ShowdownModeSettings]
 //          @Regional equivalent of $0x7405b0 (PAL)
@@ -974,6 +974,7 @@
 //          |+0x2 - [16-bit:RightJoystickAngleAndTilt]
 //          |
 //          |+0x4 - [16-bit:LeftJoystickAngleAndTilt]
+//          '
 // $73ED98: [NTSCJ][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings]
 //          @Regional Equivalent of $0x73d819
 // $73F2EC: [NTSCJ][8-bit:NumberOfPlayers |32-bit]
@@ -1426,15 +1427,15 @@
 //          |¨| - This value is updated whenever the game saves/a mission is manually restarted via the pause menu/a mission is quit/prior to the retry menu being displayed
 //          |/
 //          |+0x39C - [32-bit:TotalMoneyCollected]
-//          |+0x3A0 - [32-bit:TotalBulletFired]
-//          |+0x3A4 - [32-bit:TotalBulletHits]
+//          |+0x3A0 - [32-bit:TotalBulletsFired]
+//          |+0x3A4 - [32-bit:TotalBulletsHits]
 //          |+0x3BC - [32-bit:TotalMoneySpent]
 //          |+0x3B0 - [32-bit:TotalHeadShots]
 //          |+0x3C8 - [32-bit:DeadeyeOrSpecialMoveUseCount]
 //          |+0x3CC - [32-bit:HighestComboMultiplier]
 //          |+0x3D0 - [32-bit Float:HighestCombo]
 //          |
-//          |+0x611 - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt2) | 16-byte]
+//          |+0x611 - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt2) |16-byte]
 //          |¨| - The first ASCII letter of this AreaID may be zeroed out (eg. "lvl_mansroof" => " vl_mansroof")
 //          |¨| - Documentation on [ASCII:AreaID] at $0x7a0620
 //          |/
@@ -1747,7 +1748,7 @@
 //          |+||+0x2C - [32-bit:ShotsHit(copy)]
 //          |+||¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |+||
-//          |+||+0x30 - [32-bit:HeadShots(kills)]
+//          |+||+0x30 - [32-bit:HeadShots(preferred)]
 //          |+||¨| - This value may only count the enemies killed by head shots, NOT enemies hit in the head
 //          |+||
 //          |+||+0x5C - [32-bit:DeathToll]
@@ -1777,7 +1778,7 @@
 //          |+||
 //          |+||+0x1A0 - [32-bit:BodyShots]
 //          |+||
-//          |+||+0x1A4 - [32-bit:HeadShots]
+//          |+||+0x1A4 - [32-bit:HeadShots(alt)]
 //          |+||
 //          |+||+0x1A8 - [32-bit:LegShots]
 //          |+||
@@ -2117,6 +2118,8 @@
 //          |
 //          |+0xC - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_D |??-byte]
 //          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (this may only be the case for CPU players, since player 1 is always a 'human' player)
+//          |/
+//          '
 //          
 //          [Definition Struct:WeaponManager |176-byte]
 //          |'''''''''''''''''''''''''''''''''''''
@@ -2152,7 +2155,7 @@
 //          |
 //          |+0x0 - [32-bit:ShotsFired(copy)]
 //          |¨| - This value copies value [32-bit:ShotsFired(functional)], documented further below
-//          |/
+//          |
 //          |+0x2C - [32-bit:ShotsHit(copy)]
 //          |¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |
@@ -2167,15 +2170,15 @@
 //          |+0x430 - [32-bit:HighNoonRoundsWon]
 //          |
 //          |+0x490 - [32-bit:CashCollected]
-//          |+||¨| - For player 1: this values copies the value stored at [Struct:GameController].[Struct:CashController].[32-bit:Cash(functional)] ($0x562a20)
-//          |/
+//          |¨| - For player 1: this values copies the value stored at [Struct:GameController].[Struct:CashController].[32-bit:Cash(functional)] ($0x562a20)
+//          |
 //          |+0x494 - [32-bit:ShotsFired(functional)]
-//          |+||¨| - Depending on the type of weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
-//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
+//          |¨| - Depending on the type of weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
+//          |¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
 //          |
 //          |+0x498 - [32-bit:ShotsHit(functional)]
-//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
-//          |+||¨| - The formula would be = ShotsHit/ShotsFired
+//          |¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
+//          |¨| - The formula would be = ShotsHit/ShotsFired
 //          |
 //          |+0x49C - [32-bit:ArmShots]
 //          |
@@ -2255,12 +2258,12 @@
 //          # UniversalWeaponStates (list complete)
 //          |'''''''''''''''''''''''
 //          | 0x0 => Holstered
-//          | 0x1 => Drawing Weapon (first half of animation)
-//          | 0x2 => Drawing Weapon (last half of animation)
+//          | 0x1 => Drawing Weapon (first half of drawing animation)
+//          | 0x2 => Drawing Weapon (last half of drawing animation)
 //          | 0x3 => Aiming
-//          | 0x4 => Reloading (not used when "reloading" throwable items, also not used when reloading with DeadEye Ability)
-//          | 0x5 => Holstering (during most frames of animation)
-//          | 0x6 => Holstering (last few frames of animation)
+//          | 0x4 => Reloading (not used when "reloading" throwable items, also not used when using the Deadeye Ability for skipping the reload animation)
+//          | 0x5 => Holstering (during most frames of holstering animation)
+//          | 0x6 => Holstering (last few frames of holstering animation)
 //          '
 // $7638F8: [PAL][8-bit:ShowdownPlayerCount |32-bit]
 //          - Value range [0x2-0x4]
@@ -2274,7 +2277,7 @@
 //          @Regional equivalent of $0x7a2a00 (PAL)
 // $7A0620: [PAL][Variable Size ASCII:AreaID(functional) | 16-byte]
 //          - The AreaID that needs to be loaded is stored here
-//          - Changing this value to a valid ID and freezing before entering a loading screen, will load the corresponding mission/area
+//          - Changing this value to a valid ID and freezing this address before entering a loading screen, will load the corresponding mission/area
 //          
 //          # AreaIDs (list only contains IDs used in achievement creation)
 //          |''''''''''''''''''''''''''
@@ -2403,10 +2406,10 @@
 //          |/
 //          '
 //          
-//          # PuppetshowID (string)
-//          | (list only contains IDs used in achievements)
+//          # PuppetshowIDs (string)
+//          |(list only contains IDs used in achievements)
 //          |''''''''''''''
-//          | lvl_waterfall_pupshow_02 => Chapter 14 'Bear Mountain', intro cutscene for boss Grizzly. Starts when entering the boss arena.
+//          | - lvl_waterfall_pupshow_02 => Chapter 14 'Bear Mountain', intro cutscene for boss Grizzly. Starts when entering the boss arena.
 //          '
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
