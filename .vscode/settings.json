@@ -17,6 +17,8 @@
         "TODO",
         "PENDING",
         
+        "TODO_OPTIONAL",
+        
         "WIP",
         "TESTING",
         
@@ -40,6 +42,8 @@
 
         "IDEA",
         "CONCEPT",
+
+        "NOTE",
 
         "DEV_NOTE"
     ],
@@ -135,7 +139,15 @@
             "icon": "tools"
         },
         "TODO": {
-            "icon": "issue-draft" 
+            "icon": "issue-draft",
+            "foreground": "#2eff1b",
+        },
+        "TODO_OPTIONAL": {
+            "icon": "issue-draft",
+            "foreground": "#0bff40ea",
+            "background": "#06523283",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
         },
         "UNVERIFIED": {
             "foreground": "#fafc8a",
@@ -197,6 +209,13 @@
             "opacity" : 42,
             "type": "text-and-comment", 
             "icon": "light-bulb"
+        },
+        "NOTE": {
+            "icon": "comment",
+            "type": "comment",
+            "hideFromStatusBar": true, 
+            "hideFromActivityBar": true,
+            "hideFromTree": true
         },
         "DEV_NOTE": {
             "icon": "info",
