@@ -480,7 +480,7 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
 					RELEASE_REGION_EUR: 0x0,
-					RELEASE_REGION_USA: 0x180 + 0x0}},
+					RELEASE_REGION_USA: 0x180}},
 			"ASCIIFlag(IsWinner):Player-2": {
 				"pointerChainOffsets": [0x28, 0x24, 0x34],
 				"offsetToPointedToMember": {
@@ -6301,7 +6301,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -6390,7 +6391,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND any other player has won
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& (
 					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
@@ -6481,7 +6483,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -6572,7 +6575,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -6617,7 +6621,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -6738,7 +6743,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player 1 did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& (
 					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
@@ -6819,7 +6825,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -6909,7 +6916,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& (
 					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
@@ -7001,7 +7009,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -7133,7 +7142,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -7239,7 +7249,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
 				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
@@ -7262,7 +7273,6 @@ achievements_triggers = {
 
 					-> Logic (NTSCU)
 						I:0xX0076113c_I:0xX00000030_K:f0.0+0xX00000494_I:0xX0076113c_I:0xX00000030_K:0xX00000498/{recall}_K:{recall}*f100.0_M:{recall}>=f100.0
-
 
 						AddAddress	Mem		32-bit	0x76113c
 						AddAddress	Mem		32-bit	0x30
@@ -7347,7 +7357,8 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished and player did not win
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
 				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
 				&& (
 					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
@@ -7440,10 +7451,15 @@ achievements_triggers = {
 				|| !is_Area(const_SHOWDOWN_STAGE, enum_releaseRegion)) 
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
-			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND player 3 or 4 won
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
+			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND player 1 & 2 have not won AND player 3 or 4 won
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)				
+				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)				
+				&& is_ShowdownPlayer_NotWinner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+				&& (
+					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+					|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+				)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -7532,10 +7548,14 @@ achievements_triggers = {
 			&& unless(once( // <-- Pause Lock: Cheat Protection 
 				is_AnyCheat_active(enum_releaseRegion)))
 			&& unless(once( // <-- Pause Lock: Hide trigger indicator when the match is finished AND any enemy player has won
-				is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
-				&& is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
-				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
-				|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)))
+				never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)) // --ResetNextIf--> Necessary, otherwise when humanPlayer has not won AND "[4] Alt Pause Lock Reset Group" is true (doing a reset), this Pause Lock activates immediately again after the reset.
+				&& is_MultiplayerRewardMenu_displayed(enum_releaseRegion)
+				&& is_ShowdownPlayer_NotWinner(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
+				&& (
+					is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_2, enum_releaseRegion)
+					|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_3, enum_releaseRegion)
+					|| is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
+				)))
 
 			&& current_NumberOfPlayers(enum_releaseRegion) == 4
 			&& is_ShowdownPlayer_Human(const_HUMAN_PLAYER_INDEX_1, enum_releaseRegion)
@@ -10316,16 +10336,6 @@ leaderboards_cancelTriggers = {
 				once(is_ShowdownPlayer_Winner(const_CPU_PLAYER_INDEX_4, enum_releaseRegion)
 					&& never(is_MultiplayerRewardMenu_notDisplayed(enum_releaseRegion)))
 				])
-				
-		// // [6] ==== (Alt) Reset Group ====		-> Reset Tally in "[5] Cancel (Alt) Group"; When confirming MultiplayerRewardMenu->Replay
-		// 	|| never_toAlt(
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& on_MultiplayerRewardPopupMenu_Replay(enum_releaseRegion))
-
-		// // [7] ==== (Alt) Reset Group ====		-> Reset Tally in "[5] Cancel (Alt) Group"; When not playing Showdown mode
-		// 	|| never_toAlt(
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& !is_Playing_ShowdownMode_long(enum_releaseRegion))
 		}),
 	"lb_ShowdownLargestBounty": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
 		always_false()),
