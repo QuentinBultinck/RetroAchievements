@@ -158,9 +158,9 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x214]},
 			"BitFlag:IsRewardMenuOrStartChpMenuDisplayed": { 
 				"pointerChainOffsets": [0xAC, 0x38]},
-			"BitFlag_IsQuitConfirmationMenuDisplayed": { 
+			"BitFlag:IsQuitConfirmationMenuDisplayed": { 
 				"pointerChainOffsets": [0xAC, 0x34, 0x1C, 0xE4]},
-			"BitFlag_HighlightedMenuItem": { 
+			"8-bit:HighlightedMenuItem": { 
 				"pointerChainOffsets": [0xAC, 0x34, 0x1C, 0x8A4]},
 			"32-bit:BountyCollected": {
 				"pointerChainOffsets": {
@@ -179,28 +179,28 @@ memory_StructDefs = {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA04],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0x9E4]}},
 			"ASCII:ItemUnlockID-BountyRating": { 
-				"pointerChainOffsets": { // TODO check if these offsets works in RATools --> if they effectively go to this pointed address
+				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0xAC, 0x34, 0x1C, 0xA70 + 0x20 + 0x4],
 					RELEASE_REGION_USA: [0xAC, 0x34, 0x1C, 0xA30 + 0x20 + 0x4]}},
-			"Pointer:RewardMenuAndStartChpMenuDisplayData_L1-2d0": { 
+			"Pointer:RewardMenuAndStartChpMenuDisplayData_L1-2d0": {
 				"pointerChainOffsets": [0x2D0]},
-			"BitFlag:IsRatingObjectiveStarDisplayed-Accuracy": { // TODO check if these offsets works in RATools --> if they effectively go to this pointed address
+			"BitFlag:IsRatingObjectiveStarDisplayed-Accuracy": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x810 + 0x4],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F0 + 0x4]}},
-			"BitFlag:IsRatingObjectiveStarDisplayed-DamageTaken": { // TODO check if these offsets works in RATools --> if they effectively go to this pointed address
+			"BitFlag:IsRatingObjectiveStarDisplayed-DamageTaken": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x810 + 0x10 + 0x4],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F0 + 0x10 + 0x4]}},
-			"BitFlag:IsRatingObjectiveStarDisplayed-Time": { // TODO check if these offsets works in RATools --> if they effectively go to this pointed address
+			"BitFlag:IsRatingObjectiveStarDisplayed-Time": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x810 + 0x20 + 0x4],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F0 + 0x20 + 0x4]}},
-			"BitFlag:IsRatingObjectiveStarDisplayed-BestCombo": { // TODO check if these offsets works in RATools --> if they effectively go to this pointed address
+			"BitFlag:IsRatingObjectiveStarDisplayed-BestCombo": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_EUR: [0x2D0, 0x24, 0x1c, 0x810 + 0x30 + 0x4],
 					RELEASE_REGION_USA: [0x2D0, 0x24, 0x1c, 0x7F0 + 0x30 + 0x4]}},
-			"ASCIIField:RewardMenuDisplayText": { 
+			"ASCIIField:RewardMenuDisplayText": {
 				"pointerChainOffsets": [0x2D0, 0x24, 0x34]},
 			
 		}},
@@ -225,7 +225,7 @@ memory_StructDefs = {
 				"offsetToPointedToMember": 0x4}, // <-- This is the offset to the member inside the struct, which the pointer chain points to
 
 			// Via: +0x36C - [32-bit (layer-1) Pointer:GameplayStats] -> [Struct:SinglePlayerMissionStats]
-			"32-bit:HeadShots(kills)": { // TODO verify if this memAddr counts 'Headshot Kills' or 'Headshots' -- otherwise try using [Struct:SinglePlayerData].[32-bit:HeadShots]
+			"32-bit:HeadShots(preferred)": {
 				"pointerChainOffsets": [0x36C, 0x30]},
 			"32-bit:DeathToll": { 
 				"pointerChainOffsets": [0x36C, 0x5C]},
@@ -1007,7 +1007,7 @@ AREA_Showdown_TheMansion = "lvl_int2"
 AREA_Showdown_TwinRocks = "lvl_hng2"
 AREA_Showdown_DesertFortress = "lvl_fort2"
 
-const_Area_data = { // TODO put these coordinates inside the code notes??
+const_Area_data = { // TODO_OPTIONAL put these coordinates inside the code notes??
 	AREA_Campaign_BullsEye: { // Documentation nested here
 		"PlayerLoadCoordinates": { // These are the coordinates of the player_location during loading/restart mission/retrying
 			"X_Coordinate": 20.60,
@@ -1972,9 +1972,9 @@ function on_StartChpMenu_initialize(enum_releaseRegion) =>
 // ------------------RewardMenu---------------------
 function current_HighlightedRewardMenuItem(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
-	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor( // TODO this should not be a bit0 memAccessor but 8bit or perhaps lower4
-		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag_HighlightedMenuItem", 
-		let_memAddr_RewardMenuDisplayData, memAccessorFunction_toPointedToMember = bit0)
+	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor( 
+		"Struct:RewardMenuAndStartChpMenuDisplayData", "8-bit:HighlightedMenuItem", 
+		let_memAddr_RewardMenuDisplayData, memAccessorFunction_toPointedToMember = bit0) // TODO_OPTIONAL this should not be a "bit0" memAccessor but "byte"; This is optional as logic which requires this function current_HighlightedRewardMenuItem(), already works as intended with a "bit0" memAccessor
 	return let_memAccessor_HighlightedMenuItem}
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
@@ -1992,7 +1992,7 @@ function current_RewardMenu_BountyCollected(enum_releaseRegion) {
 function current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
-		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag_IsQuitConfirmationMenuDisplayed", 
+		"Struct:RewardMenuAndStartChpMenuDisplayData", "BitFlag:IsQuitConfirmationMenuDisplayed", 
 		let_memAddr_RewardMenuDisplayData, memAccessorFunction_toPointedToMember = bit0)}
 
 function current_FlagState_IsRewardMenuOrStartChpMenuDisplayed(enum_releaseRegion) {
@@ -2041,14 +2041,14 @@ function on_RewardMenu_close(enum_releaseRegion) {
 		&& !is_StartChpMenu_active(enum_releaseRegion)}
 
 function is_RatingBounty_achieved(enum_releaseRegion) {
-	REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked = "locked"
+	REWARDMENU_ITEMUNLOCK_ID_Locked = "locked"
 
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
-	let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID = 
+	let_pointerChainTo_ItemUnlockID_BountyRating = 
 		memGenerate_pointerChainAccessor_byReleaseRegion(
 			"Struct:RewardMenuAndStartChpMenuDisplayData", "ASCII:ItemUnlockID-BountyRating", let_memAddr_RewardMenuDisplayData, 
 			enum_releaseRegion)
-	return is_ASCII_notEqualTo(let_pointerChainTo_BountyRating_ItemUnlock_UI_Element_ID, REWARDMENU_ITEMUNLOCK_UI_ELEMENT_ID_Locked)}
+	return is_ASCII_notEqualTo(let_pointerChainTo_ItemUnlockID_BountyRating, REWARDMENU_ITEMUNLOCK_ID_Locked)}
 
 function is_RewardMenu_QuitConfirmMenu_displayed(enum_releaseRegion) => 
 	current_RewardMenu_QuitConfirmationMenuDisplayState(enum_releaseRegion) == 1
@@ -2061,11 +2061,11 @@ function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) =>
 	&& current_RewardMenu_MenuDepth(enum_releaseRegion) < 0x3 + 1
 
 function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
-	const_YES = 0
+	const_REWARD_MENU_ITEM_yes = 0x0
 	return 
 		is_RewardMenu_displayed_short(enum_releaseRegion)
 		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
-		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_YES
+		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_REWARD_MENU_ITEM_yes
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
@@ -2733,7 +2733,7 @@ function current_Calculated_DamageTakenPercentage(enum_releaseRegion) =>  // MAN
 
 function current_HeadShots(enum_releaseRegion) {
 	let_memAddr_SinglePlayerData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:HeadShots(kills)", let_memAddr_SinglePlayerData)}
+	return memGenerate_pointerChainAccessor("Struct:SinglePlayerData", "32-bit:HeadShots(preferred)", let_memAddr_SinglePlayerData)}
 
 function prev_HeadShots(enum_releaseRegion) =>
 	prev(current_HeadShots(enum_releaseRegion))
@@ -3142,6 +3142,18 @@ function is_ShowdownTeams_FreeForAll(enum_releaseRegion) {
 
 function on_ShowdownPlayer_Team_change(int_playerIndex, enum_releaseRegion) => // Player Index [1-4]
 	 current_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion) != prev_ShowdownPlayer_Team(int_playerIndex, enum_releaseRegion)
+
+function is_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
+	if(int_playerIndex < 1 || 4 < int_playerIndex)
+		util_throwError(format("Player index: {0} is not in valid range"))
+
+	let_playerIndex = int_playerIndex - 1
+	let_memAddr_ShowdownPlayerSettingsArray = memory_getAddress(DATATYPE_Struct, "Array:ShowdownPlayerSettings_B", enum_releaseRegion)
+	let_memAddr_IsShowdownPlayerSlotFilled =
+		let_memAddr_ShowdownPlayerSettingsArray 
+		+ (let_playerIndex * memory_getStruct_SizeInBytes("Struct:ShowdownPlayerSettings_B"))
+		+ memory_getStruct_OffsetToMember("Struct:ShowdownPlayerSettings_B", "BitFlag:IsShowdownPlayerSlotFilled")
+	return bit0(let_memAddr_IsShowdownPlayerSlotFilled) == 1}
 
 // --------------------ShowdownPlayer Logic------------------------
 function current_ShowdownPlayer_HP(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
@@ -7819,7 +7831,7 @@ achievements_titles = {
 	"a_BountyHuntChapter2": 				{"en": "Flawless Cut"},
 	"a_BountyHuntChapter3": 				{"en": "Slick Streetfight"},
 	"a_BountyHuntChapter5": 				{"en": "Railrushed"},
-	"a_BountyHuntChapter6": 				{"en": "Roaring Carnival"}, // TODO new title: Bombastic Carnival ("Roaring" already in use by a_ChallengeChapter15)
+	"a_BountyHuntChapter6": 				{"en": "Bombastic Carnival"},
 	"a_BountyHuntChapter7": 				{"en": "Brawny Show"},
 	"a_BountyHuntChapter8": 				{"en": "Treasure Valley"},
 	"a_BountyHuntChapter9": 				{"en": "Wraith of the West"},
@@ -8057,7 +8069,11 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = { 
 	// "rp_Template": 									{"en": "xxxxxxxx"}, 
-	"rp_Showdown_Multiplayer":							{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"}, // TODO implement this line with 3-2 players; This line only works with 4 players 
+	"rp_Showdown_Multiplayer_2P":						{"en": "Playing a {0} Multiplayer match {1} | {2} VS {3}"},
+	"rp_Showdown_Multiplayer_3P_Slot2Empty":			{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 3 as {7} | {8} {9} 4 as {10}"},
+	"rp_Showdown_Multiplayer_3P_Slot3Empty":			{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 4 as {10}"},
+	"rp_Showdown_Multiplayer_3P_Slot4Empty":			{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10}"},
+	"rp_Showdown_Multiplayer_4P":						{"en": "Playing a {0} Multiplayer match {1} | {2} {3} 1 as {4} | {5} {6} 2 as {7} | {8} {9} 3 as {10} | {11} {12} 4 as {13}"},
 	"rp_Showdown_HighNoon":								{"en": "Playing as {0} in a High Noon Showdown match {1}, vs CPU | Rounds Won: {2}/{3}"},
 	"rp_Showdown_Sundown":								{"en": "Playing as {0} in a Sundown Showdown match {1}, vs CPU | ${2} collected | Time left: {3}"},
 	"rp_Showdown_BountyHunt":							{"en": "Playing as {0} in a Bounty Hunter Showdown match {1}, vs CPU | ${2}/{3} collected"},
@@ -8467,6 +8483,45 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+// ------------------SharedConditions-------------------
+function rp_Showdown_Multiplayer_3P_condition(enum_releaseRegion) { // Used by rp_Showdown_Multiplayer_3P_...()
+	// NOTE: First player slot is always filled
+	const_array_PlayerSlots = [1,2,3,4]
+	const_REQUIRED_HUMAN_PLAYERS = 2
+
+	return 
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
+		&& current_NumberOfPlayers(enum_releaseRegion) == 3
+		&& tally_of(const_array_PlayerSlots, const_REQUIRED_HUMAN_PLAYERS, int_playerIndex => // <--Tally-- check if there are at least 2 HumanPlayers
+			once(
+				is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)
+				&& is_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion)
+
+				&& never(!is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)) // ---(2x) ResetNextIf---
+				&& never(!is_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion))
+			))
+	}
+
+function rp_Showdown_Multiplayer_2P_condition(int_secondPlayerIndex, enum_releaseRegion) {
+	// NOTE: First player slot is always filled
+	const_array_PlayerSlotsFilled = [1, int_secondPlayerIndex]
+	const_REQUIRED_HUMAN_PLAYERS = 2
+
+	return
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
+		&& current_NumberOfPlayers(enum_releaseRegion) == 2
+		&& tally_of(const_array_PlayerSlotsFilled, const_REQUIRED_HUMAN_PLAYERS, int_playerIndex => // <--Tally-- check if both are HumanPlayers
+			once(
+				is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)
+				&& is_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion)
+
+				&& never(!is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)) // ---(2x) ResetNextIf---
+				&& never(!is_ShowdownPlayerSlot_filled(int_playerIndex, enum_releaseRegion))
+			))
+	}
+// ------------------Displays-------------------
 function rp_Showdown_HighNoon(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -8528,24 +8583,114 @@ function rp_Showdown_BountyHunt(enum_releaseRegion) {
 		richPresence_callParameterFunction("rpp_Showdown_BountyHunt_MoneyToCollect", enum_releaseRegion) // 3
 	)}
 
-function rp_Showdown_Multiplayer(enum_releaseRegion) {
-	function condition(enum_releaseRegion) =>
-		is_ReleaseRegion(enum_releaseRegion)
-		&& is_Playing_ShowdownMode_long(enum_releaseRegion)
-		&& tally(2, [ // <--Tally-- check if there is more than 1 HumanPlayer
-			once(never(!is_ShowdownPlayer_Human(1, enum_releaseRegion)) &&
-				is_ShowdownPlayer_Human(1, enum_releaseRegion)),
-			once(never(!is_ShowdownPlayer_Human(2, enum_releaseRegion)) &&
-				is_ShowdownPlayer_Human(3, enum_releaseRegion)),
-			once(never(!is_ShowdownPlayer_Human(3, enum_releaseRegion)) &&
-				is_ShowdownPlayer_Human(3, enum_releaseRegion)),
-			once(never(!is_ShowdownPlayer_Human(4, enum_releaseRegion)) &&
-				is_ShowdownPlayer_Human(4, enum_releaseRegion)),
-		])
+function rp_Showdown_Multiplayer_2P_InSlot2(enum_releaseRegion) {
+	const_SECOND_PLAYER_INDEX = 2
+
+	return rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_2P_condition(const_SECOND_PLAYER_INDEX, enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_2P"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Character", enum_releaseRegion) // 3
+	)}
+
+function rp_Showdown_Multiplayer_2P_InSlot3(enum_releaseRegion) {
+	const_SECOND_PLAYER_INDEX = 3
+
+	return rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_2P_condition(const_SECOND_PLAYER_INDEX, enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_2P"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Character", enum_releaseRegion) // 3
+	)}
+
+function rp_Showdown_Multiplayer_2P_InSlot4(enum_releaseRegion) {
+	const_SECOND_PLAYER_INDEX = 4
+
+	return rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_2P_condition(const_SECOND_PLAYER_INDEX, enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_2P"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Character", enum_releaseRegion) // 3
+	)}
+
+function rp_Showdown_Multiplayer_3P_Slot2Empty(enum_releaseRegion) =>
+	rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_3P_condition(enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_3P_Slot2Empty"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Team", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_IsHumanOrCPUPlayer", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 4
+		// Skip ShowdownPlayer-2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Team", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_IsHumanOrCPUPlayer", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Character", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Team", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_IsHumanOrCPUPlayer", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Character", enum_releaseRegion) // 10
+	)
+
+function rp_Showdown_Multiplayer_3P_Slot3Empty(enum_releaseRegion) => 
+	rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_3P_condition(enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_3P_Slot3Empty"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Team", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_IsHumanOrCPUPlayer", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Team", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_IsHumanOrCPUPlayer", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Character", enum_releaseRegion), // 7
+		// Skip ShowdownPlayer-3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Team", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_IsHumanOrCPUPlayer", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Character", enum_releaseRegion) // 10
+	)
+
+function rp_Showdown_Multiplayer_3P_Slot4Empty(enum_releaseRegion) =>
+	rich_presence_conditional_display( 
+		rp_Showdown_Multiplayer_3P_condition(enum_releaseRegion),
+		richPresence_getText("rp_Showdown_Multiplayer_3P_Slot4Empty"),
+		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Team", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_IsHumanOrCPUPlayer", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Character", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Team", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_IsHumanOrCPUPlayer", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Character", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Team", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_IsHumanOrCPUPlayer", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Character", enum_releaseRegion) // 10
+		// Skip ShowdownPlayer-4
+	)
+
+function rp_Showdown_Multiplayer_4P(enum_releaseRegion) {
+	function condition(enum_releaseRegion) {
+		const_array_PlayerSlots = [1,2,3,4]
+		const_REQUIRED_HUMAN_PLAYERS = 2
+		
+		return 
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_Playing_ShowdownMode_long(enum_releaseRegion)
+			&& current_NumberOfPlayers(enum_releaseRegion) == 4
+			&& tally_of(const_array_PlayerSlots, const_REQUIRED_HUMAN_PLAYERS, int_playerIndex => // <--Tally-- check if there is are least 2 HumanPlayers
+				once(never(!is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)) &&
+					is_ShowdownPlayer_Human(int_playerIndex, enum_releaseRegion)
+				))
+		}
 
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_Showdown_Multiplayer"),
+		richPresence_getText("rp_Showdown_Multiplayer_4P"),
 		richPresence_callParameterFunction("rpp_ShowdownMode", enum_releaseRegion), // 0
 		richPresence_callParameterFunction("rpp_ShowdownStage", enum_releaseRegion), // 1
 		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Team", enum_releaseRegion), // 2
@@ -8722,7 +8867,13 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_Showdown_Multiplayer(enum_releaseRegion)  // VERIFIED - Is only displayed when more than 1 human player is present
+		rp_Showdown_Multiplayer_2P_InSlot2(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_2P_InSlot3(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_2P_InSlot4(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_3P_Slot2Empty(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_3P_Slot3Empty(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_3P_Slot4Empty(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_4P(enum_releaseRegion) // VERIFIED
 		rp_Showdown_HighNoon(enum_releaseRegion) // VERIFIED
 		rp_Showdown_Sundown(enum_releaseRegion) // VERIFIED
 		rp_Showdown_BountyHunt(enum_releaseRegion) // VERIFIED
