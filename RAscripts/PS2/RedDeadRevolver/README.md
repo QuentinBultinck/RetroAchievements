@@ -309,8 +309,19 @@ The achievements under this category revolve around unlocking various gameplay m
     🥇 Leaderboard Guide 
 </h1>
 
+This section provides a detailed breakdown of the various leaderboards featured in the game, helping players understand how to compete, measure progress, and achieve high scores. Each leaderboard is thoroughly explained, covering its purpose, requirements, and how scores are calculated.
+
+Inside, you’ll find:
+- **Leaderboard Overviews**: A description of what each leaderboard represents, such as chapter completion challenges or special gameplay modes.
+- **Start Requirements**: Information on how to activate the leaderboard, including prerequisites like starting conditions and restrictions on cheats.
+- **Cancel Conditions**: Clear explanations of what actions or circumstances will deactivate or invalidate your leaderboard attempt.
+- **Submit Conditions**: The steps necessary to successfully submit your score to the leaderboard.
+- **Score Calculation Details**: A breakdown of how your score is determined, with formulas and factors like accuracy, damage taken, time spent, and other gameplay metrics.
+
+With this guide, you'll not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
+
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to open the Leaderboard Guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -338,7 +349,7 @@ The achievements under this category revolve around unlocking various gameplay m
 |:---:|---|
 | <h4>[ASolidSnack](https://retroachievements.org/user/ASolidSnack)</h4> <img src="https://media.retroachievements.org/UserPic/ASolidSnack.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Achievement Set Developer* \| *Badge Design* \| *RA-Guide Author* </b> <br><br> |
 | <h4>[TheWTFdude](https://retroachievements.org/user/TheWTFdude)</h4> <img src="https://media.retroachievements.org/UserPic/TheWTFdude.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed to badge art: primarily helped with creating the border for the badges as well as coming up with idea's/concepts for several achievement badges. <br> - Tested most story achievements by doing a full playthrough.  |
-| <h4>[TheWTFdude](https://retroachievements.org/user/Yoshimallow)</h4> <img src="https://media.retroachievements.org/UserPic/Yoshimallow.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by creating different scenarios/concepts for the Showdown challenge achievements. <br> - Tested the viability/difficulty of initial custom-made challenge achievements. |
+| <h4>[Yoshimallow](https://retroachievements.org/user/Yoshimallow)</h4> <img src="https://media.retroachievements.org/UserPic/Yoshimallow.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by creating different scenarios/concepts for the Showdown challenge achievements. <br> - Tested the viability/difficulty of initial custom-made challenge achievements. |
 
 
 <h1 id=Footnotes>
