@@ -62,7 +62,8 @@
 //          |'''''''''''''''''''''''''''''''''''''''''
 //          |+0xD8 - [32-bit:MissionKillcount]
 //          |¨| - This is the true killcount in a mission, also counts kills by enemy friendly fire (indirectly caused by other means, other than the player)
-//          |¨| - Refer to 'death toll' ($0x763070) as another killcount
+//          |¨| - Refer to [32-bit:DeathToll] ($0x763070) as another killcount, which doe not count enemies who are killed whilst riding animals (bison or cavalry)
+//          |¨| - Practically this is used to count the kills of enemies who are riding animals (bison or cavalry), primarily useful for Chapter 18 "Stagecoach"
 //          |/
 //          '
 // $4FA3A0: [PAL][32-bit (base) Pointer:MajorCharacterData] -> [Array:MajorCharacterData]
@@ -395,7 +396,7 @@
 // $55B6A8: [NTSCU][32-bit (base) Pointer:GatlingGunZoneData] -> [Struct:InteractableZone.GatlingGun]
 //          @Regional equivalent of $0x55de28 (PAL)
 // $55DE28: [PAL][32-bit (base) Pointer:GatlingGunZoneData] -> [Struct:InteractableZone.GatlingGun]
-//          - This pointer seems to point to a node, which is part of a possible LinkedList. The list consists multiplete insstances of [Struct:InteractableZone]; Each AREA/level/mission has its own list; Each 'InteractableZone' seems to contain an interactable item (eg. gatling gun OR shootable lever)
+//          - This pointer seems to point to a node, which is part of a possible LinkedList. The list consists of multiple insstances of [Struct:InteractableZone]; Each AREA/level/mission has its own list; Each 'InteractableZone' seems to contain an interactable item (eg. gatling gun OR shootable lever)
 //          - This pointer always points to the node with ASCII:InteractableZoneID = "zone_gunA_01", which is the gatling gun, thus this pointer should only be used for that functionality
 //          - This pointer flickers with another pointerAddress when another "Actor" other than the player is shooting the gatling gun
 //          
@@ -568,7 +569,7 @@
 //          |+|¨||''''''''''''''''''''''''
 //          |+|¨|| - [8-bit:ShowdownCharacterSelectIndex] corresponds to the index of the 'showdown character' in [Array:ShowdownCharacterData]
 //          |+|¨|| - Changing these indices to valid IDs will load that character for that player
-//          |+|¨|| - If not all characters are unlocked in [Array:ShowdownCharacterData], then the index only starts counting from the ones which are unlocked (eg. Character 'Pig Josh' is index 0 in [Array:ShowdownCharacterData], but if he's not unlocked, the next character in [Array:ShowdownCharacterData] which is unlocked becomes index 0. Index 1 will then be the next character in [Array:ShowdownCharacterData] which is unlocked and so on...). If no characters are unlocked in [Bitset:ShowdownCharacter_Unlocks] the game will crash at the MainMenu
+//          |+|¨|| - If not all characters are unlocked in [Array:ShowdownCharacterData], then the index only starts counting from the ones which are unlocked (eg. Character 'Pig Josh' is index 0 in [Array:ShowdownCharacterData], but if he's not unlocked, the next character in [Array:ShowdownCharacterData] which is unlocked becomes index 0. Index 1 will then be the next character in [Array:ShowdownCharacterData] which is unlocked and so on...). If no characters are unlocked in [Bitset:ShowdownCharacterUnlocks] the game will crash at the MainMenu
 //          |+|¨|| - Identification via this method is only viable via R/R usage; Although there's ways to ID the selected showdown character without it.
 //          |+|¨||
 //          |+|¨||+0x0 - [8-bit(ShowdownCharacterSelectIndex):Player1 |32-bit]
@@ -686,7 +687,7 @@
 // $563FA0: [NTSCJ][32-bit (base) Pointer:ShowdownModeSettings]
 //          |+0x6c - [32-bit (layer-1) Pointer]
 //          |++0x50 - [32-bit (layer-2) Pointer] -> [Struct:ShowdownModeSettings]
-//          |++|[NTSCJ][Defintion Struct:ShowdownModeSettings |??-byte]
+//          |++|[NTSCJ][Definition Struct:ShowdownModeSettings |??-byte]
 //          |++||'''''''''''''''''''''''''''''''''''''''''''''
 //          |++|| - This definition is only for NTSCJ
 //          |++||
@@ -1659,7 +1660,7 @@
 //          |/
 //          |
 //          |+0x4 - [32-bit (layer-0) Pointer] -> [Struct:ActorData_B]
-//          |¨| - This pointer is removed/zero'd out when the actor model has been despawned for a 3-5 seconds, not on actor death
+//          |¨| - This pointer is removed/zeroed out 3-5 seconds after the actor model (corpse) despawns. It is not zeroed out on actor death.
 //          |¨| - Definition of [Struct:ActorData_B] below
 //          |/
 //          '
@@ -1669,7 +1670,7 @@
 //          |+0x4 - [32-bit (layer-1) Pointer]
 //          |+|+0x4 - [32-bit (layer-2) Pointer]
 //          |+|+|+0x0 - [Variable Size ASCII:CharacterName]
-//          |+|+|¨| - When this is the player character: the name of the Player_Profile will be saved here
+//          |+|+|¨| - When this is the player character: the name of the PlayerProfile will be saved here
 //          |+|+|¨| - Unique characters will have their names here
 //          |+|+|¨| - Other NPCs have miscellaneous names set here (e.g., Mikey, Bobby, Jeremiah...)
 //          |+|/
@@ -1723,7 +1724,7 @@
 //          |+|+0xF4 - [32-bit (layer-2) Pointer]
 //          |+|+|+0x30 - [660-byte Struct:AmmunitionInventory]
 //          |+|+|¨| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, the data in this struct does not.
-//          |+|+|¨| - Functional values for ammunition are also stored in [Array:WeaponData]. [Struct:AmmunitionInventory] & [Array:WeaponData] may target the same data for storing ammo.
+//          |+|+|¨| - Functional values for ammunition are also stored in [Array:WeaponData].[Struct:AmmunitionInventory] & [Array:WeaponData] may target the same data for storing ammo.
 //          |+|
 //          |+|+0xEC - [32-bit (layer-2) Pointer]
 //          |+|+|+0x4 - [Variable Size ASCII:GameTriggerID]
@@ -1734,11 +1735,11 @@
 //          |
 //          |+0x36C - [32-bit (layer-1) Pointer:GameplayStats]
 //          |+| - During Story Mode this [Pointer:GameplayStats] --pointsTo--> [Struct:SinglePlayerMissionStats] (Definition of Struct below)
-//          |+| - During a Showdown Match this [Pointer:GameplayStats] --pointsTo--> [Struct:ShowdownPlayer_Stats] (Definition of Struct at $0x7638b8)
+//          |+| - During a Showdown Match this [Pointer:GameplayStats] --pointsTo--> [Struct:ShowdownPlayerStats] (Definition of Struct at $0x7638b8)
 //          |+|
 //          |+|[Definition Struct:SinglePlayerMissionStats |456-byte]
 //          |+||''''''''''''''''''''''''''''''''''''
-//          |+|| - This struct is very similar to [Struct:ShowdownPlayer_Stats] ($0x7638b8)
+//          |+|| - This struct is very similar to [Struct:ShowdownPlayerStats] ($0x7638b8)
 //          |+|| - This struct stores stats for the current mission/Chapter, it resets when restarting the mission from the start.
 //          |+|| - On save/on restart/on RetryMenu render: the stats here will update the stats stored inside the corresponding [Array:PlayerProfileData].[Struct:PlayerProfileData] of the active PlayerProfile ($0x740608)
 //          |+||
@@ -1819,8 +1820,8 @@
 //          '
 //          
 //          [Definition Bitset:PlayerProfileUnlocks |24-byte]
-//          |- When upgrading a weapon: both the 'normal/non-upgraded' and the 'upgraded' flags will be 1 (true) until a save occurs. Once the save occurs the bitflag for the 'normal/non-upgraded' weapon will become 0 and the bitflag which corresponds with the upgraded version will be 1;
-//          |- Some JournalPages and ShowdownCharacters may be unlocked by 2 seperate bitflags (Presumably: one bitflag could possibly correspond to buying an item to unlock it and one bitflag for unlocking it through mission ratings)
+//          | - When upgrading a weapon: both the 'normal/non-upgraded' and the 'upgraded' flags will be 1 (true) until a save occurs. Once the save occurs the bitflag for the 'normal/non-upgraded' weapon will become 0 and the bitflag which corresponds with the upgraded version will be 1;
+//          | - Some JournalPages and ShowdownCharacters may be unlocked by 2 seperate bitflags (Presumably: one bitflag could possibly correspond to buying an item to unlock it and one bitflag for unlocking it through mission ratings)
 //          |================================
 //          |+0x0 - [BitFlags of Bitset(byte1):PlayerProfileUnlocks]
 //          |¨| bits[0-2] => //
@@ -2418,5 +2419,6 @@
 // $19B7FD4: [8-bit] Chapter 1 - Shots left
 // $1A88434: [8-bit] Chapter 3 - Shots left
 // $1F7EC20: [PAL][18-byte ASCIIFlag:IsEndingCreditsPlaying]
-//           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing
-//           (this is the audio file name, which is played during the Ending Credits Video)
+//           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing (this is the audio file name, which is played during the Ending Credits Video)
+//           
+//           - MISC: This region is used as runtime stack space by PS2
