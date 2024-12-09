@@ -107,7 +107,7 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 memory_StructDefs = {
 	"Struct:PS2Vector": {
 		"offsetToMember": {
-			"Float:W-Component": 0x0,
+			"Float:W_Component": 0x0,
 			"Float:Y_Coordinate": 0x4,
 			"Float:Z_Coordinate": 0x8,
 			"Float:X_Coordinate": 0xC	}
@@ -614,7 +614,6 @@ memory_addresses = {
 		"Pointer:InGameMenuController(preferred)": {RELEASE_REGION_USA: 0x73af04, RELEASE_REGION_EUR: 0x73d684, RELEASE_REGION_JPN: sNULL},
 		"Pointer:ActivePlayerProfile": {RELEASE_REGION_USA: 0x742158, RELEASE_REGION_EUR: 0x7448d8, RELEASE_REGION_JPN: sNULL},
 		"Pointer:SinglePlayerData(preferred)": {RELEASE_REGION_USA: 0x7608f0, RELEASE_REGION_EUR: 0x763070, RELEASE_REGION_JPN: sNULL},
-
 		"Pointer:PuppetshowManager": {RELEASE_REGION_USA: 0x7a0280, RELEASE_REGION_EUR: 0x7a2a00, RELEASE_REGION_JPN: sNULL},
 		"Pointer:GameplayTimers": {RELEASE_REGION_USA: 0x79e008, RELEASE_REGION_EUR: 0x7a0788, RELEASE_REGION_JPN: sNULL},
 		},
@@ -1603,15 +1602,15 @@ CHARACTER_COUNT = 48
 JOURNALPAGE_COUNT = 137
 // ----------------JournalPages--------------------
 BitsetFlagData_JournalPageUnlocks = { // 137 flags
-	1: [2,3,4,5,6,7],
-	2: [0,1,2,3,4,5,6,7],
-	3: [0,1,3,4,5,6,7],
-	4: [0,1,3,5,6,7],
-	5: [0,1,2,3,4,6,7],
-	6: [0,1,2,5,7],
-	7: [0,1,2,3,4,5,6,7],
-	8: [0,1,2,3,4,5,6,7],
-	9: [0,1,2,3,4,5,6,7],
+	1:  [2,3,4,5,6,7],
+	2:  [0,1,2,3,4,5,6,7],
+	3:  [0,1,3,4,5,6,7],
+	4:  [0,1,3,5,6,7],
+	5:  [0,1,2,3,4,6,7],
+	6:  [0,1,2,5,7],
+	7:  [0,1,2,3,4,5,6,7],
+	8:  [0,1,2,3,4,5,6,7],
+	9:  [0,1,2,3,4,5,6,7],
 	10: [0,1,2,3,4,5,6,7],
 	11: [0,1,2,3,4,5,6,7],
 	12: [0,1,2,3,4,5,6,7],
@@ -1974,7 +1973,7 @@ function current_HighlightedRewardMenuItem(enum_releaseRegion) {
 	let_memAddr_RewardMenuDisplayData = memory_getAddress(DATATYPE_32BitPointer, "Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)", enum_releaseRegion)
 	let_memAccessor_HighlightedMenuItem = memGenerate_pointerChainAccessor( 
 		"Struct:RewardMenuAndStartChpMenuDisplayData", "8-bit:HighlightedMenuItem", 
-		let_memAddr_RewardMenuDisplayData, memAccessorFunction_toPointedToMember = bit0) // TODO_OPTIONAL this should not be a "bit0" memAccessor but "byte"; This is optional as logic which requires this function current_HighlightedRewardMenuItem(), already works as intended with a "bit0" memAccessor
+		let_memAddr_RewardMenuDisplayData, memAccessorFunction_toPointedToMember = bit0) // TODO_OPTIONAL this should not be a "bit0" memAccessor, it should be "byte"; This is optional as logic which requires this function current_HighlightedRewardMenuItem(), already works as intended with a "bit0" memAccessor; Too many achievements make use of this line, would be a nuisance to change everything
 	return let_memAccessor_HighlightedMenuItem}
 
 function current_RewardMenu_Balance(enum_releaseRegion) {
@@ -2061,11 +2060,12 @@ function is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) =>
 	&& current_RewardMenu_MenuDepth(enum_releaseRegion) < 0x3 + 1
 
 function on_RewardMenu_Replay_confirm(enum_releaseRegion) {
-	const_REWARD_MENU_ITEM_yes = 0x0
+	const_REPLAY_CONFIRM_MENU_ITEM_yes = 0x0 // NOTE: There's only 2 buttons/items on the ReplayConfirmMenu: [yes,no]
+	const_REPLAY_CONFIRM_MENU_ITEM_no = 0x1
 	return 
 		is_RewardMenu_displayed_short(enum_releaseRegion)
 		&& is_RewardMenu_ReplayConfirmMenu_displayed(enum_releaseRegion) 
-		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_REWARD_MENU_ITEM_yes
+		&& current_HighlightedRewardMenuItem(enum_releaseRegion) == const_REPLAY_CONFIRM_MENU_ITEM_yes
 		&& on_PlayerInput_ConfirmBtn_press(enum_releaseRegion)}
 
 function is_RewardMenu_Accuracy(string_accuracy, enum_releaseRegion) {
@@ -7948,7 +7948,7 @@ achievements_descriptions = {
 
 	"a_BigMoney":							{"en": "Amass a bank balance of $50,000 or more at the end of a singleplayer story mission"},
 	"a_PerfectAccuracy":					{"en": "Achieve an accuracy rating of 90% or higher at the end of a singleplayer story mission without using your Deadeye ability"},
-	"a_SaveCurly":							{"en": "Earn Curly Shaw's $1,500 reward for saving him during Chapter 8, \"Rogue Valley\""},
+	"a_SaveCurly":							{"en": "Complete Chapter 8, \"Rogue Valley\", while earning Curly Shaw's $1,500 reward for saving him"},
 	"a_PerfectShootingTutorial": 			{"en": "Prove your shooting prowess in Chapter 1, \"Bull's Eye\", by finishing the shooting tutorial without wasting a single bullet and remaining stationary"},
 	"a_ChallengeChapter1": 					{"en": "Complete Chapter 1, \"Bull's Eye\", on very hard difficulty, with a collected bounty of $1,000 or more"}, // WARNING - Manual creation via RAIntegration
 	"a_ChallengeChapter2":					{"en": "Complete Chapter 2, \"Bounty Hunter\", on hard or very hard difficulty, sustaining less than 50% damage and with the \"No HUD\" cheat enabled"},
@@ -7965,7 +7965,7 @@ achievements_descriptions = {
 	"a_ChallengeChapter15":					{"en": "Complete Chapter 15, \"Bear Mountain\", on very hard difficulty, using only the firearm \"Faith\" to damage Grizzly"},
 	"a_ChallengeChapter17": 				{"en": "Complete Chapter 17, \"The Mine\", on hard or very hard difficulty, in under 1 minute, using only a knife to damage Ted and Tony"},
 	"a_ChallengeChapter19": 				{"en": "Complete Chapter 19, \"Hell's Pass\", on hard or very hard difficulty, without letting the stagecoach's HP drop below 40% and using the \"Infinite Deadeye\" cheat as the only means of shooting"},
-	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, with 12 headshot kills"},
+	"a_ChallengeChapter20": 				{"en": "Complete Chapter 20, \"Fort Diego\", on very hard difficulty, killing 12 enemies with a headshot"},
 	"a_ChallengeChapter22":					{"en": "Complete Chapter 22, \"Devils and Angels\", on hard or very hard difficulty, in under 3 minutes, killing only General Diego"},
 	"a_ChallengeChapter24":					{"en": "Complete Chapter 24, \"Battle Finale\", on very hard difficulty, with 5 headshots on Mr. Kelley and no bystander deaths"},
 	"a_ChallengeChapter25":					{"en": "Complete Chapter 25, \"The Siege\", on hard or very hard difficulty, with the combined HP of all three heroes at 60% or above, and whilst using the \"Golden Gun\" cheat"},
@@ -7993,7 +7993,7 @@ achievements_descriptions = {
 	"a_CompleteJournalAll":					{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
 	"a_MaxDeadEye":							{"en": "Max out Red's Deadeye in the story campaign"},
-	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during Red's story"}, // WARNING - Manual creation via RAIntegration
+	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during the story campaign"}, // WARNING - Manual creation via RAIntegration
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
 
@@ -8189,7 +8189,7 @@ richPresence_LookupTablesText = {
 		"CarnivalLife":				{"en": "6, \"Carnival Life\","},
 		"RangeWar":					{"en": "11, \"Range War\","},
 		"EndOfTheLine":				{"en": "21, \"End Of The Line\","},
-		"BearMountain":				{"en": "15, \"Bear Mountain\""}
+		"BearMountain":				{"en": "15, \"Bear Mountain\","}
 		},
 	"lup_StoryChapter_LongID": {
 		"TheTraitor":  				{"en": "13, \"The Traitor\","},
@@ -8867,12 +8867,12 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_Showdown_Multiplayer_2P_InSlot2(enum_releaseRegion) // PENDING
-		rp_Showdown_Multiplayer_2P_InSlot3(enum_releaseRegion) // PENDING
-		rp_Showdown_Multiplayer_2P_InSlot4(enum_releaseRegion) // PENDING
-		rp_Showdown_Multiplayer_3P_Slot2Empty(enum_releaseRegion) // PENDING
-		rp_Showdown_Multiplayer_3P_Slot3Empty(enum_releaseRegion) // PENDING
-		rp_Showdown_Multiplayer_3P_Slot4Empty(enum_releaseRegion) // PENDING
+		rp_Showdown_Multiplayer_2P_InSlot2(enum_releaseRegion) // VERIFIED
+		rp_Showdown_Multiplayer_2P_InSlot3(enum_releaseRegion) // VERIFIED
+		rp_Showdown_Multiplayer_2P_InSlot4(enum_releaseRegion) // VERIFIED
+		rp_Showdown_Multiplayer_3P_Slot2Empty(enum_releaseRegion) // VERIFIED
+		rp_Showdown_Multiplayer_3P_Slot3Empty(enum_releaseRegion) // VERIFIED
+		rp_Showdown_Multiplayer_3P_Slot4Empty(enum_releaseRegion) // VERIFIED
 		rp_Showdown_Multiplayer_4P(enum_releaseRegion) // VERIFIED
 		rp_Showdown_HighNoon(enum_releaseRegion) // VERIFIED
 		rp_Showdown_Sundown(enum_releaseRegion) // VERIFIED
@@ -8911,7 +8911,7 @@ function rpp_JournalCompletionRate(enum_releaseRegion) =>
 			Measured	Recall
 
 
-		===== Copy Serialized Logic here ---overwrite-->  __rpp_JournalCompletionRate__ (in Rich.txt) =====
+		// NOTE: Copy Serialized Logic below and overwrite  __rpp_JournalCompletionRate__ (in Rich.txt)
 
 		-> Serialized Logic (PAL) - wrapped inside Macro.Number
 			@Number(A:0xO007405cd_A:0xP007405cd_A:0xQ007405cd_A:0xR007405cd_A:0xS007405cd_A:0xT007405cd_A:0xK007405ce_A:0xM007405cf_A:0xN007405cf_A:0xP007405cf_A:0xQ007405cf_A:0xR007405cf_A:0xS007405cf_A:0xT007405cf_A:0xM007405d0_A:0xN007405d0_A:0xP007405d0_A:0xR007405d0_A:0xS007405d0_A:0xT007405d0_A:0xM007405d1_A:0xN007405d1_A:0xO007405d1_A:0xP007405d1_A:0xQ007405d1_A:0xS007405d1_A:0xT007405d1_A:0xM007405d2_A:0xN007405d2_A:0xO007405d2_A:0xR007405d2_A:0xT007405d2_A:0xK007405d3_A:0xK007405d4_A:0xK007405d5_A:0xK007405d6_A:0xK007405d7_A:0xK007405d8_A:0xN007405d9_A:0xO007405d9_A:0xP007405d9_A:0xQ007405d9_A:0xR007405d9_A:0xS007405d9_A:0xT007405d9_A:0xM007405da_A:0xN007405da_A:0xO007405da_A:0xQ007405da_A:0xR007405da_A:0xS007405da_A:0xT007405da_A:0xM007405db_A:0xN007405db_A:0xP007405db_A:0xQ007405db_A:0xR007405db_A:0xS007405db_A:0xT007405db_A:0xK007405dc_A:0xK007405dd_A:0xK007405de_A:0xM007405df_A:0xN007405df_A:0xO007405df_A:0xP007405df_A:0xQ007405df_K:f0.0_K:{recall}/f137.0_K:{recall}*f100.0_M:{recall})
@@ -9182,7 +9182,7 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
-	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
+	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_parameterKey))}
 
 // ===============================
 // • RichPresence INITIALIZATION •

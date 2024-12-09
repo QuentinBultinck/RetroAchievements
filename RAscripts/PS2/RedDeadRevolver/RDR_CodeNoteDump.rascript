@@ -62,7 +62,8 @@
 //          |'''''''''''''''''''''''''''''''''''''''''
 //          |+0xD8 - [32-bit:MissionKillcount]
 //          |¨| - This is the true killcount in a mission, also counts kills by enemy friendly fire (indirectly caused by other means, other than the player)
-//          |¨| - Refer to 'death toll' ($0x763070) as another killcount
+//          |¨| - Refer to [32-bit:DeathToll] ($0x763070) as another killcount, which doe not count enemies who are killed whilst riding animals (bison or cavalry)
+//          |¨| - Practically this is used to count the kills of enemies who are riding animals (bison or cavalry), primarily useful for Chapter 18 "Stagecoach"
 //          |/
 //          '
 // $4FA3A0: [PAL][32-bit (base) Pointer:MajorCharacterData] -> [Array:MajorCharacterData]
@@ -292,8 +293,8 @@
 //          |
 //          |+0x8A4 - [PAL][NTSCU][8-bit:HighlightedMenuItem |32-bit]
 //          |¨| - 0x0 => 1st item (top most item)
-//          |¨| - 0x1 => 2nd Item
-//          |¨| - 0x2 => 3rd item
+//          |¨| - 0x1 => 2nd item
+//          |¨| - 0x2 => 3rd item (bottom most item)
 //          |/
 //          |
 //          |+0x9B4 - [NTSCU][8-bit:MenuDepth |32-bit]
@@ -395,7 +396,7 @@
 // $55B6A8: [NTSCU][32-bit (base) Pointer:GatlingGunZoneData] -> [Struct:InteractableZone.GatlingGun]
 //          @Regional equivalent of $0x55de28 (PAL)
 // $55DE28: [PAL][32-bit (base) Pointer:GatlingGunZoneData] -> [Struct:InteractableZone.GatlingGun]
-//          - This pointer seems to point to a node, which is part of a possible LinkedList. The list consists multiplete insstances of [Struct:InteractableZone]; Each AREA/level/mission has its own list; Each 'InteractableZone' seems to contain an interactable item (eg. gatling gun OR shootable lever)
+//          - This pointer seems to point to a node, which is part of a possible LinkedList. The list consists of multiple insstances of [Struct:InteractableZone]; Each AREA/level/mission has its own list; Each 'InteractableZone' seems to contain an interactable item (eg. gatling gun OR shootable lever)
 //          - This pointer always points to the node with ASCII:InteractableZoneID = "zone_gunA_01", which is the gatling gun, thus this pointer should only be used for that functionality
 //          - This pointer flickers with another pointerAddress when another "Actor" other than the player is shooting the gatling gun
 //          
@@ -568,7 +569,7 @@
 //          |+|¨||''''''''''''''''''''''''
 //          |+|¨|| - [8-bit:ShowdownCharacterSelectIndex] corresponds to the index of the 'showdown character' in [Array:ShowdownCharacterData]
 //          |+|¨|| - Changing these indices to valid IDs will load that character for that player
-//          |+|¨|| - If not all characters are unlocked in [Array:ShowdownCharacterData], then the index only starts counting from the ones which are unlocked (eg. Character 'Pig Josh' is index 0 in [Array:ShowdownCharacterData], but if he's not unlocked, the next character in [Array:ShowdownCharacterData] which is unlocked becomes index 0. Index 1 will then be the next character in [Array:ShowdownCharacterData] which is unlocked and so on...). If no characters are unlocked in [Bitset:ShowdownCharacter_Unlocks] the game will crash at the MainMenu
+//          |+|¨|| - If not all characters are unlocked in [Array:ShowdownCharacterData], then the index only starts counting from the ones which are unlocked (eg. Character 'Pig Josh' is index 0 in [Array:ShowdownCharacterData], but if he's not unlocked, the next character in [Array:ShowdownCharacterData] which is unlocked becomes index 0. Index 1 will then be the next character in [Array:ShowdownCharacterData] which is unlocked and so on...). If no characters are unlocked in [Bitset:ShowdownCharacterUnlocks] the game will crash at the MainMenu
 //          |+|¨|| - Identification via this method is only viable via R/R usage; Although there's ways to ID the selected showdown character without it.
 //          |+|¨||
 //          |+|¨||+0x0 - [8-bit(ShowdownCharacterSelectIndex):Player1 |32-bit]
@@ -686,7 +687,7 @@
 // $563FA0: [NTSCJ][32-bit (base) Pointer:ShowdownModeSettings]
 //          |+0x6c - [32-bit (layer-1) Pointer]
 //          |++0x50 - [32-bit (layer-2) Pointer] -> [Struct:ShowdownModeSettings]
-//          |++|[NTSCJ][Defintion Struct:ShowdownModeSettings |??-byte]
+//          |++|[NTSCJ][Definition Struct:ShowdownModeSettings |??-byte]
 //          |++||'''''''''''''''''''''''''''''''''''''''''''''
 //          |++|| - This definition is only for NTSCJ
 //          |++||
@@ -933,7 +934,7 @@
 //          
 //          # Values
 //          |''''''''
-//          | - 0x1 => Single player campaign
+//          | - 0x1 => Single Player Campaign
 //          | - [0x2-0x4] => Showdown Mode
 // $73DE30: [NTSCU][32-bit (base) Pointer:ShowdownModeSettings]
 //          @Regional equivalent of $0x7405b0 (PAL)
@@ -974,6 +975,7 @@
 //          |+0x2 - [16-bit:RightJoystickAngleAndTilt]
 //          |
 //          |+0x4 - [16-bit:LeftJoystickAngleAndTilt]
+//          '
 // $73ED98: [NTSCJ][1344-byte Array] List of [(4x) 336-byte Struct:ShowdownPlayer_Settings]
 //          @Regional Equivalent of $0x73d819
 // $73F2EC: [NTSCJ][8-bit:NumberOfPlayers |32-bit]
@@ -1426,15 +1428,15 @@
 //          |¨| - This value is updated whenever the game saves/a mission is manually restarted via the pause menu/a mission is quit/prior to the retry menu being displayed
 //          |/
 //          |+0x39C - [32-bit:TotalMoneyCollected]
-//          |+0x3A0 - [32-bit:TotalBulletFired]
-//          |+0x3A4 - [32-bit:TotalBulletHits]
+//          |+0x3A0 - [32-bit:TotalBulletsFired]
+//          |+0x3A4 - [32-bit:TotalBulletsHits]
 //          |+0x3BC - [32-bit:TotalMoneySpent]
 //          |+0x3B0 - [32-bit:TotalHeadShots]
 //          |+0x3C8 - [32-bit:DeadeyeOrSpecialMoveUseCount]
 //          |+0x3CC - [32-bit:HighestComboMultiplier]
 //          |+0x3D0 - [32-bit Float:HighestCombo]
 //          |
-//          |+0x611 - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt2) | 16-byte]
+//          |+0x611 - [Variable Size ASCII(AreaID):FurthestCompletedStoryChapter(alt2) |16-byte]
 //          |¨| - The first ASCII letter of this AreaID may be zeroed out (eg. "lvl_mansroof" => " vl_mansroof")
 //          |¨| - Documentation on [ASCII:AreaID] at $0x7a0620
 //          |/
@@ -1658,7 +1660,7 @@
 //          |/
 //          |
 //          |+0x4 - [32-bit (layer-0) Pointer] -> [Struct:ActorData_B]
-//          |¨| - This pointer is removed/zero'd out when the actor model has been despawned for a 3-5 seconds, not on actor death
+//          |¨| - This pointer is removed/zeroed out 3-5 seconds after the actor model (corpse) despawns. It is not zeroed out on actor death.
 //          |¨| - Definition of [Struct:ActorData_B] below
 //          |/
 //          '
@@ -1668,7 +1670,7 @@
 //          |+0x4 - [32-bit (layer-1) Pointer]
 //          |+|+0x4 - [32-bit (layer-2) Pointer]
 //          |+|+|+0x0 - [Variable Size ASCII:CharacterName]
-//          |+|+|¨| - When this is the player character: the name of the Player_Profile will be saved here
+//          |+|+|¨| - When this is the player character: the name of the PlayerProfile will be saved here
 //          |+|+|¨| - Unique characters will have their names here
 //          |+|+|¨| - Other NPCs have miscellaneous names set here (e.g., Mikey, Bobby, Jeremiah...)
 //          |+|/
@@ -1722,7 +1724,7 @@
 //          |+|+0xF4 - [32-bit (layer-2) Pointer]
 //          |+|+|+0x30 - [660-byte Struct:AmmunitionInventory]
 //          |+|+|¨| - This struct stores the reserve ammunition, be wary the ammunition counter on the HUD ($0x562a20) also counts the ammo loaded inside the gun, the data in this struct does not.
-//          |+|+|¨| - Functional values for ammunition are also stored in [Array:WeaponData]. [Struct:AmmunitionInventory] & [Array:WeaponData] may target the same data for storing ammo.
+//          |+|+|¨| - Functional values for ammunition are also stored in [Array:WeaponData].[Struct:AmmunitionInventory] & [Array:WeaponData] may target the same data for storing ammo.
 //          |+|
 //          |+|+0xEC - [32-bit (layer-2) Pointer]
 //          |+|+|+0x4 - [Variable Size ASCII:GameTriggerID]
@@ -1733,11 +1735,11 @@
 //          |
 //          |+0x36C - [32-bit (layer-1) Pointer:GameplayStats]
 //          |+| - During Story Mode this [Pointer:GameplayStats] --pointsTo--> [Struct:SinglePlayerMissionStats] (Definition of Struct below)
-//          |+| - During a Showdown Match this [Pointer:GameplayStats] --pointsTo--> [Struct:ShowdownPlayer_Stats] (Definition of Struct at $0x7638b8)
+//          |+| - During a Showdown Match this [Pointer:GameplayStats] --pointsTo--> [Struct:ShowdownPlayerStats] (Definition of Struct at $0x7638b8)
 //          |+|
 //          |+|[Definition Struct:SinglePlayerMissionStats |456-byte]
 //          |+||''''''''''''''''''''''''''''''''''''
-//          |+|| - This struct is very similar to [Struct:ShowdownPlayer_Stats] ($0x7638b8)
+//          |+|| - This struct is very similar to [Struct:ShowdownPlayerStats] ($0x7638b8)
 //          |+|| - This struct stores stats for the current mission/Chapter, it resets when restarting the mission from the start.
 //          |+|| - On save/on restart/on RetryMenu render: the stats here will update the stats stored inside the corresponding [Array:PlayerProfileData].[Struct:PlayerProfileData] of the active PlayerProfile ($0x740608)
 //          |+||
@@ -1747,7 +1749,7 @@
 //          |+||+0x2C - [32-bit:ShotsHit(copy)]
 //          |+||¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |+||
-//          |+||+0x30 - [32-bit:HeadShots(kills)]
+//          |+||+0x30 - [32-bit:HeadShots(preferred)]
 //          |+||¨| - This value may only count the enemies killed by head shots, NOT enemies hit in the head
 //          |+||
 //          |+||+0x5C - [32-bit:DeathToll]
@@ -1777,7 +1779,7 @@
 //          |+||
 //          |+||+0x1A0 - [32-bit:BodyShots]
 //          |+||
-//          |+||+0x1A4 - [32-bit:HeadShots]
+//          |+||+0x1A4 - [32-bit:HeadShots(alt)]
 //          |+||
 //          |+||+0x1A8 - [32-bit:LegShots]
 //          |+||
@@ -1818,8 +1820,8 @@
 //          '
 //          
 //          [Definition Bitset:PlayerProfileUnlocks |24-byte]
-//          |- When upgrading a weapon: both the 'normal/non-upgraded' and the 'upgraded' flags will be 1 (true) until a save occurs. Once the save occurs the bitflag for the 'normal/non-upgraded' weapon will become 0 and the bitflag which corresponds with the upgraded version will be 1;
-//          |- Some JournalPages and ShowdownCharacters may be unlocked by 2 seperate bitflags (Presumably: one bitflag could possibly correspond to buying an item to unlock it and one bitflag for unlocking it through mission ratings)
+//          | - When upgrading a weapon: both the 'normal/non-upgraded' and the 'upgraded' flags will be 1 (true) until a save occurs. Once the save occurs the bitflag for the 'normal/non-upgraded' weapon will become 0 and the bitflag which corresponds with the upgraded version will be 1;
+//          | - Some JournalPages and ShowdownCharacters may be unlocked by 2 seperate bitflags (Presumably: one bitflag could possibly correspond to buying an item to unlock it and one bitflag for unlocking it through mission ratings)
 //          |================================
 //          |+0x0 - [BitFlags of Bitset(byte1):PlayerProfileUnlocks]
 //          |¨| bits[0-2] => //
@@ -2117,6 +2119,8 @@
 //          |
 //          |+0xC - [32-bit (layer-0) Pointer] -> [Struct:ShowdownPlayerData_D |??-byte]
 //          |+| - This pointer is only functional for Player 1; This pointer is zeroed out for other Players (this may only be the case for CPU players, since player 1 is always a 'human' player)
+//          |/
+//          '
 //          
 //          [Definition Struct:WeaponManager |176-byte]
 //          |'''''''''''''''''''''''''''''''''''''
@@ -2152,7 +2156,7 @@
 //          |
 //          |+0x0 - [32-bit:ShotsFired(copy)]
 //          |¨| - This value copies value [32-bit:ShotsFired(functional)], documented further below
-//          |/
+//          |
 //          |+0x2C - [32-bit:ShotsHit(copy)]
 //          |¨| - This value is not always an exact copy of [32-bit:ShotsHit(functional)], documented further below
 //          |
@@ -2167,15 +2171,15 @@
 //          |+0x430 - [32-bit:HighNoonRoundsWon]
 //          |
 //          |+0x490 - [32-bit:CashCollected]
-//          |+||¨| - For player 1: this values copies the value stored at [Struct:GameController].[Struct:CashController].[32-bit:Cash(functional)] ($0x562a20)
-//          |/
+//          |¨| - For player 1: this values copies the value stored at [Struct:GameController].[Struct:CashController].[32-bit:Cash(functional)] ($0x562a20)
+//          |
 //          |+0x494 - [32-bit:ShotsFired(functional)]
-//          |+||¨| - Depending on the type of weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
-//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
+//          |¨| - Depending on the type of weapon fired, this count can go up by more than 1 on each shot. (eg. Escopeta shotgun shoots 7 projectiles per shot, thus increases this value by 7)
+//          |¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
 //          |
 //          |+0x498 - [32-bit:ShotsHit(functional)]
-//          |+||¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
-//          |+||¨| - The formula would be = ShotsHit/ShotsFired
+//          |¨| - This value is used to calculate 'Accuracy' statistic on the post-match RewardMenu
+//          |¨| - The formula would be = ShotsHit/ShotsFired
 //          |
 //          |+0x49C - [32-bit:ArmShots]
 //          |
@@ -2255,12 +2259,12 @@
 //          # UniversalWeaponStates (list complete)
 //          |'''''''''''''''''''''''
 //          | 0x0 => Holstered
-//          | 0x1 => Drawing Weapon (first half of animation)
-//          | 0x2 => Drawing Weapon (last half of animation)
+//          | 0x1 => Drawing Weapon (first half of drawing animation)
+//          | 0x2 => Drawing Weapon (last half of drawing animation)
 //          | 0x3 => Aiming
-//          | 0x4 => Reloading (not used when "reloading" throwable items, also not used when reloading with DeadEye Ability)
-//          | 0x5 => Holstering (during most frames of animation)
-//          | 0x6 => Holstering (last few frames of animation)
+//          | 0x4 => Reloading (not used when "reloading" throwable items, also not used when using the Deadeye Ability for skipping the reload animation)
+//          | 0x5 => Holstering (during most frames of holstering animation)
+//          | 0x6 => Holstering (last few frames of holstering animation)
 //          '
 // $7638F8: [PAL][8-bit:ShowdownPlayerCount |32-bit]
 //          - Value range [0x2-0x4]
@@ -2274,7 +2278,7 @@
 //          @Regional equivalent of $0x7a2a00 (PAL)
 // $7A0620: [PAL][Variable Size ASCII:AreaID(functional) | 16-byte]
 //          - The AreaID that needs to be loaded is stored here
-//          - Changing this value to a valid ID and freezing before entering a loading screen, will load the corresponding mission/area
+//          - Changing this value to a valid ID and freezing this address before entering a loading screen, will load the corresponding mission/area
 //          
 //          # AreaIDs (list only contains IDs used in achievement creation)
 //          |''''''''''''''''''''''''''
@@ -2403,10 +2407,10 @@
 //          |/
 //          '
 //          
-//          # PuppetshowID (string)
-//          | (list only contains IDs used in achievements)
+//          # PuppetshowIDs (string)
+//          |(list only contains IDs used in achievements)
 //          |''''''''''''''
-//          | lvl_waterfall_pupshow_02 => Chapter 14 'Bear Mountain', intro cutscene for boss Grizzly. Starts when entering the boss arena.
+//          | - lvl_waterfall_pupshow_02 => Chapter 14 'Bear Mountain', intro cutscene for boss Grizzly. Starts when entering the boss arena.
 //          '
 // $D17E8D: [8-bit] Main Menu Check
 //          0x07e - Main Menu (Verified Always)
@@ -2415,5 +2419,6 @@
 // $19B7FD4: [8-bit] Chapter 1 - Shots left
 // $1A88434: [8-bit] Chapter 3 - Shots left
 // $1F7EC20: [PAL][18-byte ASCIIFlag:IsEndingCreditsPlaying]
-//           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing
-//           (this is the audio file name, which is played during the Ending Credits Video)
+//           - ASCII = "ENDCREDITS_PS2.stm" => Ending Credits Video Is Playing (this is the audio file name, which is played during the Ending Credits Video)
+//           
+//           - MISC: This region is used as runtime stack space by PS2
