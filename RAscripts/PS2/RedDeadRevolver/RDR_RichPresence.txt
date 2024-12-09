@@ -122,7 +122,7 @@ Lookup:StoryChapter_ShortID
 7233906=11, "Range War",
 7238509=18, "Stagecoach",
 7301223=6, "Carnival Life",
-7303031=15, "Bear Mountain"
+7303031=15, "Bear Mountain",
 7499619=16, "Jailbreak",
 7499622=20, "Fort Diego",
 *=1, "Bull's Eye",
