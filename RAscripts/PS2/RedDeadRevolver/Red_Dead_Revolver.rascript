@@ -1668,18 +1668,18 @@ function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 
 // ----------------PlayerProfile UNLOCKS--------------------
 WEAPON_COUNT = 24
-UPGRADEABLE_WEAPON_COUNT = 16
+UPGRADEABLE_WEAPON_COUNT = 12
 HP_UPGRADE_COUNT = 7
 DEADEYE_UPGRADE_COUNT = 5 
 BitsetFlagData_PlayerProfileUnlocks = {
 	// FlagData Dictionary Definition:
 		// Dictionary key --> refers to byte index in bitset
 		// Dictionary value --> refers to bit indices
-	"Flags_AllUpgradedWeapons": { // 16 flags
+	"Flags_AllUpgradedWeapons": { // 12 flags; 4 upgrades are unattainable, thus not counted
 		1: [4,6],
-		2: [0,2,5,7],
-		3: [1,3,5,7],
-		4: [1,3,6],
+		2: [0,5,7], // bit 2 is unattainable
+		3: [3,5], // bits 1 & 7 are unattainable
+		4: [1,6], // bit 3 is unattainable
 		5: [0,3,5]},
 	"Flags_AllUniqueWeapons": { // 24 unique flags
 		"AllFlags": { // 40 flags --> AddSource each Flag (or bitcount with subsource non-weapon flags in byte)
@@ -3727,7 +3727,7 @@ achievements_coreData = {
 			"id": 447034, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock 24 Showdown characters"},
 		"a_UnlockCharactersAll": { // VERIFIED
-			"id": 444067, "points": achievement_POINTS_VeryHard, "type": achievements_TYPE_Standard,
+			"id": 444067, "points": achievement_POINTS_Hard, "type": achievements_TYPE_Standard,
 			"devInfo": "Unlock all 48 Showdown characters"},
 		"a_CompleteJournalHalf": { // VERIFIED
 			"id": 444490, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
@@ -3741,12 +3741,12 @@ achievements_coreData = {
 		"a_MaxDeadEye": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 444062, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
 			"devInfo": "Unlock all 5 Deadeye upgrades for Red"},
-		// "a_UnlockAllWeapons": { // VERIFIED // DISABLED - Manual edit via RAIntegration - RATools can't generate the sumOf with SubSource 	// Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
-			// "id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			// "devInfo": "Unlock all unique weapons in the Story Campaign"},
+		"a_UnlockAllWeapons": { // VERIFIED
+			"id": 439051, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
+			"devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
+			"devInfo": "Unlock all 12 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions (20)
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
@@ -4060,10 +4060,10 @@ function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 			let_flagUpgraded = BitsetFlagData_PlayerProfileUnlocks["Flags_AllUniqueWeapons"]["NonUniqueFlags"][let_weaponKey]["Flag_Upgraded"]
 			
 			let_memAccessor_flagNormal = MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(
-				let_flagNormal["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]], 
+				let_flagNormal["ByteIndex"] - 1, memUtil_bitIndexToMemAccessor[let_flagNormal["BitIndex"]],
 				enum_releaseRegion)			
 			let_memAccessor_flagUpgraded = MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks(
-				let_flagUpgraded["ByteIndex"], memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], 
+				let_flagUpgraded["ByteIndex"] - 1, memUtil_bitIndexToMemAccessor[let_flagUpgraded["BitIndex"]], 
 				enum_releaseRegion)
 
 			array_push(let_array_memAccessorsToSub_NonUniqueFlags, (let_memAccessor_flagNormal & let_memAccessor_flagUpgraded))
@@ -4083,7 +4083,7 @@ function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 	}
 
 function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags(BitsetFlagData_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
 
 // -------------------UnlocksOther---------------------
 function achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) =>
@@ -7733,23 +7733,15 @@ achievements_triggers = {
 					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> Deadeye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),	
-	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual creation via RAIntegration
+	"a_UnlockAllWeapons": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: Trigger with DynamicBitset_PlayerProfileUnlocks not advised as the struct containing that bitset may temporarily be unloaded/reloaded during the StartChpMenu --> Results in not being able to trigger this achievement
 		let_sumOf_AllWeaponFlags = achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion)
-		/* MANUAL_CONSTRUCTION of FullTrigger
-			-> Serialized (PAL) - Alt Group 1
-				I:0xX007448d8_A:d0xP0000000c_I:0xX007448d8_A:d0xQ0000000c_I:0xX007448d8_A:d0xR0000000c_I:0xX007448d8_A:d0xS0000000c_I:0xX007448d8_A:d0xT0000000c_I:0xX007448d8_A:d0xK0000000d_I:0xX007448d8_A:d0xK0000000e_I:0xX007448d8_A:d0xK0000000f_I:0xX007448d8_A:d0xK00000010_I:0xX007448d8_A:d0xO00000011_I:0xX007448d8_A:d0xP00000011_I:0xX007448d8_B:d0xT00000010&d0xM00000011_I:0xX007448d8_B:d0xQ0000000e&d0xR0000000e_I:0xX007448d8_B:d0xQ00000011&d0xR00000011_I:0xX007448d8_B:d0xR00000010&d0xS00000010_I:0xX007448d8_B:d0xS0000000f&d0xT0000000f_I:0xX007448d8_B:d0xP0000000d&d0xQ0000000d_I:0xX007448d8_B:d0xO0000000f&d0xP0000000f_I:0xX007448d8_B:d0xO00000010&d0xP00000010_I:0xX007448d8_B:d0xQ0000000f&d0xR0000000f_I:0xX007448d8_B:d0xR0000000d&d0xS0000000d_I:0xX007448d8_B:d0xO00000011&d0xP00000011_I:0xX007448d8_B:d0xM00000010&d0xN00000010_I:0xX007448d8_B:d0xS0000000e&d0xT0000000e_I:0xX007448d8_B:d0xM0000000f&d0xN0000000f_I:0xX007448d8_B:d0xT0000000d&d0xM0000000e_I:0xX007448d8_B:d0xN0000000e&d0xO0000000e_I:0xX007448d8_d0xQ00000011<24_I:0xX007448d8_A:d0xP0000000c_I:0xX007448d8_A:d0xQ0000000c_I:0xX007448d8_A:d0xR0000000c_I:0xX007448d8_A:d0xS0000000c_I:0xX007448d8_A:d0xT0000000c_I:0xX007448d8_A:d0xK0000000d_I:0xX007448d8_A:d0xK0000000e_I:0xX007448d8_A:d0xK0000000f_I:0xX007448d8_A:d0xK00000010_I:0xX007448d8_A:d0xO00000011_I:0xX007448d8_A:d0xP00000011_I:0xX007448d8_B:d0xT00000010&d0xM00000011_I:0xX007448d8_B:d0xQ0000000e&d0xR0000000e_I:0xX007448d8_B:d0xQ00000011&d0xR00000011_I:0xX007448d8_B:d0xR00000010&d0xS00000010_I:0xX007448d8_B:d0xS0000000f&d0xT0000000f_I:0xX007448d8_B:d0xP0000000d&d0xQ0000000d_I:0xX007448d8_B:d0xO0000000f&d0xP0000000f_I:0xX007448d8_B:d0xO00000010&d0xP00000010_I:0xX007448d8_B:d0xQ0000000f&d0xR0000000f_I:0xX007448d8_B:d0xR0000000d&d0xS0000000d_I:0xX007448d8_B:d0xO00000011&d0xP00000011_I:0xX007448d8_B:d0xM00000010&d0xN00000010_I:0xX007448d8_B:d0xS0000000e&d0xT0000000e_I:0xX007448d8_B:d0xM0000000f&d0xN0000000f_I:0xX007448d8_B:d0xT0000000d&d0xM0000000e_I:0xX007448d8_B:d0xN0000000e&d0xO0000000e_I:0xX007448d8_d0xQ00000011>10_I:0xX007448d8_A:0xP0000000c_I:0xX007448d8_A:0xQ0000000c_I:0xX007448d8_A:0xR0000000c_I:0xX007448d8_A:0xS0000000c_I:0xX007448d8_A:0xT0000000c_I:0xX007448d8_A:0xK0000000d_I:0xX007448d8_A:0xK0000000e_I:0xX007448d8_A:0xK0000000f_I:0xX007448d8_A:0xK00000010_I:0xX007448d8_A:0xO00000011_I:0xX007448d8_A:0xP00000011_I:0xX007448d8_B:0xT00000010&0xM00000011_I:0xX007448d8_B:0xQ0000000e&0xR0000000e_I:0xX007448d8_B:0xQ00000011&0xR00000011_I:0xX007448d8_B:0xR00000010&0xS00000010_I:0xX007448d8_B:0xS0000000f&0xT0000000f_I:0xX007448d8_B:0xP0000000d&0xQ0000000d_I:0xX007448d8_B:0xO0000000f&0xP0000000f_I:0xX007448d8_B:0xO00000010&0xP00000010_I:0xX007448d8_B:0xQ0000000f&0xR0000000f_I:0xX007448d8_B:0xR0000000d&0xS0000000d_I:0xX007448d8_B:0xO00000011&0xP00000011_I:0xX007448d8_B:0xM00000010&0xN00000010_I:0xX007448d8_B:0xS0000000e&0xT0000000e_I:0xX007448d8_B:0xM0000000f&0xN0000000f_I:0xX007448d8_B:0xT0000000d&0xM0000000e_I:0xX007448d8_B:0xN0000000e&0xO0000000e_I:0xX007448d8_M:0xQ00000011=24_Q:0xX0054c7cc=1397050451_Q:0xH004fbaf0=250_Q:0xH0073dd6c=1_Q:0xM004fd3ec=1_Q:0xX007478f0!=36864_I:0xX007448d8_A:0xH000007bc&223_O:0!=82_I:0xX007448d8_A:0xH000007bd&223_O:0!=83_I:0xX007448d8_A:0xH000007be&223_O:0!=84_I:0xX007448d8_A:0xH000007bf&223_O:0!=65_I:0xX007448d8_A:0xH000007c0&223_O:0!=82_I:0xX007448d8_A:0xH000007c1&223_I:0xX007448d8_A:0xH000007c2&223_Q:0!=0
-
-			-> Serialized (NTSCU) - Alt Group 2
-				I:0xX00742158_A:d0xP0000000c_I:0xX00742158_A:d0xQ0000000c_I:0xX00742158_A:d0xR0000000c_I:0xX00742158_A:d0xS0000000c_I:0xX00742158_A:d0xT0000000c_I:0xX00742158_A:d0xK0000000d_I:0xX00742158_A:d0xK0000000e_I:0xX00742158_A:d0xK0000000f_I:0xX00742158_A:d0xK00000010_I:0xX00742158_A:d0xO00000011_I:0xX00742158_A:d0xP00000011_I:0xX00742158_B:d0xT00000010&d0xM00000011_I:0xX00742158_B:d0xQ0000000e&d0xR0000000e_I:0xX00742158_B:d0xQ00000011&d0xR00000011_I:0xX00742158_B:d0xR00000010&d0xS00000010_I:0xX00742158_B:d0xS0000000f&d0xT0000000f_I:0xX00742158_B:d0xP0000000d&d0xQ0000000d_I:0xX00742158_B:d0xO0000000f&d0xP0000000f_I:0xX00742158_B:d0xO00000010&d0xP00000010_I:0xX00742158_B:d0xQ0000000f&d0xR0000000f_I:0xX00742158_B:d0xR0000000d&d0xS0000000d_I:0xX00742158_B:d0xO00000011&d0xP00000011_I:0xX00742158_B:d0xM00000010&d0xN00000010_I:0xX00742158_B:d0xS0000000e&d0xT0000000e_I:0xX00742158_B:d0xM0000000f&d0xN0000000f_I:0xX00742158_B:d0xT0000000d&d0xM0000000e_I:0xX00742158_B:d0xN0000000e&d0xO0000000e_I:0xX00742158_d0xQ00000011<24_I:0xX00742158_A:d0xP0000000c_I:0xX00742158_A:d0xQ0000000c_I:0xX00742158_A:d0xR0000000c_I:0xX00742158_A:d0xS0000000c_I:0xX00742158_A:d0xT0000000c_I:0xX00742158_A:d0xK0000000d_I:0xX00742158_A:d0xK0000000e_I:0xX00742158_A:d0xK0000000f_I:0xX00742158_A:d0xK00000010_I:0xX00742158_A:d0xO00000011_I:0xX00742158_A:d0xP00000011_I:0xX00742158_B:d0xT00000010&d0xM00000011_I:0xX00742158_B:d0xQ0000000e&d0xR0000000e_I:0xX00742158_B:d0xQ00000011&d0xR00000011_I:0xX00742158_B:d0xR00000010&d0xS00000010_I:0xX00742158_B:d0xS0000000f&d0xT0000000f_I:0xX00742158_B:d0xP0000000d&d0xQ0000000d_I:0xX00742158_B:d0xO0000000f&d0xP0000000f_I:0xX00742158_B:d0xO00000010&d0xP00000010_I:0xX00742158_B:d0xQ0000000f&d0xR0000000f_I:0xX00742158_B:d0xR0000000d&d0xS0000000d_I:0xX00742158_B:d0xO00000011&d0xP00000011_I:0xX00742158_B:d0xM00000010&d0xN00000010_I:0xX00742158_B:d0xS0000000e&d0xT0000000e_I:0xX00742158_B:d0xM0000000f&d0xN0000000f_I:0xX00742158_B:d0xT0000000d&d0xM0000000e_I:0xX00742158_B:d0xN0000000e&d0xO0000000e_I:0xX00742158_d0xQ00000011>10_I:0xX00742158_A:0xP0000000c_I:0xX00742158_A:0xQ0000000c_I:0xX00742158_A:0xR0000000c_I:0xX00742158_A:0xS0000000c_I:0xX00742158_A:0xT0000000c_I:0xX00742158_A:0xK0000000d_I:0xX00742158_A:0xK0000000e_I:0xX00742158_A:0xK0000000f_I:0xX00742158_A:0xK00000010_I:0xX00742158_A:0xO00000011_I:0xX00742158_A:0xP00000011_I:0xX00742158_B:0xT00000010&0xM00000011_I:0xX00742158_B:0xQ0000000e&0xR0000000e_I:0xX00742158_B:0xQ00000011&0xR00000011_I:0xX00742158_B:0xR00000010&0xS00000010_I:0xX00742158_B:0xS0000000f&0xT0000000f_I:0xX00742158_B:0xP0000000d&0xQ0000000d_I:0xX00742158_B:0xO0000000f&0xP0000000f_I:0xX00742158_B:0xO00000010&0xP00000010_I:0xX00742158_B:0xQ0000000f&0xR0000000f_I:0xX00742158_B:0xR0000000d&0xS0000000d_I:0xX00742158_B:0xO00000011&0xP00000011_I:0xX00742158_B:0xM00000010&0xN00000010_I:0xX00742158_B:0xS0000000e&0xT0000000e_I:0xX00742158_B:0xM0000000f&0xN0000000f_I:0xX00742158_B:0xT0000000d&0xM0000000e_I:0xX00742158_B:0xN0000000e&0xO0000000e_I:0xX00742158_M:0xQ00000011=24_Q:0xX0054a04c=1398099027_Q:0xH004f9470=250_Q:0xH0073b5ec=1_Q:0xM004fad6c=1_Q:0xX00745170!=36864_I:0xX00742158_A:0xH000007bc&223_O:0!=82_I:0xX00742158_A:0xH000007bd&223_O:0!=83_I:0xX00742158_A:0xH000007be&223_O:0!=84_I:0xX00742158_A:0xH000007bf&223_O:0!=65_I:0xX00742158_A:0xH000007c0&223_O:0!=82_I:0xX00742158_A:0xH000007c1&223_I:0xX00742158_A:0xH000007c2&223_Q:0!=0
-			*/
 		
 		return 
 		// ==== Core (Alt) Group ==== 
-			// BUG_RATools - infinite processing error --> Manual creation via RAIntegration
-			// prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT // <---2Lines--- Break RATools
-			// && prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT - 14
-			measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
+			prev(let_sumOf_AllWeaponFlags) < WEAPON_COUNT // <---2Lines--- Break RATools
+			&& prev(let_sumOf_AllWeaponFlags) > WEAPON_COUNT - 14
+			&& measured(let_sumOf_AllWeaponFlags == WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
@@ -7763,7 +7755,7 @@ achievements_triggers = {
 		return 
 		// ==== Core (Alt) Logic Group ====
 			prev(let_sumOf_AllWeaponFlags) < UPGRADEABLE_WEAPON_COUNT
-			&& prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT - 11
+			&& prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT - 7
 			&& measured(let_sumOf_AllWeaponFlags == UPGRADEABLE_WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
@@ -7894,7 +7886,7 @@ achievements_titles = {
 	"a_CompleteJournalAll":					{"en": "Chronicles of the Frontier"},
 	"a_MaxHealth":							{"en": "Peak Condition"},
 	"a_MaxDeadEye":							{"en": "Red Eye"},
-	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"}, // WARNING - Manual creation via RAIntegration
+	"a_UnlockAllWeapons":					{"en": "It Never Was About the Money"},
 	"a_UpgradeAllWeapons":					{"en": "Finest in the West"},
 	}
 
@@ -7972,7 +7964,7 @@ achievements_descriptions = {
 	"a_WoodChapter10":						{"en": "Complete Chapter 10, \"The Cemetery\", on Red Wood Revolver difficulty, using the \"Infinite Deadeye\" cheat as the only means of doing damage"},
 	
 	"a_BountyHunterKatie":					{"en": "As Katie O'Grady (P1), with Sheriff O'Grady (P2) as your ally win a $10,000 target Bounty Hunter match against a team of Ugly Chris (P3) and Gigolo Hancock (P4) on Widow's Patch"},
-	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all $10,000 target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, using only knives"},
+	"a_BountyHunterBlade": 					{"en": "As The Blade Slade (P1), win a free-for-all $10,000 target Bounty Hunter match against Sissy Fess (P2), Rico Pedrosa (P3) and Udo Kang (P4) in Sunset Canyon, killing only with knives"},
 	"a_BountyHunterAnnie": 					{"en": "As Annie Stoakes (P1), win a $10,000 target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 	"a_BountyHunterCooper": 				{"en": "As Cooper (P1), win a $10,000 target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
 	"a_BountyHunterWeapons": 				{"en": "Win a 4 player free-for-all Bounty Hunter match, getting a kill with 7 different weapons"},
@@ -7991,7 +7983,7 @@ achievements_descriptions = {
 	"a_CompleteJournalAll":					{"en": "Complete Sheriff Bartlett's journal"},
 	"a_MaxHealth":							{"en": "Max out Red's health in the story campaign"},
 	"a_MaxDeadEye":							{"en": "Max out Red's Deadeye in the story campaign"},
-	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during the story campaign"}, // WARNING - Manual creation via RAIntegration
+	"a_UnlockAllWeapons":					{"en": "Acquire the full weapon arsenal during the story campaign"},
 	"a_UpgradeAllWeapons":					{"en": "Bring every weapon capable of enhancement to its maximum potential in a single story playthrough"},
 	}
 
