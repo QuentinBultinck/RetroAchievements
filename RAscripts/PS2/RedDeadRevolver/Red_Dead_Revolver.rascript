@@ -3399,7 +3399,10 @@ function is_Showdown_PowerUpSetting(enum_powerUpsSetting, enum_releaseRegion) {
 // --------------------MultiplayerRewardMenu------------------------
 ASCII_FLAG_IsMultiplayerRewardMenuDisplayed = "mpReward" // "mpRewards_new3"
 ASCII_FLAG_IsPlayerWinner = "Winn" // "Winner"
-ASCII_FLAG_IsPlayerNotWinner = "okLa" // "okLable"
+ASCII_FLAG_IsPlayerNotWinner = {
+	RELEASE_REGION_EUR: "okLa", // "okLable"
+	RELEASE_REGION_USA: "z" // "z Red boss"
+	} 
 
 function is_ShowdownPlayer_Winner(int_playerIndex, enum_releaseRegion) { // Player Index [1-4]
 	if(int_playerIndex < 1 || 4 < int_playerIndex)
@@ -3425,7 +3428,7 @@ function is_ShowdownPlayer_NotWinner(int_playerIndex, enum_releaseRegion) { // P
 	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember_byReleaseRegion("Struct:MultiplayerRewardMenuData", let_string_pointerChainKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(
 		let_pointerChainTo_ASCII + let_offsetTo_ASCII + const_OFFSET_TO_FLAG_NotWinner, 
-		ASCII_FLAG_IsPlayerNotWinner)}
+		ASCII_FLAG_IsPlayerNotWinner[enum_releaseRegion])}
 
 function ASCIIaddress_IsMultiplayerRewardMenuDisplayed(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:MultiplayerRewardMenuData(preferred)", enum_releaseRegion)
@@ -3689,8 +3692,8 @@ achievements_coreData = {
 			"id": 455172, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "As Annie Stoakes (P1), win a 10k target Bounty Hunter match against a team of Governor Griffon (P2), Holstein Hal (P3) and Sam (P4) on The Ranch"},
 		// "a_BountyHunterCooper": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// "id": 455173, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// "devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
+			// 	"id": 455173, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "As Cooper (P1), win a 10k target Bounty Hunter match against a team of Jason Cornet (P2), Sheriff Bartlett (P3) and Buffalo Soldier (P4) on Fairground, with damage taken less than 888%"},
 		"a_BountyHunterWeapons": { // VERIFIED
 			"id": 455443, "points": achievement_POINTS_Intermediate, "type": achievements_TYPE_Standard,
 			"devInfo": "Win a 4 player free-for-all Bounty Hunter match by killing opponents with 7 different weapons"},
@@ -3701,11 +3704,11 @@ achievements_coreData = {
 			"id": 455175, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "As Mr. Black (P1), win a 5 minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a kill streak of at least 15"},
 		// "a_SundownGriffon": { // VERIFIED // DISABLED - Manual construction via RAIntegration - complex sumation/AddSource chain
-			// "id": 455176, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
-			// "devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek, AND collect $15,000"},
+			// 	"id": 455176, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "As Governor Griffon (P1), win a 5 minute Sundown match against a team of Nate Harlow (P2), Falling Star (P3) and Red (P4) in Broken Creek, AND collect $15,000"},
 		// "a_SundownNate": { // VERIFIED // DISABLED - Manual construction via RAIntegration - usage of Remember/Recall
-			// "id": 455178, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
-			// "devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher, AND collect $12,000"},
+			// 	"id": 455178, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Standard,
+			// 	"devInfo": "As Nate Harlow (P1), win a 5 minute Sundown match against a team of Governor Griffon (P2), Colonel Daren (P3) and General Diego (P4) in The Mansion, with an accuracy rating of 70% or higher, AND collect $12,000"},
 		"a_SundownFlawless": { // VERIFIED
 			"id": 455444, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "1 min Sundown match vs team of 3 CPUs, without dying and kill every enemy once"},
@@ -7640,11 +7643,12 @@ achievements_triggers = {
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
 	"a_UnlockCharactersHalf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: No Measured Flag required for this as a_UnlockCharactersAll already has one
 		let_sumOf_FlagsAllCharacters = achievements_generate_SumOf_FlagsAllCharacters(enum_releaseRegion)
 		return 			
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
-			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because ShowdownCharacter:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
 			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
 			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
@@ -7663,7 +7667,7 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllCharacters == CHARACTER_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because ShowdownCharacter:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
 					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
@@ -7674,7 +7678,7 @@ achievements_triggers = {
 		return 			
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
-			&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because JournalPage:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
 			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
 			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
@@ -7693,7 +7697,7 @@ achievements_triggers = {
 			&& measured(let_sumOf_FlagsAllPages == JOURNALPAGE_COUNT,
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
-					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
+					// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because JournalPage:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
 					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion),

@@ -196,8 +196,11 @@
 //          |
 //          |[Definition ASCIIFlag:IsWinner |12-byte]
 //          ||'''''''''''''''''''''''''''
-//          || - ASCIIvalue = "Winner" --> Player is part of the winning team (This ASCII overwrites the default value below, a few frames after the ASCII Field creation)
-//          || - ASCIIvalue = " okLable" --> Player is NOT part of winning team (This ASCII is the default value which is set on ASCII Field creation)
+//          || - ASCIIFlags are slightly different depending on region
+//          ||
+//          || - [PAL][NTSCU] ASCIIvalue = "Winner" --> Player is part of the winning team (This ASCII overwrites the default value below, a few frames after the ASCII Field creation)
+//          || - [PAL] ASCIIvalue = " okLable" --> Player is NOT part of winning team (This ASCII is the default value which is set on ASCII Field creation)
+//          || - [NTSCU] ASCIIvalue = " z Red boss" --> Player is NOT part of winning team (This ASCII is the default value which is set on ASCII Field creation)
 //          ''
 // $54CAF0: [PAL][32-bit (base) Pointer:RewardMenuAndStartChpMenuDisplayData(preferred)]
 //          -> [Struct:RewardMenuAndStartChpMenuDisplayData]
@@ -936,7 +939,7 @@
 //          |''''''''
 //          | - 0x1 => Single Player Campaign
 //          | - [0x2-0x4] => Showdown Mode
-// $73DE30: [NTSCU][32-bit (base) Pointer:ShowdownModeSettings]
+// $73DE30: [NTSCU][28-byte Struct:ShowdownModeSettings]
 //          @Regional equivalent of $0x7405b0 (PAL)
 // $73DE4C: [NTSCU][28-byte Bitset:SharedUnlocks]
 //          @Regional equivalent of $0x7405cc (PAL)
@@ -1699,7 +1702,7 @@
 //          '
 // $763070: [PAL][32-bit Pointer:SinglePlayerData(preferred)] -> [Struct:SinglePlayerData]
 //          - This pointer only points to [Struct:SinglePlayerData] once the first mission is started in Story Mode
-//          - This pointer is equal to [Pointer:ShowdownPlayerData_C] ($) for ShowdownPlayer 1 during a Showdown Match;
+//          - This pointer is equal to [Pointer:ShowdownPlayerData_C] ($0x7638b8) for ShowdownPlayer 1 during a Showdown Match;
 //          - This pointer is zeroed out when booting up the game; It gets populated by starting either a Story mission or a Showdown Match; It stays populated when quiting back to MainMenu
 //          
 //          [Definition Struct:SinglePlayerData |3008-byte]
