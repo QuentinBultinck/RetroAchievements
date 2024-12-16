@@ -1668,18 +1668,18 @@ function on_PlayerProfileStat_StoryModeRetries_increment(enum_releaseRegion) {
 
 // ----------------PlayerProfile UNLOCKS--------------------
 WEAPON_COUNT = 24
-UPGRADEABLE_WEAPON_COUNT = 16
+UPGRADEABLE_WEAPON_COUNT = 12
 HP_UPGRADE_COUNT = 7
 DEADEYE_UPGRADE_COUNT = 5 
 BitsetFlagData_PlayerProfileUnlocks = {
 	// FlagData Dictionary Definition:
 		// Dictionary key --> refers to byte index in bitset
 		// Dictionary value --> refers to bit indices
-	"Flags_AllUpgradedWeapons": { // 16 flags
+	"Flags_AllUpgradedWeapons": { // 12 flags; 4 upgrades are unattainable, thus not counted
 		1: [4,6],
-		2: [0,2,5,7],
-		3: [1,3,5,7],
-		4: [1,3,6],
+		2: [0,5,7], // bit 2 is unattainable
+		3: [3,5], // bits 1 & 7 are unattainable
+		4: [1,6], // bit 3 is unattainable
 		5: [0,3,5]},
 	"Flags_AllUniqueWeapons": { // 24 unique flags
 		"AllFlags": { // 40 flags --> AddSource each Flag (or bitcount with subsource non-weapon flags in byte)
@@ -3746,7 +3746,7 @@ achievements_coreData = {
 			"devInfo": "Unlock all unique weapons in the Story Campaign"},
 		"a_UpgradeAllWeapons": { // VERIFIED // Shortened logic possible with memGenerate_SumOf_BitsetFlags() if RATools fixes that problem
 			"id": 439234, "points": achievement_POINTS_Challenging, "type": achievements_TYPE_Missable,
-			"devInfo": "Unlock all 16 upgradable weapons in the Story Campaign"},
+			"devInfo": "Unlock all 12 upgradable weapons in the Story Campaign"},
 		},
 	"c_BountyHunter": { // Category - Bounty Hunter Challenge mode for Story missions (20)
 		// "a_BountyCompletionAll": { // DISABLED - Already incorporated in other achievements
@@ -4083,7 +4083,7 @@ function achievements_generate_SumOf_FlagsAllUniqueWeapons(enum_releaseRegion) {
 	}
 
 function achievements_generate_SumOf_FlagsAllUpgradedWeapons(enum_releaseRegion) => 
-	memGenerate_SumOf_BitsetFlags_noSubSource(BitsetFlagData_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
+	memGenerate_SumOf_BitsetFlags(BitsetFlagData_PlayerProfileUnlocks["Flags_AllUpgradedWeapons"], MemAccessorGeneratorToBitset_SelectedPlayerProfileUnlocks, enum_releaseRegion)
 
 // -------------------UnlocksOther---------------------
 function achievements_generate_SumOf_FlagsAllHealthUpgrades(enum_releaseRegion) =>
@@ -7755,7 +7755,7 @@ achievements_triggers = {
 		return 
 		// ==== Core (Alt) Logic Group ====
 			prev(let_sumOf_AllWeaponFlags) < UPGRADEABLE_WEAPON_COUNT
-			&& prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT - 11
+			&& prev(let_sumOf_AllWeaponFlags) > UPGRADEABLE_WEAPON_COUNT - 7
 			&& measured(let_sumOf_AllWeaponFlags == UPGRADEABLE_WEAPON_COUNT, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
