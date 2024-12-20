@@ -230,6 +230,17 @@
 //          - Prefer using [Pointer:HUDcontrol_Gear(preferred)] at $0x7238b8
 // $8FEAEC: [32-bit] Blood frenzy ability flag
 // $8FFAC8: [8-bit] main menu selection
+// $911430: [PAL][32-bit (base) Pointer:StoryChapterID]
+//          +0x2 - [Variable Size ASCII:StoryChapterID]
+//          | - Identification is also possible via [8-bit:StoryChapterID] at $0x965cf8
+//          
+//          # StoryChapterIDs (string)
+//          |(list incomplete)
+//          |'''''''''''''
+//          | "WrongTrain" => Chapter 1, "Wrong Train"
+//          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
+//          | "M03_Cemetery => Chapter 3, "Boneyard"
+//          | ...
 // $911444: [PAL][Lower4:DifficultyID(alt1) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
@@ -319,8 +330,10 @@
 //          .+0x7C - [32-bit (layer-2) Pointer]
 //          ..+0x98 - [Float:PlayerHealth(functional) |32-bit]
 //          ..| - FloatRange: [0.0 --- 100.0]; 100.0 = maxHP; 0.0 = Death
+//          ..| - Reference [Float:PlayerHealth(display)] at $0x965d2c
 //          ..+0x98 - [Float:BloodShield(functional) |32-bit]
 //          ..| - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
+//          ..| - Reference [Float:BloodShield(display)] at $0x965d2c
 //          
 //          +0x70 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer]
@@ -389,6 +402,7 @@
 //          '
 // $965CF8: [PAL][8-bit:StoryChapterID]
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
+//          - Identification is also possible via [ASCII:StoryChapterID] at $0x911430
 //          
 //          # StoryChapterIDs (hex)
 //          |'''''''''''''
@@ -420,6 +434,15 @@
 // $965D08: [PAL][32-bit (base) Pointer:SelectedPlayerProfileName(alt2)]
 //          +0x2 - [Variable Size ASCII:SelectedPlayerProfileName]
 //          | - Identical [ASCII:SelectedPlayerProfileName] at $0x728fa0, accessible without a pointer
+// $965D2C: [PAL][32-bit (base) Pointer:HUDcontrol_Health]
+//          +0xC - [32-bit (layer-1) Pointer]
+//          .+0x18 - [32-bit (layer-2) Pointer]
+//          ..+0xF0 - [Float:PlayerHealth(display) |32-bit]
+//          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxHP; 0.0 = death
+//          ..| - Reference [Float:PlayerHealth(functional)] at $0x965cc4
+//          ..+0xF4 - [Float:BloodShield(display) |32-bit]
+//          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxShield; 0.0 = empty
+//          ..| - Reference [Float:BloodShield(functional)] $0x965cc4
 // $9B69F8: Difficulty Option Highlighted [32-Bit]
 //          0x00 = Greenhorn
 //          0x01 = Cowboy

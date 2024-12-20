@@ -10,7 +10,6 @@
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
 /* TODO Find code note for:
-	- Health Display
 	- Ability Flags
 	- StatsMenu
 	- UnlockFlags
