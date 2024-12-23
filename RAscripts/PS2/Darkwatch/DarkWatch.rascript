@@ -9,15 +9,21 @@
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
+// TODO current task: verify codenote update with temp.txt
+
 /* TODO Find code note for:
-	- Ability Flags
-	- StatsMenu
-	- UnlockFlags
-	- Gunslinger mode
+	- 8 Power (ability) Flags
+	- More consistent pointer chain to functional bullets counter 
+	- ID Minimatic (in-engine cinematics)
+	- StatsMenu data -> may be data saved per mission/chapter
+	- UnlockFlags via Gunslinger? // Bonus Extra content
+	- Gunslinger mode stats data
 	- Co-op mode
-	- HorseRiding sections
-	- Ally HP + Location
-	- Enemy HP (functional) + Location
-	- Boss HP (functionl & display)
+	- Lore flags
+	- Ally HP + Location --> [Array:EntityData] 
+	- Enemy HP (functional) + Location --> [Array:EntityData] 
 	
 	*/
+
+/* CONCEPT assets
+	- Chapter leaderboards: "Wrong Train" Greenhorn Watchlist

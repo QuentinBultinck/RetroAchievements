@@ -1,6 +1,17 @@
 // Darkwatch
 // #ID = 19111
 
+// $122474: (unverified - only tested for Chapter 1)
+//          [PAL][32-bit (base) Pointer:BossHP(preferred]
+//          +0x58 - [32-bit (layer-1) Pointer] -> [Dictionary:ActorComponents]
+//          | - A key-value paired list of ActorComponents (= components with game logic linked to the actor) linked to the BossActor
+//          .+0x4C - [32-bit (layer-2) Pointer] -> [Struct(ActorComponent):HealthComponent]
+//          ..+0x8 - [32-bit (layer-3) Pointer]
+//          ...+0x2 - [15-byte ASCII] = "HealthComponent"
+//          ..+0x98 - [Float:BossHP(functional) |32-bit]
+// $12B87C: (unverified - only tested for Chapter 1)
+//          [PAL][32-bit (base) Pointer:BossHP(alt)]
+//          - Prefer using [Pointer:BossHP(preferred)] at $0x122474
 // $134214: [PAL][32-bit (base) Pointer:SofdecStreamData(alt)] -> [Struct:SofdecStreamData]
 //          - Prefer using [Pointer:SofdecStreamData(preferred)] at $0x134408
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
@@ -87,6 +98,87 @@
 //          +0xA8 - [8-bit:VampireVisionState]
 //          | - value > 0 => Vampire Vision is active
 //          | - value == 0 => Vampire Vision is NOT active
+// $721788: [PAL][32-bit (base) Pointer:EntityData]
+//          
+//          ------Simplified_Documentation------
+//          (Example pointer chain to HP of PlayerEntityActor. Where the PlayerEntityActor [Array:EntityData].index is 38 and HealthComponent [Dictionary:EntityComponents].index is 15)
+//          
+//          +0xC - [32-bit (layer-1) Pointer] -> [Array:EntityData]
+//          .+(index*0x4) - [32-bit (layer-2) Pointer:EntityData_A]
+//          ..+0x0 - [32-bit (layer-3) Pointer:EntityData_B] -> [Struct:EntityData]
+//          ...
+//          ...+0x44 - [32-bit (layer-4) Pointer]
+//          ....+0x2 - [Variable Size ASCII:EntityNameID_1]
+//          ...
+//          ...+0x48 - [32-bit (layer-4) Pointer]
+//          ....+0x2 - [Variable Size ASCII:EntityNameID_2]
+//          ...
+//          ...+0x58 - [32-bit (layer-4) Pointer:EntityComponents] -> [Dictionary:EntityComponents]
+//          ....+0x4(+index*0x8) - [32-bit (layer-5) Pointer:EntityComponentData] -> [Struct:EntityComponentData.HealthComponent]
+//          .....
+//          .....+0x8 - [32-bit (layer-6) Pointer]
+//          ......+0x2 - [Variable Size ASCII:EntityComponentName] = "HealthComponent"
+//          .....
+//          .....+0x98 - [Float:ActorHP(functional) |32-bit]
+//          
+//          
+//          ------Advanced_Documentation------
+//          +0xC - [32-bit (layer-1) Pointer]
+//          .+0x0 - [Variable Size Array:EntityData] List of [Pointer:EntityData_A] -> [Pointer:EntityData_B] -> [Struct:EntityData]
+//          .| - Definition of [Struct:EntityData] below
+//          .| - Each area within a map, stores various entities
+//          .| - "Entity" can be an actor, light, weaponPickup, collisionSection, bossWeaponAttack, spawnPoint...
+//          .| - A lot of data related to those entities can be accessed via this [Pointer:EntityData] (location, functionalHealth...)
+//          .| - This may be the only way to access the functional health of the boss, but because the EntityData for the boss may be in different indices of this array, this is inadvisable to use for achievement logic.
+//          
+//          
+//          [Definition Struct:EntityData |96-byte??]
+//          |''''''''''''''''''''''''''''''
+//          |+0x44 - [32-bit (layer-2) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityNameID_1]
+//          |.| - This ID may vary between Chapters, when identifying the same entity (eg. Ally Cassidy in Chapter 1 vs Chapter 2)
+//          |.| - Eg. for Playercharacter this is "Chaz" (probably short name for protagonist "Jericho Cross"), duing Chapter 1
+//          |.| - Eg. for Cassidy this is "AgentCassidy", duing Chapter 1
+//          |
+//          |+0x48 - [32-bit (layer-2) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityNameID_2]
+//          |.| - This ID may vary between Chapters, when identifying the same entity (eg. Ally Cassidy in Chapter 1 vs Chapter 2)
+//          |.| - Eg. for Playercharacter this is "__PlayerActor0", duing Chapter 1
+//          |.| - Eg. for Cassidy this is "DWAgentCassidy", duing Chapter 1
+//          |
+//          |+0x58 - [32-bit (layer-2) Pointer:EntityComponents]
+//          |.+0x0 - [Variable Size Dictionary:EntityComponents] List of [Struct:ListItem_EntityComponent]
+//          |.| - Definition of [Struct:ListItem_EntityComponent] below
+//          |.| - A key-value paired list of EntityComponents (= components with game logic linked to the Entity)
+//          |.| - Size and EntityComponents in the list is dependent on the Entity
+//          '
+//          
+//          [Definition Struct:ListItem_EntityComponent |8-byte]
+//          |''''''''''''''''''''''''''''''
+//          |+0x0 - [32-bit:DictionaryKey]
+//          |+0x4 - [32-bit:DinctionaryValue] || [32-bit Pointer:EntityComponentData] -> [Struct:EntityComponentData]
+//          || - Definition of [Struct:EntityComponentData] below
+//          '
+//          
+//          [Definition Struct:EntityComponentData |Variable Size]
+//          |''''''''''''''''''''''''''''''
+//          | - Size and contents of this struct is dependent on which EntityComponent it is (refer to [ASCII:EntityComponentName])
+//          |
+//          |+0x44 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName]
+//          |.| - eg. WeaponComponent, HealthComponent, MaterialComponent, NetworkedActorComponent...
+//          '
+//          
+//          [Definition Struct:EntityComponentData.HealthComponent(actor) |??-byte]
+//          |''''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "HealthComponent"
+//          |
+//          |+0x98 - [Float:ActorHP(functional) |32-bit]
+//          '
+// $721820: [PAL][32-bit (base) Pointer:LevelID]
+//          +0x1C - [Variable Size ASCII:LevelID_long]
+//          | - This ASCII pretty much lists the folder structure to the level (eg. "Levels/SinglePlayer/WrongTrain" or "Levels/SinglePlayer/M02_CanyonShoot")
 // $721900: [PAL][32-bit (base) Pointer:PlayerInput(preferred)]
 //          - This pointer may point to a memRegion which is mostly static
 //          
@@ -207,7 +299,7 @@
 //          .+0x70 - [32-bit (layer-3) Pointer]
 //          ..+0xEC - [32-bit:EquippedWeapon_ReserveAmmo(display)]
 //          ..| - This value displays the reserve ammunition
-//          ..| - Functional values via [Pointer:PlayerActorData] at $0x965cc4
+//          ..| - Functional values via [Pointer(EntityData_B):PlayerActorData] at $0x965cc4
 //          ..
 //          ..+0xF0 - [32-bit:EquippedWeapon_LoadedBullets(display)]
 //          ..| - This value displays the amount of bullets icons displayed
@@ -245,6 +337,14 @@
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
+// $925A84: [PAL][32-bit (base) Pointer:PlayerOnHorsebackLocation]
+//          - This pointer is only valid when playing a Chapter on Horseback (eg. Chapter 2)
+//          - This points to a memRegion which may also regulate coordinates for other Actors in the scene/map
+//          
+//          +0x80 - [Struct(Coordinates):PlayerOnHorsebackLocation]
+//          | - These values regulate the location of the PlayerCharacterModel, not the horse.
+//          | - Definition of [Struct:Coordinates] at $0x965cc4
+//          | - (These are the functional coordinates)
 // $953C24: [32-bit] current weapon equipped
 // $953C28: [32-bit] current map timer
 // $953C3C: [32-bit] current map Firearms kills
@@ -311,14 +411,14 @@
 // $965CC0: [PAL][bit0:Audio_OutputMode |32-bit]
 //          0 => Surround
 //          1 => Stereo
-// $965CC4: [PAL][32-bit (base) Pointer:PlayerActorData]
+// $965CC4: [PAL][32-bit (base) Pointer(EntityData_B):PlayerActorData] -> [Struct:EntityData]
 //          
 //          +0x30 - [12-byte Struct(Coordinates):PlayerLocation(copy)]
-//          | - These coordinates are copied from [Struct(Coordinates):PlayerLocation(functional)]
+//          | - These coordinates are copied from [Struct:EntityComponentData.CharacterStateMachineComponent].[Struct(Coordinates):PlayerLocation(functional)]
 //          | - Definition of [Struct:Coordinates] below
 //          
-//          +0x58 - [32-bit (layer-1) Pointer]
-//          .+0x64 - [32-bit (layer-2) Pointer]
+//          +0x58 - [32-bit (layer-1) Pointer:EntityComponents] -> [Dictionary:EntityComponents]
+//          .+0x64 - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.CharacterStateMachineComponent]
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
 //          ...+0x0 - [32-bit (layer-4) Pointer]
 //          ....+0x90 - [32-bit (layer-5) Pointer]
@@ -327,46 +427,101 @@
 //          ......| - These are the functional coordinates, changing these moves the player character
 //          ......| - Definition of [Struct:Coordinates] below
 //          .
-//          .+0x7C - [32-bit (layer-2) Pointer]
+//          .+0x7C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.HealthComponent(player)]
 //          ..+0x98 - [Float:PlayerHealth(functional) |32-bit]
-//          ..| - FloatRange: [0.0 --- 100.0]; 100.0 = maxHP; 0.0 = Death
-//          ..| - Reference [Float:PlayerHealth(display)] at $0x965d2c
-//          ..+0x98 - [Float:BloodShield(functional) |32-bit]
-//          ..| - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
-//          ..| - Reference [Float:BloodShield(display)] at $0x965d2c
+//          ..+0xA0 - [Float:BloodShield(functional) |32-bit]
 //          
 //          +0x70 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer]
-//          ..+0x58 - [32-bit (layer-3) Pointer] -> [Dictionary:PlayerComponents]
-//          ..| - A key-value paired list of mostly miscellaneous data, although components may shift on certain occassions
+//          ..+0x58 - [32-bit (layer-3) Pointer] -> [Dictionary:EntityWeaponComponents] List of [Struct:ListItem_EntityComponent]
+//          ..| - Definition of [Struct:ListItem_EntityComponent] at $0x721788
+//          ..| - A key-value paired list of EntityComponents (= components with game logic linked to the Entity)
+//          ..| - This dictionary contains data for the different weapons of the player
+//          ..| - The ListItems get reordered when unlocking certain gameplay mechanics. (eg. when unlocking dynamite, some of the ListItems get reordered)
 //          ...
-//          ...+0xC - [32-bit (layer-4) Pointer] -> [Struct:DynamiteManager]
+//          ...+0xC - [32-bit (layer-4) Pointer:EntityComponentData_Dynamite] -> [Struct:EntityComponentData.WeaponComponent(dynamite)]
+//          ...| - This pointer is part of a [Struct:ListItem_EntityComponent]
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(dynamite)] below
 //          ...
-//          ...+0x34 - [32-bit (layer-4) Pointer:EquippedWeapon_BaiscPistol] -> [Struct:EquippedWeapon_WeaponData]
-//          ...| - This pointer is only valid for the first mission, when the player only has the BasicPistol equipped, thus only in Chapter 1
+//          ...+0x34 - [32-bit (layer-4) Pointer:EntityComponentData_BaiscPistol] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ...| - This pointer is part of a [Struct:ListItem_EntityComponent]
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(normalWeapon)] below
+//          ...| - This pointer is only valid for Chapter 1, when the player only has the BasicPistol equipped
+//          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityComponentData_NormalWeapon(1)]
 //          ...
-//          ...+0x3C - [32-bit (layer-4) Pointer:EquippedWeapon_WeaponData(1)] -> [Struct:EquippedWeapon_WeaponData]
+//          ...+0x3C - [32-bit (layer-4) Pointer:EntityComponentData_NormalWeapon(1)] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ...| - This pointer is part of a [Struct:ListItem_EntityComponent]
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(normalWeapon)] below
 //          ...| - This pointer is only valid when the player has not unlocked dynamite yet, thus should only be used up to Chapter 3, where the player first unlocks dynamite
+//          ...| - Once the player has unlocked dynamite, refer to [Pointer:EntityComponentData_NormalWeapon(2)]
 //          .
-//          .+0xC - [32-bit (layer-2) Pointer:EquippedWeapon_WeaponData(2)]
-//          .| - This pointer chain is only valid when the player has unlocked dynamite
-//          .
+//          .+0xC - [32-bit (layer-2) Pointer]
 //          ..+0x0 - [32-bit (layer-3) Pointer]
 //          ...+0x58 - [32-bit (layer-4) Pointer]
-//          ....+0x3C - [32-bit (layer-5) Pointer] -> [Struct:EquippedWeapon_WeaponData]
+//          ....+0x3C - [32-bit (layer-5) Pointer:EntityComponentData_NormalWeapon(2)] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ....| - This pointer chain is only valid when the player has unlocked dynamite
 //          
+//          [Definition Struct:EntityComponentData.CharacterStateMachineComponent |??-byte]
+//          |''''''''''''''''''''''''''''''
+//          |
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "CharacterStateMachineComponent"
+//          |
+//          |+0xF0 - [32-bit (layer-1) Pointer]
+//          |.+0x0 - [32-bit (layer-2) Pointer]
+//          |..+0x90 - [32-bit (layer-3) Pointer]
+//          |...+0x30 - [32-bit (layer-4) Pointer]
+//          |....+0xB0 - [Struct(Coordinates):PlayerLocation(functional)]
+//          |....| - These are the functional coordinates, changing these moves the player character
+//          |....| - Definition of [Struct:Coordinates] below
+//          |/
+//          '
 //          
-//          [Definition Struct:DynamiteManager |??-byte]
+//          [Definition Struct:EntityComponentData.HealthComponent(player) |??-byte]
+//          |''''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "HealthComponent"
+//          |
+//          |+0x98 - [Float:PlayerHealth(functional) |32-bit]
+//          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxHP; 0.0 = Death
+//          || - Reference [Float:PlayerHealth(display)] at $0x965d2c
+//          |
+//          |+0xA0 - [Float:BloodShield(functional) |32-bit]
+//          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
+//          || - Reference [Float:BloodShield(display)] at $0x965d2c
+//          '
+//          
+//          [Definition Struct:EntityComponentData.WeaponComponent(normalWeapon) |??-byte]
 //          |'''''''''''''''''''''''
-//          | - This struct contains data which regulates the throwable dynamite bundles
+//          | - This struct contains data on weapon ammuntion
 //          |
 //          |+0x8 - [32-bit (layer-5) Pointer]
-//          |.+x2 - [15-byte ASCII] = "WeaponComponent"
+//          |.+x2 - [Variable Size ASCII:EntityComponentName] = "WeaponComponent"
 //          |.| - Miscellaneous data
 //          |
-//          |+0x10 -[32-bit (layer-5) Pointer]
-//          |.+x2 - [8-byte ASCII] = "Dynamite"
-//          |.| - Miscellaneous data
+//          |+0x20 -[32-bit (layer-5) Pointer]
+//          |.+x2 - [Variable Size ASCII:WeaponNameID]
+//          |.| - WeaponNameIDs listed below
+//          |
+//          |+0x74 - [32-bit:LoadedBullets(functional)]
+//          || - This value regulates the amount of bullets loaded inside the gun
+//          |
+//          |+0x80 - [32-bit:MaxReserveAmmo(functional)]
+//          || - This value regulates the maximum allowed reserve ammunition
+//          |
+//          |+0x84 - [32-bit:MagazineSize(functional)]
+//          || - This value regulates how many bullets can be loaded inside the gun
+//          '
+//          
+//          [Definition Struct:EntityComponentData.WeaponComponent(dynamite) |??-byte]
+//          |''''''''''''''''''''''''''''''
+//          | - This struct contains data which regulates the throwable dynamite bundles
+//          |
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "WeaponComponent"
+//          |
+//          |+0x20 - [32-bit (layer-1) Pointer]
+//          |.+x2 - [Variable Size ASCII:WeaponNameID] = "Dynamite"
 //          |
 //          |+0x74 - [32-bit:DynamiteCountInInventory(functional-1)]
 //          || - This value is always at 1 as long as dynamite bundles left in inventory > 0
@@ -380,25 +535,19 @@
 //          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more dynamite bundle, afterwards this functional value remains at 0 and the display value becomes 0.
 //          '
 //          
-//          [Definition Struct:EquippedWeapon_WeaponData |??-byte]
-//          |'''''''''''''''''''''''
-//          | - This struct contains data on ammuntion and perhaps other data as well...
-//          |
-//          |+0x74 - [32-bit:LoadedBullets(functional)]
-//          || - This value regulates the amount of bullets loaded inside the gun
-//          |
-//          |+0x80 - [32-bit:MaxReserveAmmo(functional)]
-//          || - This value regulates the maximum allowed reserve ammunition
-//          |
-//          |+0x84 - [32-bit:MagazineSize(functional)]
-//          || - This value regulates how many bullets can be loaded inside the gun
-//          '
-//          
 //          [Definition Struct:Coordinates |12-byte]
 //          |'''''''''''''''''''''''
 //          |+0x0 - [Float:Coordinate_X |32-bit]
 //          |+0x4 - [Float:Coordinate_Z |32-bit]
 //          |+0x8 - [Float:Coordinate_Y |32-bit]
+//          '
+//          
+//          # WeaponNameIDs (string)
+//          |(list incomplete)
+//          |''''''''''''
+//          | "Revolver" => RedeemerRevolver
+//          | "Dynamite" => Dynamite_throwable
+//          | ...
 //          '
 // $965CF8: [PAL][8-bit:StoryChapterID]
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
@@ -443,12 +592,30 @@
 //          ..+0xF4 - [Float:BloodShield(display) |32-bit]
 //          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxShield; 0.0 = empty
 //          ..| - Reference [Float:BloodShield(functional)] $0x965cc4
+//          .
+//          .+0x8 - [32-bit (layer-2) Pointer]
+//          ..+0xC - [32-bit (layer-3) Pointer]
+//          ...+0x2C - [32-bit (layer-4) Pointer]
+//          ....+0x80 - [Float:BossHP(display)(alt1) |32-bit]
+//          ....+0x90 - [Float:BossHP(display)(alt2) |32-bit]
+//          ....| - Above two Floats are somewhat related to the HUD display of the boss HP bar.
+//          ....| - Prefer using [Float:BossHP(display)(preferred)], see below
+//          ....
+//          ....+0xEC - [Float:BossHP(display)(preferred) |32-bit]
+//          ....| - This Float directly regulates the HUD display of the boss HP bar.
+//          ....| - FloatRange: [1.0 --- 0.0]; 1.0 = maxHP; 0.0 = death
+//          ....| - Reference [Pointer:BossEntityComponentData].[Float:BossHP(functional)] in this same pointer chain
+//          ....
+//          ....+0xF4 - [32-bit (layer-4) Pointer:BossEntityData] -> [Struct:EntityData]
+//          ....| - Defintion of [Struct:EntityData] at $0x721788
+//          .....+0x58 - [32-bit (layer-5) Pointer:BossEntityComponents] -> [Dictionary:EntityComponents]
+//          ......+0x4C - [32-bit (layer-6) Pointer:BossEntityComponentData] -> [Struct:EntityComponent.HealthComponent(boss)]
+//          .......+0x98 - [Float:BossHP(functional) |32-bit]
 // $9B69F8: Difficulty Option Highlighted [32-Bit]
 //          0x00 = Greenhorn
 //          0x01 = Cowboy
 //          0x02 = Shootist
 //          0x03 = Deadeye
-// $9BBE88: [PAL]
 // $9E873C: [pointer chain]
 //          -+00 = pointer to first map kills
 //          --+1C = First map kills
@@ -456,21 +623,18 @@
 // $9E8744: [Pointer]
 //          00 = Gunslinger data array start
 // $9FF2DC: [32-bit] Fear ability flag
-// $A5C070: playerData
 // $A6F0B4: [32-bit] final boss
 //          3 = casside
 //          4 = tala
 // $AED58C: [32-bit] using ability flag
 // $AED8EC: [32-bit] Soul reaver ability flag
 // $AF80DC: [32-bit] evil ability flag
-// $DCE200: playerData
-// $F2FBD0: 104-byte
-// $F3D684: speech audio
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
 // $15C4A5C: [32-bit] current weapon reserve ammo
 // $15C4A60: [32-bit] current weapon magazine ammo
 // $15C4A68: [32-bit] dynamites
+// $1BDC130: A->A
 // $1FFF570: [Pointer chain]
 //           
 //           -+0xffffffac = pointer to the array of final boss
