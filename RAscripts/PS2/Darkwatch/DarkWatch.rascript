@@ -20,16 +20,21 @@
 		- Settings (game mode, map, time limit, Kills)
 		- Player Logic (HP, weaponData, location, powers)
 
-	- UnlockFlags Bonus content (Gunslinger Mode??)
+	- UnlockFlags for Bonus content (Only available in Gunslinger Mode??)
 	- UnlockFlags all movies
-	- More consistent pointer chain to functional bullets counter 	
 
-	----NotFound----
-	- ID in-engine cinematics --> Can kinda be ID'd with PlayerLocation + IsCinmetaicActive Flag (PlayerLoc is fixed during a cutscene, thus usage of bounding-box-check)
+	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
 	*/
 
 /* Game Notes:
-	- COOP mode doesn't have a Stats menu
+	- MainMenu Flag with Sofdec or IsInGame flag
+
+	- ID minimatics/Cinematics (in-engine) 
+		- Very hacky to ID consistently with ASCII ID
+		- Rrefer using hit counts of how many times an Cinmatic has been played to Identify if a specific cinematic has been played (eg. Cinematic 3 of Chapter X => 3 hits counts on_Cinematic_start())
+		- Could also introduce PlayerLocation as an extra check when the Cinematic Flag is active (this is only applicable for some cinematics where the playerLoc gets moved to some sort of default location, during or after the cinematic is done)
+
+	- COOP mode doesn't have a Stats menu, only seperate stats for each player updated during the chapter
 
 	- ChapterSections (eg. WrongTrain_A & WrongTrain_B) 
 		- When WrongTrain_B is reached, and restarting -> game restarts from the beginning of WrongTrain_B
@@ -51,6 +56,9 @@
 		- When "restarting" (PauseMenu->Restart) => the game restarts from the beginning of the Chapter Section
 		- When both players die at same time => the game restarts from the beginning of the Chapter Section
 
+	- Chapters with multiple sections
+		- Ch1 WrongTrain: Inside train -- On top of train
+		- Ch3 Boneyard: Outside church -- Inside church Catacombs
 
 */
 

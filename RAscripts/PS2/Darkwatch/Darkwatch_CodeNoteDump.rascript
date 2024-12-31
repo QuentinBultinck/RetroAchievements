@@ -31,7 +31,7 @@
 //          || - "SofdecStream" => FMV is being played
 //          || - anyOtherValue => FMV is NOT being played
 //          |
-//          |+0x14C - [5-byte ASCII:Sofdec_FMVID]
+//          |+0x14C - [6-byte ASCII:Sofdec_FMVID]
 //          || - This is actually the SofdecStreamID (about 17-byte long), but the first 5-byte of this ID can be used to identify which FMV is being played
 //          || - Sofdec_FMVIDs listed below
 //          '
@@ -39,14 +39,17 @@
 //          # Sofdec_FMVIDs (string)
 //          |(list incomplete)
 //          |'''''''''''''''''''
+//          | "PROLOG" => Intro video, which plays on game boot
+//          | "PS2MAI" => Main Menu background (looping) video
+//          |
 //          |---Chapter 1, "The Wrong Train"---
-//          | - "M01S1" => Jericho enters train
-//          | - "M01S2" => Jericho blows up door vault
-//          | - "M01S3" => ???
-//          | - "M01S4" => Jericho blows up Lazarus + Escape on horse
+//          | "M01S1_" => Jericho enters train
+//          | "M01S2_" => Jericho blows up door vault
+//          | "M01S3_" => ???
+//          | "M01S4_" => Jericho blows up Lazarus + Escape on horse
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | - "M02S1" => Lazarus escape from train wreck + Pursues Jericho
-//          | - ...
+//          | "M02S1_" => Lazarus escape from train wreck + Pursues Jericho
+//          | ...
 //          '
 // $65F3B8: [PAL][32-bit:DisplayLanguageID]
 //          - This option may be initialized by PS2 BIOS language setting
@@ -164,9 +167,64 @@
 //          |
 //          |+0x98 - [Float:ActorHP(functional) |32-bit]
 //          '
-// $721820: [PAL][32-bit (base) Pointer:LevelID]
-//          +0x1C - [Variable Size ASCII:LevelID_long]
-//          | - This ASCII pretty much lists the folder structure to the level (eg. "Levels/SinglePlayer/WrongTrain" or "Levels/SinglePlayer/M02_CanyonShoot")
+// $721820: [PAL][32-bit (base) Pointer:LevelID(preferred)]
+//          - This pointer points to ASCII data of the current loaded level. Each ASCII value listed here, substrings/returns different parts of the full LevelID
+//          
+//          +0x18 - [32-bit (layer-1) Pointer:]
+//          .+0x0 - [32-bit (layer-2) Pointer]
+//          ..+0x2 - [Variable Size ASCII:StoryChapterSectionID(false)]
+//          ..| - Prefer using [ASCII:StoryChapterSectionID(preferred)] below
+//          ..| - This always points to StoryChapterSectionID "A" (eg. "WrongTrain_A" or "M03_A"), regardless of the current StoryChapterSectionID.
+//          ..| - This ASCII value may ID a section that isn't used (eg. "M03_A", refer to StoryChapterSectionIDs listed below)
+//          
+//          +0x1C - [32-bit (layer-1) Pointer]
+//          .+0x2 - [Variable Size ASCII:DirectoryTreeToLevel]
+//          .| - This ASCII pretty much lists the folder structure to the current Chapter (eg. "Levels/SinglePlayer/WrongTrain" or "Levels/SinglePlayer/M02_CanyonShoot")
+//          
+//          +0x20 - [32-bit (layer-1) Pointer]
+//          .+0x2 - [Variable Size ASCII:LevelID(full)]
+//          .| - LevelIDs listed below
+//          .| - This ID stays the same for a whole StoryChapter level, regardless of the current StoryChapterSection
+//          .| - Multiplayer Versus maps/levels always start with "DM_"
+//          
+//          +0x24 - [32-bit (layer-1) Pointer]
+//          .+0x2 - [Variable Size ASCII:StoryChapterSectionID(preferred)]
+//          ..| - Some StoryChapters are split up into multiple sections, refer to StoryChapterSectionIDs listed below
+//          ..| - Multiplayer Versus map LevelIDs are listed here without "DM_" (eg. "DM_Asylum" --> "Asylum")
+//          
+//          
+//          # LevelIDs (string)
+//          |(list incomplete)
+//          |'''''''''''''
+//          |---StoryChapters---
+//          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
+//          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
+//          | "M03_Cemetery => Chapter 3, "Boneyard"
+//          | ...
+//          |
+//          |---VersusMaps---
+//          | "DM_Asylum"
+//          | ...
+//          '
+//          
+//          # StoryChapterSectionIDs (string)
+//          |(list incomplete) (only lists StoryChapters with multiple sections)
+//          |'''''''''''''
+//          |---Chapter 1, "Wrong Train"---
+//          | "WrongTrain_A" => Section inside the train
+//          | "WrongTrain_B" => Section on top of the train, after blowing up the vault
+//          |---Chapter 3, "Boneyard"---
+//          | "M03_A" => // ???, may be unused
+//          | "M03_C" => Section outside the church
+//          | "M03_B" => Section inside the church catacombs
+//          | ...
+//          |
+//          '
+// $7218D0: [PAL][32-bit Flag:IsInGame(alt)]
+//          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
+//          - This is actually a [32-bit Pointer] which is only functional when in-game, otherwise it's zeroed out (0x0)
+//          32bitValue > 0 => In-game (SinglePlayer and Mulltiplayer all modes)
+//          32bitValue == 0 => Not in-game (MainMenu and booting game)
 // $721900: [PAL][32-bit (base) Pointer:PlayerInput(preferred)]
 //          - This pointer may point to a memRegion which is mostly static
 //          
@@ -281,6 +339,19 @@
 //          |+0x2C - [Float:RightAnalogStick_Yaw |32-bit]
 //          |+0x30 - [Float:RightAnalogStick_Pitch |32-bit]
 //          '
+// $722528: [PAL][32-bit Flag:IsInGame(alt)]
+//          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
+//          - This is actually a [32-bit Pointer] which is only functional when in-game, otherwise it's zeroed out (0x0)
+//          32bitValue > 0 => In-game (SinglePlayer and Mulltiplayer all modes)
+//          32bitValue == 0 => Not in-game (MainMenu and booting game)
+// $72252C: [PAL][32-bit Flag:IsInGame(preferred)]
+//          0x14 => In-game (SinglePlayer and Mulltiplayer all modes)
+//          0x0 => Not in-game (MainMenu and booting game)
+// $722530: [PAL][32-bit Flag:IsInGame(alt)]
+//          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
+//          0x65 => In-game (SinglePlayer and Mulltiplayer all modes)
+//          0x0 => Not in-game (MainMenu and booting game)
+// $722540: in game?
 // $7238B8: [PAL][32-bit (base) Pointer:HUDcontrol_Gear(preferred)]
 //          +0xC - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer] -> HUDcontrol_Gear-Player1
@@ -333,7 +404,7 @@
 // $73DCD0: [PAL][bit0 BitFlag:IsCinematicActiveStateTransitioning |32-bit]
 //          - 1 => whenever a cinematic is ending or starting (transition period)
 //          - 0 => when any cinematic is fully active and and not active
-// $73DCD8: [PAL][bit0 BitFlag;IsFMVactive |32-bit]
+// $73DCD8: [PAL][bit0 BitFlag:IsFMVactive |32-bit]
 //          - Full Motion Video is a pre-rendered cutscene
 // $73DCE8: [PAL][bit0 BitFlag:IsCinematicActive |32-bit]
 //          - The game sometimes referes to "Minimatic" as an in-engine cutscene
@@ -352,7 +423,7 @@
 //          
 //          [Defintion Struct:PlayerData |300-byte]
 //          |''''''''''''''''''
-//          | - Documentation on StructMembers refer to their respective code notes, since this struct is static
+//          | - Documentation on StructMembers refer torespective code notes, since this struct is static
 //          |
 //          |+0x0 - [32-bit:EquippedWeapon_WeaponID]
 //          |+0x4 - [32-bit:TimeSpentInChapter]
@@ -406,35 +477,25 @@
 //          - Prefer using [32-bit:CheckpointID(preferred)] at $0x9114b4
 // $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
-//          - [Struct:CheckpointData] contains data about which weapons the player has equipped as well as information about power/abilities
 //          
-//          +0x0 - [12-byte ASCII:CheckpointID]
-//          | - These are unique on a Chapter basis (eg. All Chapters have a checkpoint identified as "Checkpoint_1")
-//          | - CheckpointIDs listed at $0x9114b4
+//          +0x2 - [13-byte ASCII:CheckpointID]
+//          | - Documentation at $0x96d022
 // $8FEAEC: [32-bit] Blood frenzy ability flag
 // $8FFAC8: [8-bit] main menu selection
-// $911430: [PAL][32-bit (base) Pointer:StoryChapterID]
-//          +0x2 - [Variable Size ASCII:StoryChapterID]
-//          | - Identification is also possible via [8-bit:StoryChapterID] at $0x965cf8
-//          
-//          # StoryChapterIDs (string)
-//          |(list incomplete)
-//          |'''''''''''''
-//          | "WrongTrain" => Chapter 1, "Wrong Train"
-//          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
-//          | "M03_Cemetery => Chapter 3, "Boneyard"
-//          | ...
+// $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
+//          +0x2 - [Variable Size ASCII:LevelID(alt)]
+//          | - Prefer using [Pointer:LevelID(preferred)] at $0x721820
 // $911444: [PAL][Lower4:DifficultyID(alt1) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $9114B4: (unverified - if the hexadecimal IDs are consistent)
 //          [PAL][32-bit:CheckpointID(preferred)]
-//          - Checkpoints can also be identified by [Pointer:CheckpointData_1].[Struct:CheckpointData].[ASCII:CheckpointID] at $0x807840
+//          - String CheckpointIDs accessed via [Pointer:CheckpointData_1] at $0x807840
 //          
-//          # CheckpointIDs (hex) && (string)
-//          |(list incomplete)
-//          |''''''''''''''''
+//          # CheckpointIDs (hex) - (string)
+//          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
+//          |''''''''''''''''''''''''
 //          | 0x0 => No checkpoint reached/initialized
 //          |
 //          |---Chapter 1, "The Wrong Train"---
@@ -442,8 +503,9 @@
 //          |---Chapter 2, "Ride Like The Devil"---
 //          | ...
 //          |---Chapter 3, "Boneyard"---
-//          | 0x328 == "Checkpoint_1" => At start of Chapter
-//          | 0x3DF == "Checkpoint_2" => Before Mark of Evil spawns near the church
+//          | 0x328 - "Checkpoint_1" => Section "M03_C": At start of Chapter
+//          | 0x3DF - "Checkpoint_2" => Section "M03_C": Before Mark of Evil spawns near the church
+//          | 0x344 - "Checkpoint_1S" => Section "M03_B": Start of catacombs
 //          | ...
 //          '
 // $9114B8: [PAL][32-bit (base) Pointer:CheckpointData_0]
@@ -824,7 +886,7 @@
 // $965CF8: [PAL][8-bit:StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
-//          - Identification is also possible via [ASCII:StoryChapterID] at $0x911430
+//          - Identification is also possible via [Pointer:LevelID(preferred)] at $0x721820
 //          - This value also regulates which powers are unlocked (at MainMenu->StatsMenu)
 //          
 //          # StoryChapterIDs (hex)
@@ -973,6 +1035,24 @@
 //          | 0x3A92A => CarbineRifle
 //          | 0x544F1 => ExplosiveCrossbow
 //          '
+// $96D020: [PAL][500-byte?? Struct:CheckpointData]
+//          ==============================
+//          @Fixed Memory Location, although pointed to by [Pointer:CheckpointData_1] at $0x807840
+//          - This struct is populated once a checkpoint has been reached.
+//          - This struct contains data about which weapons the player has equipped as well as information about power/abilities
+//          
+//          [Definition Struct:CheckpointData]
+//          |'''''''''''''''''
+//          | - Documentation on StructMembers refer torespective code notes, since this struct is static
+//          |
+//          |+0x2 - [13-byte ASCII:CheckpointID]
+//          '
+// $96D022: [PAL][13-byte ASCII:CheckpointID]
+//          @Member of [Struct:CheckpointData], refer to $0x96d020
+//          - These IDs are unique on a Chapter basis (eg. All Chapters have a checkpoint identified as "Checkpoint_1")
+//          - CheckpointIDs listed at $0x9114b4
+//          - Also refer to LevelIDs and StoryChapterSectionIDs
+// $96D07A: []
 // $9B69F8: Difficulty Option Highlighted [32-Bit]
 //          0x00 = Greenhorn
 //          0x01 = Cowboy
@@ -991,6 +1071,7 @@
 // $AED58C: [32-bit] using ability flag
 // $AED8EC: [32-bit] Soul reaver ability flag
 // $AF80DC: [32-bit] evil ability flag
+// $F30A24: cutscene timer
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
 // $15C4A5C: [32-bit] current weapon reserve ammo
