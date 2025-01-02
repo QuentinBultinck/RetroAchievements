@@ -49,6 +49,39 @@
 //          | "M01S4_" => Jericho blows up Lazarus + Escape on horse
 //          |---Chapter 2, "Ride Like The Devil"---
 //          | "M02S1_" => Lazarus escape from train wreck + Pursues Jericho
+//          |---Chapter 3, "Boneyard"---
+//          | "M04S1_" => End of Chapter
+//          |---Chapter 4, "Devil's Belly Mine"---
+//          | ...
+//          |---Chapter 5, "Darkwatch Outpost"---
+//          | ...
+//          |---Chapter 6, "War Train"---
+//          | ...
+//          |---Chapter 7, "Torture Maze"---
+//          | ...
+//          |---Chapter 8, "Baptism of Fire"---
+//          | ...
+//          |---Chapter 9, "Citadel"---
+//          | ...
+//          |---Chapter 10, "Rescue"---
+//          | ...
+//          |---Chapter 11, "The Deadlight Prism"---
+//          | ...
+//          |---Chapter 12, "Invasion"---
+//          | ...
+//          |---Chapter 13, "Hangtown"---
+//          | ...
+//          |---Chapter 14, "The Morning After"---
+//          | ...
+//          |---Chapter 15, "The Price of Passion"---
+//          | ...
+//          |---Chapter 16, "Showdown"---
+//          | ...
+//          |---Chapter 17, "The Right Train"---
+//          | ...
+//          |---Chapter 18, "Deadfall"---
+//          | ...
+//          |---Chapter 19, "Curse of The West"---
 //          | ...
 //          '
 // $65F3B8: [PAL][32-bit:DisplayLanguageID]
@@ -175,7 +208,6 @@
 //          ..+0x2 - [Variable Size ASCII:StoryChapterSectionID(false)]
 //          ..| - Prefer using [ASCII:StoryChapterSectionID(preferred)] below
 //          ..| - This always points to StoryChapterSectionID "A" (eg. "WrongTrain_A" or "M03_A"), regardless of the current StoryChapterSectionID.
-//          ..| - This ASCII value may ID a section that isn't used (eg. "M03_A", refer to StoryChapterSectionIDs listed below)
 //          
 //          +0x1C - [32-bit (layer-1) Pointer]
 //          .+0x2 - [Variable Size ASCII:DirectoryTreeToLevel]
@@ -200,25 +232,84 @@
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
 //          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
 //          | "M03_Cemetery => Chapter 3, "Boneyard"
-//          | ...
+//          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05", supposedly cut content)
+//          | TBD => Chapter 5, "Darkwatch Outpost"
+//          | TBD => Chapter 6, "War Train"
+//          | TBD => Chapter 7, "Torture Maze"
+//          | TBD => Chapter 8, "Baptism of Fire
+//          | TBD => Chapter 9, "Citadel"
+//          | TBD => Chapter 10, "Rescue"
+//          | TBD => Chapter 11, "The Deadlight Prism"
+//          | TBD => Chapter 12, "Invasion"
+//          | TBD => Chapter 13, "Hangtown"
+//          | TBD => Chapter 14, "The Morning After"
+//          | TBD => Chapter 15, "The Price of Passion"
+//          | TBD => Chapter 16, "Showdown"
+//          | TBD => Chapter 17, "The Right Train"
+//          | TBD => Chapter 18, "Deadfall"
+//          | TBD => Chapter 19, "Curse of The West"
 //          |
 //          |---VersusMaps---
-//          | "DM_Asylum"
-//          | ...
+//          | "DM_Asylum" => Asylum
+//          | "DM_DeathDealer" => Death Dealer
+//          | "DM_DeathDealerDay" => Death Dealer Day
+//          | "DM_DevilsBelly" => Devil's Belly Mine
+//          | "DM_DonnerPass" => Donner Pass
+//          | "DM_DonnerPassDay" => Donner Pass Day
+//          | "DM_HangTownEast" => Hangtown East
+//          | "DM_HangTownEastDay" => Hangtown East Day
+//          | "DM_HangTownWest" => Hangtown West
+//          | "DM_HangTownWestDay" => Hangtown West Day
+//          | "DM_HellHole" => Hellhole
+//          | "DM_TradeCenter" => Trade Center
+//          | "DM_TradeCenterDay" => Trade Center Day
 //          '
 //          
 //          # StoryChapterSectionIDs (string)
-//          |(list incomplete) (only lists StoryChapters with multiple sections)
+//          |(list incomplete)
 //          |'''''''''''''
 //          |---Chapter 1, "Wrong Train"---
-//          | "WrongTrain_A" => Section inside the train
-//          | "WrongTrain_B" => Section on top of the train, after blowing up the vault
+//          | "WrongTrain_A" => Section 1 - inside the train
+//          | "WrongTrain_B" => Section 2 - on top of the train, after blowing up the vault
+//          |---Chapter 2, "Ride Like The Devil"---
+//          | // (only consists of a single section)
 //          |---Chapter 3, "Boneyard"---
-//          | "M03_A" => // ???, may be unused
-//          | "M03_C" => Section outside the church
-//          | "M03_B" => Section inside the church catacombs
+//          | "M03_C" => Section 1 - outside the church
+//          | "M03_B" => Section 2 - inside the church catacombs
+//          | "M03_A" => Section 3 - after the catacombs
 //          | ...
-//          |
+//          |---Chapter 4, "Devil's Belly Mine"---
+//          | ...
+//          |---Chapter 5, "Darkwatch Outpost"---
+//          | ...
+//          |---Chapter 6, "War Train"---
+//          | ...
+//          |---Chapter 7, "Torture Maze"---
+//          | ...
+//          |---Chapter 8, "Baptism of Fire"---
+//          | ...
+//          |---Chapter 9, "Citadel"---
+//          | ...
+//          |---Chapter 10, "Rescue"---
+//          | ...
+//          |---Chapter 11, "The Deadlight Prism"---
+//          | ...
+//          |---Chapter 12, "Invasion"---
+//          | ...
+//          |---Chapter 13, "Hangtown"---
+//          | ...
+//          |---Chapter 14, "The Morning After"---
+//          | ...
+//          |---Chapter 15, "The Price of Passion"---
+//          | ...
+//          |---Chapter 16, "Showdown"---
+//          | ...
+//          |---Chapter 17, "The Right Train"---
+//          | ...
+//          |---Chapter 18, "Deadfall"---
+//          | ...
+//          |---Chapter 19, "Curse of The West"---
+//          | ...
 //          '
 // $7218D0: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
@@ -397,6 +488,15 @@
 //          0x01= Yes
 // $73B3F0: [PAL][32-bit:TurboMode(hack)]
 //          - Freezing this value, makes the game run in turbo
+// $73B410: [PAL][32-bit:TimerControl(functional)]
+//          - Time in milliseconds (1sec = 1,000ms)
+//          - This value directly regulates the timer in a Multiplayer Verus Match. Be wary, this value does not start/restart from a default value (0x0) on the start of the Verus Mode timer.
+//          - To determine the effective time left in a match, rather use [32-bit:TimeSpentInChapter] (refer to $0x74d78c), which always starts counting from 0x0.
+//          - OR use [32-bit:MatchDuration] (refer to $0x9114e0), with following formula:
+//          --| currentTime = [32-bit:TimerControl(functional)]
+//          --| timeAtMatchEnd = [32-bit:TimerControl(functional)] + ([32-bit:MatchDuration] * 60 * 1,000)
+//          --| timeLeftInMatch =  timeAtMatchEnd - currentTime
+// $73B414: timer
 // $73B430: [PAL][8-bit:GameState |32-bit]
 //          - 0x0 => Player is in control of PlayerCharacter. Also 0x0 when in MainMenu
 //          - 0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
@@ -407,11 +507,11 @@
 // $73DCD8: [PAL][bit0 BitFlag:IsFMVactive |32-bit]
 //          - Full Motion Video is a pre-rendered cutscene
 // $73DCE8: [PAL][bit0 BitFlag:IsCinematicActive |32-bit]
-//          - The game sometimes referes to "Minimatic" as an in-engine cutscene
+//          - The game sometimes refers to "Minimatic" as an in-engine cutscene
 //          - Data near this memRegion, may be used by logic for Minimatics and FMVs
 // $73DD40: (unverified)
 //          [PAL][32-bit:CinematicID(unverified)]
-//          - To ID an in-engine cinematic, but this is not always consistent.
+//          - To ID an in-engine cinematic, but this is not always consistent when restarting a chapter or when using checkpoints
 // $74D78C: [PAL][32-bit (base) Pointer:PlayerData]
 //          - Points to data at a fixed memory location
 //          
@@ -424,6 +524,7 @@
 //          [Defintion Struct:PlayerData |300-byte]
 //          |''''''''''''''''''
 //          | - Documentation on StructMembers refer torespective code notes, since this struct is static
+//          | - StructMembers are used for all modes: SinglePlayer, Multiplayer Coop and Versus
 //          |
 //          |+0x0 - [32-bit:EquippedWeapon_WeaponID]
 //          |+0x4 - [32-bit:TimeSpentInChapter]
@@ -458,7 +559,7 @@
 //          |
 //          |+0xE4 - [3-byte Bitset:LoreUnlocks]
 //          |
-//          |+0xF4 - [8-bit:StoryChapterID |16-bit]
+//          |+0xF4 - [8-bit:InProgress_StoryChapterID |16-bit]
 //          |+0xF6 - [8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          |
 //          |+0x100 - [32-bit:SelectedPlayerProfileID]
@@ -472,9 +573,9 @@
 // $763D4C: [32-bit] turn ability flag
 // $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol_Gear(alt)]
 //          - Prefer using [Pointer:HUDcontrol_Gear(preferred)] at $0x7238b8
-// $80783C: [PAL][32-bit:CheckpointID(alt)]
+// $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(alt)]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
-//          - Prefer using [32-bit:CheckpointID(preferred)] at $0x9114b4
+//          - Prefer using [32-bit:Checkpoint_RespawnPointID(preferred)] at $0x9114b4
 // $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
 //          
@@ -490,32 +591,52 @@
 // $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $9114B4: (unverified - if the hexadecimal IDs are consistent)
-//          [PAL][32-bit:CheckpointID(preferred)]
+//          [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          - String CheckpointIDs accessed via [Pointer:CheckpointData_1] at $0x807840
+//          - RespawnPointIDs listed below
 //          
-//          # CheckpointIDs (hex) - (string)
+//          # RespawnPointIDs (hex) - CheckpointIDs (string)
 //          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
 //          |''''''''''''''''''''''''
 //          | 0x0 => No checkpoint reached/initialized
 //          |
-//          |---Chapter 1, "The Wrong Train"---
+//          |===Chapter 1, "The Wrong Train===
 //          | ...
-//          |---Chapter 2, "Ride Like The Devil"---
+//          |
+//          |===Chapter 2, "Ride Like The Devil===
 //          | ...
-//          |---Chapter 3, "Boneyard"---
-//          | 0x328 - "Checkpoint_1" => Section "M03_C": At start of Chapter
-//          | 0x3DF - "Checkpoint_2" => Section "M03_C": Before Mark of Evil spawns near the church
-//          | 0x344 - "Checkpoint_1S" => Section "M03_B": Start of catacombs
+//          |
+//          |===Chapter 3, "Boneyard"===
+//          | ---StoryChapterSection "M03_C"---
+//          | 0x328 - "Checkpoint_1" => At start of Chapter
+//          | 0x3DF - "Checkpoint_2" => Before Mark of Evil spawns near the church
+//          | ---StoryChapterSection "M03_B"---
+//          | 0x344 - "Checkpoint_1" => Start of catacombs
+//          | 0x342 - "Checkpoint_2" => Entering catacombs arena
+//          | 0x362 - "Checkpoint_3" => Catacombs arena, after Banshee intro
+//          | 0x362 - "Checkpoint_4" => Catacombs arena, after defeating the Banshees
+//          | ---StoryChapterSection "M03_A"---
+//          | ??? - "Checkpoint_1" =>
+//          | 0x2BC - "Checkpoint_2" => After Good/Evil choice
 //          | ...
 //          '
 // $9114B8: [PAL][32-bit (base) Pointer:CheckpointData_0]
 //          - This pointer points to a memRegion with static data (fixed memory location)
 //          
-//          +0xC - [32-bit:CheckpointID(alt)]
-//          | - Identical to [32-bit:CheckpointID(preferred)] at $0x9114b4
+//          +0xC - [32-bit:Checkpoint_RespawnPointID(alt)]
+//          | - Identical to [32-bit:Checkpoint_RespawnPointID(preferred)] at $0x9114b4
 //          
 //          +0x10 - [32-bit (layer-1) Pointer:CheckpointData_1]
 //          | - Prefer using this pointer as a base pointer, as this is a static memRegion
+// $9114E0: [PAL][32-bit (base) Pointer:VersusMode_TimeSetting]
+//          - This pointer is only functional during a Multiplayer Versus Match
+//          
+//          +0x8 - [32-bit:MatchDuration(functional]
+//          | - Time in minutes (eg. 0x5 = 5 minutes, 0x7 => 7 minutes...)
+//          | - 0x0 => No Time limit
+//          | - This value determines the total amount of minutes the match lasts. Changing this value during a match, will update the timer display accordingly (eg. Time set to 10 (0xA) minutes  --> manual change this value 7 (0x7) --> Timer display updates)
+// $911508: [32-bit:MatchDuration(alt)]
+//          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
 // $925A84: [PAL][32-bit (base) Pointer:PlayerOnHorsebackLocation]
 //          - This pointer is only valid when playing a Chapter on Horseback (eg. Chapter 2)
 //          - This points to a memRegion which may also regulate coordinates for other Actors in the scene/map
@@ -724,34 +845,34 @@
 //          ..| - The ListItems get reordered when unlocking certain gameplay mechanics. (eg. when unlocking dynamite, some of the ListItems get reordered)
 //          ...
 //          ...
-//          ...+0xC - [32-bit (layer-4) Pointer:EntityComponentData_Dynamite] -> [Struct:EntityComponentData.WeaponComponent(dynamite)]
+//          ...+0xC - [32-bit (layer-4) Pointer:EntityComponentData_Dynamite] -> [Struct:EntityComponentData.WeaponComponent(throwable)]
 //          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(dynamite)] below
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(throwable)] below
 //          ...
-//          ...+0x2C - [32-bit (layer-4) Pointer:EntityComponentData_Crossbow] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ...+0x2C - [32-bit (layer-4) Pointer:EntityComponentData_Crossbow] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
 //          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(normalWeapon)] below
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when wielding the Crossbow
 //          ...
-//          ...+0x34 - [32-bit (layer-4) Pointer:EntityComponentData_BaiscPistol] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ...+0x34 - [32-bit (layer-4) Pointer:EntityComponentData_BaiscPistol] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
 //          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(normalWeapon)] below
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid for Chapter 1, when the player only has the BasicPistol equipped
 //          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityComponentData_NormalWeapon(1)]
 //          ...
-//          ...+0x3C - [32-bit (layer-4) Pointer:EntityComponentData_NormalWeapon(noDynamite)] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ...+0x3C - [32-bit (layer-4) Pointer:EntityComponentData_NormalWeapon(noDynamite)] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
 //          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(normalWeapon)] below
+//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when the player has not unlocked dynamite yet, thus should only be used up to Chapter 3, where the player first unlocks dynamite
 //          ...| - Once the player has unlocked dynamite, refer to [Pointer:EntityComponentData_NormalWeapon(2)]
 //          .
 //          .+0xC - [32-bit (layer-2) Pointer]
 //          ..+0x0 - [32-bit (layer-3) Pointer]
 //          ...+0x58 - [32-bit (layer-4) Pointer]
-//          ....+0x34 - [32-bit (layer-5) Pointer:EntityComponentData_MultiplayerNormalWeapon] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ....+0x34 - [32-bit (layer-5) Pointer:EntityComponentData_MultiplayerNormalWeapon] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
 //          ....| - This pointer chain is only valid in Multiplayer Versus Mode and only for a few select weapons
 //          ....
-//          ....+0x3C - [32-bit (layer-5) Pointer:EntityComponentData_NormalWeapon(dynamiteUnlocked)] -> [Struct:EntityComponentData.WeaponComponent(normalWeapon)]
+//          ....+0x3C - [32-bit (layer-5) Pointer:EntityComponentData_NormalWeapon(dynamiteUnlocked)] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
 //          ....| - This pointer chain is only valid when the player has unlocked dynamite
 //          
 //          [Definition Struct:EntityComponentData.CharacterStateMachineComponent |??-byte]
@@ -782,9 +903,15 @@
 //          |+0xA0 - [Float:BloodShield(functional) |32-bit]
 //          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
 //          || - Reference [Float:BloodShield(display)] at $0x965d2c
+//          |
+//          |+0xFC - [Float:BloodPower(functional) |32-bit]
+//          || - FloatRange: [0.0 --- 30.0]; 30.0 = maxBloodPower; 0.0 = empty
+//          || - Increments when picking up BloodClouds
+//          || - When at 30.0, the player can activate a Power, returning this value back to 0.0
+//          || - Reference |[Float:BloodPower(display)] at $0x965d2c
 //          '
 //          
-//          [Definition Struct:EntityComponentData.WeaponComponent(normalWeapon) |??-byte]
+//          [Definition Struct:EntityComponentData.WeaponComponent(weapon) |??-byte]
 //          |'''''''''''''''''''''''
 //          | - This struct contains data on weapon ammuntion
 //          |
@@ -806,7 +933,7 @@
 //          || - This value regulates how many bullets can be loaded inside the gun
 //          '
 //          
-//          [Definition Struct:EntityComponentData.WeaponComponent(dynamite) |??-byte]
+//          [Definition Struct:EntityComponentData.WeaponComponent(throwable) |??-byte]
 //          |''''''''''''''''''''''''''''''
 //          | - This struct contains data which regulates the throwable dynamite bundles
 //          |
@@ -814,7 +941,8 @@
 //          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "WeaponComponent"
 //          |
 //          |+0x20 - [32-bit (layer-1) Pointer]
-//          |.+x2 - [Variable Size ASCII:WeaponNameID] = "Dynamite"
+//          |.+x2 - [Variable Size ASCII:WeaponNameID]
+//          |.| - WeaponNameIDs listed below
 //          |
 //          |+0x74 - [32-bit:DynamiteCountInInventory(functional-1)]
 //          || - This value is always at 1 as long as dynamite bundles left in inventory > 0
@@ -838,10 +966,14 @@
 //          # WeaponNameIDs (string)
 //          |(list incomplete)
 //          |''''''''''''
+//          |---Weapons---
 //          | "BasicPistol" => BasicRevolver
 //          | "Revolver" => RedeemerRevolver
 //          | "Rifle" => CarbineRifle
-//          | "Dynamite" => Dynamite_throwable
+//          | ...
+//          |---Throwables---
+//          | "Dynamite"
+//          | "SplitterGrenades"
 //          | ...
 //          '
 // $965CD8: [PAL][32-bit (base) Pointer:PlayerSavedStats-Player1]
@@ -883,7 +1015,7 @@
 //          | - bit2 =>
 //          | - bits[3-7] => //
 //          '
-// $965CF8: [PAL][8-bit:StoryChapterID |16-bit]
+// $965CF8: [PAL][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
 //          - Identification is also possible via [Pointer:LevelID(preferred)] at $0x721820
@@ -933,6 +1065,9 @@
 //          ..+0xF4 - [Float:BloodShield(display) |32-bit]
 //          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxShield; 0.0 = empty
 //          ..| - Reference [Float:BloodShield(functional)] $0x965cc4
+//          ..+0x23C - [Float:BloodPower(display) |32-bit]
+//          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxBloodPower; 0.0 = empty
+//          ..| - Reference [Float:BloodPower(functional)] $0x965cc4
 //          .
 //          .+0x8 - [32-bit (layer-2) Pointer]
 //          ..+0xC - [32-bit (layer-3) Pointer]
@@ -1071,12 +1206,20 @@
 // $AED58C: [32-bit] using ability flag
 // $AED8EC: [32-bit] Soul reaver ability flag
 // $AF80DC: [32-bit] evil ability flag
+// $DCBBB0: CreateVersusMatchMenu_TimeSetting
 // $F30A24: cutscene timer
+// $F39608: minute setting vs mode
+// $F54FB0: list of lpointers to runes
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
+// $11D31E8: display func, bloodrune
+// $11D5D60: blocks of time left
+// $120430C: F8 - functional timer duration Blood Frenzy
 // $15C4A5C: [32-bit] current weapon reserve ammo
 // $15C4A60: [32-bit] current weapon magazine ammo
 // $15C4A68: [32-bit] dynamites
+// $19FD7C0: active rune
+// $1CC6F08: vamp jump flag
 // $1FFF570: [Pointer chain]
 //           
 //           -+0xffffffac = pointer to the array of final boss

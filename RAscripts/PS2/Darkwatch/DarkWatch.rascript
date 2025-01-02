@@ -9,24 +9,20 @@
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
-/* TODO current task: 
-	
-	*/
-
 /* TODO Find code note for:
 	- 8 Power (ability) Flags - in use
 
 	- Versus Mode 
-		- Settings (game mode, map, time limit, Kills)
-		- Player Logic (HP, weaponData, location, powers)
+		- Player Logic (powers)
 
 	- UnlockFlags for Bonus content (Only available in Gunslinger Mode??)
 	- UnlockFlags all movies
 
 	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
+	
 	*/
 
-/* Game Notes:
+/* DEV_NOTE - Game Logic Notes:
 	- MainMenu Flag with Sofdec or IsInGame flag
 
 	- ID minimatics/Cinematics (in-engine) 
@@ -60,6 +56,8 @@
 		- Ch1 WrongTrain: Inside train -- On top of train
 		- Ch3 Boneyard: Outside church -- Inside church Catacombs
 
+	- Versus Mode
+		- 
 */
 
 /* CONCEPT assets
