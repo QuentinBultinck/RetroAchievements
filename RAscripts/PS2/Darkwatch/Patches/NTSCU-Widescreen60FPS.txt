@@ -1,0 +1,67 @@
+// This file details how to transform below hacks/cheats/patches from PCSX2 into ROMpatches(xdelta patches)
+//=========================
+
+// Widescreen hack by nemesis2000 (pnach file --> http://ps2wide.net/d.html#SLUS-21042)
+// 60 fps codes by asasega (https://forums.pcsx2.net/Thread-60-fps-codes?pid=550050#pid550050)
+//-------------------------
+
+RAMaddress + RequiredRAMvalue           ROMaddress      InitialROMvalue     NewROMvalue    ExtraInfo
+
+//FPS - In-Game
+patch=1,EE,0071FA68,word,00000001       0x05AA1008      93A30000            24030001        Insert new MIPS instruction, which writes to RAMaddress $0x71FA68
+
+//Widescreen - Gameplay SinglePlayer
+patch=1,EE,00641770,word,3faaaaaa       0x05BEF470      3F800000            3faaaaaa        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size
+patch=1,EE,00641774,word,3fe38e38       0x05BEF474      3FAAAAAB            3fe38e38        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size
+
+//Widescreen - Gameplay Multiplayer Coop/Versus
+patch=1,EE,002CD9C4,word,24110001       0x0587B6C4      0000882d            24110001        Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,00641930,word,402aaaaa       0x05BEF630      3fb33333            402aaaaa        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size for Player A
+patch=1,EE,00641934,word,40638e38       0x05BEF634      402aaaa8            40638e38        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size for Player A
+patch=1,EE,0064194c,word,402aaaaa       0x05BEF64C      3fb33333            402aaaaa        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size for Player B
+patch=1,EE,00641950,word,40638e38       0x05BEF650      402aaaab            40638e38        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size for Player B
+
+//Widescreen - Cinematics 
+//patch=1,EE,0036512c,word,3c033fab
+patch=1,EE,006c2c68,word,3fe38e38       0x05C70968      3faaaaab            3fe38e38        Hardcoded float, read from ROM into this RAMaddress -> This NewValue determines screen render size during Cinematics (in-engine cutscenes)
+
+//Widescreen - Text Width
+patch=1,EE,0040da28,word,3c034455       0x00000000      xxxxxxxx            3c034455
+
+//Widescreen - Cutscenes BlackBorders (removed)
+patch=1,EE,0065ca78,word,00000000       0x00000000      xxxxxxxx            00000000
+patch=1,EE,003de3dc,word,3c020000       0x00000000      xxxxxxxx            3c020000
+patch=1,EE,003de4ec,word,3c020000       0x00000000      xxxxxxxx            3c020000
+patch=1,EE,003de508,word,3c030000       0x00000000      xxxxxxxx            3c030000
+
+//Widescreen - Subtitles
+patch=1,EE,0036bb74,word,24030000       0x00000000      xxxxxxxx            24030000
+
+//Widescreen - FMV
+patch=1,EE,003c5218,word,3c0143fe       0x00000000      xxxxxxxx            3c0143fe
+patch=1,EE,003c5230,word,44810800       0x00000000      xxxxxxxx            44810800
+patch=1,EE,003c522c,word,00000000       0x00000000      xxxxxxxx            00000000
+patch=1,EE,003c5234,word,e7a10104       0x00000000      xxxxxxxx            e7a10104
+patch=1,EE,003c5248,word,c4600000       0x00000000      xxxxxxxx            c4600000
+patch=1,EE,003c524c,word,e7a00088       0x00000000      xxxxxxxx            e7a00088
+patch=1,EE,003c5254,word,e7a000c8       0x00000000      xxxxxxxx            e7a000c8
+patch=1,EE,003c5258,word,3c01c270       0x00000000      xxxxxxxx            3c01c270
+patch=1,EE,003c525c,word,44810800       0x00000000      xxxxxxxx            44810800
+patch=1,EE,003c5260,word,e7a10044       0x00000000      xxxxxxxx            e7a10044
+patch=1,EE,003c5264,word,e7a100c4       0x00000000      xxxxxxxx            e7a100c4
+
+//Widescreen - 480p Resolution Multiplayer
+patch=1,EE,0045aaa4,word,3c050000       0x05A087A4      00052C00            3C050000        Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,0045aaac,word,3c060050       0x05A087AC      00063400            3C060050        Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,0045aab4,word,3c070001       0x05A087B4      00073C00            3C070001        Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,0045ad74,word,3c090010       0x05A08A74      00094C00            3C090010        Insert new MIPS instruction, read from ROM into this RAMaddress
+
+//Widescreen - Write FOV base to 0x620090 (required by MouseInjectorDolphinDuck)
+patch=1,EE,001EF890,word,AC320090       0x00000000      xxxxxxxx            AC320090
+patch=1,EE,001EF894,word,03E00008       0x00000000      xxxxxxxx            03E00008
+patch=1,EE,001EF898,word,27BD0080       0x00000000      xxxxxxxx            27BD0080
+
+//Widescreen - Write cambase to 0x620230 (for use with MouseInjectorDolphinDuck)
+patch=1,EE,0020520C,word,AC220230       0x00000000      xxxxxxxx            AC220230
+patch=1,EE,00205210,word,03E00008       0x00000000      xxxxxxxx            03E00008
+patch=1,EE,00205214,word,27BD0070       0x00000000      xxxxxxxx            27BD0070

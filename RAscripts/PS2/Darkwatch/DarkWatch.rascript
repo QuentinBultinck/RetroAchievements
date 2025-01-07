@@ -10,20 +10,26 @@
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
 /* TODO Find code note for:
-	- 8 Power (ability) Flags - in use
-
 	- Versus Mode 
 		- Player Logic (powers)
 
-	- UnlockFlags for Bonus content (Only available in Gunslinger Mode??)
-	- UnlockFlags all movies
+	- UnlockFlags for Concept Art (Only unlockable through  Gunslinger Mode)
 
 	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
 	
+	- Hubs to add:
+		- [Feature - PvP] 					https://retroachievements.org/game/9377
+		- [Perspective - 1st-Person] 		https://retroachievements.org/game/3401
+		- [Feature - Co-op] 				https://retroachievements.org/game/24859
+		- [Protagonist - Cowboy] 			https://retroachievements.org/game/18941
+		- [Protagonist - Vampire Hunter] 	https://retroachievements.org/game/18940
+
 	*/
 
 /* DEV_NOTE - Game Logic Notes:
 	- MainMenu Flag with Sofdec or IsInGame flag
+
+	- Power Unlock Flags (hacky) --> can  kinda ID it because a new power is selected by default on unlock on the display
 
 	- ID minimatics/Cinematics (in-engine) 
 		- Very hacky to ID consistently with ASCII ID
@@ -55,6 +61,8 @@
 	- Chapters with multiple sections
 		- Ch1 WrongTrain: Inside train -- On top of train
 		- Ch3 Boneyard: Outside church -- Inside church Catacombs
+
+	- UnlockFlags movies -> Correlated to Current StoryChapterID and endingflags
 
 	- Versus Mode
 		- 

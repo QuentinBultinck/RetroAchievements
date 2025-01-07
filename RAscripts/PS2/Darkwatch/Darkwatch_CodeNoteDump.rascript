@@ -39,6 +39,7 @@
 //          # Sofdec_FMVIDs (string)
 //          |(list incomplete)
 //          |'''''''''''''''''''
+//          | "DWATTR" => Demo video, which plays when idle at the Start-/TitleMenu
 //          | "PROLOG" => Intro video, which plays on game boot
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
@@ -50,7 +51,7 @@
 //          |---Chapter 2, "Ride Like The Devil"---
 //          | "M02S1_" => Lazarus escape from train wreck + Pursues Jericho
 //          |---Chapter 3, "Boneyard"---
-//          | "M04S1_" => End of Chapter
+//          | "M04S1_" => End of Chapter, Cassidy dies
 //          |---Chapter 4, "Devil's Belly Mine"---
 //          | ...
 //          |---Chapter 5, "Darkwatch Outpost"---
@@ -84,6 +85,76 @@
 //          |---Chapter 19, "Curse of The West"---
 //          | ...
 //          '
+// $2CD9C4: [NTSCU][32-bit:WidescreenHack_MP_2PlayerGameplay_A]
+//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+//          - This value is a MIPS/ASM instruction
+//          
+//          InitialValue = 0x882D
+//          HackValue = 0x24110001
+// $45AAA4: [NTSCU][32-bit:MultiplayerResolution_A]
+//          @Widescreen Hack - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x00052C00
+//          HackValue = 0x3C050000
+// $45AAAC: [NTSCU][32-bit:MultiplayerResolution_B]
+//          @Widescreen Hack - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x00063400
+//          HackValue = 0x3C060050
+// $45AAB4: [NTSCU][32-bit:MultiplayerResolution_C]
+//          @Widescreen Hack - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x73C00
+//          HackValue = 0x3C070001
+// $45AD74: [NTSCU][32-bit:MultiplayerResolution_C]
+//          @Widescreen Hack - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x94C00
+//          HackValue = 0x3C090010
+// $641770: [NTSCU][Float:SinglePlayerScreenRenderSize_A |32-bit]
+//          @Widescreen Hack - Gameplay SinglePlayer
+//          - This value regulates the screen render size during SinglePlayer
+//          
+//          InitialValue = 1.0 (0x3f800000)
+//          HackValue = 1.333333 (0x3faaaaaa)
+// $641774: [NTSCU][Float:SinglePlayerScreenRenderSize_B |32-bit]
+//          @Widescreen Hack - Gameplay SinglePlayer
+//          - This value regulates the screen render size during SinglePlayer
+//          
+//          InitialValue = 1.333333 (0x3FAAAAA8)
+//          HackValue = 1.777778 (0x3FE38E38)
+// $641930: [NTSCU][Float:MP_Coop_PlayerA_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player A
+//          
+//          InitialValue = 1.4 (0x3FB33333)
+//          HackValue = 2.666666 (0x402AAAAA)
+// $641934: [NTSCU][Float:MP_Coop_PlayerA_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player A
+//          
+//          InitialValue = 2.666667 (0x402AAAAB)
+//          HackValue = 3.555555 (0x40638E38)
+// $64194C: [NTSCU][Float:MP_Coop_PlayerB_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player B
+//          
+//          InitialValue = 1.4 (0x3FB33333)
+//          HackValue = 2.666666 (0x402AAAAA)
+// $641950: [NTSCU][Float:MP_Coop_PlayerB_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player B
+//          
+//          InitialValue = 2.666667 (0x402AAAAB)
+//          HackValue = 3.555555 (0x40638E38)
 // $65F3B8: [PAL][32-bit:DisplayLanguageID]
 //          - This option may be initialized by PS2 BIOS language setting
 //          - Otherwise this setting is not attached/saved the settings of a PlayerProfile
@@ -112,6 +183,15 @@
 // $6BDD00: [PAL][32-bit:FrameCounter_1]
 //          - Increments by 1 each frame
 //          - There are other FrameCounters near this memory region
+// $6C2C68: [NTSCU][Float:CinematicScreenRenderSize |32-bit]
+//          @Widescreen Hack - Cinematics
+//          - This value regulates the screen render size during Cinematics (in-engine cutscenes)
+//          
+//          InitialValue = 1.333333 (0x3FAAAAAB)
+//          HackValue = 1.777778 (0x3FE38E38)
+// $71FA68: [NTSCU][Lower4:FPScontrol |32-bit]
+//          0x1 => 30 fps
+//          0x1 => 60 fps
 // $71FF88: [8-bit] in gameplay flag
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
@@ -571,6 +651,9 @@
 //          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x70 - [Struct(Coordinates):CameraLocation)]
 // $763D4C: [32-bit] turn ability flag
+// $77C7D0: something?? active stuff??
+//          
+//          Index to start of this stuff!!!
 // $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol_Gear(alt)]
 //          - Prefer using [Pointer:HUDcontrol_Gear(preferred)] at $0x7238b8
 // $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(alt)]
@@ -600,12 +683,12 @@
 //          |''''''''''''''''''''''''
 //          | 0x0 => No checkpoint reached/initialized
 //          |
-//          |===Chapter 1, "The Wrong Train===
+//          |===Chapter 1, "The Wrong Train"===
+//          | ---StoryChapterSection "xxxxx"---
 //          | ...
-//          |
-//          |===Chapter 2, "Ride Like The Devil===
+//          |===Chapter 2, "Ride Like The Devil"===
+//          | ---StoryChapterSection "xxxxx"---
 //          | ...
-//          |
 //          |===Chapter 3, "Boneyard"===
 //          | ---StoryChapterSection "M03_C"---
 //          | 0x328 - "Checkpoint_1" => At start of Chapter
@@ -618,6 +701,54 @@
 //          | ---StoryChapterSection "M03_A"---
 //          | ??? - "Checkpoint_1" =>
 //          | 0x2BC - "Checkpoint_2" => After Good/Evil choice
+//          | ...
+//          |===Chapter 4, "Devil's Belly Mine"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 5, "Darkwatch Outpost"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 6, "War Train"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 7, "Torture Maze"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 8, "Baptism of Fire"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 9, "Citadel"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 10, "Rescue"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 11, "The Deadlight Prism"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 12, "Invasion"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 13, "Hangtown"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 14, "The Morning After"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 15, "The Price of Passion"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 16, "Showdown"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 17, "The Right Train"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 18, "Deadfall"===
+//          | ---StoryChapterSection "xxxxx"---
+//          | ...
+//          |===Chapter 19, "Curse of The West"===
+//          | ---StoryChapterSection "xxxxx"---
 //          | ...
 //          '
 // $9114B8: [PAL][32-bit (base) Pointer:CheckpointData_0]
@@ -637,6 +768,25 @@
 //          | - This value determines the total amount of minutes the match lasts. Changing this value during a match, will update the timer display accordingly (eg. Time set to 10 (0xA) minutes  --> manual change this value 7 (0x7) --> Timer display updates)
 // $911508: [32-bit:MatchDuration(alt)]
 //          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
+// $911768: 8-bit which pointer is used for the current HUD
+//          This value x 0x4
+// $911898: [PAL][32-bit (base) Pointer:MessageBoxData]
+//          @Fixed Memory Location, although pointed to by $0x7238b8
+//          - MessageBox is an in-game popup/submenu (for Lore/hints or the PowersMenu)
+//          - This pointer is only valid for these specific in-game popups
+//          
+//          +0xC - [32-bit (layer-1) Pointer]
+//          .+0x4 - [32-bit (layer-2) Pointer]
+//          ..+0x30 - [32-bit (layer-3) Pointer]
+//          ...+0x2 - [Variable Size ASCII:MainLineText]
+//          ...| - This is the literal text which is displayed on the MessageBox
+//          ...| - This ASCII is language dependent
+//          
+//          +0x30 - [32-bit (layer-1) Pointer]
+//          .+0x2 - [Variable Size ASCII:MessageBoxType]
+//          .| "MessageBox" => Default MessageBox
+//          .| "brands" => PowersMenu
+//          .| ...??
 // $925A84: [PAL][32-bit (base) Pointer:PlayerOnHorsebackLocation]
 //          - This pointer is only valid when playing a Chapter on Horseback (eg. Chapter 2)
 //          - This points to a memRegion which may also regulate coordinates for other Actors in the scene/map
@@ -678,7 +828,7 @@
 //          # WeaponIDS (hex)
 //          |(list incomplete)
 //          |''''''''''''
-//          | 0x0 => BaiscRevolver
+//          | 0x0 => BasicRevolver
 //          | 0x1 => RedeemerRevolver
 //          | 0x4 => CarbineRifle
 //          | 0x7 => ExplosiveCrossbow
@@ -904,11 +1054,11 @@
 //          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
 //          || - Reference [Float:BloodShield(display)] at $0x965d2c
 //          |
-//          |+0xFC - [Float:BloodPower(functional) |32-bit]
+//          |+0xFC - [Float:BloodPowerGauge(functional) |32-bit]
 //          || - FloatRange: [0.0 --- 30.0]; 30.0 = maxBloodPower; 0.0 = empty
 //          || - Increments when picking up BloodClouds
 //          || - When at 30.0, the player can activate a Power, returning this value back to 0.0
-//          || - Reference |[Float:BloodPower(display)] at $0x965d2c
+//          || - Reference |[Float:BloodPowerGauge(display)] at $0x965d2c
 //          '
 //          
 //          [Definition Struct:EntityComponentData.WeaponComponent(weapon) |??-byte]
@@ -970,6 +1120,8 @@
 //          | "BasicPistol" => BasicRevolver
 //          | "Revolver" => RedeemerRevolver
 //          | "Rifle" => CarbineRifle
+//          | "Shotgun" => Shotgun
+//          | "Crossbow" => ExplosiveCrossbow
 //          | ...
 //          |---Throwables---
 //          | "Dynamite"
@@ -1020,6 +1172,7 @@
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
 //          - Identification is also possible via [Pointer:LevelID(preferred)] at $0x721820
 //          - This value also regulates which powers are unlocked (at MainMenu->StatsMenu)
+//          - This also unlocks movies at MainMenu->Extras->Movies, depending on which Chapter is currently ID'd here
 //          
 //          # StoryChapterIDs (hex)
 //          |'''''''''''''
@@ -1045,6 +1198,10 @@
 // $965CFA: [PAL][8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - StoryChapterIDs listed at $0x965cf8
+// $965D00: [PAL][bit0 BitFlag:IsStoryGoodEndingAchieved |8-bit]
+//          - This also unlocks all movies at MainMenu->Extras->Movies (including "Devil" and "Hero", only unlockable with a Good playthrough)
+// $965D01: [PAL][bit0 BitFlag:IsStoryEvilEndingAchieved |8-bit]
+//          - This also unlocks all movies at MainMenu->Extras->Movies (including "Angel" and "Monster", only unlockable with an Evil playthrough)
 // $965D04: [PAL][32-bit:SelectedPlayerProfileID]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Max allowed PlayerProfiles is 10
@@ -1054,6 +1211,9 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          +0x2 - [Variable Size ASCII:SelectedPlayerProfileName]
 //          | - Identical [ASCII:SelectedPlayerProfileName] at $0x728fa0, accessible without a pointer
+// $965D0C: [PAL][bit0 BitFlag:ConceptArtUnlocks(hack) |32-bit]
+//          - This unlocks Concept Art in MainMenu->Extras->ConceptArt ("Evolution of Jericho" + "Darkwatch Archives")
+//          - This is probably not the intended way of unlocking these
 // $965D2C: [PAL][32-bit (base) Pointer:HUDcontrol_Health-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
@@ -1065,9 +1225,31 @@
 //          ..+0xF4 - [Float:BloodShield(display) |32-bit]
 //          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxShield; 0.0 = empty
 //          ..| - Reference [Float:BloodShield(functional)] $0x965cc4
-//          ..+0x23C - [Float:BloodPower(display) |32-bit]
-//          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxBloodPower; 0.0 = empty
-//          ..| - Reference [Float:BloodPower(functional)] $0x965cc4
+//          ..
+//          ..
+//          ..+0xF8 - [32-bit (layer-3) Pointer] -> Blood Power Gauge
+//          ...+0xEC - [Float:BloodPowerGauge(display) |32-bit]
+//          ...| - FloatRange: [1.0 --- 0.0]; 1.0 = maxBloodPower; 0.0 = empty
+//          ...| - Reference [Float:BloodPowerGauge(functional)] $0x965cc4
+//          ..
+//          ..
+//          ..+0x100 - [32-bit (layer-3) Pointer] -> Power Fill Data
+//          ...+0x75 - [Struct(RGBhex):PowerUsageFillColor |24-bit]
+//          ...| - This value represents to color which is used in the display of the Blood Power duration time left circle color.
+//          ...| - Definition of [Struct:RGBhex] below
+//          ...| - Practically this can be used to identify if an Evil Power or Good Power was used
+//          ...| 0xC4988D => Red color, Evil Power
+//          ...| 0x1919D1 => Blue color, Good Power
+//          ...
+//          ...+0xE8 - [Float:HealthUI_BloodPowerTimeLeft(display)(alt2) |32-bit]
+//          ...| - FloatRange [1.0 --- 0.0]; 1.0 => Power time start; 0.0 => Power over
+//          ...
+//          ...+0xF0 - [Lower4:PowerDurationBarsLeft(display) |32-bit]
+//          ...| - This value regulates how many BloodPowerDurationBars are displayed. It does not directly control the duration of the BloodPower.
+//          ...| - HealthUI can display 8 PowerDurationBars in total.
+//          ...| - When the BloodPower starts, this value starts a 0x7 (= 8 bars), this decrements by 1 each ... milliseconds. At 0x0 there is still 1 more bar displayed.
+//          .
+//          .
 //          .
 //          .+0x8 - [32-bit (layer-2) Pointer]
 //          ..+0xC - [32-bit (layer-3) Pointer]
@@ -1096,6 +1278,52 @@
 //          ......| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
 //          ......| - This pointer is only valid for Chapter 2
 //          .......+0x98 - [Float:BossHP(functional) |32-bit]
+//          .
+//          .
+//          .
+//          .+0x10 - [32-bit (layer-2) Pointer] -> [Struct:HUDcontrol_PowerSelectionUI |??-byte]
+//          ..+0xC4 - [Float:PowerSelectionUI_Opacity |32-bit]
+//          ...| - FloatRange [1.0 --- 0.0]; 1.0 => Fully visible; 0.0 => Invisible/hidden
+//          ...| - The PowerSelectionUI is dynamically displayed and hidden during gameplay
+//          ..+0xE8 - [32-bit (layer-3) Pointer]
+//          ..| - Changing this pointer so it points to another BloodPowerID (string), will update the middle/selected power icon of the bottom-left HUD accordingly
+//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Selected_BloodPowerID(display)]
+//          ...| - BloodPowerIDs listed below
+//          ..+0xF0 - [32-bit (layer-3) Pointer]
+//          ..| - Changing this pointer so it points to another BloodPowerID (string), will update the right power icon of the bottom-left HUD accordingly
+//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Right_BloodPowerID(display)]
+//          ...| - BloodPowerIDs listed below
+//          .
+//          .
+//          .+0x78 - [32-bit (layer-2) Pointer]
+//          .| - Changing this pointer so it points to another BloodPowerID (string), will update the top-left HUD power icon accordingly
+//          ..+0x2 - [Variable Size ASCII:HealthUI_Selected_BloodPowerID(display)]
+//          ..| - BloodPowerIDs listed below
+//          .
+//          .
+//          .+0x174 - [Float:HealthUI_BloodPowerTimeLeft(display)(alt1) |32-bit]
+//          .| - FloatRange [1.0 --- 0.0]; 1.0 => Power time start; 0.0 => Power over
+//          
+//          [Definition Struct:RGBhex |24-bit]
+//          |'''''''''''''''
+//          |+0x0 - [8-bit:Red]
+//          |+0x1 - [8-bit:Green]
+//          |+0x2 - [8-bit:Blue]
+//          '
+//          
+//          # BloodPowerIDs (string)
+//          |'''''''''''''''''
+//          |---Good Powers---
+//          | "SilverBrandRune" => Silver Bullet
+//          | "FearRune" => Fear
+//          | "MysticArmourRune" => Mystic Armor
+//          | "VindicatorRune" => Vindicator
+//          |---Evil Powers---
+//          | "BloodFrenzyRune" => Blood Frenzy
+//          | "TurnRune" => Turn
+//          | "BlackShroudRune" => Black Shroud
+//          | "SoulStealerRune" => Soul Stealer
+//          '
 // $965D30: [PAL][300-byte Struct(PlayerData):Player-2]
 //          ===========================================
 //          - PlayerData for player2 is only populated when starting Multiplayer
@@ -1187,7 +1415,6 @@
 //          - These IDs are unique on a Chapter basis (eg. All Chapters have a checkpoint identified as "Checkpoint_1")
 //          - CheckpointIDs listed at $0x9114b4
 //          - Also refer to LevelIDs and StoryChapterSectionIDs
-// $96D07A: []
 // $9B69F8: Difficulty Option Highlighted [32-Bit]
 //          0x00 = Greenhorn
 //          0x01 = Cowboy
@@ -1200,6 +1427,9 @@
 // $9E8744: [Pointer]
 //          00 = Gunslinger data array start
 // $9FF2DC: [32-bit] Fear ability flag
+// $A66348: controls text to dispaly in msgBox
+//          Changing this to a valid key will switch text in msgBox
+//          Key of Dictionary entry
 // $A6F0B4: [32-bit] final boss
 //          3 = casside
 //          4 = tala
@@ -1212,8 +1442,11 @@
 // $F54FB0: list of lpointers to runes
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
-// $11D31E8: display func, bloodrune
 // $11D5D60: blocks of time left
+// $1203834: F8 - functional FearRune
+// $1203D30: F8- functional BlackShroudRune
+// $120400C: F8 - functional TurnRune
+// $1204284: F8- functional BloodFrenzyRune
 // $120430C: F8 - functional timer duration Blood Frenzy
 // $15C4A5C: [32-bit] current weapon reserve ammo
 // $15C4A60: [32-bit] current weapon magazine ammo
