@@ -85,76 +85,362 @@
 //          |---Chapter 19, "Curse of The West"---
 //          | ...
 //          '
-// $2CD9C4: [NTSCU][32-bit:WidescreenHack_MP_2PlayerGameplay_A]
-//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
-//          - This value is a MIPS/ASM instruction
+// $2CD9C4: [NTSCU][AssemblyInstruction:SplitScreenImageRender |32-bit]
+//          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
+//          - This value is a MIPS/ASM instruction, which is part of a function responsible of rendering split screen Multiplayer
 //          
 //          InitialValue = 0x882D
 //          HackValue = 0x24110001
-// $45AAA4: [NTSCU][32-bit:MultiplayerResolution_A]
-//          @Widescreen Hack - 480p Resolution Multiplayer
+// $2CD9F4: [PAL][AssemblyInstruction:SplitScreenImageRender |32-bit]
+//          @Widescreen Hack (PAL) - Image Render SplitScreen Multiplayer
+//          - This value is a MIPS/ASM instruction, which is part of a function responsible of rendering split screen Multiplayer
+//          
+//          InitialValue = 0x882D
+//          HackValue = 0x24110001
+// $36BB74: [NTSCU][AssemblyInstruction:SubtitleRendering |32-bit]
+//          @Widescreen Hack (NTSC-U) - Subtitles
+//          - This value is a MIPS/ASM instruction, it's part of a function which helps with rendering subtitles
+//          
+//          InitialValue = 0x240300B4
+//          HackValue = 0x24030000
+// $36C024: [PAL][AssemblyInstruction:SubtitleRendering |32-bit]
+//          @Widescreen Hack (PAL) - Subtitles
+//          - This value is a MIPS/ASM instruction, it's part of a function which helps with rendering subtitles
+//          
+//          InitialValue = 0x240300B4
+//          HackValue = 0x24030000
+// $3C5218: [NTSCU][AssemblyInstruction:FMVrendering_A |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4410004
+//          HackValue = 0x3C0143FE
+// $3C522C: [NTSCU][AssemblyInstruction:FMVrendering_B |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xAFA00044
+//          HackValue = 0x0
+// $3C5230: [NTSCU][AssemblyInstruction:FMVrendering_C |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0x46800860
+//          HackValue = 0x44810800
+// $3C5234: [NTSCU][AssemblyInstruction:FMVrendering_D |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xAFA000C4
+//          HackValue = 0xE7A10104
+// $3C5248: [NTSCU][AssemblyInstruction:FMVrendering_E |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A10104
+//          HackValue = 0xC4600000
+// $3C524C: [NTSCU][AssemblyInstruction:FMVrendering_F |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A00088
+// $3C5254: [NTSCU][AssemblyInstruction:FMVrendering_G |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A000C8
+// $3C5258: [NTSCU][AssemblyInstruction:FMVrendering_H |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A00088
+//          HackValue = 0x3C01C270
+// $3C525C: [NTSCU][AssemblyInstruction:FMVrendering_I |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0x44810800
+// $3C5260: [NTSCU][AssemblyInstruction:FMVrendering_J |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A000C8
+//          HackValue = 0xE7A10044
+// $3C5264: [NTSCU][AssemblyInstruction:FMVrendering_K |32-bit]
+//          @Widescreen Hack (NTSC-U) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A100C4
+// $3C5908: [PAL][AssemblyInstruction:FMVrendering_A |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4410004
+//          HackValue = 0x3C0143FE
+// $3C591C: [PAL][AssemblyInstruction:FMVrendering_B |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xAFA00044
+//          HackValue = 0x0
+// $3C5920: [PAL][AssemblyInstruction:FMVrendering_C |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0x46800860
+//          HackValue = 0x44810800
+// $3C5924: [PAL][AssemblyInstruction:FMVrendering_D |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xAFA000C4
+//          HackValue = 0xE7A10104
+// $3C5938: [PAL][AssemblyInstruction:FMVrendering_E |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A10104
+//          HackValue = 0xC4600000
+// $3C593C: [PAL][AssemblyInstruction:FMVrendering_F |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A00088
+// $3C5944: [PAL][AssemblyInstruction:FMVrendering_G |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A000C8
+// $3C5948: [PAL][AssemblyInstruction:FMVrendering_H |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A00088
+//          HackValue = 0x3C01C270
+// $3C594C: [PAL][AssemblyInstruction:FMVrendering_I |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0x44810800
+// $3C5950: [PAL][AssemblyInstruction:FMVrendering_J |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xE7A000C8
+//          HackValue = 0xE7A10044
+// $3C5954: [PAL][AssemblyInstruction:FMVrendering_K |32-bit]
+//          @Widescreen Hack (PAL) - FMV
+//          - This value is a MIPS/ASM instruction, it's part of a function which is responsible for rendering Full Motion Video's (FMV)
+//          
+//          InitialValue = 0xC4600000
+//          HackValue = 0xE7A100C4
+// $3DE3DC: [NTSCU][AssemblyInstruction:Cinematic_BlackBorders_A |32-bit]
+//          @Widescreen Hack (NTSC-U) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $3DE4EC: [NTSCU][AssemblyInstruction:Cinematic_BlackBorders_B |32-bit]
+//          @Widescreen Hack (NTSC-U) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $3DE508: [NTSCU][AssemblyInstruction:Cinematic_BlackBorders_C |32-bit]
+//          @Widescreen Hack (NTSC-U) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $3DEACC: [PAL][AssemblyInstruction:Cinematic_BlackBorders_A |32-bit]
+//          @Widescreen Hack (PAL) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $3DEBDC: [PAL][AssemblyInstruction:Cinematic_BlackBorders_B |32-bit]
+//          @Widescreen Hack (PAL) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $3DEBF8: [PAL][AssemblyInstruction:Cinematic_BlackBorders_C |32-bit]
+//          @Widescreen Hack (PAL) - Cutscenes BlackBorders (removed)
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the ScreenMaskEffect/BlackBorder size during cutscenes
+//          
+//          InitialValue = 0x3C023F80
+//          HackValue = 0x3c020000
+// $40DA28: [NTSCU][AssemblyInstruction:TextRenderWidth |32-bit]
+//          @16:9 Widescreen Hack - Text Width
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the text render width
+//          
+//          InitialValue = 0x3C034420
+//          HackValue = 0x3c034455
+// $40E3C8: [PAL][AssemblyInstruction:TextRenderWidth |32-bit]
+//          @16:9 Widescreen Hack - Text Width
+//          - This value is a MIPS/ASM instruction, it's part of a function which determines the text render width
+//          
+//          InitialValue = 0x3C034420
+//          HackValue = 0x3c034455
+// $45AAA4: [NTSCU][AssemblyInstruction:MultiplayerResolution_A |32-bit]
+//          @Widescreen Hack (NTSC-U) - 480p Resolution Multiplayer
 //          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
 //          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
 //          
-//          InitialValue = 0x00052C00
+//          InitialValue = 0x52C00
 //          HackValue = 0x3C050000
-// $45AAAC: [NTSCU][32-bit:MultiplayerResolution_B]
-//          @Widescreen Hack - 480p Resolution Multiplayer
+// $45AAAC: [NTSCU][AssemblyInstruction:MultiplayerResolution_B |32-bit]
+//          @Widescreen Hack (NTSC-U) - 480p Resolution Multiplayer
 //          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
 //          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
 //          
-//          InitialValue = 0x00063400
+//          InitialValue = 0x63400
 //          HackValue = 0x3C060050
-// $45AAB4: [NTSCU][32-bit:MultiplayerResolution_C]
-//          @Widescreen Hack - 480p Resolution Multiplayer
+// $45AAB4: [NTSCU][AssemblyInstruction:MultiplayerResolution_C |32-bit]
+//          @Widescreen Hack (NTSC-U) - 480p Resolution Multiplayer
 //          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
 //          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
 //          
 //          InitialValue = 0x73C00
 //          HackValue = 0x3C070001
-// $45AD74: [NTSCU][32-bit:MultiplayerResolution_C]
-//          @Widescreen Hack - 480p Resolution Multiplayer
+// $45AD74: [NTSCU][AssemblyInstruction:MultiplayerResolution_D |32-bit]
+//          @Widescreen Hack (NTSC-U) - 480p Resolution Multiplayer
 //          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
 //          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
 //          
 //          InitialValue = 0x94C00
 //          HackValue = 0x3C090010
+// $45B6A4: [PAL][AssemblyInstruction:MultiplayerResolution_A |32-bit]
+//          @Widescreen Hack (PAL) - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x52C00
+//          HackValue = 0x3C050000
+// $45B6AC: [PAL][AssemblyInstruction:MultiplayerResolution_B |32-bit]
+//          @Widescreen Hack (PAL) - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x63400
+//          HackValue = 0x3C060050
+// $45B6B4: [PAL][AssemblyInstruction:MultiplayerResolution_C |32-bit]
+//          @Widescreen Hack (PAL) - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x73C00
+//          HackValue = 0x3C070001
+// $45B974: [PAL][AssemblyInstruction:MultiplayerResolution_D |32-bit]
+//          @Widescreen Hack (PAL) - 480p Resolution Multiplayer
+//          - This value is an MIPS/ASM instruction of a function which determines the screen render resolution for Multiplayer
+//          - The Multiplayer render resolution is 480p, which is a lower render resolution than SinglePlayer
+//          
+//          InitialValue = 0x94C00
+//          HackValue = 0x3C090010
+// $4F3308: [NTSCU][AssemblyInstruction:FPScontrol(indirect) |32-bit]
+//          @60 FPS Hack (NTSC-U)
+//          - This value is a MIPS/ASM instruction which is read from ROMaddress 0x05AA1008. This instruction is part of a function which writes to [Lower4:FPScontrol] at $0x71fa68
+//          
+//          InitialValue = 0x93A30000
+//          HackValue = 0x24030001
+// $4F45F8: [PAL][AssemblyInstruction:FPScontrol(indirect) |32-bit]
+//          @60 FPS Hack (PAL)
+//          - This value is a MIPS/ASM instruction which is read from ROMaddress 0x00E2E2F8. This instruction is part of a function which writes to [Lower4:FPScontrol] at $0x721368
+//          
+//          InitialValue = 0x93A30000
+//          HackValue = 0x24030001
 // $641770: [NTSCU][Float:SinglePlayerScreenRenderSize_A |32-bit]
-//          @Widescreen Hack - Gameplay SinglePlayer
+//          @Widescreen Hack - Image Render SinglePlayer
 //          - This value regulates the screen render size during SinglePlayer
 //          
 //          InitialValue = 1.0 (0x3f800000)
 //          HackValue = 1.333333 (0x3faaaaaa)
 // $641774: [NTSCU][Float:SinglePlayerScreenRenderSize_B |32-bit]
-//          @Widescreen Hack - Gameplay SinglePlayer
+//          @Widescreen Hack - Image Render SinglePlayer
 //          - This value regulates the screen render size during SinglePlayer
 //          
 //          InitialValue = 1.333333 (0x3FAAAAA8)
 //          HackValue = 1.777778 (0x3FE38E38)
-// $641930: [NTSCU][Float:MP_Coop_PlayerA_ScreenRenderSize_A |32-bit]
-//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+// $641930: [NTSCU][Float:SplitScreen_PlayerA_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value regulates the screen render size during 2 Player Multiplayer for Player A
 //          
 //          InitialValue = 1.4 (0x3FB33333)
 //          HackValue = 2.666666 (0x402AAAAA)
-// $641934: [NTSCU][Float:MP_Coop_PlayerA_ScreenRenderSize_B |32-bit]
-//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+// $641934: [NTSCU][Float:SplitScreen_PlayerA_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value regulates the screen render size during 2 Player Multiplayer for Player A
 //          
 //          InitialValue = 2.666667 (0x402AAAAB)
 //          HackValue = 3.555555 (0x40638E38)
-// $64194C: [NTSCU][Float:MP_Coop_PlayerB_ScreenRenderSize_A |32-bit]
-//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+// $64194C: [NTSCU][Float:SplitScreen_PlayerB_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value regulates the screen render size during 2 Player Multiplayer for Player B
 //          
 //          InitialValue = 1.4 (0x3FB33333)
 //          HackValue = 2.666666 (0x402AAAAA)
-// $641950: [NTSCU][Float:MP_Coop_PlayerB_ScreenRenderSize_B |32-bit]
-//          @Widescreen Hack - Gameplay Multiplayer Coop/Versus
+// $641950: [NTSCU][Float:SplitScreen_PlayerB_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value regulates the screen render size during 2 Player Multiplayer for Player B
 //          
 //          InitialValue = 2.666667 (0x402AAAAB)
 //          HackValue = 3.555555 (0x40638E38)
+// $6429F0: [PAL][Float:SinglePlayerScreenRenderSize_A |32-bit]
+//          @Widescreen Hack - Image Render SinglePlayer
+//          - This value regulates the screen render size during SinglePlayer
+//          
+//          InitialValue = 1.0 (0x3f800000)
+//          HackValue = 1.333333 (0x3faaaaaa)
+// $6429F4: [PAL][Float:SinglePlayerScreenRenderSize_B |32-bit]
+//          @Widescreen Hack - Image Render SinglePlayer
+//          - This value regulates the screen render size during SinglePlayer
+//          
+//          InitialValue = 1.333333 (0x3FAAAAA8)
+//          HackValue = 1.777778 (0x3FE38E38)
+// $642BB0: [PAL][Float:SplitScreen_PlayerA_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack (PAL) - Image Render SplitScreen Multiplayer
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player A
+//          
+//          InitialValue = 1.4 (0x3FB33333)
+//          HackValue = 2.666666 (0x402AAAAB)
+// $642BB4: [PAL][Float:SplitScreen_PlayerA_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack (PAL) - Image Render SplitScreen Multiplayer
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player A
+//          
+//          InitialValue = 2.666667 (0x402AAAAB)
+//          HackValue = 3.555555 (0x40638E38)
+// $642BCC: [PAL][Float:SplitScreen_PlayerB_ScreenRenderSize_A |32-bit]
+//          @Widescreen Hack (PAL) - Image Render SplitScreen Multiplayer
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player B
+//          
+//          InitialValue = 1.4 (0x3FB33333)
+//          HackValue = 2.666666 (0x402AAAAB)
+// $642BD0: [PAL][Float:SplitScreen_PlayerB_ScreenRenderSize_B |32-bit]
+//          @Widescreen Hack (PAL) - Image Render SplitScreen Multiplayer
+//          - This value regulates the screen render size during 2 Player Multiplayer for Player B
+//          
+//          InitialValue = 2.666667 (0x402AAAAB)
+//          HackValue = 3.555555 (0x40638E38)
+// $65CA78: [NTSCU][Float:Cinematic_BlackBorderSize |32-bit]
+//          @Widescreen Hack (NTSC-U) - Cutscenes BlackBorders (removed)
+//          - This float determines the size of the black border during a Cinematic (in-engine cutscene)
+//          
+//          InitialValue = 1.0 (0x3f800000)
+//          HackValue = 0.0 (0x0)
+// $65DFC8: [PAL][Float:Cinematic_BlackBorderSize |32-bit]
+//          @Widescreen Hack (PAL) - Cutscenes BlackBorders (removed)
+//          - This float determines the size of the black border during a Cinematic (in-engine cutscene)
+//          
+//          InitialValue = 1.0 (0x3f800000)
+//          HackValue = 0.0 (0x0)
 // $65F3B8: [PAL][32-bit:DisplayLanguageID]
 //          - This option may be initialized by PS2 BIOS language setting
 //          - Otherwise this setting is not attached/saved the settings of a PlayerProfile
@@ -189,10 +475,25 @@
 //          
 //          InitialValue = 1.333333 (0x3FAAAAAB)
 //          HackValue = 1.777778 (0x3FE38E38)
+// $6C4388: [PAL][Float:CinematicScreenRenderSize |32-bit]
+//          @Widescreen Hack - Cinematics
+//          - This value regulates the screen render size during Cinematics (in-engine cutscenes)
+//          
+//          InitialValue = 1.333333 (0x3FAAAAAB)
+//          HackValue = 1.777778 (0x3FE38E38)
 // $71FA68: [NTSCU][Lower4:FPScontrol |32-bit]
-//          0x1 => 30 fps
-//          0x1 => 60 fps
+//          @60 FPS Hack (NTSC-U)
+//          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F3308
+//          
+//          InitialValue = 0x0 => 30 fps
+//          HackValue = 0x1 => 60 fps
 // $71FF88: [8-bit] in gameplay flag
+// $721368: [PAL][Lower4:FPScontrol |32-bit]
+//          @60 FPS Hack (PAL)
+//          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F45F8
+//          
+//          InitialValue = 0x2 => 25 fps
+//          HackValue = 0x1 => 50 fps (0x0 can also be used)
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -312,7 +613,7 @@
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
 //          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
 //          | "M03_Cemetery => Chapter 3, "Boneyard"
-//          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05", supposedly cut content)
+//          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05". Supposedly M04 is cut content)
 //          | TBD => Chapter 5, "Darkwatch Outpost"
 //          | TBD => Chapter 6, "War Train"
 //          | TBD => Chapter 7, "Torture Maze"
@@ -1406,13 +1707,13 @@
 //          
 //          [Definition Struct:CheckpointData]
 //          |'''''''''''''''''
-//          | - Documentation on StructMembers refer torespective code notes, since this struct is static
+//          | - Documentation on StructMembers refer to respective code notes, since this struct is static
 //          |
 //          |+0x2 - [13-byte ASCII:CheckpointID]
 //          '
 // $96D022: [PAL][13-byte ASCII:CheckpointID]
 //          @Member of [Struct:CheckpointData], refer to $0x96d020
-//          - These IDs are unique on a Chapter basis (eg. All Chapters have a checkpoint identified as "Checkpoint_1")
+//          - These IDs are unique on a StoryChapterSection basis (eg. Multiple StoryChapterSections have a checkpoint identified as "Checkpoint_1")
 //          - CheckpointIDs listed at $0x9114b4
 //          - Also refer to LevelIDs and StoryChapterSectionIDs
 // $9B69F8: Difficulty Option Highlighted [32-Bit]
