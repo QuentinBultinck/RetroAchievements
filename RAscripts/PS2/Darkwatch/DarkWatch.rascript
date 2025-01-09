@@ -9,27 +9,34 @@
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
-/* TODO current task: 
-	
-	*/
-
 /* TODO Find code note for:
-	- 8 Power (ability) Flags - in use
-
 	- Versus Mode 
-		- Settings (game mode, map, time limit, Kills)
-		- Player Logic (HP, weaponData, location, powers)
+		- Player Logic (powers)
 
-	- UnlockFlags Bonus content (Gunslinger Mode??)
-	- UnlockFlags all movies
-	- More consistent pointer chain to functional bullets counter 	
+	- UnlockFlags for Concept Art (Only unlockable through  Gunslinger Mode)
 
-	----NotFound----
-	- ID in-engine cinematics --> Can kinda be ID'd with PlayerLocation + IsCinmetaicActive Flag (PlayerLoc is fixed during a cutscene, thus usage of bounding-box-check)
+	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
+	
+	- Hubs to add:
+		- [Feature - PvP] 					https://retroachievements.org/game/9377
+		- [Perspective - 1st-Person] 		https://retroachievements.org/game/3401
+		- [Feature - Co-op] 				https://retroachievements.org/game/24859
+		- [Protagonist - Cowboy] 			https://retroachievements.org/game/18941
+		- [Protagonist - Vampire Hunter] 	https://retroachievements.org/game/18940
+
 	*/
 
-/* Game Notes:
-	- COOP mode doesn't have a Stats menu
+/* DEV_NOTE - Game Logic Notes:
+	- MainMenu Flag with Sofdec or IsInGame flag
+
+	- Power Unlock Flags (hacky) --> can  kinda ID it because a new power is selected by default on unlock on the display
+
+	- ID minimatics/Cinematics (in-engine) 
+		- Very hacky to ID consistently with ASCII ID
+		- Rrefer using hit counts of how many times an Cinmatic has been played to Identify if a specific cinematic has been played (eg. Cinematic 3 of Chapter X => 3 hits counts on_Cinematic_start())
+		- Could also introduce PlayerLocation as an extra check when the Cinematic Flag is active (this is only applicable for some cinematics where the playerLoc gets moved to some sort of default location, during or after the cinematic is done)
+
+	- COOP mode doesn't have a Stats menu, only seperate stats for each player updated during the chapter
 
 	- ChapterSections (eg. WrongTrain_A & WrongTrain_B) 
 		- When WrongTrain_B is reached, and restarting -> game restarts from the beginning of WrongTrain_B
@@ -51,7 +58,14 @@
 		- When "restarting" (PauseMenu->Restart) => the game restarts from the beginning of the Chapter Section
 		- When both players die at same time => the game restarts from the beginning of the Chapter Section
 
+	- Chapters with multiple sections
+		- Ch1 WrongTrain: Inside train -- On top of train
+		- Ch3 Boneyard: Outside church -- Inside church Catacombs
 
+	- UnlockFlags movies -> Correlated to Current StoryChapterID and endingflags
+
+	- Versus Mode
+		- 
 */
 
 /* CONCEPT assets
