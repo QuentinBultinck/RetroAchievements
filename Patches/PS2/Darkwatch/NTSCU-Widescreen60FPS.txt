@@ -4,7 +4,7 @@
 // ***************************************** \\
 Darkwatch (NTSC-U) - PlayStation 2
 . This file details how to transform below hacks/cheats/patches for PCSX2 into ROMpatches (xdelta patches)
-. RAMaddresses according to rcheevos/RAIntegration/RALibretro
+. RAMaddresses according to rcheevos/RAIntegration/RALibretro RAM mapping
 
 Credits:
 - Widescreen Hack, by nemesis2000 (pnach file --> http://ps2wide.net/d.html#SLUS-21042)
@@ -41,14 +41,14 @@ patch=1,EE,0040da28,word,3c034455       $0x059BB728      0x3C034420         0x3c
 patch=1,EE,003de3dc,word,3c020000       $0x0598C0DC      0x3C023F80         0x3c020000      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,003de4ec,word,3c020000       $0x0598C1EC      0x3C023F80         0x3c020000      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,003de508,word,3c030000       $0x0598C208      0x3C033F80         0x3c030000      Insert new MIPS instruction, read from ROM into this RAMaddress
-patch=1,EE,0065ca78,word,00000000       $0x05C0A778      0x3f800000         0x00000000      Hardcoded float, read from ROM into this RAMaddress -> This determines ScreenMaskEffect/BlackBorder size during Cinematics (in-engine cutscenes)
+patch=1,EE,0065ca78,word,00000000       $0x05C0A778      0x3f800000         0x0             Hardcoded float, read from ROM into this RAMaddress -> This determines ScreenMaskEffect/BlackBorder size during Cinematics (in-engine cutscenes)
 
 //16:9 Widescreen - Subtitles
 patch=1,EE,0036bb74,word,24030000       $0x05919874      0x240300B4         0x24030000      Insert new MIPS instruction, read from ROM into this RAMaddress
 
 //16:9 Widescreen - FMV
 patch=1,EE,003c5218,word,3c0143fe       $0x05972F18      0xC4410004         0x3C0143FE      Insert new MIPS instruction, read from ROM into this RAMaddress
-patch=1,EE,003c522c,word,00000000       $0x05972F2C      0xAFA00044         0x00000000      Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,003c522c,word,00000000       $0x05972F2C      0xAFA00044         0x0             Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,003c5230,word,44810800       $0x05972F30      0x46800860         0x44810800      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,003c5234,word,e7a10104       $0x05972F34      0xAFA000C4         0xE7A10104      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,003c5248,word,c4600000       $0x05972F48      0xE7A10104         0xC4600000      Insert new MIPS instruction, read from ROM into this RAMaddress
@@ -68,9 +68,9 @@ patch=1,EE,0045ad74,word,3c090010       $0x05A08A74      0x00094C00         0x3C
 //16:9 Widescreen - Write FOV base to 0x620090 (required by MouseInjectorDolphinDuck)
 patch=1,EE,001EF890,word,AC320090       $0x0579D590      0x03e00008         0xAC320090      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,001EF894,word,03E00008       $0x0579D594      0x27bd0080         0x03E00008      Insert new MIPS instruction, read from ROM into this RAMaddress
-patch=1,EE,001EF898,word,27BD0080       $0x0579D598      0x00000000         0x27BD0080      Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,001EF898,word,27BD0080       $0x0579D598      0x0                0x27BD0080      Insert new MIPS instruction, read from ROM into this RAMaddress
 
 //16:9 Widescreen - Write cambase to 0x620230 (for use with MouseInjectorDolphinDuck)
 patch=1,EE,0020520C,word,AC220230       $0x0573ED1C      0x03E00008         0xAC220230      Insert new MIPS instruction, read from ROM into this RAMaddress
 patch=1,EE,00205210,word,03E00008       $0x0573ED20      0x27BD0070         0x03E00008      Insert new MIPS instruction, read from ROM into this RAMaddress
-patch=1,EE,00205214,word,27BD0070       $0x0573ED24      0x00000000         0x27BD0070      Insert new MIPS instruction, read from ROM into this RAMaddress
+patch=1,EE,00205214,word,27BD0070       $0x0573ED24      0x0                0x27BD0070      Insert new MIPS instruction, read from ROM into this RAMaddress
