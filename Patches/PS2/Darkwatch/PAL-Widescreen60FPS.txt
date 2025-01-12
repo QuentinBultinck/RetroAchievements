@@ -1,7 +1,6 @@
-// ***************************************** \\
-//	 █▀▄ ▄▀█ █▀█ █▄▀ █░█░█ ▄▀█ ▀█▀ █▀▀ █░█	 \\
-//	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	 \\
-// ***************************************** \\
+█▀▄ ▄▀█ █▀█ █▄▀ █░█░█ ▄▀█ ▀█▀ █▀▀ █░█
+█▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█
+
 Darkwatch (PAL) - PlayStation 2
 . This file details how to transform below hacks/cheats/patches for PCSX2 into ROMpatches (xdelta patches)
 . This patch is translated from NTSC-U into PAL
