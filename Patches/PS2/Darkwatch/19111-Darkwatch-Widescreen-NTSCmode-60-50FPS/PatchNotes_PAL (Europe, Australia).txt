@@ -1,0 +1,89 @@
+█▀▄ ▄▀█ █▀█ █▄▀ █░█░█ ▄▀█ ▀█▀ █▀▀ █░█
+█▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█
+
+Darkwatch (PAL) - PlayStation 2
+. This file details how to transform below hacks/cheats/patches for PCSX2 into ROMpatches (xdelta patches)
+. Also contains some general notes regarding the patches
+. These patches are translated from NTSC-U into PAL
+. RAMaddresses according to rcheevos/RAIntegration/RALibretro RAM mapping
+
+Credits:
+- Widescreen Hack, by nemesis2000 (pnach file --> http://ps2wide.net/d.html#SLUS-21042)
+- 60 FPS Hack, by asasega (https://forums.pcsx2.net/Thread-60-fps-codes?pid=550050#pid550050)
+...............................................................................................
+
+Notes - FPS patch:
+- Using only the FPS patch results in 50 FPS, from 25 FPS
+
+Notes - Widescreen patch:
+- Using Widescreen patch on PAL, activates NTSC 60Hz mode, instead of PAL 50 Hz mode. --> NTSC mode @ 30 fps || PAL mode @ 25 fps
+- Combining FPS patch with Widescreen patch on PAL version, results in 60 FPS
+- Widescreen patch, results in both playerCharacterModels in Multiplayer Cooperative mode to become Jericho, instead of the default Darkwatch Regulator Models
+--- This has probably something to do with loading in a higher resolution texture/model pack. As by default, this mode has very low resolution on textures
+
+
+
+    RAMaddress      RequiredRAMvalue    ROMaddress      InitialROMvalue     NewROMvalue     ExtraInfo
+                    32-bit                              32-bit              32-bit
+-----------------------------------------------------------------------------------------------------
+
+//FPS Increase - In-Game 
+-   $0x00721368     1                   $0x00E2E2F8     93A30000            24030001      Insert new MIPS instruction, so ths function which this instruiction is part of writes 1 to RAMaddress $0x0x721368
+
+//16:9 Widescreen - Image Render SinglePlayer
+-   $0x006429f0     3faaaaaa            $0x00F7C6F0     3F800000            3faaaaaa      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size
+-   $0x006429f4     3fe38e38            $0x00F7C6F4     3FAAAAAB            3fe38e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size
+
+//16:9 Widescreen - Image Render Multiplayer Coop/Versus
+-   $0x002cd9f4     24110001            $0x00C076F4     0000882d            24110001      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x00642bb0     402aaaaa            $0x00F7C8B0     3fb33333            402aaaaa      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player A
+-   $0x00642bb4     40638e38            $0x00F7C8B4     402aaaa8            40638e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player A
+-   $0x00642bcc     402AAAAA            $0x00F7C8CC     3fb33333            402aaaaa      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player B
+-   $0x00642bd0     40638E38            $0x00F7C8D0     402aaaab            40638e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size for Player B
+
+//16:9 Widescreen - Cinematics 
+//patch=1,EE,0036512c,word,3c033fab
+-   006c4388        3fe38e38            $0x00FFE088     3faaaaab            3fe38e38      Hardcoded float, read from ROM into this RAMaddress -> This determines screen render size during Cinematics (in-engine cutscenes)
+
+//16:9 Widescreen - Text Width
+-   $0x0040e3c8     3c034455            $0x00D480C8     3C034420            3c034455      Insert new MIPS instruction, read from ROM into this RAMaddress
+
+//16:9 Widescreen - Cutscenes BlackBorders (removed)
+-   $0x003deacc     3c020000            $0x00D187CC     3C023F80            3c020000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003debdc     3c020000            $0x00D188DC     3C023F80            3c020000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003debf8     3c030000            $0x00D188F8     3C033F80            3c030000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x0065dfc8     0                   $0x00F97CC8     3F800000            00000000      Hardcoded float, read from ROM into this RAMaddress -> This determines ScreenMaskEffect/BlackBorder size during Cinematics (in-engine cutscenes)  
+
+//16:9 Widescreen - Subtitles
+-   $0x0036c024     24030000            $0x00CA5D24     240300B4            24030000      Insert new MIPS instruction, read from ROM into this RAMaddress
+
+//16:9 Widescreen - FMV
+-   $0x003c5908     3C0143FE            $0x00CFF608     C4410004            3C0143FE      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c591c     0                   $0x00CFF61C     AFA00044            00000000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5920     44810800            $0x00CFF620     46800860            44810800      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5924     E7A10104            $0x00CFF624     AFA000C4            E7A10104      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5938     C4600000            $0x00CFF638     E7A10104            C4600000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c593c     E7A00088            $0x00CFF63C     C4600000            E7A00088      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5944     E7A000C8            $0x00CFF644     C4600000            E7A000C8      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5948     3C01C270            $0x00CFF648     E7A00088            3C01C270      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c594c     44810800            $0x00CFF64C     C4600000            44810800      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5950     E7A10044            $0x00CFF650     E7A000C8            E7A10044      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x003c5954     E7A100C4            $0x00CFF654     C4600000            E7A100C4      Insert new MIPS instruction, read from ROM into this RAMaddress
+
+//16:9 Widescreen - 480p Progressive Scan Mode
+-   $0x0045b6a4     3C050000            $0x00D953A4     00052C00            3C050000      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x0045b6ac     3C060050            $0x00D953AC     00063400            3C060050      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x0045b6b4     3C070001            $0x00D953B4     00073C00            3C070001      Insert new MIPS instruction, read from ROM into this RAMaddress
+-   $0x0045b974     3C090010            $0x00D95674     00094C00            3C090010      Insert new MIPS instruction, read from ROM into this RAMaddress
+
+// Below block not included in patch - breaks ROM when loading in-game
+//16:9 Widescreen - Write FOV base to 620090 (required by MouseInjectorDolphinDuck)
+//-   $0x001ef890     AC320090            $0x00B29650     03e00008            AC320090      Insert new MIPS instruction, read from ROM into this RAMaddress
+//-   $0x001ef894     03E00008            $0x00B29654     27bd0080            03E00008      Insert new MIPS instruction, read from ROM into this RAMaddress
+//-   $0x001ef898     27BD0080            $0x00B29658     0                   27BD0080      Insert new MIPS instruction, read from ROM into this RAMaddress
+
+// Below block not included in patch - breaks ROM when loading in-game
+//16:9 Widescreen - Write cambase to 620230 (for use with MouseInjectorDolphinDuck)
+//-   $0x0020520c     AC220230            $0x00B3EF0C     03E00008            AC220230      Insert new MIPS instruction, read from ROM into this RAMaddress
+//-   $0x00205210     03E00008            $0x00B3EF10     27BD0070            03E00008      Insert new MIPS instruction, read from ROM into this RAMaddress
+//-   $0x00205214     27BD0070            $0x00B3EF14     0                   27BD0070      Insert new MIPS instruction, read from ROM into this RAMaddress
