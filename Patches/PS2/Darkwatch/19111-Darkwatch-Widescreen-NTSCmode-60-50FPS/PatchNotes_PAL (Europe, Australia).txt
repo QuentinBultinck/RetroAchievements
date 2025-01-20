@@ -70,7 +70,7 @@ Notes - Widescreen patch:
 -   $0x003c5950     E7A10044            $0x00CFF650     E7A000C8            E7A10044      Insert new MIPS instruction, read from ROM into this RAMaddress
 -   $0x003c5954     E7A100C4            $0x00CFF654     C4600000            E7A100C4      Insert new MIPS instruction, read from ROM into this RAMaddress
 
-//16:9 Widescreen - 480p Progressive Scan Mode
+//16:9 Widescreen - 480p Progressive Scan Mode (NTSC 60Hz mode)
 -   $0x0045b6a4     3C050000            $0x00D953A4     00052C00            3C050000      Insert new MIPS instruction, read from ROM into this RAMaddress
 -   $0x0045b6ac     3C060050            $0x00D953AC     00063400            3C060050      Insert new MIPS instruction, read from ROM into this RAMaddress
 -   $0x0045b6b4     3C070001            $0x00D953B4     00073C00            3C070001      Insert new MIPS instruction, read from ROM into this RAMaddress
