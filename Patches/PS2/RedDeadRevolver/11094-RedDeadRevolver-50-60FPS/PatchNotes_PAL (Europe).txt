@@ -12,7 +12,7 @@ Credits:
 
 FPS Hack Notes:
 - Might need EE Overclock (130%) in PCSX2 emulator setting
-- RAPatch discontinued because the game freezes when pressing start at StartTitleMenu
+- RAPatch discontinued because the game freezes when pressing start at StartTitleMenu with patch enabled
 
 
 (pnach PCSX2)
