@@ -50,15 +50,9 @@
 /* TODO General List
 -----------------
 RAM DIGGING
-	- Pause Flag
-	- Reset Flag
-	- Quit Flag
-	- Cutscene ID
 	- Player Stats
-		- Location/Coords
 		- On Horseback Flag
 		- Is Aiming Flag
-		- Is Tipping Hat Flag
 */
 
 //#####################################################################################################\\

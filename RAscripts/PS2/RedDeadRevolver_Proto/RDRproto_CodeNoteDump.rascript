@@ -1,6 +1,55 @@
 // ~Prototype~ Red Dead Revolver
 // #ID = 32806
 
+// $421510: menu select training stage
+// $4215A0: [NTSCU][32-bit (base) Pointer:MenuData] -> [Struct:MenuData]
+//          - This pointer points to the currently active/displayed menu
+//          - Depending on which menu is displayed [Struct:MenuData] looks different (refer to MenuIDs)
+//          
+//          +0x14 - [Variable Size ASCII:MenuID]
+//          | - MenuIDs listed below
+//          
+//          +0x28 - [bit0 BitFlag:IsMenuDisplayed |32-bit]
+//          | 0 => Menu is not displayed
+//          | 1 => Menu is displayed
+//          
+//          +0x34 - [32-bit (layer-1) Pointer]
+//          .+0x1F0 - [Lower4:HighlightedMenuItem_SelectionMenu |32-bit]
+//          .| - This value is only valid when the SelectionMenu is displayed
+//          .| - 0x0 is always the top most MenuItem, 0x1 is the one below the top most MenuItem and so on...
+//          .
+//          .+0x3128 - [Lower4:HighlightedMenuItem_ShopMenu |32-bit]
+//          .| - This value is only valid when the ShopMenu is displayed
+//          .| - 0x0 is always the top most MenuItem, 0x1 is the one below the top most MenuItem and so on...
+//          
+//          +0x144 - [Lower4:HighlightedMenuItem_A |32-bit]
+//          | - This value is only valid for the following Menus: LevelSelectionMenu, PauseMenu...?
+//          | - 0x0 is always the top most MenuItem, 0x1 is the one below the top most MenuItem and so on...
+//          
+//          +0x5E0 - [Variable Size ASCII:SelectionMenuText_Top]
+//          | - This value determines what text is displayed on the top SelectableMenuItem. Where [Lower4:HighlightedMenuItem] = 0x0
+//          | "Basic_Menu" => Basic Training
+//          | "Move_Menu" => Movement Training
+//          
+//          +0x620 - [Variable Size ASCII:SelectionMenuText_Bottom]
+//          | - This value determines what text is displayed on the bottom SelectableMenuItem. Where [Lower4:HighlightedMenuItem] = 0x1
+//          | "Shooting_Gallery" => Shooting Challenge
+//          | "Shoot_Menu" => Weapon Training
+//          
+//          
+//          # MenuIDs
+//          |''''''''''
+//          |----Main Menus----
+//          | "main" => MainMenu
+//          | "1000" => LevelSelectionMenu
+//          | "2010" => MultiplayerPlayerSetupMenu (select how many HumanPlayers and how many CPUplayers)
+//          | "2000" => MultiplayerCharacterSelectMenu (select Character + weapons)
+//          |
+//          |----In-Game Menus----
+//          | "pause" => PauseMenu
+//          | "menupage" => SelectionMenu (used in Training Stage, lvl_tng)
+//          | "shop" => ShopMenu (used in Title Stage, lvl_hng)
+//          '
 // $4215DC: [NTSCU][3-byte ASCII:CharacterModelID-Player1(preferred)]
 //          - This can be used to ID which Character the player is using.
 //          - This is valid for Singleplayer & Multiplayer
@@ -34,26 +83,44 @@
 //          - This can be used to ID which Character the player is using.
 //          - This is valid for Singleplayer & Multiplayer
 // $421850: [NTSCU][32-bit (base) Pointer:PlayerData-Player1]
-//          - This pointer is always valid (SinglePlayer & Multiplayer)
+//          - This pointer is always valid (SinglePlayer &amp; Multiplayer)
 //          
 //          +0x14 - [32-bit (layer-1) Pointer]
 //          |+0xC - [Float:PlayerHealth |32-bit]
 //          
+//          +0x70 - [32-bit (layer-1) Pointer:PlayerData_L1-70]
+//          | - This pointer is only valid when the player is on Horseback
+//          | - This pointer is zeroed out (0x0) when not on Horseback
+//          .+0x8 - [32-bit (layer-2) Pointer]
+//          ..+0xC - [32-bit (layer-3) Pointer]
+//          ...+0x90 - [16-byte Struct(Coordinates):PlayerOnHorsebackLocation]
+//          ...| - Definition of [Struct:Coordinates] below
+//          
 //          +0x130 - [32-bit:Money_MPkills]
-//          | - In SinglePlayer this value regulates the Player's money (refering to the Cash display)
-//          | - In Multiplayer this value regulates the Player's killCount (refering to the sheriff badges, when killing a player)
+//          | - In SinglePlayer: this value regulates the Player's money (refering to the Cash display)
+//          | - In SinglePlayer: when this value &gt; 0x1F3 ($49.09), then the message, "You Win!!!", is displayed + player gains insane amount of money for free. After a few seconds the Level resets (just like a Reset via PauseMenu)
+//          |
+//          | - In Multiplayer: this value regulates the Player's killCount (refering to the sheriff badge count display, when killing a player)
+//          | - In Multiplayer: Once this value hits 0x2, the Player/team wins the match. After a few seconds the match resets.
 //          
-//          +0x69C - [32-bit (layer-1) Pointer]
-//          .+0x90 - [16-byte Struct(Coordinates):PlayerLocation]
-//          .| - Definition of [Struct:Coordinates] below
+//          +0x134 - [bit0 BitFlag:IsPlayerOnHorseback |32-bit]
 //          
-//          +0x6F4 - [32-bit (layer-1) Pointer]
-//          .+0x134 - [32-bit (layer-2) Pointer]
-//          ..+0x18 - [32-bit (layer-3) Pointer]
-//          ...+0x0 - [32-bit (layer-4) Pointer]
-//          ....+0x0 - [32-bit (layer-5) Pointer]
-//          .....+0x0 - [Variable Size ASCII:Active_AnimationID]
+//          +0x13C - [32-bit (layer-1) Pointer]
+//          .+0xC - [32-bit (layer-2) Pointer]
+//          ..+0x90 - [16-byte Struct(Coordinates):PlayerLocation]
+//          ..| - Definition of [Struct:Coordinates] below
+//          .
+//          .+0x134 - [32-bit (layer-3) Pointer]
+//          ..+0x18 - [32-bit (layer-4) Pointer]
+//          ...+0x0 - [32-bit (layer-5) Pointer]
+//          ....+0x0 - [32-bit (layer-6) Pointer]
+//          .....+0x0 - [Variable Size ASCII:Active_CharacterAnimationID]
+//          .....| - Pointer chain is only valid when non-repeating CharacterAnimation is being played
+//          .....| - List of CharacterAnimationIDs below
 //          
+//          +0x208 - [bit0 BitFlag:IsAimingModeActive(preferred) |32-bit]
+//          +0x220 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
+//          +0x224 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          
 //          
 //          [Definition Struct:Coordinates |16-byte]
@@ -64,9 +131,19 @@
 //          |+0x8 - [32-bit Float:Z_Coordinate]
 //          |+0xC - [32-bit Float:X_Coordinate]
 //          '
+//          
+//          # CharacterAnimationID
+//          |(only lists IDs useful for achievement logic)
+//          |''''''''''''''''''''
+//          | "red_stn_idl_11" =&gt; Tipping hat (Press and hold X_button whilst standing still)
+//          | "red_stn_idl_12" =&gt; ?? (this may be part of above animation)
+//          | "red_upp_jump" =&gt; Jump whilst standing still
+//          | "red_for_jump" =&gt; Jump whilst moving forward
+//          | "red_fnc_pst_vlt =&gt; Fence vault
+//          '
 // $421868: [NTSCU][8-bit:Showdown_Kills-Player1]
 //          - This value counts how many kills the player has achieved in the Showdown Match
-//          - When this hits 0x2, this Player/Team wins the Showdown Match, afterwards the match resets.
+//          - When this hits 0x2, this Player/Team wins the Showdown Match, after a few seconds the match resets.
 // $421884: [NTSCU][3-byte ASCII:CharacterModelID-Player2(alt1)]
 //          - This can be used to ID which Character the player is using.
 //          - This is only valid when in Multiplayer
@@ -94,6 +171,42 @@
 //          - Pointer defined at $0x421850
 // $421A84: [NTSCU][8-bit:Showdown_Kills-Player4]
 //          - Documentation at $0x421868
+// $4223F4: [NTSCU][32-bit (base) Pointer:LevelData_TrainingStage]
+//          - This points to game logic data for Training Stage (lvl_tng)
+//          - This pointer is only valid for Training Stage
+//          
+//          +0x90 - [32-bit (layer-1) Pointer]
+//          .+0x4 - [32-bit (layer-2) Pointer]
+//          ..+0x0 - [32-bit (layer-3) Pointer]
+//          ...+0xDC - [32-bit (layer-4) Pointer]
+//          ....
+//          ....+0x0 - [Lower4:ShootingGalleryState |32-bit]
+//          ....| - ShootingGalleryStates listed below
+//          ....
+//          ....+0x4 - [17-byte ASCII:ShootingGalleryState]
+//          ....| - When the first byte of this ASCII is "0" (0x30), the ShootingGallery is inactive
+//          ....| - ShootingGalleryStates listed below
+//          ....
+//          ....+0x24 - [Float:ShootingGalleryTimer |32-bit]
+//          ....| - Time in seconds
+//          ....| - Starts at 0.0 when ShootingGallery starts; ShootingGallery ends at 60.0
+//          
+//          
+//          # ShootingGalleryState (hex)
+//          |'''''''''''''''''''
+//          |----Hex----
+//          | 0x0 => ShootingGallery inactive
+//          | [0x1-0x2] => ShootingGallery setting up (Transitioning phases)
+//          | 0x3 => MessageDisplay "Shoot the dummies!"
+//          | 0x4 => Camera movement (Transitioning phase)
+//          | 0x5 => ShootingGallery is active (player can now shoot the dummies)
+//          | 0x6 => ShootingGallery ending (Transitioning phase)
+//          | 0x7 => MessageDisplay "Stop shooting Time is up!"
+//          |
+//          |----String----
+//          | "Start_Whak_A_Mole" => ShootingGallery is active. Where [Lower4:ShootingGalleryState] > 0x0
+//          | "Whack_A_Mole_Win" => ShootingGallery Win State
+//          '
 // $427C80: [NTSCU][32-bit:GameState]
 //          0x0 => TitleScreen
 //          0xFA => SinglePlayer
@@ -233,6 +346,9 @@
 //          '
 // $92785C: [NTSCU][Float:TimeSpentInLevel |32-bit]
 //          - Time in seconds
+// $AC76A4: coords horse
 // $1548C74: Coords
 // $1714980: 0x2 => hit
 //           0x4 => death
+// $178ACB0: selected menu item
+// $17D1094: shooting time
