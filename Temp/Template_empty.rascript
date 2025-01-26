@@ -53,7 +53,7 @@
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //    GENERAL UTILITY   \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
-// #region UTILITY
+// #region GENERAL UTILITY
 
 util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
@@ -84,11 +84,12 @@ function util_addToDictionary(dict, key, value) {
 //   ╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
 //																																									 \\
 // ***************************************************************************************************************************************************************** \\
-// #region Memory LOGIC
+// #region MEMORY
 
 // =============================
-// • Memory STRUCT DEFINITIONS •
+// • MEMORY struct definitions •
 // =============================
+// #region MEM - struct definitions
 memory_regionOffsets = {
 	}
 function memory_getRegionOffset(string_structKey, string_offsetKey) =>
@@ -101,10 +102,12 @@ function memory_getDataStructSizeInBytes(string_structKey) =>
 
 function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
+// #endregion MEM - struct definitions
+
 // ==========================
-// • Memory ADDRESS STORAGE •
+// • MEMORY ADDRESS STORAGE •
 // ==========================
-// #region Memory ADDRESS STORAGE
+// #region MEM - address storage
 memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
@@ -112,14 +115,13 @@ memory_addresses = {
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
 	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
-	return let_memAddr}
-	
-// #endregion Memory ADDRESS STORAGE
+	return let_memAddr}	
+// #endregion MEM - address storage
 
 // ==================
-// • Memory UTILITY •
+// • MEMORY UTILITY •
 // ===================
-// #region Memory UTILITY
+// #region MEM - utility
 function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		
@@ -148,34 +150,28 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 			always_false()
 		)
 	)
-	
-// #endregion Memory UTILITY
+// #endregion MEM - utility
 
 // ................
-// ◦ SUB HEADER 1 ◦
+// ◦ Sub Header 1 ◦
 // ''''''''''''''''
-// #region SUB HEADER 1
-
+// #region Sub Header 1
 
 // ----------------Divider---------------------
 
-
-// #endregion SUB HEADER 1
+// #endregion Sub Header 1
 
 // ................
-// ◦ SUB HEADER 2 ◦
+// ◦ Sub Header 2 ◦
 // ''''''''''''''''
-// #region SUB HEADER 2
+// #region Sub Header 2
 
-
-
-
-// #endregion SUB HEADER 2
+// #endregion Sub Header 2
 
 // =========================
-// • Memory INITIALIZATION •
+// • MEMORY initialization •
 // =========================
-// #region Memory INITIALIZATION
+// #region MEM - initialization
 
 //	- This code is for initializing memory addresses which have an offset to another regions memory addresses => lowers amount of hardcoding and chances on mistyping addresses
 //	- memory_initialize() => should be called before RATools compiles dictionary achievements_triggers, because those triggers access memory_addresses which might need to be initialized before usage.
@@ -194,9 +190,8 @@ function memory_initialize() {
 	// initialize_OtherRegions()
 	}
 memory_initialize()
-
-// #endregion Memory INITIALIZATION
-// #endregion Memory LOGIC
+// #endregion MEM - initialization
+// #endregion MEMORY
 
 // ****************************************************************************************************************************************** \\
 //																																			  \\
@@ -208,12 +203,12 @@ memory_initialize()
 //   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝          ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝   \\
 //																																			  \\
 // ****************************************************************************************************************************************** \\
-// #region Achievement LOGIC
+// #region ACHIEVEMENTS
 
 // =========================
-// • Achievement CORE DATA •
+// • ACHIEVEMENT core data •
 // =========================
-// #region Achievement CORE DATA
+// #region ACH - core data
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
@@ -241,31 +236,31 @@ achievements_typeByCategory = { // TODO set achievement types
 	// "c_Template": "xxxxxx",
 	"c_Template": 				sNULL}
 	
-// #endregion Achievement CORE DATA
+// #endregion ACH - core data
 
 // ==================================
-// • Achievement TRIGGER GENERATORS •
+// • ACHIEVEMENT trigger generators •
 // ==================================
-// #region Achievement TRIGGER GENERATORS
+// #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
 
-// #endregion Achievement TRIGGER GENERATORS
+// #endregion ACH - trigger generators
 
 // ========================
-// • Achievement TRIGGERS •
+// • ACHIEVEMENT triggers •
 // ========================
-// #region Achievement TRIGGERS
+// #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
 	// 	is_ReleaseRegion(enum_releaseRegion) &&
 	// 	always_false()),
 	}
-// #endregion Achievement TRIGGERS
+// #endregion ACH - triggers
 
 // =====================
-// • Achievement TEXT •
+// • ACHIEVEMENT text •
 // =====================
-// #region Achievement TEXT
+// #region ACH - text
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	}
@@ -273,12 +268,12 @@ achievements_titles = {
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	}
-// #endregion Achievement TEXT
+// #endregion ACH - text
 
 // ==============================
-// • Achievement INITIALIZATION •
+// • ACHIEVEMENT initialization •
 // ==============================
-// #region Achievement INITIALIZATION
+// #region ACH - initialization
 //	- Creates achievement objects (accepted by RATools) based on the achievement dictionary (achievements_coreData)
 function achievements_initialize() {
 	function achievements_generateTitle(string_achievementDevName, string_achievementCategory, string_languageCode) {
@@ -331,8 +326,8 @@ function achievements_initialize() {
 			)
 		}}
 	}
-// #endregion Achievement INITIALIZATION
-// #endregion Achievement LOGIC
+// #endregion ACH - initialization
+// #endregion ACHIEVEMENTS
 
 // ***************************************************************************************************** \\
 //																										 \\
@@ -344,13 +339,13 @@ function achievements_initialize() {
 //   ╚═╝  ╚═╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
-// #region Rich Presence LOGIC
+// #region RICH PRESENCE
 // TODO implement Rich Presence
 
 // =====================
-// • RichPresence TEXT •
+// • RICH PRESENCE text •
 // =====================
-// #region RichPresence TEXT
+// #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
@@ -427,12 +422,12 @@ function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numb
 function richPresence_initializeZeroPaddingLookupTables() { // Function is called in richPresence_initialize()
 	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeMinutes_ZeroPadding", 1, 59)
 	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeHours_ZeroPadding", 1, 23)}
-// #endregion RichPresence TEXT
+// #endregion RP - text
 
-// =========================
-// • RichPresence DISPLAYS •
-// =========================
-// #region RichPresence DISPLAYS
+// ================================
+// • RICH PRESENCE display script •
+// ================================
+// #region RP - display script
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -450,12 +445,12 @@ function richPresence_initializeDisplays() {
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
 
 	}} 
-// #endregion RichPresence DISPLAYS
+// #endregion RP - display script
 
 // ===========================
-// • RichPresence PARAMETERS •
+// • RICH PRESENCE parameters •
 // ===========================
-// #region RichPresence TEXT
+// #region RP - parameters
 richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
@@ -528,11 +523,12 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
+// #endregion RP - parameters
 
 // ===============================
-// • RichPresence INITIALIZATION •
+// • RICH PRESENCE initialization •
 // ===============================
-// #region RichPresence INITIALIZATION
+// #region RP - initialization
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_lookupTableKey in richPresence_lookupTables { 
 		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
@@ -546,9 +542,8 @@ function richPresence_initialize() {
 	richPresence_populateLookupTables()
 	richPresence_initializeZeroPaddingLookupTables() // <-- should be called after richPresence_populateLookupTables() as ZeroPaddingLookupTables don't need to be populated AND before richPresence_initializeDisplays()
 	richPresence_initializeDisplays()}
-// #endregion RichPresence INITIALIZATION
-// #endregion Rich Presence LOGIC
-// #endregion Rich Presence LOGIC
+// #endregion RP - initialization
+// #endregion RICH PRESENCE
 
 // ***************************************************************************************************** \\
 //																										 \\
@@ -560,12 +555,13 @@ function richPresence_initialize() {
 //   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
 //																										 \\
 // ***************************************************************************************************** \\
-// #region Leaderboard LOGIC
+// #region LEADERBOARDS
 // TODO implement leaderboards
 
 // =========================
-// • Leaderboard CORE DATA •
+// • LEADERBOARD core data •
 // =========================
+// #region LB - core data
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
 	// -----------------------------
@@ -578,15 +574,19 @@ leaderboards_coreData = {
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
 	}
+// #endregion LB - core data
 
 // ==================================
-// • Leaderboard TRIGGER GENERATORS •
+// • LEADERBOARD trigger generators •
 // ==================================
+// #region LB - trigger generators
 //	- For leaderboard logic that's reoccuring across multiple triggers
+// #endregion LB - trigger generators
 
 // ========================
-// • Leaderboard TRIGGERS •
+// • LEADERBOARD triggers •
 // ========================
+// #region LB - triggers
 leaderboards_startTriggers = {	
 	}
 leaderboards_cancelTriggers = {	
@@ -595,19 +595,24 @@ leaderboards_submitTriggers = {
 	}
 leaderboards_valueMeasures = {		
 	}
+// #endregion LB - triggers
+
 // ====================
-// • Leaderboard TEXT •
+// • LEADERBOARD text •
 // ====================
+// #region LB - text
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 	}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
 	}
+// #endregion LB - text
 
 // ==============================
-// • Leaderboard INITIALIZATION •
+// • LEADERBOARD initialization •
 // ==============================
+// #region LB - initialization
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
 		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
@@ -649,14 +654,11 @@ function leaderboards_initialize() {
 			format = let_leaderboardData["leaderboardFormat"], 
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
-// #endregion Leaderboards LOGIC
+// #endregion LB - initialization
+// #endregion LEADERBOARDS
 
 // ====================================================================== \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ====================================================================== \\
-function initializeRAscript() {
-	achievements_initialize()
-	richPresence_initialize()
-	leaderboards_initialize()}
-initializeRAscript()
+// #region RAScript Initialization
