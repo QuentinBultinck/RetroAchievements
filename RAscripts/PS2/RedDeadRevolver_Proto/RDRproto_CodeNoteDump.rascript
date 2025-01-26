@@ -82,8 +82,8 @@
 // $4217D0: [NTSCU][3-byte ASCII:CharacterModelID-Player1(alt1)]
 //          - This can be used to ID which Character the player is using.
 //          - This is valid for Singleplayer & Multiplayer
-// $421850: [NTSCU][32-bit (base) Pointer:PlayerData-Player1]
-//          - This pointer is always valid (SinglePlayer &amp; Multiplayer)
+// $421850: [NTSCU][32-bit (base) Pointer:PlayerData-Player1] -> [Struct:PlayerData]
+//          - This pointer is always valid (SinglePlayer & Multiplayer)
 //          
 //          +0x14 - [32-bit (layer-1) Pointer]
 //          |+0xC - [Float:PlayerHealth |32-bit]
@@ -97,8 +97,8 @@
 //          ...| - Definition of [Struct:Coordinates] below
 //          
 //          +0x130 - [32-bit:Money_MPkills]
-//          | - In SinglePlayer: this value regulates the Player's money (refering to the Cash display)
-//          | - In SinglePlayer: when this value &gt; 0x1F3 ($49.09), then the message, "You Win!!!", is displayed + player gains insane amount of money for free. After a few seconds the Level resets (just like a Reset via PauseMenu)
+//          | - In SinglePlayer: this value regulates the Player's money as cents (refering to the Cash display)
+//          | - In SinglePlayer: when this value > 0x1F3 (499, $49.09), then the message, "You Win!!!", is displayed + player gains insane amount of money for free. After a few seconds the Level resets (just like a Reset via PauseMenu)
 //          |
 //          | - In Multiplayer: this value regulates the Player's killCount (refering to the sheriff badge count display, when killing a player)
 //          | - In Multiplayer: Once this value hits 0x2, the Player/team wins the match. After a few seconds the match resets.
@@ -110,7 +110,15 @@
 //          ..+0x90 - [16-byte Struct(Coordinates):PlayerLocation]
 //          ..| - Definition of [Struct:Coordinates] below
 //          .
-//          .+0x134 - [32-bit (layer-3) Pointer]
+//          .+0x64 - [32-bit (layer-2) Pointer]
+//          ..+0x134 - [32-bit (layer-3) Pointer] -> [Struct:CharacterAnimationData]
+//          ..
+//          ..+0x10 - [Float:AnimationKeyFrame(functional)]
+//          ..| - This float represents a specific point in the animation timeline
+//          ..| - FloatRange [0.0 --- 0.999]: 0.0 is start of animation; 0.999 is end of animation
+//          ..+0x14 - [Float:AnimationKeyFrame(copy)]
+//          ..| - This float represents a specific point in the animation timeline, but copies float above
+//          ..
 //          ..+0x18 - [32-bit (layer-4) Pointer]
 //          ...+0x0 - [32-bit (layer-5) Pointer]
 //          ....+0x0 - [32-bit (layer-6) Pointer]
@@ -135,11 +143,12 @@
 //          # CharacterAnimationID
 //          |(only lists IDs useful for achievement logic)
 //          |''''''''''''''''''''
-//          | "red_stn_idl_11" =&gt; Tipping hat (Press and hold X_button whilst standing still)
-//          | "red_stn_idl_12" =&gt; ?? (this may be part of above animation)
-//          | "red_upp_jump" =&gt; Jump whilst standing still
-//          | "red_for_jump" =&gt; Jump whilst moving forward
-//          | "red_fnc_pst_vlt =&gt; Fence vault
+//          | "red_stn_idl_11" => Tipping hat (Press and hold X or R1 whilst standing still)
+//          | "red_stn_idl_12" => ?? (this may be part of above animation)
+//          | "red_upp_jump" => Jump whilst standing still
+//          | "red_for_jump" => Jump whilst moving forward
+//          | "red_fnc_pst_vlt => Fence vault
+//          | "red_rgt_dge" => Dodge (Press X or R1 whilst walking)
 //          '
 // $421868: [NTSCU][8-bit:Showdown_Kills-Player1]
 //          - This value counts how many kills the player has achieved in the Showdown Match
@@ -147,7 +156,7 @@
 // $421884: [NTSCU][3-byte ASCII:CharacterModelID-Player2(alt1)]
 //          - This can be used to ID which Character the player is using.
 //          - This is only valid when in Multiplayer
-// $421904: [NTSCU][32-bit (base) Pointer:PlayerData-Player2]
+// $421904: [NTSCU][32-bit (base) Pointer:PlayerData-Player2] -> [Struct:PlayerData]
 //          - This pointer is only valid when in Multiplayer
 //          - This pointer points to data for Player 2
 //          - Pointer defined at $0x421850
@@ -156,7 +165,7 @@
 // $421938: [NTSCU][3-byte ASCII:CharacterModelID-Player3(alt1)]
 //          - This can be used to ID which Character the player is using.
 //          - This is only valid when in Multiplayer
-// $4219B8: [NTSCU][32-bit (base) Pointer:PlayerData-Player3]
+// $4219B8: [NTSCU][32-bit (base) Pointer:PlayerData-Player3] -> [Struct:PlayerData]
 //          - This pointer is only valid when in Multiplayer
 //          - This pointer points to data for Player 3
 //          - Pointer defined at $0x421850
@@ -165,7 +174,7 @@
 // $4219EC: [NTSCU][3-byte ASCII:CharacterModelID-Player4(alt1)]
 //          - This can be used to ID which Character the player is using.
 //          - This is only valid when in Multiplayer
-// $421A6C: [NTSCU][32-bit (base) Pointer:PlayerData-Player4]
+// $421A6C: [NTSCU][32-bit (base) Pointer:PlayerData-Player4] -> [Struct:PlayerData]
 //          - This pointer is only valid when in Multiplayer
 //          - This pointer points to data for Player 4
 //          - Pointer defined at $0x421850
@@ -324,6 +333,10 @@
 // $61F650: [NTSCU][8-bit:Volume_SoundMode |32-bit]
 //          0x1 => Mono
 //          0x2 => Stereo
+// $91204C: [NTSCU][12-byte ASCII:GameID] = "SCPS_666.66"
+//          - Internal Serial SCPS-66666
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - Succeeding [2-byte ASCII] = ";1"
 // $9128E8: [NTSCU][Variable Size ASCII:LevelID(preferred)]
 //          - This controls which level is loaded.
 //          - Freezing a valid LevelID at this memAddress and then starting a game, will load the corresponding Level
@@ -352,3 +365,11 @@
 //           0x4 => death
 // $178ACB0: selected menu item
 // $17D1094: shooting time
+
+achievement(
+    title = "[SPChallenge_WinGame] Overflowing Coffers", points = 0,
+    description = "Win the game by acquiring over $49.09 in cash - [DEV: Win Game, when cash over $49.09, I think only possible in lvl_tng]",
+    id = 494562, badge = "00000", published = "26/01/2025 13:19:00", modified = "26/01/2025 13:19:00",
+    trigger = dword(0x91204C) == 1397769043 && dword(0x427C80) == 250 && dword(dword(0x421850) + 0x000130) >= 500 &&
+              prev(dword(dword(0x421850) + 0x000130)) < 500
+)

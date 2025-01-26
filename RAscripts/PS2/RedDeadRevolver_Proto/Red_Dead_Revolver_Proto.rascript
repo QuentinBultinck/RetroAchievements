@@ -8,7 +8,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/32806
-// RATools version: [version_here] // TODO set last used RATools version here
+// RATools version: v1.15.0
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -48,6 +48,15 @@
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
 //  - VScode extension list: Region Viewer Extension - Todo Tree - Markdown Preview Enhanced
+
+
+// Achievement Design Cocept Notes
+// ---------------------------------------------
+/*	EXCERPT from RAdocs:
+	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
+
+*/
+
 // #endregion DEVELOPER NOTES
  
 //#####################################################################################################\\
@@ -64,7 +73,7 @@ sNULL = "-1"
 RELEASE_REGION_USA = "NTSC-U"
 RELEASE_REGION_JPN = "NTSC-J"
 RELEASE_REGION_EUR = "PAL"
-RELEASE_REGIONS_SUPPORTED = [] // TODO add regions
+RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_USA]
 
 function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -95,13 +104,69 @@ memory_regionOffsets = {
 function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
-memory_dataStructures = {
+memory_StructDefs = {
+	"Struct:Coordinates": {
+		"offsetToMember": {
+			"Float:Y_Coordinate": 0x4,
+			"Float:Z_Coordinate": 0x8,
+			"Float:X_Coordinate": 0xC
+		}},
+	"Struct:PlayerData": {
+		"pointerChainToMember": {
+			"32-bit:Money_MPkills": { 
+				"pointerChainOffsets": [0x130]},
+			"Struct(Coordinates):PlayerLocation-X": {
+				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0xC]},
+			"Struct(Coordinates):PlayerLocation-Y": {
+				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x4]},
+			"Struct(Coordinates):PlayerLocation-Z": {
+				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x8]},
+			"ASCII:Active_CharacterAnimationID": { 
+				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
+			"Float:AnimationKeyFrame(functional)": {
+				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
+		}},
 	}
-function memory_getDataStructSizeInBytes(string_structKey) =>
-	memory_dataStructures[string_structKey]["sizeInBytes"]
+function memory_getStruct_SizeInBytes(string_structKey) =>
+	memory_StructDefs[string_structKey]["sizeInBytes"]
 
-function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
-	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
+function memory_getStruct_OffsetToMember(string_structKey, string_memberKey) =>
+	memory_StructDefs[string_structKey]["offsetToMember"][string_memberKey]
+
+function memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
+
+function memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
+
+function memory_getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
+	
+function memory_getStruct_OffsetToPointedToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
+
+function memGenerate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
+	let_addAddressChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
+
+function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion)
+	let_addAddressChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
+
+
+
 // #endregion MEM - struct definitions
 
 // ==========================
@@ -110,10 +175,16 @@ function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
 // #region MEM - address storage
 memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
-function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
-	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
+function memory_getAddress(string_addrKey, enum_releaseRegion) {
+	let_memAddr = memory_addresses[string_addrKey][enum_releaseRegion]
 	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 	return let_memAddr}	
 // #endregion MEM - address storage
@@ -123,12 +194,14 @@ function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 // ===================
 // #region MEM - utility
 function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
+	const_INTERNAL_SERIAL = "SCPS" // FullString: "SCPS_666.66"
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
-		
+		let_memAddr_GameID = memory_getAddress("ASCII:GameID", enum_releaseRegion)
+		return ascii_string_equals(let_memAddr_GameID, const_INTERNAL_SERIAL) 
 	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
-		
+		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 	} else if(enum_releaseRegion == RELEASE_REGION_EUR) {
-		
+		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 	} else {
 		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 	}}
@@ -150,23 +223,178 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 			always_false()
 		)
 	)
+
+// #region ---Custom ASCII comparitors---
+// Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
+
+function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
+	let_array_comparisons = []
+	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
+		let_substring = substring(string_s, let_stepBy4Index, 4)
+		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
+	}
+	return all_of(let_array_comparisons, c => c)}
+
+function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
+	/* NOTE: Consider following ASCII "ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII		
+		Example logic:
+			0xA != "ABCD"
+			|| 0xB != "EF"
+	*/
+	return __ornext( // --> __ornext() as otherwise RATools may generate unnecessary alt groups for these single orNext requirements
+		!ASCII_Equals(memAddr_ASCII, string_s, wrapper)
+	)}
+
+function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s)
+
+function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s)
+// #endregion Custom ASCII comparitors
 // #endregion MEM - utility
 
+// ......................
+// ◦ General Game Logic ◦
+// ''''''''''''''''''''''
+// #region General Game Logic
+// ----------------GameState---------------------
+GAMESTATE_TitleScreen = 0x0
+GAMESTATE_SinglePlayer = 0xFA
+GAMESTATE_Multiplayer = 0xC8
+function current_gameState(enum_releaseRegion) => dword(memory_getAddress("32-bit:GameState", enum_releaseRegion))
+function is_GameState(enum_gameState, enum_releaseRegion) => current_gameState(enum_releaseRegion) == enum_gameState
+// ----------------Divider---------------------
+
+// #endregion General Game Logic
+
+// ..............
+// ◦ PlayerData ◦
+// ''''''''''''''
+// #region PlayerData
+
+// ----------------Location---------------------
+function current_PlayerLocation_X(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-X",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+function current_PlayerLocation_Y(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-Y",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+function current_PlayerLocation_Z(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-Z",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+
+function is_PlayerLocation_Near(coordinates_target, int_nearRadiusThreshold, enum_releaseRegion) => // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
+	coordinates_target["X"] - int_nearRadiusThreshold <= current_PlayerLocation_X(enum_releaseRegion) && current_PlayerLocation_X(enum_releaseRegion) <= coordinates_target["X"] + int_nearRadiusThreshold
+	&& coordinates_target["Y"] - int_nearRadiusThreshold <= current_PlayerLocation_Y(enum_releaseRegion) && current_PlayerLocation_Y(enum_releaseRegion) <= coordinates_target["Y"] + int_nearRadiusThreshold
+	&& coordinates_target["Z"] - int_nearRadiusThreshold <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= coordinates_target["Z"] + int_nearRadiusThreshold
+// ----------------Character Animation---------------------
+CHARACTER_ANIMATION_TipHat = "red_stn_idl_" // FullString: "red_stn_idl_11"
+CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
+
+function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:AnimationKeyFrame(functional)",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
+	prev(current_CharacterAnimationKeyFrame(enum_releaseRegion))
+
+function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_PointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return 
+		is_ASCII_EqualTo(let_PointerChainTo_activeCharacterAnimationID, string_animationID)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
+	}
+
+function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+
+function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished = 0.6
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+	}
+
+function on_TippingHat_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+
+function on_Dodge_CharacterAnimation_start(enum_releaseRegion) => 
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+// ----------------SinglePlayer Specific---------------------
+function current_Money(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:Money_MPkills",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)
+	}
+
+function prev_Money(enum_releaseRegion) =>
+	prev(current_Money(enum_releaseRegion))
+// ----------------Multiplayer Specific---------------------
+
+// #endregion PlayerData
+
+// ...........
+// ◦ LevelID ◦
+// '''''''''''
+// #region LevelID
+LEVEL_TrainingStage = "tng" // "lvl_tng"
+function is_Level(enum_levelID, enum_releaseRegion) {
+	const_offsetTo_UniqueLevelIdSubstring = 0x4
+	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
+	return ascii_string_equals(let_memAddr_levelID + const_offsetTo_UniqueLevelIdSubstring, enum_levelID)}
+// ----------------Point of Interest (POI)---------------------
+const_Level_POI_Coordinates = { // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
+	LEVEL_TrainingStage: { 
+		"WhiteChest": {"X": 0.25, "Y": -18.47, "Z": -0.65}, 
+		"BrokenCart": {"X": -22.18, "Y": -46.63, "Z": 0.14}
+		},
+	}
+function is_PlayerNearPOI(enum_levelID, string_POI_key, float_radiusThreshold, enum_releaseRegion) => 
+	is_PlayerLocation_Near(const_Level_POI_Coordinates[enum_levelID][string_POI_key], float_radiusThreshold, enum_releaseRegion)
+
+// #endregion LevelID
+
 // ................
-// ◦ Sub Header 1 ◦
+// ◦ Sub_Header_2 ◦
 // ''''''''''''''''
-// #region Sub Header 1
+// #region Sub_Header_2
 
 // ----------------Divider---------------------
 
-// #endregion Sub Header 1
-
-// ................
-// ◦ Sub Header 2 ◦
-// ''''''''''''''''
-// #region Sub Header 2
-
-// #endregion Sub Header 2
+// #endregion Sub_Header_2
 
 // =========================
 // • MEMORY initialization •
@@ -215,13 +443,38 @@ achievements_coreData = {
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
 
-	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000,
-	//	"devInfo": "xxxxxxx"},
-	
-	"c_Template": { // Category - info_here
+	// TODO Point distribution
 
-	}}
+	// "a_Template": { // CONCEPT a_template
+	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+	
+	"c_SinglePlayer": { // Category - Single Player Progression 
+		// "a_LVLtng": { // CONCEPT a_LVLtng
+		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge, any outcome"},
+		},
+	"c_SPChallenge": { // Category - Single Player Challenges
+		// "a_ShootingGalleryGreat": { // CONCEPT a_LVLtng
+		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge, with 'Good Job'"},
+		},
+	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
+		"a_WinGame": { // VERIFIED a_WinGame
+			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
+		"a_TipHat": { // VERIFIED a_TipHat
+			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
+		"a_Dodge": { // VERIFIED a_Dodge
+			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+		"a_EyeTNG": { // VERIFIED a_EyeTNG
+			"id": 494578, "points": 0000000, "devInfo": "lvl_tng, TipHat next to Chest and BrokenCart"},
+		},
+	"c_Multiplayer": { // Category - Multiplayer
+		// "a_WinMon": { // CONCEPT a_WinMon
+		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (mon)"},
+		// "a_WinRed": { // CONCEPT a_WinRed
+		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
+		// "a_ThrowableKill": { // CONCEPT a_ThrowableKill
+		// 	"id": 000000, "points": 0000000, "devInfo": "Get a kill with knife or dynamite"},
+		}
+	}
 // -------------------------------------
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
@@ -234,7 +487,10 @@ achievements_typeByCategory = { // TODO set achievement types
 	// ------------------------------------------------------
 	
 	// "c_Template": "xxxxxx",
-	"c_Template": 				sNULL}
+	"c_SinglePlayer": 		"progression", // NOTE: This prototype has no WinCondition -> Player which achieves all Progression achievements will be marked as beaten
+	"c_SPChallenge":		sNULL,
+	"c_SPbonus":			sNULL,
+	"c_Multiplayer":		sNULL} 
 	
 // #endregion ACH - core data
 
@@ -251,9 +507,99 @@ achievements_typeByCategory = { // TODO set achievement types
 // ========================
 // #region ACH - triggers
 achievements_triggers = {
-	// "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP_template
 	// 	is_ReleaseRegion(enum_releaseRegion) &&
 	// 	always_false()),
+
+	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+	// 		is_ReleaseRegion(enum_releaseRegion)
+	// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	// 		&& is_PlayerNearPOI(LEVEL_TrainingStage, "WhiteChest", 1.5, enum_releaseRegion)
+	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+	// 	),
+
+	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+ 		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
+			This should only be possible in lvl_tng, as the dummies keep respawning. Each kill is worth $2
+			Other levels don't have enough enemies to reach the $49.09 threshold
+			*/
+		const_MONEY_WIN_THRESHOLD = 500 // (= $49.10)
+
+		return 
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+
+			&& current_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
+			&& prev_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
+		}),	
+	"a_TipHat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		never(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion))		
+		&& once(on_TippingHat_CharacterAnimation_start(enum_releaseRegion))
+		&& trigger_when(on_TippingHat_CharacterAnimation_finish(enum_releaseRegion))
+		), 
+	"a_Dodge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
+
+		&& once(on_Dodge_CharacterAnimation_start(enum_releaseRegion))
+		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
+		),
+	"a_EyeTNG": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_TrainingStage
+		const_POI_COUNT = 2
+		const_NEAR_RADIUS_THRESHOLD_BrokenCart = 2.1
+		const_NEAR_RADIUS_THRESHOLD_WhiteChest = 1.2
+
+		let_requirement_IsPlayerNearPOI_BrokenCart = 
+			is_PlayerNearPOI(const_REQUIRED_LEVEL, "BrokenCart", const_NEAR_RADIUS_THRESHOLD_BrokenCart, enum_releaseRegion)
+		let_requirement_IsPlayerNearPOI_WhiteChest = 
+			is_PlayerNearPOI(const_REQUIRED_LEVEL, "WhiteChest", const_NEAR_RADIUS_THRESHOLD_WhiteChest, enum_releaseRegion)
+
+		let_requirement_OnTipHatNear_BrokenCart = 
+			let_requirement_IsPlayerNearPOI_BrokenCart
+			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
+		let_requirement_OnTipHatNear_WhiteChest = 
+			let_requirement_IsPlayerNearPOI_WhiteChest
+			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
+
+		return
+		// [1] ==== Alt Logic Group ==== 									-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))
+			&& measured(tally(const_POI_COUNT, [
+				once(let_requirement_OnTipHatNear_BrokenCart),
+				once(let_requirement_OnTipHatNear_WhiteChest)
+				]))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2] ==== Alt POI Trigger Indicator Group - BrokenCart ==== 		-> This group only exists to display a Trigger Indicator when the player is near the BrokenCart	
+			|| never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
+			&& unless(once( // <-- PauseLock: Hide Triggir Indicator, when Player has already finished this POI
+				let_requirement_OnTipHatNear_BrokenCart))
+
+			&& let_requirement_IsPlayerNearPOI_BrokenCart
+			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+		// [3] ==== Alt POI Trigger Indicator Group - WhiteChest ==== 		-> This group only exists to display a Trigger Indicator when the player is near the WhiteChest	
+			|| never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
+			&& unless(once( // <-- PauseLock: Hide Triggir Indicator, when Player has already finished this POI
+				let_requirement_OnTipHatNear_WhiteChest))
+			
+			&& let_requirement_IsPlayerNearPOI_WhiteChest
+			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -263,10 +609,22 @@ achievements_triggers = {
 // #region ACH - text
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
+
+	"a_WinGame": 				{"en": "Overflowing Coffers"},
+	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
+	"a_Dodge": 					{"en": "The Slick Shuffle"},
+	"a_EyeTNG": 				{"en": "Trailblazer"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
+
+	"a_WinGame": 				{"en": "Win the game by acquiring over $49.09 in cash"},
+	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
+	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
+	"a_EyeTNG": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
 	}
 // #endregion ACH - text
 
@@ -349,7 +707,7 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
+	"rp_Default":										{"en": "Playing Capcom's Red Dead Revolver Prototype"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
 	// "rp_Template": {
 	// 	"Lookup_A":						{"en": "xxxxxxxx"},
