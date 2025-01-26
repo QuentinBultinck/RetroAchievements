@@ -10,6 +10,9 @@
 
         "•",
 
+        "#region",
+        "#endregion",
+
         "VERIFIED",
         "MODIFIED",
         "UPDATED",
@@ -47,7 +50,11 @@
 
         "DEV_NOTE"
     ],
-    "todo-tree.general.tagGroups": {
+    "todo-tree.general.tagGroups": {        
+        "#region": [
+            "#region",
+            "#endregion"
+        ],
         "VERIFIED": [
             "VERIFIED",
             "MODIFIED",
@@ -112,7 +119,8 @@
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,
-            "hideFromActivityBar": true
+            "hideFromActivityBar": true,
+            "hideFromTree": true
         },
         "•": {
             "foreground": "#02a80a",
@@ -122,7 +130,30 @@
             "type": "text-and-comment",
             "rulerLane": "right",
             "hideFromStatusBar": true,
-            "hideFromActivityBar": true
+            "hideFromActivityBar": true,
+            "hideFromTree": true
+        },
+        "#region": {
+            "foreground": "#01b387",
+            "background": "#4a5702",
+            "opacity": 12,
+            "icon": "$(circle-small-filled)",
+            "type": "text-and-comment",
+            "rulerLane": "right",
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true,
+            "hideFromTree": true
+        },
+        "#endregion": {
+            "foreground": "#008362",
+            "background": "#4a5702",
+            "opacity": 5,
+            "icon": "$(circle-small-filled)",
+            "type": "text-and-comment",
+            "rulerLane": "right",
+            "hideFromStatusBar": true,
+            "hideFromActivityBar": true,
+            "hideFromTree": true
         },
         "TESTING": {
             "foreground": "#eaff71",

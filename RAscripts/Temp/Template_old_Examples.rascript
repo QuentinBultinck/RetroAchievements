@@ -3,7 +3,8 @@
 //   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
 // ****************************************** \\
 // #ID = [game_ID_here]	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
-// md5: [hash_here] - [region_here]
+// md5: [hash_here] (region_here)
+// RA Hash: [hash_here] (region_here)
 // Platform: [platform_here]
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: [link_to_game_page]
@@ -45,12 +46,35 @@
 //	- Enable: Todo Tree tags => install extension: 'Todo Tree' by Gruntfuggly; settings.json file has some settings to edit the tags; README of extension => https://github.com/Gruntfuggly/todo-tree#highlighting
 // 	- Markdown editing
 //		-- Enable: Markdown Enhanced Preview => Install extension: 'Markdown Preview Enhanced' by 'Yiyi Wang'
- 
+
+//	Achievement & Leaderboard logic
+// ---------------------------------------------
+//	- Include delta wherever possible => one of safest way to make sure achievement doesn't pop randomly
+//	- Also include delta's for submit, cancel and start triggers on leaderboard logic
+
+// How to: ResetNextIf
+// ---------------------------------------------
+//	- Call never() inside a tally(), once() or repeated()
+//	- Example
+// 			tally(10, 
+// 				never(healthDecreases()) && // <-- reset this hit count when taking damage, will generate a 'resetnextif' flag when it is applicable with the rest of the trigger, otherwise it may just be a normal 'reset' flag
+// 				succesfullDodges() // <-- +1 hit count when dodging
+// 			)
+
+// Git info
+// ---------------------------------------------
+//	- Remove remote branches which have been deleted remotely, from vscode list, run following command => git fetch --prune
+
+// Syncing Local RAdata with server
+// ---------------------------------------------
+// 	- RALibretro => Assets list => Revert all assets (will fetch all changes from RAserver) + Refresh RATools as well
+//		-- For example change badge on RAweb => revert local so badge ID is changed as well locally to the next ID
+
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //  //     UTILITY      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
 //#####################################################################################################\\
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -83,11 +107,22 @@ function util_addToDictionary(dict, key, value) {
 // • Memory STRUCT DEFINITIONS •
 // =============================
 memory_regionOffsets = {
-	}
+	"Struct_Template_WeaponDataArray": {
+		"offset_USA_to_JPN": 0x000
+	}}
 function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_dataStructures = {
+	"Struct_Template_WeaponData": {
+		"sizeInBytes": 18,
+		"offsetsToMembers": {
+			"16Bit_WeaponID": 0x0,
+			"32Bit_WeaponLevel": 0x4,
+			"BitFlag_IsWeaponUnlocked": 0x8,			
+			"BitFlag_IsWeaponEquipped": 0x9,
+			"Float_WeaponAffinity": 0x10
+		}},
 	}
 function memory_getDataStructSizeInBytes(string_structKey) =>
 	memory_dataStructures[string_structKey]["sizeInBytes"]
@@ -113,7 +148,26 @@ memory_addresses = {
 	//	DATATYPE_xxxxx: {
 	//		"Template": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	//	},
-	}
+	DATATYPE_BitFlag: {
+	},
+	DATATYPE_4Bit: {
+	},
+	DATATYPE_8Bit: {
+		"Template_Area": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL}, 
+	},
+	DATATYPE_16Bit: {
+	},
+	DATATYPE_25BitPointer: {
+	},
+	DATATYPE_Float: {
+	},
+	DATATYPE_32Bit: {
+	},
+	DATATYPE_ASCII: {
+	},
+	DATATYPE_Struct: {
+		"Template_WeaponDataArray": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	}}
 
 function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
 	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
@@ -142,29 +196,98 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
-	(
-		(
-			never(comparison) &&
-			always_false()	// <-- This line needs to be here so the other groups can still evaluate, else without this line, the other groups are infinitely on hold
-							//		This signifies that this alt group only functions as a reset group, it can't trigger the achievement
-		) || (
-			always_false()
-		)
-	)
 
 // ................
 // ◦ SUB HEADER 1 ◦
 // ''''''''''''''''
+// 	- Some explanation...		
+// 	- Some explanation...		
+AREA_a = 0x1
+AREA_b = 0x2
+AREA_c = 0x3
+AREA_d = 0x4
+AREA_e = 0x5
+function current_AreaID(enum_releaseRegion) => 
+	byte(memory_getAddress(DATATYPE_8Bit, "Template_Area", enum_releaseRegion))	
 
-// ----------------Divider---------------------
+function prior_AreaID(enum_releaseRegion) =>
+	prior(current_AreaID(enum_releaseRegion))
 
+function prev_AreaID(enum_releaseRegion) =>
+	prev(current_AreaID(enum_releaseRegion))
+
+function is_Area(enum_area, enum_releaseRegion) =>		// Example usage => is_Area(enum_TEMPLATE_AREA_A, RELEASE_REGION_EUR)
+	current_AreaID(enum_releaseRegion) == enum_area
+
+function was_Area(enum_area, enum_releaseRegion) =>
+	prior_AreaID(enum_releaseRegion) == enum_area
+
+function on_AreaFinish(enum_area, enum_releaseRegion) =>	// on_templateFunction() => "on" signifies that this function returns a comparison that's checking delta values
+	current_AreaID(enum_releaseRegion) != enum_area && 
+	prev_AreaID(enum_releaseRegion) == enum_area
+// -------------------------------------
+// 	- Some explanation...
+// 	- Some explanation...
+// 	- Some explanation...
 
 // ................
 // ◦ SUB HEADER 2 ◦
 // ''''''''''''''''
+// 	- Some explanation...
+// 	- Some explanation...
+WEAPON_a = 100
+WEAPON_b = 101
+WEAPON_c = 102
+const_weapons_data = {
+	WEAPON_a: {
+		"weaponDataArray_offset": 0x20,
+		"maxWeaponAffinity": 99.0}, // <-- float
+	WEAPON_b: {
+		"weaponDataArray_offset": 0x40,
+		"maxWeaponAffinity": 77.0},
+	WEAPON_c: {
+		"weaponDataArray_offset": 0x60,
+		"maxWeaponAffinity": 20.0}
+	}
 
+function get_maxWeaponAffinity(enum_weapon) =>
+	const_weapons_data[enum_weapon]["maxWeaponAffinity"]
 
+function is_WeaponEquipped(enum_weapon, enum_releaseRegion) {
+	let_memAddr_weaponDataArray = memory_getAddress(DATATYPE_Struct, "Template_WeaponDataArray", enum_releaseRegion)
+	let_weaponOffset = const_weapons_data[enum_weapon]["weaponDataArray_offset"]
+	let_offset_bitFlag_isWeaponEquipped = memory_getDataStructOffset("Struct_Template_WeaponData", "BitFlag_IsWeaponEquipped")
+	return bit0(let_memAddr + let_weaponOffset + let_offset_bitFlag_isWeaponEquipped) == 1}
 
+function current_WeaponAffinity(enum_weapon, enum_releaseRegion) {
+	let_memAddr_weaponDataArray = memory_getAddress(DATATYPE_Struct, "Template_WeaponDataArray", enum_releaseRegion)
+	let_weaponOffset = const_weapons_data[enum_weapon]["weaponDataArray_offset"]
+	let_offset_weaponAffinity = memory_getDataStructOffset("Struct_Template_WeaponData", "Float_WeaponAffinity")
+	return float(let_memAddr_weaponDataArray + let_weaponOffset + let_offset_weaponAffinity)}
+
+function prev_WeaponAffinity(enum_weapon, enum_releaseRegion) =>
+	prev(current_WeaponAffinity(enum_weapon, enum_releaseRegion))
+
+function on_WeaponAffinityMaxed(enum_weapon, enum_releaseRegion) {
+	let_maxWeaponAffinity = get_maxWeaponAffinity(enum_weapon)
+	return 	
+		prev_WeaponAffinity(enum_weapon, enum_releaseRegion) > (let_maxWeaponAffinity*3)/4 	&& // <-- Possible save protection
+		prev_WeaponAffinity(enum_weapon, enum_releaseRegion) < let_maxWeaponAffinity		&&
+		current_WeaponAffinity(enum_weapon, enum_releaseRegion) == let_maxWeaponAffinity}
+	
+function memUtil_sumOfAllCurrentWeaponsAffinity(enum_releaseRegion) => 
+	sum_of(const_weapons_data, (weaponDataKey){
+		let_memAddr_currentWeaponAffinity = const_weapons_data[weaponDataKey]["memAddr_CurrentWeaponAffinity"]		
+		return dword(let_memAddr_currentWeaponAffinity)
+	})
+
+function is_AllWeaponsAffinityMaxed(enum_releaseRegion) =>
+	memUtil_sumOfAllCurrentWeaponsAffinity(enum_releaseRegion) == memUtil_totalAffinityOverAllWeapons(enum_releaseRegion)
+
+// -------------------------------------
+function doThisA(enum_releaseRegion) => always_false()
+function doThisB(enum_releaseRegion) => always_false()
+function doThisC(enum_releaseRegion) => always_false()
 // =========================
 // • Memory INITIALIZATION •
 // =========================
@@ -197,24 +320,53 @@ memory_initialize()
 //																																			  \\
 // ****************************************************************************************************************************************** \\
 
-// ==========================
+// **************************
 // • Achievements CORE DATA •
-// ==========================
+// **************************
 // - Divided by category => when in debug mode, category tags are added to achievement titles
 achievements_coreData = {
-	// DEV_NOTE: Achievement property 'badgeId'
-	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
+	// DEV NOTE: Achievement property 'badgeId'
+	// 		- Do not add badge ID to this core data. Easily upload badges via the game page on the RA website
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
 	//	"id": 000000, "points": 0000000,
 	//	"devInfo": "xxxxxxx"},
-	
-	"c_Template": { // Category - info_here
 
-	}}
+	"c_ExampleWeaponLeveling": {	// Category - Leveling all weapons
+		"a_Example_WeaponAMaxed": { // VERIFIED
+			"id": 000000, "points": 3,
+			"devInfo": "xxxxxxx"},
+		"a_Example_AllWeaponsAffinitiesMaxed": { // VERIFIED
+			"id": 000000, "points": 25,
+			"devInfo": "xxxxxxx"},
+	},
+    "c_ExampleCategeroy1": {	// Category - [info about category]
+        "a_AchievementA": { // VERIFIED
+            "id": 000000, "points": 0000000, 
+            "devInfo": "xxxxxxx"},
+        "a_AchievementB": { // BUG something_is_wrong
+            "id": 000000, "points": 0000000,
+            "devInfo": "xxxxxxx"},
+        "a_AchievementC": { // VERIFIED
+            "id": 000000, "points": 0000000,
+            "devInfo": "xxxxxxx"}
+    },
+    "c_ExampleCategeroy2": {	// Category - [info about category]
+        "a_AchievementD": { // DISABLED // VERIFIED reason_of_inactivity
+            "id": 000000, "points": 0000000, 
+            "devInfo": "xxxxxxx"}
+    },
+    "c_ExampleCategeroy3": {	// Category - [info about category]
+        "a_AchievementE": { // VERIFIED
+            "id": 000000, "points": 0000000, 
+            "devInfo": "xxxxxxx"},
+        "a_AchievementF": { // VERIFIED
+            "id": 000000, "points": 0000000,
+            "devInfo": "xxxxxxx"}
+    }}
 // -------------------------------------
-achievements_typeByCategory = { // TODO set achievement types
+achievements_typeByCategory = {	// TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -224,33 +376,100 @@ achievements_typeByCategory = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": "xxxxxx",
-	"c_Template": 				sNULL}
+	// "c_Template": 			"xxxxxx",
+	"c_ExampleWeaponLeveling":			sNULL
+	"c_ExampleCategeroy1": 				sNULL,
+	"c_ExampleCategeroy2": 				sNULL,
+	"c_ExampleCategeroy3":				sNULL}
 
-// ===================================
+// ***********************************
 // • Achievements TRIGGER GENERATORS •
-// ===================================
+// ***********************************
 //	- For achievement logic that's reoccuring across multiple triggers
+function achievements_generate_Tally_TemplateA() {
+	return always_false()}
+function achievements_generate_Tally_TemplateB() {
+	return always_false()}
 
-// =========================
+// *************************
 // • Achievements TRIGGERS •
-// =========================
+// *************************
 achievements_triggers = {
-	// "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
-	// 	is_ReleaseRegion(enum_releaseRegion) &&
-	// 	always_false()),
+    // "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP_template
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),
+	"a_Example_WeaponAMaxed": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		on_WeaponAffinityMaxed(WEAPON_a, enum_releaseRegion)),
+	"a_Example_AllWeaponsAffinitiesMaxed": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => {
+		function calculate_totalAffinityOverAllWeapons() {
+			let_total = 0
+			for enum_weapon in const_weapons_data
+				let_total = let_total + const_weapons_data[enum_weapon]["maxWeaponAffinity"]
+			return let_total}
+		
+		let_totalWeaponAffinity = calculate_totalAffinityOverAllWeapons()
+		let_sumOfExpression_prevWeaponAffinities = sum_of(const_weapons_data, (enum_weapon) => prev_WeaponAffinity(enum_weapon, enum_releaseRegion))
+		let_sumOfExpression_currentWeaponAffinities = sum_of(const_weapons_data, (enum_weapon) => current_WeaponAffinity(enum_weapon, enum_releaseRegion))
+
+		return
+			is_ReleaseRegion(enum_releaseRegion) &&
+			let_sumOfExpression_prevWeaponAffinities > (let_totalWeaponAffinity*7)/8	&& // <-- possible save protection
+			let_sumOfExpression_prevWeaponAffinities < let_totalWeaponAffinity			&&
+			let_sumOfExpression_currentWeaponAffinities == let_totalWeaponAffinity	
+		}),	
+	"a_AchievementF": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),
+	"a_AchievementE": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),	
+	"a_AchievementD": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),
+	"a_AchievementC": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),
+	"a_AchievementB": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()),
+	"a_AchievementA": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false())
 	}
 
-// =====================
-// • Achievements TEXT •
-// =====================
+// ********************
+// • Achievement TEXT •
+// ********************
 achievements_titles = {
-	// "a_Template": 			{"en": "xxxxxxxxx"},
-	}
+    // "a_Template":						{"en": "xxxxx"},
+	"a_Example_WeaponAMaxed":				{"en": "xxxxx"},
+	"a_Example_AllWeaponsAffinitiesMaxed":	{"en": "xxxxx"}, 
+    "a_AchievementF":						{"en": "EnglishTitle"},
+    "a_AchievementE":						{"en": "EnglishTitle"},
+    "a_AchievementD":						{"en": "EnglishTitle"},
+    "a_AchievementC":						{"en": "EnglishTitle"},
+    "a_AchievementB":						{"en": "EnglishTitle",
+											"fr": "FrenchTitle",
+											"nl": "DutchTitle"},
+    "a_AchievementA":						{"en": "EnglishTitle",
+											"fr": "FrenchTitle",
+											"nl": "DutchTitle"}}
 // -------------------------------------
 achievements_descriptions = {
-	// "a_Template": 			{"en": "xxxxxxxx"},
-	}
+    // "a_Template": 						{"en": "xxxxx"}, 
+	"a_Example_WeaponAMaxed":				{"en": "xxxxx"},
+	"a_Example_AllWeaponsAffinitiesMaxed":	{"en": "xxxxx"}, 
+    "a_AchievementF":						{"en": "EnglishDescription"},
+    "a_AchievementE":						{"en": "EnglishDescription"},
+    "a_AchievementD":						{"en": "EnglishDescription"},
+    "a_AchievementC":						{"en": "EnglishDescription"},
+    "a_AchievementB":						{"en": "EnglishDescription",
+											"fr": "FrenchDescription",
+											"nl": "DutchDescription"},
+    "a_AchievementA":						{"en": "EnglishDescription",
+											"fr": "FrenchDescription",
+											"nl": "DutchDescription"}}
 
 // ===============================
 // • Achievements INITIALIZATION •
@@ -292,7 +511,7 @@ function achievements_initialize() {
 	function achievements_getType(string_achievementCategory) {
 		let_type = achievements_typeByCategory[string_achievementCategory]
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
-		return let_type}	
+		return let_type}
 	
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
@@ -326,16 +545,22 @@ function achievements_initialize() {
 // =====================
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 									{"en": "xxxxxxxx"},	
+
+	"rp_TemplateB":										{"en": "xxxxxxxx"},
+	"rp_TemplateA":										{"en": "Current time {0}{1}:{2}{3}"},
+
+	"rp_Default":										{"en": "Playing the game"}}	// TODO rp_Default + rp_DefaultPlus
+
 richPresence_LookupTablesText = {
-	// "rp_Template": {
-	// 	"Lookup_A":						{"en": "xxxxxxxx"},
-	// 	"Lookup_B":						{"en": "xxxxxxxx"},
-	// 	"Lookup_C":						{"en": "xxxxxxxx"},
-	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
-	// 	},
+	"lup_LookupTemplate": {
+		"Lookup_A":						{"en": "xxxxxxxx"},
+		"Lookup_B":						{"en": "xxxxxxxx"},
+		"Lookup_C":						{"en": "xxxxxxxx"},
+		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
+		},
 	}
+
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
@@ -343,9 +568,13 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
-	}
+	"lup_LookupTemplate": {
+		0x1: "Lookup_A",
+		0x2: "Lookup_B",
+		0x3: "Lookup_C"}}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]
+
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -398,19 +627,43 @@ function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numb
 	richPresence_lookupTables[string_lookupTableName] = let_dict_lookupTable}
 
 function richPresence_initializeZeroPaddingLookupTables() { // Function is called in richPresence_initialize()
-	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeMinutes_ZeroPadding", 1, 59)
-	richPresence_addZeroPaddingLookupTable("rpp_PresentTimeHours_ZeroPadding", 1, 23)}
+	richPresence_addZeroPaddingLookupTable("rpp_Example_PresentTimeHours_ZeroPadding", 1, 59)
+	richPresence_addZeroPaddingLookupTable("rpp_Example_PresentTimeMinutes_ZeroPadding", 1, 23)}
 
 // =========================
 // • RichPresence DISPLAYS •
 // =========================
+function rp_TemplateA(enum_releaseRegion) {
+	function condition(enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()
+	return rich_presence_conditional_display(
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_TemplateA"),
+		richPresence_callParameterFunction("rpp_Example_PresentTimeHours_ZeroPadding", enum_releaseRegion), // Adds "0" when rpp_PresentTimeHours is < 10
+		richPresence_callParameterFunction("rpp_Example_PresentTimeHours", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_Example_PresentTimeMinutes_ZeroPadding", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_Example_PresentTimeMinutes", enum_releaseRegion),
+	)}
+
+function rp_TemplateB(enum_releaseRegion) {
+	function condition(enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()
+	return rich_presence_conditional_display(
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_TemplateB")
+	)}
+
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
+		richPresence_getText("rp_DefaultPlus"),
+		richPresence_callParameterFunction("rpp_TemplateZ", enum_releaseRegion)
 	)}
+
 function rp_Default() {
 	return rich_presence_display(	
 		richPresence_getText("rp_Default")
@@ -419,7 +672,9 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		rp_TemplateA(enum_releaseRegion) // VERIFIED
+		// rp_TemplateB(enum_releaseRegion) // DISABLED // VERIFIED not as elegant inside rich presence; 	--> !! IF !! turning back on => re-check other richPresence conditions, some other conditions need changing
+		rp_DefaultPlus(enum_releaseRegion) // VERIFIED
 	}} 
 
 // ===========================
@@ -429,6 +684,11 @@ richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
 richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
 richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpp_Example_PresentTimeMinutes(enum_releaseRegion) { return
+	current_DateTime_Minutes(DATETIME_Present, enum_releaseRegion)}
+
+function rpp_Example_PresentTimeHours(enum_releaseRegion) { return
+	current_DateTime_Hours(DATETIME_Present, enum_releaseRegion)}
 
 // -------------------------------------
 richPresence_parameterData = {
@@ -440,31 +700,55 @@ richPresence_parameterData = {
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	//	"rpp_ValueTemplate": {
-	//	 	"RPtype": richPresence_VALUE,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"ValueFormat": "VALUE"},
-
-	//	 "rpp_LookupTemplate": {
-	//	 	"RPtype": richPresence_LOOKUP,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//		"LookupTableID": "lup_LookupTableKey",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
-
-	//	"rpp_MacroTemplate": {
-	//	 	"RPtype": richPresence_MACRO,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"MacroFormat": "Number"},	
+	"rpp_ValueTemplate": {
+		"RPtype": richPresence_VALUE,
+		"Expression": {
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
+		"ValueFormat": "VALUE"},
+	"rpp_LookupTemplate": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
+		"LookupTableID": "lup_LookupTemplate",
+		"LookupFallback": richPresence_getLookupTableText("lup_LookupTemplate", "LOOKUP_FALLBACK")},
+	"rpp_MacroTemplate": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: always_false(), 
+			RELEASE_REGION_EUR: always_false(),
+			RELEASE_REGION_JPN: always_false()},
+		"MacroFormat": "Number"},
 	
+	"rpp_Example_PresentTimeMinutes_ZeroPadding": { // Use in combination with a DateTime. eg. rpp_PresentTimeMinutes => to prepend an extra 0 when the minutes would only evaluate to 1 number 	=> eg. "7" --> "07"
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
+			RELEASE_REGION_JPN: rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
+		"LookupFallback": "0"}, // This "0" + "0" from rpp_PresentTimeMinutes => will show "00"
+	"rpp_Example_PresentTimeMinutes": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_Example_PresentTimeMinutes(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpp_Example_PresentTimeMinutes(RELEASE_REGION_EUR),
+			RELEASE_REGION_JPN: rpp_Example_PresentTimeMinutes(RELEASE_REGION_JPN)},
+		"MacroFormat": "Number"},
+	"rpp_Example_PresentTimeHours_ZeroPadding": {
+		"RPtype": richPresence_LOOKUP,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_PresentTimeHours(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: rpp_PresentTimeHours(RELEASE_REGION_JPN)},
+		"LookupFallback": "0"},
+	"rpp_Example_PresentTimeHours": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_PresentTimeHours(RELEASE_REGION_USA), 
+			RELEASE_REGION_JPN: rpp_PresentTimeHours(RELEASE_REGION_JPN)},
+		"MacroFormat": "Number"},
 	
 
 	}
@@ -522,7 +806,7 @@ function richPresence_initialize() {
 //   ██║     █████╗  ███████║██║  ██║█████╗  ██████╔╝██████╔╝██║   ██║███████║██████╔╝██║  ██║███████╗   \\
 //   ██║     ██╔══╝  ██╔══██║██║  ██║██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██║██╔══██╗██║  ██║╚════██║   \\
 //   ███████╗███████╗██║  ██║██████╔╝███████╗██║  ██║██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝███████║   \\
-//   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\
+//   ╚══════╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝   \\                                                                                                 
 //																										 \\
 // ***************************************************************************************************** \\
 
@@ -542,32 +826,86 @@ leaderboards_coreData = {
 	// 	"id": 000000, "isLowerBetter": false, 
 	// 	"leaderboardFormat": "VALUE",
 	// 	"devInfo": "xxxxxxx"},
+
+	"lb_StageAClearTime": { // VERIFIED 
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardFormat": "SECS",
+		"devInfo": "xxxxxxx"},
+	"lb_StageBClearTime": { // VERIFIED 
+		"id": 000000, "isLowerBetter": true,
+		"leaderboardFormat": "SECS",
+		"devInfo": "xxxxxxx"},
 	}
 
 // ===================================
 // • Leaderboards TRIGGER GENERATORS •
 // ===================================
 //	- For leaderboard logic that's reoccuring across multiple triggers
-
+function leaderboards_generate_StartTrigger_StageClearTime(enum_releaseRegion) {
+	return 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()}
+function leaderboards_generate_CancelTrigger_StageClearTime(enum_releaseRegion) {
+	return 
+		is_ReleaseRegion(enum_releaseRegion) &&
+		always_false()}
+function leaderboards_generate_SubmitTrigger_StageClearTime(enum_releaseRegion) =>
+	is_ReleaseRegion(enum_releaseRegion) &&
+	always_false()
+function leaderboards_generate_ValueMeasure_StageClearTime(enum_releaseRegion) =>
+	measured(get_Timer_ClearTime_InSeconds(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
 // =========================
 // • Leaderboards TRIGGERS •
 // =========================
-leaderboards_startTriggers = {	
+leaderboards_startTriggers = {
+	"lb_StageAClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_StartTrigger_StageClearTime()),
+	"lb_StageBClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_StartTrigger_StageClearTime()),
 	}
-leaderboards_cancelTriggers = {	
+leaderboards_cancelTriggers = {
+	"lb_StageAClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_CancelTrigger_StageClearTime()),
+	"lb_StageBClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_CancelTrigger_StageClearTime()),
 	}
 leaderboards_submitTriggers = {
+	"lb_StageAClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_SubmitTrigger_StageClearTime()),
+	"lb_StageBClearTime": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		leaderboards_generate_SubmitTrigger_StageClearTime()),
 	}
-leaderboards_valueMeasures = {		
+leaderboards_valueMeasures = {
+	"lb_StageAClearTime": () {
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = leaderboards_generate_ValueMeasure_StageClearTime(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
+	"lb_StageBClearTime": () {
+		function valueMeasure(enum_releaseRegion) => 
+			measured(get_Timer_TotalClearTime_InMinutes(enum_releaseRegion), when = is_ReleaseRegion(enum_releaseRegion))
+		let_array_valueMeasures = []
+		for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+			let_valueMeasure = valueMeasure(enum_releaseRegion)
+			array_push(let_array_valueMeasures, let_valueMeasure)
+		}
+		return max_of(let_array_valueMeasures)},
 	}
+
 // =====================
 // • Leaderboards TEXT •
 // =====================
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_StageAClearTime":					{"en": "xxxxxxxx"},
+	"lb_StageBClearTime":					{"en": "xxxxxxxx"}, 
 	}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+	"lb_StageAClearTime":					{"en": "xxxxxxxx"},
+	"lb_StageBClearTime":					{"en": "xxxxxxxx"}, 
 	}
 
 // ===============================
@@ -615,10 +953,10 @@ function leaderboards_initialize() {
 			lower_is_better = let_leaderboardData["isLowerBetter"])}
 	}
 
-// ====================================================================== \\
+// ********************************************************************** \\
 //   █ █▄░█ █ ▀█▀ █ ▄▀█ █░░ █ ▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█     █▀▀ █▀█ █▀▄ █▀▀   \\
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
-// ====================================================================== \\
+// ********************************************************************** \\
 function initializeRAscript() {
 	achievements_initialize()
 	richPresence_initialize()
