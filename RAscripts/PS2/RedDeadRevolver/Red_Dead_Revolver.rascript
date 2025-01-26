@@ -3,7 +3,8 @@
 // █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
 // ***************************************************************** \\
 // #ID = 11094
-// md5: c06c59490d239fb56ace0388ac2b2842 - PAL/EUR
+// md5: 36dcc42763a1ef425eda6c0b498645c2 (PAL) - b68142ed452436319bff1a2cc80fa697 (NTSC-U)
+// RA Hash: c06c59490d239fb56ace0388ac2b2842 (PAL) - 1a9f22c6a88cd43b66934f5071d1dc52 (NTSC-U)
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
 // RA Game Page: https://retroachievements.org/game/11094
@@ -3806,7 +3807,7 @@ achievements_coreData = {
 		"a_BountyHuntChapter24": { // VERIFIED
 			"id": 449104, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			"devInfo": "Complete Bounty Hunter mission for Chapter 24"},
-		// "a_BountyHuntChapter25": { // VERIFIED (RATools v1.15.0) // DISABLED - MANUAL_CONSTRUCTION
+		// "a_BountyHuntChapter25": { // VERIFIED (RATools v1.15.0) // DISABLED - MANUAL_CONSTRUCTION - usage of Remember/Recall
 			// "id": 449103, "points": achievement_POINTS_Advanced, "type": achievements_TYPE_Standard,
 			// "devInfo": "Complete Bounty Hunter mission for Chapter 25"},
 		"a_BountyHuntChapter27": { // VERIFIED
@@ -7638,7 +7639,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
@@ -7649,7 +7650,7 @@ achievements_triggers = {
 			// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because ShowdownCharacter:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
-			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
@@ -7668,7 +7669,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because ShowdownCharacter:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
@@ -7679,7 +7680,7 @@ achievements_triggers = {
 		// ==== Core (Alt) Group ====
 			is_ReleaseRegion(enum_releaseRegion)
 			// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because JournalPage:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
-			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+			&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 			&& !is_AnimationLoading(enum_releaseRegion)
 			&& is_RStar_Cheat_inActive(enum_releaseRegion)
 
@@ -7698,7 +7699,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					// && is_Playing_SinglePlayerCampaign(enum_releaseRegion) // ---BugFix---> line is commented, because JournalPage:MannyQuinn needs to be unlocked in Showdown Mode. There are already delta checks in place so removing this logic won't be a big deal
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion),
 				format = "percent")
@@ -7713,7 +7714,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> Health upgrades are not unlockable during this menu; this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
@@ -7728,7 +7729,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& !is_StartChpMenu_active(enum_releaseRegion) // ---1 line: bugfix---> Deadeye upgrades are not unlockable during this menu, this line in necessary as the struct storing DynamicBitset_PlayerProfileUnlocks may be remade during StartChpMenu  
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
@@ -7745,7 +7746,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
@@ -7760,7 +7761,7 @@ achievements_triggers = {
 				when = 
 					is_ReleaseRegion(enum_releaseRegion) 
 					&& is_Playing_SinglePlayerCampaign(enum_releaseRegion)
-					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured may show up/or even trigger when Structs are reconstructed
+					&& !is_LogoScreenLoading(enum_releaseRegion) // ---2 Lines---> checks if a mission is being loaded. Necessary as otherwise RAmeasured indicator may show up/or even trigger when Structs are reconstructed during loading
 					&& !is_AnimationLoading(enum_releaseRegion)
 					&& is_RStar_Cheat_inActive(enum_releaseRegion))
 		}),
@@ -7839,7 +7840,7 @@ achievements_titles = {
 	"a_BountyHuntChapter27": 				{"en": "Diligent Fall"},
 	"a_BountyCompletionAll": 				{"en": "Out for Blood"},
 
-	"a_BigMoney":							{"en": "It Was Always About the Money"},
+	"a_BigMoney":							{"en": "It Always Was About the Money"},
 	"a_PerfectAccuracy":					{"en": "Deadeye"}, 
 	"a_SaveCurly":							{"en": "A Curly Deal for Carbine Zeal"},
 	"a_PerfectShootingTutorial": 			{"en": "Rookie Sharpshooter"},
