@@ -1,0 +1,25 @@
+█▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█
+█▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄
+
+Darkwatch (NTSC-U) - PlayStation 2
+. This file details how to transform below hacks/cheats/patches for PCSX2 into ROMpatches (xdelta patches)
+. Also contains some general notes regarding the patches
+. RAMaddresses according to rcheevos/RAIntegration/RALibretro RAM mapping
+
+Credits:
+- 50/60 FPS Hack, by PeterDelta (https://github.com/PeterDelta/PCSX2/blob/main/patches/SLES-52478_E2E67E23.pnach)
+...............................................................................................
+
+FPS Hack Notes:
+- Might need EE Overclock (130%) in PCSX2 emulator setting
+- RAPatch discontinued because the game freezes when pressing start at StartTitleMenu with patch enabled
+
+
+(pnach PCSX2)
+RAMaddress +    RequiredRAMvalue    InitialRAMvalue     ROMaddress      InitialROMvalue     NewROMvalue     ExtraInfo
+                32-bit              32-bit              32-bit                              
+--------------------------------------------------------------------------------------------------------------
+
+[50/60 FPS]                                                             8-bit               8-bit 
+patch=1,EE,001018AC,word,24030001   24030002            $0x000C3782     80                  83              Byte at ROMaddress $0xC3782 is XOR'd by 0x82 and result is written to RAMaddress $0x1018AC. This byte seems to be part of some compressed file/package.
+                                                                                                    

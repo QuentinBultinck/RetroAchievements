@@ -9,6 +9,8 @@
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
+// TODO current task: Code Note InGameMenuData pointer
+
 /* TODO Find code note for:
 	- Versus Mode 
 		- Player Logic (powers)

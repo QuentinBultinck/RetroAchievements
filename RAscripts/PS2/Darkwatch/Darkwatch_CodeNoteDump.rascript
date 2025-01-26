@@ -346,13 +346,13 @@
 //          InitialValue = 0x94C00
 //          HackValue = 0x3C090010
 // $4F3308: [NTSCU][AssemblyInstruction:FPScontrol(indirect) |32-bit]
-//          @60 FPS Hack (NTSC-U)
+//          @FPS Hack (NTSC-U)
 //          - This value is a MIPS/ASM instruction which is read from ROMaddress 0x05AA1008. This instruction is part of a function which writes to [Lower4:FPScontrol] at $0x71fa68
 //          
 //          InitialValue = 0x93A30000
 //          HackValue = 0x24030001
 // $4F45F8: [PAL][AssemblyInstruction:FPScontrol(indirect) |32-bit]
-//          @60 FPS Hack (PAL)
+//          @FPS Hack (PAL)
 //          - This value is a MIPS/ASM instruction which is read from ROMaddress 0x00E2E2F8. This instruction is part of a function which writes to [Lower4:FPScontrol] at $0x721368
 //          
 //          InitialValue = 0x93A30000
@@ -482,14 +482,14 @@
 //          InitialValue = 1.333333 (0x3FAAAAAB)
 //          HackValue = 1.777778 (0x3FE38E38)
 // $71FA68: [NTSCU][Lower4:FPScontrol |32-bit]
-//          @60 FPS Hack (NTSC-U)
+//          @FPS Hack (NTSC-U)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F3308
 //          
 //          InitialValue = 0x0 => 30 fps
 //          HackValue = 0x1 => 60 fps
 // $71FF88: [8-bit] in gameplay flag
 // $721368: [PAL][Lower4:FPScontrol |32-bit]
-//          @60 FPS Hack (PAL)
+//          @FPS Hack (PAL)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F45F8
 //          
 //          InitialValue = 0x2 => 25 fps
@@ -503,12 +503,12 @@
 //          +0xA8 - [8-bit:VampireVisionState]
 //          | - value > 0 => Vampire Vision is active
 //          | - value == 0 => Vampire Vision is NOT active
-// $721788: [PAL][32-bit (base) Pointer:EntityData]
+// $721788: [PAL][32-bit (base) Pointer:EntityList]
 //          
 //          ------Simplified_Documentation------
-//          (Example pointer chain to HP of PlayerEntityActor. Where the PlayerEntityActor [Array:EntityData].index is 38 and HealthComponent [Dictionary:EntityComponents].index is 15)
+//          (Example pointer chain to HP of PlayerEntityActor. Where the PlayerCharacterEntityActor [Array:Entities].index = 38 and HealthComponent [Dictionary:EntityComponents].index = 15)
 //          
-//          +0xC - [32-bit (layer-1) Pointer] -> [Array:EntityData]
+//          +0xC - [32-bit (layer-1) Pointer] -> [Array:Entities]
 //          .+(index*0x4) - [32-bit (layer-2) Pointer:EntityData_A]
 //          ..+0x0 - [32-bit (layer-3) Pointer:EntityData_B] -> [Struct:EntityData]
 //          ...
@@ -529,7 +529,7 @@
 //          
 //          ------Advanced_Documentation------
 //          +0xC - [32-bit (layer-1) Pointer]
-//          .+0x0 - [Variable Size Array:EntityData] List of [Pointer:EntityData_A] -> [Pointer:EntityData_B] -> [Struct:EntityData]
+//          .+0x0 - [Variable Size Array:Entities] List of [Pointer:EntityData_A] -> [Pointer:EntityData_B] -> [Struct:EntityData]
 //          .| - Definition of [Struct:EntityData] below
 //          .| - Each area within a map, stores various entities
 //          .| - "Entity" can be an actor, light, weaponPickup, collisionSection, bossWeaponAttack, spawnPoint...
@@ -551,18 +551,9 @@
 //          |.| - Eg. for Playercharacter this is "__PlayerActor0", duing Chapter 1
 //          |.| - Eg. for Cassidy this is "DWAgentCassidy", duing Chapter 1
 //          |
-//          |+0x58 - [32-bit (layer-2) Pointer:EntityComponents]
-//          |.+0x0 - [Variable Size Dictionary:EntityComponents] List of [Struct:ListItem_EntityComponent]
-//          |.| - Definition of [Struct:ListItem_EntityComponent] below
-//          |.| - A key-value paired list of EntityComponents (= components with game logic linked to the Entity)
-//          |.| - Size and EntityComponents in the list is dependent on the Entity
-//          '
-//          
-//          [Definition Struct:ListItem_EntityComponent |8-byte]
-//          |''''''''''''''''''''''''''''''
-//          |+0x0 - [32-bit:DictionaryKey]
-//          |+0x4 - [32-bit:DinctionaryValue] || [32-bit Pointer:EntityComponentData] -> [Struct:EntityComponentData]
-//          || - Definition of [Struct:EntityComponentData] below
+//          |+0x58 - [32-bit (layer-2) Pointer:EntityComponentsDictionary] -> [Dictionary:EntityComponents]
+//          |.| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:EntitycomponentData] -> [Struct:EntityComponentData]
+//          |.| - Depending on the Entity, this dictionary has differing ListItems
 //          '
 //          
 //          [Definition Struct:EntityComponentData |Variable Size]
@@ -974,8 +965,7 @@
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
 // $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
 //          - Identical to [Lower4:DifficultyID] at $0x965c7c
-// $9114B4: (unverified - if the hexadecimal IDs are consistent)
-//          [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
+// $9114B4: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          - String CheckpointIDs accessed via [Pointer:CheckpointData_1] at $0x807840
 //          - RespawnPointIDs listed below
 //          
@@ -1240,16 +1230,22 @@
 //          - This base pointer is only active during gameplay
 //          
 //          +0x30 - [12-byte Struct(Coordinates):PlayerLocation(copy)]
-//          | - These coordinates are copied from [Struct:EntityComponentData.CharacterStateMachineComponent].[Struct(Coordinates):PlayerLocation(functional)]
+//          | - These coordinates are copied from [Struct:EntityComponent.CharacterStateMachineComponent].[Struct(Coordinates):PlayerLocation(functional)]
 //          | - Definition of [Struct:Coordinates] below
 //          
 //          +0x44 - [32-bit (layer-1) Pointer]
 //          .+0x2 - [Variable Size ASCII:EntityNameID]
 //          .| - ASCII = "Chaz", this is a short name for Jericho Cross (PlayerCharacter)
 //          
-//          +0x58 - [32-bit (layer-1) Pointer:EntityComponents] -> [Dictionary:EntityComponents]
+//          
+//          _____EntityComponents_____
+//          +0x58 - [32-bit (layer-1) Pointer:EntityComponentsDictionary] -> [Dictionary:EntityComponents]
+//          .+0x4C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.InventoryComponent]
+//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x49
+//          .| - Definition of [Struct:EntityComponent.InventoryComponent] below
+//          .
 //          .+0x5C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.CharacterStateMachineComponent]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x7B
+//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x7B
 //          .| - This pointer is only valid when playing Multiplayer Mode
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
 //          ...+0x0 - [32-bit (layer-4) Pointer]
@@ -1260,7 +1256,7 @@
 //          ......| - Definition of [Struct:Coordinates] below
 //          .
 //          .+0x64 - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.CharacterStateMachineComponent]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x7B
+//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x7B
 //          .| - This pointer is only valid when playing SinglePlayer Mode
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
 //          ...+0x0 - [32-bit (layer-4) Pointer]
@@ -1271,15 +1267,17 @@
 //          ......| - Definition of [Struct:Coordinates] below
 //          .
 //          .+0x74 - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.HealthComponent(player)]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x4B
+//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
 //          .| - This pointer is only valid when playing Multiplayer Cooperative Mode
 //          .| - Definition of [Struct:EntityComponent.HealthComponent(player)] below
 //          .
 //          .+0x7C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.HealthComponent(player)]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x4B
+//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
 //          .| - This pointer is only valid when playing SinglePlayer Mode OR Multiplayer Versus Mode
 //          .| - Definition of [Struct:EntityComponent.HealthComponent(player)] below
 //          
+//          
+//          _____WeaponLogicData_____
 //          +0x70 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer] -> [Struct:EntityData]
 //          .| - Definition of [Struct:EntityData] at $0x721788
@@ -1289,46 +1287,110 @@
 //          ...+x2 - [Variable Size ASCII:Equipped_WeaponNameID]
 //          ...| - WeaponNameIDs listed below
 //          ..
-//          ..+0x58 - [32-bit (layer-3) Pointer] -> [Dictionary:EntityWeaponComponents] List of [Struct:ListItem_EntityComponent]
-//          ..| - Definition of [Struct:ListItem_EntityComponent] at $0x721788
-//          ..| - A key-value paired list of EntityComponents (= components with game logic linked to the Entity)
-//          ..| - This dictionary contains data for the different weapons of the player
+//          ..+0x58 - [32-bit (layer-3) Pointer] -> [Dictionary:EntityWeaponComponents_A]
+//          ..| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:EntityWeaponComponentData]
 //          ..| - The ListItems get reordered when unlocking certain gameplay mechanics. (eg. when unlocking dynamite, some of the ListItems get reordered)
+//          ..| - [Struct:EntityWeaponComponent.WeaponComponent].[32-bit:DictionaryKey] = 0x2F
 //          ...
+//          ...+0xC - [32-bit (layer-4) Pointer:EntityWeaponComponent_Dynamite] -> [Struct:EntityWeaponComponent.WeaponComponent(throwable)]
+//          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(throwable)] below
 //          ...
-//          ...+0xC - [32-bit (layer-4) Pointer:EntityComponentData_Dynamite] -> [Struct:EntityComponentData.WeaponComponent(throwable)]
-//          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(throwable)] below
-//          ...
-//          ...+0x2C - [32-bit (layer-4) Pointer:EntityComponentData_Crossbow] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
-//          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
+//          ...+0x2C - [32-bit (layer-4) Pointer:EntityWeaponComponent_Crossbow] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
+//          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when wielding the Crossbow
 //          ...
-//          ...+0x34 - [32-bit (layer-4) Pointer:EntityComponentData_BaiscPistol] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
-//          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
+//          ...+0x34 - [32-bit (layer-4) Pointer:EntityWeaponComponent_BaiscPistol] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
+//          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid for Chapter 1, when the player only has the BasicPistol equipped
-//          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityComponentData_NormalWeapon(1)]
+//          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityWeaponComponent_NormalWeapon(noDynamite)]
 //          ...
-//          ...+0x3C - [32-bit (layer-4) Pointer:EntityComponentData_NormalWeapon(noDynamite)] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
-//          ...| - The [32-bit:DictionaryKey] for this [Dictionary:EntityWeaponComponents].[Struct:ListItem_EntityComponent] = 0x2F
-//          ...| - Definition of [Struct:EntityComponentData.WeaponComponent(weapon)] below
+//          ...+0x3C - [32-bit (layer-4) Pointer:EntityWeaponComponent_NormalWeapon(noDynamite)] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
+//          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when the player has not unlocked dynamite yet, thus should only be used up to Chapter 3, where the player first unlocks dynamite
-//          ...| - Once the player has unlocked dynamite, refer to [Pointer:EntityComponentData_NormalWeapon(2)]
+//          ...| - This pointer is then only valid for the RedeemerRevolver as well as the CarbineRifle
+//          ...| - Once the player has unlocked dynamite, refer to [Pointer:EntityWeaponComponent_NormalWeapon(dynamiteUnlocked)]
 //          .
 //          .+0xC - [32-bit (layer-2) Pointer]
 //          ..+0x0 - [32-bit (layer-3) Pointer]
-//          ...+0x58 - [32-bit (layer-4) Pointer]
-//          ....+0x34 - [32-bit (layer-5) Pointer:EntityComponentData_MultiplayerNormalWeapon] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
+//          ...+0x58 - [32-bit (layer-4) Pointer] -> [Dictionary:EntityWeaponComponents_B]
+//          ....+0x34 - [32-bit (layer-5) Pointer:EntityWeaponComponent_MultiplayerNormalWeapon] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
 //          ....| - This pointer chain is only valid in Multiplayer Versus Mode and only for a few select weapons
 //          ....
-//          ....+0x3C - [32-bit (layer-5) Pointer:EntityComponentData_NormalWeapon(dynamiteUnlocked)] -> [Struct:EntityComponentData.WeaponComponent(weapon)]
+//          ....+0x3C - [32-bit (layer-5) Pointer:EntityWeaponComponent_NormalWeapon(dynamiteUnlocked)] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
 //          ....| - This pointer chain is only valid when the player has unlocked dynamite
 //          
-//          [Definition Struct:EntityComponentData.CharacterStateMachineComponent |??-byte]
+//          
+//          [Definition Struct:EntityComponent.InventoryComponent |??-byte]
 //          |''''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "InventoryComponent"
 //          |
+//          |+0x88 - [32-bit (layer-1) Pointer]
+//          |.
+//          |._____Selected/ActiveRune_____
+//          |.+0x38 - [32-bit (layer-2) Pointer]
+//          |..
+//          |..+0x4 - [32-bit (layer-3) Pointer]
+//          |...+0x2 - [11-byte ASCII] = "active_rune"
+//          |..
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |...+0x2 - [Variable Size ASCII:PowerRuneNameID]
+//          |...| - PowerRuneNameIDs listed below
+//          |.
+//          |._____RuneUnlocks + RuneLogicData_____
+//          |.+0x44 - [32-bit (layer-2) Pointer]
+//          |..+0x10 - [32-bit (layer-3) Pointer] -> [192-byte Array:PowerRunes]
+//          |..| - This array contains (12x) [Struct:ListItem_PowerRune |16-byte], sometimes it only contains (11x) ListItems, for some reason
+//          |..| - Each available PowerRune should have one [Struct:ListItem_PowerRune] inside this array, refer to PowerRuneNameIDs below
+//          |..| - Definition of [Struct:ListItem_PowerRune] below
+//          '
+//          
+//          [Definition Struct:ListItem_PowerRune |16-byte]
+//          |''''''''''''''''''''''''''''''
+//          |+0x0 - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_A]
+//          |.+0x44 - [32-bit (layer-2) Pointer]
+//          |..+0x2 - [Variable Size ASCII:PowerRuneNameID]
+//          |..| - PowerRuneNameIDs listed below
+//          |.
+//          |.+0x58 - [32-bit (layer-2) Pointer] -> [Dictionary:PowerRuneComponents]
+//          |.| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:PowerRuneComponentData]
+//          |.| - [Struct:PowerRuneComponent.RuneComponent].[32-bit:DictionaryKey] = 0x82
+//          |.| - [Struct:PowerRuneComponent.MysticArmourRuneComponent].[32-bit:DictionaryKey] = 0x8D
+//          |.| - ...
+//          |
+//          |
+//          |+0x4 - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_B]
+//          |+0x8 - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_C]
+//          |+0xC - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_D]
+//          '
+//          
+//          [Definition Struct:PowerRuneComponent.RuneComponent |256-byte]
+//          |'''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-xxx) Pointer]
+//          |.+0x2 - [Variable Size ASCII:PowerRuneComponentName] = "RuneComponent"
+//          |
+//          |+0x20 - [32-bit (layer-xxx) Pointer]
+//          |.+0x2 - [Variable Size ASCII:PowerRuneNameID]
+//          |.| - PowerRuneNameIDs listed below
+//          |
+//          |+0x74 - [32-bit:ReputationPointsTillPowerUnlock]
+//          || - This value regulates when the Player can unlock this power, when this value == [32-bit:RequiredReputationPoints], then the game unlocks this Power
+//          || - This value also indirectly regulates the PowerSelectionUI
+//          |
+//          |+0x80 - [32-bit (layer-xxx) Pointer]
+//          |.+0x2 - [Variable Size ASCII:ReputationType]
+//          |.| - ReputationTypes: "Evil", "Good", "Neutral"
+//          
+//          |+0x84 - [32-bit:RequiredReputationPoints]
+//          |
+//          |+0xFC - [Float:PowerTimeLeft |32-bit]
+//          || - Time in seconds; Countdown timer
+//          || FloatValue = 0.0 => Power is inactive
+//          || FloatValue > 0.0 => Power is active
+//          '
+//          
+//          [Definition Struct:EntityComponent.CharacterStateMachineComponent |??-byte]
+//          |''''''''''''''''''''''''''''''
 //          |+0x8 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "CharacterStateMachineComponent"
 //          |
@@ -1342,7 +1404,7 @@
 //          |/
 //          '
 //          
-//          [Definition Struct:EntityComponentData.HealthComponent(player) |??-byte]
+//          [Definition Struct:EntityComponent.HealthComponent(player) |??-byte]
 //          |''''''''''''''''''''''''''''''
 //          |+0x8 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "HealthComponent"
@@ -1362,7 +1424,7 @@
 //          || - Reference |[Float:BloodPowerGauge(display)] at $0x965d2c
 //          '
 //          
-//          [Definition Struct:EntityComponentData.WeaponComponent(weapon) |??-byte]
+//          [Definition Struct:EntityWeaponComponent.WeaponComponent(weapon) |??-byte]
 //          |'''''''''''''''''''''''
 //          | - This struct contains data on weapon ammuntion
 //          |
@@ -1384,7 +1446,7 @@
 //          || - This value regulates how many bullets can be loaded inside the gun
 //          '
 //          
-//          [Definition Struct:EntityComponentData.WeaponComponent(throwable) |??-byte]
+//          [Definition Struct:EntityWeaponComponent.WeaponComponent(throwable) |??-byte]
 //          |''''''''''''''''''''''''''''''
 //          | - This struct contains data which regulates the throwable dynamite bundles
 //          |
@@ -1428,6 +1490,27 @@
 //          | "Dynamite"
 //          | "SplitterGrenades"
 //          | ...
+//          '
+//          
+//          # PowerRuneNameIDs (string)
+//          |''''''''''''''''''
+//          |---Neutral Powers--- (acquired independent from Good/Evil choices)
+//          | "VampireShieldRune => Blood Shield
+//          | "BloodVisionRune" => Blood Vision (zoom-in)
+//          | "VampireJumpRune" => Double Jump
+//          |
+//          |---Good Powers---
+//          | "NullRune" => Default Rune??? (acquired independent from Good/Evil choices, although this one is marked as ReputationType "Good")
+//          | "SilverBrandRune" => Silver Bullet
+//          | "FearRune" => Fear
+//          | "MysticArmourRune" => Mystic Armour
+//          | "VindicatorRune" => Vindicator
+//          |
+//          |---Evil Powers---
+//          | "BloodFrenzyRune" => Blood Frenzy
+//          | "TurnRune" => Turn
+//          | "BlackShroudRune" => Black Shroud
+//          | "SoulStealerRune" => Soul Stealer
 //          '
 // $965CD8: [PAL][32-bit (base) Pointer:PlayerSavedStats-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)

@@ -3,7 +3,8 @@
 //   █▄█ █▀█ █░▀░█ ██▄    ░█░ █ ░█░ █▄▄ ██▄   \\
 // ****************************************** \\
 // #ID = [game_ID_here]	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
-// md5: [hash_here] - [region_here]
+// md5: [hash_here] (region_here)
+// RA Hash: [hash_here] (region_here)
 // Platform: [platform_here]
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: [link_to_game_page]
