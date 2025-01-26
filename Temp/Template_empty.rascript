@@ -95,13 +95,48 @@ memory_regionOffsets = {
 function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
-memory_dataStructures = {
+memory_StructDefs = {
 	}
-function memory_getDataStructSizeInBytes(string_structKey) =>
-	memory_dataStructures[string_structKey]["sizeInBytes"]
+function memory_getStruct_SizeInBytes(string_structKey) =>
+	memory_StructDefs[string_structKey]["sizeInBytes"]
 
-function memory_getDataStructOffset(string_structKey, string_offsetKey) =>
-	memory_dataStructures[string_structKey]["offsetsToMembers"][string_offsetKey]
+function memory_getStruct_OffsetToMember(string_structKey, string_memberKey) =>
+	memory_StructDefs[string_structKey]["offsetToMember"][string_memberKey]
+
+function memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
+
+function memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
+
+function memory_getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"]
+	
+function memory_getStruct_OffsetToPointedToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) => 
+	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
+
+function memGenerate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
+	let_addAddressChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
+
+function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion)
+	let_addAddressChain = dword(memAdrr_basePointer)
+    for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
+		if (let_index == length(let_array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + let_array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + let_array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
+
+
+
 // #endregion MEM - struct definitions
 
 // ==========================
@@ -112,8 +147,8 @@ memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
-function memory_getAddress(enum_dateType, string_addrKey, enum_releaseRegion) {
-	let_memAddr = memory_addresses[enum_dateType][string_addrKey][enum_releaseRegion]
+function memory_getAddress(string_addrKey, enum_releaseRegion) {
+	let_memAddr = memory_addresses[string_addrKey][enum_releaseRegion]
 	if(let_memAddr == sNULL) util_throwError(format("Memory address for '{0}' - Region '{1}' is NULL", string_addrKey, enum_releaseRegion))
 	return let_memAddr}	
 // #endregion MEM - address storage
@@ -153,20 +188,20 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // #endregion MEM - utility
 
 // ................
-// ◦ Sub Header 1 ◦
+// ◦ Sub_Header_1 ◦
 // ''''''''''''''''
-// #region Sub Header 1
+// #region Sub_Header_1
 
 // ----------------Divider---------------------
 
-// #endregion Sub Header 1
+// #endregion Sub_Header_1
 
 // ................
-// ◦ Sub Header 2 ◦
+// ◦ Sub_Header_2 ◦
 // ''''''''''''''''
-// #region Sub Header 2
+// #region Sub_Header_2
 
-// #endregion Sub Header 2
+// #endregion Sub_Header_2
 
 // =========================
 // • MEMORY initialization •
@@ -216,12 +251,17 @@ achievements_coreData = {
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000,
-	//	"devInfo": "xxxxxxx"},
+	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Template": { // Category - info_here
-
-	}}
+		"a_Template": 	{
+			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+		}
+	"c_Template2": { // Category - info_here
+		"a_Template2": 	{
+			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+		}
+	}
 // -------------------------------------
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
