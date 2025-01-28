@@ -1,0 +1,6 @@
+gametitle=Red Dead Revolver (USA) [SLUS-20500]
+comment=Redump --> http://redump.org/disc/6380/
+author=ASolidSnack
+
+// Unlock all difficulty modes for newly created Player Profiles
+patch=1,EE,00180438,extended,AC9407B8

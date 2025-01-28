@@ -1,0 +1,35 @@
+// ***************************************************************** \\
+// █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█ \\
+// █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
+// ***************************************************************** \\
+
+=================
+|| Pnach Notes ||
+=================
+
+Unlock all difficulty modes
+''''''''''''''''''''''''''
+RAMaddress: $0x001813D0 --> This stores a MIPS/ASM instruction, which is part of a function which helps to create blank/empty/new PlayerProfiles.
+InitialRAMvalue: 0xAC8007B8 --dissassembled--> "sw zero,0x7B8(a0)"
+- This 32-bit value in RAM at "register a0 + 0x7B8" is the PlayerProfile's unlocked difficulty modes, which are only selectable when pressing 'New Game' at MainMenu
+- Possible values: 0x0 => normal; 0x1 => Hard; 0x2 and higher => Very Hard and Red Wood Revolver
+- More info can be found on https://retroachievements.org/codenotes.php?g=11094 - CodeNote(0x740608): [Struct:PlayerProfileData].[8-bit:UnlockedDifficulties]
+NewRAMvalue: 0xAC9407B8 --dissassembled--> "sw s4,0x7B8(a0)"
+- Register s4 always stores value 0x3 at the point this instruction is executed, so this can be used to write to this RAM value
+- This makes it so each new PlayerProfile can select all 4 difficulty modes when pressing 'New Game'
+
+
+
+==============
+|| Use With ||
+==============
+
+(Redump)
+File:               Red Dead Revolver (Europe) (En,Fr,De,Es,It).iso
+BitSize:            19 Gbit
+Size (Bytes):       2617507840
+PCSX2 CRC:          E2E67E23
+CRC32:              C042DC14
+MD5:                36DCC42763A1EF425EDA6C0B498645C2
+SHA1:               8A95F62804100A1CAA093015BBAB99B78DDDAB10
+SHA256:             8A34D82DDF844C624BDA7F8D65CFFF8AA62C04A9E1491699842FDFD173D0563B
