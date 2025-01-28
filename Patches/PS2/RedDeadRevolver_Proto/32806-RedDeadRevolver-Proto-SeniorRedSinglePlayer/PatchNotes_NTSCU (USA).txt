@@ -1,0 +1,50 @@
+// ***************************************************************************** \\
+// █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█ 		     \\
+// █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄   PROTOTYPE \\
+// ***************************************************************************** \\
+
+=======================
+|| Original ROM Info ||
+=======================
+~Prototype~ Red Dead Revolver (NTSC-U) - PlayStation 2
+No-Intro: https://datomatic.no-intro.org/index.php?page=show_record&s=169&n=0374 (NTSC-U)
+RA Hash: 286690e373e89d91408387a4a68c6742 (NTSC-U)
+
+
+
+==================
+|| General Info ||
+==================
+. This file details the ROM patch
+. Also contains some general notes regarding the patches
+. RAMaddresses according to rcheevos/RAIntegration/RALibretro RAM mapping
+
+
+
+==========================================
+|| Patch Notes - SeniorRed SinglePlayer ||
+==========================================
+- By default this prototype build loads CharacterModel "training red (trd)" for all SinglePlayer Levels.
+    This patch changes this so it loads "new red (nrd)" instead
+- The game has 4 different CharacterModels for the main protagonist, Red. 
+    I tried looking for a way to make the 4 different CharacterModels for Red work across the different levels, 
+    where it would make sense (eg. TrainingStage loads "trd", TitleStage loads "nrd"), but this is impossible due to how this build is coded. 
+    Implementing something like this would pretty much mean creating a hack of this build by adding/changing a significant amount of code. But this is too far fetched for me.
+
+----- List Red CharacterModels 
+----- FullName      (CharacterModelID)      Description
+    - training red  (trd = 0x747264)    --> Teen Red
+    - snow red      (yrd = 0x797264)    --> Teen Red with different (warmer) jacket
+    - red           (red = 0x726564)    --> Senior Red without a long coat
+    - new red       (nrd = 0x6E7264)    --> Senior Red with long coat, as seen on trailers and TitleScreen
+
+
+
+=====================
+|| Technical Notes ||
+=====================
+RAMaddress +    InitialRAMvalue     RequiredRAMvalue    ROMaddress      InitialROMvalue     NewROMvalue     ExtraInfo
+---------------------------------------------------------------------------------------------------------------------
+
+[New Red]       32-bit              32-bit                              32-bit              32-bit
+0x00499878      00647274            0064726E            0x0806D078      00647274            0064726E        ASCII "trd" changed to "nrd", this ASCII determines which CharacterModel is loaded for all SinglePlayer Levels

@@ -1,7 +1,6 @@
 // ~Prototype~ Red Dead Revolver
 // #ID = 32806
 
-// $421510: menu select training stage
 // $4215A0: [NTSCU][32-bit (base) Pointer:MenuData] -> [Struct:MenuData]
 //          - This pointer points to the currently active/displayed menu
 //          - Depending on which menu is displayed [Struct:MenuData] looks different (refer to MenuIDs)
@@ -144,7 +143,7 @@
 //          |(only lists IDs useful for achievement logic)
 //          |''''''''''''''''''''
 //          | "red_stn_idl_11" => Tipping hat (Press and hold X or R1 whilst standing still)
-//          | "red_stn_idl_12" => ?? (this may be part of above animation)
+//          | "red_stn_idl_12" => Talk animation (Press X near and facing friendly NPC)
 //          | "red_upp_jump" => Jump whilst standing still
 //          | "red_for_jump" => Jump whilst moving forward
 //          | "red_fnc_pst_vlt => Fence vault
@@ -180,6 +179,51 @@
 //          - Pointer defined at $0x421850
 // $421A84: [NTSCU][8-bit:Showdown_Kills-Player4]
 //          - Documentation at $0x421868
+// $421DAC: [NTSCU][32-bit (base) Pointer:NPCdata]
+//          - This points to some sort of linked list, Each ListItem is [Struct:NPCdata]
+//          - Each Singleplayer Level stores its own predetermined list of NPCdata. The list is not dynamic, all NPCs are inside this list at all times during the Level
+//          - Practically this can be used to access NPC related data (eg. coords, NPCname...) as well as NPCevents. NPCevents (eg. Cutscenes) are accessible via [Struct:NPCdata]
+//          
+//          [Definition Struct:NPCdata |??-byte]
+//          |'''''''''''''''''
+//          |+0x4 - [32-bit (layer-1) Pointer]
+//          |.+0x198 - [Variable Size ASCII:NPCname]
+//          |.| - This is the name which is displayed above the NPC on death
+//          |.
+//          |.+0x1EC - [3-byte ASCII:CharacterModelID]
+//          |.| - This IDs the 3D CharacterModel
+//          |.
+//          |.+0x22C - [Variable Size ASCII:NPCdataID(alt)]
+//          |.| - Exact copy of [ASCII:NPCdataID(preferred)] below
+//          |.
+//          |.+0x26C - [Variable Size ASCII:NPCtype]
+//          |.| - eg. "MidBoss", "NPCs",...
+//          |/
+//          |
+//          |+0x60 - [Variable Size ASCII:NPCdataID(preferred)]
+//          || - eg. "Perf75_PlayerAI" (refers to PlayerCharacter),
+//          || - eg. "Perf75_Mom", "Perf75_Jin", "Perf75_Bil",...
+//          ''
+//          
+//          __________PrologueStage__________
+//          [32-bit (base) Pointer:NPCdata.lvl_perf75] -> [Struct:NPCdata.Perf75_PlayerAI]
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.Perf75_Bil]
+//          .+0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.Perf75_Jin]
+//          ..
+//          ..+0x94 - [32-bit (layer-3) Pointer]
+//          ...+0x4C0 - [32-bit (layer-4) Pointer]
+//          ....+0xC - [32-bit (layer-5) Pointer]
+//          .....+0x0 - [20-byte ASCIIFlag(NPCevent):IsJinnieThanksActive]
+//          .....| ASCII == "ThankYou2" => Active (Red is talking with Jinnie, his Sister + message "Thank You")
+//          .....| ASCII == "0HankYou2" => Inactive
+//          ..
+//          ..+0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.Perf75_Mom]
+//          ...+0x94 - [32-bit (layer-4) Pointer]
+//          ....+0x4C0 - [32-bit (layer-5) Pointer]
+//          .....+0xC - [32-bit (layer-6) Pointer]
+//          ......+0x0 - [20-byte ASCIIFlag(NPCevent):IsMomThanksActive]
+//          ......| ASCII == "Perf75_End_Cinematic" => Active (Mom walks up to Red + message "Thank You")
+//          ......| ASCII == "0erf75_End_Cinematic" => Inactive
 // $4223F4: [NTSCU][32-bit (base) Pointer:LevelData_TrainingStage]
 //          - This points to game logic data for Training Stage (lvl_tng)
 //          - This pointer is only valid for Training Stage
@@ -346,7 +390,7 @@
 //          |(list complete)
 //          |'''''''''''''''''''
 //          | "lvl_tng" => Training Stage
-//          | "lvl_perf75" => Prologue Level (used by SinglePlayer and Multiplayer)
+//          | "lvl_perf75" => Prologue Stage/Level (used by SinglePlayer and Multiplayer)
 //          | "lvl_hng" => Title Stage
 //          | "lvl_shernite" => Sheriff Night
 //          | "lvl_sher70" => Sheriff Day
@@ -357,19 +401,7 @@
 //          | "lvl_fort" => Fort Stage
 //          | "lvl_mans" => Mansion
 //          '
+// $912954: [NTSCU][3-byte ASCII:CharacterModelID-Player1(functional)]
+//          - Placing a valid ID here and then freezing before loading a Level, will load the corresponding CharacterModel
 // $92785C: [NTSCU][Float:TimeSpentInLevel |32-bit]
 //          - Time in seconds
-// $AC76A4: coords horse
-// $1548C74: Coords
-// $1714980: 0x2 => hit
-//           0x4 => death
-// $178ACB0: selected menu item
-// $17D1094: shooting time
-
-achievement(
-    title = "[SPChallenge_WinGame] Overflowing Coffers", points = 0,
-    description = "Win the game by acquiring over $49.09 in cash - [DEV: Win Game, when cash over $49.09, I think only possible in lvl_tng]",
-    id = 494562, badge = "00000", published = "26/01/2025 13:19:00", modified = "26/01/2025 13:19:00",
-    trigger = dword(0x91204C) == 1397769043 && dword(0x427C80) == 250 && dword(dword(0x421850) + 0x000130) >= 500 &&
-              prev(dword(dword(0x421850) + 0x000130)) < 500
-)

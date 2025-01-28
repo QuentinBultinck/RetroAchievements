@@ -1,7 +1,7 @@
 █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█
 █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄
 
-Darkwatch (NTSC-U) - PlayStation 2
+Red Dead Revolver (NTSC-U) - PlayStation 2
 . This file details how to transform below hacks/cheats/patches for PCSX2 into ROMpatches (xdelta patches)
 . Also contains some general notes regarding the patches
 . RAMaddresses according to rcheevos/RAIntegration/RALibretro RAM mapping
