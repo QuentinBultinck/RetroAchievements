@@ -1,18 +1,18 @@
-# **Retro Achievements Guide** <br> 🔶 ***GAME_TITLE_HERE*** <sub><sup> (PLATFORM_HERE) </sup></sub>
+# **Retro Achievements Guide** <br> 🔶 ***Red Dead Revolver \~ Prototype*** <sub><sup> (PS2) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")](https://retroachievements.org/game/00000 "Retro Achievements game page - GAME_TITLE_HERE") 
+[![Achievement badge icon](https://i.retroachievements.org/Images/106446.png "Mastery badge icon")](https://retroachievements.org/game/32806 "Retro Achievements game page - Red Dead Revolver (Prototype)") 
 
 This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "Red Dead Revolver (Prototype) (PS2) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
-    - 🏆 *[Progression](#Progression)*
-    - 🏆 *[Challenges](#Challenges)*
-    - 🏆 *[Unlocks](#Unlocks)*
-    - 🏆 *[Misc_AchievementCategory](#Misc_AchievementCategory)*
+    - 🏆 *[Single Player Progression](#c_SinglePlayer)*
+    - 🏆 *[Single Player Challenges](#c_SPChallenge)*
+    - 🏆 *[Single Player Bonus](#c_SPbonus)*
+    - 🏆 *[Showdown Challenges](#c_Multiplayer)*
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
@@ -27,7 +27,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
-+ [Retro Achievements Game Page](https://retroachievements.org/game/0000 "Retro Achievements Game Page - GAME_TITLE_HERE") 
++ [Retro Achievements Game Page](https://retroachievements.org/game/32806 "Retro Achievements Game Page - Red Dead Revolver (Prototype)") 
 + Resource_1
 + Resource_2
 + Resource_3
@@ -41,20 +41,34 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 > [!IMPORTANT]
 > important_info
 
+
+### All Single Player Achievements Grouped by Level
+
+<details>
+    <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
+
+| Level | Achievements <sub><sub>Required Chapter + (achievement_link)</sub></sub> |
+|:---:|---|
+| **Training Stage** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
+| **Prologue Stage** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
+
+</details>
+
 ---
 
 
 
-<h1 id=Progression>
-    🏆 Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
+<h1 id=c_SinglePlayer>
+    🏆 Single Player Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
-The achievements under this category revolve around ...
+The achievements in this category require the player to complete tasks all levels that feature significant content. While only half of the levels meet this criterion, don’t worry—mastering this set will still require the player to visit all levels. For more details, refer to the achievement categories: [Single Player Challenge Achievements](#c_SPChallenge) and [Single Player Bonus Achievements](#c_SPbonus)
 
-> [!WARNING]
-> Warning_info
+> [!NOTE]
+> ***"Beaten"* Status**: Since all levels in the LevelSelectionMenu are unlocked by default, no achievement is tied to a *"Win Condition"*.
+Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievements site, the player must unlock all achievements under this category, marked as *"Progression"*.
 
-### Progression Guide
+### SinglePlayer Progression Guide
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
@@ -79,8 +93,8 @@ The achievements under this category revolve around ...
 
 </details>
 
-<h1 id=Challenges>
-    🏆 Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
+<h1 id=c_SPChallenge>
+    🏆 Single Player Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
 General_info_about_achievement_category
@@ -96,19 +110,7 @@ General_info_about_achievement_category
 >
 > - **SubTitle**: additional_notes
 
-### Challenges Grouped by DifficultyMode
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
-
-| Difficulty | Achievements <sub><sub>Required Chapter + (achievement_link)</sub></sub> |
-|:---:|---|
-| **Easy** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
-| **Hard** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
-
-</details>
-
-### Challenges Guide
+### Single Player Challenges Guide
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
@@ -131,8 +133,8 @@ General_info_about_achievement_category
 
 
 
-<h1 id=Unlocks>
-    🏆 Unlocks <i><sub><sup>(__count__ achievements)</sup></sub></i>
+<h1 id=c_SPbonus>
+    🏆 Single Player Bonus <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
 General_info_about_achievement_category
@@ -147,7 +149,7 @@ General_info_about_achievement_category
 >
 > - **SubTitle**: additional_notes
 
-### Unlocks Guide
+### Single Player Bonus Guide
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
@@ -170,11 +172,11 @@ General_info_about_achievement_category
 
 
 
-<h1 id=Misc_AchievementCategory>
-    🏆 Misc_AchievementCategory <i><sub><sup>(__count__ achievements)</sup></sub></i>
+<h1 id=c_Multiplayer>
+    🏆 Showdown Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
-General_info_about_achievement_category
+This prototype build of *Red Dead Revolver* includes a basic version of the Multiplayer Mode, referred to as *"Showdown"*, which is also featured in the full release version. All achievements in this category are centered around this mode
 
 > [!NOTE]
 > Note_info
@@ -186,7 +188,7 @@ General_info_about_achievement_category
 >
 > - **SubTitle**: additional_notes
 
-### Misc_AchievementCategory Guide
+### Showdown Challenges Guide
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
