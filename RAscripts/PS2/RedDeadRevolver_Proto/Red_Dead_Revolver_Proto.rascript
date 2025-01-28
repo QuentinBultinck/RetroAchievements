@@ -54,10 +54,6 @@
 // ---------------------------------------------
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
-
-	TODO list
-	- ROM hack -< Load correct CharacterModel for certain SinglePlayer Levels. "trd" training red - "yrd" young red - "nrd" coated red - "red" normal red 
-
 */
 
 // #endregion DEVELOPER NOTES
