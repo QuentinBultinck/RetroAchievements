@@ -55,6 +55,9 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
+	TODO list
+	- ROM hack -< Load correct CharacterModel for certain SinglePlayer Levels. "trd" training red - "yrd" young red - "nrd" coated red - "red" normal red 
+
 */
 
 // #endregion DEVELOPER NOTES
@@ -224,7 +227,7 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 
-// #region ---Custom ASCII comparitors---
+// #region Custom ASCII comparitors
 // Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
 
 function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
@@ -297,7 +300,7 @@ function is_PlayerLocation_Near(coordinates_target, int_nearRadiusThreshold, enu
 	&& coordinates_target["Y"] - int_nearRadiusThreshold <= current_PlayerLocation_Y(enum_releaseRegion) && current_PlayerLocation_Y(enum_releaseRegion) <= coordinates_target["Y"] + int_nearRadiusThreshold
 	&& coordinates_target["Z"] - int_nearRadiusThreshold <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= coordinates_target["Z"] + int_nearRadiusThreshold
 // ----------------Character Animation---------------------
-CHARACTER_ANIMATION_TipHat = "red_stn_idl_" // FullString: "red_stn_idl_11"
+CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
 CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
 
 function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
@@ -370,7 +373,17 @@ function prev_Money(enum_releaseRegion) =>
 // ◦ LevelID ◦
 // '''''''''''
 // #region LevelID
-LEVEL_TrainingStage = "tng" // "lvl_tng"
+LEVEL_TrainingStage = "tng" 	// FullString: "lvl_tng"
+LEVEL_PrologueStage = "perf75"  // FullString: "lvl_perf75"
+LEVEL_TitleStage = "hng" 		// FullString: "lvl_hng"
+LEVEL_SheriffNight = "shernite" // FullString: "lvl_shernite"
+LEVEL_SheriffDay = "sher70" 	// FullString: "lvl_sher70"
+LEVEL_SaloonStage = "saloon" 	// FullString: "lvl_saloon"
+LEVEL_Tombstone = "tomb" 		// FullString: "lvl_tomb"
+LEVEL_FlashbackStage = "flash" 	// FullString: "lvl_flash"
+LEVEL_Train = "train" 			// FullString: "lvl_train"
+LEVEL_FortStage = "fort" 		// FullString: "lvl_fort"
+LEVEL_Mansion = "mans" 			// FullString: "lvl_mans"
 function is_Level(enum_levelID, enum_releaseRegion) {
 	const_offsetTo_UniqueLevelIdSubstring = 0x4
 	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
@@ -449,11 +462,13 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SinglePlayer": { // Category - Single Player Progression 
-		// "a_LVLtng": { // CONCEPT a_LVLtng
-		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge, any outcome"},
+		// "a_CompleteTng": { // CONCEPT a_CompleteTng
+		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_tng: Finish shooting challenge, any outcome"},
+		"a_CompletePerf": { // CONCEPT a_CompletePerf
+			"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with allied NPC"},
 		},
 	"c_SPChallenge": { // Category - Single Player Challenges
-		// "a_ShootingGalleryGreat": { // CONCEPT a_LVLtng
+		// "a_ShootingGalleryGreat": { // CONCEPT a_CompleteTng
 		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge, with 'Good Job'"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
@@ -463,8 +478,8 @@ achievements_coreData = {
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED a_Dodge
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
-		"a_EyeTNG": { // VERIFIED a_EyeTNG
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng, TipHat next to Chest and BrokenCart"},
+		"a_EyeTng": { // VERIFIED a_EyeTng
+			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
 	"c_Multiplayer": { // Category - Multiplayer
 		// "a_WinMon": { // CONCEPT a_WinMon
@@ -519,6 +534,14 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
+	// "a_CompleteTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// 	&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	// 	&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
+	// 	&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+	// 	),
+
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
  		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
 			This should only be possible in lvl_tng, as the dummies keep respawning. Each kill is worth $2
@@ -550,7 +573,7 @@ achievements_triggers = {
 		&& once(on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
-	"a_EyeTNG": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_LEVEL = LEVEL_TrainingStage
 		const_POI_COUNT = 2
 		const_NEAR_RADIUS_THRESHOLD_BrokenCart = 2.1
@@ -614,7 +637,7 @@ achievements_titles = {
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
-	"a_EyeTNG": 				{"en": "Trailblazer"},
+	"a_EyeTng": 				{"en": "Trailblazer"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -624,7 +647,7 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Win the game by acquiring over $49.09 in cash"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
-	"a_EyeTNG": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
+	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
 	}
 // #endregion ACH - text
 
