@@ -4,7 +4,7 @@
 
 This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "Red Dead Revolver (Prototype) (PS2) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/RedDeadRevolver_Proto "Red Dead Revolver (Prototype) (PS2) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
@@ -68,7 +68,7 @@ The achievements in this category require the player to complete tasks all level
 > ***"Beaten"* Status**: Since all levels in the LevelSelectionMenu are unlocked by default, no achievement is tied to a *"Win Condition"*.
 Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievements site, the player must unlock all achievements under this category, marked as *"Progression"*.
 
-### SinglePlayer Progression Guide
+### Single Player Progression Guide
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
@@ -108,7 +108,7 @@ General_info_about_achievement_category
 >
 > - additional_notes
 >
-> - **SubTitle**: additional_notes
+> **Sub_Title**: additional_notes
 
 ### Single Player Challenges Guide
 
@@ -147,7 +147,7 @@ General_info_about_achievement_category
 >
 > - additional_notes
 >
-> - **SubTitle**: additional_notes
+> **Sub_Title**: additional_notes
 
 ### Single Player Bonus Guide
 
