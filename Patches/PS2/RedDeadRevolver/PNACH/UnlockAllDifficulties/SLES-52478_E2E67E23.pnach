@@ -1,6 +1,17 @@
-gametitle=Red Dead Revolver (Europe) [SLES-52478]
-comment=Redump --> http://redump.org/disc/11673/
-author=ASolidSnack
+gametitle=Red Dead Revolver (Europe) [SLES-52478] [E2E67E23]
+// ROM DAT info: Redump --> http://redump.org/disc/11673/
 
-// Unlock all difficulty modes for newly created Player Profiles
-patch=1,EE,001813D0,extended,AC9407B8
+[Unlock all difficulties, new PlayerProfiles]
+author=ASolidSnack
+comment=Unlock all difficulty modes for newly created Player Profiles. Difficulty is selectable on 'New Game'. Complete a mission so the game saves this edit to your memory card, afterwards you can disable this PNACH file.
+patch=1,EE,2001813D0,extended,AC9407B8
+
+[Unlock all difficulties, all PlayerProfiles]
+author=ASolidSnack
+comment=Unlock all difficulty modes for all Player Profiles. Difficulty is selectable on 'New Game'. Complete a mission so the game saves this edit to your memory card, afterwards you can disable this PNACH file.
+patch=1,EE,000740dc0,extended,00000003
+patch=1,EE,0007418d8,extended,00000003
+patch=1,EE,0007423f0,extended,00000003
+patch=1,EE,000742f08,extended,00000003
+patch=1,EE,000743a20,extended,00000003
+patch=1,EE,000744538,extended,00000003

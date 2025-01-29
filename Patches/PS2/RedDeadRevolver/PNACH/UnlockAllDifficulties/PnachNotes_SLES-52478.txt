@@ -7,8 +7,8 @@
 || Pnach Notes ||
 =================
 
-Unlock all difficulty modes
-''''''''''''''''''''''''''
+[Unlock all difficulties, new PlayerProfiles]
+'''''''''''''''''''''''''''''''''''''''''''''
 RAMaddress: $0x001813D0 --> This stores a MIPS/ASM instruction, which is part of a function which helps to create blank/empty/new PlayerProfiles.
 InitialRAMvalue: 0xAC8007B8 --dissassembled--> "sw zero,0x7B8(a0)"
 - This 32-bit value in RAM at "register a0 + 0x7B8" is the PlayerProfile's unlocked difficulty modes, which are only selectable when pressing 'New Game' at MainMenu
@@ -18,6 +18,9 @@ NewRAMvalue: 0xAC9407B8 --dissassembled--> "sw s4,0x7B8(a0)"
 - Register s4 always stores value 0x3 at the point this instruction is executed, so this can be used to write to this RAM value
 - This makes it so each new PlayerProfile can select all 4 difficulty modes when pressing 'New Game'
 
+[Unlock all difficulty modes for all PlayerProfiles]
+''''''''''''''''''''''''''''''''''''''''''''''''''''
+Directly write 0x3 to all (6x) [Struct:PlayerProfileData].[8-bit:UnlockedDifficulties]
 
 
 ==============

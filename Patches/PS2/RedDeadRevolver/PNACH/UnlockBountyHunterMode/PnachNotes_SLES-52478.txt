@@ -1,0 +1,28 @@
+// ***************************************************************** \\
+// █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█ \\
+// █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
+// ***************************************************************** \\
+
+=================
+|| Pnach Notes ||
+=================
+
+[Unlock Bounty Hunter Mode, all PlayerProfiles]
+'''''''''''''''''''''''''''''''''''''''''''''''
+Directly write 0x1 to all (6x) [Struct:PlayerProfileData].[bit0 BitFlag:IsBountyHunterModeUnlocked]
+
+
+
+==============
+|| Use With ||
+==============
+
+(Redump)
+File:               Red Dead Revolver (Europe) (En,Fr,De,Es,It).iso
+BitSize:            19 Gbit
+Size (Bytes):       2617507840
+PCSX2 CRC:          E2E67E23
+CRC32:              C042DC14
+MD5:                36DCC42763A1EF425EDA6C0B498645C2
+SHA1:               8A95F62804100A1CAA093015BBAB99B78DDDAB10
+SHA256:             8A34D82DDF844C624BDA7F8D65CFFF8AA62C04A9E1491699842FDFD173D0563B
