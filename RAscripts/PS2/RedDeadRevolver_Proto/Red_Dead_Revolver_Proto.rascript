@@ -54,6 +54,10 @@
 // ---------------------------------------------
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
+
+	TODO list
+	- Finish documenting the NPCdata struct -> lvl_tng trainingData
+
 */
 
 // #endregion DEVELOPER NOTES
@@ -104,6 +108,13 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Struct:MenuData": {
+		"offsetToMember": {
+			"ASCII:MenuID": 0x14},
+		"pointerChainToMember": {
+			"BitFlag:IsMenuDisplayed": { 
+				"pointerChainOffsets": [0x28]},
+		}},
 	"Struct:Coordinates": {
 		"offsetToMember": {
 			"Float:Y_Coordinate": 0x4,
@@ -124,6 +135,24 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
+		}},
+	"Pointer:NPCdata": {
+		"pointerChainToMember": {
+			"8-bit:MovementTrainingState": {
+				"pointerChainOffsets": [0x188, 0x94, 0x108, 0xC, 0x0]},
+			"ASCII:Active_MovementTrainingSectionID": {
+				"pointerChainOffsets": [0x188, 0x94, 0x108, 0xC],
+				"offsetToPointedToMember": 0x4},
+			"8-bit:WeaponTrainingState": {
+				"pointerChainOffsets": [0x188, 0x94, 0x14C, 0xC, 0x0]},
+			"ASCII:Active_WeaponTrainingSectionID": {
+				"pointerChainOffsets": [0x188, 0x94, 0x14C, 0xC],
+				"offsetToPointedToMember": 0x4},
+			"Lower4:ShootingGalleryState": {
+				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC, 0x0]},
+			"ASCII:ShootingGalleryNameState": {
+				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC],
+				"offsetToPointedToMember": 0x4},
 		}},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -176,10 +205,14 @@ memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-
+	
+	"Float:TimeSpentInLevel": {RELEASE_REGION_USA: 0x92785c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
 	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Pointer:MenuData": {RELEASE_REGION_USA: 0x4215a0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -249,6 +282,12 @@ function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 
 function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s)
+
+function wasPrev_ASCII_EqualTo(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s, c => prev(c))
+
+function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
 // #endregion Custom ASCII comparitors
 // #endregion MEM - utility
 
@@ -262,7 +301,53 @@ GAMESTATE_SinglePlayer = 0xFA
 GAMESTATE_Multiplayer = 0xC8
 function current_gameState(enum_releaseRegion) => dword(memory_getAddress("32-bit:GameState", enum_releaseRegion))
 function is_GameState(enum_gameState, enum_releaseRegion) => current_gameState(enum_releaseRegion) == enum_gameState
-// ----------------Divider---------------------
+// ----------------MenuData---------------------
+MENU_MainMenu = "main"
+MENU_LevelSelectionMenu = "1000"
+MENU_MultiplayerPlayerSetupMenu ="2010"
+MENU_MultiplayerCharacterSelectMenu = "2000"
+MENU_SelectionMenu = "menupage"
+MENU_PauseMenu = "pause"
+
+function is_MenuID(enum_menuID, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
+	let_offsetTo_MenuID = memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
+	return is_ASCII_EqualTo(dword(let_memAddr_basePointer) + let_offsetTo_MenuID, enum_menuID)}
+
+function on_MenuID_changeTo(enum_menuID, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
+	let_offsetTo_MenuID = memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
+	return 
+		is_ASCII_EqualTo(dword(let_memAddr_basePointer) + let_offsetTo_MenuID, enum_menuID)
+		&& wasPrev_ASCII_notEqualTo(dword(let_memAddr_basePointer) + let_offsetTo_MenuID, enum_menuID)}
+
+function current_FlagState_IsMenuDisplayed(enum_releaseRegion) => 
+	memGenerate_pointerChainAccessor(
+		"Struct:MenuData", "BitFlag:IsMenuDisplayed", memory_getAddress("Pointer:MenuData", enum_releaseRegion),
+		memAccessorFunction_toPointedToMember = bit0)
+
+function prev_FlagState_IsMenuDisplayed(enum_releaseRegion) => 
+	prev(current_FlagState_IsMenuDisplayed(enum_releaseRegion))
+
+function is_Menu_displayed(enum_menuID, enum_releaseRegion) =>
+	is_MenuID(enum_menuID, enum_releaseRegion)
+	&& current_FlagState_IsMenuDisplayed(enum_releaseRegion) == 1
+
+function on_Menu_render(enum_menuID, enum_releaseRegion) =>
+	is_MenuID(enum_menuID, enum_releaseRegion)
+	&& current_FlagState_IsMenuDisplayed(enum_releaseRegion) == 1
+	&& prev_FlagState_IsMenuDisplayed(enum_releaseRegion) == 0
+	
+// ----------------TimeSpentInLevel---------------------
+function current_TimeSpentInLevel(enum_releaseRegion) => float(memory_getAddress("Float:TimeSpentInLevel", enum_releaseRegion))
+function prev_TimeSpentInLevel(enum_releaseRegion) => prev(current_TimeSpentInLevel(enum_releaseRegion))
+function on_TimeSpentInLevel_start(enum_releaseRegion) => 
+	// NOTE: Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
+	current_TimeSpentInLevel(enum_releaseRegion) <= 1.0
+	&& prev_TimeSpentInLevel(enum_releaseRegion) > 1.0
+
+function on_TimeSpentInLevel_reset(enum_releaseRegion) => 
+	current_TimeSpentInLevel(enum_releaseRegion) < prev_TimeSpentInLevel(enum_releaseRegion)
 
 // #endregion General Game Logic
 
@@ -396,6 +481,109 @@ function is_PlayerNearPOI(enum_levelID, string_POI_key, float_radiusThreshold, e
 
 // #endregion LevelID
 
+// ...........
+// ◦ NPCdata ◦
+// '''''''''''
+// #region NPCdata
+// #region TrainingStage
+// -----------------MovementTraining--------------------
+MOVEMENT_TRAINING_SECTION_SneakAndCreep = "Sneak_and_Creep"
+function is_MovementTrainingSectionID(enum_movementTrainingSection, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_PointerChainTo_activeMovementTrainingSectionID = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:Active_MovementTrainingSectionID", let_memAddr_basePointer) + 
+		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:Active_MovementTrainingSectionID")
+	return is_ASCII_EqualTo(let_PointerChainTo_activeMovementTrainingSectionID, enum_movementTrainingSection)}
+
+function current_MovementTrainingState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:NPCdata", "8-bit:MovementTrainingState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = byte)}
+
+function prev_MovementTrainingState(enum_releaseRegion) =>
+	prev(current_MovementTrainingState(enum_releaseRegion))
+
+function on_TrainingStage_MovementTraining_complete(enum_releaseRegion) {
+	const_STATE_COMPLETE_MovementTrainingSection_SneakAndCreep = 0x1F	
+	return 
+		is_MovementTrainingSectionID(MOVEMENT_TRAINING_SECTION_SneakAndCreep, enum_releaseRegion)
+		&& current_MovementTrainingState(enum_releaseRegion) == const_STATE_COMPLETE_MovementTrainingSection_SneakAndCreep
+		&& prev_MovementTrainingState(enum_releaseRegion) < const_STATE_COMPLETE_MovementTrainingSection_SneakAndCreep
+		&& prev_MovementTrainingState(enum_releaseRegion) > const_STATE_COMPLETE_MovementTrainingSection_SneakAndCreep - 0x3 // --> Allow for some leeway, by minus 3 states
+	}
+// -----------------WeaponTraining--------------------
+WEAPON_TRAINING_SECTION_RapidFire = "Rapid_Fire"
+function is_WeaponTrainingSectionID(enum_weaponTrainingSection, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_PointerChainTo_activeWeaponTrainingSectionID = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:Active_WeaponTrainingSectionID", let_memAddr_basePointer) + 
+		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:Active_WeaponTrainingSectionID")
+	return is_ASCII_EqualTo(let_PointerChainTo_activeWeaponTrainingSectionID, enum_weaponTrainingSection)}
+
+function current_WeaponTrainingState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:NPCdata", "8-bit:WeaponTrainingState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = byte)}
+
+function prev_WeaponTrainingState(enum_releaseRegion) =>
+	prev(current_WeaponTrainingState(enum_releaseRegion))
+
+function on_TrainingStage_WeaponTraining_complete(enum_releaseRegion) {
+	const_STATE_COMPLETE_WeaponTrainingSection_RapidFire = 0x16	
+	return 
+		is_WeaponTrainingSectionID(WEAPON_TRAINING_SECTION_RapidFire, enum_releaseRegion)
+		&& current_WeaponTrainingState(enum_releaseRegion) == const_STATE_COMPLETE_WeaponTrainingSection_RapidFire
+		&& prev_WeaponTrainingState(enum_releaseRegion) < const_STATE_COMPLETE_WeaponTrainingSection_RapidFire
+		&& prev_WeaponTrainingState(enum_releaseRegion) > const_STATE_COMPLETE_WeaponTrainingSection_RapidFire - 0x3 // --> Allow for some leeway, by minus 3 states
+	}
+// -----------------ShootingGallery--------------------
+SHOOTING_GALLERY_NAME_STATE_Inactive = "0tar" // FullString: "0tart_Whak_A_Mole"
+SHOOTING_GALLERY_NAME_STATE_Active = "Star" // FullString: "Start_Whak_A_Mole"
+SHOOTING_GALLERY_NAME_STATE_Win = "Whac" // FullString: "Whack_A_Mole_Win"
+function is_ShootingGalleryNameState(enum_shootingGalleryNameState, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_PointerChainTo_shootingGalleryNameState = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) + 
+		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
+	return is_ASCII_EqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
+
+function on_ShootingGalleryNameState_changeTo(enum_shootingGalleryNameState, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_PointerChainTo_shootingGalleryNameState = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) + 
+		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
+	return 
+		is_ASCII_EqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)
+		&& wasPrev_ASCII_notEqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
+
+function current_ShootingGalleryState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:NPCdata", "Lower4:ShootingGalleryState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = low4)}
+
+function prev_ShootingGalleryState(enum_releaseRegion) =>
+	prev(current_ShootingGalleryState(enum_releaseRegion))
+
+function on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion) {
+	const_SHOOTING_GALLERY_STATE_TaskShootDummies = 0x5 // --> ShootingGallery State where the player is required to shoot the dummies
+	const_SHOOTING_GALLERY_STATE_Fail = 0x6 // 0x6 or 0x7 --> ShootingGallery Fail State - msg. "Stop shooting Time is up!"
+
+	return 
+		is_ShootingGalleryNameState(SHOOTING_GALLERY_NAME_STATE_Active, enum_releaseRegion)
+		&& current_ShootingGalleryState(enum_releaseRegion) >= const_SHOOTING_GALLERY_STATE_Fail
+		&& prev(current_ShootingGalleryState(enum_releaseRegion)) < const_SHOOTING_GALLERY_STATE_Fail
+		&& prev(current_ShootingGalleryState(enum_releaseRegion)) > const_SHOOTING_GALLERY_STATE_Fail - 0x3 // --> Allow for some leeway, by minus 3 states
+	}
+
+function on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion) =>
+	on_ShootingGalleryNameState_changeTo(SHOOTING_GALLERY_NAME_STATE_Win, enum_releaseRegion)
+
+// #endregion TrainingStage
+// #endregion NPCdata
+
 // ................
 // ◦ Sub_Header_2 ◦
 // ''''''''''''''''
@@ -458,14 +646,14 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SinglePlayer": { // Category - Single Player Progression 
-		// "a_CompleteTng": { // CONCEPT a_CompleteTng
-		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_tng: Finish shooting challenge, any outcome"},
-		"a_CompletePerf": { // CONCEPT a_CompletePerf
-			"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with allied NPC"},
+		"a_CompleteTng": { // CONCEPT a_CompleteTng
+			"id": 000000, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
+		// "a_CompletePerf": { // CONCEPT a_CompletePerf
+		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with allied NPC"},
 		},
 	"c_SPChallenge": { // Category - Single Player Challenges
-		// "a_ShootingGalleryGreat": { // CONCEPT a_CompleteTng
-		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge, with 'Good Job'"},
+		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
+		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED a_WinGame
@@ -518,9 +706,10 @@ achievements_typeByCategory = { // TODO set achievement types
 // ========================
 // #region ACH - triggers
 achievements_triggers = {
-	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP_template
-	// 	is_ReleaseRegion(enum_releaseRegion) &&
-	// 	always_false()),
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// 	&& always_false()),
 
 	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
@@ -530,13 +719,35 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
-	// "a_CompleteTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
-	// 	is_ReleaseRegion(enum_releaseRegion)
-	// 	&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-	// 	&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
-	// 	&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-	// 	),
+	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP refactor, so ResetIfs are inside Core Logic Group
+		// NOTE: Two alt logic groups (one of them needs to be true). One counts a ShootingChallenge_Fail, the other counts a ShootingChallenge_Win
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core shared logic; This group and one Alt Logic Group needs to be true
+			always_true()
+		
+		// [1] ==== Alt Logic Group - ShootingChallenge_Fail ==== 			-> Alt Logic Group 1, which counts ShootingChallenge_Fail
+			&& never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion))
+			&& measured(tally(3, [
+				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
+				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
+				once(on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion))]
+				))
+			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
+			
+		// [2] ==== Alt Logic Group - ShootingChallenge_Win ==== 			-> Alt Logic Group 2, which counts ShootingChallenge_Win
+			|| never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion))
+			&& measured(tally(3, [
+				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
+				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
+				once(on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion))]
+				))				
+			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
+		),
 
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
  		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
@@ -630,6 +841,8 @@ achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
 
+	"a_CompleteTng": 			{"en": "Training Stage Completion"},
+
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
@@ -639,6 +852,8 @@ achievements_titles = {
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
+
+	"a_CompleteTng": 			{"en": "In the \"Training Stage\", complete the Movement Training, Weapon Training and the Shooting Challenge"},
 
 	"a_WinGame": 				{"en": "Win the game by acquiring over $49.09 in cash"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
