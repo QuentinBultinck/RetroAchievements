@@ -646,10 +646,20 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SinglePlayer": { // Category - Single Player Progression 
-		"a_CompleteTng": { // CONCEPT a_CompleteTng
+		"a_CompleteTng": { // VERIFIED a_CompleteTng
 			"id": 000000, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
 		// "a_CompletePerf": { // CONCEPT a_CompletePerf
-		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with allied NPC"},
+		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
+		// "a_CompleteHng": { // CONCEPT a_CompleteHng
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact woth dog"},
+		// "a_CompleteShernite": { // CONCEPT a_CompleteShernite
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
+		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
+		// "a_SaloonBrawl": { // CONCEPT a_SaloonBrawl
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
+		// "a_CompleteTomb": { // CONCEPT a_CompleteTomb
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback"},
 		},
 	"c_SPChallenge": { // Category - Single Player Challenges
 		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
@@ -662,6 +672,8 @@ achievements_coreData = {
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED a_Dodge
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+		"a_SaloonGrab": { // CONCEPT a_SaloonGrab
+			"id": 0000000, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_EyeTng": { // VERIFIED a_EyeTng
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
@@ -719,13 +731,10 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
-	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP refactor, so ResetIfs are inside Core Logic Group
+	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// NOTE: Two alt logic groups (one of them needs to be true). One counts a ShootingChallenge_Fail, the other counts a ShootingChallenge_Win
-		// [0] ==== Core Logic Group ==== 			-> This group handles the core shared logic; This group and one Alt Logic Group needs to be true
-			always_true()
-		
 		// [1] ==== Alt Logic Group - ShootingChallenge_Fail ==== 			-> Alt Logic Group 1, which counts ShootingChallenge_Fail
-			&& never(
+			never(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion))
@@ -735,7 +744,6 @@ achievements_triggers = {
 				once(on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion))]
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
-			
 		// [2] ==== Alt Logic Group - ShootingChallenge_Win ==== 			-> Alt Logic Group 2, which counts ShootingChallenge_Win
 			|| never(
 				!is_ReleaseRegion(enum_releaseRegion)
@@ -745,7 +753,7 @@ achievements_triggers = {
 				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
 				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
 				once(on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion))]
-				))				
+				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
 
@@ -841,7 +849,7 @@ achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
 
-	"a_CompleteTng": 			{"en": "Training Stage Completion"},
+	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
