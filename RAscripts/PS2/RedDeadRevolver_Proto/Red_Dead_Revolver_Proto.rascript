@@ -56,7 +56,8 @@
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
 	TODO list
-	- Finish documenting the NPCdata struct -> lvl_tng trainingData
+	- a_HorseTomb Accuracy test
+	- update changes to unoffical
 
 */
 
@@ -81,6 +82,13 @@ RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_USA]
 function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
+
+function util_concatArrays(array_1, array_2) { // This function will concatenate two arrays (add values of array_2 to array_1)
+	let_array_concat = array_1
+	for let_index in range(0, length(array_2) - 1) {
+		array_push(let_array_concat, array_2[let_index])
+	}
+	return let_array_concat}
 
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
@@ -125,6 +133,8 @@ memory_StructDefs = {
 		"pointerChainToMember": {
 			"32-bit:Money_MPkills": { 
 				"pointerChainOffsets": [0x130]},
+			"BitFlag:IsPlayerOnHorseback": { 
+				"pointerChainOffsets": [0x134]},
 			"Struct(Coordinates):PlayerLocation-X": {
 				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0xC]},
 			"Struct(Coordinates):PlayerLocation-Y": {
@@ -135,9 +145,30 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
+			"32-bit:ShotsFired": {
+				"pointerChainOffsets": [0x170, 0x0]},
+			"32-bit:ShotsHit": {
+				"pointerChainOffsets": [0x170, 0x2C]},
+			"32-bit:Headshots": {
+				"pointerChainOffsets": [0x170, 0x30]},
+			"32-bit:Kills": {
+				"pointerChainOffsets": [0x170, 0x5C]},
+		}},
+	"Struct:NPCdata": {
+		"offsetToMember": {
+			"Pointer:NextNode_NPCdata": 0x188
+		},
+		"pointerChainToMember": {
+			"Struct(Coordinates):NPClocation(functional)-X": {
+				"pointerChainOffsets": [0x4, 0x8, 0xC, 0x90 + 0xC]},
+			"Struct(Coordinates):NPClocation(functional)-Y": {
+				"pointerChainOffsets": [0x4, 0x8, 0xC, 0x90 + 0x4]},
+			"Struct(Coordinates):NPClocation(functional)-Z": {
+				"pointerChainOffsets": [0x4, 0x8, 0xC, 0x90 + 0x8]},
 		}},
 	"Pointer:NPCdata": {
 		"pointerChainToMember": {
+			// ----TrainingStage----
 			"8-bit:MovementTrainingState": {
 				"pointerChainOffsets": [0x188, 0x94, 0x108, 0xC, 0x0]},
 			"ASCII:Active_MovementTrainingSectionID": {
@@ -152,7 +183,12 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC, 0x0]},
 			"ASCII:ShootingGalleryNameState": {
 				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC],
-				"offsetToPointedToMember": 0x4},
+				"offsetToPointedToMember": 0x4},		
+			// ----PrologueStage----
+			"ASCIIFlag(NPCevent):IsJinnieThanksActive": {
+				"pointerChainOffsets": [0x188, 0x188, 0x94, 0x4C0, 0x0]},
+			"ASCIIFlag(NPCevent):IsMomThanksActive": {
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x94, 0x4C0, 0x0]},
 		}},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -193,6 +229,14 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
+function memGenerate_pointerChainAccessor_fromOffsets(memAdrr_basePointer, array_pointerChainOffsets, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_addAddressChain = dword(memAdrr_basePointer)
+	for let_index in range(0, length(array_pointerChainOffsets) - 1) {
+		if (let_index == length(array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with creating pointer chain for memAddr: {0}", memAdrr_basePointer))}
 
 
 // #endregion MEM - struct definitions
@@ -205,6 +249,8 @@ memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
+	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"Float:TimeSpentInLevel": {RELEASE_REGION_USA: 0x92785c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
@@ -349,13 +395,58 @@ function on_TimeSpentInLevel_start(enum_releaseRegion) =>
 function on_TimeSpentInLevel_reset(enum_releaseRegion) => 
 	current_TimeSpentInLevel(enum_releaseRegion) < prev_TimeSpentInLevel(enum_releaseRegion)
 
+function on_Level_startORreset(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start(enum_releaseRegion)
+	|| on_TimeSpentInLevel_reset(enum_releaseRegion)
+
 // #endregion General Game Logic
 
 // ..............
 // ◦ PlayerData ◦
 // ''''''''''''''
 // #region PlayerData
+// #region ShootingStats
+// ----------------SinglePlayer---------------------
+function current_SinglePlayer_ShotsFired(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:ShotsFired",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
 
+function current_SinglePlayer_ShotsHit(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:ShotsHit",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function current_calculated_Accuracy(enum_releaseRegion) => 
+	current_SinglePlayer_ShotsFired(enum_releaseRegion) / current_SinglePlayer_ShotsHit(enum_releaseRegion)
+
+function current_SinglePlayer_Headshots(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:Headshots",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function prev_SinglePlayer_Headshots(enum_releaseRegion) =>
+	prev(current_SinglePlayer_Headshots(enum_releaseRegion))
+
+function on_SinglePlayer_Headshot_increment(enum_releaseRegion) =>
+	current_SinglePlayer_Headshots(enum_releaseRegion) > prev_SinglePlayer_Headshots(enum_releaseRegion)
+
+function current_SinglePlayer_Kills(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:Kills",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function prev_SinglePlayer_Kills(enum_releaseRegion) =>
+	prev(current_SinglePlayer_Kills(enum_releaseRegion))
+
+function on_SinglePlayer_Kill_increment(enum_releaseRegion) =>
+	current_SinglePlayer_Kills(enum_releaseRegion) > prev_SinglePlayer_Kills(enum_releaseRegion)
+// ----------------Multiplayer---------------------
+// #endregion ShootingStats
 // ----------------Location---------------------
 function current_PlayerLocation_X(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -395,12 +486,18 @@ function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
 
 function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	let_PointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
 		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
 	return 
-		is_ASCII_EqualTo(let_PointerChainTo_activeCharacterAnimationID, string_animationID)
+		is_ASCII_EqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)
 		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
 	}
+
+function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return is_ASCII_notEqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)}
 
 function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
 	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
@@ -437,6 +534,14 @@ function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
 		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
 	}
 // ----------------SinglePlayer Specific---------------------
+function is_PlayerOnHorseback(enum_releaseRegion) {
+	// NOTE: In SinglePlayer, PlayerData for Player1 is used
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsPlayerOnHorseback",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0) == 1
+	}
+
 function current_Money(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
@@ -485,15 +590,38 @@ function is_PlayerNearPOI(enum_levelID, string_POI_key, float_radiusThreshold, e
 // ◦ NPCdata ◦
 // '''''''''''
 // #region NPCdata
+// -----------------General--------------------
+function memGenerate_array_pointerChainOffsetsTo_NPCdata(int_NPCdataIndex) {
+	if(int_NPCdataIndex < 0) util_throwError("'int_NPCdataIndex' must be greater than 0")
+	if(int_NPCdataIndex == 0) return []
+
+	let_array_pointerChainOffsetsTo_NPCdata = []
+	let_index = 0
+	let_offsetTo_PointerNextNode_NPCdata = memory_getStruct_OffsetToMember("Struct:NPCdata", "Pointer:NextNode_NPCdata")
+	for let_index in range(0, int_NPCdataIndex - 1)
+		array_push(let_array_pointerChainOffsetsTo_NPCdata, let_offsetTo_PointerNextNode_NPCdata)
+	return let_array_pointerChainOffsetsTo_NPCdata
+	}
+function current_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion) {
+	let_array_pointerChainOffsetsTo_NPCdata = memGenerate_array_pointerChainOffsetsTo_NPCdata(int_NPCdataIndex)
+	let_array_pointerChainOffsetsTo_NPClocation_from_NPCdata = memory_getStruct_offsetSequenceToMember("Struct:NPCdata", "Struct(Coordinates):NPClocation(functional)-Y")
+	let_array_pointerChainOffsetsTo_NPClocation_Coord = util_concatArrays(let_array_pointerChainOffsetsTo_NPCdata, let_array_pointerChainOffsetsTo_NPClocation_from_NPCdata)
+	
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)		
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_basePointer, 
+		let_array_pointerChainOffsetsTo_NPClocation_Coord, memAccessorFunction_toPointedToMember = float)
+	}
+function prev_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion) =>
+	prev(current_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion))
 // #region TrainingStage
 // -----------------MovementTraining--------------------
 MOVEMENT_TRAINING_SECTION_SneakAndCreep = "Sneak_and_Creep"
 function is_MovementTrainingSectionID(enum_movementTrainingSection, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
-	let_PointerChainTo_activeMovementTrainingSectionID = 
+	let_pointerChainTo_activeMovementTrainingSectionID = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:Active_MovementTrainingSectionID", let_memAddr_basePointer) + 
 		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:Active_MovementTrainingSectionID")
-	return is_ASCII_EqualTo(let_PointerChainTo_activeMovementTrainingSectionID, enum_movementTrainingSection)}
+	return is_ASCII_EqualTo(let_pointerChainTo_activeMovementTrainingSectionID, enum_movementTrainingSection)}
 
 function current_MovementTrainingState(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -516,10 +644,10 @@ function on_TrainingStage_MovementTraining_complete(enum_releaseRegion) {
 WEAPON_TRAINING_SECTION_RapidFire = "Rapid_Fire"
 function is_WeaponTrainingSectionID(enum_weaponTrainingSection, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
-	let_PointerChainTo_activeWeaponTrainingSectionID = 
+	let_pointerChainTo_activeWeaponTrainingSectionID = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:Active_WeaponTrainingSectionID", let_memAddr_basePointer) + 
 		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:Active_WeaponTrainingSectionID")
-	return is_ASCII_EqualTo(let_PointerChainTo_activeWeaponTrainingSectionID, enum_weaponTrainingSection)}
+	return is_ASCII_EqualTo(let_pointerChainTo_activeWeaponTrainingSectionID, enum_weaponTrainingSection)}
 
 function current_WeaponTrainingState(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -544,19 +672,19 @@ SHOOTING_GALLERY_NAME_STATE_Active = "Star" // FullString: "Start_Whak_A_Mole"
 SHOOTING_GALLERY_NAME_STATE_Win = "Whac" // FullString: "Whack_A_Mole_Win"
 function is_ShootingGalleryNameState(enum_shootingGalleryNameState, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
-	let_PointerChainTo_shootingGalleryNameState = 
+	let_pointerChainTo_shootingGalleryNameState = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) + 
 		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
-	return is_ASCII_EqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
+	return is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
 
 function on_ShootingGalleryNameState_changeTo(enum_shootingGalleryNameState, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
-	let_PointerChainTo_shootingGalleryNameState = 
+	let_pointerChainTo_shootingGalleryNameState = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) + 
 		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
 	return 
-		is_ASCII_EqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)
-		&& wasPrev_ASCII_notEqualTo(let_PointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
+		is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)
+		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
 
 function current_ShootingGalleryState(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -582,6 +710,41 @@ function on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion) =>
 	on_ShootingGalleryNameState_changeTo(SHOOTING_GALLERY_NAME_STATE_Win, enum_releaseRegion)
 
 // #endregion TrainingStage
+
+// #region PrologueStage
+ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true = "Perf" // FullString: "Perf75_End_Cinematic"
+ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false = "0erf" // FullString: "0erf75_End_Cinematic"
+ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true = "Than" // FullString: "ThankYou2"
+ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false = "0han" // FullString: "0hankYou2"
+function is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive", let_memAddr_basePointer)
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false)}
+
+function on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion) {
+
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive", let_memAddr_basePointer)
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)
+		&& wasPrev_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false)
+	}
+
+function is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false)}
+
+function on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion) {
+
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)
+		&& wasPrev_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false)
+	}
+// #endregion PrologueStage
+
 // #endregion NPCdata
 
 // ................
@@ -647,7 +810,7 @@ achievements_coreData = {
 	
 	"c_SinglePlayer": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED a_CompleteTng
-			"id": 000000, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
+			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
 		// "a_CompletePerf": { // CONCEPT a_CompletePerf
 		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		// "a_CompleteHng": { // CONCEPT a_CompleteHng
@@ -656,14 +819,12 @@ achievements_coreData = {
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
 		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
-		// "a_SaloonBrawl": { // CONCEPT a_SaloonBrawl
-		//	"id": 000000, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
-		// "a_CompleteTomb": { // CONCEPT a_CompleteTomb
-		//	"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback"},
 		},
 	"c_SPChallenge": { // Category - Single Player Challenges
 		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
 		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
+		"a_ChallengePerf": { // QA // WARNING - Manual Construction
+			"id": 000000, "points": 0000000, "devInfo": "lvl_perf: Finish level (talk to mom after killing all enemies) with % accuracy or better"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED a_WinGame
@@ -672,8 +833,10 @@ achievements_coreData = {
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED a_Dodge
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
-		"a_SaloonGrab": { // CONCEPT a_SaloonGrab
-			"id": 0000000, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
+		"a_SaloonThrow": { // VERIFIED a_SaloonThrow
+			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
+		"a_HorseTomb": { // CONCEPT a_HorseTomb
+			"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback, with 100% accuracy"},
 		"a_EyeTng": { // VERIFIED a_EyeTng
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
@@ -719,9 +882,9 @@ achievements_typeByCategory = { // TODO set achievement types
 // #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-	// 	is_ReleaseRegion(enum_releaseRegion)
-	// 	&& always_false()),
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
 
 	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
@@ -731,6 +894,7 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
+	// c_SinglePlayer
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// NOTE: Two alt logic groups (one of them needs to be true). One counts a ShootingChallenge_Fail, the other counts a ShootingChallenge_Win
 		// [1] ==== Alt Logic Group - ShootingChallenge_Fail ==== 			-> Alt Logic Group 1, which counts ShootingChallenge_Fail
@@ -756,9 +920,54 @@ achievements_triggers = {
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
+	// c_SPChallenge
+	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual Construction
+		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		const_MIN_REQUIRED_ACCURACY = 0.7
+		return 
+		// [0] ==== Core Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			&& is_Level(LEVEL_PrologueStage, enum_releaseRegion)
 
+			/* MANUAL_CONSTRUCTION below line (usage of R/R) - current_calculated_Accuracy() >= const_MIN_REQUIRED_ACCURACY
+				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_{recall}>=f0.7
+				
+				Remember	0.0 + [32-bit:ShotsFired]
+				Remember	[32-bit:ShotsHit] / Recall
+							Recall >= const_MIN_REQUIRED_ACCURACY
+				*/
+			&& current_calculated_Accuracy(enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+
+			&& trigger_when(tally(1, [ // ---Tally--> functions as an orNext
+				once(never(is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion))
+					&& on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion)),
+				once(never(is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion))
+					&& on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion))
+			]))
+
+		// [2] ==== Alt Accuracy Measured Group ==== 	-> This group purely exists to display % accuracy in a Measured Indicator
+			/* MANUAL_CONSTRUCTION below measureComparison (usage of R/R) - measured(current_calculated_Accuracy()) as percent
+				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
+				
+				Remember	0.0 + [32-bit:ShotsFired]
+				Remember	[32-bit:ShotsHit] / Recall
+				Remember	Recall * 100.0
+				Measured	Recall
+				*/
+			|| measured( 
+				// current_calculated_Accuracy(enum_releaseRegion) >= 100,
+				current_SinglePlayer_ShotsHit(enum_releaseRegion) / current_SinglePlayer_ShotsFired(enum_releaseRegion) >= 100, 
+				when = 
+					is_ReleaseRegion(enum_releaseRegion)
+					&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+					&& is_Level(LEVEL_PrologueStage, enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false()) // ---AlwaysFalse---> This alt group should not unlock the achievment
+		}),
+	// c_SPbonus
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
- 		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
+		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
 			This should only be possible in lvl_tng, as the dummies keep respawning. Each kill is worth $2
 			Other levels don't have enough enemies to reach the $49.09 threshold
 			*/
@@ -785,7 +994,9 @@ achievements_triggers = {
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
 
-		&& once(on_Dodge_CharacterAnimation_start(enum_releaseRegion))
+		&& once(
+			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)) // ---ResetNextIf--- // TODO test this reset
+			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
 	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -838,6 +1049,50 @@ achievements_triggers = {
 			&& let_requirement_IsPlayerNearPOI_WhiteChest
 			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 		}),
+	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		/* NOTE: Coordinates + Shoving NPCs
+			- The frontside wall of the saloon is perpendicular to X-axis, thus Y-axis can be used as check; Going inside the saloon decreases the y coord; Going outside increases it
+			- Enemy NPCs can be grabbed and thrown. Press and Hold X or R1 (without in aim mode) to grab, then release to throw.
+			- Enemy NPCs can be "melee" kicked. Press X or R1 while in aim mode and whilst standing close to an enemy to shove them. (Player should be standing close enough when PlayerCharacter moves weapon aside)
+			- The perfect tactic is to grab an enemy, then aim them at the front door and try a throw. If he bounces back inside, try a "melee" kick 
+			*/
+		const_Y_COORD_SaloonFrontWall = -1.5 // Wall is perpendicular to X-axis, thus Y-axis can be used
+		const_ENEMY_COUNT = 2
+		const_NPC_LINKEDLISTED_INDEX_zzt = 0 
+		const_NPC_LINKEDLISTED_INDEX_zzt2 = 1
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_SaloonStage, enum_releaseRegion))
+			&& never(on_Level_startORreset(enum_releaseRegion))
+
+			&& measured(tally(const_ENEMY_COUNT, [ // ---Measured---> Count the number of enemies thrown through the front door of the saloon, by checking respective Y coordinates 
+				once(
+					current_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt, enum_releaseRegion) >= const_Y_COORD_SaloonFrontWall
+					&& prev_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt, enum_releaseRegion) < const_Y_COORD_SaloonFrontWall),
+				once(
+					current_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt2, enum_releaseRegion) >= const_Y_COORD_SaloonFrontWall
+					&& prev_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt2, enum_releaseRegion) < const_Y_COORD_SaloonFrontWall)]
+				))
+		}),
+	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ENEMY_COUNT = 2
+		return
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_Tombstone, enum_releaseRegion))
+			&& unless( // Pause: When missed a bullet --- This is a Pause Lock, because the used RAMvalues for this PauseIf only reset on Level Start or Reset
+				current_SinglePlayer_ShotsHit(enum_releaseRegion) <= current_SinglePlayer_ShotsFired(enum_releaseRegion))
+			&& repeated(const_ENEMY_COUNT, 
+				is_PlayerOnHorseback(enum_releaseRegion)
+				&& on_SinglePlayer_Kill_increment(enum_releaseRegion))
+		}),
+
+	// c_Multiplayer
 	}
 // #endregion ACH - triggers
 
@@ -851,10 +1106,14 @@ achievements_titles = {
 
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 
+	"a_ChallengePerf":			{"en": "xxxxxxxxx"},
+
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
 	"a_EyeTng": 				{"en": "Trailblazer"},
+	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
+	"a_HorseTomb":				{"en": "Lead and Leather"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -863,10 +1122,14 @@ achievements_descriptions = {
 
 	"a_CompleteTng": 			{"en": "In the \"Training Stage\", complete the Movement Training, Weapon Training and the Shooting Challenge"},
 
-	"a_WinGame": 				{"en": "Win the game by acquiring over $49.09 in cash"},
+	"a_ChallengePerf":			{"en": "xxxxxxxxx"},
+
+	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
 	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
+	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
+	"a_HorseTomb":				{"en": "In the \"Tombstone Stage\", prove your gunslinger prowess by eliminating every enemy from horseback without missing a single shot"},
 	}
 // #endregion ACH - text
 
