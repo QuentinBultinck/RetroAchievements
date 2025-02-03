@@ -68,11 +68,6 @@ The achievements in this category require the player to complete tasks all level
 > ***"Beaten"* Status**: Since all levels in the LevelSelectionMenu are unlocked by default, no achievement is tied to a *"Win Condition"*.
 Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievements site, the player must unlock all achievements under this category, marked as *"Progression"*.
 
-### Single Player Progression Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
@@ -85,13 +80,10 @@ Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievement
 
 ---
 
-</details>
 
 
 
 
-
-</details>
 
 <h1 id=c_SPChallenge>
     🏆 Single Player Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
@@ -110,11 +102,6 @@ General_info_about_achievement_category
 >
 > **Sub_Title**: additional_notes
 
-### Single Player Challenges Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
@@ -123,10 +110,6 @@ General_info_about_achievement_category
 🔗 [Back to Table of Contents](#ToC)
 
 🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
-
----
-
-</details>
 
 
 
@@ -149,23 +132,16 @@ General_info_about_achievement_category
 >
 > **Sub_Title**: additional_notes
 
-### Single Player Bonus Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_HorseTomb>**Lead and Leather**</h3><br><sub>*a_HorseTomb*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In level **"Tombstone Stage"**, eliminate all **two** hostile NPCs **whilst on horseback** and **without wasting a single bullet**. <br><br> <h4>Fail Conditions</h4> - Using a weapon while **not** on horseback. <br> - Missing a shot. <br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when both enemies were eliminated whilst on horseback **and** the player maintains **100% shooting accuracy**. <br> - A [Measured Indicator](#RA_Measured) tracks the number of enemies killed, up to **two**. |
 
 🔗 [Back to Table of Contents](#ToC)
 
 🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
 
 ---
-
-</details>
 
 
 
@@ -190,9 +166,6 @@ This prototype build of *Red Dead Revolver* includes a basic version of the Mult
 
 ### Showdown Challenges Guide
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
@@ -203,8 +176,6 @@ This prototype build of *Red Dead Revolver* includes a basic version of the Mult
 🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
 
 ---
-
-</details>
 
 
 
@@ -225,9 +196,6 @@ Inside, you’ll find:
 
 With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open the Leaderboard Guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
@@ -237,8 +205,6 @@ With this guide, the player will not only understand the mechanics behind each l
 🔗 [Back to Top of Leaderboard Guide](#LeaderboardGuide)
 
 ---
-
-</details>
 
 
 

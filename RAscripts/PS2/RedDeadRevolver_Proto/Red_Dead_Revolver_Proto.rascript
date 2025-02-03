@@ -56,7 +56,6 @@
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
 	TODO list
-	- a_HorseTomb Accuracy test
 	- update changes to unoffical
 
 */
@@ -147,12 +146,23 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
 			"32-bit:ShotsFired": {
 				"pointerChainOffsets": [0x170, 0x0]},
-			"32-bit:ShotsHit": {
+			"32-bit:ShotsHitBody": {
 				"pointerChainOffsets": [0x170, 0x2C]},
-			"32-bit:Headshots": {
+			"32-bit:ShotsHitHead": {
 				"pointerChainOffsets": [0x170, 0x30]},
 			"32-bit:Kills": {
 				"pointerChainOffsets": [0x170, 0x5C]},
+		}},
+	"Struct:HUD_AmmoHealth": {
+		"pointerChainToMember": {
+			"Float:PlayerHealth(display)": {
+				"pointerChainOffsets": [0x74]},
+			"32-bit:LoadedAmmoCount_Back(display)": { 
+				"pointerChainOffsets": [0xB0]},
+			"32-bit:LoadedAmmoCount_Front(display)": {
+				"pointerChainOffsets": [0xB4]},
+			"[8-bit:Equipped_WeaponID(non-functional)": {
+				"pointerChainOffsets": [0xC8]},
 		}},
 	"Struct:NPCdata": {
 		"offsetToMember": {
@@ -259,6 +269,7 @@ memory_addresses = {
 	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:MenuData": {RELEASE_REGION_USA: 0x4215a0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Pointer:HUD_AmmoHealth-Player1": {RELEASE_REGION_USA: 0x5f7e24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -271,7 +282,7 @@ function memory_getAddress(string_addrKey, enum_releaseRegion) {
 // • MEMORY UTILITY •
 // ===================
 // #region MEM - utility
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
+function is_ReleaseRegion(enum_releaseRegion) {
 	const_INTERNAL_SERIAL = "SCPS" // FullString: "SCPS_666.66"
 	if(enum_releaseRegion == RELEASE_REGION_USA) {
 		let_memAddr_GameID = memory_getAddress("ASCII:GameID", enum_releaseRegion)
@@ -290,6 +301,10 @@ function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegi
 function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
+
+function memUtil_ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
+	let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
+	return dword(let_dummyAddress) == 0xBAADF00D}
 
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
@@ -413,26 +428,29 @@ function current_SinglePlayer_ShotsFired(enum_releaseRegion) {
 		"Struct:PlayerData", "32-bit:ShotsFired",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
 
-function current_SinglePlayer_ShotsHit(enum_releaseRegion) {
+function prev_SinglePlayer_ShotsFired(enum_releaseRegion) =>
+	prev(current_SinglePlayer_ShotsFired(enum_releaseRegion))
+
+function current_SinglePlayer_ShotsHitBody(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "32-bit:ShotsHit",
+		"Struct:PlayerData", "32-bit:ShotsHitBody",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
 
 function current_calculated_Accuracy(enum_releaseRegion) => 
-	current_SinglePlayer_ShotsFired(enum_releaseRegion) / current_SinglePlayer_ShotsHit(enum_releaseRegion)
+	current_SinglePlayer_ShotsFired(enum_releaseRegion) / current_SinglePlayer_ShotsHitBody(enum_releaseRegion)
 
-function current_SinglePlayer_Headshots(enum_releaseRegion) {
+function current_SinglePlayer_ShotsHitHead(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "32-bit:Headshots",
+		"Struct:PlayerData", "32-bit:ShotsHitHead",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
 
-function prev_SinglePlayer_Headshots(enum_releaseRegion) =>
-	prev(current_SinglePlayer_Headshots(enum_releaseRegion))
+function prev_SinglePlayer_ShotsHitHead(enum_releaseRegion) =>
+	prev(current_SinglePlayer_ShotsHitHead(enum_releaseRegion))
 
-function on_SinglePlayer_Headshot_increment(enum_releaseRegion) =>
-	current_SinglePlayer_Headshots(enum_releaseRegion) > prev_SinglePlayer_Headshots(enum_releaseRegion)
+function on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion) =>
+	current_SinglePlayer_ShotsHitHead(enum_releaseRegion) > prev_SinglePlayer_ShotsHitHead(enum_releaseRegion)
 
 function current_SinglePlayer_Kills(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -554,6 +572,50 @@ function prev_Money(enum_releaseRegion) =>
 // ----------------Multiplayer Specific---------------------
 
 // #endregion PlayerData
+
+// ..................
+// ◦ HUD_AmmoHealth ◦
+// ''''''''''''''''''
+// #region HUD_AmmoHealth
+
+// ----------------SinglePlayer---------------------
+function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Back(display)", let_memAddr_basePointer)}
+		
+function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) =>
+	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion))
+
+function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Front(display)", let_memAddr_basePointer)}
+
+function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) =>
+	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion))
+
+function current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
+	+ current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
+
+function prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
+	prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
+	+ prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
+
+function on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) => // BUG_RATools - Too complex for RAtools
+	/* MANUAL_CONSTRUCTION
+		I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_0>0
+		-------------
+		SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
+		AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
+					val 0 > val 0
+		*/
+	prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion)
+	- current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) 
+	> 0
+
+// #endregion HUD_AmmoHealth
 
 // ...........
 // ◦ LevelID ◦
@@ -809,7 +871,7 @@ achievements_coreData = {
 	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SinglePlayer": { // Category - Single Player Progression 
-		"a_CompleteTng": { // VERIFIED a_CompleteTng
+		"a_CompleteTng": { // VERIFIED
 			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
 		// "a_CompletePerf": { // CONCEPT a_CompletePerf
 		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
@@ -823,21 +885,21 @@ achievements_coreData = {
 	"c_SPChallenge": { // Category - Single Player Challenges
 		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
 		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
-		"a_ChallengePerf": { // QA // WARNING - Manual Construction
+		"a_ChallengePerf": { // QA // DISABLED - Manual Construction (refer to Trigger)
 			"id": 000000, "points": 0000000, "devInfo": "lvl_perf: Finish level (talk to mom after killing all enemies) with % accuracy or better"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
-		"a_WinGame": { // VERIFIED a_WinGame
+		"a_WinGame": { // VERIFIED
 			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
-		"a_TipHat": { // VERIFIED a_TipHat
+		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
-		"a_Dodge": { // VERIFIED a_Dodge
+		"a_Dodge": { // VERIFIED
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
-		"a_SaloonThrow": { // VERIFIED a_SaloonThrow
+		"a_SaloonThrow": { // VERIFIED
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
-		"a_HorseTomb": { // CONCEPT a_HorseTomb
-			"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback, with 100% accuracy"},
-		"a_EyeTng": { // VERIFIED a_EyeTng
+		// "a_HorseTomb": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback, with 100% accuracy (shooting whilst not on horseback is not allowed)"},
+		"a_EyeTng": { // VERIFIED
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
 	"c_Multiplayer": { // Category - Multiplayer
@@ -850,7 +912,7 @@ achievements_coreData = {
 		}
 	}
 // -------------------------------------
-achievements_typeByCategory = { // TODO set achievement types
+achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -873,7 +935,19 @@ achievements_typeByCategory = { // TODO set achievement types
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
-
+function AchGenerate_3x_AltResetGroups_SinglePlayerLevel(enum_levelID, enum_releaseRegion) =>
+	// [1] ==== Alt Reset Group ==== 				-> Reset when not in SinglePlayer Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 				-> Reset when not in correct Level
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level(enum_levelID, enum_releaseRegion))	
+	// [3] ==== Alt Reset Group ==== 				-> Reset on Level start or reset
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_Level_startORreset(enum_releaseRegion))
 // #endregion ACH - trigger generators
 
 // ========================
@@ -921,7 +995,7 @@ achievements_triggers = {
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
 	// c_SPChallenge
-	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - Manual Construction
+	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
 		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
 		const_MIN_REQUIRED_ACCURACY = 0.7
 		return 
@@ -932,9 +1006,9 @@ achievements_triggers = {
 
 			/* MANUAL_CONSTRUCTION below line (usage of R/R) - current_calculated_Accuracy() >= const_MIN_REQUIRED_ACCURACY
 				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_{recall}>=f0.7
-				
+				-------------
 				Remember	0.0 + [32-bit:ShotsFired]
-				Remember	[32-bit:ShotsHit] / Recall
+				Remember	[32-bit:ShotsHitBody] / Recall
 							Recall >= const_MIN_REQUIRED_ACCURACY
 				*/
 			&& current_calculated_Accuracy(enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
@@ -949,15 +1023,15 @@ achievements_triggers = {
 		// [2] ==== Alt Accuracy Measured Group ==== 	-> This group purely exists to display % accuracy in a Measured Indicator
 			/* MANUAL_CONSTRUCTION below measureComparison (usage of R/R) - measured(current_calculated_Accuracy()) as percent
 				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
-				
+				-------------
 				Remember	0.0 + [32-bit:ShotsFired]
-				Remember	[32-bit:ShotsHit] / Recall
+				Remember	[32-bit:ShotsHitBody] / Recall
 				Remember	Recall * 100.0
 				Measured	Recall
 				*/
 			|| measured( 
 				// current_calculated_Accuracy(enum_releaseRegion) >= 100,
-				current_SinglePlayer_ShotsHit(enum_releaseRegion) / current_SinglePlayer_ShotsFired(enum_releaseRegion) >= 100, 
+				current_SinglePlayer_ShotsHitBody(enum_releaseRegion) / current_SinglePlayer_ShotsFired(enum_releaseRegion) >= 100, 
 				when = 
 					is_ReleaseRegion(enum_releaseRegion)
 					&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
@@ -1077,19 +1151,120 @@ achievements_triggers = {
 					&& prev_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt2, enum_releaseRegion) < const_Y_COORD_SaloonFrontWall)]
 				))
 		}),
-	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) Manual Construction
 		const_ENEMY_COUNT = 2
+		const_FRAME_DELAY_accuracyCheck = 200
 		return
-		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
-			never(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-				|| !is_Level(LEVEL_Tombstone, enum_releaseRegion))
-			&& unless( // Pause: When missed a bullet --- This is a Pause Lock, because the used RAMvalues for this PauseIf only reset on Level Start or Reset
-				current_SinglePlayer_ShotsHit(enum_releaseRegion) <= current_SinglePlayer_ShotsFired(enum_releaseRegion))
-			&& repeated(const_ENEMY_COUNT, 
-				is_PlayerOnHorseback(enum_releaseRegion)
-				&& on_SinglePlayer_Kill_increment(enum_releaseRegion))
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
+			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_0xM00000134=1_I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.2._I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
+			never(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // Pause Lock: When using a weapon while not on horseback
+				!is_PlayerOnHorseback(enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
+					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
+					-------------
+					SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
+					AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
+					PauseIf		val 0 > val 0 	(1)
+					*/
+				// && on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) // --> BUG_RATools this can't be generated by RATools
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
+				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
+				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
+				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)
+				))
+			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
+				/* MANUAL_CONSTRUCTION B: Below ResetNextIf && PauseIf Code - Reset next if 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
+					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
+					---------
+					AddSource	Mem [32-bit:ShotsFired]
+					SubSource	Mem [32-bit:ShotsHitBody]
+					SubSource	Mem [32-bit:ShotsHitHead]
+					ResetNextIf	val 0 == val 0
+					AddSource	[32-bit:ShotsFired]
+					SubSource	[32-bit:ShotsHitBody]
+					SubSource	[32-bit:ShotsHitHead]
+					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
+					*/
+				never( // --ResetNextIf--> When 100 % accuracy
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
+					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
+				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB1)))
+			&& is_PlayerOnHorseback(enum_releaseRegion)
+			&& trigger_when(
+				repeated(const_ENEMY_COUNT, 
+					is_PlayerOnHorseback(enum_releaseRegion)
+					&& on_SinglePlayer_Kill_increment(enum_releaseRegion))
+				/* MANUAL_CONSTRUCTION C: Below Trigger Code - Check if 100% accuracy (AccumulatorChain too complex for RATools)
+					I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
+					---------						
+					AddSource	[32-bit:ShotsHitBody]
+					AddSource	[32-bit:ShotsHitHead]
+					Remember	val 0
+					Remember	[32-bit:ShotsFired] - Recall
+					Trigger		Recall == 0
+					*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xC0)
+				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xC1))
+		// [2] ==== Alt Measured Group ==== 			-> Groups is purely responsible for displaying a Measured Indicator for enemy kill count
+			// MANUAL_CONSTRUCTION Alt2: I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_M:0xX0000005c>d0xX0000005c.2._Q:0xX0091204c=1397769043_T:0=1
+			|| unless(once( // Pause Lock: When using a weapon while not on horseback
+				!is_PlayerOnHorseback(enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
+					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
+					-------------
+					SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
+					AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
+					PauseIf		val 0 > val 0 	(1)
+					*/
+				// && on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) // --> BUG_RATools this can't be generated by RATools
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
+				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
+				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
+				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)
+				))
+			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
+				/* MANUAL_CONSTRUCTION B: Below ResetNextIf && PauseIf Code - Reset next if 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
+					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
+					---------
+					AddSource	Mem [32-bit:ShotsFired]
+					SubSource	Mem [32-bit:ShotsHitBody]
+					SubSource	Mem [32-bit:ShotsHitHead]
+					ResetNextIf	val 0 == val 0
+					AddSource	[32-bit:ShotsFired]
+					SubSource	[32-bit:ShotsHitBody]
+					SubSource	[32-bit:ShotsHitHead]
+					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
+					*/
+				&& never( // --ResetNextIf--> When 100 % accuracy
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
+					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
+				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB1)))
+			&& measured(
+				repeated(const_ENEMY_COUNT, 
+					is_PlayerOnHorseback(enum_releaseRegion)
+					&& on_SinglePlayer_Kill_increment(enum_releaseRegion)),
+				when = is_ReleaseRegion(enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_Tombstone, enum_releaseRegion)		
 		}),
 
 	// c_Multiplayer
