@@ -1,8 +1,12 @@
 # **Retro Achievements Guide** <br> 🔶 ***Red Dead Revolver*** <sub><sup> (PS2) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/103450.png "Mastery badge icon")](https://retroachievements.org/game/11094 "Retro Achievements game page - Red Dead Revolver") 
+<p align="center">
+  <img width="672" height="301" src="https://cdn2.steamgriddb.com/thumb/7f8246a27862384466cb5d059a32bd32.jpg" alt="Red Dead Revolver - Key Art">
+</p>
 
-This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
+---
+
+This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
 <sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/RedDeadRevolver "Red Dead Revolver (PS2) - Achievement Guide")*</sup>
 
@@ -18,9 +22,18 @@ This guide provides comprehensive details on how to unlock each achievement with
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
 
+---
+
 <h1 id=AchievementGuide>
     💎 Achievement Guide
 </h1>
+
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/103450.png" alt="Red Dead Revolver - RetroAchievements Mastery Icon">
+
+```
+Set consists of 87 achievements worth 612 points
+Set released on 11 December 2024
+```
 
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
@@ -53,11 +66,6 @@ These are the player's bread-and-butter *progresion* achievements for playing th
 
 These achievements will only unlock in Story Mode, not in Bounty Hunter Mode. Any difficulty can be used to unlock these. <sup> More on difficulties, refer to [Story Mission Challenges](#StoryChallenges) </sup>
 
-### Story Mode Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_CompleteChapter1>**The Scorpion's Scar**</h3><sub>*a_CompleteChapter1*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/534750.png "Achievement badge icon") | - Complete Chapter 1 'Bull's Eye' |
@@ -86,8 +94,6 @@ These achievements will only unlock in Story Mode, not in Bounty Hunter Mode. An
 🔗 [Back to Top of Achievement Category](#Progression)
 
 ---
-
-</details>
 
 
 <h1 id=StoryChallenges>
@@ -126,11 +132,6 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 </details>
 
-### Story Challenges Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_BigMoney>**It Always Was About the Money**</h3><sub>*a_BigMoney*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/550575.png "Achievement badge icon") | - Finish a singleplayer story mission on any difficulty, where the player's bank balance at the post-mission reward menu is \$30,000 or higher. <br><br> - A [trigger indicator](#RA_Trigger) will be displayed during the mission, when the player's cash is at \$30,000 or higher. |
@@ -166,8 +167,6 @@ Most achievements in this category require specific difficulty levels. Achieveme
 
 ---
 
-</details>
-
 
 
 <h1 id=BountyHunterChallenges>
@@ -182,11 +181,6 @@ Some of these Bounty Hunter Mode challenges can be pretty hard. If you're having
 > - A [trigger indicator](#RA_Trigger) will be displayed at the post-mission overview menu when the Bounty Hunter objective has been reached. The achievement should pop around the same time that the game shows which item the player has unlocked. 
 >
 > - Bounty Hunter Missions which require a certain cash combo to be achieved will display a [trigger indicator](#RA_Trigger) during the mission once the required combo has been achieved. Finish any other objectives and the mission itself to unlock the achievement.
-
-### Bounty Hunter Mode Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -217,9 +211,6 @@ Some of these Bounty Hunter Mode challenges can be pretty hard. If you're having
 
 ---
 
-</details>
-
-
 
 
 <h1 id=ShowdownChallenges>
@@ -237,11 +228,6 @@ All of these challenge achievements revolve around the Multiplayer Mode called '
 > - When a [trigger indicator](#RA_Trigger) is displayed on the post-match overview menu, the player has completed the Showdown challenge. On pressing OK, to display the continue popup window, the achievement should unlock.
 >
 > - **GAME BUG**: The [trigger indicator](#RA_Trigger) shown when setting up the Showdown match at the main menu may not display properly when shifting through the Showdown stages too fast <sub>(the ID which checks for the selected Showdown stage may not update properly when shifting through the stages too fast...)</sub> To make the [trigger indicator](#RA_Trigger) appear properly, just don't shift through the Showdown stages too quickly. Although as mentioned above as well. This indicator is not necessary to have been displayed.
-
-### Showdown Challenges Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -264,8 +250,6 @@ All of these challenge achievements revolve around the Multiplayer Mode called '
 
 ---
 
-</details>
-
 
 
 
@@ -277,11 +261,6 @@ The achievements under this category revolve around unlocking various gameplay m
 
 > [!WARNING]
 > A player profile with the name '*Rstar*' is not allowed to unlock any of these achievements. Creating a profile with this name unlocks a few items for free, which is pretty much cheating. 
-
-### Unlocks Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -301,8 +280,6 @@ The achievements under this category revolve around unlocking various gameplay m
 
 ---
 
-</details>
-
 
 
 <h1 id=LeaderboardGuide>
@@ -320,9 +297,6 @@ Inside, you’ll find:
 
 With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open the Leaderboard Guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=lb_Chapter...>**Bounty Boards**</h3><sub>*lb_Chapter...*</sub> <br><br> | - This is a series of leaderboards for completing different story chapters on different difficulties. <br> - There's about 20 story missions (with a post-mission reward menu) and about 4 difficulties to master. <br><br> - This series of leaderboards is not functional in Bounty Hunter Challenge Mode. <br><br> <h4>Start Requirements</h4> - The corresponding chapter must have been started from the beginning. After 7-20 seconds (depends on cutscenes) the leaderboard will start. <br> - No cheat must be active prior to starting the mission. <br><br> <h4>Cancel Conditions</h4> - Leaderboard will be canceled when any cheat is active. <br> - When the player replays/restarts the level or quits. <br><br> <h4>Submit Conditions</h4> - The leaderboard will submit when pressing *OK* on the post-mission reward menu. <br><br> <h4>Measured Value</h4> - The score which is submitted/shown during gameplay is a custom score created with the following aspects: <br> <sub> ∙ Bounty/money collected during gameplay + the bounty reward for completing the mission. <br> ∙ Accuracy <br> ∙ Damage taken <br> ∙ Time spent in mission <br> ∙ Best Combo <br> ∙ Headshots <br> ∙ Death toll / Kills <br> ∙ Rating stars achieved (shown on the post-mission reward menu).</sub> <br><br> <h5>The Full Formula:</h5> <sub> (*BountyCollected* * ((*accuracy* * 5) + 12)) <br> - (*RawDamageTaken* * 5) <br> - (*TimeInSeconds* * 3) <br> + (*BestCombo* * *BestComboMultiplier*) <br> + (*BestCombo* * *BestComboMultiplier*) <sub>(yes... twice)</sub>  <br> + (*Headshots* * 500) <br> + (*DeathToll*/*Killcount* * 200) <br> + (10,000 for each *stat star*) </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
@@ -335,9 +309,6 @@ With this guide, the player will not only understand the mechanics behind each l
 🔗 [Back to Top of Leaderboard Guide](#LeaderboardGuide)
 
 ---
-
-</details>
-
 
 
 
