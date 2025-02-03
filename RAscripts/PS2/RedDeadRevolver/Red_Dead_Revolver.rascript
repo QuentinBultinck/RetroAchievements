@@ -3,7 +3,7 @@
 // █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
 // ***************************************************************** \\
 // #ID = 11094
-// md5: 36dcc42763a1ef425eda6c0b498645c2 (PAL) - b68142ed452436319bff1a2cc80fa697 (NTSC-U)
+// Redump: http://redump.org/disc/11673/ (PAL) - http://redump.org/disc/6380/ (NTSC-U)
 // RA Hash: c06c59490d239fb56ace0388ac2b2842 (PAL) - 1a9f22c6a88cd43b66934f5071d1dc52 (NTSC-U)
 // Platform: PlayStation 2
 // Achievement Guide: https://github.com/RetroAchievements/guides/wiki/Red-Dead-Revolver-(PlayStation-2)
@@ -519,10 +519,10 @@ function memory_getStruct_SizeInBytes(string_structKey) =>
 function memory_getStruct_OffsetToMember(string_structKey, string_memberKey) =>
 	memory_StructDefs[string_structKey]["offsetToMember"][string_memberKey]
 
-function memory_getStuct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
+function memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey) =>
 	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"]
 
-function memory_getStuct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
+function memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion) =>
 	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["pointerChainOffsets"][enum_releaseRegion]
 
 function memory_getStruct_OffsetToPointedToMember(string_structKey, string_pointerChainKey) => 
@@ -532,7 +532,7 @@ function memory_getStruct_OffsetToPointedToMember_byReleaseRegion(string_structK
 	memory_StructDefs[string_structKey]["pointerChainToMember"][string_pointerChainKey]["offsetToPointedToMember"][enum_releaseRegion]
 
 function memGenerate_pointerChainAccessor(string_structKey, string_pointerChainKey, memAdrr_basePointer, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
-	let_array_pointerChainOffsets = memory_getStuct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember(string_structKey, string_pointerChainKey)
 	let_addAddressChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
 		if (let_index == length(let_array_pointerChainOffsets) - 1)
@@ -542,7 +542,7 @@ function memGenerate_pointerChainAccessor(string_structKey, string_pointerChainK
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
 function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, string_pointerChainKey, memAdrr_basePointer, enum_releaseRegion, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
-	let_array_pointerChainOffsets = memory_getStuct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion)
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember_byReleaseRegion(string_structKey, string_pointerChainKey, enum_releaseRegion)
 	let_addAddressChain = dword(memAdrr_basePointer)
     for let_index in range(0, length(let_array_pointerChainOffsets) - 1) {
 		if (let_index == length(let_array_pointerChainOffsets) - 1)
@@ -2641,7 +2641,7 @@ function is_PlayerWeapon_equipped(enum_weapon, enum_releaseRegion) =>
 	current_PlayerWeaponEquipped(enum_releaseRegion) == enum_weapon
 
 function current_FlagState_IsWeaponInInventory(enum_weapon, enum_releaseRegion) {
-	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStuct_offsetSequenceToMember("Struct:WeaponData", "BitFlag:IsWeaponInInventory")
+	let_array_AddAddressChainTo_IsWeaponInInventory = memory_getStruct_offsetSequenceToMember("Struct:WeaponData", "BitFlag:IsWeaponInInventory")
 	let_offsetTo_WeaponData = (enum_weapon * memory_getStruct_SizeInBytes("Struct:WeaponData")) + let_array_AddAddressChainTo_IsWeaponInInventory[0]
 
 	let_memAddr_basePointer = memory_getAddress(DATATYPE_32BitPointer, "Pointer:SinglePlayerData(preferred)", enum_releaseRegion)
@@ -7972,7 +7972,7 @@ achievements_descriptions = {
 	"a_SundownFallingStar": 				{"en": "As Falling Star (P1), with Shadow Wolf (P2) as your ally, win a 5-minute Sundown match against a team of Grizzly (P3) and Standing Snake (P4) in Fallen Creek"},
 	"a_SundownBlack": 						{"en": "As Mr. Black (P1), win a 5-minute free-for-all Sundown match against Bad Bessie (P2), Ugly Chris (P3) and Pig Josh (P4) in Ghost Town, with a death toll of at least 15"},
 	"a_SundownGriffon": 					{"en": "As Governor Griffon (P1), win a 5-minute Sundown match in Broken Creek against a team of Nate Harlow (P2), Falling Star (P3), and Red (P4), collecting at least $15,000."},
-	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5-minute Sundown match in The Mansion against a team of Governor Griffon (P2), Colonel Daren (P3), and General Diego (P4), with 70% accuracy or higher and at least $10,000 collected"},
+	"a_SundownNate": 						{"en": "As Nate Harlow (P1), win a 5-minute Sundown match in The Mansion against a team of Governor Griffon (P2), Colonel Daren (P3), and General Diego (P4), with 70% accuracy or higher and at least $12,000 collected"},
 	"a_SundownFlawless": 					{"en": "Win a 1-minute Sundown match against a team of 3 enemies without dying and killing each enemy at least once"},
 	"a_HighNoonNatalie": 					{"en": "As Natalie (P1), complete a first-to-5 free-for-all High Noon match on Mansion Grounds against Mr. Kelley (P2), Red Jr. (P3), and Nate Harlow (P4). Achieve at least 3 kills, with either Natalie or Mr. Kelley winning the match"},
 	"a_HighNoonCurly": 						{"en": "As Curly Shaw (P1), win a first-to-5 free-for-all High Noon match on Twin Rocks against Bloody Tom (P2), Big Oaf Whitney (P3), and Twiggy Phelps (P4), scoring at least 5 headshots"},

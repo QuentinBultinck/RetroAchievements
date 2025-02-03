@@ -3,28 +3,28 @@
 //	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	 \\
 // ***************************************** \\
 // #ID = 19111	// TODO Set header info - Two Line Text Generator: https://www.fancytextpro.com/BigTextGenerator
-// md5: 0e21d37f63246c5a7bb32e074ce43f8b (PAL) -- 00bead17cad153878fc25b8985187192 (NTSC-U)
+// md5: 
+// RA Hash: 0e21d37f63246c5a7bb32e074ce43f8b (PAL) -- 00bead17cad153878fc25b8985187192 (NTSC-U)
 // Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/19111
 // RATools version: v1.15.0 // TODO set last used RATools version here
 
-// TODO current task: Code Note InGameMenuData pointer
-
 /* TODO Find code note for:
-	- Versus Mode 
-		- Player Logic (powers)
+	- Minimatic/Cinematic ID
 
 	- UnlockFlags for Concept Art (Only unlockable through  Gunslinger Mode)
 
 	- Enemy EntityData (HP, Location, Type) --> cheevo's for killing specific enemies
 	
 	- Hubs to add:
-		- [Feature - PvP] 					https://retroachievements.org/game/9377
-		- [Perspective - 1st-Person] 		https://retroachievements.org/game/3401
-		- [Feature - Co-op] 				https://retroachievements.org/game/24859
-		- [Protagonist - Cowboy] 			https://retroachievements.org/game/18941
-		- [Protagonist - Vampire Hunter] 	https://retroachievements.org/game/18940
+		- [Feature - PvP] 							https://retroachievements.org/game/9377
+		- [Perspective - 1st-Person] 				https://retroachievements.org/game/3401
+		- [Feature - Co-op] 						https://retroachievements.org/game/24859
+		- [Protagonist - Cowboy] 					https://retroachievements.org/game/18941
+		- [Protagonist - Vampire Hunter] 			https://retroachievements.org/game/18940
+		- [Meta - Has RAGuide]  					https://retroachievements.org/game/4637
+		- [Meta - Quality of Life Patch Available]	https://retroachievements.org/game/30636
 
 	*/
 

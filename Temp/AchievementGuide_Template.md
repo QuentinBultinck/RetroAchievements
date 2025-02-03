@@ -94,7 +94,7 @@ General_info_about_achievement_category
 >
 > - additional_notes
 >
-> - **SubTitle**: additional_notes
+> **SubTitle**: additional_notes
 
 ### Challenges Grouped by DifficultyMode
 
@@ -145,7 +145,7 @@ General_info_about_achievement_category
 >
 > - additional_notes
 >
-> - **SubTitle**: additional_notes
+> **Sub_Title**: additional_notes
 
 ### Unlocks Guide
 
@@ -184,7 +184,7 @@ General_info_about_achievement_category
 >
 > - additional_notes
 >
-> - **SubTitle**: additional_notes
+> **Sub_Title**: additional_notes
 
 ### Misc_AchievementCategory Guide
 

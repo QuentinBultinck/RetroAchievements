@@ -1,0 +1,28 @@
+// ***************************************************************** \\
+// █▀█ █▀▀ █▀▄    █▀▄ █▀▀ ▄▀█ █▀▄    █▀█ █▀▀ █░█ █▀█ █░░ █░█ █▀▀ █▀█ \\
+// █▀▄ ██▄ █▄▀    █▄▀ ██▄ █▀█ █▄▀    █▀▄ ██▄ ▀▄▀ █▄█ █▄▄ ▀▄▀ ██▄ █▀▄ \\
+// ***************************************************************** \\
+
+=================
+|| Pnach Notes ||
+=================
+
+[Unlock Bounty Hunter Mode, all PlayerProfiles]
+'''''''''''''''''''''''''''''''''''''''''''''''
+Directly write 0x1 to all (6x) [Struct:PlayerProfileData].[bit0 BitFlag:IsBountyHunterModeUnlocked]
+
+
+
+==============
+|| Use With ||
+==============
+
+(Redump)
+File:               Red Dead Revolver (USA).iso
+BitSize:            17 Gbit
+Size (Bytes):       2340487168
+PCSX2 CRC:          E169BAF8
+CRC32:              ADB54266
+MD5:                B68142ED452436319BFF1A2CC80FA697
+SHA1:               7BBE502A1B170F80E378A566AD8EC313DBA78361
+SHA256:             CCA17EA8717B5681FEAA0177DDACE229DD4662032229AFB11B21EA821ED9CFA0
