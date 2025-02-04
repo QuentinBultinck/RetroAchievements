@@ -1,8 +1,10 @@
 # **Retro Achievements Guide** <br> 🔶 ***GAME_TITLE_HERE*** <sub><sup> (PLATFORM_HERE) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")](https://retroachievements.org/game/00000 "Retro Achievements game page - GAME_TITLE_HERE") 
+<p align="center">
+  <img width="xxx" height="xxx" src="link_here" alt="GAME_TITLE_HERE - Key Art">
+</p>
 
-This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
+This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
 <sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")*</sup>
 
@@ -20,6 +22,13 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h1 id=AchievementGuide>
     💎 Achievement Guide
 </h1>
+
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/0000000.png" alt="GAME_TITLE_HERE - RetroAchievements Mastery Icon">
+
+```
+Set consists of xxxx achievements worth xxx points
+Set released on DD MMMM YYYY
+```
 
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
