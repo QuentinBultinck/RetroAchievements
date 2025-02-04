@@ -56,7 +56,7 @@
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
 	TODO list
-	- update changes to unoffical
+	- Update all DISABLED cheevo's - IsLoading() check added everywhere
 
 */
 
@@ -193,12 +193,14 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC, 0x0]},
 			"ASCII:ShootingGalleryNameState": {
 				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC],
-				"offsetToPointedToMember": 0x4},		
+				"offsetToPointedToMember": 0x4},
 			// ----PrologueStage----
 			"ASCIIFlag(NPCevent):IsJinnieThanksActive": {
-				"pointerChainOffsets": [0x188, 0x188, 0x94, 0x4C0, 0x0]},
+				"pointerChainOffsets": [0x188, 0x188, 0x94, 0x4C0, 0xC],
+				"offsetToPointedToMember": 0x4},
 			"ASCIIFlag(NPCevent):IsMomThanksActive": {
-				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x94, 0x4C0, 0x0]},
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x94, 0x4C0, 0xC],
+				"offsetToPointedToMember": 0x4},
 		}},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -257,6 +259,8 @@ function memGenerate_pointerChainAccessor_fromOffsets(memAdrr_basePointer, array
 // #region MEM - address storage
 memory_addresses = {
 	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Flag:IsLoading": {RELEASE_REGION_USA: 0x483750, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
@@ -362,6 +366,13 @@ GAMESTATE_SinglePlayer = 0xFA
 GAMESTATE_Multiplayer = 0xC8
 function current_gameState(enum_releaseRegion) => dword(memory_getAddress("32-bit:GameState", enum_releaseRegion))
 function is_GameState(enum_gameState, enum_releaseRegion) => current_gameState(enum_releaseRegion) == enum_gameState
+function is_Loading(enum_releaseRegion) {
+	const_STATE_IsLoading_true = 0xD
+	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_true}
+function isNot_Loading(enum_releaseRegion) {
+	const_STATE_IsLoading_false = 0xFF
+	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_false}
+
 // ----------------MenuData---------------------
 MENU_MainMenu = "main"
 MENU_LevelSelectionMenu = "1000"
@@ -775,35 +786,51 @@ function on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion) =>
 
 // #region PrologueStage
 ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true = "Perf" // FullString: "Perf75_End_Cinematic"
-ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false = "0erf" // FullString: "0erf75_End_Cinematic"
+// ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false = "0erf" // FullString: "0erf75_End_Cinematic" // WARNING - Don't use as the memAddr for this ASCII may be populated by some other ASCII 
 ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true = "Than" // FullString: "ThankYou2"
-ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false = "0han" // FullString: "0hankYou2"
+// ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false = "0han" // FullString: "0hankYou2" // WARNING - Don't use as the memAddr for this ASCII may be populated by some other ASCII
 function is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive", let_memAddr_basePointer)
-	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false)}
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive")
+	return is_ASCII_notEqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)}
+
+function is_ASCIIflagState_PrologueStage_IsMomThanksActive_true(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive")
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)}
 
 function on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion) {
 
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive", let_memAddr_basePointer)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsMomThanksActive")
 	return 
-		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)
-		&& wasPrev_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_false)
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)
+		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsMomThanksActive_true)
 	}
 
 function is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
-	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false)}
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive")
+	return is_ASCII_notEqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)}
+
+function is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_true(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive")
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)}
 
 function on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion) {
 
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive", let_memAddr_basePointer)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJinnieThanksActive")
 	return 
-		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)
-		&& wasPrev_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_false)
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)
+		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_ASCIIFlag + let_offsetTo_ASCII, ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true)
 	}
 // #endregion PrologueStage
 
@@ -870,11 +897,11 @@ achievements_coreData = {
 	// "a_Template": { // CONCEPT a_template
 	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
-	"c_SinglePlayer": { // Category - Single Player Progression 
+	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
 			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
-		// "a_CompletePerf": { // CONCEPT a_CompletePerf
-		// 	"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
+		"a_CompletePerf": { // CONCEPT a_CompletePerf
+			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		// "a_CompleteHng": { // CONCEPT a_CompleteHng
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact woth dog"},
 		// "a_CompleteShernite": { // CONCEPT a_CompleteShernite
@@ -882,11 +909,11 @@ achievements_coreData = {
 		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
 		},
-	"c_SPChallenge": { // Category - Single Player Challenges
+	"c_SPchallenge": { // Category - Single Player Challenges
 		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
 		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
-		"a_ChallengePerf": { // QA // DISABLED - Manual Construction (refer to Trigger)
-			"id": 000000, "points": 0000000, "devInfo": "lvl_perf: Finish level (talk to mom after killing all enemies) with % accuracy or better"},
+		// "a_ChallengePerf": { // QA // DISABLED - Manual Construction (refer to Trigger)
+			// "id": 000000, "points": 0000000, "devInfo": "lvl_perf: Finish level missing no shots (talk to mom or Jinnie after killing all enemies)"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
@@ -902,13 +929,13 @@ achievements_coreData = {
 		"a_EyeTng": { // VERIFIED
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
-	"c_Multiplayer": { // Category - Multiplayer
+	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinMon": { // CONCEPT a_WinMon
 		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (mon)"},
 		// "a_WinRed": { // CONCEPT a_WinRed
 		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
-		// "a_ThrowableKill": { // CONCEPT a_ThrowableKill
-		// 	"id": 000000, "points": 0000000, "devInfo": "Get a kill with knife or dynamite"},
+		// "a_Dynamite": { // CONCEPT a_Dynamite
+		// 	"id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite"},
 		}
 	}
 // -------------------------------------
@@ -923,10 +950,10 @@ achievements_typeByCategory = {
 	// ------------------------------------------------------
 	
 	// "c_Template": "xxxxxx",
-	"c_SinglePlayer": 		"progression", // NOTE: This prototype has no WinCondition -> Player which achieves all Progression achievements will be marked as beaten
-	"c_SPChallenge":		sNULL,
+	"c_SPprogress": 		"progression", // NOTE: This prototype has no WinCondition -> Player which achieves all Progression achievements will be marked as beaten
+	"c_SPchallenge":		sNULL,
 	"c_SPbonus":			sNULL,
-	"c_Multiplayer":		sNULL} 
+	"c_MPchallenge":		sNULL} 
 	
 // #endregion ACH - core data
 
@@ -968,14 +995,15 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
-	// c_SinglePlayer
+	// c_SPprogress
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// NOTE: Two alt logic groups (one of them needs to be true). One counts a ShootingChallenge_Fail, the other counts a ShootingChallenge_Win
 		// [1] ==== Alt Logic Group - ShootingChallenge_Fail ==== 			-> Alt Logic Group 1, which counts ShootingChallenge_Fail
 			never(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion))
+				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
 			&& measured(tally(3, [
 				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
 				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
@@ -994,50 +1022,63 @@ achievements_triggers = {
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
-	// c_SPChallenge
+	"a_CompletePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_PrologueStage, enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+
+			&& measured(tally(2, [ // ---Tally---> Talk to both Mom and Jinnie
+				once(on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
+				once(on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))]
+				))
+		),
+	// c_SPchallenge
 	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
 		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
-		const_MIN_REQUIRED_ACCURACY = 0.7
-		return 
-		// [0] ==== Core Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-			&& is_Level(LEVEL_PrologueStage, enum_releaseRegion)
+		const_FRAME_DELAY_accuracyCheck = 200
+		const_ENEMY_COUNT = 6 // "Billy The Kid" is also included in this count. He may be friendly when killing other hostile NPCs too quickly
+		return
+			// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
+				/* MANUAL_CONSTRUCTION A: Below ResetNextIf && PauseIf Code - Reset next if 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
+					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
+					---------
+					AddSource	Mem [32-bit:ShotsFired]
+					SubSource	Mem [32-bit:ShotsHitBody]
+					SubSource	Mem [32-bit:ShotsHitHead]
+					ResetNextIf	val 0 == val 0
+					AddSource	[32-bit:ShotsFired]
+					SubSource	[32-bit:ShotsHitBody]
+					SubSource	[32-bit:ShotsHitHead]
+					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
+					*/
+				never( // --ResetNextIf--> When 100 % accuracy
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
+					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
+				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)))
 
-			/* MANUAL_CONSTRUCTION below line (usage of R/R) - current_calculated_Accuracy() >= const_MIN_REQUIRED_ACCURACY
-				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_{recall}>=f0.7
-				-------------
-				Remember	0.0 + [32-bit:ShotsFired]
-				Remember	[32-bit:ShotsHitBody] / Recall
-							Recall >= const_MIN_REQUIRED_ACCURACY
-				*/
-			&& current_calculated_Accuracy(enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+			&& measured(
+				repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion)),
+				when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))
 
-			&& trigger_when(tally(1, [ // ---Tally--> functions as an orNext
+			&& trigger_when(tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
 				once(never(is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion))
 					&& on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion)),
 				once(never(is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion))
-					&& on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion))
-			]))
-
-		// [2] ==== Alt Accuracy Measured Group ==== 	-> This group purely exists to display % accuracy in a Measured Indicator
-			/* MANUAL_CONSTRUCTION below measureComparison (usage of R/R) - measured(current_calculated_Accuracy()) as percent
-				I:0xX00421850_I:0xX00000170_K:f0.0+0xX00000000_I:0xX00421850_I:0xX00000170_K:0xX0000002c/{recall}_K:{recall}*f100.0_G:{recall}>=f100.0
-				-------------
-				Remember	0.0 + [32-bit:ShotsFired]
-				Remember	[32-bit:ShotsHitBody] / Recall
-				Remember	Recall * 100.0
-				Measured	Recall
-				*/
-			|| measured( 
-				// current_calculated_Accuracy(enum_releaseRegion) >= 100,
-				current_SinglePlayer_ShotsHitBody(enum_releaseRegion) / current_SinglePlayer_ShotsFired(enum_releaseRegion) >= 100, 
-				when = 
-					is_ReleaseRegion(enum_releaseRegion)
-					&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-					&& is_Level(LEVEL_PrologueStage, enum_releaseRegion),
-				format = "percent")
-			&& trigger_when(always_false()) // ---AlwaysFalse---> This alt group should not unlock the achievment
+					&& on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion))]
+				))
 		}),
 	// c_SPbonus
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -1051,6 +1092,7 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
 
 			&& current_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
 			&& prev_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
@@ -1059,7 +1101,8 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 		never(
 			!is_ReleaseRegion(enum_releaseRegion)
-			|| is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion))		
+			|| is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion))		
 		&& once(on_TippingHat_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_TippingHat_CharacterAnimation_finish(enum_releaseRegion))
 		), 
@@ -1067,6 +1110,7 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
+		&& isNot_Loading(enum_releaseRegion)
 
 		&& once(
 			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)) // ---ResetNextIf--- // TODO test this reset
@@ -1107,7 +1151,7 @@ achievements_triggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
-			&& unless(once( // <-- PauseLock: Hide Triggir Indicator, when Player has already finished this POI
+			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
 				let_requirement_OnTipHatNear_BrokenCart))
 
 			&& let_requirement_IsPlayerNearPOI_BrokenCart
@@ -1117,11 +1161,12 @@ achievements_triggers = {
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
-			&& unless(once( // <-- PauseLock: Hide Triggir Indicator, when Player has already finished this POI
+			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
 				let_requirement_OnTipHatNear_WhiteChest))
 			
 			&& let_requirement_IsPlayerNearPOI_WhiteChest
 			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+		
 		}),
 	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: Coordinates + Shoving NPCs
@@ -1157,7 +1202,9 @@ achievements_triggers = {
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
 			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_0xM00000134=1_I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.2._I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
-			never(!is_ReleaseRegion(enum_releaseRegion))
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
 			&& unless(once( // Pause Lock: When using a weapon while not on horseback
 				!is_PlayerOnHorseback(enum_releaseRegion)
 				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
@@ -1248,7 +1295,7 @@ achievements_triggers = {
 					SubSource	[32-bit:ShotsHitHead]
 					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
 					*/
-				&& never( // --ResetNextIf--> When 100 % accuracy
+				never( // --ResetNextIf--> When 100 % accuracy
 					memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
 					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
 					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
@@ -1261,7 +1308,9 @@ achievements_triggers = {
 				repeated(const_ENEMY_COUNT, 
 					is_PlayerOnHorseback(enum_releaseRegion)
 					&& on_SinglePlayer_Kill_increment(enum_releaseRegion)),
-				when = is_ReleaseRegion(enum_releaseRegion))
+				when = 
+					is_ReleaseRegion(enum_releaseRegion)
+					&& isNot_Loading(enum_releaseRegion))
 			&& trigger_when(always_false())
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_Tombstone, enum_releaseRegion)		
@@ -1276,12 +1325,19 @@ achievements_triggers = {
 // =====================
 // #region ACH - text
 achievements_titles = {
+	/* Title Ideas
+		---------
+		Deadeye Prodigy (using deadeye ability)
+
+		*/
+
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
 
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
+	"a_CompletePerf": 			{"en": "A Son's Duty"},
 
-	"a_ChallengePerf":			{"en": "xxxxxxxxx"},
+	"a_ChallengePerf":			{"en": "Lead with Precision"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
@@ -1295,9 +1351,10 @@ achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
 
-	"a_CompleteTng": 			{"en": "In the \"Training Stage\", complete the Movement Training, Weapon Training and the Shooting Challenge"},
+	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
+	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", share a few last words with your mother and Jinnie"},
 
-	"a_ChallengePerf":			{"en": "xxxxxxxxx"},
+	"a_ChallengePerf":			{"en": "Take down every enemy in the \"Prologue Stage\" without wasting a single bullet, then have a word with your mother or Jinnie"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},

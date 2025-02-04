@@ -9,10 +9,10 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
-    - 🏆 *[Single Player Progression](#c_SinglePlayer)*
-    - 🏆 *[Single Player Challenges](#c_SPChallenge)*
+    - 🏆 *[Single Player Progression](#c_SPprogress)*
+    - 🏆 *[Single Player Challenges](#c_SPchallenge)*
     - 🏆 *[Single Player Bonus](#c_SPbonus)*
-    - 🏆 *[Showdown Challenges](#c_Multiplayer)*
+    - 🏆 *[Showdown Challenges](#c_MPchallenge)*
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
@@ -58,7 +58,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 
-<h1 id=c_SinglePlayer>
+<h1 id=c_SPprogress>
     🏆 Single Player Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
@@ -85,7 +85,7 @@ Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievement
 
 
 
-<h1 id=c_SPChallenge>
+<h1 id=c_SPchallenge>
     🏆 Single Player Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
@@ -148,7 +148,7 @@ General_info_about_achievement_category
 
 
 
-<h1 id=c_Multiplayer>
+<h1 id=c_MPchallenge>
     🏆 Showdown Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 

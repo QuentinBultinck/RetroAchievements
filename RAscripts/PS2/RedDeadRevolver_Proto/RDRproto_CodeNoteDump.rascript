@@ -52,7 +52,7 @@
 // $4215DC: [NTSCU][3-byte ASCII:CharacterModelID-Player1(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player1(preferred)] at $0x912954
 //          - This is valid for Singleplayer & Multiplayer
-// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1]
+// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1 |16-byte??]
 //          - Practically this can be used to check if a MultiplayerPlayer is AI controlled or Human controlled
 //          - AIsetting examples: "Default_Bot", "Pig_Bot", ...
 //          - MultiplayerPlayer 1 is always Human Controlled
@@ -62,17 +62,17 @@
 // $421628: [NTSCU][3-byte ASCII:CharacterModelID-Player2(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player2(preferred)] at $0x9129bc
 //          - This is only valid when in Multiplayer
-// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2]
+// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2 |16-byte??]
 //          - Documentation at $0x4215f8
 // $421674: [NTSCU][3-byte ASCII:CharacterModelID-Player3(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player3(preferred)] at $0x912a24
 //          - This is only valid when in Multiplayer
-// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3]
+// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3 |16-byte??]
 //          - Documentation at $0x4215f8
 // $4216C0: [NTSCU][3-byte ASCII:CharacterModelID-Player4(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player4(preferred)] at $0x912a8c
 //          - This is only valid when in Multiplayer
-// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4]
+// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4 |16-byte??]
 //          - Documentation at $0x4215f8
 // $421708: [NTSCU][Variable Size ASCII:LevelID(alt1)]
 //          - Prefer using [ASCII:LevelID(preferred)] at $0x9128e8
@@ -125,6 +125,9 @@
 //          .....| - Pointer chain is only valid when non-repeating CharacterAnimation is being played
 //          .....| - List of CharacterAnimationIDs below
 //          
+//          +0x170 - [32-bit (layer-1) Pointer] -> [Struct:ShootingStats]
+//          | - Definition of [Struct:ShootingStats] below
+//          
 //          +0x208 - [bit0 BitFlag:IsAimingModeActive(preferred) |32-bit]
 //          +0x220 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          +0x224 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
@@ -137,6 +140,22 @@
 //          |+0x4 - [32-bit Float:Y_Coordinate]
 //          |+0x8 - [32-bit Float:Z_Coordinate]
 //          |+0xC - [32-bit Float:X_Coordinate]
+//          '
+//          
+//          [Definition Struct:ShootingStats |??-byte]
+//          |''''''''''''''''''
+//          | - These offsets are only functional when in SinglePlayer
+//          | - These stats reset to 0x0 when PauseMenu->Reset OR when dying
+//          | - The pointed to data is different depending on SinglePlayer or Multiplayer
+//          | - For some reason While in Multiplayer ShootingStats are only saved ShotsFired, any other stats are not saved. Kills are saved somewhere else $0x421868.
+//          | - Total Shots Hit: [32-bit:ShotsHitBody] + [32-bit:ShotsHitHead]
+//          |
+//          |+0x0 - [32-bit:ShotsFired]
+//          |+0x2C - [32-bit:ShotsHitBody]
+//          || - Only counts hits on the body, NOT headshots
+//          |+0x30 - [32-bit:ShotsHitHead]
+//          || - Counts headshot-kills & normal headshots
+//          |+0x5C - [32-bit:Kills]
 //          '
 //          
 //          # CharacterAnimationID
@@ -213,7 +232,7 @@
 //          || - eg. "Perf75_PlayerAI",
 //          || - eg. "Perf75_Mom", "Perf75_Jin", "Perf75_Bil",...
 //          |
-//          |+0x188 - [32-bit (Layer-1) Pointer:NextNode] -> [Struct:NPCdata]
+//          |+0x188 - [32-bit (Layer-1) Pointer:NextNode_NPCdata] -> [Struct:NPCdata]
 //          '
 //          
 //          __________TrainingStage__________
@@ -303,7 +322,7 @@
 //          | - ...
 //          | - 0x1A => msg. "Good, Now press L1 AND Fire to spin out and shoot!"
 //          | - ...
-//          | - 0x1F => msg. "Good job!" (Sneak_and_Creep CLEARED) (End of MovementTraining)
+//          | - 0x1F => msg. "Good job!" (Sneak_and_Creep CLEARED)(End of MovementTraining)
 //          '
 //          # WeaponTrainingSectionIDs (string) + WeaponTrainingStates (hex)
 //          |'''''''''''''''''''''''
@@ -340,7 +359,7 @@
 //          |
 //          | "Rapid_Fire" => WeaponTrainingSection 6
 //          | - ...
-//          | - 0x16 => You are now ready for the shooting challenge! (Rapid_Fire CLEARED) (End of WeaponTraining)
+//          | - 0x16 => You are now ready for the shooting challenge! (Rapid_Fire CLEARED)(End of WeaponTraining)
 //          '
 //          # ShootingGalleryState (hex) + ShootingGalleryNameState (string)
 //          |'''''''''''''''''''
@@ -350,12 +369,12 @@
 //          | 0x3 => msg. "Shoot the dummies!"
 //          | 0x4 => Camera movement
 //          | 0x5 => Task: Player can now shoot the dummies
-//          | [0x6-0x7] => msg. "Stop shooting Time is up!" (ShootingGallery Fail State)
+//          | [0x6-0x7] => msg. "Stop shooting Time is up!" (ShootingGallery Fail State)(End of ShootingGallery)
 //          |
 //          |----String----
 //          | "0tart_Whak_A_Mole" => ShootingGallery inactive. Where [Lower4:ShootingGalleryState] == 0x0
 //          | "Start_Whak_A_Mole" => ShootingGallery active. Where [Lower4:ShootingGalleryState] > 0x0
-//          | "Whack_A_Mole_Win" => msg. "Good job!" (ShootingGallery Win State)
+//          | "Whack_A_Mole_Win" => msg. "Good job!" (ShootingGallery Win State)(End of ShootingGallery)
 //          '
 //          
 //          __________PrologueStage__________
@@ -418,16 +437,18 @@
 //          0xFA => SinglePlayer
 //          0xC8 => Multiplayer
 // $428BD8: [NTSCU][32-bit (base) Pointer:ShootingStats] -> [Struct:ShootingStats]
+//          -- WARNING -- This pointer is only valid for some SinglePlayer Levels, prefer using [Pointer:PlayerData], which always points to this, refer to $0x421850
 //          - These stats reset to 0x0 when PauseMenu->Reset OR when dying
 //          - The pointed to data is different depending on SinglePlayer or Multiplayer
 //          
-//          [Definition Struct:ShootingStats.Singleplayer]
+//          [Definition Struct:ShootingStats.SinglePlayer]
 //          |''''''''''''''''''
 //          |- These offsets are only functional when in SinglePlayer
 //          |
 //          |+0xE0 - [32-bit:ShotsFired]
-//          |+0x10C - [32-bit:ShotsHit]
-//          |+0x110 - [32-bit:Headshots]
+//          |+0x10C - [32-bit:ShotsHitBody]
+//          || - Only counts hits on the body, NOT headshots
+//          |+0x110 - [32-bit:ShotsHitHead]
 //          || - Counts headshot-kills & normal headshots
 //          |+0x13C - [32-bit:Kills]
 //          '
@@ -443,13 +464,14 @@
 //          |.+0x120 - [32-bit:ShotsFired-Player3]
 //          |.+0x1B0 - [32-bit:ShotsFired-Player4]
 //          '
-// $499878: [NTSCU][3-yte ASCII:SinglePlayerLoaded_CharacterModelID]
+// $488238: PlayerInput
+// $499878: [NTSCU][3-byte ASCII:SinglePlayerLoaded_CharacterModelID]
 //          @SinglePlayer CharacterModel Hack
 //          - This value determines which CharacterModel is loaded for all SinglePlayer Levels.
 //          - CharacterModelIDs listed at $0x912954
 //          
 //          InitialValue = "trd"
-//          HackValue : "nrd"
+//          HackValue = "nrd"
 // $5F7E20: [NTSCU][Variable Size Array:GameData]
 //          - Array is only populated when in-game
 //          - Size of this array is dependent on amount of HumanPlayers in-game
@@ -537,6 +559,8 @@
 // $61F650: [NTSCU][8-bit:Volume_SoundMode |32-bit]
 //          0x1 => Mono
 //          0x2 => Stereo
+// $912040: [NTSCU][8-bit:AlwaysNULL |32-bit]
+//          - Useful to do some RAscript voodoo tricks
 // $91204C: [NTSCU][12-byte ASCII:GameID] = "SCPS_666.66"
 //          - Internal Serial SCPS-66666
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -562,9 +586,22 @@
 //          | "lvl_mans" => Mansion
 //          '
 // $912954: [NTSCU][3-byte ASCII:CharacterModelID-Player1(preferred)]
+//          - This controls which CharacterModel is loaded
 //          - Placing a valid ID here and then freezing before loading a Level, will load the corresponding CharacterModel
+//          - This value only changes/is written to when the game loads a Level (SinglePlayer or Multiplayer)
+//          
+//          # CharacterModelIDs (string)
+//          |(list incomplete)
+//          |'''''''''''''''''
+//          | "trd" => Training Red (Teenage Red)
+//          | "yrd" => Snow Red (Teenage Red, with different coat)
+//          | "red" => Red (Senior Red with casual wild west clothing)
+//          | "nrd" => New Red (Senior Red with long coat, as seen on TitleScreen and box art)
+//          | ...
 // $9129BC: [NTSCU][3-byte ASCII:CharacterModelID-Player2(preferred)]
+//          - Documentation at $0x912954
 // $912A24: [NTSCU][3-byte ASCII:CharacterModelID-Player3(preferred)]
+//          - Documentation at $0x912954
 // $912A8C: [NTSCU][3-byte ASCII:CharacterModelID-Player4(preferred)]
 //          - Documentation at $0x912954
 // $92785C: [NTSCU][Float:TimeSpentInLevel |32-bit]
