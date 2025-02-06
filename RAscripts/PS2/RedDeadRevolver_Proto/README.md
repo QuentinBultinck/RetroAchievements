@@ -105,7 +105,7 @@ General_info_about_achievement_category
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_ChallengePerf>**Lead with Precision**</h3><br><sub>*a_ChallengePerf*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In level "Prologue Stage", defeat a total of 6 hostile NPCs harrassing mother and Jinnie. <br><br> <h4>Fail Conditions</h4> - Missing a shot <br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the level starts, this indicator is removed when a bullet is missed. <br> - A [Measured Indicator](#RA_Measured) tracks the number of enemies killed, up to **six**. |
 
 🔗 [Back to Table of Contents](#ToC)
 

@@ -161,7 +161,7 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xB0]},
 			"32-bit:LoadedAmmoCount_Front(display)": {
 				"pointerChainOffsets": [0xB4]},
-			"[8-bit:Equipped_WeaponID(non-functional)": {
+			"8-bit:Equipped_WeaponID(non-functional)": {
 				"pointerChainOffsets": [0xC8]},
 		}},
 	"Struct:NPCdata": {
@@ -626,6 +626,16 @@ function on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) => // BUG_RAToo
 	- current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) 
 	> 0
 
+function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:HUD_AmmoHealth", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
+
+function prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion) =>
+	prev(current_SinglePlayer_EquippedWeaponID(enum_releaseRegion))
+
+function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) != prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion)
+
 // #endregion HUD_AmmoHealth
 
 // ...........
@@ -900,7 +910,7 @@ achievements_coreData = {
 	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
 			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
-		"a_CompletePerf": { // CONCEPT a_CompletePerf
+		"a_CompletePerf": { // VERIFIED
 			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		// "a_CompleteHng": { // CONCEPT a_CompleteHng
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact woth dog"},
@@ -912,8 +922,8 @@ achievements_coreData = {
 	"c_SPchallenge": { // Category - Single Player Challenges
 		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
 		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
-		// "a_ChallengePerf": { // QA // DISABLED - Manual Construction (refer to Trigger)
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_perf: Finish level missing no shots (talk to mom or Jinnie after killing all enemies)"},
+		// "a_ChallengePerf": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
+			// "id": 497683, "points": 0000000, "devInfo": "lvl_perf: Finish level missing no shots (talk to mom or Jinnie after killing all enemies)"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
@@ -1042,7 +1052,8 @@ achievements_triggers = {
 		const_FRAME_DELAY_accuracyCheck = 200
 		const_ENEMY_COUNT = 6 // "Billy The Kid" is also included in this count. He may be friendly when killing other hostile NPCs too quickly
 		return
-			// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_R:0xH00483750=13_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_Z:0xX00000004!=1718773072_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_N:0xX00000004=1718773072_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_C:d0xX00000004!=1718773072.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_Z:0xX00000004!=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_N:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000004c0_I:0xX0000000c_C:d0xX00000004!=1851877460.1._T:0=1.1.
 			never(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -1069,16 +1080,50 @@ achievements_triggers = {
 				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
 				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)))
 
-			&& measured(
-				repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion)),
-				when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
 
-			&& trigger_when(tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
-				once(never(is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion))
-					&& on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion)),
-				once(never(is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion))
-					&& on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion))]
-				))
+			&& trigger_when(
+				repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+				&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
+					once(never(is_ASCIIflagState_PrologueStage_IsMomThanksActive_false(enum_releaseRegion))
+						&& on_ASCIIflagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion)),
+					once(never(is_ASCIIflagState_PrologueStage_IsJinnieThanksActive_false(enum_releaseRegion))
+						&& on_ASCIIflagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion))]
+					)
+				)
+		// [2] ==== Alt Measured Group ====				-> This group is purely responsible for displaying a Measured Indicator tracking enemy kills
+			// MANUAL_CONSTRUCTION Alt2: R:0xX0091204c!=1397769043_R:0xH00483750=13_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_I:0xX00000170_M:0xX0000005c>d0xX0000005c.6._I:0xX00421850_I:0xX00000170_Q:0xX0000005c=0.1._T:0=1
+			|| never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
+				/* MANUAL_CONSTRUCTION A: Below ResetNextIf && PauseIf Code - Reset next if 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
+					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
+					---------
+					AddSource	Mem [32-bit:ShotsFired]
+					SubSource	Mem [32-bit:ShotsHitBody]
+					SubSource	Mem [32-bit:ShotsHitHead]
+					ResetNextIf	val 0 == val 0
+					AddSource	[32-bit:ShotsFired]
+					SubSource	[32-bit:ShotsHitBody]
+					SubSource	[32-bit:ShotsHitHead]
+					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
+					*/
+				never( // --ResetNextIf--> When 100 % accuracy
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
+					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
+				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
+				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)))
+			&& measured(
+					repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion)),
+					when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))	
+			&& trigger_when(always_false())	
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)	
 		}),
 	// c_SPbonus
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -1201,12 +1246,16 @@ achievements_triggers = {
 		const_FRAME_DELAY_accuracyCheck = 200
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
-			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_0xM00000134=1_I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.2._I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
+			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_R:0xH00483750=13_N:fF0092785c>=f3.0_O:dfF0092785c<f3.0_I:0xX005f7e24_Z:0xX000000c8!=d0xX000000c8_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_0xM00000134=1_I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.2._I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
 			never(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
 			&& unless(once( // Pause Lock: When using a weapon while not on horseback
-				!is_PlayerOnHorseback(enum_releaseRegion)
+				never( // ---BugFix---> without this ResetNextIf, this PauseLock may activate on level start or reset
+					current_TimeSpentInLevel(enum_releaseRegion) >= 3.0
+					&& prev_TimeSpentInLevel(enum_releaseRegion) < 3.0) 
+				&& never(on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion)) // ---BugFix---> without this ResetNextIf, this PauseLock may activate when switching weapons
+				&& !is_PlayerOnHorseback(enum_releaseRegion)
 				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
 					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
 					-------------
@@ -1264,10 +1313,14 @@ achievements_triggers = {
 				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
 				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xC1))
 		// [2] ==== Alt Measured Group ==== 			-> Groups is purely responsible for displaying a Measured Indicator for enemy kill count
-			// MANUAL_CONSTRUCTION Alt2: I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_M:0xX0000005c>d0xX0000005c.2._Q:0xX0091204c=1397769043_T:0=1
+			// MANUAL_CONSTRUCTION Alt2: N:fF0092785c>=f3.0_O:dfF0092785c<f3.0_I:0xX005f7e24_Z:0xX000000c8!=d0xX000000c8_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_M:0xX0000005c>d0xX0000005c.2._Q:0xX0091204c=1397769043_Q:0xH00483750=255_T:0=1
 			|| unless(once( // Pause Lock: When using a weapon while not on horseback
-				!is_PlayerOnHorseback(enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
+				never( // ---BugFix---> without this ResetNextIf, this PauseLock may activate on level start or reset
+					current_TimeSpentInLevel(enum_releaseRegion) >= 3.0
+					&& prev_TimeSpentInLevel(enum_releaseRegion) < 3.0) 
+				&& never(on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion)) // ---BugFix---> without this ResetNextIf, this PauseLock may activate when switching weapons
+				&& !is_PlayerOnHorseback(enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon AND Player hasn't switched weapons
 					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
 					-------------
 					SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
