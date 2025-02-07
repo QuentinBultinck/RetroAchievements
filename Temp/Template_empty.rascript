@@ -610,9 +610,7 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, 
-	// 	"leaderboardFormat": "VALUE",
-	// 	"devInfo": "xxxxxxx"},
+	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	}
 // #endregion LB - core data
 
@@ -627,13 +625,14 @@ leaderboards_coreData = {
 // • LEADERBOARD triggers •
 // ========================
 // #region LB - triggers
-leaderboards_startTriggers = {	
+leaderboards_startTriggers = {
 	}
-leaderboards_cancelTriggers = {	
+leaderboards_cancelTriggers = {
 	}
 leaderboards_submitTriggers = {
 	}
-leaderboards_valueMeasures = {		
+//-----------------ValueMeasures-------------------
+leaderboards_valueMeasures = {
 	}
 // #endregion LB - triggers
 
@@ -655,8 +654,8 @@ leaderboards_descriptions = {
 // #region LB - initialization
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
-		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
-			format("[{0}] ", substring(string_leaderboardDevName, 3))
+		function leaderboards_createDevName(string_leaderboardDevName) => 	// Wrap LeaderoboardDevName in [] (brackets)
+			format("[{0}] ", string_leaderboardDevName)
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
