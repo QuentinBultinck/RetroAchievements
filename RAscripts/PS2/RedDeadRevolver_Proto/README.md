@@ -1,6 +1,8 @@
 # **Retro Achievements Guide** <br> 🔶 ***Red Dead Revolver \~ Prototype*** <sub><sup> (PS2) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/106446.png "Mastery badge icon")](https://retroachievements.org/game/32806 "Retro Achievements game page - Red Dead Revolver (Prototype)") 
+<p align="center">
+  <img width="xxx" height="xxx" src="https://tcrf.net/images/4/4d/RDRevolverPS2-20020115_title640x448.tex.png" alt="Red Dead Revolver (Prototype) - Key Art">
+</p>
 
 This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
@@ -17,9 +19,17 @@ This guide provides comprehensive details on how to unlock each achievement with
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
 
+
 <h1 id=AchievementGuide>
     💎 Achievement Guide
 </h1>
+
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/106446.png" alt="Red Dead Revolver (Prototype) - RetroAchievements Mastery Icon">
+
+```
+Set consists of xxxx achievements worth xxx points
+Set released on DD MMMM YYYY
+```
 
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
