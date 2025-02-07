@@ -54,10 +54,6 @@
 // ---------------------------------------------
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
-
-	TODO list
-	- Update all DISABLED cheevo's - IsLoading() check added everywhere
-
 */
 
 // #endregion DEVELOPER NOTES
@@ -194,6 +190,8 @@ memory_StructDefs = {
 			"ASCII:ShootingGalleryNameState": {
 				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC],
 				"offsetToPointedToMember": 0x4},
+			"Float:ShootingGalleryTimer": {
+				"pointerChainOffsets": [0x188, 0x94, 0x190, 0xC, 0x24]},
 			// ----PrologueStage----
 			"ASCIIFlag(NPCevent):IsJinnieThanksActive": {
 				"pointerChainOffsets": [0x188, 0x188, 0x94, 0x4C0, 0xC],
@@ -531,6 +529,9 @@ function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
 function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
 	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
 
+function is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion) =>
+	is_CharacterAnimation_inactive(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+
 function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
 	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
 	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
@@ -763,8 +764,8 @@ function is_ShootingGalleryNameState(enum_shootingGalleryNameState, enum_release
 function on_ShootingGalleryNameState_changeTo(enum_shootingGalleryNameState, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_shootingGalleryNameState = 
-		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) + 
-		memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) 
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
 	return 
 		is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)
 		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
@@ -778,7 +779,17 @@ function current_ShootingGalleryState(enum_releaseRegion) {
 function prev_ShootingGalleryState(enum_releaseRegion) =>
 	prev(current_ShootingGalleryState(enum_releaseRegion))
 
-function on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion) {
+function on_TrainingStage_ShootingChallenge_start(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_shootingGalleryNameState = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCII:ShootingGalleryNameState", let_memAddr_basePointer) 
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCII:ShootingGalleryNameState")
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, SHOOTING_GALLERY_NAME_STATE_Active)
+		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_shootingGalleryNameState, SHOOTING_GALLERY_NAME_STATE_Active)}
+
+
+function on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion) {
 	const_SHOOTING_GALLERY_STATE_TaskShootDummies = 0x5 // --> ShootingGallery State where the player is required to shoot the dummies
 	const_SHOOTING_GALLERY_STATE_Fail = 0x6 // 0x6 or 0x7 --> ShootingGallery Fail State - msg. "Stop shooting Time is up!"
 
@@ -789,8 +800,23 @@ function on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion) {
 		&& prev(current_ShootingGalleryState(enum_releaseRegion)) > const_SHOOTING_GALLERY_STATE_Fail - 0x3 // --> Allow for some leeway, by minus 3 states
 	}
 
-function on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion) =>
+function on_TrainingStage_ShootingChallenge_win(enum_releaseRegion) =>
 	on_ShootingGalleryNameState_changeTo(SHOOTING_GALLERY_NAME_STATE_Win, enum_releaseRegion)
+
+function current_ShootingGalleryTimer(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:NPCdata", "Float:ShootingGalleryTimer", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function prev_ShootingGalleryTimer(enum_releaseRegion) =>
+	prev(current_ShootingGalleryTimer(enum_releaseRegion))
+
+function current_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion) =>
+	current_ShootingGalleryTimer(enum_releaseRegion) * 100.0 // Seconds to CentiSeconds
+
+function prev_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion) =>
+	prev_ShootingGalleryTimer(enum_releaseRegion) * 100.0 // Seconds to CentiSeconds
 
 // #endregion TrainingStage
 
@@ -913,15 +939,15 @@ achievements_coreData = {
 		"a_CompletePerf": { // VERIFIED
 			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		// "a_CompleteHng": { // CONCEPT a_CompleteHng
-		//	"id": 000000, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact woth dog"},
+		//	"id": 000000, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
 		// "a_CompleteShernite": { // CONCEPT a_CompleteShernite
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
 		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
 		},
 	"c_SPchallenge": { // Category - Single Player Challenges
-		// "a_ShootingGalleryGreat": { // CONCEPT a_ShootingGalleryGreat
-		// 	"id": 000000, "points": 0000000, "devInfo": "Finish shooting challenge in under xx time"},
+		"a_ShootingGalleryGreat": { // VERIFIED
+			"id": 497831, "points": 0000000, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge"},
 		// "a_ChallengePerf": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
 			// "id": 497683, "points": 0000000, "devInfo": "lvl_perf: Finish level missing no shots (talk to mom or Jinnie after killing all enemies)"},
 		},
@@ -1017,7 +1043,7 @@ achievements_triggers = {
 			&& measured(tally(3, [
 				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
 				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
-				once(on_TrainingStage_ShootingChallenge_Fail(enum_releaseRegion))]
+				once(on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion))]
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		// [2] ==== Alt Logic Group - ShootingChallenge_Win ==== 			-> Alt Logic Group 2, which counts ShootingChallenge_Win
@@ -1028,7 +1054,7 @@ achievements_triggers = {
 			&& measured(tally(3, [
 				once(on_TrainingStage_MovementTraining_complete(enum_releaseRegion)),
 				once(on_TrainingStage_WeaponTraining_complete(enum_releaseRegion)),
-				once(on_TrainingStage_ShootingChallenge_Win(enum_releaseRegion))]
+				once(on_TrainingStage_ShootingChallenge_win(enum_releaseRegion))]
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
@@ -1047,6 +1073,21 @@ achievements_triggers = {
 				))
 		),
 	// c_SPchallenge
+	"a_ShootingGalleryGreat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
+		return
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once(on_TrainingStage_ShootingChallenge_start(enum_releaseRegion))
+			&& measured(repeated(const_MOLE_KILLS_REQUIRED_FOR_WIN, on_SinglePlayer_Kill_increment(enum_releaseRegion)))
+			&& trigger_when(on_TrainingStage_ShootingChallenge_win(enum_releaseRegion))
+		// [2] ==== Alt Reset Group ==== 				-> Reset on ShootingChallenge fail
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TrainingStage, enum_releaseRegion)		
+		}),
 	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
 		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
 		const_FRAME_DELAY_accuracyCheck = 200
@@ -1148,7 +1189,9 @@ achievements_triggers = {
 			!is_ReleaseRegion(enum_releaseRegion)
 			|| is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion)
 			|| is_Loading(enum_releaseRegion))		
-		&& once(on_TippingHat_CharacterAnimation_start(enum_releaseRegion))
+		&& once(
+			never(is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion))
+			&& on_TippingHat_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_TippingHat_CharacterAnimation_finish(enum_releaseRegion))
 		), 
 	"a_Dodge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1158,7 +1201,7 @@ achievements_triggers = {
 		&& isNot_Loading(enum_releaseRegion)
 
 		&& once(
-			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)) // ---ResetNextIf--- // TODO test this reset
+			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion))
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
@@ -1390,6 +1433,7 @@ achievements_titles = {
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 	"a_CompletePerf": 			{"en": "A Son's Duty"},
 
+	"a_ShootingGalleryGreat": 	{"en": "Whack-a-Mole"},
 	"a_ChallengePerf":			{"en": "Lead with Precision"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
@@ -1407,6 +1451,7 @@ achievements_descriptions = {
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
 	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", share a few last words with your mother and Jinnie"},
 
+	"a_ShootingGalleryGreat": 	{"en": "Impress the Indian Master by eliminating 11 moles in under one minute during the \"Training Stage\" Shooting Challenge"},
 	"a_ChallengePerf":			{"en": "Take down every enemy in the \"Prologue Stage\" without wasting a single bullet, then have a word with your mother or Jinnie"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
@@ -1704,7 +1749,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO implement leaderboards
 
 // =========================
 // • LEADERBOARD core data •
@@ -1718,9 +1762,10 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, 
-	// 	"leaderboardFormat": "VALUE",
-	// 	"devInfo": "xxxxxxx"},
+	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+
+	"lb_ShootingChallenge": { // VERIFIED
+		"id": 125651, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_tng: Achieve 'Good Job' for ShootingChallenge"},
 	}
 // #endregion LB - core data
 
@@ -1735,13 +1780,61 @@ leaderboards_coreData = {
 // • LEADERBOARD triggers •
 // ========================
 // #region LB - triggers
-leaderboards_startTriggers = {	
+leaderboards_startTriggers = {
+	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+		&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
+		&& on_TrainingStage_ShootingChallenge_start(enum_releaseRegion)
+		),
 	}
-leaderboards_cancelTriggers = {	
+leaderboards_cancelTriggers = {
+	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when not correct GameState
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+		// [2] ==== Alt Cancel Group ====		-> Cancel when not correct Level
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level(LEVEL_TrainingStage, enum_releaseRegion)
+		// [3] ==== Alt Cancel Group ====		-> Cancel when ShootingChallenge fails
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion)
+		// [4+5] ==== Alt Cancel Groups ====	-> Cancel on Level Start or Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_Level_startORreset(enum_releaseRegion)
+		),
 	}
 leaderboards_submitTriggers = {
+	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
+		return 
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_TrainingStage, enum_releaseRegion)
+				|| on_TrainingStage_ShootingChallenge_start(enum_releaseRegion)
+				|| on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion)
+				|| on_Level_startORreset(enum_releaseRegion))
+			&& repeated(const_MOLE_KILLS_REQUIRED_FOR_WIN, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+
+			&& prev_ShootingGalleryTimer(enum_releaseRegion) > 3.0 // ---2 Lines---> prev_ShootingGalleryTimer() is the submitted ValueMeasure, These are extra checks to prevent false entries from getting into leaderboard
+			&& prev_ShootingGalleryTimer(enum_releaseRegion) < 61.0 
+		}),
 	}
-leaderboards_valueMeasures = {		
+//-----------------ValueMeasures-------------------
+function lb_ShootingChallenge_ValueMeasure() {
+	function valueMeasure_A(enum_releaseRegion) => // This is the value which is displayed; When this leaderboard.SubmitTrigger triggers, current value will be 0
+		measured(current_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion))
+	function valueMeasure_B(enum_releaseRegion) => // This is the value which will be submitted; When this leaderboard.SubmitTrigger triggers, prev/delta value will be the ShootingGalleryTimer, which is higher than 0, thus max_of()
+		measured(prev_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		array_push(let_array_valueMeasures, valueMeasure_A(enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_B(enum_releaseRegion))}
+	return max_of(let_array_valueMeasures)}
+leaderboards_valueMeasures = {
+	"lb_ShootingChallenge":  lb_ShootingChallenge_ValueMeasure(),
 	}
 // #endregion LB - triggers
 
@@ -1751,9 +1844,13 @@ leaderboards_valueMeasures = {
 // #region LB - text
 leaderboards_titles = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+
+	"lb_ShootingChallenge": 				{"en": "Whack-a-Mole: Quick Draw Champions"},	
 	}
 leaderboards_descriptions = {
 	// "rp_Template": 						{"en": "xxxxxxxx"},
+
+	"lb_ShootingChallenge": 				{"en": "In the \"Training Stage\", eliminate 11 moles during the Shooting Challenge as fast as possible"},
 	}
 // #endregion LB - text
 
@@ -1763,8 +1860,8 @@ leaderboards_descriptions = {
 // #region LB - initialization
 function leaderboards_initialize() {
 	function leaderboards_generateTitle(string_leaderboardDevName, string_languageCode) {
-		function leaderboards_createDevName(string_leaderboardDevName) => 	// Removes lb_ and puts it between []
-			format("[{0}] ", substring(string_leaderboardDevName, 3))
+		function leaderboards_createDevName(string_leaderboardDevName) => 	// Wrap LeaderoboardDevName in [] (brackets)
+			format("[{0}] ", string_leaderboardDevName)
 		function leaderboards_getTitle(string_leaderboardDevName, string_languageCode) => 
 			leaderboards_titles[string_leaderboardDevName][string_languageCode]
 
