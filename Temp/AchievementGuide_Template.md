@@ -27,6 +27,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 ```
 Set consists of xxxx achievements worth xxx points
+
 Set released on DD MMMM YYYY
 ```
 

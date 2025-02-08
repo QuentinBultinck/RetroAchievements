@@ -54,6 +54,8 @@
 // ---------------------------------------------
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
+
+	// TODO RamDig - Find a way to ID if player on horseback is taking cover/hugging horse + implement achievement showcasing this feature 
 */
 
 // #endregion DEVELOPER NOTES
@@ -130,6 +132,12 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x14, 0xC]},
 			"Float:PlayerMaxHealth": { 
 				"pointerChainOffsets": [0x14, 0x4, 0x0]},
+			"Struct(Coordinates):PlayerOnHorsebackLocation-X": {
+				"pointerChainOffsets": [0x70, 0x8, 0xC, 0x90 + 0xC]},
+			"Struct(Coordinates):PlayerOnHorsebackLocation-Y": {
+				"pointerChainOffsets": [0x70, 0x8, 0xC, 0x90 + 0x4]},
+			"Struct(Coordinates):PlayerOnHorsebackLocation-Z": {
+				"pointerChainOffsets": [0x70, 0x8, 0xC, 0x90 + 0x8]},
 			"32-bit:Money_MPkills": { 
 				"pointerChainOffsets": [0x130]},
 			"BitFlag:IsPlayerOnHorseback": { 
@@ -175,6 +183,8 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x4, 0x8, 0xC, 0x90 + 0x4]},
 			"Struct(Coordinates):NPClocation(functional)-Z": {
 				"pointerChainOffsets": [0x4, 0x8, 0xC, 0x90 + 0x8]},
+			"Float:NPChealth": {
+				"pointerChainOffsets": [0x4, 0x14, 0xC]},
 		}},
 	"Pointer:NPCdata": {
 		"pointerChainToMember": {
@@ -213,7 +223,19 @@ memory_StructDefs = {
 			"ASCIIFlag(NPCevent):IsDogThanksActive": {
 				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0xC4, 0xC],
 				"offsetToPointedToMember": 0x4},
+			// ----SheriffNightStage----
+			"8-bit(NPCeventState):CaptiveThanks": {
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x14C, 0xC, 0x0]},
+			"ASCIIFlag(NPCevent):IsCaptiveThanksActive": {
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x14C, 0xC],
+				"offsetToPointedToMember": 0x4},
+			
 		}},
+	"Pointer:TimeSpentInLevel": {
+		"pointerChainToMember": {
+			"Float:TimeSpentInLevel": {
+				"pointerChainOffsets": [0x4C]}
+		}}, 
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -278,11 +300,10 @@ memory_addresses = {
 
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
-	"Float:TimeSpentInLevel": {RELEASE_REGION_USA: 0x92785c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
-	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},	
+	"Pointer:TimeSpentInLevel": {RELEASE_REGION_USA: 0x53cfa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:MenuData": {RELEASE_REGION_USA: 0x4215a0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:HUD_AmmoHealth-Player1": {RELEASE_REGION_USA: 0x5f7e24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -426,7 +447,12 @@ function on_Menu_render(enum_menuID, enum_releaseRegion) =>
 	&& prev_FlagState_IsMenuDisplayed(enum_releaseRegion) == 0
 	
 // ----------------TimeSpentInLevel---------------------
-function current_TimeSpentInLevel(enum_releaseRegion) => float(memory_getAddress("Float:TimeSpentInLevel", enum_releaseRegion))
+function current_TimeSpentInLevel(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:TimeSpentInLevel", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:TimeSpentInLevel", "Float:TimeSpentInLevel", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
 function prev_TimeSpentInLevel(enum_releaseRegion) => prev(current_TimeSpentInLevel(enum_releaseRegion))
 function on_TimeSpentInLevel_start(enum_releaseRegion) => 
 	// NOTE: Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
@@ -457,11 +483,20 @@ function current_SinglePlayer_ShotsFired(enum_releaseRegion) {
 function prev_SinglePlayer_ShotsFired(enum_releaseRegion) =>
 	prev(current_SinglePlayer_ShotsFired(enum_releaseRegion))
 
+function on_SinglePlayer_ShotsFired_increment(enum_releaseRegion) =>
+	current_SinglePlayer_ShotsFired(enum_releaseRegion) > prev_SinglePlayer_ShotsFired(enum_releaseRegion)
+
 function current_SinglePlayer_ShotsHitBody(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
 		"Struct:PlayerData", "32-bit:ShotsHitBody",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function prev_SinglePlayer_ShotsHitBody(enum_releaseRegion) => 
+	prev(current_SinglePlayer_ShotsHitBody(enum_releaseRegion))
+
+function on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion) =>
+	current_SinglePlayer_ShotsHitBody(enum_releaseRegion) > prev_SinglePlayer_ShotsHitBody(enum_releaseRegion)
 
 function current_calculated_Accuracy(enum_releaseRegion) => 
 	current_SinglePlayer_ShotsFired(enum_releaseRegion) / current_SinglePlayer_ShotsHitBody(enum_releaseRegion)
@@ -580,14 +615,46 @@ function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
 		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
 		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
 	}
-// ----------------SinglePlayer Specific---------------------
+
+// ----------------Horseback---------------------
 function is_PlayerOnHorseback(enum_releaseRegion) {
-	// NOTE: In SinglePlayer, PlayerData for Player1 is used
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
 		"Struct:PlayerData", "BitFlag:IsPlayerOnHorseback",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0) == 1}
 
+function current_PlayerOnHorsebackLocation_X(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerOnHorsebackLocation-X",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function current_PlayerOnHorsebackLocation_Y(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerOnHorsebackLocation-Y",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function current_PlayerOnHorsebackLocation_Z(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Struct(Coordinates):PlayerOnHorsebackLocation-Z",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function prev_PlayerOnHorsebackLocation_X(enum_releaseRegion) =>
+	prev(current_PlayerOnHorsebackLocation_X(enum_releaseRegion))
+
+function prev_PlayerOnHorsebackLocation_Y(enum_releaseRegion) =>
+	prev(current_PlayerOnHorsebackLocation_Y(enum_releaseRegion))
+
+function prev_PlayerOnHorsebackLocation_Z(enum_releaseRegion) =>
+	prev(current_PlayerOnHorsebackLocation_Z(enum_releaseRegion))
+
+function on_PlayerOnHorsebackLocation_move_xy(enum_releaseRegion) =>
+	current_PlayerOnHorsebackLocation_X(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_X(enum_releaseRegion)
+	|| current_PlayerOnHorsebackLocation_Y(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_Y(enum_releaseRegion)
+
+// ----------------SinglePlayer Specific---------------------
 function current_SinglePlayer_Health(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
@@ -617,6 +684,7 @@ function current_SinglePlayer_Money(enum_releaseRegion) {
 
 function prev_SinglePlayer_Money(enum_releaseRegion) =>
 	prev(current_SinglePlayer_Money(enum_releaseRegion))
+
 // ----------------Multiplayer Specific---------------------
 
 // #endregion PlayerData
@@ -733,6 +801,27 @@ function current_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion) {
 	}
 function prev_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion) =>
 	prev(current_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion))
+
+function current_NPChealth(int_NPCdataIndex, enum_releaseRegion) {
+	let_array_pointerChainOffsetsTo_NPCdata = memGenerate_array_pointerChainOffsetsTo_NPCdata(int_NPCdataIndex)
+	let_array_pointerChainOffsetsTo_NPChealth_from_NPCdata = memory_getStruct_offsetSequenceToMember("Struct:NPCdata", "Float:NPChealth")
+	let_array_pointerChainOffsetsTo_NPChealth = util_concatArrays(let_array_pointerChainOffsetsTo_NPCdata, let_array_pointerChainOffsetsTo_NPChealth_from_NPCdata)
+	
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)		
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_basePointer, 
+		let_array_pointerChainOffsetsTo_NPChealth, memAccessorFunction_toPointedToMember = float)
+	}
+
+function prev_NPChealth(int_NPCdataIndex, enum_releaseRegion) =>
+	prev(current_NPChealth(int_NPCdataIndex, enum_releaseRegion))
+
+function on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion) =>
+	current_NPChealth(int_NPCdataIndex, enum_releaseRegion) == 0.0
+	&& prev_NPChealth(int_NPCdataIndex, enum_releaseRegion) > 0.0
+
+function on_NPChealth_takeDamage(int_NPCdataIndex, enum_releaseRegion) =>
+	current_NPChealth(int_NPCdataIndex, enum_releaseRegion) < prev_NPChealth(int_NPCdataIndex, enum_releaseRegion)
+
 // #region TrainingStage
 // -----------------MovementTraining--------------------
 MOVEMENT_TRAINING_SECTION_SneakAndCreep = "Sneak_and_Creep"
@@ -790,6 +879,18 @@ function on_TrainingStage_WeaponTraining_complete(enum_releaseRegion) {
 SHOOTING_GALLERY_NAME_STATE_Inactive = "0tar" // FullString: "0tart_Whak_A_Mole"
 SHOOTING_GALLERY_NAME_STATE_Active = "Star" // FullString: "Start_Whak_A_Mole"
 SHOOTING_GALLERY_NAME_STATE_Win = "Whac" // FullString: "Whack_A_Mole_Win"
+SHOOTING_GALLERY_STATE_TaskShootDummies = 0x5 // --> ShootingGallery State where the player is required to shoot the dummies
+SHOOTING_GALLERY_STATE_Fail = 0x6 // 0x6 or 0x7 --> ShootingGallery Fail State - msg. "Stop shooting Time is up!"
+
+function current_ShootingGalleryState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:NPCdata", "Lower4:ShootingGalleryState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = low4)}
+
+function prev_ShootingGalleryState(enum_releaseRegion) =>
+	prev(current_ShootingGalleryState(enum_releaseRegion))
+
 function is_ShootingGalleryNameState(enum_shootingGalleryNameState, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_shootingGalleryNameState = 
@@ -806,14 +907,14 @@ function on_ShootingGalleryNameState_changeTo(enum_shootingGalleryNameState, enu
 		is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)
 		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_shootingGalleryNameState, enum_shootingGalleryNameState)}
 
-function current_ShootingGalleryState(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Pointer:NPCdata", "Lower4:ShootingGalleryState",
-		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = low4)}
+function is_TrainingStage_ShootingChallenge_TaskShootDummies_active(enum_releaseRegion) =>
+	is_ShootingGalleryNameState(SHOOTING_GALLERY_NAME_STATE_Active, enum_releaseRegion)
+	&& current_ShootingGalleryState(enum_releaseRegion) == SHOOTING_GALLERY_STATE_TaskShootDummies
 
-function prev_ShootingGalleryState(enum_releaseRegion) =>
-	prev(current_ShootingGalleryState(enum_releaseRegion))
+function on_TrainingStage_ShootingChallenge_TaskShootDummies_start(enum_releaseRegion) =>
+	is_ShootingGalleryNameState(SHOOTING_GALLERY_NAME_STATE_Active, enum_releaseRegion)
+	&& current_ShootingGalleryState(enum_releaseRegion) == SHOOTING_GALLERY_STATE_TaskShootDummies
+	&& prev_ShootingGalleryState(enum_releaseRegion) < SHOOTING_GALLERY_STATE_TaskShootDummies
 
 function on_TrainingStage_ShootingChallenge_start(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -824,17 +925,11 @@ function on_TrainingStage_ShootingChallenge_start(enum_releaseRegion) {
 		is_ASCII_EqualTo(let_pointerChainTo_shootingGalleryNameState, SHOOTING_GALLERY_NAME_STATE_Active)
 		&& wasPrev_ASCII_notEqualTo(let_pointerChainTo_shootingGalleryNameState, SHOOTING_GALLERY_NAME_STATE_Active)}
 
-
-function on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion) {
-	const_SHOOTING_GALLERY_STATE_TaskShootDummies = 0x5 // --> ShootingGallery State where the player is required to shoot the dummies
-	const_SHOOTING_GALLERY_STATE_Fail = 0x6 // 0x6 or 0x7 --> ShootingGallery Fail State - msg. "Stop shooting Time is up!"
-
-	return 
-		is_ShootingGalleryNameState(SHOOTING_GALLERY_NAME_STATE_Active, enum_releaseRegion)
-		&& current_ShootingGalleryState(enum_releaseRegion) >= const_SHOOTING_GALLERY_STATE_Fail
-		&& prev(current_ShootingGalleryState(enum_releaseRegion)) < const_SHOOTING_GALLERY_STATE_Fail
-		&& prev(current_ShootingGalleryState(enum_releaseRegion)) > const_SHOOTING_GALLERY_STATE_Fail - 0x3 // --> Allow for some leeway, by minus 3 states
-	}
+function on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion) =>
+	is_ShootingGalleryNameState(SHOOTING_GALLERY_NAME_STATE_Active, enum_releaseRegion)
+	&& current_ShootingGalleryState(enum_releaseRegion) >= SHOOTING_GALLERY_STATE_Fail
+	&& prev(current_ShootingGalleryState(enum_releaseRegion)) <= SHOOTING_GALLERY_STATE_TaskShootDummies
+	&& prev(current_ShootingGalleryState(enum_releaseRegion)) > SHOOTING_GALLERY_STATE_TaskShootDummies - 0x3 // --> Allow for some leeway, by minus 3 states
 
 function on_TrainingStage_ShootingChallenge_win(enum_releaseRegion) =>
 	on_ShootingGalleryNameState_changeTo(SHOOTING_GALLERY_NAME_STATE_Win, enum_releaseRegion)
@@ -855,7 +950,6 @@ function prev_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion) =>
 	prev_ShootingGalleryTimer(enum_releaseRegion) * 100.0 // Seconds to CentiSeconds
 
 // #endregion TrainingStage
-
 // #region PrologueStage
 function current_NPCeventState_TitleStage_MomThanks(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -908,7 +1002,6 @@ function on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_release
 		&& on_NPCeventState_TitleStage_JinnieThanks_toggleActive(enum_releaseRegion)}
 
 // #endregion PrologueStage
-
 // #region TitleStage
 function current_NPCeventState_TitleStage_DogThanks(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
@@ -934,7 +1027,31 @@ function on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion
 		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, const_ASCII_FLAG_STATE_Hng_IsDogThanksActive_true)
 		&& on_NPCeventState_TitleStage_DogThanks_toggleActive(enum_releaseRegion)}
 // #endregion TitleStage
+// #region SheriffNightStage
+function current_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:NPCdata", "8-bit(NPCeventState):CaptiveThanks", let_memAddr_basePointer)}
 
+function prev_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion) =>
+	prev(current_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion))
+
+function on_NPCeventState_SheriffNightStage_CaptiveThanks_toggleActive(enum_releaseRegion) {
+	// NOTE: this NPCeventState goes from [0x0-0x4], refer to code notes
+	const_NPC_EVENT_STATE_CaptiveThanks_active = 0x2
+	return 
+		current_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion) == const_NPC_EVENT_STATE_CaptiveThanks_active
+		&& prev_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion) < const_NPC_EVENT_STATE_CaptiveThanks_active}
+
+function on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion) {
+	const_ASCII_FLAG_STATE_Shernite_IsCaptiveThanksActive_true = "ThankYou"
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsCaptiveThanksActive", let_memAddr_basePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsCaptiveThanksActive")
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, const_ASCII_FLAG_STATE_Shernite_IsCaptiveThanksActive_true)
+		&& on_NPCeventState_SheriffNightStage_CaptiveThanks_toggleActive(enum_releaseRegion)}
+// #endregion SheriffNightStage
 // #endregion NPCdata
 
 // ................
@@ -1005,20 +1122,20 @@ achievements_coreData = {
 			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		"a_CompleteHng": { // VERIFIED
 			"id": 497833, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
-		// "a_CompleteShernite": { // CONCEPT a_CompleteShernite
-		//	"id": 000000, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
+		"a_CompleteShernite": { // VERIFIED
+			"id": 497874, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
 		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
 		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
-		},
+		}, 
 	"c_SPchallenge": { // Category - Single Player Challenges
-		"a_ShootingGalleryGreat": { // TODO update with "only score headshots"
-			"id": 497831, "points": 0000000, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only score headshots"},
+		"a_ChallengeTng": { // VERIFIED
+			"id": 497831, "points": 0000000, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only hit headshots"},
 		"a_ChallengePerf": { // VERIFIED
 			"id": 497683, "points": 0000000, "devInfo": "lvl_perf: Finish level without taking damage (talk to mom or Jinnie after killing all enemies)"},
 		// "a_ChallengeHng": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
 			// "id": 497832, "points": 0000000, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
-		// "a_ChallengeShernite": { // CONCEPT a_ChallengeShernite
-			//	"id": 000000, "points": 0000000, "devInfo": "lvl_shernite: Get a kill with 5 different weapons (talk to slave after killing all enemies)"},
+		"a_ChallengeShernite": { // VERIFIED
+			"id": 497875, "points": 0000000, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
 		// "a_ChallengeSher70": { // CONCEPT a_ChallengeSher70
 			//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Get a kill with 5 different weapons"},
 		},
@@ -1031,18 +1148,18 @@ achievements_coreData = {
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
 		"a_SaloonThrow": { // VERIFIED
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
-		// "a_HorseTomb": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger) // TODO update with simplified logic, refer to a_ChallengeHng
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Kill all enemies whilst on horseback, with 100% accuracy (shooting whilst not on horseback is not allowed)"},
+		"a_HorseTomb": { // VERIFIED
+			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
 		"a_EyeTng": { // VERIFIED
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinMon": { // CONCEPT a_WinMon
-		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (mon)"},
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (mon)"},
 		// "a_WinRed": { // CONCEPT a_WinRed
-		// 	"id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
 		// "a_Dynamite": { // CONCEPT a_Dynamite
-		// 	"id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite"},
+			// "id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite"},
 		}
 	}
 // -------------------------------------
@@ -1069,6 +1186,16 @@ achievements_typeByCategory = {
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
+function AchGenerate_2x_AltResetGroups_SinglePlayerLevel(enum_levelID, enum_releaseRegion) =>
+	// [1] ==== Alt Reset Group ==== 				-> Reset when not in SinglePlayer Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 				-> Reset when not in correct Level
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level(enum_levelID, enum_releaseRegion))
+
 function AchGenerate_3x_AltResetGroups_SinglePlayerLevel(enum_levelID, enum_releaseRegion) =>
 	// [1] ==== Alt Reset Group ==== 				-> Reset when not in SinglePlayer Mode
 		never_toAlt(
@@ -1102,7 +1229,7 @@ achievements_triggers = {
 	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 	// 	),
 
-	// c_SPprogress
+	// -------c_SPprogress-------
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// NOTE: Two alt logic groups (one of them needs to be true). One counts a ShootingChallenge_Fail, the other counts a ShootingChallenge_Win
 		// [1] ==== Alt Logic Group - ShootingChallenge_Fail ==== 			-> Alt Logic Group 1, which counts ShootingChallenge_Fail
@@ -1129,22 +1256,28 @@ achievements_triggers = {
 				))
 			// && trigger_when(on_Menu_render(MENU_SelectionMenu, enum_releaseRegion)) // ---Disabled--> Otherwise doing MovementTraining for last => plaer will have to re-complete whole WeaponTraining as well before this Menu renders again
 		),
-	"a_CompletePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	"a_CompletePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
+		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 			never(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 				|| !is_Level(LEVEL_PrologueStage, enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
-
+			// && repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 			&& measured(tally(2, [ // ---Tally---> Talk to both Mom and Jinnie
 				once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
 				once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))]
 				))
-		),
+		}),
 	"a_CompleteHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_ENEMY_COUNT = 6
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
 		return
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 			never(
@@ -1152,29 +1285,61 @@ achievements_triggers = {
 				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 				|| !is_Level(LEVEL_TitleStage, enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion)
-				|| on_Level_startORreset(enum_releaseRegion))			
-			&& repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+				|| on_Level_startORreset(enum_releaseRegion))
+			// && repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
 			}),
-	// c_SPchallenge
-	"a_ShootingGalleryGreat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_CompleteShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			never(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+				|| !is_Level(LEVEL_SheriffNight, enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion)
+				|| on_Level_startORreset(enum_releaseRegion))
+			// && repeated(const_ENEMY_COUNT, on_SinglePlayer_Kill_increment(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex =>  // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+				once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion)
+			}),
+	// -------c_SPchallenge-------
+	"a_ChallengeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
 			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once player hits a body shot
+				never(on_TrainingStage_ShootingChallenge_TaskShootDummies_start(enum_releaseRegion)) // ---ResetNextIf---> on_TrainingStage_ShootingChallenge_TaskShootDummies_start()
+				&& is_TrainingStage_ShootingChallenge_TaskShootDummies_active(enum_releaseRegion)
+				&& on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)))
 			&& once(on_TrainingStage_ShootingChallenge_start(enum_releaseRegion))
-			&& measured(repeated(const_MOLE_KILLS_REQUIRED_FOR_WIN, on_SinglePlayer_Kill_increment(enum_releaseRegion)))
+			&& measured(repeated(const_MOLE_KILLS_REQUIRED_FOR_WIN, 
+				on_SinglePlayer_Kill_increment(enum_releaseRegion)
+				&& on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion)))
 			&& trigger_when(on_TrainingStage_ShootingChallenge_win(enum_releaseRegion))
-		// [2] ==== Alt Reset Group ==== 				-> Reset on ShootingChallenge fail
+		// [2] ==== Alt Triggered Group ==== 			-> This group is only repsonsible for displaying a Triggered Indicator as long as the player doesn't hit a headshot
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once player hits a body shot
+				is_TrainingStage_ShootingChallenge_TaskShootDummies_active(enum_releaseRegion)
+				&& on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)))
+			&& once(on_TrainingStage_ShootingChallenge_start(enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 				-> Reset on ShootingChallenge fail
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_TrainingStage_ShootingChallenge_fail(enum_releaseRegion))
-		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+		// [4+5+6] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TrainingStage, enum_releaseRegion)		
 		}),
 	"a_ChallengePerf": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
-		const_ENEMY_COUNT = 6 // --> "Billy The Kid" is also included in this count. He may be friendly when killing the other hostile NPCs too quickly
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
 			unless(
@@ -1185,9 +1350,9 @@ achievements_triggers = {
 				&& once(on_SinglePlayer_Health_takeDamage(enum_releaseRegion)))
 			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
 			&& trigger_when(
-				once(
-					current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT
-					&& prev_SinglePlayer_Kills(enum_releaseRegion) < const_ENEMY_COUNT)
+				// once(current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT && prev_SinglePlayer_Kills(enum_releaseRegion) < const_ENEMY_COUNT)
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 				&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
 					once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
 					once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))])
@@ -1200,21 +1365,24 @@ achievements_triggers = {
 				once(is_SinglePlayer_Health_atMax(enum_releaseRegion))
 				&& once(on_SinglePlayer_Health_takeDamage(enum_releaseRegion)))
 			&& measured(
-				current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT,
+				// current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT,
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))),
 				when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))
 			&& trigger_when(always_false())
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)	
 		}),
 	"a_ChallengeHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
-		const_ENEMY_COUNT = 6
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
-			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421850_I:0xX00000170_N:0xX0000005c=6_I:0xX00421850_I:0xX00000170_T:d0xX0000005c<6.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000008=1970239851_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
+			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._T:0=1.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000008=1970239851_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
-			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)		
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
 
 			/* MANUAL_CONSTRUCTION A: CheckIf 100% accuracy (AccumulatorChain too complex for RATools)
 				I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0
@@ -1224,24 +1392,26 @@ achievements_triggers = {
 				SubSource	Mem [32-bit:ShotsHitHead]
 							val 0 == val 0
 				*/
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xa0)
 			&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB1)
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)
 
 			&& trigger_when(
-				once(
-					current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT
-					&& prev_SinglePlayer_Kills(enum_releaseRegion) < const_ENEMY_COUNT)
+				// once(current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT && prev_SinglePlayer_Kills(enum_releaseRegion) < const_ENEMY_COUNT)
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 				&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion))
 		// [2] ==== Alt Measured Group ====				-> This group is purely responsible for displaying a Measured Indicator tracking enemy kills
-			// MANUAL_CONSTRUCTION Alt2: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_M:0xX0000005c=6_I:0xX00421850_I:0xX00000170_Q:0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Q:0=0_T:0=1
+			// MANUAL_CONSTRUCTION Alt2: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._M:0=1.6._I:0xX00421850_I:0xX00000170_Q:0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Q:0=0_T:0=1
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
 			&& measured(
-				current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT,
+				// current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT,
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))),
 				when = 
 					once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
 					/* MANUAL_CONSTRUCTION B: MeasuredIf 100% accuracy (AccumulatorChain too complex for RATools)
@@ -1262,7 +1432,44 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TitleStage, enum_releaseRegion)	
 		}),
-	// c_SPbonus
+	"a_ChallengeShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
+		const_TIME_LIMIT = 120.0 // in seconds
+		return
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement + Displays a Trigger Indicator	when all enemies killed within TimeLimit
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)			
+			// once(current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT && prev_SinglePlayer_Kills(enum_releaseRegion) < const_ENEMY_COUNT)
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)
+				&& current_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT))
+			&& trigger_when(on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion))
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for displaying a Measured Indicator, tracking TimeSpentInLevel up to xx seconds
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				// current_SinglePlayer_Kills(enum_releaseRegion) == const_ENEMY_COUNT,
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once( // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)
+					&& current_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT)),
+				when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))
+			&& trigger_when(always_false())
+		// [3] ==== Alt Triggered Group ==== 			-> This group is only responsible for displaying a Triggered Indicator as long as within TimeLimit
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once TimeSpentInLevel passes allowed time
+				current_TimeSpentInLevel(enum_releaseRegion) >= const_TIME_LIMIT
+				&& prev_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT))
+			&& trigger_when(always_false())
+		// [4+5+6] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)	
+		}),
+	// -------c_SPbonus-------
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
 			This should only be possible in lvl_tng, as the dummies keep respawning. Each kill is worth $2
@@ -1321,36 +1528,28 @@ achievements_triggers = {
 
 		return
 		// [1] ==== Alt Logic Group ==== 									-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
-			never(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))
+			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& measured(tally(const_POI_COUNT, [
 				once(let_requirement_OnTipHatNear_BrokenCart),
 				once(let_requirement_OnTipHatNear_WhiteChest)
 				]))
 			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
 		// [2] ==== Alt POI Trigger Indicator Group - BrokenCart ==== 		-> This group only exists to display a Trigger Indicator when the player is near the BrokenCart	
-			|| never(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
 				let_requirement_OnTipHatNear_BrokenCart))
 
 			&& let_requirement_IsPlayerNearPOI_BrokenCart
 			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
 		// [3] ==== Alt POI Trigger Indicator Group - WhiteChest ==== 		-> This group only exists to display a Trigger Indicator when the player is near the WhiteChest	
-			|| never(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-				|| !is_Level(const_REQUIRED_LEVEL, enum_releaseRegion))			
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
 				let_requirement_OnTipHatNear_WhiteChest))
 			
 			&& let_requirement_IsPlayerNearPOI_WhiteChest
 			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		
+		// [4+5] ==== Alt Reset Groups ==== 								-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
 	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: Coordinates + Shoving NPCs
@@ -1380,135 +1579,49 @@ achievements_triggers = {
 					&& prev_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt2, enum_releaseRegion) < const_Y_COORD_SaloonFrontWall)]
 				))
 		}),
-	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) Manual Construction
-		const_ENEMY_COUNT = 2
-		const_FRAME_DELAY_accuracyCheck = 200
+	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
+		const_ARRAY_NPCDATA_INDICES = [2,3,4,5,6,7,8,9]
+		const_NPC_COUNT = length(const_ARRAY_NPCDATA_INDICES)
 		return
-		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
-			// MANUAL_CONSTRUCTION Alt1: R:0xX0091204c!=1397769043_R:0xH00483750=13_N:fF0092785c>=f3.0_O:dfF0092785c<f3.0_I:0xX005f7e24_Z:0xX000000c8!=d0xX000000c8_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_0xM00000134=1_I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_T:0xX0000005c>d0xX0000005c.2._I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
-			never(
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Triggered Indicator whilst on horseback
+			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
-			&& unless(once( // Pause Lock: When using a weapon while not on horseback
-				never( // ---BugFix---> without this ResetNextIf, this PauseLock may activate on level start or reset
-					current_TimeSpentInLevel(enum_releaseRegion) >= 3.0
-					&& prev_TimeSpentInLevel(enum_releaseRegion) < 3.0) 
-				&& never(on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion)) // ---BugFix---> without this ResetNextIf, this PauseLock may activate when switching weapons
-				&& !is_PlayerOnHorseback(enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon
-					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
-					-------------
-					SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
-					AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
-					PauseIf		val 0 > val 0 	(1)
-					*/
-				// && on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) // --> BUG_RATools this can't be generated by RATools
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
-				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
-				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
-				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)
+			&& unless(once( // Pause Lock: Once the player uses/fires a weapon
+				on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)))
+			&& unless(tally_of( // Pause Lock: When an NPC dies whilst the player is not on horseback
+				const_ARRAY_NPCDATA_INDICES, 1, int_NPCdataIndex => once(
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)
+					&& !is_PlayerOnHorseback(enum_releaseRegion))
 				))
-			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
-				/* MANUAL_CONSTRUCTION B: Below ResetNextIf && PauseIf Code - Reset next if 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
-					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
-					---------
-					AddSource	Mem [32-bit:ShotsFired]
-					SubSource	Mem [32-bit:ShotsHitBody]
-					SubSource	Mem [32-bit:ShotsHitHead]
-					ResetNextIf	val 0 == val 0
-					AddSource	[32-bit:ShotsFired]
-					SubSource	[32-bit:ShotsHitBody]
-					SubSource	[32-bit:ShotsHitHead]
-					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
-					*/
-				never( // --ResetNextIf--> When 100 % accuracy
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
-					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
-					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
-					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
-				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB1)))
 			&& is_PlayerOnHorseback(enum_releaseRegion)
 			&& trigger_when(
-				repeated(const_ENEMY_COUNT, 
-					is_PlayerOnHorseback(enum_releaseRegion)
-					&& on_SinglePlayer_Kill_increment(enum_releaseRegion))
-				/* MANUAL_CONSTRUCTION C: Below Trigger Code - Check if 100% accuracy (AccumulatorChain too complex for RATools)
-					I:0xX00421850_I:0xX00000170_A:0xX0000002c_I:0xX00421850_I:0xX00000170_A:0xX00000030_K:0_I:0xX00421850_I:0xX00000170_K:0xX00000000-{recall}_T:{recall}=0
-					---------						
-					AddSource	[32-bit:ShotsHitBody]
-					AddSource	[32-bit:ShotsHitHead]
-					Remember	val 0
-					Remember	[32-bit:ShotsFired] - Recall
-					Trigger		Recall == 0
-					*/
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xC0)
-				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xC1))
-		// [2] ==== Alt Measured Group ==== 			-> Groups is purely responsible for displaying a Measured Indicator for enemy kill count
-			// MANUAL_CONSTRUCTION Alt2: N:fF0092785c>=f3.0_O:dfF0092785c<f3.0_I:0xX005f7e24_Z:0xX000000c8!=d0xX000000c8_I:0xX00421850_N:0xM00000134=0_I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200._I:0xX00421850_N:0xM00000134=1_I:0xX00421850_I:0xX00000170_M:0xX0000005c>d0xX0000005c.2._Q:0xX0091204c=1397769043_Q:0xH00483750=255_T:0=1
-			|| unless(once( // Pause Lock: When using a weapon while not on horseback
-				never( // ---BugFix---> without this ResetNextIf, this PauseLock may activate on level start or reset
-					current_TimeSpentInLevel(enum_releaseRegion) >= 3.0
-					&& prev_TimeSpentInLevel(enum_releaseRegion) < 3.0) 
-				&& never(on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion)) // ---BugFix---> without this ResetNextIf, this PauseLock may activate when switching weapons
-				&& !is_PlayerOnHorseback(enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION A: Below PauseIf Code - Pause if player uses/fires weapon AND Player hasn't switched weapons
-					I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_P:0>0.1.
-					-------------
-					SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
-					AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
-					PauseIf		val 0 > val 0 	(1)
-					*/
-				// && on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) // --> BUG_RATools this can't be generated by RATools
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
-				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
-				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) == 0xbeef
-				&& prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) == 0xbeef
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA1)
+				tally_of(const_ARRAY_NPCDATA_INDICES, const_NPC_COUNT, int_NPCdataIndex => once( // ---TallyOf---> CountIf all NPCs have been hit by ramming horse
+					on_NPChealth_takeDamage(int_NPCdataIndex, enum_releaseRegion)
+					&& is_PlayerOnHorseback(enum_releaseRegion)
+					&& on_PlayerOnHorsebackLocation_move_xy(enum_releaseRegion))))
+		// [2] ==== Alt Measured Group ==== 			-> Group is purely responsible for displaying a Measured Indicator for NPCs rammed count
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player uses/fires a weapon
+				on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)))
+			&& unless(tally_of( // Pause Lock: When an NPC dies whilst the player is not on horseback
+				const_ARRAY_NPCDATA_INDICES, 1, int_NPCdataIndex => once(
+					on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)
+					&& !is_PlayerOnHorseback(enum_releaseRegion))
 				))
-			&& unless(repeated(const_FRAME_DELAY_accuracyCheck, // Pause Lock: When accuracy is not 100% for xx frames; Delay is necessary to give the game time let the bullet fly, and eventually decide if the bullet hits or not
-				/* MANUAL_CONSTRUCTION B: Below ResetNextIf && PauseIf Code - ResetNextIf 100% accuracy && PauseIf not 100% accuracy (AccumulatorChain too complex for RATools)
-					I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_Z:0=0_I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_P:0>0.200.
-					---------
-					AddSource	Mem [32-bit:ShotsFired]
-					SubSource	Mem [32-bit:ShotsHitBody]
-					SubSource	Mem [32-bit:ShotsHitHead]
-					ResetNextIf	val 0 == val 0
-					AddSource	[32-bit:ShotsFired]
-					SubSource	[32-bit:ShotsHitBody]
-					SubSource	[32-bit:ShotsHitHead]
-					PauseIf		val 0 > val 0 	(const_FRAME_DELAY_accuracyCheck)
-					*/
-				never( // --ResetNextIf--> When 100 % accuracy
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xB0)
-					&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
-					&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
-					&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef)
-				&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
-				&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
-				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xB1)))
 			&& measured(
-				repeated(const_ENEMY_COUNT, 
-					is_PlayerOnHorseback(enum_releaseRegion)
-					&& on_SinglePlayer_Kill_increment(enum_releaseRegion)),
-				when = 
-					is_ReleaseRegion(enum_releaseRegion)
-					&& isNot_Loading(enum_releaseRegion))
+				tally_of(const_ARRAY_NPCDATA_INDICES, const_NPC_COUNT, int_NPCdataIndex => once( // ---TallyOf---> CountIf all NPCs have been hit by ramming horse
+					on_NPChealth_takeDamage(int_NPCdataIndex, enum_releaseRegion)
+					&& is_PlayerOnHorseback(enum_releaseRegion)
+					&& on_PlayerOnHorsebackLocation_move_xy(enum_releaseRegion))))
 			&& trigger_when(always_false())
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_Tombstone, enum_releaseRegion)		
 		}),
 
-	// c_Multiplayer
+	// -------c_Multiplayer-------
 	}
 // #endregion ACH - triggers
 
@@ -1529,17 +1642,21 @@ achievements_titles = {
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 	"a_CompletePerf": 			{"en": "A Son's Duty"},
 	"a_CompleteHng": 			{"en": "The Goodest Bounty Hunter"},
+	"a_CompleteShernite": 		{"en": "Mad Sheriff, Grim Justice"},
+	"a_CompleteSher70": 		{"en": "xxxxxxxxx"},
 
-	"a_ShootingGalleryGreat": 	{"en": "Whack-a-Mole"},
+	"a_ChallengeTng": 			{"en": "Whack-a-Mole"},
 	"a_ChallengePerf":			{"en": "No Harm Comes Home"},
 	"a_ChallengeHng": 			{"en": "Lead with Precision"},
+	"a_ChallengeShernite": 		{"en": "Reckoning at Midnight"},
+	"a_ChallengeSher70": 		{"en": "xxxxxxxxx"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
 	"a_EyeTng": 				{"en": "Trailblazer"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
-	"a_HorseTomb":				{"en": "Lead and Leather"},
+	"a_HorseTomb":				{"en": "The Tombstone Stampede"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -1548,18 +1665,22 @@ achievements_descriptions = {
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
 	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", share a few last words with your mother and Jinnie"},
-	"a_CompleteHng": 			{"en": "Once all outlaws in the \"Title Stage\" have been vanquished, prove your worth and earn the respect of a loyal companion"},
+	"a_CompleteHng": 			{"en": "Once all outlaws in the \"Title Stage\" have been vanquished, prove your worth and earn Rusty's respect"},
+	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang in the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
+	"a_CompleteSher70": 		{"en": "xxxxxxxxx"},
 
-	"a_ShootingGalleryGreat": 	{"en": "Impress the Indian Master by eliminating 11 moles in under one minute during the \"Training Stage\" Shooting Challenge"},
+	"a_ChallengeTng": 			{"en": "The Indian Master has seen many shooters, but few with true skill. Prove your worth in the \"Training Stage\" Shooting Challenge by eliminating 11 moles in under a minute, but only with headshots"},
 	"a_ChallengePerf":			{"en": "Take down every enemy in the \"Prologue Stage\" without taking damage, then have a word with your mother or Jinnie"},
 	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of his respect"},
+	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
+	"a_ChallengeSher70": 		{"en": "xxxxxxxxx"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
 	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
-	"a_HorseTomb":				{"en": "In the \"Tombstone Stage\", prove your gunslinger prowess by eliminating every enemy from horseback without missing a single shot"},
+	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
 	}
 // #endregion ACH - text
 
