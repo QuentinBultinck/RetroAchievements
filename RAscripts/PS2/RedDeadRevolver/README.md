@@ -14,7 +14,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 - 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
     - 🏆 *[Story Mode](#Progression)*
-    - 🏆 *[Story Mission Challenges](#StoryChallenges)*
+    - 🏆 *[Story Challenges](#StoryChallenges)*
     - 🏆 *[Bounty Hunter Mode](#BountyHunterChallenges)*
     - 🏆 *[Showdown Challenges](#ShowdownChallenges)*
     - 🏆 *[Unlocks](#Unlocks)*
@@ -32,6 +32,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 
 ```
 Set consists of 87 achievements worth 612 points
+
 Set released on 11 December 2024
 ```
 
@@ -65,6 +66,8 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 These are the player's bread-and-butter *progresion* achievements for playing through the story. The last one under this category, [a_CompleteChapter27](#a_CompleteChapter27), is the *win condition* for "beating" the game.
 
 These achievements will only unlock in Story Mode, not in Bounty Hunter Mode. Any difficulty can be used to unlock these. <sup> More on difficulties, refer to [Story Mission Challenges](#StoryChallenges) </sup>
+
+### Story Mode Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -118,7 +121,7 @@ Most achievements in this category require specific difficulty levels. Achieveme
 >
 > - If for some reason the achievement doesn't unlock, or the [trigger indicator](#RA_Trigger) is not displayed. Double check the difficulty, mission and cheat requirements of the achievement then restart the level when all requirements are set correctly.
 
-### Story Challenges Grouped by Difficulty
+### Story Challenge Achievements Grouped by Difficulty
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
@@ -131,6 +134,8 @@ Most achievements in this category require specific difficulty levels. Achieveme
 | **Red Wood Revolver** <sub>(2)</sub> | - **Wood You Believe It?** <sub> Chapter 8 "Rogue Valley" ⇒ *([a_WoodChapter8](#a_WoodChapter8))*</sub> <br> - **Cremation at Sundawn** <sub> Chapter 10 "The Cemetery" ⇒ *([a_WoodChapter10](#a_WoodChapter10))* </sub> |
 
 </details>
+
+### Story Challenge Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -182,6 +187,8 @@ Some of these Bounty Hunter Mode challenges can be pretty hard. If you're having
 >
 > - Bounty Hunter Missions which require a certain cash combo to be achieved will display a [trigger indicator](#RA_Trigger) during the mission once the required combo has been achieved. Finish any other objectives and the mission itself to unlock the achievement.
 
+### Bounty Hunter Mode Achievement List
+
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_BountyHuntChapter1>**Skull's Eye**</h3><sub>*a_BountyHuntChapter1*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/535544.png "Achievement badge icon") | - Chapter 1, "Bull's Eye": Shoot all enemies only in the head. |
@@ -229,6 +236,8 @@ All of these challenge achievements revolve around the Multiplayer Mode called '
 >
 > - **GAME BUG**: The [trigger indicator](#RA_Trigger) shown when setting up the Showdown match at the main menu may not display properly when shifting through the Showdown stages too fast <sub>(the ID which checks for the selected Showdown stage may not update properly when shifting through the stages too fast...)</sub> To make the [trigger indicator](#RA_Trigger) appear properly, just don't shift through the Showdown stages too quickly. Although as mentioned above as well. This indicator is not necessary to have been displayed.
 
+### Showdown Challenge Achievement List
+
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_BountyHunterKatie>**Remember Us?**</h3><sub>*a_BountyHunterKatie*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/535526.png "Achievement badge icon") | <u>Win a Showdown/Multiplayer match where: </u><br><br> ∙ The game mode is *Bounty Hunter* <br> ∙ Bounty limit is set to *\$10,000* <br> ∙ Stage is *Widow's Patch* <br><br> ∙ Player 1 is *Katie O'Grady* (human player) <br> ∙ Player 2 is *Sheriff O'Grady* (CPU) <br> ∙ Player 3 is *Ugly Chris* (CPU) <br> ∙ Player 4 is *Gigolo Hancock* (CPU) <br><br> ∙ Player 1 and player 2 are on the same team <br> ∙ Player 3 and player 4 are on the same team <br><br> - A [trigger indicator](#RA_Trigger) will be displayed when all settings are correct at the Showdown menu on the main menu. This trigger will hide once the match starts loading. <br> - A [trigger indicator](#RA_Trigger) is shown when the match starts. |
@@ -261,6 +270,8 @@ The achievements under this category revolve around unlocking various gameplay m
 
 > [!WARNING]
 > A player profile with the name '*Rstar*' is not allowed to unlock any of these achievements. Creating a profile with this name unlocks a few items for free, which is pretty much cheating. 
+
+### Unlock Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -296,6 +307,8 @@ Inside, you’ll find:
 - **Score Calculation Details**: A breakdown of how the player's score is determined, with formulas and factors like accuracy, damage taken, time spent, and other gameplay metrics.
 
 With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
+
+### Leaderboard List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|

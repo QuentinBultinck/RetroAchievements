@@ -4,6 +4,8 @@
   <img width="xxx" height="xxx" src="link_here" alt="GAME_TITLE_HERE - Key Art">
 </p>
 
+---
+
 This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
 <sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")*</sup>
@@ -23,7 +25,7 @@ This guide provides comprehensive details on how to unlock each achievement with
     💎 Achievement Guide
 </h1>
 
-<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/0000000.png" alt="GAME_TITLE_HERE - RetroAchievements Mastery Icon">
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/000000.png" alt="GAME_TITLE_HERE - RetroAchievements Mastery Icon">
 
 ```
 Set consists of xxxx achievements worth xxx points
@@ -71,7 +73,7 @@ The achievements under this category revolve around ...
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -104,7 +106,7 @@ General_info_about_achievement_category
 >
 > **SubTitle**: additional_notes
 
-### Challenges Grouped by DifficultyMode
+### Challenge Achievements Grouped by DifficultyMode
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
@@ -116,15 +118,14 @@ General_info_about_achievement_category
 
 </details>
 
-### Challenges Guide
+### Challenge Achievement List
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
-
+| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
 🔗 [Back to Table of Contents](#ToC)
 
 🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
@@ -154,14 +155,14 @@ General_info_about_achievement_category
 >
 > **Sub_Title**: additional_notes
 
-### Unlocks Guide
+### Unlock Achievement List
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -192,14 +193,14 @@ General_info_about_achievement_category
 >
 > **Sub_Title**: additional_notes
 
-### Misc_AchievementCategory Guide
+### Misc_AchievementCategory Achievement List
 
 <details>
     <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -228,8 +229,7 @@ Inside, you’ll find:
 
 With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open the Leaderboard Guide</summary><br>
+### Leaderboard List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -240,8 +240,6 @@ With this guide, the player will not only understand the mechanics behind each l
 🔗 [Back to Top of Leaderboard Guide](#LeaderboardGuide)
 
 ---
-
-</details>
 
 
 
