@@ -1205,24 +1205,49 @@ achievements_coreData = {
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
 			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
+		// "a_DeadEye": { // CONCEPT a_DeadEye
+			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability to hit multiple enemies in quick succession??"},
 		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+		// "a_HorseCover": { // CONCEPT a_HorseCover
+			// "id": 000000, "points": 0000000, "devInfo": "Use a horse as cover"},
 		"a_SaloonThrow": { // VERIFIED
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
 			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
+		// "a_PerfRoofFall": { // CONCEPT a_PerfRoofFall
+			// "id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed"},
 		"a_EyeTng": { // VERIFIED
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest and BrokenCart"},
+			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest + near BrokenCart"},
+		// "a_EyeFlash": { // CONCEPT a_EyeFlash
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_flash: TipHat whilst standing in fire on roof of house + on top of fallen tree trunk in the river"},
+		// "a_EyeTrain": { // CONCEPT a_EyeTrain
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_train: TipHat whilst standing on the cliff ledge to the left of the train (get there by jumping on train roof then jump accross (spam jump button near cliff))"},
+		// "a_EyeTomb": { // CONCEPT a_EyeTomb
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_tomb: TipHat close to Indian corner of map"},
+		// "a_EyeFort": { // CONCEPT a_EyeFort
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_fort: TipHat near throne or near gatling gun"},
+		// "a_EyeMans": { // CONCEPT a_EyeMans
+			// "id": 496929, "points": 0000000, "devInfo": "lvl_mans: TipHat whilst standing on podium + inside train station (side of Tombstone) + inside a small outlook "roofed alcove/nook" on the roof of the mansion"},
+		// "a_EyeShootHng": { // CONCEPT a_EyeShootHng
+			// "id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of one of the 3 buildings (in succession without dropping down)"},
+		// "a_EyeShootShernite": { // CONCEPT a_EyeShootShernite
+			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down)"},
+		// "a_EyeShootSher70": { // CONCEPT a_EyeShootSher70
+			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill XX enemies (in succession without dropping down)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
-		// "a_WinMon": { // CONCEPT a_WinMon
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (mon)"},
 		// "a_WinRed": { // CONCEPT a_WinRed
 			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
-		// "a_Dynamite": { // CONCEPT a_Dynamite
-			// "id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite"},
+		
+		// "a_WinNrdHeadshots": { // CONCEPT a_WinNrdHeadshots
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), headshots only"},
+		// "a_WinPigDynamite": { // CONCEPT a_WinPigDynamite
+			// "id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite as Pig Josh"},
+		// "a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
+			// "id": 000000, "points": 0000000, "devInfo": "Win match using only knives as baby"},
 		}
 	}
 // -------------------------------------
