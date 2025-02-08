@@ -1,6 +1,8 @@
 # **Retro Achievements Guide** <br> 🔶 ***Red Dead Revolver \~ Prototype*** <sub><sup> (PS2) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/106446.png "Mastery badge icon")](https://retroachievements.org/game/32806 "Retro Achievements game page - Red Dead Revolver (Prototype)") 
+<p align="center">
+  <img width="xxx" height="xxx" src="https://tcrf.net/images/4/4d/RDRevolverPS2-20020115_title640x448.tex.png" alt="Red Dead Revolver (Prototype) - Key Art">
+</p>
 
 This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
@@ -9,17 +11,26 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h3 id=ToC> 📑 Table of Contents</h3>
 
 - 💎 **[Achievement Guide](#AchievementGuide)** <sup>(divided by category)</sup>
-    - 🏆 *[Single Player Progression](#c_SinglePlayer)*
-    - 🏆 *[Single Player Challenges](#c_SPChallenge)*
+    - 🏆 *[Single Player Progression](#c_SPprogress)*
+    - 🏆 *[Single Player Challenges](#c_SPchallenge)*
     - 🏆 *[Single Player Bonus](#c_SPbonus)*
-    - 🏆 *[Showdown Challenges](#c_Multiplayer)*
+    - 🏆 *[Showdown Challenges](#c_MPchallenge)*
 - 🥇 **[Leaderboard Guide](#LeaderboardGuide)**
 - 📜 **[Credits](#Credits)**
 - ✏️ **[Footnotes](#Footnotes)**
 
+
 <h1 id=AchievementGuide>
     💎 Achievement Guide
 </h1>
+
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/106446.png" alt="Red Dead Revolver (Prototype) - RetroAchievements Mastery Icon">
+
+```
+Set consists of xxxx achievements worth xxx points
+
+Set released on DD MMMM YYYY
+```
 
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
@@ -36,7 +47,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 + info_and_tip
 
-+ info_and_tip
++ Due to the nature of this prototype build, the player character may easily get stuck on objects or go out of bounds when struck by enemy attacks, as these can push the character model into unintended areas. This might prevent progress on certain achievements. However, a simple level *Reset* via the *Pause Menu* can quickly give the player another chance. Since the levels aren’t very large, this shouldn’t be too much of a hassle.
 
 > [!IMPORTANT]
 > important_info
@@ -58,7 +69,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 
-<h1 id=c_SinglePlayer>
+<h1 id=c_SPprogress>
     🏆 Single Player Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
@@ -70,9 +81,7 @@ Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievement
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here <br><br> - A [trigger indicator](#RA_Trigger) will be displayed when ... <br> - A [measured indicator](#RA_Measure) keeps track of ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here <br> Refer to achievement [a_placeholder](#a_placeholder) in category [Extra Content](#ExtraContent) <br><br> <sub> **Developer note ⁃** *The bitset which corresponds to the journal page unlocks consists of 137 bitflags, although there's 138 sections. Bit 6 of byte12 in the bitset unlocks 2 unique sections.* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -85,7 +94,7 @@ Therefore, to achieve the *"Beaten"* status for the game on the RetroAchievement
 
 
 
-<h1 id=c_SPChallenge>
+<h1 id=c_SPchallenge>
     🏆 Single Player Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
@@ -104,8 +113,13 @@ General_info_about_achievement_category
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeTng>**Whack-a-Mole**</h3><br><sub>*a_ChallengeTng*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | Within the **"Training Stage"**, eliminate **11** moles during the **Shooting Challenge**, in **under one minute** and whilst only going for **headshots**. <br><br> <h4>Fail Conditions</h4> - Hitting a bodyshot <br> - Failing to kill 11 moles within the time limit of 60 seconds. (The Shooting Challenge fails in this case)<br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sup>  <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the Shooting Challenge starts. It is removed when the player hits a bodyshot <br> - A [Measured Indicator](#RA_Measured) tracks the number of mole kills up to **11** <br><br> <sub> **WARNING ⁃** *Each mole kill adds \$2.00 to the player's cash. When this cash value reaches above \$49.09 the game goes into a "Win State", resulting the level to reset. Thus this will fail the player's current progress for this achievement. (Also refer to achievement [a_WinGame](]a_WinGame)) .* </sub> |
+| <h3 id=a_ChallengePerf>**No Harm Comes Home**</h3><br><sub>*a_ChallengePerf*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In the **"Prologue Stage"**, defeat a total of **six** hostile NPCs. Interact with mother or Jinnie after the deed is done. <br><br> <h4>Fail Conditions</h4> - Taking damage <br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the level starts, this indicator is removed when the player takes damage. <br> - A [Measured Indicator](#RA_Measured) tracks the number of enemies killed, up to **six**. |
+| <h3 id=a_ChallengeHng>**title_placeholder**</h3><br><sub>*a_ChallengeHng*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_ChallengeSher70>**Sheriff by Sunrise**</h3><br><sub>*a_ChallengeSher70*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | Eliminate at least **15** hostiles during the **"Sheriff Day Stage"** without picking up any healing items AND ensuring that the neutral NPC, Old Man *"Jiji"*, survives so he can express his gratitude. <br> Once Pig Josh is defeated and Jiji survives, he will run up to the player, triggering a brief interaction or cutscene. However, since this is a prototype build, there may not be any text displayed. The achievement will unlock once this interaction is activates and as long as [Trigger Indicator](#RA_Trigger) is still active. <br> If *"Jiji"* doesn’t approach the player, he may be stuck somewhere. Try walking around to get close to him and trigger the interaction. If he remains unresponsive, he may have gone out of bounds due to enemy attacks—most likely from Pig Josh’s dynamite explosions. <br> To reach 15 kills, the player must eliminate at least one Piggy twice. Piggies are the small flying enemies that spawn alongside Pig Josh and will continue respawning until he is defeated (these are the only enemies which keep respawning in this level). However, once Pig Josh dies, all remaining Piggies will despawn. To meet the kill requirement, the player should reach at least 14/15 kills before taking down Pig Josh, as his defeat will count as the final required kill. <br><br> <h4>Fail Conditions</h4> - Old Man *"Jiji"* dies. <br> - The player picks up a healing item. <br> <sup>If any fail condition is met, the player can easily retry the achievement pressing *Reset* in the *Pause Menu*. </sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the level starts. It is removed when any of the fail conditions are met. <br> - A [Measured Indicator](#RA_Measured) tracks the current player's kill count up to **15** |
+
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -134,8 +148,9 @@ General_info_about_achievement_category
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_HorseTomb>**Lead and Leather**</h3><br><sub>*a_HorseTomb*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In level **"Tombstone Stage"**, eliminate all **two** hostile NPCs **whilst on horseback** and **without wasting a single bullet**. <br><br> <h4>Fail Conditions</h4> - Using a weapon while **not** on horseback. <br> - Missing a shot. <br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when both enemies were eliminated whilst on horseback **and** the player maintains **100% shooting accuracy**. <br> - A [Measured Indicator](#RA_Measured) tracks the number of enemies killed, up to **two**. |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=a_WinGame>**Overflowing Coffers**</h3><br><sub>*a_WinGame*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | Within a Singleplayer level earn more than \$49.09 in cash. <br><br> This should only be achievable in the **"Training Stage"**. Keep killing moles during the **Shooting Challenge**. Any other levels do not have enough enemies to kill to get past \$49.09. <br><br> <sup> The developers put in some sort of "Win State" for this build of the game. Once the player reaches above \$49.09 in cash, the game gives the player an insane amount of cash and the game goes into a "Win State". After a few seconds the game resets the level. </sup> |
+| <h3 id=a_HorseTomb>**The Tombstone Stampede**</h3><br><sub>*a_HorseTomb*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In the **"Tombstone Stage"**, **ram** into all **eight NPCs** roaming around town, whilst **on horseback**. A horse can be found in the center of the town. The player can mount the horse by standing next to it and pressing the jump button *O*. <br><br> <h4>Fail Conditions</h4> - Using/firing a weapon. <br> - An NPC dies whilst the player is not on horseback. <br> <sup>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*. </sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the player is on horseback. <br> - A [Measured Indicator](#RA_Measured) tracks the number of unique NPCs rammed with the horse, up to **eight**. |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -148,7 +163,7 @@ General_info_about_achievement_category
 
 
 
-<h1 id=c_Multiplayer>
+<h1 id=c_MPchallenge>
     🏆 Showdown Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
@@ -168,8 +183,7 @@ This prototype build of *Red Dead Revolver* includes a basic version of the Mult
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -198,7 +212,8 @@ With this guide, the player will not only understand the mechanics behind each l
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | some_general_info <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=lb_ShootingChallenge>**Whack-a-Mole: Quick Draw Champions**</h3><br><sub>*lb_ShootingChallenge*</sub> <br><br> | In the "**Training Stage**", eliminate **11** moles during the Shooting Challenge as fast as possible. <br><br> <h4>Start Requirements</h4> - Start the Shooting Challenge by speaking to the Indian Master, the leaderboard will start once the player is able to draw his weapons. <br><br> <h4>Cancel Conditions</h4> - Failing to complete the Shooting Challenge within 60 seconds. <br> - On resetting the level. <br><br> <h4>Submit Conditions</h4> - The leaderboard will submit once the player has killed 11 moles. <br><br> <h4>Measured Value</h4> - The leaderboard hooks onto an in-game timer, which is tied to the Shooting Challenge. |
 
 🔗 [Back to Table of Contents](#ToC)
 

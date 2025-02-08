@@ -1,8 +1,10 @@
 # **Retro Achievements Guide** <br> 🔶 ***GAME_TITLE_HERE*** <sub><sup> (PLATFORM_HERE) </sup></sub>
 
-[![Achievement badge icon](https://i.retroachievements.org/Images/000000.png "Mastery badge icon")](https://retroachievements.org/game/00000 "Retro Achievements game page - GAME_TITLE_HERE") 
+<p align="center">
+  <img width="xxx" height="xxx" src="link_here" alt="GAME_TITLE_HERE - Key Art">
+</p>
 
-This guide provides comprehensive details on how to unlock each achievement within the core set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
+This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
 <sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")*</sup>
 
@@ -20,6 +22,14 @@ This guide provides comprehensive details on how to unlock each achievement with
 <h1 id=AchievementGuide>
     💎 Achievement Guide
 </h1>
+
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/0000000.png" alt="GAME_TITLE_HERE - RetroAchievements Mastery Icon">
+
+```
+Set consists of xxxx achievements worth xxx points
+
+Set released on DD MMMM YYYY
+```
 
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
@@ -61,9 +71,7 @@ The achievements under this category revolve around ...
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here <br><br> - A [trigger indicator](#RA_Trigger) will be displayed when ... <br> - A [measured indicator](#RA_Measure) keeps track of ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here <br> Refer to achievement [a_placeholder](#a_placeholder) in category [Extra Content](#ExtraContent) <br><br> <sub> **Developer note ⁃** *The bitset which corresponds to the journal page unlocks consists of 137 bitflags, although there's 138 sections. Bit 6 of byte12 in the bitset unlocks 2 unique sections.* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -115,8 +123,7 @@ General_info_about_achievement_category
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -154,8 +161,7 @@ General_info_about_achievement_category
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -193,8 +199,7 @@ General_info_about_achievement_category
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
-| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | explanation_here |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sup>If any fail condition is met, the player can easily retry the achievement by ...</sup> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *Health upgrades only upgrade the max health of Red/Manny Quinn and not for any other playable supporting characters in the Story Mode (eg. Jack Swift or Annie Stoakes).* </sub> <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -228,7 +233,7 @@ With this guide, the player will not only understand the mechanics behind each l
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | - some_general_info <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | _some_general_info_ <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 

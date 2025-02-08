@@ -52,7 +52,7 @@
 // $4215DC: [NTSCU][3-byte ASCII:CharacterModelID-Player1(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player1(preferred)] at $0x912954
 //          - This is valid for Singleplayer & Multiplayer
-// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1]
+// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1 |16-byte??]
 //          - Practically this can be used to check if a MultiplayerPlayer is AI controlled or Human controlled
 //          - AIsetting examples: "Default_Bot", "Pig_Bot", ...
 //          - MultiplayerPlayer 1 is always Human Controlled
@@ -62,17 +62,17 @@
 // $421628: [NTSCU][3-byte ASCII:CharacterModelID-Player2(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player2(preferred)] at $0x9129bc
 //          - This is only valid when in Multiplayer
-// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2]
+// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2 |16-byte??]
 //          - Documentation at $0x4215f8
 // $421674: [NTSCU][3-byte ASCII:CharacterModelID-Player3(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player3(preferred)] at $0x912a24
 //          - This is only valid when in Multiplayer
-// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3]
+// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3 |16-byte??]
 //          - Documentation at $0x4215f8
 // $4216C0: [NTSCU][3-byte ASCII:CharacterModelID-Player4(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player4(preferred)] at $0x912a8c
 //          - This is only valid when in Multiplayer
-// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4]
+// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4 |16-byte??]
 //          - Documentation at $0x4215f8
 // $421708: [NTSCU][Variable Size ASCII:LevelID(alt1)]
 //          - Prefer using [ASCII:LevelID(preferred)] at $0x9128e8
@@ -85,7 +85,11 @@
 //          - This pointer is always valid (SinglePlayer & Multiplayer)
 //          
 //          +0x14 - [32-bit (layer-1) Pointer]
-//          |+0xC - [Float:PlayerHealth |32-bit]
+//          .
+//          .+0x4 - [32-bit (layer-2) Pointer]
+//          ..+0x0 - [Float:PlayerMaxHealth |32-bit]
+//          .
+//          .+0xC - [Float:PlayerHealth |32-bit]
 //          
 //          +0x70 - [32-bit (layer-1) Pointer:PlayerData_L1-70]
 //          | - This pointer is only valid when the player is on Horseback
@@ -125,6 +129,9 @@
 //          .....| - Pointer chain is only valid when non-repeating CharacterAnimation is being played
 //          .....| - List of CharacterAnimationIDs below
 //          
+//          +0x170 - [32-bit (layer-1) Pointer] -> [Struct:ShootingStats]
+//          | - Definition of [Struct:ShootingStats] below
+//          
 //          +0x208 - [bit0 BitFlag:IsAimingModeActive(preferred) |32-bit]
 //          +0x220 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          +0x224 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
@@ -137,6 +144,22 @@
 //          |+0x4 - [32-bit Float:Y_Coordinate]
 //          |+0x8 - [32-bit Float:Z_Coordinate]
 //          |+0xC - [32-bit Float:X_Coordinate]
+//          '
+//          
+//          [Definition Struct:ShootingStats |??-byte]
+//          |''''''''''''''''''
+//          | - These offsets are only functional when in SinglePlayer
+//          | - These stats reset to 0x0 when PauseMenu->Reset OR when dying
+//          | - The pointed to data is different depending on SinglePlayer or Multiplayer
+//          | - For some reason While in Multiplayer ShootingStats are only saved ShotsFired, any other stats are not saved. Kills are saved somewhere else $0x421868.
+//          | - Total Shots Hit: [32-bit:ShotsHitBody] + [32-bit:ShotsHitHead]
+//          |
+//          |+0x0 - [32-bit:ShotsFired]
+//          |+0x2C - [32-bit:ShotsHitBody]
+//          || - Only counts hits on the body, NOT headshots
+//          |+0x30 - [32-bit:ShotsHitHead]
+//          || - Counts headshot-kills & normal headshots
+//          |+0x5C - [32-bit:Kills]
 //          '
 //          
 //          # CharacterAnimationID
@@ -194,6 +217,12 @@
 //          |...+0x90 - [Struct(Coordinates):NPClocation(functional)]
 //          |...| - These are the functional coordinates. Changing these, changes the NPC's position in game world.
 //          |.
+//          |.+0x14 - [32-bit (layer-2) Pointer]
+//          |..+0x0 - [32-bit (layer-3) Pointer]
+//          |...+0x0 - [Float:NPCmaxHealth |32-bit]
+//          |..+0xC - [Float:NPChealth |32-bit]
+//          |..| - NPC death at: 0.0
+//          |.
 //          |.+0x40 - [Struct(Coordinates):NPClocation(copy)]
 //          |.
 //          |.+0x198 - [Variable Size ASCII:NPCname]
@@ -208,12 +237,11 @@
 //          |.+0x26C - [Variable Size ASCII:NPCtype]
 //          |.| - eg. "MidBoss", "NPCs",...
 //          |
-//          |
 //          |+0x60 - [Variable Size ASCII:NPCdataID(preferred)]
 //          || - eg. "Perf75_PlayerAI",
 //          || - eg. "Perf75_Mom", "Perf75_Jin", "Perf75_Bil",...
 //          |
-//          |+0x188 - [32-bit (Layer-1) Pointer:NextNode] -> [Struct:NPCdata]
+//          |+0x188 - [32-bit (Layer-1) Pointer:NextNode_NPCdata] -> [Struct:NPCdata]
 //          '
 //          
 //          __________TrainingStage__________
@@ -303,7 +331,7 @@
 //          | - ...
 //          | - 0x1A => msg. "Good, Now press L1 AND Fire to spin out and shoot!"
 //          | - ...
-//          | - 0x1F => msg. "Good job!" (Sneak_and_Creep CLEARED) (End of MovementTraining)
+//          | - 0x1F => msg. "Good job!" (Sneak_and_Creep CLEARED)(End of MovementTraining)
 //          '
 //          # WeaponTrainingSectionIDs (string) + WeaponTrainingStates (hex)
 //          |'''''''''''''''''''''''
@@ -340,7 +368,7 @@
 //          |
 //          | "Rapid_Fire" => WeaponTrainingSection 6
 //          | - ...
-//          | - 0x16 => You are now ready for the shooting challenge! (Rapid_Fire CLEARED) (End of WeaponTraining)
+//          | - 0x16 => You are now ready for the shooting challenge! (Rapid_Fire CLEARED)(End of WeaponTraining)
 //          '
 //          # ShootingGalleryState (hex) + ShootingGalleryNameState (string)
 //          |'''''''''''''''''''
@@ -350,33 +378,183 @@
 //          | 0x3 => msg. "Shoot the dummies!"
 //          | 0x4 => Camera movement
 //          | 0x5 => Task: Player can now shoot the dummies
-//          | [0x6-0x7] => msg. "Stop shooting Time is up!" (ShootingGallery Fail State)
+//          | [0x6-0x7] => msg. "Stop shooting Time is up!" (ShootingGallery Fail State)(End of ShootingGallery)
 //          |
 //          |----String----
 //          | "0tart_Whak_A_Mole" => ShootingGallery inactive. Where [Lower4:ShootingGalleryState] == 0x0
 //          | "Start_Whak_A_Mole" => ShootingGallery active. Where [Lower4:ShootingGalleryState] > 0x0
-//          | "Whack_A_Mole_Win" => msg. "Good job!" (ShootingGallery Win State)
+//          | "Whack_A_Mole_Win" => msg. "Good job!" (ShootingGallery Win State)(End of ShootingGallery)
 //          '
 //          
 //          __________PrologueStage__________
 //          [32-bit (base) Pointer:NPCdata.lvl_perf75] -> [Struct:NPCdata.Perf75_PlayerAI]
-//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.Perf75_Bil]
-//          .+0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.Perf75_Jin]
-//          ..
-//          ..+0x94 - [32-bit (layer-3) Pointer]
-//          ...+0x4C0 - [32-bit (layer-4) Pointer]
-//          ....+0xC - [32-bit (layer-5) Pointer]
-//          .....+0x0 - [20-byte ASCIIFlag(NPCevent):IsJinnieThanksActive]
-//          .....| ASCII == "ThankYou2" => Active (Red is talking with Jinnie, his Sister + message "Thank You")
-//          .....| ASCII == "0HankYou2" => Inactive
-//          ..
-//          ..+0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.Perf75_Mom]
-//          ...+0x94 - [32-bit (layer-4) Pointer]
-//          ....+0x4C0 - [32-bit (layer-5) Pointer]
-//          .....+0xC - [32-bit (layer-6) Pointer]
-//          ......+0x0 - [20-byte ASCIIFlag(NPCevent):IsMomThanksActive]
-//          ......| ASCII == "Perf75_End_Cinematic" => Active (Mom walks up to Red + message "Thank You")
-//          ......| ASCII == "0erf75_End_Cinematic" => Inactive
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.Perf75_Bil] (Billy The Kid - Hostile NPC)
+//          +0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.Perf75_Jin] (Jin - Allied NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.Perf75_Mom] (Mother - Allied NPC)
+//          +0x188 - [32-bit (layer-4) Pointer] -> [Struct:NPCdata.Perf75_Ugl] (Ugly - Hostile NPC)
+//          +0x188 - [32-bit (layer-5) Pointer] -> [Struct:NPCdata.Perf75_Wsk] (Wiskey - Hostile NPC)
+//          +0x188 - [32-bit (layer-6) Pointer] -> [Struct:NPCdata.Perf75_Hdh] (HedgeHog - Hostile NPC)
+//          +0x188 - [32-bit (layer-7) Pointer] -> [Struct:NPCdata.Perf75_Ggl] (Gigolo - Hostile NPC)
+//          +0x188 - [32-bit (layer-8) Pointer] -> [Struct:NPCdata.Perf75_Chk] (Chicken - Hostile NPC)
+//          '
+//          [Defintion Struct:NPCdata.Perf75_Jin]
+//          |'''''''''''''''''''''
+//          |+0x94 - [32-bit (layer-1) Pointer]
+//          |.+0x4C0 - [32-bit (layer-2) Pointer] -> [Struct(NPCeventData):JinnieThanks]
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |..
+//          |...+0x0 - [8-bit(NPCeventState):JinnieThanks |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsJinnieThanksActive] = "ThankYou2"
+//          |...| 0x1 => Transitioning value to starting the cinematic
+//          |...| 0x2 => JinnieThanks cinematic is active
+//          |...| [0x3-0x4] => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsJinnieThanksActive]
+//          |...| ASCII == "ThankYou2" => Active (Red is talking with Jinnie, his Sister + message "Thank You")
+//          |...| ASCII == "0HankYou2" => Inactive
+//          '
+//          [Defintion Struct:NPCdata.Perf75_Mom]
+//          |'''''''''''''''''''''
+//          |+0x94 - [32-bit (layer-4) Pointer]
+//          |.+0x4C0 - [32-bit (layer-5) Pointer] -> [Struct(NPCeventData):MomThanks]
+//          |..+0xC - [32-bit (layer-6) Pointer]
+//          |...
+//          |...+0x0 - [8-bit(NPCeventState):MomThanks |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsMomThanksActive] = "Perf75_End_Cinematic"
+//          |...| [0x0-0x4] => skipped (in current fps)
+//          |...| 0x5 => MomThanks active
+//          |...| 0x6 => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsMomThanksActive]
+//          |...| ASCII == "Perf75_End_Cinematic" => Active (Mom walks up to Red + message "Thank You")
+//          |...| ASCII == "0erf75_End_Cinematic" => Inactive
+//          '
+//          
+//          __________TitleStage__________
+//          [32-bit (base) Pointer:NPCdata.lvl_hng] -> [Struct:NPCdata.Tomb_Player]
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.desperado] (Professor - Hostile NPC)
+//          +0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.desperado2] (Big Oaf - Hostile NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.desperado3] (Tom - Hostile NPC)
+//          +0x188 - [32-bit (layer-4) Pointer] -> [Struct:NPCdata.desperado4] (Bob - Hostile NPC)
+//          +0x188 - [32-bit (layer-5) Pointer] -> [Struct:NPCdata.desperado1] (Dan - Hostile NPC)
+//          +0x188 - [32-bit (layer-6) Pointer] -> [Struct:NPCdata.DogBear] (Rusty (Dog) - Allied NPC)
+//          +0x188 - [32-bit (layer-5) Pointer] -> [Struct:NPCdata.ShopGuy] (Scrooge - Hostile NPC)
+//          '
+//          [Defintion Struct:NPCdata.DogBear] -> [Struct(NPCeventData):DogThanks]
+//          |'''''''''''''''''''''
+//          |+0x94 - [32-bit (layer-1) Pointer]
+//          |.+0xC4 - [32-bit (layer-2) Pointer]
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |...
+//          |...+0x0 - [8-bit(NPCeventState):DogThanks |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsDogThanksActive] = "Thankyou"
+//          |...| 0x1 => Transitioning value to starting the cinematic
+//          |...| 0x2 => DogThanks cinematic is active
+//          |...| [0x3-0x4] => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsDogThanksActive]
+//          |...| "Thankyou" => Active (Red is interacting with Dog, only activatable after killing all enemies)
+//          |...| AnyOtherASCII => Inactive
+//          '
+//          
+//          __________SheriffNightStage__________
+//          [32-bit (base) Pointer:NPCdata.lvl_shernite] -> [Struct:NPCdata.carlos] (Carlos - Hostile NPC)
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.CarlosHorse] (Horse)
+//          +0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.Ghost] (Ghost Gurad - Hostile NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.Ghost] (Ghost Charger - Hostile NPC)
+//          +0x188 - [32-bit (layer-4) Pointer] -> [Struct:NPCdata.zakoforward] (Jumble - Hostile NPC)
+//          +0x188 - [32-bit (layer-5) Pointer] -> [Struct:NPCdata.zakodefender] (Bango - Hostile NPC)
+//          +0x188 - [32-bit (layer-6) Pointer] -> [Struct:NPCdata.zako] (Jango - Hostile NPC)
+//          +0x188 - [32-bit (layer-7) Pointer] -> [Struct:NPCdata.zako] (Rumble - Hostile NPC)
+//          +0x188 - [32-bit (layer-8) Pointer] -> [Struct:NPCdata.NonePlayer] (Nanda! - Captive)
+//          '
+//          [Defintion Struct:NPCdata.DogBear]
+//          |'''''''''''''''''''''
+//          |+0x94 - [32-bit (layer-1) Pointer]
+//          |.+0x14C - [32-bit (layer-2) Pointer] -> [Struct(NPCeventData):CaptiveThanks]
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |...
+//          |...+0x0 - [8-bit(NPCeventState):CaptiveThanks |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsCaptiveThanksActive] = "ThankYou"
+//          |...| 0x1 => Transitioning value to starting the cinematic
+//          |...| 0x2 => CaptiveThanks cinematic is active
+//          |...| [0x3-0x4] => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsCaptiveThanksActive]
+//          |...| "ThankYou" => Active (Red is interacting with Captive, only activatable after killing all enemies)
+//          |...| AnyOtherASCII => Inactive
+//          '
+//          
+//          
+//          __________SheriffDayStage__________
+//          [32-bit (base) Pointer:NPCdata.lvl_sher70] -> [Struct:NPCdata.PlayerAI_Sher70_var4]
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.Sher70_PigJosh] (PigJosh - Hostile NPC)
+//          +0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.Sher70_Piggy] (Piggy3 - Hostile NPC)
+//          | (Keeps respawning till PigJosh death, despawns on PigJosh death)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.Sher70_Piggy_B] (Piggy2 - Hostile NPC)
+//          | (Keeps respawning till PigJosh death, despawns on PigJosh death)
+//          +0x188 - [32-bit (layer-4) Pointer] -> [Struct:NPCdata.Sher70_Piggy] (Piggy1 - Hostile NPC)
+//          | (Keeps respawning till PigJosh death, despawns on PigJosh death)
+//          +0x188 - [32-bit (layer-5) Pointer] -> [Struct:NPCdata.Sher70_Sniper_D] (Aimgo7 - Hostile NPC)
+//          | (YES, it's "Aimgo7")
+//          +0x188 - [32-bit (layer-6) Pointer] -> [Struct:NPCdata.Sher70_Phase2_Sniper_C] (Amigo6 - Hostile NPC)
+//          +0x188 - [32-bit (layer-7) Pointer] -> [Struct:NPCdata.Sher70_Phase2_Sniper_B] (Amigo5 - Hostile NPC)
+//          +0x188 - [32-bit (layer-8) Pointer] -> [Struct:NPCdata.Sher70_Phase2_Sniper_A] (Amigo4 - Hostile NPC)
+//          +0x188 - [32-bit (layer-9) Pointer] -> [Struct:NPCdata.Sher70_Sniper_C] (Amigo3 - Hostile NPC)
+//          +0x188 - [32-bit (layer-10) Pointer] -> [Struct:NPCdata.Sher70_Sniper_B] (Aimgo2 - Hostile NPC)
+//          | (YES, it's "Aimgo2")
+//          +0x188 - [32-bit (layer-11) Pointer] -> [Struct:NPCdata.Sher70_Sniper] (Amigo1 - Hostile NPC)
+//          +0x188 - [32-bit (layer-12) Pointer] -> [Struct:NPCdata.Sher70_HorseRobber_B] (Straw - Hostile NPC)
+//          +0x188 - [32-bit (layer-13) Pointer] -> [Struct:NPCdata.Sher70_HorseRobber_C] (Udo - Hostile NPC)
+//          +0x188 - [32-bit (layer-14) Pointer] -> [Struct:NPCdata.Sher70_HorseRobber_A] (Mant - Hostile NPC)
+//          +0x188 - [32-bit (layer-15) Pointer] -> [Struct:NPCdata.Sher70_Ending_Character] (Jiji - Friendly NPC)
+//          '
+//          [Defintion Struct:NPCdata.Sher70_Ending_Character]
+//          |'''''''''''''''''''''
+//          |+0x94 - [32-bit (layer-1) Pointer]
+//          |.+0x14C - [32-bit (layer-2) Pointer:NPCeventData_JijiThanks_A] -> [Struct(NPCeventData):JijiThanks]
+//          |..| - This NPCeventData may be pointed to by [Pointer:NPCeventData_JijiThanks_B] instead of this pointer
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |...
+//          |...+0x0 - [8-bit(NPCeventState):JijiThanks(alt1) |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsJijiThanksActive] = "ThankYou"
+//          |...| 0x1 => Transitioning value to starting the cinematic
+//          |...| 0x2 => JijiThanks cinematic is active
+//          |...| [0x3-0x4] => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsJijiThanksActive(alt1)]
+//          |...| "ThankYou" => Active (Red is interacting with Captive, only activatable after killing all enemies)
+//          |...| AnyOtherASCII => Inactive
+//          |.
+//          |.
+//          |.+0x190 - [32-bit (layer-2) Pointer:NPCeventData_JijiThanks_B] -> [Struct(NPCeventData):JijiThanks]
+//          |..| - This NPCeventData may be pointed to by [Pointer:NPCeventData_JijiThanks_A] instead of this pointer
+//          |..+0xC - [32-bit (layer-3) Pointer]
+//          |...
+//          |...+0x0 - [8-bit(NPCeventState):JijiThanks(alt2) |32-bit]
+//          |...| - Documentation valid where [ASCIIFlag(NPCevent):IsJijiThanksActive] = "ThankYou"
+//          |...| 0x1 => Transitioning value to starting the cinematic
+//          |...| 0x2 => JijiThanks cinematic is active
+//          |...| [0x3-0x4] => ending cinematic
+//          |...
+//          |...+0x4 - [20-byte ASCIIFlag(NPCevent):IsJijiThanksActive(alt2)]
+//          |...| "ThankYou" => Active (Red is interacting with Captive, only activatable after killing all enemies)
+//          |...| AnyOtherASCII => Inactive
+//          '
+//          
+//          
+//          __________TombstoneStage__________
+//          [32-bit (base) Pointer:NPCdata.lvl_tomb] -> [Struct:NPCdata.Tomb_Player]
+//          +0x188 - [32-bit (layer-1) Pointer] -> [Struct:NPCdata.horse] (Horse)
+//          +0x188 - [32-bit (layer-2) Pointer] -> [Struct:NPCdata.TombNPC_yrd] (Paper boy - Friendly NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_crt] (... - Friendly NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_dad] (... - Friendly NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_old] (... - Friendly NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_pld] (TalkMan2 - Hostile NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_shp] (... - Friendly NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_wsk] (TalkMan1 - Hostile NPC)
+//          +0x188 - [32-bit (layer-3) Pointer] -> [Struct:NPCdata.TombNPC_snp] (walkman2 - Friendly NPC)
+//          '
 // $4223F4: [NTSCU][32-bit (base) Pointer:LevelData]
 //          - This points to game logic data for a specific Level
 //          
@@ -418,16 +596,18 @@
 //          0xFA => SinglePlayer
 //          0xC8 => Multiplayer
 // $428BD8: [NTSCU][32-bit (base) Pointer:ShootingStats] -> [Struct:ShootingStats]
+//          -- WARNING -- This pointer is only valid for some SinglePlayer Levels, prefer using [Pointer:PlayerData], which always points to this, refer to $0x421850
 //          - These stats reset to 0x0 when PauseMenu->Reset OR when dying
 //          - The pointed to data is different depending on SinglePlayer or Multiplayer
 //          
-//          [Definition Struct:ShootingStats.Singleplayer]
+//          [Definition Struct:ShootingStats.SinglePlayer]
 //          |''''''''''''''''''
 //          |- These offsets are only functional when in SinglePlayer
 //          |
 //          |+0xE0 - [32-bit:ShotsFired]
-//          |+0x10C - [32-bit:ShotsHit]
-//          |+0x110 - [32-bit:Headshots]
+//          |+0x10C - [32-bit:ShotsHitBody]
+//          || - Only counts hits on the body, NOT headshots
+//          |+0x110 - [32-bit:ShotsHitHead]
 //          || - Counts headshot-kills & normal headshots
 //          |+0x13C - [32-bit:Kills]
 //          '
@@ -443,13 +623,22 @@
 //          |.+0x120 - [32-bit:ShotsFired-Player3]
 //          |.+0x1B0 - [32-bit:ShotsFired-Player4]
 //          '
-// $499878: [NTSCU][3-yte ASCII:SinglePlayerLoaded_CharacterModelID]
+// $483750: [NTSCU][8-bit Flag:IsLoading |32-bit]
+//          0xD => loading
+//          0xFFFFFFFF => not loading
+// $488238: PlayerInput
+// $499878: [NTSCU][3-byte ASCII:SinglePlayerLoaded_CharacterModelID]
 //          @SinglePlayer CharacterModel Hack
 //          - This value determines which CharacterModel is loaded for all SinglePlayer Levels.
 //          - CharacterModelIDs listed at $0x912954
 //          
 //          InitialValue = "trd"
-//          HackValue : "nrd"
+//          HackValue = "nrd"
+// $53CFA0: [NTSCU][32-bit (base) Pointer:TimeSpentInLevel]
+//          +0x4C - [Float:TimeSpentInLevel |32-bit]
+//          | - Time in seconds
+//          | - Resets back to 0.0: On Level Start + On Level Reset; Thus this can be used to check if a Player has started a Level from the beginning
+//          | - Timer halts at 524288.0 (= 8738m 8s, 145h 38m 8s)
 // $5F7E20: [NTSCU][Variable Size Array:GameData]
 //          - Array is only populated when in-game
 //          - Size of this array is dependent on amount of HumanPlayers in-game
@@ -537,6 +726,8 @@
 // $61F650: [NTSCU][8-bit:Volume_SoundMode |32-bit]
 //          0x1 => Mono
 //          0x2 => Stereo
+// $912040: [NTSCU][8-bit:AlwaysNULL |32-bit]
+//          - Useful to do some RAscript voodoo tricks
 // $91204C: [NTSCU][12-byte ASCII:GameID] = "SCPS_666.66"
 //          - Internal Serial SCPS-66666
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -562,12 +753,21 @@
 //          | "lvl_mans" => Mansion
 //          '
 // $912954: [NTSCU][3-byte ASCII:CharacterModelID-Player1(preferred)]
+//          - This controls which CharacterModel is loaded
 //          - Placing a valid ID here and then freezing before loading a Level, will load the corresponding CharacterModel
+//          - This value only changes/is written to when the game loads a Level (SinglePlayer or Multiplayer)
+//          
+//          # CharacterModelIDs (string)
+//          |(list incomplete)
+//          |'''''''''''''''''
+//          | "trd" => Training Red (Teenage Red)
+//          | "yrd" => Snow Red (Teenage Red, with different coat)
+//          | "red" => Red (Senior Red with casual wild west clothing)
+//          | "nrd" => New Red (Senior Red with long coat, as seen on TitleScreen and box art)
+//          | ...
 // $9129BC: [NTSCU][3-byte ASCII:CharacterModelID-Player2(preferred)]
+//          - Documentation at $0x912954
 // $912A24: [NTSCU][3-byte ASCII:CharacterModelID-Player3(preferred)]
+//          - Documentation at $0x912954
 // $912A8C: [NTSCU][3-byte ASCII:CharacterModelID-Player4(preferred)]
 //          - Documentation at $0x912954
-// $92785C: [NTSCU][Float:TimeSpentInLevel |32-bit]
-//          - Time in seconds
-//          - Resets back to 0.0: On Level Start + On Level Reset; Thus this can be used to check if a Player has started a Level from the beginning
-//          - Timer halts at 524288.0 (= 8738m 8s, 145h 38m 8s)
