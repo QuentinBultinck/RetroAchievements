@@ -229,6 +229,17 @@ memory_StructDefs = {
 			"ASCIIFlag(NPCevent):IsCaptiveThanksActive": {
 				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x14C, 0xC],
 				"offsetToPointedToMember": 0x4},
+			// ----SheriffDayStage----
+			"8-bit(NPCeventState):JijiThanks(alt1)": { // Alt1 via [Pointer:NPCeventData_JijiThanks_A]
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x14C, 0xC, 0x0]},
+			"ASCIIFlag(NPCevent):IsJijiThanksActive(alt1)": {
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x14C, 0xC],
+				"offsetToPointedToMember": 0x4},
+			"8-bit(NPCeventState):JijiThanks(alt2)": { // Alt2 via [Pointer:NPCeventData_JijiThanks_B]
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x190, 0xC, 0x0]},
+			"ASCIIFlag(NPCevent):IsJijiThanksActive(alt2)": {
+				"pointerChainOffsets": [0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x188, 0x94, 0x190, 0xC],
+				"offsetToPointedToMember": 0x4},
 			
 		}},
 	"Pointer:TimeSpentInLevel": {
@@ -676,6 +687,9 @@ function is_SinglePlayer_Health_atMax(enum_releaseRegion) =>
 function on_SinglePlayer_Health_takeDamage(enum_releaseRegion) =>
 	current_SinglePlayer_Health(enum_releaseRegion) < prev_SinglePlayer_Health(enum_releaseRegion)
 
+function on_SinglePlayer_Health_heal(enum_releaseRegion) =>
+	current_SinglePlayer_Health(enum_releaseRegion) > prev_SinglePlayer_Health(enum_releaseRegion)
+
 function current_SinglePlayer_Money(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
@@ -795,7 +809,7 @@ function current_NPClocation_YCoord(int_NPCdataIndex, enum_releaseRegion) {
 	let_array_pointerChainOffsetsTo_NPClocation_from_NPCdata = memory_getStruct_offsetSequenceToMember("Struct:NPCdata", "Struct(Coordinates):NPClocation(functional)-Y")
 	let_array_pointerChainOffsetsTo_NPClocation_Coord = util_concatArrays(let_array_pointerChainOffsetsTo_NPCdata, let_array_pointerChainOffsetsTo_NPClocation_from_NPCdata)
 	
-	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)		
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_basePointer, 
 		let_array_pointerChainOffsetsTo_NPClocation_Coord, memAccessorFunction_toPointedToMember = float)
 	}
@@ -991,7 +1005,7 @@ function on_NPCeventState_TitleStage_JinnieThanks_toggleActive(enum_releaseRegio
 		&& prev_NPCeventState_TitleStage_JinnieThanks(enum_releaseRegion) < const_NPC_EVENT_STATE_JinnieThanks_active}
 
 function on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion) {
-	const_ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true = "Than" // FullString: "ThankYou2"
+	const_ASCII_FLAG_STATE_Perf75_IsJinnieThanksActive_true = "Than" // FullString: "ThankYou2" (T + Y is uppercase)
 
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = 
@@ -1018,7 +1032,7 @@ function on_NPCeventState_TitleStage_DogThanks_toggleActive(enum_releaseRegion) 
 		&& prev_NPCeventState_TitleStage_DogThanks(enum_releaseRegion) < const_NPC_EVENT_STATE_DogThanks_active}
 
 function on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion) {
-	const_ASCII_FLAG_STATE_Hng_IsDogThanksActive_true = "Thankyou"
+	const_ASCII_FLAG_STATE_Hng_IsDogThanksActive_true = "Than" // FullString: "Thankyou" (Only T is uppercase)
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsDogThanksActive", let_memAddr_basePointer)
@@ -1043,7 +1057,7 @@ function on_NPCeventState_SheriffNightStage_CaptiveThanks_toggleActive(enum_rele
 		&& prev_NPCeventState_SheriffNightStage_CaptiveThanks(enum_releaseRegion) < const_NPC_EVENT_STATE_CaptiveThanks_active}
 
 function on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion) {
-	const_ASCII_FLAG_STATE_Shernite_IsCaptiveThanksActive_true = "ThankYou"
+	const_ASCII_FLAG_STATE_Shernite_IsCaptiveThanksActive_true = "Than" // FullString: "ThankYou" (T + Y is uppercase)
 	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
 	let_pointerChainTo_ASCIIFlag = 
 		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsCaptiveThanksActive", let_memAddr_basePointer)
@@ -1052,6 +1066,55 @@ function on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_re
 		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, const_ASCII_FLAG_STATE_Shernite_IsCaptiveThanksActive_true)
 		&& on_NPCeventState_SheriffNightStage_CaptiveThanks_toggleActive(enum_releaseRegion)}
 // #endregion SheriffNightStage
+// #region SheriffDayStage
+function current_NPCeventState_SheriffDayStage_JijiThanks_alt1(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:NPCdata", "8-bit(NPCeventState):JijiThanks(alt1)", let_memAddr_basePointer)}
+
+function prev_NPCeventState_SheriffDayStage_JijiThanks_alt1(enum_releaseRegion) =>
+	prev(current_NPCeventState_SheriffDayStage_JijiThanks_alt1(enum_releaseRegion))
+
+function on_NPCeventState_SheriffDayStage_JijiThanks_alt1_toggleActive(enum_releaseRegion) {
+	// NOTE: this NPCeventState goes from [0x0-0x4], refer to code notes
+	const_NPC_EVENT_STATE_JijiThanks_active = 0x2
+	return 
+		current_NPCeventState_SheriffDayStage_JijiThanks_alt1(enum_releaseRegion) == const_NPC_EVENT_STATE_JijiThanks_active
+		&& prev_NPCeventState_SheriffDayStage_JijiThanks_alt1(enum_releaseRegion) < const_NPC_EVENT_STATE_JijiThanks_active}
+		
+function on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion) {
+	const_ASCII_FLAG_STATE_Sher70_IsJijiThanksActive_true = "Than" // FullString: "ThankYou" (T + Y is uppercase)
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJijiThanksActive(alt1)", let_memAddr_basePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJijiThanksActive(alt1)")
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, const_ASCII_FLAG_STATE_Sher70_IsJijiThanksActive_true)
+		&& on_NPCeventState_SheriffDayStage_JijiThanks_alt1_toggleActive(enum_releaseRegion)}
+
+function current_NPCeventState_SheriffDayStage_JijiThanks_alt2(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:NPCdata", "8-bit(NPCeventState):JijiThanks(alt2)", let_memAddr_basePointer)}
+
+function prev_NPCeventState_SheriffDayStage_JijiThanks_alt2(enum_releaseRegion) =>
+	prev(current_NPCeventState_SheriffDayStage_JijiThanks_alt2(enum_releaseRegion))
+
+function on_NPCeventState_SheriffDayStage_JijiThanks_alt2_toggleActive(enum_releaseRegion) {
+	// NOTE: this NPCeventState goes from [0x0-0x4], refer to code notes
+	const_NPC_EVENT_STATE_JijiThanks_active = 0x2
+	return 
+		current_NPCeventState_SheriffDayStage_JijiThanks_alt2(enum_releaseRegion) == const_NPC_EVENT_STATE_JijiThanks_active
+		&& prev_NPCeventState_SheriffDayStage_JijiThanks_alt2(enum_releaseRegion) < const_NPC_EVENT_STATE_JijiThanks_active}
+
+function on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion) {
+	const_ASCII_FLAG_STATE_Sher70_IsJijiThanksActive_true = "Than" // FullString: "ThankYou" (T + Y is uppercase)
+	let_memAddr_basePointer = memory_getAddress("Pointer:NPCdata", enum_releaseRegion)
+	let_pointerChainTo_ASCIIFlag = 
+		memGenerate_pointerChainAccessor("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJijiThanksActive(alt2)", let_memAddr_basePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:NPCdata", "ASCIIFlag(NPCevent):IsJijiThanksActive(alt2)")
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_ASCIIFlag, const_ASCII_FLAG_STATE_Sher70_IsJijiThanksActive_true)
+		&& on_NPCeventState_SheriffDayStage_JijiThanks_alt2_toggleActive(enum_releaseRegion)}
+// #endregion SheriffDayStage
 // #endregion NPCdata
 
 // ................
@@ -1124,8 +1187,8 @@ achievements_coreData = {
 			"id": 497833, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
 		"a_CompleteShernite": { // VERIFIED
 			"id": 497874, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
-		// "a_CompleteSher70": { // CONCEPT a_CompleteSher70
-		//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Kill all enemies"},
+		"a_CompleteSher70": { // VERIFIED
+			"id": 498038, "points": 0000000, "devInfo": "lvl_sher70: Kill at least xx enemies (Talk with old man for thanks)"},
 		}, 
 	"c_SPchallenge": { // Category - Single Player Challenges
 		"a_ChallengeTng": { // VERIFIED
@@ -1136,8 +1199,8 @@ achievements_coreData = {
 			// "id": 497832, "points": 0000000, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
 		"a_ChallengeShernite": { // VERIFIED
 			"id": 497875, "points": 0000000, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
-		// "a_ChallengeSher70": { // CONCEPT a_ChallengeSher70
-			//	"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: Get a kill with 5 different weapons"},
+		"a_ChallengeSher70": { // VERIFIED
+			"id": 498037, "points": 0000000, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
@@ -1222,12 +1285,12 @@ achievements_triggers = {
 		// 	&& always_false()),
 
 	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-	// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-	// 		is_ReleaseRegion(enum_releaseRegion)
-	// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-	// 		&& is_PlayerNearPOI(LEVEL_TrainingStage, "WhiteChest", 1.5, enum_releaseRegion)
-	// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-	// 	),
+		// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+		// 		&& is_PlayerNearPOI(LEVEL_TrainingStage, "WhiteChest", 1.5, enum_releaseRegion)
+		// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
+		// 	),
 
 	// -------c_SPprogress-------
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1306,7 +1369,35 @@ achievements_triggers = {
 			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex =>  // ---TallyOf---> BugFix: Replaces above commented line. [Struct:PlayerData].[32-bit:Kills] only counts kills by PlayerShots, not by PlayerMelee or other indirect methods of NPC death
 				once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 			&& on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion)
-			}),
+		}),
+	"a_CompleteSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning = [2,3,4] // Accounts for all "Piggy" NPCs which keep respawning till PigJosh dies. Once PigJosh dies all Piggy's despawn (but their HP remains)
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_all = util_concatArrays(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning)
+		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) // = 11 	Required to kill all of these once
+		const_ENEMY_COUNT_respawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning) // = 3 	Required to kill 3 in total, they keep respawning. So player should be allowed to kill the same NPC multiple times
+		const_ENEMY_COUNT_all = const_ENEMY_COUNT_nonRespawning + const_ENEMY_COUNT_respawning - 7 // 11+3-7 = 7		(minus xx, as this isn't a challenge achievement)
+		const_ALLIED_NPCDATA_INDEX = 15 // Last entry in "LinkedList", refer to code notes
+		return
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement		
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the OldMan dies
+				on_NPChealth_death(const_ALLIED_NPCDATA_INDEX, enum_releaseRegion)))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_ENEMY_COUNT_all, (int_NPCdataIndex) {
+				if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, int_NPCdataIndex)) // If this is a respawning NPC: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+					return repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				else if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, int_NPCdataIndex)) // ElseIf this is a non-respawning NPC: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+					return once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				else util_throwError(format("NPCdataIndex [{0}] did not evaluate to any valid index", int_NPCdataIndex))
+				})
+			&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),
 	// -------c_SPchallenge-------
 	"a_ChallengeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
@@ -1469,6 +1560,54 @@ achievements_triggers = {
 		// [4+5+6] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)	
 		}),
+	"a_ChallengeSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning = [2,3,4] // Accounts for all "Piggy" NPCs which keep respawning till PigJosh dies. Once PigJosh dies all Piggy's despawn (but their HP remains)
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_all = util_concatArrays(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning)
+		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) // = 11 	Required to kill all of these once
+		const_ENEMY_COUNT_respawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning) // = 3 	Required to kill 3 in total, they keep respawning. So player should be allowed to kill the same NPC multiple times
+		const_ENEMY_COUNT_all = const_ENEMY_COUNT_nonRespawning + const_ENEMY_COUNT_respawning + 1 // = 14 + 1		(plus 1, to add extra challenge)
+		const_ALLIED_NPCDATA_INDEX = 15 // Last entry in "LinkedList", refer to code notes
+		return
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator as long as OldMan lives AND player hasn't healed
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player heals
+				on_SinglePlayer_Health_heal(enum_releaseRegion)))
+			&& unless(once( // Pause Lock: Once the OldMan dies
+				on_NPChealth_death(const_ALLIED_NPCDATA_INDEX, enum_releaseRegion)))
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
+			&& trigger_when(
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => // Respawning NPCs: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+					once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+				&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, const_ENEMY_COUNT_respawning, int_NPCdataIndex => // non-respawning NPCS: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+					repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+				&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
+					once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
+					once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
+				)
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for displaying a Measured Indicator, tracking enemy kills
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player heals
+				on_SinglePlayer_Health_heal(enum_releaseRegion)))
+			&& unless(once( // Pause Lock: Once the OldMan dies
+				on_NPChealth_death(const_ALLIED_NPCDATA_INDEX, enum_releaseRegion)))
+			&& measured(
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_ENEMY_COUNT_all, (int_NPCdataIndex) {
+					if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, int_NPCdataIndex)) // If this is a respawning NPC: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+						return repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, int_NPCdataIndex)) // ElseIf this is a non-respawning NPC: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+						return once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else util_throwError(format("NPCdataIndex [{0}] did not evaluate to any valid index", int_NPCdataIndex))
+					}),
+				when = once(current_SinglePlayer_Kills(enum_releaseRegion) == 0))
+			&& trigger_when(always_false())
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),
 	// -------c_SPbonus-------
 	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
@@ -1579,7 +1718,7 @@ achievements_triggers = {
 					&& prev_NPClocation_YCoord(const_NPC_LINKEDLISTED_INDEX_zzt2, enum_releaseRegion) < const_Y_COORD_SaloonFrontWall)]
 				))
 		}),
-	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) Manual Construction
+	"a_HorseTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_ARRAY_NPCDATA_INDICES = [2,3,4,5,6,7,8,9]
 		const_NPC_COUNT = length(const_ARRAY_NPCDATA_INDICES)
 		return
@@ -1643,13 +1782,13 @@ achievements_titles = {
 	"a_CompletePerf": 			{"en": "A Son's Duty"},
 	"a_CompleteHng": 			{"en": "The Goodest Bounty Hunter"},
 	"a_CompleteShernite": 		{"en": "Mad Sheriff, Grim Justice"},
-	"a_CompleteSher70": 		{"en": "xxxxxxxxx"},
+	"a_CompleteSher70": 		{"en": "No Mercy for Swine"},
 
 	"a_ChallengeTng": 			{"en": "Whack-a-Mole"},
 	"a_ChallengePerf":			{"en": "No Harm Comes Home"},
 	"a_ChallengeHng": 			{"en": "Lead with Precision"},
 	"a_ChallengeShernite": 		{"en": "Reckoning at Midnight"},
-	"a_ChallengeSher70": 		{"en": "xxxxxxxxx"},
+	"a_ChallengeSher70": 		{"en": "Sheriff by Sunrise"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
@@ -1664,16 +1803,16 @@ achievements_descriptions = {
 	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
-	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", share a few last words with your mother and Jinnie"},
+	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
 	"a_CompleteHng": 			{"en": "Once all outlaws in the \"Title Stage\" have been vanquished, prove your worth and earn Rusty's respect"},
 	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang in the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
-	"a_CompleteSher70": 		{"en": "xxxxxxxxx"},
+	"a_CompleteSher70": 		{"en": "Butcher Pig's gang of outlaws during the \"Sheriff Day Stage\" and earn an old veteran's admiration for restoring peace to his town"},
 
 	"a_ChallengeTng": 			{"en": "The Indian Master has seen many shooters, but few with true skill. Prove your worth in the \"Training Stage\" Shooting Challenge by eliminating 11 moles in under a minute, but only with headshots"},
 	"a_ChallengePerf":			{"en": "Take down every enemy in the \"Prologue Stage\" without taking damage, then have a word with your mother or Jinnie"},
-	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of his respect"},
+	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of Rusty's respect"},
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
-	"a_ChallengeSher70": 		{"en": "xxxxxxxxx"},
+	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos, time to bring them bullets. Drop 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
