@@ -90,6 +90,11 @@
 //          ..+0x0 - [Float:PlayerMaxHealth |32-bit]
 //          .
 //          .+0xC - [Float:PlayerHealth |32-bit]
+//          .
+//          .+0x80 - [32-bit (layer-2) Pointer] -> [Struct:RapidFireData]
+//          ..+0x140 - [bit0 BitFlag:IsRapidFireModeActive |32-bit]
+//          .| - RapidFireMode is activated whilst in AimingMode + doing a half circle with the analog stick
+//          .| - This uses SpecialGauge
 //          
 //          +0x70 - [32-bit (layer-1) Pointer:PlayerData_L1-70]
 //          | - This pointer is only valid when the player is on Horseback
@@ -136,6 +141,14 @@
 //          +0x220 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          +0x224 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          
+//          +0x4E8 - [32-bit (layer-1) Pointer:HUD_AmmoHealth] -> [Struct:HUD_AmmoHealth]
+//          | - Definition of [Struct:HUD_AmmoHealth] below
+//          
+//          +0x6DC - [32-bit (layer-1) Pointer] -> [Struct:RapidFireData]
+//          .+0x140 - [bit0 BitFlag:IsRapidFireModeActive |32-bit]
+//          .| - RapidFireMode is activated whilst in AimingMode + doing a half circle with the analog stick
+//          .| - This uses SpecialGauge
+//          
 //          
 //          [Definition Struct:Coordinates |16-byte]
 //          |''''''''''''''''''''''''''''''''
@@ -162,6 +175,32 @@
 //          |+0x5C - [32-bit:Kills]
 //          '
 //          
+//          [Definition Struct:HUD_AmmoHealth |532-byte]
+//          |''''''''''''''''''''''''''''''''''''''
+//          | - This struct controls the UI display in the bottom-left
+//          |
+//          |+0x6C - [Float:SpecialMoveGauge(display) |32-bit]
+//          || - FloatRange [0.0 --- 1000.0]; Each 100.0 is counts a number on the SpecialGauge
+//          |
+//          |+0x74 - [Float:PlayerHealth(display) |32-bit]
+//          || - This float regulates how much of the HP bar is filled. Pretty much correlates to effective PlayerHealth
+//          || - FloatRange [0.0 --- 1.0]; MaxHP = 1.0
+//          |
+//          |+0xB0 - [32-bit:LoadedAmmoCount_Back(display)]
+//          || - When the Player is using dual wielded weapons, this value becomes active. It counts how many bullets are loaded inside the secondary weapon. (the display of bullet icons behind the front display)
+//          |
+//          |+0xB4 - [32-bit:LoadedAmmoCount_Front(display)]
+//          || - This value regulates the display of how many bullets icons are displayed. This pretty much correlates how many bullets are loaded inside the weapon.
+//          || - When Player has single shot weapon equipped (eg. throwables like dynamite or knife), when this value becomes 0x0, then the display greys out the weapon icon until weapon is reloaded
+//          |
+//          |+0xC0 - [32-bit:ReserveAmmoCount(display)]
+//          || - This value controls the number display of how many reserve bullets the Player has in inventory
+//          |
+//          |+0xC8 - [8-bit:Equipped_WeaponID(non-functional) |32-bit]
+//          || - This value correlates to the equipped WeaponID
+//          || - WeaponIDs listed below
+//          '
+//          
 //          # CharacterAnimationID
 //          |(only lists IDs useful for achievement logic)
 //          |''''''''''''''''''''
@@ -171,6 +210,18 @@
 //          | "red_for_jump" => Jump whilst moving forward
 //          | "red_fnc_pst_vlt => Fence vault
 //          | "red_rgt_dge" => Dodge (Press X or R1 whilst walking)
+//          '
+//          
+//          # WeaponIDs (hex)
+//          |(list incomplete)
+//          |''''''''''''''''''
+//          | 0x0 => SingleRevolver
+//          | 0x1 => DualRevolvers
+//          | 0x2 => Shotgun
+//          | 0x3 => Rifle
+//          | 0x4 => Knife
+//          | 0x5 => Dynamite
+//          | ...??
 //          '
 // $421868: [NTSCU][8-bit:Showdown_Kills-Player1]
 //          - This value counts how many kills the player has achieved in the Showdown Match
@@ -639,7 +690,24 @@
 //          | - Time in seconds
 //          | - Resets back to 0.0: On Level Start + On Level Reset; Thus this can be used to check if a Player has started a Level from the beginning
 //          | - Timer halts at 524288.0 (= 8738m 8s, 145h 38m 8s)
-// $5F7E20: [NTSCU][Variable Size Array:GameData]
+// $5E3320: [NTSCU][576-byte?? Array:LevelZoneDataPointers]
+//          - Each ListItem consists of [32-bit:ZeroedOut] + [32-bit Pointer:LevelZoneData] -> [Struct:LevelZoneData]
+//          - The first [Pointer:LevelZoneData] in the array points to something else ???
+//          - [Struct:LevelZoneData] contains various data about the 3D levelObjects loaded into the game.
+// $5E334C: [NTSCU][32-bit (base) Pointer:LevelZoneData_A]
+//          @Member of [Array:LevelZoneDataPointers]
+//          
+//          ___________PrologueStage___________
+//          [32-bit (base) Pointer:LevelZoneData_A.lvl_perf75] -> [Struct:LevelZoneData.zone_crack01Roof_01]
+//          +0x1C - [ASCII:ZoneDataID] = "zone_crack01Roof_01"
+//          +0x194 - [bit0 BitFlag:IsRoofCrackOpen |32-bit]
+//          | - This bitflag only handles the visual change of the crack in the roof; Surrounding data may correlate to functional logic.
+//          | 0 => no crack visible
+//          | 1 => crack visible
+//          '
+// $5F7E20: (unverified)
+//          
+//          [NTSCU][Variable Size Array:GameData]
 //          - Array is only populated when in-game
 //          - Size of this array is dependent on amount of HumanPlayers in-game
 //          - This array consists of 2 parts. [Array:PlayerDataPointers] + [Array:GameDataPointers]
@@ -678,7 +746,9 @@
 //          |''''''''''''''''''''''''''''''''''''''
 //          | - Contains (5x) pointers to various data related to the Level + Game
 //          '
-// $5F7E24: [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player1] -> [Struct:HUD_AmmoHealth]
+// $5F7E24: (inconsistent)
+//          
+//          [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player1] -&gt; [Struct:HUD_AmmoHealth]
 //          @Fixed Memory Location, although this pointer is part of [Variable Size Array:GameData] ($0x5f7e20)
 //          - Pointer is only valid when in-game
 //          
@@ -708,12 +778,12 @@
 //          # WeaponIDs (hex)
 //          |(list incomplete)
 //          |''''''''''''''''''
-//          | 0x0 => SingleRevolver
-//          | 0x1 => DualRevolvers
-//          | 0x2 => Shotgun
-//          | 0x3 => Rifle
-//          | 0x4 => Knife
-//          | 0x5 => Dynamite
+//          | 0x0 =&gt; SingleRevolver
+//          | 0x1 =&gt; DualRevolvers
+//          | 0x2 =&gt; Shotgun
+//          | 0x3 =&gt; Rifle
+//          | 0x4 =&gt; Knife
+//          | 0x5 =&gt; Dynamite
 //          | ...??
 //          '
 // $5F7E94: [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player2] -> [Struct:HUD_AmmoHealth]
@@ -771,3 +841,4 @@
 //          - Documentation at $0x912954
 // $912A8C: [NTSCU][3-byte ASCII:CharacterModelID-Player4(preferred)]
 //          - Documentation at $0x912954
+// $FF06D4: crack F2

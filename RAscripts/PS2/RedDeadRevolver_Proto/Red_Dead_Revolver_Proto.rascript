@@ -488,6 +488,8 @@ function on_Level_startORreset(enum_releaseRegion) =>
 // ''''''''''''''
 // #region PlayerData
 // #region HUD_AmmoHealth
+WEAPON_SingleRevolver = 0x0
+WEAPON_DualRevolvers = 0x1
 WEAPON_Rifle = 0x3
 
 function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
@@ -811,6 +813,18 @@ const_Level_BoundingBox_POI_Data = {
 			"BoundingBoxWall_X_neg": 11.0, "BoundingBoxWall_X_pos": 21.0,
 			"BoundingBoxWall_Y_neg": -10.0, "BoundingBoxWall_Y_pos": 0.0,
 			"BoundingBoxWall_Z_neg": 6.5, "BoundingBoxWall_Z_pos": 20.0},
+		},
+	LEVEL_SheriffNight: {
+		"On_BigBarrel": {
+			"BoundingBoxWall_X_neg": 27.5, "BoundingBoxWall_X_pos": 31.0,
+			"BoundingBoxWall_Y_neg": -16.0, "BoundingBoxWall_Y_pos": -13.0,
+			"BoundingBoxWall_Z_neg": 5.0, "BoundingBoxWall_Z_pos": 10.0},
+		},
+	LEVEL_TitleStage: {
+		"On_Roofs": {
+			"BoundingBoxWall_X_neg": -2.0, "BoundingBoxWall_X_pos": 15.5,
+			"BoundingBoxWall_Y_neg": -2.5, "BoundingBoxWall_Y_pos": 8.5,
+			"BoundingBoxWall_Z_neg": 2.0, "BoundingBoxWall_Z_pos": 10.0},
 		},
 	}
 
@@ -1308,12 +1322,12 @@ achievements_coreData = {
 			"id": 000000, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
 			"id": 000000, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
-		// "a_EyeShootHng": { // CONCEPT a_EyeShootHng
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of one of the 3 buildings (in succession without dropping down)"},
-		// "a_EyeShootShernite": { // CONCEPT a_EyeShootShernite
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down)"},
+		"a_EyeShootHng": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
+		"a_EyeShootShernite": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
 		"a_EyeShootSher70": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down)"},
+			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinRed": { // CONCEPT a_WinRed
@@ -1980,28 +1994,58 @@ achievements_triggers = {
 		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
 			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
-	// "a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-			// const_BOUNDING_BOX_KEY_Roofs = "On_Roofs"
-		// 	return
-		// 	// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-		// 		&& is_Level(LEVEL_Train, enum_releaseRegion)
-		// 		&& isNot_Loading(enum_releaseRegion)
-		// 		&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
-		// 		&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// 	}),
-	// "a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-			// const_BOUNDING_BOX_KEY_BigBarrel = "On_BigBarrel"
-		// 	return
-		// 	// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-		// 		&& is_Level(LEVEL_Train, enum_releaseRegion)
-		// 		&& isNot_Loading(enum_releaseRegion)
-		// 		&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
-		// 		&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// 	}),
+	"a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_TitleStage
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_REQUIRED_ENEMY_KILLS = 5
+		const_REQUIRED_WEAPON = WEAPON_SingleRevolver
+		const_BOUNDING_BOX_KEY_Roofs = "On_Roofs"
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_Roofs, enum_releaseRegion))
+			&& measured(tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_REQUIRED_ENEMY_KILLS, int_NPCdataIndex => 
+				once(
+					is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)
+					&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_Roofs, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enu9m_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_SheriffNight
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_REQUIRED_ENEMY_KILLS = 4
+		const_REQUIRED_WEAPON = WEAPON_DualRevolvers
+		const_BOUNDING_BOX_KEY_BigBarrel = "On_BigBarrel"
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_BigBarrel, enum_releaseRegion))
+			&& measured(tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_REQUIRED_ENEMY_KILLS, int_NPCdataIndex => 
+				once(
+					is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)
+					&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_BigBarrel, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
 	"a_EyeShootSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_LEVEL = LEVEL_SheriffDay
 		const_REQUIRED_WEAPON = WEAPON_Rifle
