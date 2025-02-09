@@ -160,17 +160,15 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x170, 0x30]},
 			"32-bit:Kills": {
 				"pointerChainOffsets": [0x170, 0x5C]},
-		}},
-	"Struct:HUD_AmmoHealth": {
-		"pointerChainToMember": {
+			// -------Struct:HUD_AmmoHealth-------
 			"Float:PlayerHealth(display)": {
-				"pointerChainOffsets": [0x74]},
+				"pointerChainOffsets": [0x4E8, 0x74]},
 			"32-bit:LoadedAmmoCount_Back(display)": { 
-				"pointerChainOffsets": [0xB0]},
+				"pointerChainOffsets": [0x4E8, 0xB0]},
 			"32-bit:LoadedAmmoCount_Front(display)": {
-				"pointerChainOffsets": [0xB4]},
+				"pointerChainOffsets": [0x4E8, 0xB4]},
 			"8-bit:Equipped_WeaponID(non-functional)": {
-				"pointerChainOffsets": [0xC8]},
+				"pointerChainOffsets": [0x4E8, 0xC8]},
 		}},
 	"Struct:LevelZoneData.zone_crack01Roof_01": {
 		"pointerChainToMember": {
@@ -324,7 +322,6 @@ memory_addresses = {
 	"Pointer:TimeSpentInLevel": {RELEASE_REGION_USA: 0x53cfa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:MenuData": {RELEASE_REGION_USA: 0x4215a0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	"Pointer:HUD_AmmoHealth-Player1": {RELEASE_REGION_USA: 0x5f7e24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -490,6 +487,23 @@ function on_Level_startORreset(enum_releaseRegion) =>
 // ◦ PlayerData ◦
 // ''''''''''''''
 // #region PlayerData
+// #region HUD_AmmoHealth
+WEAPON_Rifle = 0x3
+
+function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
+
+function prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion) =>
+	prev(current_SinglePlayer_EquippedWeaponID(enum_releaseRegion))
+
+function is_SinglePlayer_EquippedWeaponID(enum_weapon, enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) == enum_weapon
+
+function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) != prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion)
+
+// #endregion HUD_AmmoHealth
 // #region ShootingStats
 // ----------------SinglePlayer---------------------
 function current_SinglePlayer_ShotsFired(enum_releaseRegion) {
@@ -705,60 +719,6 @@ function prev_SinglePlayer_Money(enum_releaseRegion) =>
 
 // #endregion PlayerData
 
-// ..................
-// ◦ HUD_AmmoHealth ◦
-// ''''''''''''''''''
-// #region HUD_AmmoHealth
-
-// ----------------SinglePlayer---------------------
-function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Back(display)", let_memAddr_basePointer)}
-		
-function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion))
-
-function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Front(display)", let_memAddr_basePointer)}
-
-function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion))
-
-function current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
-	current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
-	+ current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
-
-function prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
-	prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
-	+ prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
-
-function on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) => // BUG_RATools - Too complex for RAtools
-	/* MANUAL_CONSTRUCTION
-		I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_0>0
-		-------------
-		SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
-		AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
-					val 0 > val 0
-		*/
-	prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion)
-	- current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) 
-	> 0
-
-function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct:HUD_AmmoHealth", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
-
-function prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeaponID(enum_releaseRegion))
-
-function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
-	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) != prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion)
-
-// #endregion HUD_AmmoHealth
-
 // .............
 // ◦ LevelData ◦
 // '''''''''''''
@@ -832,6 +792,59 @@ function is_PlayerNearPOI(enum_levelID, string_POI_key, enum_releaseRegion) {
 		&& 	(let_POI_Y - let_POI_RadiusThreshold) <= let_memAccessor_Player_Y 		&& let_memAccessor_Player_Y <= (let_POI_Y + let_POI_RadiusThreshold)
 		&& 	(let_POI_Z - let_POI_RadiusThreshold) <= let_memAccessor_Player_Z 		&& let_memAccessor_Player_Z <= (let_POI_Z + let_POI_RadiusThreshold)
 	}
+// ----------------Bounding Box POI---------------------
+const_Level_BoundingBox_POI_Data = {
+	/* NOTE: Template DictObject(BoundingBox_POI_Data):
+		"string_POI_key": {
+			"BoundingBoxWall_X_neg": sNULL, "BoundingBoxWall_X_pos": sNULL,
+			"BoundingBoxWall_Y_neg": sNULL, "BoundingBoxWall_Y_pos": sNULL,
+			"BoundingBoxWall_Z_neg": sNULL, "BoundingBoxWall_Z_pos": sNULL},
+		*/
+	LEVEL_Train: {
+		"On_CliffRidge": {
+			"BoundingBoxWall_X_neg": -10.0, "BoundingBoxWall_X_pos": -4.0,
+			"BoundingBoxWall_Y_neg": sNULL, "BoundingBoxWall_Y_pos": sNULL, // --> Infinite BoundingBoxSize on Y-axis
+			"BoundingBoxWall_Z_neg": 4.5, "BoundingBoxWall_Z_pos": 10.0},
+		},
+	LEVEL_SheriffDay: {
+		"On_RoofHighBuilding": {
+			"BoundingBoxWall_X_neg": 11.0, "BoundingBoxWall_X_pos": 21.0,
+			"BoundingBoxWall_Y_neg": -10.0, "BoundingBoxWall_Y_pos": 0.0,
+			"BoundingBoxWall_Z_neg": 6.5, "BoundingBoxWall_Z_pos": 20.0},
+		},
+	}
+
+function is_PlayerWithinBoundingBox_POI(enum_levelID, string_boundingBoxPOI_key, enum_releaseRegion) {
+	let_POI_target = const_Level_BoundingBox_POI_Data[enum_levelID][string_boundingBoxPOI_key]
+	let_POI_X_neg = let_POI_target["BoundingBoxWall_X_neg"]
+	let_POI_X_pos = let_POI_target["BoundingBoxWall_X_pos"]
+	let_POI_Y_neg = let_POI_target["BoundingBoxWall_Y_neg"]
+	let_POI_Y_pos = let_POI_target["BoundingBoxWall_Y_pos"]
+	let_POI_Z_neg = let_POI_target["BoundingBoxWall_Z_neg"]
+	let_POI_Z_pos = let_POI_target["BoundingBoxWall_Z_pos"]
+
+	let_memAccessor_Player_X = current_PlayerLocation_X(enum_releaseRegion)
+	let_memAccessor_Player_Y = current_PlayerLocation_Y(enum_releaseRegion)
+	let_memAccessor_Player_Z = current_PlayerLocation_Z(enum_releaseRegion)
+
+	if(let_POI_X_neg == sNULL || let_POI_X_pos == sNULL) 
+		return 
+			let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+			&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	if(let_POI_Y_neg == sNULL || let_POI_Y_pos == sNULL) 
+		return 
+			let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+			&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	if(let_POI_Z_neg == sNULL || let_POI_Z_pos == sNULL) 
+		return 
+			let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+			&& let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+	return 
+		let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+		&& let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+		&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	}
+
 // #endregion Point of Interest (POI)
 // #region LevelZoneData
 function current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) {
@@ -1299,8 +1312,8 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of one of the 3 buildings (in succession without dropping down)"},
 		// "a_EyeShootShernite": { // CONCEPT a_EyeShootShernite
 			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down)"},
-		// "a_EyeShootSher70": { // CONCEPT a_EyeShootSher70
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill XX enemies (in succession without dropping down)"},
+		"a_EyeShootSher70": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinRed": { // CONCEPT a_WinRed
@@ -1853,18 +1866,14 @@ achievements_triggers = {
 			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
 	"a_EyeTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_POI_DATA_On_CliffRidge = {
-			"BoundingBoxWall_X_neg": -10.0, "BoundingBoxWall_X_pos": -4.0,
-			// "BoundingBoxWall_Y_neg": sNULL "BoundingBoxWall_Y_pos": sNULL, // --> Infinite BoundingBoxSize on Y-axis
-			"BoundingBoxWall_Z_neg": 4.5, "BoundingBoxWall_Z_pos": 10.0}
+		const_BOUNDING_BOX_KEY_CliffRidge = "On_CliffRidge"
 		return
 		// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 			&& is_Level(LEVEL_Train, enum_releaseRegion)
-			&& isNot_Loading(enum_releaseRegion)			
-			&& const_POI_DATA_On_CliffRidge["BoundingBoxWall_X_neg"] <= current_PlayerLocation_X(enum_releaseRegion) && current_PlayerLocation_X(enum_releaseRegion) <= const_POI_DATA_On_CliffRidge["BoundingBoxWall_X_pos"]
-			&& const_POI_DATA_On_CliffRidge["BoundingBoxWall_Z_neg"] <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= const_POI_DATA_On_CliffRidge["BoundingBoxWall_Z_pos"]
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_CliffRidge, enum_releaseRegion)
 			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
 		}),
 	"a_EyeTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -1971,18 +1980,64 @@ achievements_triggers = {
 		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
 			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
-	// "a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()),
-	// "a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()),
-	// "a_EyeShootSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& always_false()),
+	// "a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+			// const_BOUNDING_BOX_KEY_Roofs = "On_Roofs"
+		// 	return
+		// 	// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+		// 		&& is_Level(LEVEL_Train, enum_releaseRegion)
+		// 		&& isNot_Loading(enum_releaseRegion)
+		// 		&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
+		// 		&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// 	}),
+	// "a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+			// const_BOUNDING_BOX_KEY_BigBarrel = "On_BigBarrel"
+		// 	return
+		// 	// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+		// 		&& is_Level(LEVEL_Train, enum_releaseRegion)
+		// 		&& isNot_Loading(enum_releaseRegion)
+		// 		&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
+		// 		&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// 	}),
+	"a_EyeShootSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_SheriffDay
+		const_REQUIRED_WEAPON = WEAPON_Rifle
+		const_BOUNDING_BOX_KEY_RoofHighBuilding = "On_RoofHighBuilding"
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning = [2,3,4] // Accounts for all "Piggy" NPCs which keep respawning till PigJosh dies. Once PigJosh dies all Piggy's despawn (but their HP remains)
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_all = util_concatArrays(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning)
+		const_REQUIRED_ENEMY_KILLS = 7
+		
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion))
+			&& measured(
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_REQUIRED_ENEMY_KILLS, (int_NPCdataIndex) {
+					if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, int_NPCdataIndex)) // If this is a respawning NPC: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+						return repeated(3, 
+							is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)	
+							&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, int_NPCdataIndex)) // ElseIf this is a non-respawning NPC: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+						return once(
+							is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)	
+							&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else util_throwError(format("NPCdataIndex [{0}] did not evaluate to any valid index", int_NPCdataIndex))
+				}))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)		
+		}),
 	// -------c_Multiplayer-------
 	}
 // #endregion ACH - triggers
