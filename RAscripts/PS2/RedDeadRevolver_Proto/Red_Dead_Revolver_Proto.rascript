@@ -172,6 +172,11 @@ memory_StructDefs = {
 			"8-bit:Equipped_WeaponID(non-functional)": {
 				"pointerChainOffsets": [0xC8]},
 		}},
+	"Struct:LevelZoneData.zone_crack01Roof_01": {
+		"pointerChainToMember": {
+			"BitFlag:IsRoofCrackOpen": {
+				"pointerChainOffsets": [0x194]},
+		}},
 	"Struct:NPCdata": {
 		"offsetToMember": {
 			"Pointer:NextNode_NPCdata": 0x188
@@ -247,6 +252,7 @@ memory_StructDefs = {
 			"Float:TimeSpentInLevel": {
 				"pointerChainOffsets": [0x4C]}
 		}}, 
+	
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -313,6 +319,7 @@ memory_addresses = {
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
+	"Pointer:LevelZoneData_A": {RELEASE_REGION_USA: 0x5e334c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},	
 	"Pointer:TimeSpentInLevel": {RELEASE_REGION_USA: 0x53cfa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -556,11 +563,6 @@ function current_PlayerLocation_Z(enum_releaseRegion) {
 		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-Z",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
 	}
-
-function is_PlayerLocation_Near(coordinates_target, int_nearRadiusThreshold, enum_releaseRegion) => // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
-	coordinates_target["X"] - int_nearRadiusThreshold <= current_PlayerLocation_X(enum_releaseRegion) && current_PlayerLocation_X(enum_releaseRegion) <= coordinates_target["X"] + int_nearRadiusThreshold
-	&& coordinates_target["Y"] - int_nearRadiusThreshold <= current_PlayerLocation_Y(enum_releaseRegion) && current_PlayerLocation_Y(enum_releaseRegion) <= coordinates_target["Y"] + int_nearRadiusThreshold
-	&& coordinates_target["Z"] - int_nearRadiusThreshold <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= coordinates_target["Z"] + int_nearRadiusThreshold
 // ----------------Character Animation---------------------
 CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
 CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
@@ -757,9 +759,10 @@ function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
 
 // #endregion HUD_AmmoHealth
 
-// ...........
-// ◦ LevelID ◦
-// '''''''''''
+// .............
+// ◦ LevelData ◦
+// '''''''''''''
+// #region LevelData
 // #region LevelID
 LEVEL_TrainingStage = "tng" 	// FullString: "lvl_tng"
 LEVEL_PrologueStage = "perf75"  // FullString: "lvl_perf75"
@@ -776,17 +779,78 @@ function is_Level(enum_levelID, enum_releaseRegion) {
 	const_offsetTo_UniqueLevelIdSubstring = 0x4
 	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
 	return ascii_string_equals(let_memAddr_levelID + const_offsetTo_UniqueLevelIdSubstring, enum_levelID)}
-// ----------------Point of Interest (POI)---------------------
-const_Level_POI_Coordinates = { // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
+// #endregion LevelID
+// #region Point of Interest (POI)
+const_Level_POI_Data = {
+	/* NOTE: Template DictObject(POI_data):
+		"string_POI_key": {"X": 0.0, "Y": 0.0, "Z": 0.0, "RadiusThreshold": sNULL},
+		*/
+	LEVEL_PrologueStage: {
+		"RoofCrack": {"X": -2.3, "Y": -8.1, "Z": 3.5, "RadiusThreshold": 1.0},
+		"UnderRoofCrack": {"X": -2.3, "Y": -8.1, "Z": 0.0, "RadiusThreshold": 1.0},
+		},
 	LEVEL_TrainingStage: { 
-		"WhiteChest": {"X": 0.25, "Y": -18.47, "Z": -0.65}, 
-		"BrokenCart": {"X": -22.18, "Y": -46.63, "Z": 0.14}
+		"Front_WhiteChest": {"X": 0.25, "Y": -18.5, "Z": -0.5, "RadiusThreshold": 1.5},
+		"near_BrokenCart": {"X": -22.0, "Y": -46.5, "Z": 0.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_Tombstone: { 
+		"Near_NativeCamps": {"X": -11, "Y": 27.0, "Z": 0.0, "RadiusThreshold": 7.0},
+		"Front_FlowerStall": {"X": 15.0, "Y": 2.5, "Z": 0.0, "RadiusThreshold": 1.7},
+		"Front_PotteryKiln": {"X": 27, "Y": -24.0, "Z": 0.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_FlashbackStage: { 
+		"On_Outhouse": {"X": -3.5, "Y": -3.5, "Z": 3.0, "RadiusThreshold": 1.0},
+		"On_RiverLogBridge": {"X": 26.5, "Y": -24.5, "Z": -8.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_FortStage: { 
+		"Near_Throne": {"X": -18.0, "Y": 0.0, "Z": 1.0, "RadiusThreshold": 2.5},
+		"In_LeftCastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_Mansion: { 
+		"On_Podium": {"X": 11.5, "Y": -63.0, "Z": 1.0, "RadiusThreshold": 1.5},
+		"Near_LionFountain": {"X": 31.5, "Y": -76.5, "Z": 1.0, "RadiusThreshold": 2.0},
+		"In_RoofAlcove": {"X": 24.5, "Y": -60.0, "Z": 7.5, "RadiusThreshold": 1.5},
+		"In_TrainStation": {"X": 11.5, "Y": -26.0, "Z": 1.0, "RadiusThreshold": 2.0},
 		},
 	}
-function is_PlayerNearPOI(enum_levelID, string_POI_key, float_radiusThreshold, enum_releaseRegion) => 
-	is_PlayerLocation_Near(const_Level_POI_Coordinates[enum_levelID][string_POI_key], float_radiusThreshold, enum_releaseRegion)
 
-// #endregion LevelID
+function get_POI_data(enum_levelID) =>
+	const_Level_POI_Data[enum_levelID]
+
+function is_PlayerNearPOI(enum_levelID, string_POI_key, enum_releaseRegion) {
+	let_POIdata_target = const_Level_POI_Data[enum_levelID][string_POI_key]
+	let_POI_X = let_POIdata_target["X"]
+	let_POI_Y = let_POIdata_target["Y"]
+	let_POI_Z = let_POIdata_target["Z"]
+	let_POI_RadiusThreshold = let_POIdata_target["RadiusThreshold"]
+
+	let_memAccessor_Player_X = current_PlayerLocation_X(enum_releaseRegion)
+	let_memAccessor_Player_Y = current_PlayerLocation_Y(enum_releaseRegion)
+	let_memAccessor_Player_Z = current_PlayerLocation_Z(enum_releaseRegion)
+	return
+			(let_POI_X - let_POI_RadiusThreshold) <= let_memAccessor_Player_X 		&& let_memAccessor_Player_X <= (let_POI_X + let_POI_RadiusThreshold)
+		&& 	(let_POI_Y - let_POI_RadiusThreshold) <= let_memAccessor_Player_Y 		&& let_memAccessor_Player_Y <= (let_POI_Y + let_POI_RadiusThreshold)
+		&& 	(let_POI_Z - let_POI_RadiusThreshold) <= let_memAccessor_Player_Z 		&& let_memAccessor_Player_Z <= (let_POI_Z + let_POI_RadiusThreshold)
+	}
+// #endregion Point of Interest (POI)
+// #region LevelZoneData
+function current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:LevelZoneData_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:LevelZoneData.zone_crack01Roof_01", "BitFlag:IsRoofCrackOpen", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prev_flagState_PrologueStage_RoofCrack(enum_releaseRegion) =>
+	prev(current_flagState_PrologueStage_RoofCrack(enum_releaseRegion))
+
+function is_PrologueStage_RoofCrack_open(enum_releaseRegion) =>
+	current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) == 1
+
+function on_flagState_PrologueStage_RoofCrack_toggleTrue(enum_releaseRegion) =>
+	current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) > prev_flagState_PrologueStage_RoofCrack(enum_releaseRegion)
+
+// #endregion LevelZoneData
+// #endregion LevelData
 
 // ...........
 // ◦ NPCdata ◦
@@ -1217,20 +1281,20 @@ achievements_coreData = {
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
 			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
-		// "a_PerfRoofFall": { // CONCEPT a_PerfRoofFall
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed"},
+		"a_PerfRoofFall": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
 		"a_EyeTng": { // VERIFIED
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest + near BrokenCart"},
-		// "a_EyeFlash": { // CONCEPT a_EyeFlash
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_flash: TipHat whilst standing in fire on roof of house + on top of fallen tree trunk in the river"},
-		// "a_EyeTrain": { // CONCEPT a_EyeTrain
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_train: TipHat whilst standing on the cliff ledge to the left of the train (get there by jumping on train roof then jump accross (spam jump button near cliff))"},
-		// "a_EyeTomb": { // CONCEPT a_EyeTomb
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_tomb: TipHat close to Indian corner of map"},
-		// "a_EyeFort": { // CONCEPT a_EyeFort
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_fort: TipHat near throne or near gatling gun"},
-		// "a_EyeMans": { // CONCEPT a_EyeMans
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_mans: TipHat whilst standing on podium + inside train station (side of Tombstone) + inside a small outlook "roofed alcove/nook" on the roof of the mansion"},
+			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
+		"a_EyeFlash": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
+		"a_EyeTrain": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
+		"a_EyeTomb": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
+		"a_EyeFort": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+		"a_EyeMans": { // VERIFIED
+			"id": 000000, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		// "a_EyeShootHng": { // CONCEPT a_EyeShootHng
 			// "id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of one of the 3 buildings (in succession without dropping down)"},
 		// "a_EyeShootShernite": { // CONCEPT a_EyeShootShernite
@@ -1240,8 +1304,7 @@ achievements_coreData = {
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinRed": { // CONCEPT a_WinRed
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
-		
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},		
 		// "a_WinNrdHeadshots": { // CONCEPT a_WinNrdHeadshots
 			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), headshots only"},
 		// "a_WinPigDynamite": { // CONCEPT a_WinPigDynamite
@@ -1672,49 +1735,7 @@ achievements_triggers = {
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
-	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_REQUIRED_LEVEL = LEVEL_TrainingStage
-		const_POI_COUNT = 2
-		const_NEAR_RADIUS_THRESHOLD_BrokenCart = 2.1
-		const_NEAR_RADIUS_THRESHOLD_WhiteChest = 1.2
-
-		let_requirement_IsPlayerNearPOI_BrokenCart = 
-			is_PlayerNearPOI(const_REQUIRED_LEVEL, "BrokenCart", const_NEAR_RADIUS_THRESHOLD_BrokenCart, enum_releaseRegion)
-		let_requirement_IsPlayerNearPOI_WhiteChest = 
-			is_PlayerNearPOI(const_REQUIRED_LEVEL, "WhiteChest", const_NEAR_RADIUS_THRESHOLD_WhiteChest, enum_releaseRegion)
-
-		let_requirement_OnTipHatNear_BrokenCart = 
-			let_requirement_IsPlayerNearPOI_BrokenCart
-			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
-		let_requirement_OnTipHatNear_WhiteChest = 
-			let_requirement_IsPlayerNearPOI_WhiteChest
-			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
-
-		return
-		// [1] ==== Alt Logic Group ==== 									-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
-			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& measured(tally(const_POI_COUNT, [
-				once(let_requirement_OnTipHatNear_BrokenCart),
-				once(let_requirement_OnTipHatNear_WhiteChest)
-				]))
-			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// [2] ==== Alt POI Trigger Indicator Group - BrokenCart ==== 		-> This group only exists to display a Trigger Indicator when the player is near the BrokenCart	
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
-				let_requirement_OnTipHatNear_BrokenCart))
-
-			&& let_requirement_IsPlayerNearPOI_BrokenCart
-			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// [3] ==== Alt POI Trigger Indicator Group - WhiteChest ==== 		-> This group only exists to display a Trigger Indicator when the player is near the WhiteChest	
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
-				let_requirement_OnTipHatNear_WhiteChest))
-			
-			&& let_requirement_IsPlayerNearPOI_WhiteChest
-			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// [4+5] ==== Alt Reset Groups ==== 								-> Reset when not in SinglePlayer Mode || not in correct Level
-			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
-		}),
+	
 	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: Coordinates + Shoving NPCs
 			- The frontside wall of the saloon is perpendicular to X-axis, thus Y-axis can be used as check; Going inside the saloon decreases the y coord; Going outside increases it
@@ -1784,7 +1805,184 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_Tombstone, enum_releaseRegion)		
 		}),
-
+	"a_PerfRoofFall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_PrologueStage
+		const_POI_KEY_RoofCrack = "RoofCrack"
+		const_POI_KEY_UnderRoofCrack = "UnderRoofCrack"
+		const_MAX_FRAMES_ALLOWED_TO_UNLOCK = 120 // min 4 seconds at 30 fps
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(repeated(const_MAX_FRAMES_ALLOWED_TO_UNLOCK, // ---PauseLock---> When player does NOT fall through crack in roof after it is open for xx frames
+				is_PrologueStage_RoofCrack_open(enum_releaseRegion)))
+			&& once( // ---> CheckIf Roof cracks whilst walking over it
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, const_POI_KEY_RoofCrack, enum_releaseRegion)
+				&& on_flagState_PrologueStage_RoofCrack_toggleTrue(enum_releaseRegion))
+			&& once( // ---> CheckIf player fell through crack, within xx seconds of it cracking open
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, const_POI_KEY_UnderRoofCrack, enum_releaseRegion)
+				&& is_PrologueStage_RoofCrack_open(enum_releaseRegion))
+			// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_TrainingStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_POI_DATA_On_CliffRidge = {
+			"BoundingBoxWall_X_neg": -10.0, "BoundingBoxWall_X_pos": -4.0,
+			// "BoundingBoxWall_Y_neg": sNULL "BoundingBoxWall_Y_pos": sNULL, // --> Infinite BoundingBoxSize on Y-axis
+			"BoundingBoxWall_Z_neg": 4.5, "BoundingBoxWall_Z_pos": 10.0}
+		return
+		// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			&& is_Level(LEVEL_Train, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)			
+			&& const_POI_DATA_On_CliffRidge["BoundingBoxWall_X_neg"] <= current_PlayerLocation_X(enum_releaseRegion) && current_PlayerLocation_X(enum_releaseRegion) <= const_POI_DATA_On_CliffRidge["BoundingBoxWall_X_pos"]
+			&& const_POI_DATA_On_CliffRidge["BoundingBoxWall_Z_neg"] <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= const_POI_DATA_On_CliffRidge["BoundingBoxWall_Z_pos"]
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		}),
+	"a_EyeTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_Tombstone
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4] ==== Alt POI Trigger Indicator Groups ==== 			-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [5+6] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeFlash": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_FlashbackStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeFort": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_FortStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [4+5] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeMans": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_Mansion
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 4 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	// "a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
+	// "a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
+	// "a_EyeShootSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
 	// -------c_Multiplayer-------
 	}
 // #endregion ACH - triggers
@@ -1818,9 +2016,18 @@ achievements_titles = {
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
-	"a_EyeTng": 				{"en": "Trailblazer"},
+	"a_PerfRoofFall":			{"en": "xxxxxxxx"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
 	"a_HorseTomb":				{"en": "The Tombstone Stampede"},
+	"a_EyeTng": 				{"en": "Trailblazer"},
+	"a_EyeFlash":				{"en": "xxxxxxxx"},
+	"a_EyeTrain":				{"en": "xxxxxxxx"},
+	"a_EyeTomb":				{"en": "xxxxxxxx"},
+	"a_EyeFort":				{"en": "xxxxxxxx"},
+	"a_EyeMans":				{"en": "xxxxxxxx"},
+	"a_EyeShootHng":			{"en": "xxxxxxxx"},
+	"a_EyeShootShernite":		{"en": "xxxxxxxx"},
+	"a_EyeShootSher70":			{"en": "xxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -1842,9 +2049,18 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
-	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
+	"a_PerfRoofFall":			{"en": "xxxxxxxx"},
 	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
+	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
+	"a_EyeFlash":				{"en": "xxxxxxxx"},
+	"a_EyeTrain":				{"en": "xxxxxxxx"},
+	"a_EyeTomb":				{"en": "xxxxxxxx"},
+	"a_EyeFort":				{"en": "xxxxxxxx"},
+	"a_EyeMans":				{"en": "xxxxxxxx"},
+	"a_EyeShootHng":			{"en": "xxxxxxxx"},
+	"a_EyeShootShernite":		{"en": "xxxxxxxx"},
+	"a_EyeShootSher70":			{"en": "xxxxxxxx"},
 	}
 // #endregion ACH - text
 
