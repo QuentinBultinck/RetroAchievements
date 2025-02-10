@@ -152,6 +152,10 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
+			"BitFlag:IsHorseHugging": { 
+				"pointerChainOffsets": [0x13C, 0x64, 0x144, 0x40, 0xFFFFFFD4, 0x0]},
+			"Lower4:HorseHuggingState": { 
+				"pointerChainOffsets": [0x13C, 0x64, 0x144, 0x40, 0xFFFFFFD4, 0x4]},
 			"32-bit:ShotsFired": {
 				"pointerChainOffsets": [0x170, 0x0]},
 			"32-bit:ShotsHitBody": {
@@ -579,72 +583,6 @@ function current_PlayerLocation_Z(enum_releaseRegion) {
 		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-Z",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
 	}
-// ----------------Character Animation---------------------
-CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
-CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
-
-function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "Float:AnimationKeyFrame(functional)",
-		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
-	}
-function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
-	prev(current_CharacterAnimationKeyFrame(enum_releaseRegion))
-
-function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
-	return 
-		is_ASCII_EqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
-	}
-
-function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
-	return is_ASCII_notEqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)}
-
-function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-
-function is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion) =>
-	is_CharacterAnimation_inactive(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-
-function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
-
-function on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished = 0.6
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
-	}
-
-function on_TippingHat_CharacterAnimation_finish(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-	}
-
-function on_Dodge_CharacterAnimation_start(enum_releaseRegion) => 
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
-	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
-
-function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-	}
-
 // ----------------Horseback---------------------
 function is_PlayerOnHorseback(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -682,6 +620,113 @@ function prev_PlayerOnHorsebackLocation_Z(enum_releaseRegion) =>
 function on_PlayerOnHorsebackLocation_move_xy(enum_releaseRegion) =>
 	current_PlayerOnHorsebackLocation_X(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_X(enum_releaseRegion)
 	|| current_PlayerOnHorsebackLocation_Y(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_Y(enum_releaseRegion)
+
+// ----------------Character Animation---------------------
+CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
+CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
+
+function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:AnimationKeyFrame(functional)",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
+	prev(current_CharacterAnimationKeyFrame(enum_releaseRegion))
+
+function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
+	}
+
+function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return is_ASCII_notEqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)}
+
+function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+
+function is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion) =>
+	is_CharacterAnimation_inactive(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+
+function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished = 0.6
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+	}
+
+function on_TippingHat_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+
+function on_Dodge_CharacterAnimation_start(enum_releaseRegion) => 
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+// ----------------HorseCover Animation---------------------
+function current_flagState_IsHorseHugging(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsHorseHugging",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prev_flagState_IsHorseHugging(enum_releaseRegion) =>
+	prev(current_flagState_IsHorseHugging(enum_releaseRegion))
+
+function is_HorseHugging(enum_releaseRegion) =>
+	current_flagState_IsHorseHugging(enum_releaseRegion) == 1
+
+HORSE_HUGGING_STATE_Duck = 0x0
+HORSE_HUGGING_STATE_HangRight = 0x1
+HORSE_HUGGING_STATE_HangLeft = 0x2
+function current_HorseHuggingState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Lower4:HorseHuggingState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = low4)}
+	
+function prev_HorseHuggingState(enum_releaseRegion) =>
+	prev(current_HorseHuggingState(enum_releaseRegion))
+
+function is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion) =>
+	is_HorseHugging(enum_releaseRegion)
+	&& current_HorseHuggingState(enum_releaseRegion) >= HORSE_HUGGING_STATE_HangRight
+	&& current_HorseHuggingState(enum_releaseRegion) <= HORSE_HUGGING_STATE_HangLeft
+
+function on_HorseHuggingHang_CharacterAnimation_activate(enum_releaseRegion) =>
+	is_HorseHugging(enum_releaseRegion)
+	&& current_HorseHuggingState(enum_releaseRegion) >= HORSE_HUGGING_STATE_HangRight
+	&& current_HorseHuggingState(enum_releaseRegion) <= HORSE_HUGGING_STATE_HangLeft
+	&& prev_HorseHuggingState(enum_releaseRegion) == HORSE_HUGGING_STATE_Duck
 
 // ----------------SinglePlayer Specific---------------------
 function current_SinglePlayer_Health(enum_releaseRegion) {
@@ -1302,8 +1347,8 @@ achievements_coreData = {
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
-		// "a_HorseCover": { // CONCEPT a_HorseCover
-			// "id": 000000, "points": 0000000, "devInfo": "Use a horse as cover"},
+		"a_HorseCover": { // VERIFIED
+			"id": 498510, "points": 0000000, "devInfo": "Take cover whilst on horseback"},
 		"a_SaloonThrow": { // VERIFIED
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
@@ -1756,13 +1801,28 @@ achievements_triggers = {
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
 		&& isNot_Loading(enum_releaseRegion)
-
 		&& once(
 			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion))
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
 	
+	"a_HorseCover": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_HOLD_FRAME_COUNT = 120 // Player should hold this animation input for a few seconds to get the PlayerCharacter in the full "cover" stance, otherwise Animation won't show correctly.
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
+			&& isNot_Loading(enum_releaseRegion)
+			&& once(
+				never(!is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion)) // ---ResetNextIf---
+				&& on_HorseHuggingHang_CharacterAnimation_activate(enum_releaseRegion))
+			&& trigger_when(
+				repeated(const_HOLD_FRAME_COUNT,
+					never(!is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion)) // ---ResetNextIf---
+					&& is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion))
+				)
+		}),
 	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: Coordinates + Shoving NPCs
 			- The frontside wall of the saloon is perpendicular to X-axis, thus Y-axis can be used as check; Going inside the saloon decreases the y coord; Going outside increases it
@@ -2115,6 +2175,7 @@ achievements_titles = {
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
+	"a_HorseCover": 			{"en": "Low Profile Rider"},
 	"a_PerfRoofFall":			{"en": "Drop-In Lodging"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
 	"a_HorseTomb":				{"en": "The Tombstone Stampede"},
@@ -2148,6 +2209,7 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
+	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
 	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
 	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
