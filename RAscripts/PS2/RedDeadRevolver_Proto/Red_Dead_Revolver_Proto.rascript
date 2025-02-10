@@ -1309,25 +1309,25 @@ achievements_coreData = {
 		"a_HorseTomb": { // VERIFIED
 			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
 		"a_PerfRoofFall": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
+			"id": 498497, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
 		"a_EyeTng": { // VERIFIED
 			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
 		"a_EyeFlash": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
+			"id": 498489, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
 		"a_EyeTrain": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
+			"id": 498496, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
 		"a_EyeTomb": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
+			"id": 498495, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
 		"a_EyeFort": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+			"id": 498490, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
+			"id": 498491, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		"a_EyeShootHng": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
+			"id": 498492, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
 		"a_EyeShootShernite": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
+			"id": 498494, "points": 0000000, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
 		"a_EyeShootSher70": { // VERIFIED
-			"id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
+			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinRed": { // CONCEPT a_WinRed
@@ -2016,7 +2016,7 @@ achievements_triggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& isNot_Loading(enum_releaseRegion)
 			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_Roofs, enum_releaseRegion)
-			&& trigger_when(memUtil_alwaysFalse(enu9m_releaseRegion))
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
@@ -2115,18 +2115,18 @@ achievements_titles = {
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
-	"a_PerfRoofFall":			{"en": "xxxxxxxx"},
+	"a_PerfRoofFall":			{"en": "Drop-In Lodging"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
 	"a_HorseTomb":				{"en": "The Tombstone Stampede"},
-	"a_EyeTng": 				{"en": "Trailblazer"},
-	"a_EyeFlash":				{"en": "xxxxxxxx"},
-	"a_EyeTrain":				{"en": "xxxxxxxx"},
-	"a_EyeTomb":				{"en": "xxxxxxxx"},
-	"a_EyeFort":				{"en": "xxxxxxxx"},
-	"a_EyeMans":				{"en": "xxxxxxxx"},
-	"a_EyeShootHng":			{"en": "xxxxxxxx"},
-	"a_EyeShootShernite":		{"en": "xxxxxxxx"},
-	"a_EyeShootSher70":			{"en": "xxxxxxxx"},
+	"a_EyeTng": 				{"en": "Lessons of the Trial"},
+	"a_EyeFlash":				{"en": "Snowy Reverence"},
+	"a_EyeTrain":				{"en": "Dramatic Heights"},
+	"a_EyeTomb":				{"en": "A Town of Stories"},
+	"a_EyeFort":				{"en": "The King's Vantage"},
+	"a_EyeMans":				{"en": "Estate of Grace"},
+	"a_EyeShootHng":			{"en": "Revolver's Rain"},
+	"a_EyeShootShernite":		{"en": "Gunslinger's Stage"},
+	"a_EyeShootSher70":			{"en": "Marksman's Perch"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -2145,21 +2145,21 @@ achievements_descriptions = {
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos, time to bring them bullets. Drop 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
 
-	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
+	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
-	"a_PerfRoofFall":			{"en": "xxxxxxxx"},
+	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
 	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
-	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
-	"a_EyeFlash":				{"en": "xxxxxxxx"},
-	"a_EyeTrain":				{"en": "xxxxxxxx"},
-	"a_EyeTomb":				{"en": "xxxxxxxx"},
-	"a_EyeFort":				{"en": "xxxxxxxx"},
-	"a_EyeMans":				{"en": "xxxxxxxx"},
-	"a_EyeShootHng":			{"en": "xxxxxxxx"},
-	"a_EyeShootShernite":		{"en": "xxxxxxxx"},
-	"a_EyeShootSher70":			{"en": "xxxxxxxx"},
+	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat in front of a white chest and broken cart to reflect on what you've learned"},
+	"a_EyeFlash":				{"en": "Memories drift like snow in lvl_flash, fleeting yet heavy. Tip your hat atop the River Log Bridge and the Outhouse—a quiet salute to the past, and the road that led you here"},
+	"a_EyeTrain":				{"en": "The best views come with a little risk. In the Train Stage hop on the train to reach the Cliff Ridge, then tip your hat—because nothing says 'I made it' like a dramatic pose above a moving locomotive"},
+	"a_EyeTomb":				{"en": "A town like in the Tombstone Stage ain't just gunfights and dust storms—it's got charm if you know where to look. Tip your hat near the Native Camps, the Flower Stall, and the Pottery Kiln, and take in the sights like a true cultured pioneer"},
+	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and atop the Left Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
+	"a_EyeMans":				{"en": "The \"Mansion Stage\" is fancy, shame about the lack of hospitality. Tip your hat on the Podium, by the Lion Fountain, in the Train Station, and inside the Roof Alcove—because if you're gonna wander through a villain's estate, might as well do it in style"},
+	"a_EyeShootHng":			{"en": "In the \"Title Stage\" take the high ground and take down 5 enemies from atop any of the buildings—because nothing says 'top of the food chain' like a clean shot from the highest point!"},
+	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
+	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
 	}
 // #endregion ACH - text
 
