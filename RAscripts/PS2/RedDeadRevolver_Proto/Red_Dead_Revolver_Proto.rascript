@@ -119,6 +119,8 @@ memory_StructDefs = {
 		"pointerChainToMember": {
 			"BitFlag:IsMenuDisplayed": { 
 				"pointerChainOffsets": [0x28]},
+			"Lower4:HighlightedMenuItem_A": { 
+				"pointerChainOffsets": [0x144]}
 		}},
 	"Struct:Coordinates": {
 		"offsetToMember": {
@@ -329,7 +331,8 @@ memory_addresses = {
 	"Lower4:TeamID-Player2": {RELEASE_REGION_USA: 0x9129b8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Lower4:TeamID-Player3": {RELEASE_REGION_USA: 0x912a20, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Lower4:TeamID-Player4": {RELEASE_REGION_USA: 0x912a88, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	"Lower4:PlayerCount": {RELEASE_REGION_USA: 0x42171c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TotalPlayerCount": {RELEASE_REGION_USA: 0x42171c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:HumanPlayerCount": {RELEASE_REGION_USA: 0x421720, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"8-bit:Showdown_Kills-Player1": {RELEASE_REGION_USA: 0x421868, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"8-bit:Showdown_Kills-Player2": {RELEASE_REGION_USA: 0x42191c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -338,6 +341,9 @@ memory_addresses = {
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
+	"Bitset(byte1):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488182, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Bitset(byte2):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488183, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
 	"Pointer:LevelZoneData_A": {RELEASE_REGION_USA: 0x5e334c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},	
@@ -446,6 +452,30 @@ function isNot_Loading(enum_releaseRegion) {
 	const_STATE_IsLoading_false = 0xFF
 	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_false}
 
+// ----------------PlayerInput---------------------
+CONTROLLER_1 = 1
+CONTROLLER_2 = 2
+
+function current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit6(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_X_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+	
+function current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte1):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit5(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_O_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
 // ----------------MenuData---------------------
 MENU_MainMenu = "main"
 MENU_LevelSelectionMenu = "1000"
@@ -456,8 +486,10 @@ MENU_PauseMenu = "pause"
 
 function is_MenuID(enum_menuID, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
-	let_offsetTo_MenuID = memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
-	return is_ASCII_EqualTo(dword(let_memAddr_basePointer) + let_offsetTo_MenuID, enum_menuID)}
+	let_pointerChainTo_ASCII = 
+		dword(memory_getAddress("Pointer:MenuData", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCII, enum_menuID)}
 
 function on_MenuID_changeTo(enum_menuID, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
@@ -483,6 +515,22 @@ function on_Menu_render(enum_menuID, enum_releaseRegion) =>
 	&& current_FlagState_IsMenuDisplayed(enum_releaseRegion) == 1
 	&& prev_FlagState_IsMenuDisplayed(enum_releaseRegion) == 0
 	
+function current_HighLightedMenuItem_A(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:MenuData", "Lower4:HighlightedMenuItem_A", let_memAddr_basePointer)}
+
+function on_PauseMenu_reset(enum_releaseRegion) {
+	const_PAUSE_MENU_HIGHLIGHT_ID_Reset = 0x2 // PauseMenu HighlightItems start counting from 0x1 up to 0x4; "Reset" is second from top
+	return 
+		is_Menu_displayed(MENU_PauseMenu, enum_releaseRegion)
+		&& current_HighLightedMenuItem_A(enum_releaseRegion) == const_PAUSE_MENU_HIGHLIGHT_ID_Reset
+		&& (
+			on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+			|| on_PlayerInput_O_press(CONTROLLER_1, enum_releaseRegion)
+			)
+		}
+
 // ----------------TimeSpentInLevel---------------------
 function current_TimeSpentInLevel(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:TimeSpentInLevel", enum_releaseRegion)
@@ -512,7 +560,10 @@ function on_Level_startORreset(enum_releaseRegion) =>
 // #region HUD_AmmoHealth
 WEAPON_SingleRevolver = 0x0
 WEAPON_DualRevolvers = 0x1
+WEAPON_Shotgun = 0x2
 WEAPON_Rifle = 0x3
+WEAPON_Knife = 0x4
+WEAPON_Dynamite = 0x5
 
 function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -807,10 +858,13 @@ function on_MPround_start(enum_releaseRegion) =>
 function on_MPround_reset(enum_releaseRegion) =>
 	on_TimeSpentInLevel_reset(enum_releaseRegion)
 
-function current_PlayerCount(enum_releaseRegion) =>
-	low4(memory_getAddress("Lower4:PlayerCount", enum_releaseRegion))
+function current_TotalPlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:TotalPlayerCount", enum_releaseRegion))
 
-function is_MPplayer_Character(enum_playerID, enum_characterID, enum_shootingGalleryNameState) {
+function current_HumanPlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:HumanPlayerCount", enum_releaseRegion))
+
+function is_MPplayer_Character(enum_playerID, enum_characterID, enum_releaseRegion) {
 	let_string_addrKey = format("ASCII:CharacterModelID-Player{0}(preferred)", enum_playerID)
 	let_memAddr_ASCII = memory_getAddress(let_string_addrKey, enum_releaseRegion)
 	return is_ASCII_EqualTo(let_memAddr_ASCII, enum_characterID)}
@@ -824,14 +878,14 @@ function current_MPplayer_Team(enum_playerID, enum_releaseRegion) {
 	return low4(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
 
 function is_MPteams_FreeForAll(enum_releaseRegion) =>
-	current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_2, enum_releaseRegion)
-	&& current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_3, enum_releaseRegion)
-	&& current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+	current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
 
-	&& current_MPplayer_Team(PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(PLAYER_3, enum_releaseRegion)
-	&& current_MPplayer_Team(PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
 
-	&& current_MPplayer_Team(PLAYER_3, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
 
 function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
 	let_string_addrKey = format("8-bit:Showdown_Kills-Player{0}", enum_playerID)
@@ -840,11 +894,14 @@ function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
 function prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
 	prev(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
 
+function on_MPplayer_ShowdownKills_Increment(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion)
+
 function on_MPplayer_winGame(enum_playerID, enum_releaseRegion) {
 	const_KILLS_REQUIRED_FOR_WIN = 2
 	return 
 		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
-		prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
+		&& prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
 
 function current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) {
 	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
@@ -860,6 +917,45 @@ function is_MPplayer_EquippedWeaponID(enum_playerID, enum_weapon, enum_releaseRe
 function on_MPplayer_EquippedWeaponID_change(enum_playerID, enum_releaseRegion) =>
 	current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) != prev_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion)
 
+function current_MPplayer_Health(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:PlayerHealth",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function prev_MPplayer_Health(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_Health(enum_playerID, enum_releaseRegion))
+
+function current_MPplayer_MaxHealth(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:PlayerMaxHealth",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function is_MPplayer_Health_atMax(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) == current_MPplayer_MaxHealth(enum_playerID, enum_releaseRegion)
+
+function on_MPplayer_Health_death(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) == 0.0
+	&& prev_MPplayer_Health(enum_playerID, enum_releaseRegion) > 0.0
+
+function on_MPplayer_Health_takeDamage(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) < prev_MPplayer_Health(enum_playerID, enum_releaseRegion)
+
+function current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:ShotsFired",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function prev_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion))
+
+function on_MPplayer_ShotsFired_increment(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion)
 
 // #endregion Multiplayer PlayerData
 // #endregion PlayerData
@@ -1442,7 +1538,7 @@ achievements_coreData = {
 		// "a_DeadEyeOne": { // CONCEPT a_DeadEyeOne
 			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability succesfully (hitting at least one enemy)"},
 		// "a_DeadEyeMaster": { // CONCEPT a_DeadEyeMaster
-			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability (hit at least 5 different enemies with one salvo)"},
+			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability (hit a full SingleRevolver salvo)"},
 		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
@@ -1475,16 +1571,16 @@ achievements_coreData = {
 			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
-		// "a_WinRed": { // CONCEPT a_WinRed
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (red), xx 1v1 rounds consecutively, 100% accuracy"},		
-		// "a_WinNrdHeadshots": { // CONCEPT a_WinNrdHeadshots
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), xx free-for-all rounds consecutively, headshots only"},
-		// "a_WinDcgDynamite": { // CONCEPT a_WinDcgDynamite
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (dcg), 1 free-for-all round using only dynamite (melee allowed)"},
-		// "a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (bby), 1 free-for-all round using only knives (melee allowed)"},
-		// "a_WinMskDeathless": { // CONCEPT a_WinMskDeathless
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (msk), xx free-for-all rounds consecutively, without dying"},
+		"a_WinRed": { // CONCEPT a_WinRed
+			"id": 000000, "points": 0000000, "devInfo": "Win as (red), 3x 1v1 rounds consecutively"},
+		"a_WinNrdDeathless": { // CONCEPT a_WinNrdDeathless
+			"id": 000000, "points": 0000000, "devInfo": "Win as (nrd), 5x free-for-all rounds consecutively, without dying once"},
+		"a_WinDcgDynamite": { // CONCEPT a_WinDcgDynamite
+			"id": 000000, "points": 0000000, "devInfo": "Win as (dcg), 2x free-for-all round, killing only with dynamite (melee allowed)"},
+		"a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
+			"id": 000000, "points": 0000000, "devInfo": "Win as (bby), 2x free-for-all round, killing only with knives (melee allowed)"},
+		"a_WinMskHitless": { // CONCEPT a_WinMskHitless
+			"id": 000000, "points": 0000000, "devInfo": "Win as (msk), 3x free-for-all round, without getting hit"},
 		}
 	}
 // -------------------------------------
@@ -1896,6 +1992,11 @@ achievements_triggers = {
 			&& current_SinglePlayer_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
 			&& prev_SinglePlayer_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
 		}),	
+	"a_DeadEyeMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()
+		),
 	"a_TipHat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 		never(
@@ -2253,7 +2354,281 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)		
 		}),
-	// -------c_Multiplayer-------
+	// -------c_Multiplayer------
+	"a_WinRed": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: In 1v1, player can't pick same team as the other opponent 
+		const_REQUIRED_CHARACTER = CHARACTER_Red
+		const_REQUIRED_ROUND_WINS = 3
+		const_REQUIRED_PLAYER_COUNT = 2
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion))
+		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinNrdDeathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_SeniorRed
+		const_REQUIRED_ROUND_WINS = 5
+		const_REQUIRED_PLAYER_COUNT = 4
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer dies
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_death(MP_PLAYER_1, enum_releaseRegion)))
+
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer dies
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_death(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinDcgDynamite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_DancingGirl
+		const_REQUIRED_ROUND_WINS = 2
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Dynamite
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+					&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinBabyKnife": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_Baby
+		const_REQUIRED_ROUND_WINS = 2
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Knife
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+					&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinMskHitless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_Indian
+		const_REQUIRED_ROUND_WINS = 3
+		const_REQUIRED_PLAYER_COUNT = 4
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer takes damage
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)))
+
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer takes damage
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -2303,10 +2678,10 @@ achievements_titles = {
 	"a_EyeShootSher70":			{"en": "Marksman's Perch"},
 	
 	"a_WinRed": 				{"en": "xxxxxxxxx"},
-	"a_WinNrdHeadshots": 		{"en": "xxxxxxxxx"},
+	"a_WinNrdDeathless": 		{"en": "xxxxxxxxx"},
 	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
 	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
-	"a_WinMskDeathless": 		{"en": "xxxxxxxxx"},
+	"a_WinMskHitless": 			{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -2345,10 +2720,10 @@ achievements_descriptions = {
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
 	
 	"a_WinRed": 				{"en": "xxxxxxxxx"},
-	"a_WinNrdHeadshots": 		{"en": "xxxxxxxxx"},
+	"a_WinNrdDeathless": 		{"en": "xxxxxxxxx"},
 	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
 	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
-	"a_WinMskDeathless": 		{"en": "xxxxxxxxx"},
+	"a_WinMskHitless": 			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
 
