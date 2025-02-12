@@ -316,7 +316,25 @@ memory_addresses = {
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player1(preferred)": {RELEASE_REGION_USA: 0x912954, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player2(preferred)": {RELEASE_REGION_USA: 0x9129bc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player3(preferred)": {RELEASE_REGION_USA: 0x912a24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player4(preferred)": {RELEASE_REGION_USA: 0x912a8c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player1(preferred)": {RELEASE_REGION_USA: 0x912968, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player2(preferred)": {RELEASE_REGION_USA: 0x9129d0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player3(preferred)": {RELEASE_REGION_USA: 0x912a38, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player4(preferred)": {RELEASE_REGION_USA: 0x912aa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
+	"Lower4:TeamID-Player1": {RELEASE_REGION_USA: 0x912950, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player2": {RELEASE_REGION_USA: 0x9129b8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player3": {RELEASE_REGION_USA: 0x912a20, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player4": {RELEASE_REGION_USA: 0x912a88, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:PlayerCount": {RELEASE_REGION_USA: 0x42171c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	
+	"8-bit:Showdown_Kills-Player1": {RELEASE_REGION_USA: 0x421868, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player2": {RELEASE_REGION_USA: 0x42191c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player3": {RELEASE_REGION_USA: 0x4219d0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player4": {RELEASE_REGION_USA: 0x421a84, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -763,7 +781,87 @@ function prev_SinglePlayer_Money(enum_releaseRegion) =>
 	prev(current_SinglePlayer_Money(enum_releaseRegion))
 
 // ----------------Multiplayer Specific---------------------
+// #region Multiplayer PlayerData
+MP_PLAYER_1 = 1
+MP_PLAYER_2 = 2
+MP_PLAYER_3 = 3
+MP_PLAYER_4 = 4
 
+TEAM_Red = 0
+TEAM_Blue = 1
+TEAM_Yellow = 2
+TEAM_Green = 3
+
+CHARACTER_TrainingRed = "trd"
+CHARACTER_SnowRed = "yrd"
+CHARACTER_SeniorRed = "nrd"
+CHARACTER_Red = "red"
+CHARACTER_PigJosh = "pgj"
+CHARACTER_Indian = "msk"
+CHARACTER_Baby = "bby"
+CHARACTER_DancingGirl = "dcg"
+
+function on_MPround_start(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start(enum_releaseRegion)
+
+function on_MPround_reset(enum_releaseRegion) =>
+	on_TimeSpentInLevel_reset(enum_releaseRegion)
+
+function current_PlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:PlayerCount", enum_releaseRegion))
+
+function is_MPplayer_Character(enum_playerID, enum_characterID, enum_shootingGalleryNameState) {
+	let_string_addrKey = format("ASCII:CharacterModelID-Player{0}(preferred)", enum_playerID)
+	let_memAddr_ASCII = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return is_ASCII_EqualTo(let_memAddr_ASCII, enum_characterID)}
+
+function is_MPplayer_CPUcontrolled(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("ASCII:AIsetting-Player{0}(preferred)", enum_playerID)
+	dword(memory_getAddress(let_string_addrKey, enum_releaseRegion)) != 0x0} // If zeroed out => HumanControlled; Else CPUcontrolled
+
+function current_MPplayer_Team(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Lower4:TeamID-Player{0}", enum_playerID)
+	return low4(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function is_MPteams_FreeForAll(enum_releaseRegion) =>
+	current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_2, enum_releaseRegion)
+	&& current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+
+	&& current_MPplayer_Team(PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+
+	&& current_MPplayer_Team(PLAYER_3, enum_releaseRegion) != current_MPplayer_Team(PLAYER_4, enum_releaseRegion)
+
+function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("8-bit:Showdown_Kills-Player{0}", enum_playerID)
+	return byte(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
+
+function on_MPplayer_winGame(enum_playerID, enum_releaseRegion) {
+	const_KILLS_REQUIRED_FOR_WIN = 2
+	return 
+		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
+		prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
+
+function current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
+
+function prev_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion))
+
+function is_MPplayer_EquippedWeaponID(enum_playerID, enum_weapon, enum_releaseRegion) =>
+	current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) == enum_weapon
+
+function on_MPplayer_EquippedWeaponID_change(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) != prev_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion)
+
+
+// #endregion Multiplayer PlayerData
 // #endregion PlayerData
 
 // .............
@@ -1341,8 +1439,10 @@ achievements_coreData = {
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
 			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
-		// "a_DeadEye": { // CONCEPT a_DeadEye
-			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability to hit multiple enemies in quick succession??"},
+		// "a_DeadEyeOne": { // CONCEPT a_DeadEyeOne
+			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability succesfully (hitting at least one enemy)"},
+		// "a_DeadEyeMaster": { // CONCEPT a_DeadEyeMaster
+			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability (hit at least 5 different enemies with one salvo)"},
 		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
@@ -1376,13 +1476,15 @@ achievements_coreData = {
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		// "a_WinRed": { // CONCEPT a_WinRed
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},		
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (red), xx 1v1 rounds consecutively, 100% accuracy"},		
 		// "a_WinNrdHeadshots": { // CONCEPT a_WinNrdHeadshots
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), headshots only"},
-		// "a_WinPigDynamite": { // CONCEPT a_WinPigDynamite
-			// "id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite as Pig Josh"},
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), xx free-for-all rounds consecutively, headshots only"},
+		// "a_WinDcgDynamite": { // CONCEPT a_WinDcgDynamite
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (dcg), 1 free-for-all round using only dynamite (melee allowed)"},
 		// "a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
-			// "id": 000000, "points": 0000000, "devInfo": "Win match using only knives as baby"},
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (bby), 1 free-for-all round using only knives (melee allowed)"},
+		// "a_WinMskDeathless": { // CONCEPT a_WinMskDeathless
+			// "id": 000000, "points": 0000000, "devInfo": "Win as (msk), xx free-for-all rounds consecutively, without dying"},
 		}
 	}
 // -------------------------------------
@@ -1432,6 +1534,15 @@ function AchGenerate_3x_AltResetGroups_SinglePlayerLevel(enum_levelID, enum_rele
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_Level_startORreset(enum_releaseRegion))
+
+function AchGenerate_TallyOnce_CheckIf_MultiplayerRoundEnds(enum_releaseRegion) =>
+	tally(1, [ // ---Tally---> OrNext: CheckIf any players has won the round
+		once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))]
+	)
+
 // #endregion ACH - trigger generators
 
 // ========================
@@ -2173,6 +2284,8 @@ achievements_titles = {
 	"a_ChallengeSher70": 		{"en": "Sheriff by Sunrise"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
+	"a_DeadEyeOne": 			{"en": "xxxxxxxxx"},
+	"a_DeadEyeMaster": 			{"en": "xxxxxxxxx"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
 	"a_HorseCover": 			{"en": "Low Profile Rider"},
@@ -2188,6 +2301,12 @@ achievements_titles = {
 	"a_EyeShootHng":			{"en": "Revolver's Rain"},
 	"a_EyeShootShernite":		{"en": "Gunslinger's Stage"},
 	"a_EyeShootSher70":			{"en": "Marksman's Perch"},
+	
+	"a_WinRed": 				{"en": "xxxxxxxxx"},
+	"a_WinNrdHeadshots": 		{"en": "xxxxxxxxx"},
+	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
+	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
+	"a_WinMskDeathless": 		{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -2196,7 +2315,7 @@ achievements_descriptions = {
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
 	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
-	"a_CompleteHng": 			{"en": "Once all outlaws in the \"Title Stage\" have been vanquished, prove your worth and earn Rusty's respect"},
+	"a_CompleteHng": 			{"en": "Prove you worth to your loyal companion, Rusty, in the \"Title Stage\" by vanquishing all six outlaws"},
 	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang in the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
 	"a_CompleteSher70": 		{"en": "Butcher Pig's gang of outlaws during the \"Sheriff Day Stage\" and earn an old veteran's admiration for restoring peace to his town"},
 
@@ -2207,6 +2326,8 @@ achievements_descriptions = {
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos, time to bring them bullets. Drop 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
+	"a_DeadEyeOne": 			{"en": "xxxxxxxxx"},
+	"a_DeadEyeMaster": 			{"en": "xxxxxxxxx"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
@@ -2222,6 +2343,12 @@ achievements_descriptions = {
 	"a_EyeShootHng":			{"en": "In the \"Title Stage\" take the high ground and take down 5 enemies from atop any of the buildings—because nothing says 'top of the food chain' like a clean shot from the highest point!"},
 	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
+	
+	"a_WinRed": 				{"en": "xxxxxxxxx"},
+	"a_WinNrdHeadshots": 		{"en": "xxxxxxxxx"},
+	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
+	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
+	"a_WinMskDeathless": 		{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
 

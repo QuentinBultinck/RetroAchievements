@@ -75,7 +75,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
     🏆 Single Player Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
 </h1>
 
-The achievements in this category require the player to complete tasks all levels that feature significant content. While only half of the levels meet this criterion, don’t worry—mastering this set will still require the player to visit all levels. For more details, refer to the achievement categories: [Single Player Challenge Achievements](#c_SPChallenge) and [Single Player Bonus Achievements](#c_SPbonus)
+The achievements in this category require the player to visit in all levels which feature "significant" content. While only half of the levels meet this criterion, don’t worry—mastering this set will still require the player to visit all levels. For more details, refer to the achievement categories: [Single Player Challenge Achievements](#c_SPChallenge) and [Single Player Bonus Achievements](#c_SPbonus)
 
 > [!NOTE]
 > ***"Beaten"* Status**: Since all levels in the LevelSelectionMenu are unlocked by default, no achievement is tied to a *"Win Condition"*.
