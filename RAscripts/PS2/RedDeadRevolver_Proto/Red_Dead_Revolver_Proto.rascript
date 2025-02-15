@@ -55,7 +55,6 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
-	// TODO RamDig - Find a way to ID if player on horseback is taking cover/hugging horse + implement achievement showcasing this feature 
 */
 
 // #endregion DEVELOPER NOTES
@@ -166,6 +165,13 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x170, 0x30]},
 			"32-bit:Kills": {
 				"pointerChainOffsets": [0x170, 0x5C]},
+			"BitFlag:IsAimingModeActive(preferred)": {
+				"pointerChainOffsets": [0x208]},
+			// -------RapidFireMode-------
+			"BitFlag:IsRapidFireModeActive": {
+				"pointerChainOffsets": [0x6DC, 0x140]},
+			"32-bit:RapidFireMode_TargetsPainted": {
+				"pointerChainOffsets": [0x474]},
 			// -------Struct:HUD_AmmoHealth-------
 			"Float:PlayerHealth(display)": {
 				"pointerChainOffsets": [0x4E8, 0x74]},
@@ -476,6 +482,17 @@ function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
 function on_PlayerInput_O_press(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 
+function current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit3(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_R1_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
+
 // ----------------MenuData---------------------
 MENU_MainMenu = "main"
 MENU_LevelSelectionMenu = "1000"
@@ -761,6 +778,41 @@ function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
 		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
 		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
 	}
+// ----------------RapidFireMode---------------------
+function current_flagState_IsAimingModeActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsAimingModeActive(preferred)",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function is_AimingMode_active(enum_releaseRegion) =>
+	current_flagState_IsAimingModeActive(enum_releaseRegion) == 1
+
+function current_flagState_IsRapidFireModeActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsRapidFireModeActive",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prior_flagState_IsRapidFireModeActive(enum_releaseRegion) =>
+	prior(current_flagState_IsRapidFireModeActive(enum_releaseRegion))
+
+function prev_flagState_IsRapidFireModeActive(enum_releaseRegion) =>
+	prev(current_flagState_IsRapidFireModeActive(enum_releaseRegion))
+
+function is_RapidFireMode_active(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) == 1
+
+function has_RapidFireMode_activated(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) > prior_flagState_IsRapidFireModeActive(enum_releaseRegion)
+
+function on_RapidFireMode_activate(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) > prev_flagState_IsRapidFireModeActive(enum_releaseRegion)
+
+function current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "32-bit:RapidFireMode_TargetsPainted", let_memAddr_basePointer)}
+
 // ----------------HorseCover Animation---------------------
 function current_flagState_IsHorseHugging(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -848,6 +900,7 @@ CHARACTER_SnowRed = "yrd"
 CHARACTER_SeniorRed = "nrd"
 CHARACTER_Red = "red"
 CHARACTER_PigJosh = "pgj"
+CHARACTER_BatBoy = "scb"
 CHARACTER_Indian = "msk"
 CHARACTER_Baby = "bby"
 CHARACTER_DancingGirl = "dcg"
@@ -1535,10 +1588,8 @@ achievements_coreData = {
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
 			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
-		// "a_DeadEyeOne": { // CONCEPT a_DeadEyeOne
-			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability succesfully (hitting at least one enemy)"},
-		// "a_DeadEyeMaster": { // CONCEPT a_DeadEyeMaster
-			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability (hit a full SingleRevolver salvo)"},
+		"a_DeadEyeMaster": { // VERIFIED
+			"id": 498358, "points": 0000000, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
 		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
@@ -1571,16 +1622,18 @@ achievements_coreData = {
 			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
-		"a_WinRed": { // CONCEPT a_WinRed
-			"id": 000000, "points": 0000000, "devInfo": "Win as (red), 3x 1v1 rounds consecutively"},
-		"a_WinNrdDeathless": { // CONCEPT a_WinNrdDeathless
-			"id": 000000, "points": 0000000, "devInfo": "Win as (nrd), 5x free-for-all rounds consecutively, without dying once"},
-		"a_WinDcgDynamite": { // CONCEPT a_WinDcgDynamite
-			"id": 000000, "points": 0000000, "devInfo": "Win as (dcg), 2x free-for-all round, killing only with dynamite (melee allowed)"},
-		"a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
-			"id": 000000, "points": 0000000, "devInfo": "Win as (bby), 2x free-for-all round, killing only with knives (melee allowed)"},
-		"a_WinMskHitless": { // CONCEPT a_WinMskHitless
-			"id": 000000, "points": 0000000, "devInfo": "Win as (msk), 3x free-for-all round, without getting hit"},
+		"a_WinRed": { // VERIFIED
+			"id": 498364, "points": 0000000, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
+		"a_WinNrdDeathless": { // VERIFIED
+			"id": 498362, "points": 0000000, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
+		"a_WinPigDynamite": { // VERIFIED
+			"id": 498363, "points": 0000000, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
+		"a_WinBbyShotgun": { // VERIFIED
+			"id": 498359, "points": 0000000, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
+		"a_WinDcgRifle": { // VERIFIED
+			"id": 498360, "points": 0000000, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
+		"a_WinMskHitless": { // VERIFIED
+			"id": 498361, "points": 0000000, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
 		}
 	}
 // -------------------------------------
@@ -1650,14 +1703,6 @@ achievements_triggers = {
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
-
-	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-		// 		&& is_PlayerNearPOI(LEVEL_TrainingStage, "WhiteChest", 1.5, enum_releaseRegion)
-		// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// 	),
 
 	// -------c_SPprogress-------
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1992,11 +2037,77 @@ achievements_triggers = {
 			&& current_SinglePlayer_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
 			&& prev_SinglePlayer_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
 		}),	
-	"a_DeadEyeMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
-		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()
-		),
+	"a_DeadEyeMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_HIT_COUNT = 5
+		const_RAPID_FIRE_INACTIVE_FRAMES_TILL_RESET = 210
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator when RapidFireMode is activated
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(has_RapidFireMode_activated(enum_releaseRegion)) // --CheckIf--> RapidFireMode was activated; Needs to be prior check as this flag is incorprorated into a ResetIf of AltGroup[3]
+			&& trigger_when(
+				once(// --CheckIf--> Player executes RapidFireMode when having painted xx targets
+					is_RapidFireMode_active(enum_releaseRegion)
+					&& current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) >= const_REQUIRED_HIT_COUNT
+					&& (
+						on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+						|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+						)
+					)
+				&& repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --CheckIf--> xx bulets fired 
+				&& tally(const_REQUIRED_HIT_COUNT, [ // --Tally--> Count number of total hits
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				)
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator tracking number of hit bullets after shooting from RapidFireMode
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_HIT_COUNT, [ // --Tally--> Count number of total hits
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = 
+					once(// --CheckIf--> Player executes RapidFireMode when having painted xx targets
+						is_RapidFireMode_active(enum_releaseRegion)
+						// && current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) >= const_REQUIRED_HIT_COUNT
+						&& (
+							on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+							|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+							)
+						)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when RapidFireMode is activated
+			// NOTE: This is to reset hit counts from a previous RapidFireMode activation
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_RapidFireMode_activate(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ==== 			-> Reset when RapidFireMode is inactive for xx frames
+			// NOTE: This is to remove the Trigger Indicator in AltGroup[1], when RapidFireMode is inactive
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& repeated(const_RAPID_FIRE_INACTIVE_FRAMES_TILL_RESET, 
+					never(is_RapidFireMode_active(enum_releaseRegion))
+					&& !is_RapidFireMode_active(enum_releaseRegion)))
+		// [5] ==== Alt Reset Group ==== 			-> Reset when shooting whilst not in RapidFireMode
+			// NOTE: Without this Reset, ShotsFired will still count even when the RapidFire volley is over
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_RapidFireMode_active(enum_releaseRegion)
+				&& is_AimingMode_active(enum_releaseRegion)
+				&& (
+					on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+					|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+					)
+				)
+		// [6] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+		}),
 	"a_TipHat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 		never(
@@ -2358,7 +2469,7 @@ achievements_triggers = {
 	"a_WinRed": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		// NOTE: In 1v1, player can't pick same team as the other opponent 
 		const_REQUIRED_CHARACTER = CHARACTER_Red
-		const_REQUIRED_ROUND_WINS = 3
+		const_REQUIRED_ROUND_WINS = 5
 		const_REQUIRED_PLAYER_COUNT = 2
 
 		return
@@ -2451,8 +2562,8 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset(enum_releaseRegion))
 		}),
-	"a_WinDcgDynamite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_REQUIRED_CHARACTER = CHARACTER_DancingGirl
+	"a_WinPigDynamite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_PigJosh
 		const_REQUIRED_ROUND_WINS = 2
 		const_REQUIRED_PLAYER_COUNT = 4
 		const_REQUIRED_WEAPON = WEAPON_Dynamite
@@ -2474,7 +2585,7 @@ achievements_triggers = {
 
 			&& trigger_when(
 				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
-		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
 				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
@@ -2489,10 +2600,9 @@ achievements_triggers = {
 					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
 					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
 					&& is_MPteams_FreeForAll(enum_releaseRegion)
-					&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
 				)
 			&& trigger_when(always_false())
-		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& (
@@ -2500,7 +2610,7 @@ achievements_triggers = {
 					|| is_Loading(enum_releaseRegion)
 					)
 				)
-		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
@@ -2508,16 +2618,16 @@ achievements_triggers = {
 					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
 					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
 				)
-		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset(enum_releaseRegion))
 		}),
-	"a_WinBabyKnife": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	"a_WinBbyShotgun": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_CHARACTER = CHARACTER_Baby
-		const_REQUIRED_ROUND_WINS = 2
+		const_REQUIRED_ROUND_WINS = 4
 		const_REQUIRED_PLAYER_COUNT = 4
-		const_REQUIRED_WEAPON = WEAPON_Knife
+		const_REQUIRED_WEAPON = WEAPON_Shotgun
 
 		return
 		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
@@ -2536,7 +2646,7 @@ achievements_triggers = {
 
 			&& trigger_when(
 				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
-		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
 				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
@@ -2551,10 +2661,9 @@ achievements_triggers = {
 					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
 					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
 					&& is_MPteams_FreeForAll(enum_releaseRegion)
-					&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
 				)
 			&& trigger_when(always_false())
-		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& (
@@ -2562,7 +2671,7 @@ achievements_triggers = {
 					|| is_Loading(enum_releaseRegion)
 					)
 				)
-		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
@@ -2570,7 +2679,68 @@ achievements_triggers = {
 					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
 					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
 				)
-		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinDcgRifle":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_DancingGirl
+		const_REQUIRED_ROUND_WINS = 4
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Rifle
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset(enum_releaseRegion))
@@ -2644,7 +2814,6 @@ achievements_titles = {
 		*/
 
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
 
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 	"a_CompletePerf": 			{"en": "A Son's Duty"},
@@ -2659,8 +2828,7 @@ achievements_titles = {
 	"a_ChallengeSher70": 		{"en": "Sheriff by Sunrise"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
-	"a_DeadEyeOne": 			{"en": "xxxxxxxxx"},
-	"a_DeadEyeMaster": 			{"en": "xxxxxxxxx"},
+	"a_DeadEyeMaster": 			{"en": "Six-Shooter Symphony"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
 	"a_HorseCover": 			{"en": "Low Profile Rider"},
@@ -2677,21 +2845,21 @@ achievements_titles = {
 	"a_EyeShootShernite":		{"en": "Gunslinger's Stage"},
 	"a_EyeShootSher70":			{"en": "Marksman's Perch"},
 	
-	"a_WinRed": 				{"en": "xxxxxxxxx"},
-	"a_WinNrdDeathless": 		{"en": "xxxxxxxxx"},
-	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
-	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
-	"a_WinMskHitless": 			{"en": "xxxxxxxxx"},
+	"a_WinRed": 				{"en": "Red Steps Ahead"},
+	"a_WinNrdDeathless": 		{"en": "It Never Was About the Money"},
+	"a_WinPigDynamite": 		{"en": "The Hog's Squall"},
+	"a_WinBbyShotgun": 			{"en": "Boomstick Baby"},
+	"a_WinDcgRifle":			{"en": "Standing Ovation"},
+	"a_WinMskHitless": 			{"en": "Wind Walker"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
 	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
 	"a_CompleteHng": 			{"en": "Prove you worth to your loyal companion, Rusty, in the \"Title Stage\" by vanquishing all six outlaws"},
-	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang in the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
+	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang within the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
 	"a_CompleteSher70": 		{"en": "Butcher Pig's gang of outlaws during the \"Sheriff Day Stage\" and earn an old veteran's admiration for restoring peace to his town"},
 
 	"a_ChallengeTng": 			{"en": "The Indian Master has seen many shooters, but few with true skill. Prove your worth in the \"Training Stage\" Shooting Challenge by eliminating 11 moles in under a minute, but only with headshots"},
@@ -2701,8 +2869,7 @@ achievements_descriptions = {
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos, time to bring them bullets. Drop 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
 
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
-	"a_DeadEyeOne": 			{"en": "xxxxxxxxx"},
-	"a_DeadEyeMaster": 			{"en": "xxxxxxxxx"},
+	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
@@ -2719,11 +2886,12 @@ achievements_descriptions = {
 	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
 	
-	"a_WinRed": 				{"en": "xxxxxxxxx"},
-	"a_WinNrdDeathless": 		{"en": "xxxxxxxxx"},
-	"a_WinDcgDynamite": 		{"en": "xxxxxxxxx"},
-	"a_WinBabyKnife": 			{"en": "xxxxxxxxx"},
-	"a_WinMskHitless": 			{"en": "xxxxxxxxx"},
+	"a_WinRed": 				{"en": "In a world of duels, only one gunslinger walks away. As \"Red\" win 5 consecutive 1v1 rounds in a Multiplayer Showdown match"},
+	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
+	"a_WinPigDynamite": 		{"en": "Some men fight with bullets, others with fire. As \"Pig Josh\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match using only dynamite"},
+	"a_WinBbyShotgun": 			{"en": "No age restrictions on firepower in the Wild West. As \"Baby\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the shotgun"},
+	"a_WinDcgRifle":			{"en": "She came for the stage, stayed for the shootout. As \"Dancing Grl\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the rifle"},
+	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
 	}
 // #endregion ACH - text
 
@@ -2805,15 +2973,30 @@ function achievements_initialize() {
 // #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "Playing Capcom's Red Dead Revolver Prototype"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 					{"en": "xxxxxxxx"},
+	"rp_DefaultPlus":					{"en": "Playing Red Dead Revolver ~Prototype~"},
+	"rp_Default":						{"en": "Playing Red Dead Revolver ~Prototype~"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
-	// "rp_Template": {
-	// 	"Lookup_A":						{"en": "xxxxxxxx"},
-	// 	"Lookup_B":						{"en": "xxxxxxxx"},
-	// 	"Lookup_C":						{"en": "xxxxxxxx"},
-	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
-	// 	},
+	// "lup_Template": {
+		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_A":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
+		// },
+
+	"lup_CharacterName": {
+		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+
+		"TrainingRed": 					{"en": "xxxxxxxx"}, 
+		"SnowRed":						{"en": "xxxxxxxx"}, 
+		"SeniorRed":					{"en": "xxxxxxxx"}, 
+		"Red": 							{"en": "xxxxxxxx"}, 
+		"PigJosh":						{"en": "xxxxxxxx"}, 
+		"BatBoy": 						{"en": "xxxxxxxx"}, 
+		"M_Indian": 					{"en": "xxxxxxxx"}, 
+		"Baby": 						{"en": "xxxxxxxx"}, 
+		"DancingGirl": 					{"en": "xxxxxxxx"}, 
+		},
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -2822,6 +3005,23 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	// "lup_Template": {
+		// enum_XXX_A:					"LookupTextKey_A",
+		// enum_XXX_B:					"LookupTextKey_B",
+		// enum_XXX_C:					"LookupTextKey_C",
+		// },
+
+	"lup_CharacterName": {
+		CHARACTER_TrainingRed: "TrainingRed"
+		CHARACTER_SnowRed: "SnowRed"
+		CHARACTER_SeniorRed: "SeniorRed"
+		CHARACTER_Red: "Red"
+		CHARACTER_PigJosh: "PigJosh"
+		CHARACTER_BatBoy: "BatBoy"
+		CHARACTER_Indian: "M_Indian"
+		CHARACTER_Baby: "Baby"
+		CHARACTER_DancingGirl: "DancingGirl"
+		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]
