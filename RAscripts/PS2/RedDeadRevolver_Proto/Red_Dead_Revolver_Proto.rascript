@@ -904,6 +904,37 @@ CHARACTER_BatBoy = "scb"
 CHARACTER_Indian = "msk"
 CHARACTER_Baby = "bby"
 CHARACTER_DancingGirl = "dcg"
+CHARACTER_Carlos = "cls"
+CHARACTER_Tackler = "tck"
+CHARACTER_MrKelley = "mrk"
+CHARACTER_Guardian = "gdn"
+CHARACTER_Natalie = "ntl"
+CHARACTER_UglyChris = "ugl"
+CHARACTER_Christina = "ctn"
+CHARACTER_zzTop = "zzt" // GabrialNavarro
+CHARACTER_BillyTheKid = "bil"
+CHARACTER_Dad = "dad"
+CHARACTER_Franken = "frk"
+CHARACTER_Gigolo = "ggl"
+CHARACTER_GunmanA = "gma" // Captive
+CHARACTER_HedgeHog = "hdh"
+CHARACTER_Jinnie = "jin"
+CHARACTER_Mexican = "max" // ---GameCrash---
+CHARACTER_Mongolian = "mon" // UdoKang
+CHARACTER_yngRMaster = "mst" // Grizzly
+CHARACTER_nCowboy = "ncb" // Smitty
+CHARACTER_TallGuy = "tal"
+CHARACTER_CowboyA = "tca" // LonghornLuke
+CHARACTER_CowboyB = "tcb" // HolsteinHal
+CHARACTER_Gangster = "nga" // RicoPedrosa
+CHARACTER_NewOldMan = "nod"
+CHARACTER_Soldier = "nsd" // ---GameCrash---
+CHARACTER_PlaidGuy = "pld" 
+CHARACTER_ShopOwner = "shp" // CurlyShaw
+CHARACTER_Sniper = "snp"
+CHARACTER_Twig = "twg" // TwiggyPhelps
+CHARACTER_Whiskey = "wsk" // WhiskeyTreadwell
+CHARACTER_zzTop2 = "zz2" // // GabrialNavarro(alt)
 
 function on_MPround_start(enum_releaseRegion) =>
 	on_TimeSpentInLevel_start(enum_releaseRegion)
@@ -2973,9 +3004,14 @@ function achievements_initialize() {
 // #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 					{"en": "xxxxxxxx"},
-	"rp_DefaultPlus":					{"en": "Playing Red Dead Revolver ~Prototype~"},
-	"rp_Default":						{"en": "Playing Red Dead Revolver ~Prototype~"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 				{"en": "xxxxxxxx"},
+	"rp_MP_2P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {4} {8}"},
+	"rp_MP_3P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {4} {8} | {9} {10} 3 as {11} {12}"},
+	"rp_MP_4P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {4} {8} | {9} {10} 3 as {11} {12} | {13} {14} 4 as {15} {16}"},
+
+	"rp_SP":						{"en": "Playing Red Dead Revolver ~Prototype~ | {0} is gunslinging in {1}"},
+	"rp_TitleScreen":				{"en": "Playing Red Dead Revolver ~Prototype~ | Title Screen"}	
+	"rp_Default":					{"en": "Playing Red Dead Revolver ~Prototype~"}}
 richPresence_LookupTablesText = {
 	// "lup_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -2984,18 +3020,80 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
 
-	"lup_CharacterName": {
-		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+	"lup_ShowdownKills": {
+		"ShowdownKills_0": 	{"en": ""},
+		"ShowdownKills_1": 	{"en": "✯"},
+		"ShowdownKills_2": 	{"en": "✯✯"},
+		},
+	"lup_Human_OR_CPU": {
+		"Human":	{"en": "Player"},
+		"CPU":		{"en": "CPU"},
+		},
+	"lup_TeamColor": {
+		"LOOKUP_FALLBACK":	{"en": "🔘"},
+		"RED": 				{"en": "🔴"},
+		"BLUE": 			{"en": "🔵"},
+		"GREEN": 			{"en": "🟢"},
+		"YELLOW": 			{"en": "🟡"},
+		},
+	"lup_StageName": {
+		"LOOKUP_FALLBACK":				{"en": "\"The Wild West\""},
 
-		"TrainingRed": 					{"en": "xxxxxxxx"}, 
-		"SnowRed":						{"en": "xxxxxxxx"}, 
-		"SeniorRed":					{"en": "xxxxxxxx"}, 
-		"Red": 							{"en": "xxxxxxxx"}, 
-		"PigJosh":						{"en": "xxxxxxxx"}, 
-		"BatBoy": 						{"en": "xxxxxxxx"}, 
-		"M_Indian": 					{"en": "xxxxxxxx"}, 
-		"Baby": 						{"en": "xxxxxxxx"}, 
-		"DancingGirl": 					{"en": "xxxxxxxx"}, 
+		"TrainingStage": 				{"en": "\"The Training Stage\""},
+		"PrologueStage": 				{"en": "\"The Prologue Stage\""},
+		"TitleStage": 					{"en": "\"The Title Stage\""},
+		"SheriffNight": 				{"en": "\"The Sheriff Night Stage\""},
+		"SheriffDay": 					{"en": "\"The Sheriff Day Stage\""},
+		"SaloonStage": 					{"en": "\"The Saloon Stage\""},
+		"Tombstone": 					{"en": "\"The Tombstone Stage\""},
+		"FlashbackStage": 				{"en": "\"The Flashback Stage\""},
+		"Train": 						{"en": "\"The Train Stage\""},
+		"FortStage": 					{"en": "\"The Fort Stage\""},
+		"Mansion": 						{"en": "\"The Mansion Stage\""},
+		},
+	"lup_CharacterName": {
+		"LOOKUP_FALLBACK":				{"en": "a Gunslinger"},
+
+		"TrainingRed": 					{"en": "Young Red"},
+		"SnowRed": 						{"en": "Teenage Red"},
+		"SeniorRed": 					{"en": "Senior Red"},
+		"Red": 							{"en": "Adult Red"},
+		"PigJosh": 						{"en": "Pig Josh"},
+		"BatBoy": 						{"en": "Bat Boy"},
+		"Indian": 						{"en": "Young Master Indian"},
+		"Baby": 						{"en": "Baby"},
+		"DancingGirl": 					{"en": "Dancing Girl"},
+		"Carlos": 						{"en": "Carlos"},
+		"Tackler": 						{"en": "Sam"},
+		"MrKelley": 					{"en": "Mr. Kelley"},
+		"Guardian": 					{"en": "Atlas"},
+		"Natalie": 						{"en": "Natalie"},
+		"UglyChris": 					{"en": "Ugly Chris"},
+		"Christina": 					{"en": "Christina"},
+		"zzTop": 						{"en": "Gabrial Navarro"},
+		"BillyTheKid": 					{"en": "Billy the Kid"},
+		"Dad": 							{"en": "Dad"},
+		"Franken": 						{"en": "Franken"},
+		"Gigolo": 						{"en": "Gigolo Hancock"},
+		"GunmanA": 						{"en": "Captive"},
+		"HedgeHog": 					{"en": "Hedgehog Thornton"},
+		"Jinnie": 						{"en": "Jinnie"},
+		"Mexican": 						{"en": "Dan the Mexican"},
+		"Mongolian": 					{"en": "Udo Kang the Mongolian"},
+		"yngRMaster": 					{"en": "Master Indian"},
+		"nCowboy": 						{"en": "Smitty"},
+		"TallGuy": 						{"en": "Tall Guy"},
+		"CowboyA": 						{"en": "Longhorn Luke"},
+		"CowboyB": 						{"en": "Holstein Hal"},
+		"Gangster": 					{"en": "Rico Pedrosa"},
+		"NewOldMan": 					{"en": "Old Man"},
+		"Soldier": 						{"en": "Soldier"},
+		"PlaidGuy": 					{"en": "The Plaid Cowboy"},
+		"ShopOwner": 					{"en": "Curly Shaw"},
+		"Sniper": 						{"en": "The Sniper"},
+		"Twig": 						{"en": "Twiggy Phelps"},
+		"Whiskey": 						{"en": "Whiskey Treadwell"},
+		"zzTop2": 						{"en": "Gabrial Navarro"},
 		},
 	}
 function richPresence_getText(string_textKey) =>
@@ -3011,16 +3109,75 @@ richPresence_lookupTables = {
 		// enum_XXX_C:					"LookupTextKey_C",
 		// },
 
+	"lup_ShowdownKills": {
+		0x0: "ShowdownKills_0",
+		0x1: "ShowdownKills_1",
+		0x2: "ShowdownKills_2",
+		},
+	"lup_Human_OR_CPU": {
+		0x0:	"Human",
+		// Not zeroed out: "CPU" (As Lookup_Fallback)
+		},
+	"lup_TeamColor": {
+		TEAM_Red:		"RED",
+		TEAM_Blue:		"BLUE",
+		TEAM_Green:		"GREEN", is_MPplayer_CPUcontrolled(MP_PLAYER_1, enum_releaseRegion)
+		TEAM_Yellow:	"YELLOW",
+		},
+	"lup_StageName": {
+		LEVEL_TrainingStage: "TrainingStage", 
+		LEVEL_PrologueStage: "PrologueStage", 
+		LEVEL_TitleStage: "TitleStage", 
+		LEVEL_SheriffNight: "SheriffNight", 
+		LEVEL_SheriffDay: "SheriffDay", 
+		LEVEL_SaloonStage: "SaloonStage", 
+		LEVEL_Tombstone: "Tombstone", 
+		LEVEL_FlashbackStage: "FlashbackStage", 
+		LEVEL_Train: "Train", 
+		LEVEL_FortStage: "FortStage", 
+		LEVEL_Mansion: "Mansion", 
+		},
 	"lup_CharacterName": {
-		CHARACTER_TrainingRed: "TrainingRed"
-		CHARACTER_SnowRed: "SnowRed"
-		CHARACTER_SeniorRed: "SeniorRed"
-		CHARACTER_Red: "Red"
-		CHARACTER_PigJosh: "PigJosh"
-		CHARACTER_BatBoy: "BatBoy"
-		CHARACTER_Indian: "M_Indian"
-		CHARACTER_Baby: "Baby"
-		CHARACTER_DancingGirl: "DancingGirl"
+		CHARACTER_TrainingRed: "TrainingRed",
+		CHARACTER_SnowRed: "SnowRed",
+		CHARACTER_SeniorRed: "SeniorRed",
+		CHARACTER_Red: "Red",
+		CHARACTER_PigJosh: "PigJosh",
+		CHARACTER_BatBoy: "BatBoy",
+		CHARACTER_Indian: "Indian",
+		CHARACTER_Baby: "Baby",
+		CHARACTER_DancingGirl: "DancingGirl",
+		CHARACTER_Carlos: "Carlos",
+		CHARACTER_Tackler: "Tackler",
+		CHARACTER_MrKelley: "MrKelley",
+		CHARACTER_Guardian: "Guardian",
+		CHARACTER_Natalie: "Natalie",
+		CHARACTER_UglyChris: "UglyChris",
+		CHARACTER_Christina: "Christina",
+		CHARACTER_zzTop: "zzTop",
+		CHARACTER_BillyTheKid: "BillyTheKid",
+		CHARACTER_Dad: "Dad",
+		CHARACTER_Franken: "Franken",
+		CHARACTER_Gigolo: "Gigolo",
+		CHARACTER_GunmanA: "GunmanA",
+		CHARACTER_HedgeHog: "HedgeHog",
+		CHARACTER_Jinnie: "Jinnie",
+		CHARACTER_Mexican: "Mexican",
+		CHARACTER_Mongolian: "Mongolian",
+		CHARACTER_yngRMaster: "yngRMaster",
+		CHARACTER_nCowboy: "nCowboy",
+		CHARACTER_TallGuy: "TallGuy",
+		CHARACTER_CowboyA: "CowboyA",
+		CHARACTER_CowboyB: "CowboyB",
+		CHARACTER_Gangster: "Gangster",
+		CHARACTER_NewOldMan: "NewOldMan",
+		CHARACTER_Soldier: "Soldier",
+		CHARACTER_PlaidGuy: "PlaidGuy",
+		CHARACTER_ShopOwner: "ShopOwner",
+		CHARACTER_Sniper: "Sniper",
+		CHARACTER_Twig: "Twig",
+		CHARACTER_Whiskey: "Whiskey",
+		CHARACTER_zzTop2: "zzTop2",
 		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
@@ -3108,10 +3265,13 @@ function richPresence_initializeDisplays() {
 // • RICH PRESENCE parameters •
 // ===========================
 // #region RP - parameters
-richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1			// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_LOOKUP_STRING = 3	//  rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
+richPresence_MACRO = 4			// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpp_ShowdownPlayer_Is_CPUcontrolled(enum_playerID, enum_releaseRegion) =>
+	dword(memory_getAddress(format("ASCII:AIsetting-Player{0}(preferred)", enum_playerID), enum_releaseRegion))
 
 // -------------------------------------
 richPresence_parameterData = {
@@ -3123,33 +3283,148 @@ richPresence_parameterData = {
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	//	"rpp_ValueTemplate": {
-	//	 	"RPtype": richPresence_VALUE,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"ValueFormat": "VALUE"},
+	// "rpp_ValueTemplate": {
+		// "RPtype": richPresence_VALUE,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "ValueFormat": "VALUE"},
 
-	//	 "rpp_LookupTemplate": {
-	//	 	"RPtype": richPresence_LOOKUP,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//		"LookupTableID": "lup_LookupTableKey",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
+	// "rpp_LookupHexTemplate": {
+		// "RPtype": richPresence_LOOKUP_HEX,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
+
+	// "rpp_LookupStringTemplate": {
+		// "RPtype": richPresence_LOOKUP_STRING,
+		// "MemoryAddressToASCII": {
+		// 	RELEASE_REGION_USA: memory_getAddress(), 
+		// 	RELEASE_REGION_EUR: memory_getAddress(),
+		// 	RELEASE_REGION_JPN: memory_getAddress()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
-	//	 	"RPtype": richPresence_MACRO,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"MacroFormat": "Number"},	
-	
+		// "RPtype": richPresence_MACRO,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "MacroFormat": "Number"},	
 	
 
+	"rpp_StageName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_StageName",
+		"LookupFallback": richPresence_getLookupTableText("lup_StageName", "LOOKUP_FALLBACK")},
+	// ---------ShowdownPlayer1---------
+	"rpp_ShowdownPlayer1_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player1(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer1_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lup_Human_OR_CPU", "Human")},
+	"rpp_ShowdownPlayer1_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lup_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer1_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer2---------
+	"rpp_ShowdownPlayer2_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player2(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer2_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lup_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer2_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lup_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer2_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer3---------
+	"rpp_ShowdownPlayer3_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player3(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer3_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lup_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer3_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lup_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer3_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer4---------
+	"rpp_ShowdownPlayer4_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player4(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
+
+	"rpp_ShowdownPlayer4_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lup_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer4_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lup_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer4_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lup_ShowdownKills", "ShowdownKills_0")},
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
@@ -3162,12 +3437,19 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+	function richPresence_callLookupHexFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
 		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+
+	function richPresence_callLookupStringFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
+		let_memAddr_ASCII = dict_paramLookupData["MemoryAddressToASCII"][enum_releaseRegion]
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_ascii_string_lookup(let_name, let_memAddr_ASCII, let_lookUpTable, let_lookupFallback)}
 	
 	function richPresence_callMacroFunction(dict_paramMacroData, enum_releaseRegion) {
 		let_macro = dict_paramMacroData["MacroFormat"] 
@@ -3177,7 +3459,8 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
 	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 // #endregion RP - parameters
