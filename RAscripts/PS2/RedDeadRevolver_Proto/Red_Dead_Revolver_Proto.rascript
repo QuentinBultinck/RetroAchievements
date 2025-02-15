@@ -55,7 +55,6 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
-	// TODO RamDig - Find a way to ID if player on horseback is taking cover/hugging horse + implement achievement showcasing this feature 
 */
 
 // #endregion DEVELOPER NOTES
@@ -119,6 +118,8 @@ memory_StructDefs = {
 		"pointerChainToMember": {
 			"BitFlag:IsMenuDisplayed": { 
 				"pointerChainOffsets": [0x28]},
+			"Lower4:HighlightedMenuItem_A": { 
+				"pointerChainOffsets": [0x144]}
 		}},
 	"Struct:Coordinates": {
 		"offsetToMember": {
@@ -152,6 +153,10 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x10]},
+			"BitFlag:IsHorseHugging": { 
+				"pointerChainOffsets": [0x13C, 0x64, 0x144, 0x40, 0xFFFFFFD4, 0x0]},
+			"Lower4:HorseHuggingState": { 
+				"pointerChainOffsets": [0x13C, 0x64, 0x144, 0x40, 0xFFFFFFD4, 0x4]},
 			"32-bit:ShotsFired": {
 				"pointerChainOffsets": [0x170, 0x0]},
 			"32-bit:ShotsHitBody": {
@@ -160,17 +165,27 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x170, 0x30]},
 			"32-bit:Kills": {
 				"pointerChainOffsets": [0x170, 0x5C]},
-		}},
-	"Struct:HUD_AmmoHealth": {
-		"pointerChainToMember": {
+			"BitFlag:IsAimingModeActive(preferred)": {
+				"pointerChainOffsets": [0x208]},
+			// -------RapidFireMode-------
+			"BitFlag:IsRapidFireModeActive": {
+				"pointerChainOffsets": [0x6DC, 0x140]},
+			"32-bit:RapidFireMode_TargetsPainted": {
+				"pointerChainOffsets": [0x474]},
+			// -------Struct:HUD_AmmoHealth-------
 			"Float:PlayerHealth(display)": {
-				"pointerChainOffsets": [0x74]},
+				"pointerChainOffsets": [0x4E8, 0x74]},
 			"32-bit:LoadedAmmoCount_Back(display)": { 
-				"pointerChainOffsets": [0xB0]},
+				"pointerChainOffsets": [0x4E8, 0xB0]},
 			"32-bit:LoadedAmmoCount_Front(display)": {
-				"pointerChainOffsets": [0xB4]},
+				"pointerChainOffsets": [0x4E8, 0xB4]},
 			"8-bit:Equipped_WeaponID(non-functional)": {
-				"pointerChainOffsets": [0xC8]},
+				"pointerChainOffsets": [0x4E8, 0xC8]},
+		}},
+	"Struct:LevelZoneData.zone_crack01Roof_01": {
+		"pointerChainToMember": {
+			"BitFlag:IsRoofCrackOpen": {
+				"pointerChainOffsets": [0x194]},
 		}},
 	"Struct:NPCdata": {
 		"offsetToMember": {
@@ -247,6 +262,7 @@ memory_StructDefs = {
 			"Float:TimeSpentInLevel": {
 				"pointerChainOffsets": [0x4C]}
 		}}, 
+	
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -308,16 +324,38 @@ memory_addresses = {
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x91204c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"ASCII:LevelID(preferred)": {RELEASE_REGION_USA: 0x9128e8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player1(preferred)": {RELEASE_REGION_USA: 0x912954, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player2(preferred)": {RELEASE_REGION_USA: 0x9129bc, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player3(preferred)": {RELEASE_REGION_USA: 0x912a24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CharacterModelID-Player4(preferred)": {RELEASE_REGION_USA: 0x912a8c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player1(preferred)": {RELEASE_REGION_USA: 0x912968, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player2(preferred)": {RELEASE_REGION_USA: 0x9129d0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player3(preferred)": {RELEASE_REGION_USA: 0x912a38, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"ASCII:AIsetting-Player4(preferred)": {RELEASE_REGION_USA: 0x912aa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
+	"Lower4:TeamID-Player1": {RELEASE_REGION_USA: 0x912950, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player2": {RELEASE_REGION_USA: 0x9129b8, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player3": {RELEASE_REGION_USA: 0x912a20, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TeamID-Player4": {RELEASE_REGION_USA: 0x912a88, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:TotalPlayerCount": {RELEASE_REGION_USA: 0x42171c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Lower4:HumanPlayerCount": {RELEASE_REGION_USA: 0x421720, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	
+	"8-bit:Showdown_Kills-Player1": {RELEASE_REGION_USA: 0x421868, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player2": {RELEASE_REGION_USA: 0x42191c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player3": {RELEASE_REGION_USA: 0x4219d0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"8-bit:Showdown_Kills-Player4": {RELEASE_REGION_USA: 0x421a84, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
+	"Bitset(byte1):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488182, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Bitset(byte2):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488183, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:LevelZoneData_A": {RELEASE_REGION_USA: 0x5e334c, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:PlayerData-Player1": {RELEASE_REGION_USA: 0x421850, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},	
 	"Pointer:TimeSpentInLevel": {RELEASE_REGION_USA: 0x53cfa0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:NPCdata": {RELEASE_REGION_USA: 0x421dac, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Pointer:MenuData": {RELEASE_REGION_USA: 0x4215a0, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	"Pointer:HUD_AmmoHealth-Player1": {RELEASE_REGION_USA: 0x5f7e24, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -420,6 +458,41 @@ function isNot_Loading(enum_releaseRegion) {
 	const_STATE_IsLoading_false = 0xFF
 	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_false}
 
+// ----------------PlayerInput---------------------
+CONTROLLER_1 = 1
+CONTROLLER_2 = 2
+
+function current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit6(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_X_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+	
+function current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte1):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit5(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_O_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
+function current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) {
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
+	return bit3(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) =>
+	prev(current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion))
+
+function on_PlayerInput_R1_press(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
+
 // ----------------MenuData---------------------
 MENU_MainMenu = "main"
 MENU_LevelSelectionMenu = "1000"
@@ -430,8 +503,10 @@ MENU_PauseMenu = "pause"
 
 function is_MenuID(enum_menuID, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
-	let_offsetTo_MenuID = memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
-	return is_ASCII_EqualTo(dword(let_memAddr_basePointer) + let_offsetTo_MenuID, enum_menuID)}
+	let_pointerChainTo_ASCII = 
+		dword(memory_getAddress("Pointer:MenuData", enum_releaseRegion)) 
+		+ memory_getStruct_OffsetToMember("Struct:MenuData", "ASCII:MenuID")
+	return is_ASCII_EqualTo(let_pointerChainTo_ASCII, enum_menuID)}
 
 function on_MenuID_changeTo(enum_menuID, enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
@@ -457,6 +532,22 @@ function on_Menu_render(enum_menuID, enum_releaseRegion) =>
 	&& current_FlagState_IsMenuDisplayed(enum_releaseRegion) == 1
 	&& prev_FlagState_IsMenuDisplayed(enum_releaseRegion) == 0
 	
+function current_HighLightedMenuItem_A(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:MenuData", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:MenuData", "Lower4:HighlightedMenuItem_A", let_memAddr_basePointer)}
+
+function on_PauseMenu_reset(enum_releaseRegion) {
+	const_PAUSE_MENU_HIGHLIGHT_ID_Reset = 0x2 // PauseMenu HighlightItems start counting from 0x1 up to 0x4; "Reset" is second from top
+	return 
+		is_Menu_displayed(MENU_PauseMenu, enum_releaseRegion)
+		&& current_HighLightedMenuItem_A(enum_releaseRegion) == const_PAUSE_MENU_HIGHLIGHT_ID_Reset
+		&& (
+			on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+			|| on_PlayerInput_O_press(CONTROLLER_1, enum_releaseRegion)
+			)
+		}
+
 // ----------------TimeSpentInLevel---------------------
 function current_TimeSpentInLevel(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:TimeSpentInLevel", enum_releaseRegion)
@@ -483,6 +574,28 @@ function on_Level_startORreset(enum_releaseRegion) =>
 // ◦ PlayerData ◦
 // ''''''''''''''
 // #region PlayerData
+// #region HUD_AmmoHealth
+WEAPON_SingleRevolver = 0x0
+WEAPON_DualRevolvers = 0x1
+WEAPON_Shotgun = 0x2
+WEAPON_Rifle = 0x3
+WEAPON_Knife = 0x4
+WEAPON_Dynamite = 0x5
+
+function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
+
+function prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion) =>
+	prev(current_SinglePlayer_EquippedWeaponID(enum_releaseRegion))
+
+function is_SinglePlayer_EquippedWeaponID(enum_weapon, enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) == enum_weapon
+
+function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
+	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) != prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion)
+
+// #endregion HUD_AmmoHealth
 // #region ShootingStats
 // ----------------SinglePlayer---------------------
 function current_SinglePlayer_ShotsFired(enum_releaseRegion) {
@@ -556,77 +669,6 @@ function current_PlayerLocation_Z(enum_releaseRegion) {
 		"Struct:PlayerData", "Struct(Coordinates):PlayerLocation-Z",
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
 	}
-
-function is_PlayerLocation_Near(coordinates_target, int_nearRadiusThreshold, enum_releaseRegion) => // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
-	coordinates_target["X"] - int_nearRadiusThreshold <= current_PlayerLocation_X(enum_releaseRegion) && current_PlayerLocation_X(enum_releaseRegion) <= coordinates_target["X"] + int_nearRadiusThreshold
-	&& coordinates_target["Y"] - int_nearRadiusThreshold <= current_PlayerLocation_Y(enum_releaseRegion) && current_PlayerLocation_Y(enum_releaseRegion) <= coordinates_target["Y"] + int_nearRadiusThreshold
-	&& coordinates_target["Z"] - int_nearRadiusThreshold <= current_PlayerLocation_Z(enum_releaseRegion) && current_PlayerLocation_Z(enum_releaseRegion) <= coordinates_target["Z"] + int_nearRadiusThreshold
-// ----------------Character Animation---------------------
-CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
-CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
-
-function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "Float:AnimationKeyFrame(functional)",
-		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
-	}
-function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
-	prev(current_CharacterAnimationKeyFrame(enum_releaseRegion))
-
-function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
-	return 
-		is_ASCII_EqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
-	}
-
-function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
-	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
-	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
-		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
-	return is_ASCII_notEqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)}
-
-function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-
-function is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion) =>
-	is_CharacterAnimation_inactive(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-
-function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
-
-function on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished = 0.6
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
-	}
-
-function on_TippingHat_CharacterAnimation_finish(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-	}
-
-function on_Dodge_CharacterAnimation_start(enum_releaseRegion) => 
-	is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
-	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
-
-function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
-	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
-	return 
-		is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
-		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
-	}
-
 // ----------------Horseback---------------------
 function is_PlayerOnHorseback(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -665,6 +707,148 @@ function on_PlayerOnHorsebackLocation_move_xy(enum_releaseRegion) =>
 	current_PlayerOnHorsebackLocation_X(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_X(enum_releaseRegion)
 	|| current_PlayerOnHorsebackLocation_Y(enum_releaseRegion) != prev_PlayerOnHorsebackLocation_Y(enum_releaseRegion)
 
+// ----------------Character Animation---------------------
+CHARACTER_ANIMATION_TipHat = "red_stn_idl_11"
+CHARACTER_ANIMATION_Dodge = "red_rgt_dge"
+
+function current_CharacterAnimationKeyFrame(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:AnimationKeyFrame(functional)",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)
+	}
+function prev_CharacterAnimationKeyFrame(enum_releaseRegion) =>
+	prev(current_CharacterAnimationKeyFrame(enum_releaseRegion))
+
+function is_CharacterAnimation_active(string_animationID, enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return 
+		is_ASCII_EqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) > 0.0
+	}
+
+function is_CharacterAnimation_inactive(string_animationID, enum_releaseRegion){
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	let_pointerChainTo_activeCharacterAnimationID = memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "ASCII:Active_CharacterAnimationID", let_memAddr_basePointer)
+	return is_ASCII_notEqualTo(let_pointerChainTo_activeCharacterAnimationID, string_animationID)}
+
+function is_TippingHat_CharacterAnimation_active(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+
+function is_TippingHat_CharacterAnimation_inactive(enum_releaseRegion) =>
+	is_CharacterAnimation_inactive(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+
+function on_TippingHat_CharacterAnimation_start(enum_releaseRegion) =>
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished = 0.6
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_nearlyFinished
+	}
+
+function on_TippingHat_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_TipHat, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+
+function on_Dodge_CharacterAnimation_start(enum_releaseRegion) => 
+	is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+	&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+	&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) == 0.0
+
+function on_Dodge_CharacterAnimation_finish(enum_releaseRegion) {
+	const_ANIMATION_KEY_FRAME_THRESHOLD_finish = 0.9
+	return 
+		is_CharacterAnimation_active(CHARACTER_ANIMATION_Dodge, enum_releaseRegion)
+		&& !is_PlayerOnHorseback(enum_releaseRegion) // ---> Necessary as otherwise this is true, without this Check
+		&& current_CharacterAnimationKeyFrame(enum_releaseRegion) >= const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+		&& prev_CharacterAnimationKeyFrame(enum_releaseRegion) < const_ANIMATION_KEY_FRAME_THRESHOLD_finish
+	}
+// ----------------RapidFireMode---------------------
+function current_flagState_IsAimingModeActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsAimingModeActive(preferred)",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function is_AimingMode_active(enum_releaseRegion) =>
+	current_flagState_IsAimingModeActive(enum_releaseRegion) == 1
+
+function current_flagState_IsRapidFireModeActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsRapidFireModeActive",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prior_flagState_IsRapidFireModeActive(enum_releaseRegion) =>
+	prior(current_flagState_IsRapidFireModeActive(enum_releaseRegion))
+
+function prev_flagState_IsRapidFireModeActive(enum_releaseRegion) =>
+	prev(current_flagState_IsRapidFireModeActive(enum_releaseRegion))
+
+function is_RapidFireMode_active(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) == 1
+
+function has_RapidFireMode_activated(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) > prior_flagState_IsRapidFireModeActive(enum_releaseRegion)
+
+function on_RapidFireMode_activate(enum_releaseRegion) =>
+	current_flagState_IsRapidFireModeActive(enum_releaseRegion) > prev_flagState_IsRapidFireModeActive(enum_releaseRegion)
+
+function current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "32-bit:RapidFireMode_TargetsPainted", let_memAddr_basePointer)}
+
+// ----------------HorseCover Animation---------------------
+function current_flagState_IsHorseHugging(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "BitFlag:IsHorseHugging",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prev_flagState_IsHorseHugging(enum_releaseRegion) =>
+	prev(current_flagState_IsHorseHugging(enum_releaseRegion))
+
+function is_HorseHugging(enum_releaseRegion) =>
+	current_flagState_IsHorseHugging(enum_releaseRegion) == 1
+
+HORSE_HUGGING_STATE_Duck = 0x0
+HORSE_HUGGING_STATE_HangRight = 0x1
+HORSE_HUGGING_STATE_HangLeft = 0x2
+function current_HorseHuggingState(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Lower4:HorseHuggingState",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = low4)}
+	
+function prev_HorseHuggingState(enum_releaseRegion) =>
+	prev(current_HorseHuggingState(enum_releaseRegion))
+
+function is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion) =>
+	is_HorseHugging(enum_releaseRegion)
+	&& current_HorseHuggingState(enum_releaseRegion) >= HORSE_HUGGING_STATE_HangRight
+	&& current_HorseHuggingState(enum_releaseRegion) <= HORSE_HUGGING_STATE_HangLeft
+
+function on_HorseHuggingHang_CharacterAnimation_activate(enum_releaseRegion) =>
+	is_HorseHugging(enum_releaseRegion)
+	&& current_HorseHuggingState(enum_releaseRegion) >= HORSE_HUGGING_STATE_HangRight
+	&& current_HorseHuggingState(enum_releaseRegion) <= HORSE_HUGGING_STATE_HangLeft
+	&& prev_HorseHuggingState(enum_releaseRegion) == HORSE_HUGGING_STATE_Duck
+
 // ----------------SinglePlayer Specific---------------------
 function current_SinglePlayer_Health(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
@@ -700,66 +884,139 @@ function prev_SinglePlayer_Money(enum_releaseRegion) =>
 	prev(current_SinglePlayer_Money(enum_releaseRegion))
 
 // ----------------Multiplayer Specific---------------------
+// #region Multiplayer PlayerData
+MP_PLAYER_1 = 1
+MP_PLAYER_2 = 2
+MP_PLAYER_3 = 3
+MP_PLAYER_4 = 4
 
+TEAM_Red = 0
+TEAM_Blue = 1
+TEAM_Yellow = 2
+TEAM_Green = 3
+
+CHARACTER_TrainingRed = "trd"
+CHARACTER_SnowRed = "yrd"
+CHARACTER_SeniorRed = "nrd"
+CHARACTER_Red = "red"
+CHARACTER_PigJosh = "pgj"
+CHARACTER_BatBoy = "scb"
+CHARACTER_Indian = "msk"
+CHARACTER_Baby = "bby"
+CHARACTER_DancingGirl = "dcg"
+
+function on_MPround_start(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start(enum_releaseRegion)
+
+function on_MPround_reset(enum_releaseRegion) =>
+	on_TimeSpentInLevel_reset(enum_releaseRegion)
+
+function current_TotalPlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:TotalPlayerCount", enum_releaseRegion))
+
+function current_HumanPlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:HumanPlayerCount", enum_releaseRegion))
+
+function is_MPplayer_Character(enum_playerID, enum_characterID, enum_releaseRegion) {
+	let_string_addrKey = format("ASCII:CharacterModelID-Player{0}(preferred)", enum_playerID)
+	let_memAddr_ASCII = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return is_ASCII_EqualTo(let_memAddr_ASCII, enum_characterID)}
+
+function is_MPplayer_CPUcontrolled(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("ASCII:AIsetting-Player{0}(preferred)", enum_playerID)
+	dword(memory_getAddress(let_string_addrKey, enum_releaseRegion)) != 0x0} // If zeroed out => HumanControlled; Else CPUcontrolled
+
+function current_MPplayer_Team(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Lower4:TeamID-Player{0}", enum_playerID)
+	return low4(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function is_MPteams_FreeForAll(enum_releaseRegion) =>
+	current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_1, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
+
+	&& current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion)
+	&& current_MPplayer_Team(MP_PLAYER_2, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
+
+	&& current_MPplayer_Team(MP_PLAYER_3, enum_releaseRegion) != current_MPplayer_Team(MP_PLAYER_4, enum_releaseRegion)
+
+function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("8-bit:Showdown_Kills-Player{0}", enum_playerID)
+	return byte(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
+
+function prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
+
+function on_MPplayer_ShowdownKills_Increment(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion)
+
+function on_MPplayer_winGame(enum_playerID, enum_releaseRegion) {
+	const_KILLS_REQUIRED_FOR_WIN = 2
+	return 
+		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
+		&& prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
+
+function current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:PlayerData", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
+
+function prev_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion))
+
+function is_MPplayer_EquippedWeaponID(enum_playerID, enum_weapon, enum_releaseRegion) =>
+	current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) == enum_weapon
+
+function on_MPplayer_EquippedWeaponID_change(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) != prev_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion)
+
+function current_MPplayer_Health(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:PlayerHealth",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function prev_MPplayer_Health(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_Health(enum_playerID, enum_releaseRegion))
+
+function current_MPplayer_MaxHealth(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Float:PlayerMaxHealth",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
+
+function is_MPplayer_Health_atMax(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) == current_MPplayer_MaxHealth(enum_playerID, enum_releaseRegion)
+
+function on_MPplayer_Health_death(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) == 0.0
+	&& prev_MPplayer_Health(enum_playerID, enum_releaseRegion) > 0.0
+
+function on_MPplayer_Health_takeDamage(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_Health(enum_playerID, enum_releaseRegion) < prev_MPplayer_Health(enum_playerID, enum_releaseRegion)
+
+function current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) {
+	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
+	let_memAddr_basePointer = memory_getAddress(let_string_addrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "32-bit:ShotsFired",
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+
+function prev_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) =>
+	prev(current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion))
+
+function on_MPplayer_ShotsFired_increment(enum_playerID, enum_releaseRegion) =>
+	current_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShotsFired(enum_playerID, enum_releaseRegion)
+
+// #endregion Multiplayer PlayerData
 // #endregion PlayerData
 
-// ..................
-// ◦ HUD_AmmoHealth ◦
-// ''''''''''''''''''
-// #region HUD_AmmoHealth
-
-// ----------------SinglePlayer---------------------
-function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Back(display)", let_memAddr_basePointer)}
-		
-function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion))
-
-function current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor(
-		"Struct:HUD_AmmoHealth", "32-bit:LoadedAmmoCount_Front(display)", let_memAddr_basePointer)}
-
-function prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion))
-
-function current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
-	current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
-	+ current_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
-
-function prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) =>
-	prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Back(enum_releaseRegion)
-	+ prev_SinglePlayer_EquippedWeapon_LoadedAmmoCount_Front(enum_releaseRegion)
-
-function on_SinglePlayer_EquippedWeapon_fire(enum_releaseRegion) => // BUG_RATools - Too complex for RAtools
-	/* MANUAL_CONSTRUCTION
-		I:0xX005f7e24_A:d0xX000000b0+d0xX000000b4_I:0xX005f7e24_B:0xX000000b0+0xX000000b4_0>0
-		-------------
-		SubSource	delta [32-bit:LoadedAmmoCount_Back(display)] 	+ delta [32-bit:LoadedAmmoCount_Front(display)]
-		AddSource	Mem	[32-bit:LoadedAmmoCount_Back(display)] 		+ Mem [32-bit:LoadedAmmoCount_Front(display)]
-					val 0 > val 0
-		*/
-	prev_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion)
-	- current_calculated_SinglePlayer_EquippedWeapon_TotalLoadedAmmoCount(enum_releaseRegion) 
-	> 0
-
-function current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) {
-	let_memAddr_basePointer = memory_getAddress("Pointer:HUD_AmmoHealth-Player1", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct:HUD_AmmoHealth", "8-bit:Equipped_WeaponID(non-functional)", let_memAddr_basePointer)}
-
-function prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion) =>
-	prev(current_SinglePlayer_EquippedWeaponID(enum_releaseRegion))
-
-function on_SinglePlayer_EquippedWeapon_change(enum_releaseRegion) =>
-	current_SinglePlayer_EquippedWeaponID(enum_releaseRegion) != prev_SinglePlayer_EquippedWeaponID(enum_releaseRegion)
-
-// #endregion HUD_AmmoHealth
-
-// ...........
-// ◦ LevelID ◦
-// '''''''''''
+// .............
+// ◦ LevelData ◦
+// '''''''''''''
+// #region LevelData
 // #region LevelID
 LEVEL_TrainingStage = "tng" 	// FullString: "lvl_tng"
 LEVEL_PrologueStage = "perf75"  // FullString: "lvl_perf75"
@@ -776,17 +1033,143 @@ function is_Level(enum_levelID, enum_releaseRegion) {
 	const_offsetTo_UniqueLevelIdSubstring = 0x4
 	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
 	return ascii_string_equals(let_memAddr_levelID + const_offsetTo_UniqueLevelIdSubstring, enum_levelID)}
-// ----------------Point of Interest (POI)---------------------
-const_Level_POI_Coordinates = { // Defintion DictObject:Coordinates = {"X": 0.0, "Y": 0.0, "Z": 0.0}
+// #endregion LevelID
+// #region Point of Interest (POI)
+const_Level_POI_Data = {
+	/* NOTE: Template DictObject(POI_data):
+		"string_POI_key": {"X": 0.0, "Y": 0.0, "Z": 0.0, "RadiusThreshold": sNULL},
+		*/
+	LEVEL_PrologueStage: {
+		"RoofCrack": {"X": -2.3, "Y": -8.1, "Z": 3.5, "RadiusThreshold": 1.0},
+		"UnderRoofCrack": {"X": -2.3, "Y": -8.1, "Z": 0.0, "RadiusThreshold": 1.0},
+		},
 	LEVEL_TrainingStage: { 
-		"WhiteChest": {"X": 0.25, "Y": -18.47, "Z": -0.65}, 
-		"BrokenCart": {"X": -22.18, "Y": -46.63, "Z": 0.14}
+		"Front_WhiteChest": {"X": 0.25, "Y": -18.5, "Z": -0.5, "RadiusThreshold": 1.5},
+		"near_BrokenCart": {"X": -22.0, "Y": -46.5, "Z": 0.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_Tombstone: { 
+		"Near_NativeCamps": {"X": -11, "Y": 27.0, "Z": 0.0, "RadiusThreshold": 7.0},
+		"Front_FlowerStall": {"X": 15.0, "Y": 2.5, "Z": 0.0, "RadiusThreshold": 1.7},
+		"Front_PotteryKiln": {"X": 27, "Y": -24.0, "Z": 0.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_FlashbackStage: { 
+		"On_Outhouse": {"X": -3.5, "Y": -3.5, "Z": 3.0, "RadiusThreshold": 1.0},
+		"On_RiverLogBridge": {"X": 26.5, "Y": -24.5, "Z": -8.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_FortStage: { 
+		"Near_Throne": {"X": -18.0, "Y": 0.0, "Z": 1.0, "RadiusThreshold": 2.5},
+		"In_LeftCastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
+		},
+	LEVEL_Mansion: { 
+		"On_Podium": {"X": 11.5, "Y": -63.0, "Z": 1.0, "RadiusThreshold": 1.5},
+		"Near_LionFountain": {"X": 31.5, "Y": -76.5, "Z": 1.0, "RadiusThreshold": 2.0},
+		"In_RoofAlcove": {"X": 24.5, "Y": -60.0, "Z": 7.5, "RadiusThreshold": 1.5},
+		"In_TrainStation": {"X": 11.5, "Y": -26.0, "Z": 1.0, "RadiusThreshold": 2.0},
 		},
 	}
-function is_PlayerNearPOI(enum_levelID, string_POI_key, float_radiusThreshold, enum_releaseRegion) => 
-	is_PlayerLocation_Near(const_Level_POI_Coordinates[enum_levelID][string_POI_key], float_radiusThreshold, enum_releaseRegion)
 
-// #endregion LevelID
+function get_POI_data(enum_levelID) =>
+	const_Level_POI_Data[enum_levelID]
+
+function is_PlayerNearPOI(enum_levelID, string_POI_key, enum_releaseRegion) {
+	let_POIdata_target = const_Level_POI_Data[enum_levelID][string_POI_key]
+	let_POI_X = let_POIdata_target["X"]
+	let_POI_Y = let_POIdata_target["Y"]
+	let_POI_Z = let_POIdata_target["Z"]
+	let_POI_RadiusThreshold = let_POIdata_target["RadiusThreshold"]
+
+	let_memAccessor_Player_X = current_PlayerLocation_X(enum_releaseRegion)
+	let_memAccessor_Player_Y = current_PlayerLocation_Y(enum_releaseRegion)
+	let_memAccessor_Player_Z = current_PlayerLocation_Z(enum_releaseRegion)
+	return
+			(let_POI_X - let_POI_RadiusThreshold) <= let_memAccessor_Player_X 		&& let_memAccessor_Player_X <= (let_POI_X + let_POI_RadiusThreshold)
+		&& 	(let_POI_Y - let_POI_RadiusThreshold) <= let_memAccessor_Player_Y 		&& let_memAccessor_Player_Y <= (let_POI_Y + let_POI_RadiusThreshold)
+		&& 	(let_POI_Z - let_POI_RadiusThreshold) <= let_memAccessor_Player_Z 		&& let_memAccessor_Player_Z <= (let_POI_Z + let_POI_RadiusThreshold)
+	}
+// ----------------Bounding Box POI---------------------
+const_Level_BoundingBox_POI_Data = {
+	/* NOTE: Template DictObject(BoundingBox_POI_Data):
+		"string_POI_key": {
+			"BoundingBoxWall_X_neg": sNULL, "BoundingBoxWall_X_pos": sNULL,
+			"BoundingBoxWall_Y_neg": sNULL, "BoundingBoxWall_Y_pos": sNULL,
+			"BoundingBoxWall_Z_neg": sNULL, "BoundingBoxWall_Z_pos": sNULL},
+		*/
+	LEVEL_Train: {
+		"On_CliffRidge": {
+			"BoundingBoxWall_X_neg": -10.0, "BoundingBoxWall_X_pos": -4.0,
+			"BoundingBoxWall_Y_neg": sNULL, "BoundingBoxWall_Y_pos": sNULL, // --> Infinite BoundingBoxSize on Y-axis
+			"BoundingBoxWall_Z_neg": 4.5, "BoundingBoxWall_Z_pos": 10.0},
+		},
+	LEVEL_SheriffDay: {
+		"On_RoofHighBuilding": {
+			"BoundingBoxWall_X_neg": 11.0, "BoundingBoxWall_X_pos": 21.0,
+			"BoundingBoxWall_Y_neg": -10.0, "BoundingBoxWall_Y_pos": 0.0,
+			"BoundingBoxWall_Z_neg": 6.5, "BoundingBoxWall_Z_pos": 20.0},
+		},
+	LEVEL_SheriffNight: {
+		"On_BigBarrel": {
+			"BoundingBoxWall_X_neg": 27.5, "BoundingBoxWall_X_pos": 31.0,
+			"BoundingBoxWall_Y_neg": -16.0, "BoundingBoxWall_Y_pos": -13.0,
+			"BoundingBoxWall_Z_neg": 5.0, "BoundingBoxWall_Z_pos": 10.0},
+		},
+	LEVEL_TitleStage: {
+		"On_Roofs": {
+			"BoundingBoxWall_X_neg": -2.0, "BoundingBoxWall_X_pos": 15.5,
+			"BoundingBoxWall_Y_neg": -2.5, "BoundingBoxWall_Y_pos": 8.5,
+			"BoundingBoxWall_Z_neg": 2.0, "BoundingBoxWall_Z_pos": 10.0},
+		},
+	}
+
+function is_PlayerWithinBoundingBox_POI(enum_levelID, string_boundingBoxPOI_key, enum_releaseRegion) {
+	let_POI_target = const_Level_BoundingBox_POI_Data[enum_levelID][string_boundingBoxPOI_key]
+	let_POI_X_neg = let_POI_target["BoundingBoxWall_X_neg"]
+	let_POI_X_pos = let_POI_target["BoundingBoxWall_X_pos"]
+	let_POI_Y_neg = let_POI_target["BoundingBoxWall_Y_neg"]
+	let_POI_Y_pos = let_POI_target["BoundingBoxWall_Y_pos"]
+	let_POI_Z_neg = let_POI_target["BoundingBoxWall_Z_neg"]
+	let_POI_Z_pos = let_POI_target["BoundingBoxWall_Z_pos"]
+
+	let_memAccessor_Player_X = current_PlayerLocation_X(enum_releaseRegion)
+	let_memAccessor_Player_Y = current_PlayerLocation_Y(enum_releaseRegion)
+	let_memAccessor_Player_Z = current_PlayerLocation_Z(enum_releaseRegion)
+
+	if(let_POI_X_neg == sNULL || let_POI_X_pos == sNULL) 
+		return 
+			let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+			&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	if(let_POI_Y_neg == sNULL || let_POI_Y_pos == sNULL) 
+		return 
+			let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+			&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	if(let_POI_Z_neg == sNULL || let_POI_Z_pos == sNULL) 
+		return 
+			let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+			&& let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+	return 
+		let_POI_X_neg <= let_memAccessor_Player_X  && let_memAccessor_Player_X <= let_POI_X_pos
+		&& let_POI_Y_neg <= let_memAccessor_Player_Y  && let_memAccessor_Player_Y <= let_POI_Y_pos
+		&& let_POI_Z_neg <= let_memAccessor_Player_Z && let_memAccessor_Player_Z <= let_POI_Z_pos
+	}
+
+// #endregion Point of Interest (POI)
+// #region LevelZoneData
+function current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:LevelZoneData_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:LevelZoneData.zone_crack01Roof_01", "BitFlag:IsRoofCrackOpen", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = bit0)}
+
+function prev_flagState_PrologueStage_RoofCrack(enum_releaseRegion) =>
+	prev(current_flagState_PrologueStage_RoofCrack(enum_releaseRegion))
+
+function is_PrologueStage_RoofCrack_open(enum_releaseRegion) =>
+	current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) == 1
+
+function on_flagState_PrologueStage_RoofCrack_toggleTrue(enum_releaseRegion) =>
+	current_flagState_PrologueStage_RoofCrack(enum_releaseRegion) > prev_flagState_PrologueStage_RoofCrack(enum_releaseRegion)
+
+// #endregion LevelZoneData
+// #endregion LevelData
 
 // ...........
 // ◦ NPCdata ◦
@@ -1205,49 +1588,52 @@ achievements_coreData = {
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
 			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
-		// "a_DeadEye": { // CONCEPT a_DeadEye
-			// "id": 000000, "points": 0000000, "devInfo": "Use DeadEye ability to hit multiple enemies in quick succession??"},
+		"a_DeadEyeMaster": { // VERIFIED
+			"id": 498358, "points": 0000000, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
 		"a_TipHat": { // VERIFIED
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
-		// "a_HorseCover": { // CONCEPT a_HorseCover
-			// "id": 000000, "points": 0000000, "devInfo": "Use a horse as cover"},
+		"a_HorseCover": { // VERIFIED
+			"id": 498510, "points": 0000000, "devInfo": "Take cover whilst on horseback"},
 		"a_SaloonThrow": { // VERIFIED
 			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
 			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
-		// "a_PerfRoofFall": { // CONCEPT a_PerfRoofFall
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed"},
+		"a_PerfRoofFall": { // VERIFIED
+			"id": 498497, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
 		"a_EyeTng": { // VERIFIED
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat next to Chest + near BrokenCart"},
-		// "a_EyeFlash": { // CONCEPT a_EyeFlash
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_flash: TipHat whilst standing in fire on roof of house + on top of fallen tree trunk in the river"},
-		// "a_EyeTrain": { // CONCEPT a_EyeTrain
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_train: TipHat whilst standing on the cliff ledge to the left of the train (get there by jumping on train roof then jump accross (spam jump button near cliff))"},
-		// "a_EyeTomb": { // CONCEPT a_EyeTomb
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_tomb: TipHat close to Indian corner of map"},
-		// "a_EyeFort": { // CONCEPT a_EyeFort
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_fort: TipHat near throne or near gatling gun"},
-		// "a_EyeMans": { // CONCEPT a_EyeMans
-			// "id": 496929, "points": 0000000, "devInfo": "lvl_mans: TipHat whilst standing on podium + inside train station (side of Tombstone) + inside a small outlook "roofed alcove/nook" on the roof of the mansion"},
-		// "a_EyeShootHng": { // CONCEPT a_EyeShootHng
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of one of the 3 buildings (in succession without dropping down)"},
-		// "a_EyeShootShernite": { // CONCEPT a_EyeShootShernite
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of big barrel kill 4 enemies (in succession without dropping down)"},
-		// "a_EyeShootSher70": { // CONCEPT a_EyeShootSher70
-			// "id": 000000, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill XX enemies (in succession without dropping down)"},
+			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
+		"a_EyeFlash": { // VERIFIED
+			"id": 498489, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
+		"a_EyeTrain": { // VERIFIED
+			"id": 498496, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
+		"a_EyeTomb": { // VERIFIED
+			"id": 498495, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
+		"a_EyeFort": { // VERIFIED
+			"id": 498490, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+		"a_EyeMans": { // VERIFIED
+			"id": 498491, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
+		"a_EyeShootHng": { // VERIFIED
+			"id": 498492, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
+		"a_EyeShootShernite": { // VERIFIED
+			"id": 498494, "points": 0000000, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
+		"a_EyeShootSher70": { // VERIFIED
+			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
-		// "a_WinRed": { // CONCEPT a_WinRed
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (red)"},
-		
-		// "a_WinNrdHeadshots": { // CONCEPT a_WinNrdHeadshots
-			// "id": 000000, "points": 0000000, "devInfo": "Win as (nrd), headshots only"},
-		// "a_WinPigDynamite": { // CONCEPT a_WinPigDynamite
-			// "id": 000000, "points": 0000000, "devInfo": "Win match using only dynamite as Pig Josh"},
-		// "a_WinBabyKnife": { // CONCEPT a_WinBabyKnife
-			// "id": 000000, "points": 0000000, "devInfo": "Win match using only knives as baby"},
+		"a_WinRed": { // VERIFIED
+			"id": 498364, "points": 0000000, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
+		"a_WinNrdDeathless": { // VERIFIED
+			"id": 498362, "points": 0000000, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
+		"a_WinPigDynamite": { // VERIFIED
+			"id": 498363, "points": 0000000, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
+		"a_WinBbyShotgun": { // VERIFIED
+			"id": 498359, "points": 0000000, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
+		"a_WinDcgRifle": { // VERIFIED
+			"id": 498360, "points": 0000000, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
+		"a_WinMskHitless": { // VERIFIED
+			"id": 498361, "points": 0000000, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
 		}
 	}
 // -------------------------------------
@@ -1297,6 +1683,15 @@ function AchGenerate_3x_AltResetGroups_SinglePlayerLevel(enum_levelID, enum_rele
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_Level_startORreset(enum_releaseRegion))
+
+function AchGenerate_TallyOnce_CheckIf_MultiplayerRoundEnds(enum_releaseRegion) =>
+	tally(1, [ // ---Tally---> OrNext: CheckIf any players has won the round
+		once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+		once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))]
+	)
+
 // #endregion ACH - trigger generators
 
 // ========================
@@ -1308,14 +1703,6 @@ achievements_triggers = {
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
-
-	// "a_TEST_coordinates": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// 	// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-		// 		is_ReleaseRegion(enum_releaseRegion)
-		// 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
-		// 		&& is_PlayerNearPOI(LEVEL_TrainingStage, "WhiteChest", 1.5, enum_releaseRegion)
-		// 		&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// 	),
 
 	// -------c_SPprogress-------
 	"a_CompleteTng":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -1650,6 +2037,77 @@ achievements_triggers = {
 			&& current_SinglePlayer_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
 			&& prev_SinglePlayer_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
 		}),	
+	"a_DeadEyeMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_HIT_COUNT = 5
+		const_RAPID_FIRE_INACTIVE_FRAMES_TILL_RESET = 210
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator when RapidFireMode is activated
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(has_RapidFireMode_activated(enum_releaseRegion)) // --CheckIf--> RapidFireMode was activated; Needs to be prior check as this flag is incorprorated into a ResetIf of AltGroup[3]
+			&& trigger_when(
+				once(// --CheckIf--> Player executes RapidFireMode when having painted xx targets
+					is_RapidFireMode_active(enum_releaseRegion)
+					&& current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) >= const_REQUIRED_HIT_COUNT
+					&& (
+						on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+						|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+						)
+					)
+				&& repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --CheckIf--> xx bulets fired 
+				&& tally(const_REQUIRED_HIT_COUNT, [ // --Tally--> Count number of total hits
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				)
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator tracking number of hit bullets after shooting from RapidFireMode
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_HIT_COUNT, [ // --Tally--> Count number of total hits
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_HIT_COUNT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = 
+					once(// --CheckIf--> Player executes RapidFireMode when having painted xx targets
+						is_RapidFireMode_active(enum_releaseRegion)
+						// && current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) >= const_REQUIRED_HIT_COUNT
+						&& (
+							on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+							|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+							)
+						)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when RapidFireMode is activated
+			// NOTE: This is to reset hit counts from a previous RapidFireMode activation
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_RapidFireMode_activate(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ==== 			-> Reset when RapidFireMode is inactive for xx frames
+			// NOTE: This is to remove the Trigger Indicator in AltGroup[1], when RapidFireMode is inactive
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& repeated(const_RAPID_FIRE_INACTIVE_FRAMES_TILL_RESET, 
+					never(is_RapidFireMode_active(enum_releaseRegion))
+					&& !is_RapidFireMode_active(enum_releaseRegion)))
+		// [5] ==== Alt Reset Group ==== 			-> Reset when shooting whilst not in RapidFireMode
+			// NOTE: Without this Reset, ShotsFired will still count even when the RapidFire volley is over
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_RapidFireMode_active(enum_releaseRegion)
+				&& is_AimingMode_active(enum_releaseRegion)
+				&& (
+					on_PlayerInput_X_press(CONTROLLER_1, enum_releaseRegion)
+					|| on_PlayerInput_R1_press(CONTROLLER_1, enum_releaseRegion)
+					)
+				)
+		// [6] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+		}),
 	"a_TipHat": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
 		never(
@@ -1666,54 +2124,27 @@ achievements_triggers = {
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
 		&& isNot_Loading(enum_releaseRegion)
-
 		&& once(
 			never(is_CharacterAnimation_inactive(CHARACTER_ANIMATION_Dodge, enum_releaseRegion))
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
-	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_REQUIRED_LEVEL = LEVEL_TrainingStage
-		const_POI_COUNT = 2
-		const_NEAR_RADIUS_THRESHOLD_BrokenCart = 2.1
-		const_NEAR_RADIUS_THRESHOLD_WhiteChest = 1.2
-
-		let_requirement_IsPlayerNearPOI_BrokenCart = 
-			is_PlayerNearPOI(const_REQUIRED_LEVEL, "BrokenCart", const_NEAR_RADIUS_THRESHOLD_BrokenCart, enum_releaseRegion)
-		let_requirement_IsPlayerNearPOI_WhiteChest = 
-			is_PlayerNearPOI(const_REQUIRED_LEVEL, "WhiteChest", const_NEAR_RADIUS_THRESHOLD_WhiteChest, enum_releaseRegion)
-
-		let_requirement_OnTipHatNear_BrokenCart = 
-			let_requirement_IsPlayerNearPOI_BrokenCart
-			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
-		let_requirement_OnTipHatNear_WhiteChest = 
-			let_requirement_IsPlayerNearPOI_WhiteChest
-			&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)
-
+	
+	"a_HorseCover": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_HOLD_FRAME_COUNT = 120 // Player should hold this animation input for a few seconds to get the PlayerCharacter in the full "cover" stance, otherwise Animation won't show correctly.
 		return
-		// [1] ==== Alt Logic Group ==== 									-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
-			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& measured(tally(const_POI_COUNT, [
-				once(let_requirement_OnTipHatNear_BrokenCart),
-				once(let_requirement_OnTipHatNear_WhiteChest)
-				]))
-			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// [2] ==== Alt POI Trigger Indicator Group - BrokenCart ==== 		-> This group only exists to display a Trigger Indicator when the player is near the BrokenCart	
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
-				let_requirement_OnTipHatNear_BrokenCart))
-
-			&& let_requirement_IsPlayerNearPOI_BrokenCart
-			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// [3] ==== Alt POI Trigger Indicator Group - WhiteChest ==== 		-> This group only exists to display a Trigger Indicator when the player is near the WhiteChest	
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
-				let_requirement_OnTipHatNear_WhiteChest))
-			
-			&& let_requirement_IsPlayerNearPOI_WhiteChest
-			&& trigger_when(dword(0xbeef) == 0xbaadf00d)
-		// [4+5] ==== Alt Reset Groups ==== 								-> Reset when not in SinglePlayer Mode || not in correct Level
-			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion) 
+			&& isNot_Loading(enum_releaseRegion)
+			&& once(
+				never(!is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion)) // ---ResetNextIf---
+				&& on_HorseHuggingHang_CharacterAnimation_activate(enum_releaseRegion))
+			&& trigger_when(
+				repeated(const_HOLD_FRAME_COUNT,
+					never(!is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion)) // ---ResetNextIf---
+					&& is_HorseHuggingHang_CharacterAnimation_active(enum_releaseRegion))
+				)
 		}),
 	"a_SaloonThrow": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		/* NOTE: Coordinates + Shoving NPCs
@@ -1784,8 +2215,590 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_Tombstone, enum_releaseRegion)		
 		}),
+	"a_PerfRoofFall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_PrologueStage
+		const_POI_KEY_RoofCrack = "RoofCrack"
+		const_POI_KEY_UnderRoofCrack = "UnderRoofCrack"
+		const_MAX_FRAMES_ALLOWED_TO_UNLOCK = 120 // min 4 seconds at 30 fps
+		return
+		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(repeated(const_MAX_FRAMES_ALLOWED_TO_UNLOCK, // ---PauseLock---> When player does NOT fall through crack in roof after it is open for xx frames
+				is_PrologueStage_RoofCrack_open(enum_releaseRegion)))
+			&& once( // ---> CheckIf Roof cracks whilst walking over it
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, const_POI_KEY_RoofCrack, enum_releaseRegion)
+				&& on_flagState_PrologueStage_RoofCrack_toggleTrue(enum_releaseRegion))
+			&& once( // ---> CheckIf player fell through crack, within xx seconds of it cracking open
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, const_POI_KEY_UnderRoofCrack, enum_releaseRegion)
+				&& is_PrologueStage_RoofCrack_open(enum_releaseRegion))
+			// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeTng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_TrainingStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_BOUNDING_BOX_KEY_CliffRidge = "On_CliffRidge"
+		return
+		// [0] ==== Core Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			&& is_Level(LEVEL_Train, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(LEVEL_Train, const_BOUNDING_BOX_KEY_CliffRidge, enum_releaseRegion)
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		}),
+	"a_EyeTomb": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_Tombstone
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4] ==== Alt POI Trigger Indicator Groups ==== 			-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [5+6] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeFlash": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_FlashbackStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeFort": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_FortStage
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [4+5] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeMans": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_Mansion
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 4 POIs
+		return
+		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(tally_of(const_DICT_POI_DATA, length(const_DICT_POI_DATA), string_POI_key =>
+				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
+		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+			|| any_of(const_DICT_POI_DATA, string_POI_key =>
+					unless(
+						!is_ReleaseRegion(enum_releaseRegion)
+						|| is_Loading(enum_releaseRegion))
+					&& unless(once( // <-- PauseLock: Hide Trigger Indicator, when Player has tipped hat near this POI
+						is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+						&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
+					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
+					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+				) 
+		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeShootHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_TitleStage
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_REQUIRED_ENEMY_KILLS = 5
+		const_REQUIRED_WEAPON = WEAPON_SingleRevolver
+		const_BOUNDING_BOX_KEY_Roofs = "On_Roofs"
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_Roofs, enum_releaseRegion))
+			&& measured(tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_REQUIRED_ENEMY_KILLS, int_NPCdataIndex => 
+				once(
+					is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)
+					&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_Roofs, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeShootShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_SheriffNight
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_REQUIRED_ENEMY_KILLS = 4
+		const_REQUIRED_WEAPON = WEAPON_DualRevolvers
+		const_BOUNDING_BOX_KEY_BigBarrel = "On_BigBarrel"
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_BigBarrel, enum_releaseRegion))
+			&& measured(tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_REQUIRED_ENEMY_KILLS, int_NPCdataIndex => 
+				once(
+					is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)
+					&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+				))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_BigBarrel, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
+		}),
+	"a_EyeShootSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_LEVEL = LEVEL_SheriffDay
+		const_REQUIRED_WEAPON = WEAPON_Rifle
+		const_BOUNDING_BOX_KEY_RoofHighBuilding = "On_RoofHighBuilding"
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning = [2,3,4] // Accounts for all "Piggy" NPCs which keep respawning till PigJosh dies. Once PigJosh dies all Piggy's despawn (but their HP remains)
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_all = util_concatArrays(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning)
+		const_REQUIRED_ENEMY_KILLS = 7
+		
+		return
+		// [1] ==== Core Logic Group ==== 						-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& never( // ---ResetIf---> When player goes outside POI
+				!is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion))
+			&& measured(
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_REQUIRED_ENEMY_KILLS, (int_NPCdataIndex) {
+					if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, int_NPCdataIndex)) // If this is a respawning NPC: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+						return repeated(3, 
+							is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)	
+							&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, int_NPCdataIndex)) // ElseIf this is a non-respawning NPC: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+						return once(
+							is_SinglePlayer_EquippedWeaponID(const_REQUIRED_WEAPON, enum_releaseRegion)	
+							&& on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
+					else util_throwError(format("NPCdataIndex [{0}] did not evaluate to any valid index", int_NPCdataIndex))
+				}))
+		// [2] ==== Alt POI Trigger Indicator Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the player is inside the POI	
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& is_PlayerWithinBoundingBox_POI(const_REQUIRED_LEVEL, const_BOUNDING_BOX_KEY_RoofHighBuilding, enum_releaseRegion)
+			&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)		
+		}),
+	// -------c_Multiplayer------
+	"a_WinRed": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: In 1v1, player can't pick same team as the other opponent 
+		const_REQUIRED_CHARACTER = CHARACTER_Red
+		const_REQUIRED_ROUND_WINS = 5
+		const_REQUIRED_PLAYER_COUNT = 2
 
-	// -------c_Multiplayer-------
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for dispalying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 				-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 				-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion))
+		// [5] ==== Alt Reset Group ==== 				-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinNrdDeathless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_SeniorRed
+		const_REQUIRED_ROUND_WINS = 5
+		const_REQUIRED_PLAYER_COUNT = 4
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer dies
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_death(MP_PLAYER_1, enum_releaseRegion)))
+
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer dies
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_death(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinPigDynamite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_PigJosh
+		const_REQUIRED_ROUND_WINS = 2
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Dynamite
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinBbyShotgun": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_Baby
+		const_REQUIRED_ROUND_WINS = 4
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Shotgun
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinDcgRifle":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_DancingGirl
+		const_REQUIRED_ROUND_WINS = 4
+		const_REQUIRED_PLAYER_COUNT = 4
+		const_REQUIRED_WEAPON = WEAPON_Rifle
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When using any other weapon than the requiredWeapon
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShotsFired_increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // PauseLock: When earning a kill, without having the requiredWeapon equipped
+				!is_MPplayer_EquippedWeaponID(MP_PLAYER_1, const_REQUIRED_WEAPON, enum_releaseRegion)
+				&& on_MPplayer_ShowdownKills_Increment(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
+	"a_WinMskHitless": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_CHARACTER = CHARACTER_Indian
+		const_REQUIRED_ROUND_WINS = 3
+		const_REQUIRED_PLAYER_COUNT = 4
+
+		return
+		// [1] ==== Alt Logic + Trigger Group ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when at 100% accuracy
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer takes damage
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)))
+
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1 
+			&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+			&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+
+			&& trigger_when(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)))
+		// [2] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator, tracking rounds won consecutively
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // PauseLock: When HumanPlayer takes damage
+				never(on_MPround_start(enum_releaseRegion)) // --ResetNextIf--> Unlock PauseLock: When a new round starts
+				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)))
+			&& measured(
+				repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)),
+				when = 
+					current_HumanPlayerCount(enum_releaseRegion) == 1 
+					&& current_TotalPlayerCount(enum_releaseRegion) == const_REQUIRED_PLAYER_COUNT
+					&& is_MPplayer_Character(MP_PLAYER_1, const_REQUIRED_CHARACTER, enum_releaseRegion)
+					&& is_MPteams_FreeForAll(enum_releaseRegion)
+				)
+			&& trigger_when(always_false())
+		// [3] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Mode || when loading
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& (
+					!is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+					|| is_Loading(enum_releaseRegion)
+					)
+				)
+		// [4] ==== Alt Reset Group ==== 			-> Reset when an enemy wins a round
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNext: CheckIf an enemyPlayer wins a round // WARNING - This tally will cause a warning for this logic in RAIntegration, alas there's no other compact method for this OrNext
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion))])
+				)
+		// [5] ==== Alt Reset Group ==== 			-> Reset when PauseMenu->Reset
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -1801,7 +2814,6 @@ achievements_titles = {
 		*/
 
 	// "a_Template": 			{"en": "xxxxxxxxx"},
-	"a_TEST_coordinates":		{"en": "Coordinate Test with Trigger Indicator"},
 
 	"a_CompleteTng": 			{"en": "Westbound and Ready"},
 	"a_CompletePerf": 			{"en": "A Son's Duty"},
@@ -1816,21 +2828,38 @@ achievements_titles = {
 	"a_ChallengeSher70": 		{"en": "Sheriff by Sunrise"},
 
 	"a_WinGame": 				{"en": "Overflowing Coffers"},
+	"a_DeadEyeMaster": 			{"en": "Six-Shooter Symphony"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
-	"a_EyeTng": 				{"en": "Trailblazer"},
+	"a_HorseCover": 			{"en": "Low Profile Rider"},
+	"a_PerfRoofFall":			{"en": "Drop-In Lodging"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
 	"a_HorseTomb":				{"en": "The Tombstone Stampede"},
+	"a_EyeTng": 				{"en": "Lessons of the Trial"},
+	"a_EyeFlash":				{"en": "Snowy Reverence"},
+	"a_EyeTrain":				{"en": "Dramatic Heights"},
+	"a_EyeTomb":				{"en": "A Town of Stories"},
+	"a_EyeFort":				{"en": "The King's Vantage"},
+	"a_EyeMans":				{"en": "Estate of Grace"},
+	"a_EyeShootHng":			{"en": "Revolver's Rain"},
+	"a_EyeShootShernite":		{"en": "Gunslinger's Stage"},
+	"a_EyeShootSher70":			{"en": "Marksman's Perch"},
+	
+	"a_WinRed": 				{"en": "Red Steps Ahead"},
+	"a_WinNrdDeathless": 		{"en": "It Never Was About the Money"},
+	"a_WinPigDynamite": 		{"en": "The Hog's Squall"},
+	"a_WinBbyShotgun": 			{"en": "Boomstick Baby"},
+	"a_WinDcgRifle":			{"en": "Standing Ovation"},
+	"a_WinMskHitless": 			{"en": "Wind Walker"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
-	"a_TEST_coordinates":		{"en": "xxxxxxxxx"},
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
 	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
-	"a_CompleteHng": 			{"en": "Once all outlaws in the \"Title Stage\" have been vanquished, prove your worth and earn Rusty's respect"},
-	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang in the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
+	"a_CompleteHng": 			{"en": "Prove you worth to your loyal companion, Rusty, in the \"Title Stage\" by vanquishing all six outlaws"},
+	"a_CompleteShernite": 		{"en": "Take down every member of the hostile gang within the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
 	"a_CompleteSher70": 		{"en": "Butcher Pig's gang of outlaws during the \"Sheriff Day Stage\" and earn an old veteran's admiration for restoring peace to his town"},
 
 	"a_ChallengeTng": 			{"en": "The Indian Master has seen many shooters, but few with true skill. Prove your worth in the \"Training Stage\" Shooting Challenge by eliminating 11 moles in under a minute, but only with headshots"},
@@ -1839,12 +2868,30 @@ achievements_descriptions = {
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos, time to bring them bullets. Drop 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
 
-	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all"},
+	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
+	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
-	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat near a white chest and broken cart to reflect on what you've learned"},
+	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
+	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
 	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
+	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat in front of a white chest and broken cart to reflect on what you've learned"},
+	"a_EyeFlash":				{"en": "Memories drift like snow in lvl_flash, fleeting yet heavy. Tip your hat atop the River Log Bridge and the Outhouse—a quiet salute to the past, and the road that led you here"},
+	"a_EyeTrain":				{"en": "The best views come with a little risk. In the Train Stage hop on the train to reach the Cliff Ridge, then tip your hat—because nothing says 'I made it' like a dramatic pose above a moving locomotive"},
+	"a_EyeTomb":				{"en": "A town like in the Tombstone Stage ain't just gunfights and dust storms—it's got charm if you know where to look. Tip your hat near the Native Camps, the Flower Stall, and the Pottery Kiln, and take in the sights like a true cultured pioneer"},
+	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and atop the Left Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
+	"a_EyeMans":				{"en": "The \"Mansion Stage\" is fancy, shame about the lack of hospitality. Tip your hat on the Podium, by the Lion Fountain, in the Train Station, and inside the Roof Alcove—because if you're gonna wander through a villain's estate, might as well do it in style"},
+	"a_EyeShootHng":			{"en": "In the \"Title Stage\" take the high ground and take down 5 enemies from atop any of the buildings—because nothing says 'top of the food chain' like a clean shot from the highest point!"},
+	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
+	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
+	
+	"a_WinRed": 				{"en": "In a world of duels, only one gunslinger walks away. As \"Red\" win 5 consecutive 1v1 rounds in a Multiplayer Showdown match"},
+	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
+	"a_WinPigDynamite": 		{"en": "Some men fight with bullets, others with fire. As \"Pig Josh\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match using only dynamite"},
+	"a_WinBbyShotgun": 			{"en": "No age restrictions on firepower in the Wild West. As \"Baby\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the shotgun"},
+	"a_WinDcgRifle":			{"en": "She came for the stage, stayed for the shootout. As \"Dancing Grl\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the rifle"},
+	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
 	}
 // #endregion ACH - text
 
@@ -1926,15 +2973,30 @@ function achievements_initialize() {
 // #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "Playing Capcom's Red Dead Revolver Prototype"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 					{"en": "xxxxxxxx"},
+	"rp_DefaultPlus":					{"en": "Playing Red Dead Revolver ~Prototype~"},
+	"rp_Default":						{"en": "Playing Red Dead Revolver ~Prototype~"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
-	// "rp_Template": {
-	// 	"Lookup_A":						{"en": "xxxxxxxx"},
-	// 	"Lookup_B":						{"en": "xxxxxxxx"},
-	// 	"Lookup_C":						{"en": "xxxxxxxx"},
-	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
-	// 	},
+	// "lup_Template": {
+		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_A":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
+		// },
+
+	"lup_CharacterName": {
+		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+
+		"TrainingRed": 					{"en": "xxxxxxxx"}, 
+		"SnowRed":						{"en": "xxxxxxxx"}, 
+		"SeniorRed":					{"en": "xxxxxxxx"}, 
+		"Red": 							{"en": "xxxxxxxx"}, 
+		"PigJosh":						{"en": "xxxxxxxx"}, 
+		"BatBoy": 						{"en": "xxxxxxxx"}, 
+		"M_Indian": 					{"en": "xxxxxxxx"}, 
+		"Baby": 						{"en": "xxxxxxxx"}, 
+		"DancingGirl": 					{"en": "xxxxxxxx"}, 
+		},
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -1943,6 +3005,23 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	// "lup_Template": {
+		// enum_XXX_A:					"LookupTextKey_A",
+		// enum_XXX_B:					"LookupTextKey_B",
+		// enum_XXX_C:					"LookupTextKey_C",
+		// },
+
+	"lup_CharacterName": {
+		CHARACTER_TrainingRed: "TrainingRed"
+		CHARACTER_SnowRed: "SnowRed"
+		CHARACTER_SeniorRed: "SeniorRed"
+		CHARACTER_Red: "Red"
+		CHARACTER_PigJosh: "PigJosh"
+		CHARACTER_BatBoy: "BatBoy"
+		CHARACTER_Indian: "M_Indian"
+		CHARACTER_Baby: "Baby"
+		CHARACTER_DancingGirl: "DancingGirl"
+		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
 	richPresence_lookupTables[string_lookupTableKey]

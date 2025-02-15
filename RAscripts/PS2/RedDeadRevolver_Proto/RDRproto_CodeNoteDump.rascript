@@ -52,32 +52,29 @@
 // $4215DC: [NTSCU][3-byte ASCII:CharacterModelID-Player1(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player1(preferred)] at $0x912954
 //          - This is valid for Singleplayer & Multiplayer
-// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1 |16-byte??]
-//          - Practically this can be used to check if a MultiplayerPlayer is AI controlled or Human controlled
-//          - AIsetting examples: "Default_Bot", "Pig_Bot", ...
-//          - MultiplayerPlayer 1 is always Human Controlled
-//          
-//          [4-byte ASCII] Zeroed out (0x0) => Human controlled MultiplayerPlayer
-//          [4-byte ASCII] Any other value => AI controlled MultiplayerPlayer
+// $4215F8: [NTSCU][Variable Size ASCII:AIsetting-Player1(alt) |16-byte??]
 // $421628: [NTSCU][3-byte ASCII:CharacterModelID-Player2(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player2(preferred)] at $0x9129bc
 //          - This is only valid when in Multiplayer
-// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2 |16-byte??]
-//          - Documentation at $0x4215f8
+// $421644: [NTSCU][Variable Size ASCII:AIsetting-Player2(alt) |16-byte??]
 // $421674: [NTSCU][3-byte ASCII:CharacterModelID-Player3(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player3(preferred)] at $0x912a24
 //          - This is only valid when in Multiplayer
-// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3 |16-byte??]
-//          - Documentation at $0x4215f8
+// $421690: [NTSCU][Variable Size ASCII:AIsetting-Player3(alt) |16-byte??]
 // $4216C0: [NTSCU][3-byte ASCII:CharacterModelID-Player4(alt2)]
 //          - Prefer using [ASCII:CharacterModelID-Player4(preferred)] at $0x912a8c
 //          - This is only valid when in Multiplayer
-// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4 |16-byte??]
-//          - Documentation at $0x4215f8
+// $4216DC: [NTSCU][Variable Size ASCII:AIsetting-Player4(alt) |16-byte??]
 // $421708: [NTSCU][Variable Size ASCII:LevelID(alt1)]
 //          - Prefer using [ASCII:LevelID(preferred)] at $0x9128e8
+// $42171C: [NTSCU][Lower4:TotalPlayerCount |32-bit]
+//          - TitleScreen this value is 0x0
+//          - In SinglePlayer this value is always 0x1
+//          - In Multiplayer this value counts the number of players in the Showdown match; Range [0x2-0x4]
+//          - This value counts both human controlled and CPU controlled players in Multiplayer
 // $421720: [NTSCU][Lower4:HumanPlayerCount |32-bit]
-//          Range [0x1 --- 0x4]
+//          - Range [0x1 --- 0x4]
+//          - This value only counts human controlled Multiplayer players
 // $4217D0: [NTSCU][3-byte ASCII:CharacterModelID-Player1(alt1)]
 //          - Prefer using [ASCII:CharacterModelID-Player2(preferred)] at $0x9129bc
 //          - This is valid for Singleplayer & Multiplayer
@@ -90,6 +87,11 @@
 //          ..+0x0 - [Float:PlayerMaxHealth |32-bit]
 //          .
 //          .+0xC - [Float:PlayerHealth |32-bit]
+//          .
+//          .+0x80 - [32-bit (layer-2) Pointer] -> [Struct:RapidFireData]
+//          ..+0x140 - [bit0 BitFlag:IsRapidFireModeActive |32-bit]
+//          .| - RapidFireMode is activated whilst in AimingMode + doing a half circle with the analog stick
+//          .| - This uses SpecialGauge
 //          
 //          +0x70 - [32-bit (layer-1) Pointer:PlayerData_L1-70]
 //          | - This pointer is only valid when the player is on Horseback
@@ -115,19 +117,33 @@
 //          .
 //          .+0x64 - [32-bit (layer-2) Pointer]
 //          ..+0x134 - [32-bit (layer-3) Pointer] -> [Struct:CharacterAnimationData]
+//          ...
+//          ...+0x10 - [Float:AnimationKeyFrame(functional)]
+//          ...| - This float represents a specific point in the animation timeline
+//          ...| - FloatRange [0.0 --- 0.999]: 0.0 is start of animation; 0.999 is end of animation
+//          ...+0x14 - [Float:AnimationKeyFrame(copy)]
+//          ...| - This float represents a specific point in the animation timeline, but copies float above
+//          ...
+//          ...+0x18 - [32-bit (layer-4) Pointer]
+//          ....+0x0 - [32-bit (layer-5) Pointer]
+//          .....+0x0 - [32-bit (layer-6) Pointer]
+//          ......+0x0 - [Variable Size ASCII:Active_CharacterAnimationID]
+//          ......| - Pointer chain is only valid when non-repeating CharacterAnimation is being played
+//          ......| - List of CharacterAnimationIDs below
 //          ..
-//          ..+0x10 - [Float:AnimationKeyFrame(functional)]
-//          ..| - This float represents a specific point in the animation timeline
-//          ..| - FloatRange [0.0 --- 0.999]: 0.0 is start of animation; 0.999 is end of animation
-//          ..+0x14 - [Float:AnimationKeyFrame(copy)]
-//          ..| - This float represents a specific point in the animation timeline, but copies float above
-//          ..
-//          ..+0x18 - [32-bit (layer-4) Pointer]
-//          ...+0x0 - [32-bit (layer-5) Pointer]
-//          ....+0x0 - [32-bit (layer-6) Pointer]
-//          .....+0x0 - [Variable Size ASCII:Active_CharacterAnimationID]
-//          .....| - Pointer chain is only valid when non-repeating CharacterAnimation is being played
-//          .....| - List of CharacterAnimationIDs below
+//          ..+0x144 - [32-bit (layer-3) Pointer] -> [Struct:CharacterAnimationData]
+//          ...+0x40 - [32-bit (layer-4) Pointer]
+//          ....+0xFFFFFFD4 - [32-bit (layer-5) Pointer]
+//          ....| - YES, use a negative offset. I did not find any other decent pointer, which points a few bytes lower.
+//          .....+0x0 - [bit0 BitFlag:IsHorseHugging |32-bit]
+//          .....| - HorseHugging animation can be activated whilst on a horse and pressing and holding X or R1
+//          .....| - HorseHugging animation feels like a prototype cover system on the horse
+//          .....| - There are 3 variations of this animation: Duck, HangLeft, HangRight
+//          .....+0x4 - [Lower4:HorseHuggingState |32-bit]
+//          .....| 0x0 => Duck
+//          .....| 0x1 => HangRight
+//          .....| 0x2 => HangLeft
+//          
 //          
 //          +0x170 - [32-bit (layer-1) Pointer] -> [Struct:ShootingStats]
 //          | - Definition of [Struct:ShootingStats] below
@@ -135,6 +151,19 @@
 //          +0x208 - [bit0 BitFlag:IsAimingModeActive(preferred) |32-bit]
 //          +0x220 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
 //          +0x224 - [bit0 BitFlag:IsAimingModeActive(alt1) |32-bit]
+//          
+//          +0x474 - [32-bit:RapidFireMode_TargetsPainted]
+//          | - This value counts the number of targets painted whilst RapidFireMode is active
+//          
+//          +0x4E8 - [32-bit (layer-1) Pointer:HUD_AmmoHealth] -> [Struct:HUD_AmmoHealth]
+//          | - Definition of [Struct:HUD_AmmoHealth] below
+//          
+//          +0x6DC - [32-bit (layer-1) Pointer] -> [Struct:RapidFireData]
+//          .+0x140 - [bit0 BitFlag:IsRapidFireModeActive |32-bit]
+//          .| - RapidFireMode is activated whilst in AimingMode + doing a half circle with the analog stick
+//          .| - This uses SpecialGauge
+//          .| 0 => inactive (This flag turns 0, a few frames after the first shot is fired on a painted target)
+//          .| 1 => active
 //          
 //          
 //          [Definition Struct:Coordinates |16-byte]
@@ -162,6 +191,32 @@
 //          |+0x5C - [32-bit:Kills]
 //          '
 //          
+//          [Definition Struct:HUD_AmmoHealth |532-byte]
+//          |''''''''''''''''''''''''''''''''''''''
+//          | - This struct controls the UI display in the bottom-left
+//          |
+//          |+0x6C - [Float:SpecialMoveGauge(display) |32-bit]
+//          || - FloatRange [0.0 --- 1000.0]; Each 100.0 is counts a number on the SpecialGauge
+//          |
+//          |+0x74 - [Float:PlayerHealth(display) |32-bit]
+//          || - This float regulates how much of the HP bar is filled. Pretty much correlates to effective PlayerHealth
+//          || - FloatRange [0.0 --- 1.0]; MaxHP = 1.0
+//          |
+//          |+0xB0 - [32-bit:LoadedAmmoCount_Back(display)]
+//          || - When the Player is using dual wielded weapons, this value becomes active. It counts how many bullets are loaded inside the secondary weapon. (the display of bullet icons behind the front display)
+//          |
+//          |+0xB4 - [32-bit:LoadedAmmoCount_Front(display)]
+//          || - This value regulates the display of how many bullets icons are displayed. This pretty much correlates how many bullets are loaded inside the weapon.
+//          || - When Player has single shot weapon equipped (eg. throwables like dynamite or knife), when this value becomes 0x0, then the display greys out the weapon icon until weapon is reloaded
+//          |
+//          |+0xC0 - [32-bit:ReserveAmmoCount(display)]
+//          || - This value controls the number display of how many reserve bullets the Player has in inventory
+//          |
+//          |+0xC8 - [8-bit:Equipped_WeaponID(non-functional) |32-bit]
+//          || - This value correlates to the equipped WeaponID
+//          || - WeaponIDs listed below
+//          '
+//          
 //          # CharacterAnimationID
 //          |(only lists IDs useful for achievement logic)
 //          |''''''''''''''''''''
@@ -171,6 +226,18 @@
 //          | "red_for_jump" => Jump whilst moving forward
 //          | "red_fnc_pst_vlt => Fence vault
 //          | "red_rgt_dge" => Dodge (Press X or R1 whilst walking)
+//          '
+//          
+//          # WeaponIDs (hex)
+//          |(list incomplete)
+//          |''''''''''''''''''
+//          | 0x0 => SingleRevolver
+//          | 0x1 => DualRevolvers
+//          | 0x2 => Shotgun
+//          | 0x3 => Rifle
+//          | 0x4 => Knife
+//          | 0x5 => Dynamite
+//          | ...??
 //          '
 // $421868: [NTSCU][8-bit:Showdown_Kills-Player1]
 //          - This value counts how many kills the player has achieved in the Showdown Match
@@ -626,6 +693,34 @@
 // $483750: [NTSCU][8-bit Flag:IsLoading |32-bit]
 //          0xD => loading
 //          0xFFFFFFFF => not loading
+// $488182: [NTSCU][6-byte Struct:PlayerInput-Controller1]
+//          - Freezing values in this 6-byte region, prevents the game from reading inpur
+//          
+//          [NTSCU][2-byte Bitset:ButtonsPressed-Controller1]
+//          @Member of [Struct:PlayerInput-Controller1]
+//          
+//          [NTSCU][InvertedBitFlags of Bitset(byte1):ButtonsPressed-Controller1]
+//          - bit0 => Select
+//          - bit1 => L3
+//          - bit2 => R3
+//          - bit3 => Start
+//          - bit4 => D-pad up
+//          - bit5 => D-pad right
+//          - bit6 => D-pad down
+//          - bit7 => D-pad left
+// $488183: [NTSCU][InvertedBitFlags of Bitset(byte2):PlayerInput-Controller1]
+//          - bit0 => L2
+//          - bit1 => R2
+//          - bit2 => L1
+//          - bit3 => R1
+//          - bit4 => 🛆
+//          - bit5 => ◌
+//          - bit6 => X
+//          - bit7 => ⬚
+// $488184: [NTSCU][16-bit:RightJoystickAngleAndTilt-Controller1]
+//          @Member of [Struct:PlayerInput-Controller1]
+// $488186: [NTSCU][16-bit:LeftJoystickAngleAndTilt-Controller1]
+//          @Member of [Struct:PlayerInput-Controller1]
 // $488238: PlayerInput
 // $499878: [NTSCU][3-byte ASCII:SinglePlayerLoaded_CharacterModelID]
 //          @SinglePlayer CharacterModel Hack
@@ -638,8 +733,26 @@
 //          +0x4C - [Float:TimeSpentInLevel |32-bit]
 //          | - Time in seconds
 //          | - Resets back to 0.0: On Level Start + On Level Reset; Thus this can be used to check if a Player has started a Level from the beginning
+//          | - Can also be used to check if a new round has started in Multplayer Mode
 //          | - Timer halts at 524288.0 (= 8738m 8s, 145h 38m 8s)
-// $5F7E20: [NTSCU][Variable Size Array:GameData]
+// $5E3320: [NTSCU][576-byte?? Array:LevelZoneDataPointers]
+//          - Each ListItem consists of [32-bit:ZeroedOut] + [32-bit Pointer:LevelZoneData] -> [Struct:LevelZoneData]
+//          - The first [Pointer:LevelZoneData] in the array points to something else ???
+//          - [Struct:LevelZoneData] contains various data about the 3D levelObjects loaded into the game.
+// $5E334C: [NTSCU][32-bit (base) Pointer:LevelZoneData_A]
+//          @Member of [Array:LevelZoneDataPointers]
+//          
+//          ___________PrologueStage___________
+//          [32-bit (base) Pointer:LevelZoneData_A.lvl_perf75] -> [Struct:LevelZoneData.zone_crack01Roof_01]
+//          +0x1C - [ASCII:ZoneDataID] = "zone_crack01Roof_01"
+//          +0x194 - [bit0 BitFlag:IsRoofCrackOpen |32-bit]
+//          | - This bitflag only handles the visual change of the crack in the roof; Surrounding data may correlate to functional logic.
+//          | 0 => no crack visible
+//          | 1 => crack visible
+//          '
+// $5F7E20: (unverified)
+//          
+//          [NTSCU][Variable Size Array:GameData]
 //          - Array is only populated when in-game
 //          - Size of this array is dependent on amount of HumanPlayers in-game
 //          - This array consists of 2 parts. [Array:PlayerDataPointers] + [Array:GameDataPointers]
@@ -678,7 +791,9 @@
 //          |''''''''''''''''''''''''''''''''''''''
 //          | - Contains (5x) pointers to various data related to the Level + Game
 //          '
-// $5F7E24: [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player1] -> [Struct:HUD_AmmoHealth]
+// $5F7E24: (inconsistent)
+//          
+//          [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player1] -&gt; [Struct:HUD_AmmoHealth]
 //          @Fixed Memory Location, although this pointer is part of [Variable Size Array:GameData] ($0x5f7e20)
 //          - Pointer is only valid when in-game
 //          
@@ -708,12 +823,12 @@
 //          # WeaponIDs (hex)
 //          |(list incomplete)
 //          |''''''''''''''''''
-//          | 0x0 => SingleRevolver
-//          | 0x1 => DualRevolvers
-//          | 0x2 => Shotgun
-//          | 0x3 => Rifle
-//          | 0x4 => Knife
-//          | 0x5 => Dynamite
+//          | 0x0 =&gt; SingleRevolver
+//          | 0x1 =&gt; DualRevolvers
+//          | 0x2 =&gt; Shotgun
+//          | 0x3 =&gt; Rifle
+//          | 0x4 =&gt; Knife
+//          | 0x5 =&gt; Dynamite
 //          | ...??
 //          '
 // $5F7E94: [NTSCU][32-bit (base) Pointer:HUD_AmmoHealth-Player2] -> [Struct:HUD_AmmoHealth]
@@ -752,6 +867,16 @@
 //          | "lvl_fort" => Fort Stage
 //          | "lvl_mans" => Mansion
 //          '
+// $912950: [NTSCU][Lower4:TeamID-Player1 |32-bit]
+//          - Identifies the MPplayer's team
+//          
+//          # TeamIDs (hex)
+//          |''''''''''''''''
+//          | 0x0 => Red Team
+//          | 0x1 => Blue team
+//          | 0x2 => Yellow Team
+//          | 0x3 => Green Team
+//          '
 // $912954: [NTSCU][3-byte ASCII:CharacterModelID-Player1(preferred)]
 //          - This controls which CharacterModel is loaded
 //          - Placing a valid ID here and then freezing before loading a Level, will load the corresponding CharacterModel
@@ -764,10 +889,32 @@
 //          | "yrd" => Snow Red (Teenage Red, with different coat)
 //          | "red" => Red (Senior Red with casual wild west clothing)
 //          | "nrd" => New Red (Senior Red with long coat, as seen on TitleScreen and box art)
+//          | "pgj" => PigJosh
+//          | "scb" => BatBoy
+//          | "msk" => Indian
+//          | "bby" => Baby
+//          | "dcg" => DancingGirl
 //          | ...
+//          '
+// $912968: [NTSCU][Variable Size ASCII:AIsetting-Player1(preferred) |16-byte??]
+//          - Practically this can be used to check if a MultiplayerPlayer is AI controlled or Human controlled
+//          - AIsetting examples: "Default_Bot", "Pig_Bot", ...
+//          - MultiplayerPlayer 1 is always Human Controlled
+//          
+//          [4-byte ASCII] Zeroed out (0x0) => Human controlled MultiplayerPlayer
+//          [4-byte ASCII] Any other value => AI controlled MultiplayerPlayer
+// $9129B8: [NTSCU][Lower4:TeamID-Player2 |32-bit]
+//          - Documentation & TeamIDs listed at $0x912950
 // $9129BC: [NTSCU][3-byte ASCII:CharacterModelID-Player2(preferred)]
 //          - Documentation at $0x912954
+// $9129D0: [NTSCU][Variable Size ASCII:AIsetting-Player2(preferred) |16-byte??]
+// $912A20: [NTSCU][Lower4:TeamID-Player3 |32-bit]
+//          - Documentation & TeamIDs listed at $0x912950
 // $912A24: [NTSCU][3-byte ASCII:CharacterModelID-Player3(preferred)]
 //          - Documentation at $0x912954
+// $912A38: [NTSCU][Variable Size ASCII:AIsetting-Player3(preferred) |16-byte??]
+// $912A88: [NTSCU][Lower4:TeamID-Player4 |32-bit]
+//          - Documentation & TeamIDs listed at $0x912950
 // $912A8C: [NTSCU][3-byte ASCII:CharacterModelID-Player4(preferred)]
 //          - Documentation at $0x912954
+// $912AA0: [NTSCU][Variable Size ASCII:AIsetting-Player4(preferred) |16-byte??]
