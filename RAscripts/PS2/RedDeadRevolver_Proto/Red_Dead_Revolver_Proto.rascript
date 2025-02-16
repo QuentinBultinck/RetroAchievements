@@ -1060,10 +1060,35 @@ LEVEL_FlashbackStage = "flash" 	// FullString: "lvl_flash"
 LEVEL_Train = "train" 			// FullString: "lvl_train"
 LEVEL_FortStage = "fort" 		// FullString: "lvl_fort"
 LEVEL_Mansion = "mans" 			// FullString: "lvl_mans"
+CONST_OFFSET_TO_LEVEL_ID_SUBSTRING = 4
 function is_Level(enum_levelID, enum_releaseRegion) {
-	const_offsetTo_UniqueLevelIdSubstring = 0x4
-	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
-	return ascii_string_equals(let_memAddr_levelID + const_offsetTo_UniqueLevelIdSubstring, enum_levelID)}
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	return ascii_string_equals(let_memAddr_LevelIdSubstring, enum_levelID)}
+
+function on_LevelID_change(enum_releaseRegion) {
+	const_MAX_SIZE_LEVEL_ID_SizeInBytes = 12 // 12-byte
+
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	let_array_memAddresses_toCheckForChange = []
+	let_index = 0
+	let_step = 4
+	for let_index in range (0, const_MAX_SIZE_LEVEL_ID_SizeInBytes - let_step, let_step) 
+		array_push(let_array_memAddresses_toCheckForChange, let_memAddr_LevelIdSubstring + let_index)
+	return any_of(let_array_memAddresses_toCheckForChange, let_memAddr_toCheckForChange =>
+		dword(let_memAddr_toCheckForChange) != prev(dword(let_memAddr_toCheckForChange)))
+	}
+
+function is_LevelID_sizeInBytes(int_sizeInBytes, enum_releaseRegion) {
+	/* NOTE: The last character of the LevelId is always followed by [1-byte] == 0x00
+		Example, where "." represents 0x00:
+			"lvl_tng"; "lvl_tng.70" 
+		*/
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	let_memAddr_LastCharacterOfLevelID = let_memAddr_LevelIdSubstring + (int_sizeInBytes - 1)
+	return 
+		byte(let_memAddr_LastCharacterOfLevelID) != 0x00 			// --CheckIf--> last character of LeveID_substring [4-byte] != 0x00
+		&& byte(let_memAddr_LastCharacterOfLevelID + 0x1) == 0x00 	// --CheckIf--> the last character of LeveID_substring is followed by [1-byte] == 0x00
+		} 
 // #endregion LevelID
 // #region Point of Interest (POI)
 const_Level_POI_Data = {
@@ -3009,8 +3034,8 @@ richPresence_text = {
 	"rp_MP_3P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {4} {8} | {9} {10} 3 as {11} {12}"},
 	"rp_MP_4P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {4} {8} | {9} {10} 3 as {11} {12} | {13} {14} 4 as {15} {16}"},
 
-	"rp_SP":						{"en": "Playing Red Dead Revolver ~Prototype~ | {0} is gunslinging in {1}"},
-	"rp_TitleScreen":				{"en": "Playing Red Dead Revolver ~Prototype~ | Title Screen"}	
+	"rp_SP":						{"en": "Playing Red Dead Revolver ~Prototype~ | {0} is gunslinging in {1}"}, // TODO rp_SP - update with a extra lookupTable "is gunslinging" vs "is exploring"
+	"rp_TitleScreen":				{"en": "Playing Red Dead Revolver ~Prototype~ | Title Screen"},
 	"rp_Default":					{"en": "Playing Red Dead Revolver ~Prototype~"}}
 richPresence_LookupTablesText = {
 	// "lup_Template": {
@@ -3020,6 +3045,12 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
 
+	// "lup_Template": {
+	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+	// 	"LookupTextKey_A":				{"en": "xxxxxxxx"},
+	// 	"LookupTextKey_B":				{"en": "xxxxxxxx"},
+	// 	"LookupTextKey_C":				{"en": "xxxxxxxx"},
+	// 	},
 	"lup_ShowdownKills": {
 		"ShowdownKills_0": 	{"en": ""},
 		"ShowdownKills_1": 	{"en": "✯"},
@@ -3036,20 +3067,24 @@ richPresence_LookupTablesText = {
 		"GREEN": 			{"en": "🟢"},
 		"YELLOW": 			{"en": "🟡"},
 		},
-	"lup_StageName": {
-		"LOOKUP_FALLBACK":				{"en": "\"The Wild West\""},
+	"lup_StageName_4Byte": { // lup_StageName is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LOOKUP_FALLBACK":				{"en": "\"The Wild West 4\""},
 
 		"TrainingStage": 				{"en": "\"The Training Stage\""},
-		"PrologueStage": 				{"en": "\"The Prologue Stage\""},
 		"TitleStage": 					{"en": "\"The Title Stage\""},
+		"Tombstone": 					{"en": "\"The Tombstone Stage\""},
+		"FortStage": 					{"en": "\"The Fort Stage\""},
+		"Mansion": 						{"en": "\"The Mansion Stage\""},
+		},
+	"lup_StageName_8Byte": { // lup_StageName is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LOOKUP_FALLBACK":				{"en": "\"The Wild West\" 8"},
+
+		"PrologueStage": 				{"en": "\"The Prologue Stage\""},
 		"SheriffNight": 				{"en": "\"The Sheriff Night Stage\""},
 		"SheriffDay": 					{"en": "\"The Sheriff Day Stage\""},
 		"SaloonStage": 					{"en": "\"The Saloon Stage\""},
-		"Tombstone": 					{"en": "\"The Tombstone Stage\""},
 		"FlashbackStage": 				{"en": "\"The Flashback Stage\""},
 		"Train": 						{"en": "\"The Train Stage\""},
-		"FortStage": 					{"en": "\"The Fort Stage\""},
-		"Mansion": 						{"en": "\"The Mansion Stage\""},
 		},
 	"lup_CharacterName": {
 		"LOOKUP_FALLBACK":				{"en": "a Gunslinger"},
@@ -3109,6 +3144,11 @@ richPresence_lookupTables = {
 		// enum_XXX_C:					"LookupTextKey_C",
 		// },
 
+	// "lup_Template": {
+	// 	enum_XXX_A:					"LookupTextKey_A",
+	// 	enum_XXX_B:					"LookupTextKey_B",
+	// 	enum_XXX_C:					"LookupTextKey_C",
+	// 	},
 	"lup_ShowdownKills": {
 		0x0: "ShowdownKills_0",
 		0x1: "ShowdownKills_1",
@@ -3121,21 +3161,23 @@ richPresence_lookupTables = {
 	"lup_TeamColor": {
 		TEAM_Red:		"RED",
 		TEAM_Blue:		"BLUE",
-		TEAM_Green:		"GREEN", is_MPplayer_CPUcontrolled(MP_PLAYER_1, enum_releaseRegion)
+		TEAM_Green:		"GREEN",
 		TEAM_Yellow:	"YELLOW",
 		},
-	"lup_StageName": {
+	"lup_StageName_4Byte": { // lup_StageName is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
 		LEVEL_TrainingStage: "TrainingStage", 
-		LEVEL_PrologueStage: "PrologueStage", 
 		LEVEL_TitleStage: "TitleStage", 
+		LEVEL_Tombstone: "Tombstone", 
+		LEVEL_FortStage: "FortStage", 
+		LEVEL_Mansion: "Mansion", 
+		},
+	"lup_StageName_8Byte": { // lup_StageName is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		LEVEL_PrologueStage: "PrologueStage", 
 		LEVEL_SheriffNight: "SheriffNight", 
 		LEVEL_SheriffDay: "SheriffDay", 
 		LEVEL_SaloonStage: "SaloonStage", 
-		LEVEL_Tombstone: "Tombstone", 
 		LEVEL_FlashbackStage: "FlashbackStage", 
 		LEVEL_Train: "Train", 
-		LEVEL_FortStage: "FortStage", 
-		LEVEL_Mansion: "Mansion", 
 		},
 	"lup_CharacterName": {
 		CHARACTER_TrainingRed: "TrainingRed",
@@ -3242,13 +3284,130 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // • RICH PRESENCE display script •
 // ================================
 // #region RP - display script
-function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+
+// function rp_TemplateDisplayScript(enum_releaseRegion) { 
+	// function condition(enum_releaseRegion) =>
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// return rich_presence_conditional_display( 
+	// 	condition(enum_releaseRegion),
+	// 	richPresence_getText("rp_Template"),
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
+	// )}
+
+function rp_MP_2P(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
+		richPresence_getText("rp_MP_2P"),
+		richPresence_callParameterFunction("rpp_StageName_8Byte", enum_releaseRegion), // 0 // rpp_StageName_8Byte as MP has only Prologue Stage
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion) // 8
 	)}
+
+function rp_MP_3P(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MP_3P"),
+		richPresence_callParameterFunction("rpp_StageName_8Byte", enum_releaseRegion), // 0 // rpp_StageName_8Byte as MP has only Prologue Stage
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_TeamColor", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Human_OR_CPU", enum_releaseRegion), // 10
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_CharacterName", enum_releaseRegion), // 11
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Kills", enum_releaseRegion) // 12
+	)}
+
+function rp_MP_4P(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MP_4P"),
+		richPresence_callParameterFunction("rpp_StageName_8Byte", enum_releaseRegion), // 0 // rpp_StageName_8Byte as MP has only Prologue Stage
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_TeamColor", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Human_OR_CPU", enum_releaseRegion), // 10
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_CharacterName", enum_releaseRegion), // 11
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Kills", enum_releaseRegion), // 12
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_TeamColor", enum_releaseRegion), // 13
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Human_OR_CPU", enum_releaseRegion), // 14
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_CharacterName", enum_releaseRegion), // 15
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Kills", enum_releaseRegion) // 16
+	)}
+
+function rp_SP_StageName_4Byte(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion))
+		&& never(on_LevelID_change(enum_releaseRegion))
+		&& tally(1, [
+			once(is_LevelID_sizeInBytes(3, enum_releaseRegion)), // 3-byte is minimum size of LevelID
+			once(is_LevelID_sizeInBytes(4, enum_releaseRegion)),
+			])
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_SP"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_StageName_4Byte", enum_releaseRegion) // 1
+	)}
+function rp_SP_StageName_8Byte(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion))
+		&& never(on_LevelID_change(enum_releaseRegion))
+		&& tally(1, [
+			once(is_LevelID_sizeInBytes(5, enum_releaseRegion)),
+			once(is_LevelID_sizeInBytes(6, enum_releaseRegion)),
+			once(is_LevelID_sizeInBytes(7, enum_releaseRegion)), 
+			once(is_LevelID_sizeInBytes(8, enum_releaseRegion)), // 8-byte is the largest sized LevelID
+			])
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_SP"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_StageName_8Byte", enum_releaseRegion) // 1
+	)}
+
+function rp_TitleScreen(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& (
+			is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion)
+		)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_TitleScreen")
+	)}
+	
 function rp_Default() {
 	return rich_presence_display(	
 		richPresence_getText("rp_Default")
@@ -3257,7 +3416,12 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		rp_TitleScreen(enum_releaseRegion)
+		rp_SP_StageName_4Byte(enum_releaseRegion)
+		rp_SP_StageName_8Byte(enum_releaseRegion)
+		rp_MP_2P(enum_releaseRegion)
+		rp_MP_3P(enum_releaseRegion)
+		rp_MP_4P(enum_releaseRegion)
 	}} 
 // #endregion RP - display script
 
@@ -3318,12 +3482,18 @@ richPresence_parameterData = {
 		// "MacroFormat": "Number"},	
 	
 
-	"rpp_StageName": {
+	"rpp_StageName_4Byte": {
 		"RPtype": richPresence_LOOKUP_STRING,
 		"MemoryAddressToASCII": {
-			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA)},
-		"LookupTableID": "lup_StageName",
-		"LookupFallback": richPresence_getLookupTableText("lup_StageName", "LOOKUP_FALLBACK")},
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageName_4Byte",
+		"LookupFallback": richPresence_getLookupTableText("lup_StageName_4Byte", "LOOKUP_FALLBACK")},
+	"rpp_StageName_8Byte": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageName_8Byte",
+		"LookupFallback": richPresence_getLookupTableText("lup_StageName_8Byte", "LOOKUP_FALLBACK")},
 	// ---------ShowdownPlayer1---------
 	"rpp_ShowdownPlayer1_CharacterName": {
 		"RPtype": richPresence_LOOKUP_STRING,
@@ -3406,7 +3576,6 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player4(preferred)", RELEASE_REGION_USA)},
 		"LookupTableID": "lup_CharacterName",
 		"LookupFallback": richPresence_getLookupTableText("lup_CharacterName", "LOOKUP_FALLBACK")},
-
 	"rpp_ShowdownPlayer4_TeamColor": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {

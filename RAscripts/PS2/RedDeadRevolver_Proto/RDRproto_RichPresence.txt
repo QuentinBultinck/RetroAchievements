@@ -1,0 +1,84 @@
+Lookup:CharacterName
+3308154=Gabrial Navarro
+6382452=Longhorn Luke
+6383470=Rico Pedrosa
+6384999=Captive
+6447982=Smitty
+6447987=Bat Boy
+6447988=Holstein Hal
+6578532=Dad
+6579570=Adult Red
+6581360=The Plaid Cowboy
+6582126=Old Man
+6582894=Senior Red
+6582900=Young Red
+6582905=Teenage Red
+6583150=Soldier
+6775652=Dancing Girl
+6780788=Twiggy Phelps
+6841448=Hedgehog Thornton
+6973296=Pig Josh
+7037812=Sam
+7041638=Franken
+7041645=Mr. Kelley
+7041901=Young Master Indian
+7041911=Whiskey Treadwell
+7102836=Tall Guy
+7104359=Gigolo Hancock
+7104373=Ugly Chris
+7104866=Billy the Kid
+7107694=Natalie
+7234663=Atlas
+7235946=Jinnie
+7237485=Udo Kang the Mongolian
+7238755=Christina
+7366771=Curly Shaw
+7368307=The Sniper
+7564387=Carlos
+7631725=Master Indian
+7633530=Gabrial Navarro
+7889261=Dan the Mexican
+7955042=Baby
+*=a Gunslinger
+
+Lookup:Human_OR_CPU
+0=Player
+*=CPU
+
+Lookup:ShowdownKills
+0=
+1=✯
+2=✯✯
+
+Lookup:StageName_4Byte
+6778472="The Title Stage"
+6778484="The Training Stage"
+1651339124="The Tombstone Stage"
+1936613741="The Mansion Stage"
+1953656678="The Fort Stage"
+*="The Wild West 4"
+
+Lookup:StageName_8Byte
+6845281="The Flashback Stage"
+7235937="The Train Stage"
+808940133="The Sheriff Day Stage"
+892823154="The Prologue Stage"
+1768845925="The Sheriff Night Stage"
+1852796780="The Saloon Stage"
+*="The Wild West" 8
+
+Lookup:TeamColor
+0=🔴
+1=🔵
+2=🟡
+3=🟢
+*=🔘
+
+Display:
+?0xX91204c=1397769043S0xX427c80=0S0xH483750=13?Playing Red Dead Revolver ~Prototype~ | Title Screen
+?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128ee!=0_C:0xH9128ef=0.1._N:0xH9128ef!=0_C:0xH9128f0=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is gunslinging in @StageName_4Byte(0xX9128ec)
+?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128f0!=0_C:0xH9128f1=0.1._N:0xH9128f1!=0_C:0xH9128f2=0.1._N:0xH9128f2!=0_C:0xH9128f3=0.1._N:0xH9128f3!=0_C:0xH9128f4=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is gunslinging in @StageName_8Byte(0xX9128ee)
+?0xX91204c=1397769043?Playing a Showdown Multiplayer Match in @StageName_8Byte(0xX9128ee) | @Human_OR_CPU(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @ShowdownKills(0xH421868) @ShowdownKills(0xH42191c)
+?0xX91204c=1397769043?Playing a Showdown Multiplayer Match in @StageName_8Byte(0xX9128ee) | @Human_OR_CPU(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @ShowdownKills(0xH421868) @ShowdownKills(0xH42191c) | @TeamColor(0xL912a20) @Human_OR_CPU(0xX912a38) 3 as @CharacterName(0xX912a24) @ShowdownKills(0xH4219d0)
+?0xX91204c=1397769043?Playing a Showdown Multiplayer Match in @StageName_8Byte(0xX9128ee) | @Human_OR_CPU(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @ShowdownKills(0xH421868) @ShowdownKills(0xH42191c) | @TeamColor(0xL912a20) @Human_OR_CPU(0xX912a38) 3 as @CharacterName(0xX912a24) @ShowdownKills(0xH4219d0) | @TeamColor(0xL912a88) @Human_OR_CPU(0xX912aa0) 4 as @CharacterName(0xX912a8c) @ShowdownKills(0xH421a84)
+Playing Red Dead Revolver ~Prototype~
