@@ -391,12 +391,12 @@ richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
-	// "rp_Template": {
-	// 	"Lookup_A":						{"en": "xxxxxxxx"},
-	// 	"Lookup_B":						{"en": "xxxxxxxx"},
-	// 	"Lookup_C":						{"en": "xxxxxxxx"},
-	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
-	// 	},
+	// "lupText_Template": {
+		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_A":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
+		// },
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -405,9 +405,19 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	// "lup_Template": {
+		// "LookupTableText_Key": "lupText_Template",
+		// "LookUpTable": {
+		// 	enum_XXX_A:					"LookupTextKey_A",
+		// 	enum_XXX_B:					"LookupTextKey_B",
+		// 	enum_XXX_C:					"LookupTextKey_C",
+		// 	},
+		// },
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
-	richPresence_lookupTables[string_lookupTableKey]
+	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
+function richPresence_getLookupTableTextKey(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]["LookupTableText_Key"]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -468,6 +478,18 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // • RICH PRESENCE display script •
 // ================================
 // #region RP - display script
+
+// function rp_TemplateDisplayScript(enum_releaseRegion) { 
+	// function condition(enum_releaseRegion) =>
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// return rich_presence_conditional_display( 
+	// 	condition(enum_releaseRegion),
+	// 	richPresence_getText("rp_Template"),
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
+	// )}
+
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -491,9 +513,10 @@ function richPresence_initializeDisplays() {
 // • RICH PRESENCE parameters •
 // ===========================
 // #region RP - parameters
-richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1			// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_LOOKUP_STRING = 3	//  rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
+richPresence_MACRO = 4			// rich_presence_macro(macro, expression)
 // -------------------------------------
 
 // -------------------------------------
@@ -505,31 +528,40 @@ richPresence_parameterData = {
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
+	
+	// "rpp_ValueTemplate": {
+		// "RPtype": richPresence_VALUE,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "ValueFormat": "VALUE"},
 
-	//	"rpp_ValueTemplate": {
-	//	 	"RPtype": richPresence_VALUE,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"ValueFormat": "VALUE"},
+	// "rpp_LookupHexTemplate": {
+		// "RPtype": richPresence_LOOKUP_HEX,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
-	//	 "rpp_LookupTemplate": {
-	//	 	"RPtype": richPresence_LOOKUP,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//		"LookupTableID": "lup_LookupTableKey",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
+	// "rpp_LookupStringTemplate": {
+		// "RPtype": richPresence_LOOKUP_STRING,
+		// "MemoryAddressToASCII": {
+		// 	RELEASE_REGION_USA: memory_getAddress(), 
+		// 	RELEASE_REGION_EUR: memory_getAddress(),
+		// 	RELEASE_REGION_JPN: memory_getAddress()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
-	//	 	"RPtype": richPresence_MACRO,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"MacroFormat": "Number"},	
+		// "RPtype": richPresence_MACRO,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "MacroFormat": "Number"},	
 	
 	
 
@@ -545,12 +577,19 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+	function richPresence_callLookupHexFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
 		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+
+	function richPresence_callLookupStringFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
+		let_memAddr_ASCII = dict_paramLookupData["MemoryAddressToASCII"][enum_releaseRegion]
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_ascii_string_lookup(let_name, let_memAddr_ASCII, let_lookUpTable, let_lookupFallback)}
 	
 	function richPresence_callMacroFunction(dict_paramMacroData, enum_releaseRegion) {
 		let_macro = dict_paramMacroData["MacroFormat"] 
@@ -560,7 +599,8 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
 	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 // #endregion RP - parameters
@@ -571,10 +611,11 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 // #region RP - initialization
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_lookupTableKey in richPresence_lookupTables { 
-		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
+		let_lookupTable = richPresence_getLookupTable(let_lookupTableKey)
+		let_lookupTableTextKey = richPresence_getLookupTableTextKey(let_lookupTableKey)
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
-			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableTextKey, let_lookupValue)
 		}
 	}}
 
