@@ -350,6 +350,7 @@ memory_addresses = {
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"32-bit:FrameCounter(preferred)": {RELEASE_REGION_USA: 0x487000, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
 	"Bitset(byte1):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488182, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Bitset(byte2):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488183, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -461,6 +462,10 @@ function isNot_Loading(enum_releaseRegion) {
 	const_STATE_IsLoading_false = 0xFF
 	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_false}
 
+function on_FrameCounter_change(enum_releaseRegion) {
+	let_memAddr_FrameCounter = memory_getAddress("32-bit:FrameCounter(preferred)", enum_releaseRegion)
+	return dword(let_memAddr_FrameCounter) != prev(dword(let_memAddr_FrameCounter))}
+
 // ----------------PlayerInput---------------------
 CONTROLLER_1 = 1
 CONTROLLER_2 = 2
@@ -475,6 +480,9 @@ function prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) =>
 function on_PlayerInput_X_press(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 	
+function on_PlayerInput_X_release(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) > prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
 function current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) {
 	let_string_addrKey = format("Bitset(byte1):ButtonsPressed-Controller{0}", enum_controllerID)
 	return bit5(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
@@ -484,6 +492,9 @@ function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
 
 function on_PlayerInput_O_press(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
+function on_PlayerInput_O_release(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) > prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 
 function current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) {
 	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
@@ -559,10 +570,22 @@ function current_TimeSpentInLevel(enum_releaseRegion) {
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
 
 function prev_TimeSpentInLevel(enum_releaseRegion) => prev(current_TimeSpentInLevel(enum_releaseRegion))
-function on_TimeSpentInLevel_start(enum_releaseRegion) => 
+
+function current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion) =>
+	current_TimeSpentInLevel(enum_releaseRegion) * 100.0 // Seconds to CentiSeconds
+
+function on_TimeSpentInLevel_start(enum_releaseRegion) =>
 	// NOTE: Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
-	current_TimeSpentInLevel(enum_releaseRegion) <= 1.0
-	&& prev_TimeSpentInLevel(enum_releaseRegion) > 1.0
+	current_TimeSpentInLevel(enum_releaseRegion) >= 1.0
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 1.0
+
+function on_TimeSpentInLevel_start_bis(enum_releaseRegion) => 
+	/* NOTE: 
+		- on_TimeSpentInLevel_start_bis() is true a few millieseconds later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
+		- Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
+		*/
+	current_TimeSpentInLevel(enum_releaseRegion) >= 2.0
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 2.0
 
 function on_TimeSpentInLevel_reset(enum_releaseRegion) => 
 	current_TimeSpentInLevel(enum_releaseRegion) < prev_TimeSpentInLevel(enum_releaseRegion)
@@ -905,6 +928,10 @@ function is_SinglePlayer_Health_atMax(enum_releaseRegion) =>
 function on_SinglePlayer_Health_takeDamage(enum_releaseRegion) =>
 	current_SinglePlayer_Health(enum_releaseRegion) < prev_SinglePlayer_Health(enum_releaseRegion)
 
+function on_SinglePlayer_Health_death(enum_releaseRegion) =>
+	current_SinglePlayer_Health(enum_releaseRegion) == 0.0 
+	&& prev_SinglePlayer_Health(enum_releaseRegion) > 0.0
+
 function on_SinglePlayer_Health_heal(enum_releaseRegion) =>
 	current_SinglePlayer_Health(enum_releaseRegion) > prev_SinglePlayer_Health(enum_releaseRegion)
 
@@ -972,6 +999,9 @@ CHARACTER_zzTop2 = "zz2" // // GabrialNavarro(alt)
 
 function on_MPround_start(enum_releaseRegion) =>
 	on_TimeSpentInLevel_start(enum_releaseRegion)
+
+function on_MPround_start_bis(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start_bis(enum_releaseRegion)
 
 function on_MPround_reset(enum_releaseRegion) =>
 	on_TimeSpentInLevel_reset(enum_releaseRegion)
@@ -1649,7 +1679,7 @@ achievements_coreData = {
 	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
-		//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
@@ -3852,22 +3882,22 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 
 	"lb_ShootingChallenge": { // VERIFIED
 		"id": 125651, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_tng: Achieve 'Good Job' for ShootingChallenge"},
-	// "lb_Perf75TimeTrial": { // CONCEPT lb_Perf75TimeTrial
-		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
-	// "lb_HngTimeTrial": { // CONCEPT lb_HngTimeTrial
-		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
-	// "lb_SherniteTimeTrial": { // CONCEPT lb_SherniteTimeTrial
-		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
-	// "lb_Sher70TimeTrial": { // CONCEPT lb_Sher70TimeTrial
-		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
-	// "lb_MPTimeTrial": { // CONCEPT lb_MPTimeTrial
-		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
-	// "lb_MPChallenge": { // CONCEPT lb_MPChallenge
-		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "MILLISECS", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
+	"lb_TimeTrialPerf75": { // VERIFIED
+		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
+	"lb_TimeTrialHng": { // VERIFIED
+		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
+	"lb_TimeTrialShernite": { // VERIFIED
+		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+	"lb_TimeTrialSher70": { // VERIFIED
+		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+	"lb_MPTimeTrial": { // QA lb_MPTimeTrial
+		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
+	"lb_MPChallenge": { // QA lb_MPChallenge
+		"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
 	}
 // #endregion LB - core data
 
@@ -3876,6 +3906,29 @@ leaderboards_coreData = {
 // ==================================
 // #region LB - trigger generators
 //	- For leaderboard logic that's reoccuring across multiple triggers
+function lbGenerate_StartTrigger_SPstage_TimeTrial(enum_levelID, enum_releaseRegion) =>	
+	is_ReleaseRegion(enum_releaseRegion)
+	&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	&& is_Level(enum_levelID, enum_releaseRegion)
+	&& isNot_Loading(enum_releaseRegion)
+	&& on_TimeSpentInLevel_start(enum_releaseRegion) // --CheckIf--> Level starts from beginning
+function lbGenerate_CancelTrigger_SPstage_TimeTrial(enum_levelID, enum_releaseRegion) =>
+	// [1] ==== Alt Cancel Group ====	-> Cancel when not correct GameState
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	// [2] ==== Alt Cancel Group ====	-> Cancel when not correct Level
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Level(enum_levelID, enum_releaseRegion)
+	// [3] ==== Alt Cancel Groups ====	-> Cancel on Level Start or Reset
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_PauseMenu_reset(enum_releaseRegion)
+	// [4] ==== Alt Cancel Groups ====	-> Cancel on player death
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_SinglePlayer_Health_death(enum_releaseRegion)
+	// [5] ==== Alt Cancel Groups ====	-> Cancel on TimeSpentInLevel reset (CheckIf level has reset through any other means)
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_TimeSpentInLevel_reset(enum_releaseRegion)
+
 // #endregion LB - trigger generators
 
 // ========================
@@ -3883,15 +3936,67 @@ leaderboards_coreData = {
 // ========================
 // #region LB - triggers
 leaderboards_startTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Alt Start Group ====		-> Start when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [1] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 		&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
 		&& on_TrainingStage_ShootingChallenge_start(enum_releaseRegion)
 		),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+	
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1
+			&& current_TotalPlayerCount(enum_releaseRegion) == 4
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& on_MPround_start(enum_releaseRegion)
+		),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1
+			&& current_TotalPlayerCount(enum_releaseRegion) == 4
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& on_MPround_start_bis(enum_releaseRegion) // on_MPround_start_bis() activates one second later than on_MPround_start()
+		),
 	}
 leaderboards_cancelTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [3] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1] ==== Alt Cancel Group ====		-> Cancel when not correct GameState
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
@@ -3905,9 +4010,59 @@ leaderboards_cancelTriggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_Level_startORreset(enum_releaseRegion)
 		),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
+		// [2] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_reset(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
+		// [2] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_reset(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		),
 	}
 leaderboards_submitTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Submit Group ====		-> Submit when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Reset Group ====			-> Reset when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
 		return 
 			never(
@@ -3922,9 +4077,134 @@ leaderboards_submitTriggers = {
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) > 3.0 // ---2 Lines---> prev_ShootingGalleryTimer() is the submitted ValueMeasure, These are extra checks to prevent false entries from getting into leaderboard
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) < 61.0 
 		}),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 1 // = 5 (minus 1, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
+				once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)		
+		}),	
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 4 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TitleStage, enum_releaseRegion)	
+		}),	
+
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 5 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)		
+		}),	
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: For the leaderboad, only count nonRespawning NPC deaths
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) - 2 // = 9 	(minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),	
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_ROUND_WINS = 7
+		return 
+		// [1] ==== Alt Submit Group ====		-> Submit when MP_PLAYER_1 has won 7 rounds consecutively
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))
+		// [2] ==== Alt Reset Group ====		-> Reset when enemy Player wins a round (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					])
+				)
+		// [2] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		// [3] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		}),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Submit Group ====		-> Submit when player takes a hit
+			is_ReleaseRegion(enum_releaseRegion)
+			&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+			&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)
+		// [2+3] ==== Alt Submit Group ====		-> Submit on PauseMenu->Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& on_PauseMenu_reset(enum_releaseRegion)
+		// [4] ==== Alt Submit Group ====		-> Submit when leaving Multiplayer mode
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCount in AltGroup[2])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
+		// [6] ==== Alt Reset Group ====		-> Submit on PauseMenu->Reset (To reset HitCount in AltGroup[2])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& once(on_PauseMenu_reset(enum_releaseRegion)) // ---> Once is necessary as otherwise it may Reset the hitCount in AltGroup[2], thus not being able to submit
+				&& (
+					on_PlayerInput_O_release(CONTROLLER_1, enum_releaseRegion)
+					|| on_PlayerInput_X_release(CONTROLLER_1, enum_releaseRegion)
+					)
+				)
+		// [7] ==== Alt Reset Group ====		-> Submit when leaving Multiplayer mode (To reset HitCount in AltGroup[2])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		),
 	}
 //-----------------ValueMeasures-------------------
-function lb_ShootingChallenge_ValueMeasure() {
+function lb_ValueMeasure_ShootingChallenge() {
 	function valueMeasure_A(enum_releaseRegion) => // This is the value which is displayed; When this leaderboard.SubmitTrigger triggers, current value will be 0
 		measured(current_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion))
 	function valueMeasure_B(enum_releaseRegion) => // This is the value which will be submitted; When this leaderboard.SubmitTrigger triggers, prev/delta value will be the ShootingGalleryTimer, which is higher than 0, thus max_of()
@@ -3935,8 +4215,43 @@ function lb_ShootingChallenge_ValueMeasure() {
 		array_push(let_array_valueMeasures, valueMeasure_A(enum_releaseRegion))
 		array_push(let_array_valueMeasures, valueMeasure_B(enum_releaseRegion))}
 	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_TimeSpentInLevel() {
+	function valueMeasure(enum_releaseRegion) => 
+		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_TimeSpentInMultiplayerMatch() {
+	function valueMeasure(enum_releaseRegion) => 
+		// measured(repeated(0, on_FrameCounter_change(enum_releaseRegion))) // --repeated(0)--> hitCount infinitely
+		measured(tally(0, [
+			repeated(0, on_FrameCounter_change(enum_releaseRegion)), // --repeated(0)--> hitCount infinitely
+			repeated(30, on_FrameCounter_change(enum_releaseRegion)), // --repeated(30)--> Add 1 extra second, because leaderboard starts when 1 second passes
+			]))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_MultiplayerRoundsWon() {
+	function valueMeasure(enum_releaseRegion) => 
+		measured(repeated(0, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))) // --repeated(0)--> hitCount infinitely
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 leaderboards_valueMeasures = {
-	"lb_ShootingChallenge":  lb_ShootingChallenge_ValueMeasure(),
+	// "lb_template": lb_ValueMeasure_Template(),
+	"lb_ShootingChallenge": lb_ValueMeasure_ShootingChallenge(),
+	"lb_TimeTrialPerf75": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialHng": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialShernite": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialSher70": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_MPTimeTrial": lb_ValueMeasure_TimeSpentInMultiplayerMatch(),
+	"lb_MPChallenge": lb_ValueMeasure_MultiplayerRoundsWon(),
 	}
 // #endregion LB - triggers
 
@@ -3945,14 +4260,27 @@ leaderboards_valueMeasures = {
 // ====================
 // #region LB - text
 leaderboards_titles = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_ShootingChallenge": 				{"en": "Whack-a-Mole: Quick Draw Champions"},	
+	"lb_ShootingChallenge": 				{"en": "Whack-a-Mole: Quick Draw Gunslingers"},
+	"lb_TimeTrialPerf75":					{"en": "Prologue Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialHng":						{"en": "Title Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialShernite":					{"en": "Sheriff Night Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialSher70":					{"en": "Sheriff Day Stage: Quick Draw Gunslingers"},
+	"lb_MPTimeTrial":						{"en": "Seven in the Chamber: Quick Draw Gunslingers"},
+	"lb_MPChallenge":						{"en": "Bulletproof Bravado: Untouchable Gunslingers"},	
+
 	}
 leaderboards_descriptions = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 
 	"lb_ShootingChallenge": 				{"en": "In the \"Training Stage\", eliminate 11 moles during the Shooting Challenge as fast as possible"},
+	"lb_TimeTrialPerf75": 					{"en": "Complete the \"Prologue Stage\" by swiftly vanquishing all outlaws and reuniting with Mother or Jinnie after Red's home is secure"},
+	"lb_TimeTrialHng": 						{"en": "Complete the \"Title Stage\" by swiftly vanquishing all outlaws and earning the respect of a loyal canine after the deed is done"},
+	"lb_TimeTrialShernite": 				{"en": "Complete the \"Sheriff Night Stage\" by swiftly vanquishing all outlaws and earning the gratitude of the old man after the town is safe"},
+	"lb_TimeTrialSher70": 					{"en": "Complete the \"Sheriff Day Stage\" by swiftly vanquishing all outlaws and receiving thanks from the captive after the coast is clear"},
+	"lb_MPTimeTrial": 						{"en": "In Multiplayer, win 7 consecutive 4-player free-for-all rounds as fast as possible"},
+	"lb_MPChallenge": 						{"en": "In Multiplayer, win as many consecutive 4-player free-for-all rounds as possible without taking a single hit"},
 	}
 // #endregion LB - text
 

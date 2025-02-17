@@ -251,7 +251,7 @@ achievements_coreData = {
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Template": { // Category - info_here
 		"a_Template": 	{
@@ -651,7 +651,7 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	}
 // #endregion LB - core data
 
@@ -667,13 +667,52 @@ leaderboards_coreData = {
 // ========================
 // #region LB - triggers
 leaderboards_startTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Alt Start Group ====		-> Start when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [1] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 leaderboards_cancelTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [3] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 leaderboards_submitTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Submit Group ====		-> Submit when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Reset Group ====			-> Reset when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 //-----------------ValueMeasures-------------------
+function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
+	function valueMeasure(enum_releaseRegion) => 
+		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 leaderboards_valueMeasures = {
+	// "lb_template": lb_ValueMeasure_Template(),
 	}
 // #endregion LB - triggers
 
@@ -682,10 +721,10 @@ leaderboards_valueMeasures = {
 // ====================
 // #region LB - text
 leaderboards_titles = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 	}
 leaderboards_descriptions = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 	}
 // #endregion LB - text
 
