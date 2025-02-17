@@ -149,6 +149,8 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x4]},
 			"Struct(Coordinates):PlayerLocation-Z": {
 				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x8]},
+			"Flag:IsSpinFireAnimationActive": {
+				"pointerChainOffsets": [0x13C, 0x48, 0x28]},
 			"ASCII:Active_CharacterAnimationID": { 
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
@@ -167,6 +169,7 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x170, 0x5C]},
 			"BitFlag:IsAimingModeActive(preferred)": {
 				"pointerChainOffsets": [0x208]},
+			
 			// -------RapidFireMode-------
 			"BitFlag:IsRapidFireModeActive": {
 				"pointerChainOffsets": [0x6DC, 0x140]},
@@ -812,6 +815,37 @@ function on_RapidFireMode_activate(enum_releaseRegion) =>
 function current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor("Struct:PlayerData", "32-bit:RapidFireMode_TargetsPainted", let_memAddr_basePointer)}
+// ----------------SpinFire Special---------------------
+function current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Flag:IsSpinFireAnimationActive", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+	
+function prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) =>
+	prev(current_flagState_IsSpinFireAnimationActive(enum_releaseRegion))
+
+function is_Special_SpinFire_active(enum_releaseRegion) {
+	const_FLAG_True = 0x0 // NOTE: 0xFFFFFFFF => false
+	return current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True}
+
+function is_Special_SpinFire_inactive(enum_releaseRegion) {
+	const_FLAG_False = 0xFFFFFFFF // NOTE: 0x0 => true 
+	return current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False}
+
+function on_Special_SpinFire_start(enum_releaseRegion) {
+	const_FLAG_True = 0x0
+	const_FLAG_False = 0xFFFFFFFF
+	return
+		current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True
+		&& prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False}
+	
+function on_Special_SpinFire_finish(enum_releaseRegion) {
+	const_FLAG_True = 0x0
+	const_FLAG_False = 0xFFFFFFFF
+	return
+		current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False
+		&& prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True}
 
 // ----------------HorseCover Animation---------------------
 function current_flagState_IsHorseHugging(enum_releaseRegion) {
@@ -1615,7 +1649,7 @@ achievements_coreData = {
 	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
@@ -1650,6 +1684,8 @@ achievements_coreData = {
 			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
 		"a_Dodge": { // VERIFIED
 			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+		"a_SpinFire": { // VERIFIED
+			"id": 499616, "points": 0000000, "devInfo": "Hit at least 3 bullets during a secret Spinfire technique and without getting hit out of the technique (Press both X and O simultaneously with dual or single revolver equipped)"},	
 		"a_HorseCover": { // VERIFIED
 			"id": 498510, "points": 0000000, "devInfo": "Take cover whilst on horseback"},
 		"a_SaloonThrow": { // VERIFIED
@@ -2185,7 +2221,77 @@ achievements_triggers = {
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
-	
+	"a_SpinFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_SHOTS_HIT = 3
+		const_SPINFIRE_INACTIVE_FRAMES_TILL_RESET = 5
+		const_BULLETS_SingleRevolver = 6
+		const_BULLETS_DualRevolvers = 12
+
+		return
+		// [1] ==== Alt Logic + Trigger Group (WEAPON_SingleRevolver) ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when Spinfire is activated
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(
+				is_SinglePlayer_EquippedWeaponID(WEAPON_SingleRevolver, enum_releaseRegion)
+				&& on_Special_SpinFire_start(enum_releaseRegion))
+			&& trigger_when(
+				tally(const_REQUIRED_SHOTS_HIT, [ // --Tally--> Count xx shots hit
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				&& repeated(const_BULLETS_SingleRevolver, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --Repeated--> Count if xx shots fired, to check if whole spinfire animation has run
+				&& on_Special_SpinFire_finish(enum_releaseRegion))
+		// [2] ==== Alt Logic + Trigger Group (WEAPON_DualRevolvers) ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when Spinfire is activated
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(
+				is_SinglePlayer_EquippedWeaponID(WEAPON_DualRevolvers, enum_releaseRegion)
+				&& on_Special_SpinFire_start(enum_releaseRegion))
+			&& trigger_when(
+				tally(const_REQUIRED_SHOTS_HIT, [ // --Tally--> Count xx shots hit
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				&& repeated(const_BULLETS_DualRevolvers, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --Repeated--> Count if xx shots fired, to check if whole spinfire animation has run
+				&& on_Special_SpinFire_finish(enum_releaseRegion))
+		// [3] ==== Alt Measured Group (WEAPON_SingleRevolver) ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_SHOTS_HIT, [
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = once(
+					is_SinglePlayer_EquippedWeaponID(WEAPON_SingleRevolver, enum_releaseRegion)
+					&& on_Special_SpinFire_start(enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [4] ==== Alt Measured Group (WEAPON_DualRevolvers) ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_SHOTS_HIT, [
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = once(
+					is_SinglePlayer_EquippedWeaponID(WEAPON_DualRevolvers, enum_releaseRegion)
+					&& on_Special_SpinFire_start(enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [5] ==== Alt Reset Group ==== 		-> Reset when SpinFire special is inactive for xx frames
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& repeated(const_SPINFIRE_INACTIVE_FRAMES_TILL_RESET, 
+					never(is_Special_SpinFire_active(enum_releaseRegion))
+					&& is_Special_SpinFire_inactive(enum_releaseRegion)))
+		// [6] ==== Alt Reset Group ==== 		-> Reset when not in SinglePlayer Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+
+		}),
 	"a_HorseCover": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_HOLD_FRAME_COUNT = 120 // Player should hold this animation input for a few seconds to get the PlayerCharacter in the full "cover" stance, otherwise Animation won't show correctly.
 		return
@@ -2887,6 +2993,7 @@ achievements_titles = {
 	"a_DeadEyeMaster": 			{"en": "Six-Shooter Symphony"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
+	"a_SpinFire":				{"en": "High Noon Hurricane"},
 	"a_HorseCover": 			{"en": "Low Profile Rider"},
 	"a_PerfRoofFall":			{"en": "Drop-In Lodging"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
@@ -2927,7 +3034,8 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
-	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
+	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"}, 
+	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off a Spinfire technique by pressing X and O simultaneously while holding a revolver, and land at least 3 shots without being interrupted or knocked out of the move"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
 	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
@@ -3744,10 +3852,22 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 
 	"lb_ShootingChallenge": { // VERIFIED
 		"id": 125651, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_tng: Achieve 'Good Job' for ShootingChallenge"},
+	// "lb_Perf75TimeTrial": { // CONCEPT lb_Perf75TimeTrial
+		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
+	// "lb_HngTimeTrial": { // CONCEPT lb_HngTimeTrial
+		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
+	// "lb_SherniteTimeTrial": { // CONCEPT lb_SherniteTimeTrial
+		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+	// "lb_Sher70TimeTrial": { // CONCEPT lb_Sher70TimeTrial
+		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+	// "lb_MPTimeTrial": { // CONCEPT lb_MPTimeTrial
+		// 	"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
+	// "lb_MPChallenge": { // CONCEPT lb_MPChallenge
+		// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "MILLISECS", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
 	}
 // #endregion LB - core data
 
