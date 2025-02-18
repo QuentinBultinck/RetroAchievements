@@ -245,6 +245,17 @@ memory_initialize()
 // =========================
 // #region ACH - core data
 // - Divided by category => when in debug mode, category tags are added to achievement titles
+achievement_POINTS_0 = 0		// Free - Freebie/informational achievement
+achievement_POINTS_1 = 1 		// Minor - Finding a hidden item, do some arbitrary/easter egg task
+achievement_POINTS_2 = 2 		// Basic - Defeating a few enemies
+achievement_POINTS_3 = 3 		// Easy - Completing an easy quest or level
+achievement_POINTS_4 = 4 		// Intermediate - Completing a harder quest or level
+achievement_POINTS_5 = 5 		// Advanced - Collecting rare items or completing a level
+achievement_POINTS_10 = 10		// Challenging - Defeating a major boss or collecting a VERY rare one-of-a-kind item
+achievement_POINTS_25 = 25 		// Hard - Completing the game 
+achievement_POINTS_50 = 50 		// VeryHard - Achieving 100% completion
+achievement_POINTS_100 = 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
+
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
@@ -255,14 +266,19 @@ achievements_coreData = {
 	
 	"c_Template": { // Category - info_here
 		"a_Template": 	{
-			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		}
 	"c_Template2": { // Category - info_here
 		"a_Template2": 	{
-			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		}
 	}
 // -------------------------------------
+achievement_TYPE_Progression = "progression"
+achievement_TYPE_WinCondition = "win_condition"
+achievement_TYPE_Missable = "missable"
+achievement_TYPE_Standard = ""
+
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
@@ -273,8 +289,8 @@ achievements_typeByCategory = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": "xxxxxx",
-	"c_Template": 				sNULL}
+	// "c_Template": 	achievement_TYPE_Standard,
+	"c_Template": 		achievement_TYPE_Standard}
 	
 // #endregion ACH - core data
 
@@ -341,9 +357,15 @@ function achievements_initialize() {
 			}
 			return let_devInfoString}
 
-		return format("{0}{1}",
-			achievements_getDescription(string_achievementDevName, string_languageCode),
-			achievements_formatDevInfo(string_devInfo))}
+		let_descriptionString = achievements_getDescription(string_achievementDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_achievementDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + achievements_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
 
 	function achievements_getTrigger(string_achievementDevName) => 
 		achievements_triggers[string_achievementDevName]
@@ -353,6 +375,8 @@ function achievements_initialize() {
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
 		return let_type}	
 	
+	
+
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
 			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
@@ -365,8 +389,7 @@ function achievements_initialize() {
 				trigger = achievements_getTrigger(let_cheevmentName)
 			)
 		}}
-	}
-// #endregion ACH - initialization
+	}// #endregion ACH - initialization
 // #endregion ACHIEVEMENTS
 
 // ***************************************************************************************************** \\
@@ -756,9 +779,17 @@ function leaderboards_initialize() {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
-		return format("{0}{1}",
-			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
-			leaderboards_formatDevInfo(string_devInfo))}
+
+		let_descriptionString = leaderboards_getDescription(string_leaderboardDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_leaderboardDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + leaderboards_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
+	
 
 	for let_leaderboardKey in leaderboards_coreData {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
