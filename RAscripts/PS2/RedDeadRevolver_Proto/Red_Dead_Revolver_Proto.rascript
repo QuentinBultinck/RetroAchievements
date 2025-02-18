@@ -149,6 +149,8 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x4]},
 			"Struct(Coordinates):PlayerLocation-Z": {
 				"pointerChainOffsets": [0x13C, 0xC, 0x90 + 0x8]},
+			"Flag:IsSpinFireAnimationActive": {
+				"pointerChainOffsets": [0x13C, 0x48, 0x28]},
 			"ASCII:Active_CharacterAnimationID": { 
 				"pointerChainOffsets": [0x13C, 0x64, 0x134, 0x18, 0x0, 0x0]},
 			"Float:AnimationKeyFrame(functional)": {
@@ -167,6 +169,7 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x170, 0x5C]},
 			"BitFlag:IsAimingModeActive(preferred)": {
 				"pointerChainOffsets": [0x208]},
+			
 			// -------RapidFireMode-------
 			"BitFlag:IsRapidFireModeActive": {
 				"pointerChainOffsets": [0x6DC, 0x140]},
@@ -347,6 +350,7 @@ memory_addresses = {
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x912040, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	
 	"32-bit:GameState": {RELEASE_REGION_USA: 0x427c80, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"32-bit:FrameCounter(preferred)": {RELEASE_REGION_USA: 0x487000, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 
 	"Bitset(byte1):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488182, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	"Bitset(byte2):ButtonsPressed-Controller1": {RELEASE_REGION_USA: 0x488183, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
@@ -458,6 +462,10 @@ function isNot_Loading(enum_releaseRegion) {
 	const_STATE_IsLoading_false = 0xFF
 	return byte(memory_getAddress("Flag:IsLoading", enum_releaseRegion)) == const_STATE_IsLoading_false}
 
+function on_FrameCounter_change(enum_releaseRegion) {
+	let_memAddr_FrameCounter = memory_getAddress("32-bit:FrameCounter(preferred)", enum_releaseRegion)
+	return dword(let_memAddr_FrameCounter) != prev(dword(let_memAddr_FrameCounter))}
+
 // ----------------PlayerInput---------------------
 CONTROLLER_1 = 1
 CONTROLLER_2 = 2
@@ -472,8 +480,11 @@ function prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) =>
 function on_PlayerInput_X_press(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 	
+function on_PlayerInput_X_release(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) > prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
 function current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) {
-	let_string_addrKey = format("Bitset(byte1):ButtonsPressed-Controller{0}", enum_controllerID)
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
 	return bit5(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
 
 function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
@@ -481,6 +492,9 @@ function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
 
 function on_PlayerInput_O_press(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) < prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
+
+function on_PlayerInput_O_release(enum_controllerID, enum_releaseRegion) =>
+	current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) > prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 
 function current_flagState_PlayerInput_R1(enum_controllerID, enum_releaseRegion) {
 	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
@@ -548,6 +562,17 @@ function on_PauseMenu_reset(enum_releaseRegion) {
 			)
 		}
 
+function on_PauseMenu_reset_release(enum_releaseRegion) { 
+	const_PAUSE_MENU_HIGHLIGHT_ID_Reset = 0x2 // PauseMenu HighlightItems start counting from 0x1 up to 0x4; "Reset" is second from top
+	return 
+		is_Menu_displayed(MENU_PauseMenu, enum_releaseRegion)
+		&& current_HighLightedMenuItem_A(enum_releaseRegion) == const_PAUSE_MENU_HIGHLIGHT_ID_Reset
+		&& (
+			on_PlayerInput_X_release(CONTROLLER_1, enum_releaseRegion)
+			|| on_PlayerInput_O_release(CONTROLLER_1, enum_releaseRegion)
+			)
+		}
+
 // ----------------TimeSpentInLevel---------------------
 function current_TimeSpentInLevel(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:TimeSpentInLevel", enum_releaseRegion)
@@ -556,10 +581,30 @@ function current_TimeSpentInLevel(enum_releaseRegion) {
 		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = float)}
 
 function prev_TimeSpentInLevel(enum_releaseRegion) => prev(current_TimeSpentInLevel(enum_releaseRegion))
-function on_TimeSpentInLevel_start(enum_releaseRegion) => 
+
+function current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion) =>
+	current_TimeSpentInLevel(enum_releaseRegion) * 100.0 // Seconds to CentiSeconds
+
+function on_TimeSpentInLevel_start(enum_releaseRegion) =>
 	// NOTE: Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
-	current_TimeSpentInLevel(enum_releaseRegion) <= 1.0
-	&& prev_TimeSpentInLevel(enum_releaseRegion) > 1.0
+	current_TimeSpentInLevel(enum_releaseRegion) >= 1.0
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 1.0
+
+function on_TimeSpentInLevel_start_later(enum_releaseRegion) => 
+	/* NOTE: 
+		- on_TimeSpentInLevel_start_later() is true 1 second later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
+		- Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
+		*/
+	current_TimeSpentInLevel(enum_releaseRegion) >= 2.0
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 2.0
+
+function on_TimeSpentInLevel_start_early(enum_releaseRegion) => 
+	/* NOTE: 
+		- on_TimeSpentInLevel_start_early() is true 0.5 seconds later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
+		- Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
+		*/
+	current_TimeSpentInLevel(enum_releaseRegion) >= 0.5
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 0.5
 
 function on_TimeSpentInLevel_reset(enum_releaseRegion) => 
 	current_TimeSpentInLevel(enum_releaseRegion) < prev_TimeSpentInLevel(enum_releaseRegion)
@@ -812,6 +857,37 @@ function on_RapidFireMode_activate(enum_releaseRegion) =>
 function current_RapidFireMode_TargetsPaintedCount(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor("Struct:PlayerData", "32-bit:RapidFireMode_TargetsPainted", let_memAddr_basePointer)}
+// ----------------SpinFire Special---------------------
+function current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) {
+	let_memAddr_basePointer = memory_getAddress("Pointer:PlayerData-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerData", "Flag:IsSpinFireAnimationActive", 
+		let_memAddr_basePointer, memAccessorFunction_toPointedToMember = dword)}
+	
+function prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) =>
+	prev(current_flagState_IsSpinFireAnimationActive(enum_releaseRegion))
+
+function is_Special_SpinFire_active(enum_releaseRegion) {
+	const_FLAG_True = 0x0 // NOTE: 0xFFFFFFFF => false
+	return current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True}
+
+function is_Special_SpinFire_inactive(enum_releaseRegion) {
+	const_FLAG_False = 0xFFFFFFFF // NOTE: 0x0 => true 
+	return current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False}
+
+function on_Special_SpinFire_start(enum_releaseRegion) {
+	const_FLAG_True = 0x0
+	const_FLAG_False = 0xFFFFFFFF
+	return
+		current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True
+		&& prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False}
+	
+function on_Special_SpinFire_finish(enum_releaseRegion) {
+	const_FLAG_True = 0x0
+	const_FLAG_False = 0xFFFFFFFF
+	return
+		current_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_False
+		&& prev_flagState_IsSpinFireAnimationActive(enum_releaseRegion) == const_FLAG_True}
 
 // ----------------HorseCover Animation---------------------
 function current_flagState_IsHorseHugging(enum_releaseRegion) {
@@ -871,6 +947,10 @@ function is_SinglePlayer_Health_atMax(enum_releaseRegion) =>
 function on_SinglePlayer_Health_takeDamage(enum_releaseRegion) =>
 	current_SinglePlayer_Health(enum_releaseRegion) < prev_SinglePlayer_Health(enum_releaseRegion)
 
+function on_SinglePlayer_Health_death(enum_releaseRegion) =>
+	current_SinglePlayer_Health(enum_releaseRegion) == 0.0 
+	&& prev_SinglePlayer_Health(enum_releaseRegion) > 0.0
+
 function on_SinglePlayer_Health_heal(enum_releaseRegion) =>
 	current_SinglePlayer_Health(enum_releaseRegion) > prev_SinglePlayer_Health(enum_releaseRegion)
 
@@ -904,9 +984,46 @@ CHARACTER_BatBoy = "scb"
 CHARACTER_Indian = "msk"
 CHARACTER_Baby = "bby"
 CHARACTER_DancingGirl = "dcg"
+CHARACTER_Carlos = "cls"
+CHARACTER_Tackler = "tck"
+CHARACTER_MrKelley = "mrk"
+CHARACTER_Guardian = "gdn"
+CHARACTER_Natalie = "ntl"
+CHARACTER_UglyChris = "ugl"
+CHARACTER_Christina = "ctn"
+CHARACTER_zzTop = "zzt" // GabrialNavarro
+CHARACTER_BillyTheKid = "bil"
+CHARACTER_Dad = "dad"
+CHARACTER_Franken = "frk"
+CHARACTER_Gigolo = "ggl"
+CHARACTER_GunmanA = "gma" // Captive
+CHARACTER_HedgeHog = "hdh"
+CHARACTER_Jinnie = "jin"
+CHARACTER_Mexican = "max" // ---GameCrash---
+CHARACTER_Mongolian = "mon" // UdoKang
+CHARACTER_yngRMaster = "mst" // Grizzly
+CHARACTER_nCowboy = "ncb" // Smitty
+CHARACTER_TallGuy = "tal"
+CHARACTER_CowboyA = "tca" // LonghornLuke
+CHARACTER_CowboyB = "tcb" // HolsteinHal
+CHARACTER_Gangster = "nga" // RicoPedrosa
+CHARACTER_NewOldMan = "nod"
+CHARACTER_Soldier = "nsd" // ---GameCrash---
+CHARACTER_PlaidGuy = "pld" 
+CHARACTER_ShopOwner = "shp" // CurlyShaw
+CHARACTER_Sniper = "snp"
+CHARACTER_Twig = "twg" // TwiggyPhelps
+CHARACTER_Whiskey = "wsk" // WhiskeyTreadwell
+CHARACTER_zzTop2 = "zz2" // // GabrialNavarro(alt)
 
 function on_MPround_start(enum_releaseRegion) =>
 	on_TimeSpentInLevel_start(enum_releaseRegion)
+
+function on_MPround_start_later(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start_later(enum_releaseRegion)
+
+function on_MPround_start_early(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start_early(enum_releaseRegion)
 
 function on_MPround_reset(enum_releaseRegion) =>
 	on_TimeSpentInLevel_reset(enum_releaseRegion)
@@ -1029,10 +1146,35 @@ LEVEL_FlashbackStage = "flash" 	// FullString: "lvl_flash"
 LEVEL_Train = "train" 			// FullString: "lvl_train"
 LEVEL_FortStage = "fort" 		// FullString: "lvl_fort"
 LEVEL_Mansion = "mans" 			// FullString: "lvl_mans"
+CONST_OFFSET_TO_LEVEL_ID_SUBSTRING = 4
 function is_Level(enum_levelID, enum_releaseRegion) {
-	const_offsetTo_UniqueLevelIdSubstring = 0x4
-	let_memAddr_levelID = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion)
-	return ascii_string_equals(let_memAddr_levelID + const_offsetTo_UniqueLevelIdSubstring, enum_levelID)}
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	return ascii_string_equals(let_memAddr_LevelIdSubstring, enum_levelID)}
+
+function on_LevelID_change(enum_releaseRegion) {
+	const_MAX_SIZE_LEVEL_ID_SizeInBytes = 12 // 12-byte
+
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	let_array_memAddresses_toCheckForChange = []
+	let_index = 0
+	let_step = 4
+	for let_index in range (0, const_MAX_SIZE_LEVEL_ID_SizeInBytes - let_step, let_step) 
+		array_push(let_array_memAddresses_toCheckForChange, let_memAddr_LevelIdSubstring + let_index)
+	return any_of(let_array_memAddresses_toCheckForChange, let_memAddr_toCheckForChange =>
+		dword(let_memAddr_toCheckForChange) != prev(dword(let_memAddr_toCheckForChange)))
+	}
+
+function is_LevelID_sizeInBytes(int_sizeInBytes, enum_releaseRegion) {
+	/* NOTE: The last character of the LevelId is always followed by [1-byte] == 0x00
+		Example, where "." represents 0x00:
+			"lvl_tng"; "lvl_tng.70" 
+		*/
+	let_memAddr_LevelIdSubstring = memory_getAddress("ASCII:LevelID(preferred)", enum_releaseRegion) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING
+	let_memAddr_LastCharacterOfLevelID = let_memAddr_LevelIdSubstring + (int_sizeInBytes - 1)
+	return 
+		byte(let_memAddr_LastCharacterOfLevelID) != 0x00 			// --CheckIf--> last character of LeveID_substring [4-byte] != 0x00
+		&& byte(let_memAddr_LastCharacterOfLevelID + 0x1) == 0x00 	// --CheckIf--> the last character of LeveID_substring is followed by [1-byte] == 0x00
+		} 
 // #endregion LevelID
 // #region Point of Interest (POI)
 const_Level_POI_Data = {
@@ -1551,92 +1693,111 @@ memory_initialize()
 // =========================
 // #region ACH - core data
 // - Divided by category => when in debug mode, category tags are added to achievement titles
+// DEV_NOTE: Achievement Scoring --> https://docs.retroachievements.org/developer-docs/achievement-scoring.html
+achievement_POINTS_0 = 0		// Free - Freebie/informational achievement
+achievement_POINTS_1 = 1 		// Minor - Finding a hidden item, do some arbitrary/easter egg task
+achievement_POINTS_2 = 2 		// Basic - Defeating a few enemies
+achievement_POINTS_3 = 3 		// Easy - Completing an easy quest or level
+achievement_POINTS_4 = 4 		// Intermediate - Completing a harder quest or level
+achievement_POINTS_5 = 5 		// Advanced - Collecting rare items or completing a level
+achievement_POINTS_10 = 10		// Challenging - Defeating a major boss or collecting a VERY rare one-of-a-kind item
+achievement_POINTS_25 = 25 		// Hard - Completing the game 
+achievement_POINTS_50 = 50 		// VeryHard - Achieving 100% completion
+achievement_POINTS_100 = 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
+
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
-
+	
 	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
-			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
+			"id": 495453, "points": achievement_POINTS_5, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
 		"a_CompletePerf": { // VERIFIED
-			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
+			"id": 497244, "points": achievement_POINTS_5, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		"a_CompleteHng": { // VERIFIED
-			"id": 497833, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
+			"id": 497833, "points": achievement_POINTS_5, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
 		"a_CompleteShernite": { // VERIFIED
-			"id": 497874, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
+			"id": 497874, "points": achievement_POINTS_5, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
 		"a_CompleteSher70": { // VERIFIED
-			"id": 498038, "points": 0000000, "devInfo": "lvl_sher70: Kill at least xx enemies (Talk with old man for thanks)"},
+			"id": 498038, "points": achievement_POINTS_5, "devInfo": "lvl_sher70: Kill at least xx enemies (Talk with old man for thanks)"},
 		}, 
 	"c_SPchallenge": { // Category - Single Player Challenges
 		"a_ChallengeTng": { // VERIFIED
-			"id": 497831, "points": 0000000, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only hit headshots"},
+			"id": 497831, "points": achievement_POINTS_10, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only hit headshots"},
 		"a_ChallengePerf": { // VERIFIED
-			"id": 497683, "points": 0000000, "devInfo": "lvl_perf: Finish level without taking damage (talk to mom or Jinnie after killing all enemies)"},
+			"id": 497683, "points": achievement_POINTS_10, "devInfo": "lvl_perf: Finish level without taking damage (talk to mom or Jinnie after killing all enemies)"},
 		// "a_ChallengeHng": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
-			// "id": 497832, "points": 0000000, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
+			// "id": 497832, "points": achievement_POINTS_10, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
 		"a_ChallengeShernite": { // VERIFIED
-			"id": 497875, "points": 0000000, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
+			"id": 497875, "points": achievement_POINTS_10, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
 		"a_ChallengeSher70": { // VERIFIED
-			"id": 498037, "points": 0000000, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
+			"id": 498037, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
-			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
+			"id": 494562, "points": achievement_POINTS_3, "devInfo": "Win Game, when cash over $49.09, lvl_tng and lvl_sher70 have respawning enemies"},
 		"a_DeadEyeMaster": { // VERIFIED
-			"id": 498358, "points": 0000000, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
+			"id": 498358, "points": achievement_POINTS_5, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
 		"a_TipHat": { // VERIFIED
-			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
+			"id": 494576, "points": achievement_POINTS_1, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements (by standing idle and pressing and holding X or R1)"},
 		"a_Dodge": { // VERIFIED
-			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+			"id": 494577, "points": achievement_POINTS_2, "devInfo": "Secret dodge input/animation (by walking and pressing X or R1)"},
+		"a_SpinFire": { // VERIFIED
+			"id": 499616, "points": achievement_POINTS_3, "devInfo": "Hit at least 3 bullets during a secret Spinfire technique and without getting hit out of the technique (Press both X and O simultaneously with dual or single revolver equipped)"},	
 		"a_HorseCover": { // VERIFIED
-			"id": 498510, "points": 0000000, "devInfo": "Take cover whilst on horseback"},
+			"id": 498510, "points": achievement_POINTS_2, "devInfo": "Take cover whilst on horseback (press and hold X while on horseback + move camera)"},
 		"a_SaloonThrow": { // VERIFIED
-			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
+			"id": 495633, "points": achievement_POINTS_3, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
-			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
+			"id": 496929, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
 		"a_PerfRoofFall": { // VERIFIED
-			"id": 498497, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
+			"id": 498497, "points": achievement_POINTS_2, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
 		"a_EyeTng": { // VERIFIED
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
+			"id": 494578, "points": achievement_POINTS_3, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
 		"a_EyeFlash": { // VERIFIED
-			"id": 498489, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
+			"id": 498489, "points": achievement_POINTS_3, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
 		"a_EyeTrain": { // VERIFIED
-			"id": 498496, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
+			"id": 498496, "points": achievement_POINTS_3, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
 		"a_EyeTomb": { // VERIFIED
-			"id": 498495, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
+			"id": 498495, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
 		"a_EyeFort": { // VERIFIED
-			"id": 498490, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
-			"id": 498491, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
+			"id": 498491, "points": achievement_POINTS_3, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		"a_EyeShootHng": { // VERIFIED
-			"id": 498492, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
+			"id": 498492, "points": achievement_POINTS_5, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
 		"a_EyeShootShernite": { // VERIFIED
-			"id": 498494, "points": 0000000, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
+			"id": 498494, "points": achievement_POINTS_5, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
 		"a_EyeShootSher70": { // VERIFIED
-			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
+			"id": 498493, "points": achievement_POINTS_5, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		"a_WinRed": { // VERIFIED
-			"id": 498364, "points": 0000000, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
+			"id": 498364, "points": achievement_POINTS_5, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
 		"a_WinNrdDeathless": { // VERIFIED
-			"id": 498362, "points": 0000000, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
+			"id": 498362, "points": achievement_POINTS_5, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
 		"a_WinPigDynamite": { // VERIFIED
-			"id": 498363, "points": 0000000, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
+			"id": 498363, "points": achievement_POINTS_5, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
 		"a_WinBbyShotgun": { // VERIFIED
-			"id": 498359, "points": 0000000, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
+			"id": 498359, "points": achievement_POINTS_5, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
 		"a_WinDcgRifle": { // VERIFIED
-			"id": 498360, "points": 0000000, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
+			"id": 498360, "points": achievement_POINTS_5, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
 		"a_WinMskHitless": { // VERIFIED
-			"id": 498361, "points": 0000000, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
+			"id": 498361, "points": achievement_POINTS_10, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
 		}
 	}
 // -------------------------------------
+achievement_TYPE_Progression = "progression"
+achievement_TYPE_WinCondition = "win_condition"
+achievement_TYPE_Missable = "missable"
+achievement_TYPE_Standard = ""
+
 achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
@@ -1647,11 +1808,11 @@ achievements_typeByCategory = {
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": "xxxxxx",
-	"c_SPprogress": 		"progression", // NOTE: This prototype has no WinCondition -> Player which achieves all Progression achievements will be marked as beaten
-	"c_SPchallenge":		sNULL,
-	"c_SPbonus":			sNULL,
-	"c_MPchallenge":		sNULL} 
+	// "c_Template": 		achievement_TYPE_Standard,
+	"c_SPprogress": 		achievement_TYPE_Progression, // NOTE: This prototype has no achievement_TYPE_WinCondition -> Player needs to achieve all achievement_TYPE_Progression to reach "beaten" status
+	"c_SPchallenge":		achievement_TYPE_Standard,
+	"c_SPbonus":			achievement_TYPE_Standard,
+	"c_MPchallenge":		achievement_TYPE_Standard} 
 	
 // #endregion ACH - core data
 
@@ -1881,7 +2042,7 @@ achievements_triggers = {
 		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
-			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._T:0=1.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000008=1970239851_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
+			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._T:0=1.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -1895,7 +2056,7 @@ achievements_triggers = {
 				SubSource	Mem [32-bit:ShotsHitHead]
 							val 0 == val 0
 				*/
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xa0)
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
 			&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
@@ -2129,7 +2290,77 @@ achievements_triggers = {
 			&& on_Dodge_CharacterAnimation_start(enum_releaseRegion))
 		&& trigger_when(on_Dodge_CharacterAnimation_finish(enum_releaseRegion))
 		),
-	
+	"a_SpinFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_SHOTS_HIT = 3
+		const_SPINFIRE_INACTIVE_FRAMES_TILL_RESET = 5
+		const_BULLETS_SingleRevolver = 6
+		const_BULLETS_DualRevolvers = 12
+
+		return
+		// [1] ==== Alt Logic + Trigger Group (WEAPON_SingleRevolver) ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when Spinfire is activated
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(
+				is_SinglePlayer_EquippedWeaponID(WEAPON_SingleRevolver, enum_releaseRegion)
+				&& on_Special_SpinFire_start(enum_releaseRegion))
+			&& trigger_when(
+				tally(const_REQUIRED_SHOTS_HIT, [ // --Tally--> Count xx shots hit
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				&& repeated(const_BULLETS_SingleRevolver, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --Repeated--> Count if xx shots fired, to check if whole spinfire animation has run
+				&& on_Special_SpinFire_finish(enum_releaseRegion))
+		// [2] ==== Alt Logic + Trigger Group (WEAPON_DualRevolvers) ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying Trigger Indicator when Spinfire is activated
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once(
+				is_SinglePlayer_EquippedWeaponID(WEAPON_DualRevolvers, enum_releaseRegion)
+				&& on_Special_SpinFire_start(enum_releaseRegion))
+			&& trigger_when(
+				tally(const_REQUIRED_SHOTS_HIT, [ // --Tally--> Count xx shots hit
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))])
+				&& repeated(const_BULLETS_DualRevolvers, on_SinglePlayer_ShotsFired_increment(enum_releaseRegion)) // --Repeated--> Count if xx shots fired, to check if whole spinfire animation has run
+				&& on_Special_SpinFire_finish(enum_releaseRegion))
+		// [3] ==== Alt Measured Group (WEAPON_SingleRevolver) ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_SHOTS_HIT, [
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = once(
+					is_SinglePlayer_EquippedWeaponID(WEAPON_SingleRevolver, enum_releaseRegion)
+					&& on_Special_SpinFire_start(enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [4] ==== Alt Measured Group (WEAPON_DualRevolvers) ==== 		-> This group handles the core logic; It's responsible for unlocking the achievement
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& measured(
+				tally(const_REQUIRED_SHOTS_HIT, [
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitBody_increment(enum_releaseRegion)),
+					repeated(const_REQUIRED_SHOTS_HIT, on_SinglePlayer_ShotsHitHead_increment(enum_releaseRegion))]),
+				when = once(
+					is_SinglePlayer_EquippedWeaponID(WEAPON_DualRevolvers, enum_releaseRegion)
+					&& on_Special_SpinFire_start(enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [5] ==== Alt Reset Group ==== 		-> Reset when SpinFire special is inactive for xx frames
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& repeated(const_SPINFIRE_INACTIVE_FRAMES_TILL_RESET, 
+					never(is_Special_SpinFire_active(enum_releaseRegion))
+					&& is_Special_SpinFire_inactive(enum_releaseRegion)))
+		// [6] ==== Alt Reset Group ==== 		-> Reset when not in SinglePlayer Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion))
+
+		}),
 	"a_HorseCover": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_HOLD_FRAME_COUNT = 120 // Player should hold this animation input for a few seconds to get the PlayerCharacter in the full "cover" stance, otherwise Animation won't show correctly.
 		return
@@ -2831,6 +3062,7 @@ achievements_titles = {
 	"a_DeadEyeMaster": 			{"en": "Six-Shooter Symphony"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
+	"a_SpinFire":				{"en": "High Noon Hurricane"},
 	"a_HorseCover": 			{"en": "Low Profile Rider"},
 	"a_PerfRoofFall":			{"en": "Drop-In Lodging"},
 	"a_SaloonThrow": 			{"en": "Boots First, Questions Later"},
@@ -2871,7 +3103,8 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
-	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"},
+	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it"}, 
+	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off a Spinfire technique by pressing X and O simultaneously while holding a revolver, and land at least 3 shots without being interrupted or knocked out of the move"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
 	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
@@ -2926,9 +3159,15 @@ function achievements_initialize() {
 			}
 			return let_devInfoString}
 
-		return format("{0}{1}",
-			achievements_getDescription(string_achievementDevName, string_languageCode),
-			achievements_formatDevInfo(string_devInfo))}
+		let_descriptionString = achievements_getDescription(string_achievementDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_achievementDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + achievements_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
 
 	function achievements_getTrigger(string_achievementDevName) => 
 		achievements_triggers[string_achievementDevName]
@@ -2938,6 +3177,8 @@ function achievements_initialize() {
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
 		return let_type}	
 	
+	
+
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
 			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
@@ -2965,7 +3206,6 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
-// TODO implement Rich Presence
 
 // =====================
 // • RICH PRESENCE text •
@@ -2973,29 +3213,103 @@ function achievements_initialize() {
 // #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 					{"en": "xxxxxxxx"},
-	"rp_DefaultPlus":					{"en": "Playing Red Dead Revolver ~Prototype~"},
-	"rp_Default":						{"en": "Playing Red Dead Revolver ~Prototype~"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 				{"en": "xxxxxxxx"},
+	"rp_MP_2P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8}"},
+	"rp_MP_3P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12}"},
+	"rp_MP_4P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12} | {13} {14} 4 as {15} {16}"},
+
+	"rp_SP":						{"en": "Playing Red Dead Revolver ~Prototype~ | {0} is {1} in {2}"}, 
+	"rp_TitleScreen":				{"en": "Playing Red Dead Revolver ~Prototype~ | Title Screen"},
+	"rp_Default":					{"en": "Playing Red Dead Revolver ~Prototype~"}}
 richPresence_LookupTablesText = {
-	// "lup_Template": {
+	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_A":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
 
-	"lup_CharacterName": {
-		"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+	"lupText_ShowdownKills": {
+		"ShowdownKills_0": 	{"en": ""},
+		"ShowdownKills_1": 	{"en": "✯"},
+		"ShowdownKills_2": 	{"en": "✯✯"},
+		},
+	"lupText_Human_OR_CPU": {
+		"Human":	{"en": "Player"},
+		"CPU":		{"en": "CPU"},
+		},
+	"lupText_TeamColor": {
+		"LOOKUP_FALLBACK":	{"en": "🔘"},
+		"RED": 				{"en": "🔴"},
+		"BLUE": 			{"en": "🔵"},
+		"GREEN": 			{"en": "🟢"},
+		"YELLOW": 			{"en": "🟡"},
+		},
+	"lupText_StageName": {
+		"LOOKUP_FALLBACK":				{"en": "\"The Wild West\""},
 
-		"TrainingRed": 					{"en": "xxxxxxxx"}, 
-		"SnowRed":						{"en": "xxxxxxxx"}, 
-		"SeniorRed":					{"en": "xxxxxxxx"}, 
-		"Red": 							{"en": "xxxxxxxx"}, 
-		"PigJosh":						{"en": "xxxxxxxx"}, 
-		"BatBoy": 						{"en": "xxxxxxxx"}, 
-		"M_Indian": 					{"en": "xxxxxxxx"}, 
-		"Baby": 						{"en": "xxxxxxxx"}, 
-		"DancingGirl": 					{"en": "xxxxxxxx"}, 
+		"TrainingStage": 				{"en": "\"The Training Stage\""},
+		"TitleStage": 					{"en": "\"The Title Stage\""},
+		"Tombstone": 					{"en": "\"The Tombstone Stage\""},
+		"FortStage": 					{"en": "\"The Fort Stage\""},
+		"Mansion": 						{"en": "\"The Mansion Stage\""},
+		"PrologueStage": 				{"en": "\"The Prologue Stage\""},
+		"SheriffNight": 				{"en": "\"The Sheriff Night Stage\""},
+		"SheriffDay": 					{"en": "\"The Sheriff Day Stage\""},
+		"SaloonStage": 					{"en": "\"The Saloon Stage\""},
+		"FlashbackStage": 				{"en": "\"The Flashback Stage\""},
+		"Train": 						{"en": "\"The Train Stage\""},
+		},
+	"lupText_StageActivity": {
+		"Training":				{"en": "training"},
+		"Fighting":				{"en": "gunslinging"},
+		"Exploring":			{"en": "exploring"},
+		"SavingFamily":			{"en": "saving his family"},
+		"Brawling":				{"en": "having a drink"},
+		},
+	"lupText_CharacterName": {
+		"LOOKUP_FALLBACK":				{"en": "a Gunslinger"},
+
+		"TrainingRed": 					{"en": "Young Red"},
+		"SnowRed": 						{"en": "Teenage Red"},
+		"SeniorRed": 					{"en": "Senior Red"},
+		"Red": 							{"en": "Adult Red"},
+		"PigJosh": 						{"en": "Pig Josh"},
+		"BatBoy": 						{"en": "Bat Boy"},
+		"Indian": 						{"en": "Young Master Indian"},
+		"Baby": 						{"en": "Baby"},
+		"DancingGirl": 					{"en": "Dancing Girl"},
+		"Carlos": 						{"en": "Carlos"},
+		"Tackler": 						{"en": "Sam"},
+		"MrKelley": 					{"en": "Mr. Kelley"},
+		"Guardian": 					{"en": "Atlas"},
+		"Natalie": 						{"en": "Natalie"},
+		"UglyChris": 					{"en": "Ugly Chris"},
+		"Christina": 					{"en": "Christina"},
+		"zzTop": 						{"en": "Gabrial Navarro"},
+		"BillyTheKid": 					{"en": "Billy the Kid"},
+		"Dad": 							{"en": "Dad"},
+		"Franken": 						{"en": "Franken"},
+		"Gigolo": 						{"en": "Gigolo Hancock"},
+		"GunmanA": 						{"en": "Captive"},
+		"HedgeHog": 					{"en": "Hedgehog Thornton"},
+		"Jinnie": 						{"en": "Jinnie"},
+		"Mexican": 						{"en": "Dan the Mexican"},
+		"Mongolian": 					{"en": "Udo Kang the Mongolian"},
+		"yngRMaster": 					{"en": "Master Indian"},
+		"nCowboy": 						{"en": "Smitty"},
+		"TallGuy": 						{"en": "Tall Guy"},
+		"CowboyA": 						{"en": "Longhorn Luke"},
+		"CowboyB": 						{"en": "Holstein Hal"},
+		"Gangster": 					{"en": "Rico Pedrosa"},
+		"NewOldMan": 					{"en": "Old Man"},
+		"Soldier": 						{"en": "Soldier"},
+		"PlaidGuy": 					{"en": "The Plaid Cowboy"},
+		"ShopOwner": 					{"en": "Curly Shaw"},
+		"Sniper": 						{"en": "The Sniper"},
+		"Twig": 						{"en": "Twiggy Phelps"},
+		"Whiskey": 						{"en": "Whiskey Treadwell"},
+		"zzTop2": 						{"en": "Gabrial Navarro"},
 		},
 	}
 function richPresence_getText(string_textKey) =>
@@ -3006,25 +3320,138 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
 	// "lup_Template": {
-		// enum_XXX_A:					"LookupTextKey_A",
-		// enum_XXX_B:					"LookupTextKey_B",
-		// enum_XXX_C:					"LookupTextKey_C",
+		// "LookupTableText_Key": "lupText_Template",
+		// "LookUpTable": {
+		// 	enum_XXX_A:					"LookupTextKey_A",
+		// 	enum_XXX_B:					"LookupTextKey_B",
+		// 	enum_XXX_C:					"LookupTextKey_C",
+		// 	},
 		// },
 
+	// "lup_Template": {
+		// "LookupTableText_Key": "lupText_Template",
+		// "LookUpTable": {
+		// 	enum_XXX_A:					"LookupTextKey_A",
+		// 	enum_XXX_B:				"LookupTextKey_B",
+		// 	enum_XXX_C:					"LookupTextKey_C",
+		// 	},
+		// },
+	"lup_ShowdownKills": {
+		"LookupTableText_Key": "lupText_ShowdownKills",
+		"LookUpTable": {
+			0x0: "ShowdownKills_0",
+			0x1: "ShowdownKills_1",
+			0x2: "ShowdownKills_2",
+			},
+		},
+	"lup_Human_OR_CPU": {
+		"LookupTableText_Key": "lupText_Human_OR_CPU",
+		"LookUpTable": {
+			0x0:	"Human",
+			// OtherValues (Not zeroed out): "CPU" (As Lookup_Fallback)
+			},
+		},
+	"lup_TeamColor": {
+		"LookupTableText_Key": "lupText_TeamColor",
+		"LookUpTable": {
+			TEAM_Red:		"RED",
+			TEAM_Blue:		"BLUE",
+			TEAM_Green:		"GREEN",
+			TEAM_Yellow:	"YELLOW",
+			},
+		},
+	"lup_StageName_4ByteLevelID": { // RP using LevelID is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LookupTableText_Key": "lupText_StageName",
+		"LookUpTable": {
+			LEVEL_TrainingStage: "TrainingStage", 
+			LEVEL_TitleStage: "TitleStage", 
+			LEVEL_Tombstone: "Tombstone", 
+			LEVEL_FortStage: "FortStage", 
+			LEVEL_Mansion: "Mansion", 
+			},
+		},
+	"lup_StageName_8ByteLevelID": { // RP using LevelID is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LookupTableText_Key": 		"lupText_StageName",
+		"LookUpTable": {
+			LEVEL_PrologueStage: "PrologueStage", 
+			LEVEL_SheriffNight: "SheriffNight", 
+			LEVEL_SheriffDay: "SheriffDay", 
+			LEVEL_SaloonStage: "SaloonStage", 
+			LEVEL_FlashbackStage: "FlashbackStage", 
+			LEVEL_Train: "Train", 
+			},
+		},
+	"lup_StageActivity_4ByteLevelID": { // RP using LevelID is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LookupTableText_Key": "lupText_StageActivity",
+		"LookUpTable": {
+			LEVEL_TrainingStage: "Training", 
+			LEVEL_TitleStage: "Fighting", 
+			LEVEL_Tombstone: "Exploring", 
+			LEVEL_FortStage: "Exploring", 
+			LEVEL_Mansion: "Exploring", 
+			},
+		},
+	"lup_StageActivity_8ByteLevelID": { // RP using LevelID is split up, because "sher70" & "shernite" can't be uniquely ID within 32-bit together with other LevelIDs
+		"LookupTableText_Key": "lupText_StageActivity",
+		"LookUpTable": {
+			LEVEL_PrologueStage: "SavingFamily", 
+			LEVEL_SheriffNight: "Fighting", 
+			LEVEL_SheriffDay: "Fighting", 
+			LEVEL_SaloonStage: "Brawling", 
+			LEVEL_FlashbackStage: "Exploring", 
+			LEVEL_Train: "Exploring", 
+			},
+		},
 	"lup_CharacterName": {
-		CHARACTER_TrainingRed: "TrainingRed"
-		CHARACTER_SnowRed: "SnowRed"
-		CHARACTER_SeniorRed: "SeniorRed"
-		CHARACTER_Red: "Red"
-		CHARACTER_PigJosh: "PigJosh"
-		CHARACTER_BatBoy: "BatBoy"
-		CHARACTER_Indian: "M_Indian"
-		CHARACTER_Baby: "Baby"
-		CHARACTER_DancingGirl: "DancingGirl"
+		"LookupTableText_Key": "lupText_CharacterName",
+		"LookUpTable": {
+			CHARACTER_TrainingRed: "TrainingRed",
+			CHARACTER_SnowRed: "SnowRed",
+			CHARACTER_SeniorRed: "SeniorRed",
+			CHARACTER_Red: "Red",
+			CHARACTER_PigJosh: "PigJosh",
+			CHARACTER_BatBoy: "BatBoy",
+			CHARACTER_Indian: "Indian",
+			CHARACTER_Baby: "Baby",
+			CHARACTER_DancingGirl: "DancingGirl",
+			CHARACTER_Carlos: "Carlos",
+			CHARACTER_Tackler: "Tackler",
+			CHARACTER_MrKelley: "MrKelley",
+			CHARACTER_Guardian: "Guardian",
+			CHARACTER_Natalie: "Natalie",
+			CHARACTER_UglyChris: "UglyChris",
+			CHARACTER_Christina: "Christina",
+			CHARACTER_zzTop: "zzTop",
+			CHARACTER_BillyTheKid: "BillyTheKid",
+			CHARACTER_Dad: "Dad",
+			CHARACTER_Franken: "Franken",
+			CHARACTER_Gigolo: "Gigolo",
+			CHARACTER_GunmanA: "GunmanA",
+			CHARACTER_HedgeHog: "HedgeHog",
+			CHARACTER_Jinnie: "Jinnie",
+			CHARACTER_Mexican: "Mexican",
+			CHARACTER_Mongolian: "Mongolian",
+			CHARACTER_yngRMaster: "yngRMaster",
+			CHARACTER_nCowboy: "nCowboy",
+			CHARACTER_TallGuy: "TallGuy",
+			CHARACTER_CowboyA: "CowboyA",
+			CHARACTER_CowboyB: "CowboyB",
+			CHARACTER_Gangster: "Gangster",
+			CHARACTER_NewOldMan: "NewOldMan",
+			CHARACTER_Soldier: "Soldier",
+			CHARACTER_PlaidGuy: "PlaidGuy",
+			CHARACTER_ShopOwner: "ShopOwner",
+			CHARACTER_Sniper: "Sniper",
+			CHARACTER_Twig: "Twig",
+			CHARACTER_Whiskey: "Whiskey",
+			CHARACTER_zzTop2: "zzTop2",
+			},
 		},
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
-	richPresence_lookupTables[string_lookupTableKey]
+	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
+function richPresence_getLookupTableTextKey(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]["LookupTableText_Key"]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -3085,13 +3512,141 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // • RICH PRESENCE display script •
 // ================================
 // #region RP - display script
-function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+
+// function rp_TemplateDisplayScript(enum_releaseRegion) { 
+	// function condition(enum_releaseRegion) =>
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// return rich_presence_conditional_display( 
+	// 	condition(enum_releaseRegion),
+	// 	richPresence_getText("rp_Template"),
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
+	// )}
+
+function rp_MP_2P(enum_releaseRegion) { 
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
+		&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		&& isNot_Loading(enum_releaseRegion)
+		&& current_TotalPlayerCount(enum_releaseRegion) == 2
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
+		richPresence_getText("rp_MP_2P"),
+		richPresence_callParameterFunction("rpp_StageName_8ByteLevelID", enum_releaseRegion), // 0 // only Prologue Stage available in Multiplayer
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion) // 8
 	)}
+
+function rp_MP_3P(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		&& isNot_Loading(enum_releaseRegion)
+		&& current_TotalPlayerCount(enum_releaseRegion) == 3
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MP_3P"),
+		richPresence_callParameterFunction("rpp_StageName_8ByteLevelID", enum_releaseRegion), // 0 // only Prologue Stage available in Multiplayer
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_TeamColor", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Human_OR_CPU", enum_releaseRegion), // 10
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_CharacterName", enum_releaseRegion), // 11
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Kills", enum_releaseRegion) // 12
+	)}
+
+function rp_MP_4P(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		&& isNot_Loading(enum_releaseRegion)
+		&& current_TotalPlayerCount(enum_releaseRegion) == 4
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_MP_4P"),
+		richPresence_callParameterFunction("rpp_StageName_8ByteLevelID", enum_releaseRegion), // 0 // only Prologue Stage available in Multiplayer
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_TeamColor", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Human_OR_CPU", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_Kills", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_TeamColor", enum_releaseRegion), // 5
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Human_OR_CPU", enum_releaseRegion), // 6
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_CharacterName", enum_releaseRegion), // 7
+		richPresence_callParameterFunction("rpp_ShowdownPlayer2_Kills", enum_releaseRegion), // 8
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_TeamColor", enum_releaseRegion), // 9
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Human_OR_CPU", enum_releaseRegion), // 10
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_CharacterName", enum_releaseRegion), // 11
+		richPresence_callParameterFunction("rpp_ShowdownPlayer3_Kills", enum_releaseRegion), // 12
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_TeamColor", enum_releaseRegion), // 13
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Human_OR_CPU", enum_releaseRegion), // 14
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_CharacterName", enum_releaseRegion), // 15
+		richPresence_callParameterFunction("rpp_ShowdownPlayer4_Kills", enum_releaseRegion) // 16
+	)}
+
+function rp_SP_StageName_4ByteLevelID(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion))
+		&& never(on_LevelID_change(enum_releaseRegion))
+		&& tally(1, [
+			once(is_LevelID_sizeInBytes(3, enum_releaseRegion)), // 3-byte is minimum size of LevelID
+			once(is_LevelID_sizeInBytes(4, enum_releaseRegion)),
+			])
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_SP"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_StageActivity_4ByteLevelID", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_StageName_4ByteLevelID", enum_releaseRegion) // 2
+	)}
+function rp_SP_StageName_8ByteLevelID(enum_releaseRegion) { 
+	function condition(enum_releaseRegion) =>
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion))
+		&& never(on_LevelID_change(enum_releaseRegion))
+		&& tally(1, [
+			once(is_LevelID_sizeInBytes(5, enum_releaseRegion)),
+			once(is_LevelID_sizeInBytes(6, enum_releaseRegion)),
+			once(is_LevelID_sizeInBytes(7, enum_releaseRegion)), 
+			once(is_LevelID_sizeInBytes(8, enum_releaseRegion)), // 8-byte is the largest sized LevelID
+			])
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_SP"),
+		richPresence_callParameterFunction("rpp_ShowdownPlayer1_CharacterName", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_StageActivity_8ByteLevelID", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_StageName_8ByteLevelID", enum_releaseRegion) // 2
+	)}
+
+function rp_TitleScreen(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& (
+			is_GameState(GAMESTATE_TitleScreen, enum_releaseRegion)
+			|| is_Loading(enum_releaseRegion)
+		)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText("rp_TitleScreen")
+	)}
+	
 function rp_Default() {
 	return rich_presence_display(	
 		richPresence_getText("rp_Default")
@@ -3100,7 +3655,12 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		rp_TitleScreen(enum_releaseRegion)
+		rp_SP_StageName_4ByteLevelID(enum_releaseRegion)
+		rp_SP_StageName_8ByteLevelID(enum_releaseRegion)
+		rp_MP_2P(enum_releaseRegion)
+		rp_MP_3P(enum_releaseRegion)
+		rp_MP_4P(enum_releaseRegion)
 	}} 
 // #endregion RP - display script
 
@@ -3108,10 +3668,13 @@ function richPresence_initializeDisplays() {
 // • RICH PRESENCE parameters •
 // ===========================
 // #region RP - parameters
-richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1			// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_LOOKUP_STRING = 3	//  rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
+richPresence_MACRO = 4			// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpp_ShowdownPlayer_Is_CPUcontrolled(enum_playerID, enum_releaseRegion) =>
+	dword(memory_getAddress(format("ASCII:AIsetting-Player{0}(preferred)", enum_playerID), enum_releaseRegion))
 
 // -------------------------------------
 richPresence_parameterData = {
@@ -3123,33 +3686,164 @@ richPresence_parameterData = {
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
 
-	//	"rpp_ValueTemplate": {
-	//	 	"RPtype": richPresence_VALUE,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"ValueFormat": "VALUE"},
+	// "rpp_ValueTemplate": {
+		// "RPtype": richPresence_VALUE,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "ValueFormat": "VALUE"},
 
-	//	 "rpp_LookupTemplate": {
-	//	 	"RPtype": richPresence_LOOKUP,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//		"LookupTableID": "lup_LookupTableKey",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
+	// "rpp_LookupHexTemplate": {
+		// "RPtype": richPresence_LOOKUP_HEX,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
+
+	// "rpp_LookupStringTemplate": {
+		// "RPtype": richPresence_LOOKUP_STRING,
+		// "MemoryAddressToASCII": {
+		// 	RELEASE_REGION_USA: memory_getAddress(), 
+		// 	RELEASE_REGION_EUR: memory_getAddress(),
+		// 	RELEASE_REGION_JPN: memory_getAddress()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
-	//	 	"RPtype": richPresence_MACRO,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"MacroFormat": "Number"},	
+		// "RPtype": richPresence_MACRO,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "MacroFormat": "Number"},	
 	
-	
-
+	"rpp_StageActivity_4ByteLevelID": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageActivity_4ByteLevelID",
+		"LookupFallback": richPresence_getLookupTableText("lupText_StageActivity", "Fighting")},
+	"rpp_StageActivity_8ByteLevelID": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageActivity_8ByteLevelID",
+		"LookupFallback": richPresence_getLookupTableText("lupText_StageActivity", "Fighting")},
+	"rpp_StageName_4ByteLevelID": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageName_4ByteLevelID",
+		"LookupFallback": richPresence_getLookupTableText("lupText_StageName", "LOOKUP_FALLBACK")},
+	"rpp_StageName_8ByteLevelID": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:LevelID(preferred)", RELEASE_REGION_USA) + CONST_OFFSET_TO_LEVEL_ID_SUBSTRING},
+		"LookupTableID": "lup_StageName_8ByteLevelID",
+		"LookupFallback": richPresence_getLookupTableText("lupText_StageName", "LOOKUP_FALLBACK")},
+	// ---------ShowdownPlayer1---------
+	"rpp_ShowdownPlayer1_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player1(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lupText_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer1_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lupText_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer1_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lupText_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer1_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_1, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lupText_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer2---------
+	"rpp_ShowdownPlayer2_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player2(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lupText_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer2_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lupText_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer2_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lupText_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer2_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_2, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lupText_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer3---------
+	"rpp_ShowdownPlayer3_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player3(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lupText_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer3_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lupText_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer3_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lupText_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer3_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_3, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lupText_ShowdownKills", "ShowdownKills_0")},
+	// ---------ShowdownPlayer4---------
+	"rpp_ShowdownPlayer4_CharacterName": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: memory_getAddress("ASCII:CharacterModelID-Player4(preferred)", RELEASE_REGION_USA)},
+		"LookupTableID": "lup_CharacterName",
+		"LookupFallback": richPresence_getLookupTableText("lupText_CharacterName", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer4_TeamColor": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_Team(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_TeamColor",
+		"LookupFallback": richPresence_getLookupTableText("lupText_TeamColor", "LOOKUP_FALLBACK")},
+	"rpp_ShowdownPlayer4_Human_OR_CPU": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpp_ShowdownPlayer_Is_CPUcontrolled(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_Human_OR_CPU",
+		"LookupFallback": richPresence_getLookupTableText("lupText_Human_OR_CPU", "CPU")},
+	"rpp_ShowdownPlayer4_Kills": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MPplayer_ShowdownKills(MP_PLAYER_4, RELEASE_REGION_USA)},
+		"LookupTableID": "lup_ShowdownKills",
+		"LookupFallback": richPresence_getLookupTableText("lupText_ShowdownKills", "ShowdownKills_0")},
 	}
 // -------------------------------------
 function richPresence_createParameterName(string_parameterKey) => // Removes rpp_ 
@@ -3162,12 +3856,19 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+	function richPresence_callLookupHexFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
 		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+
+	function richPresence_callLookupStringFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
+		let_memAddr_ASCII = dict_paramLookupData["MemoryAddressToASCII"][enum_releaseRegion]
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_ascii_string_lookup(let_name, let_memAddr_ASCII, let_lookUpTable, let_lookupFallback)}
 	
 	function richPresence_callMacroFunction(dict_paramMacroData, enum_releaseRegion) {
 		let_macro = dict_paramMacroData["MacroFormat"] 
@@ -3177,7 +3878,8 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
 	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 // #endregion RP - parameters
@@ -3188,10 +3890,11 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 // #region RP - initialization
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_lookupTableKey in richPresence_lookupTables { 
-		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
+		let_lookupTable = richPresence_getLookupTable(let_lookupTableKey)
+		let_lookupTableTextKey = richPresence_getLookupTableTextKey(let_lookupTableKey)
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
-			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableTextKey, let_lookupValue)
 		}
 	}}
 
@@ -3213,7 +3916,7 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-
+// TODO design more Leaderboards
 // =========================
 // • LEADERBOARD core data •
 // =========================
@@ -3226,10 +3929,22 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 
 	"lb_ShootingChallenge": { // VERIFIED
 		"id": 125651, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_tng: Achieve 'Good Job' for ShootingChallenge"},
+	"lb_TimeTrialPerf75": { // VERIFIED
+		"id": 126166, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
+	"lb_TimeTrialHng": { // VERIFIED
+		"id": 126165, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
+	"lb_TimeTrialShernite": { // VERIFIED
+		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+	"lb_TimeTrialSher70": { // VERIFIED
+		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+	"lb_MPTimeTrial": { // VERIFIED
+		"id": 126163, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
+	"lb_MPChallenge": { // VERIFIED
+		"id": 126162, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
 	}
 // #endregion LB - core data
 
@@ -3238,6 +3953,29 @@ leaderboards_coreData = {
 // ==================================
 // #region LB - trigger generators
 //	- For leaderboard logic that's reoccuring across multiple triggers
+function lbGenerate_StartTrigger_SPstage_TimeTrial(enum_levelID, enum_releaseRegion) =>	
+	is_ReleaseRegion(enum_releaseRegion)
+	&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	&& is_Level(enum_levelID, enum_releaseRegion)
+	&& isNot_Loading(enum_releaseRegion)
+	&& on_TimeSpentInLevel_start(enum_releaseRegion) // --CheckIf--> Level starts from beginning
+function lbGenerate_CancelTrigger_SPstage_TimeTrial(enum_levelID, enum_releaseRegion) =>
+	// [1] ==== Alt Cancel Group ====	-> Cancel when not correct GameState
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
+	// [2] ==== Alt Cancel Group ====	-> Cancel when not correct Level
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Level(enum_levelID, enum_releaseRegion)
+	// [3] ==== Alt Cancel Groups ====	-> Cancel on Level Start or Reset
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_PauseMenu_reset(enum_releaseRegion)
+	// [4] ==== Alt Cancel Groups ====	-> Cancel on player death
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_SinglePlayer_Health_death(enum_releaseRegion)
+	// [5] ==== Alt Cancel Groups ====	-> Cancel on TimeSpentInLevel reset (CheckIf level has reset through any other means)
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_TimeSpentInLevel_reset(enum_releaseRegion)
+
 // #endregion LB - trigger generators
 
 // ========================
@@ -3245,15 +3983,67 @@ leaderboards_coreData = {
 // ========================
 // #region LB - triggers
 leaderboards_startTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Alt Start Group ====		-> Start when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [1] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 		&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
 		&& on_TrainingStage_ShootingChallenge_start(enum_releaseRegion)
 		),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+	
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1
+			&& current_TotalPlayerCount(enum_releaseRegion) == 4
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& on_MPround_start(enum_releaseRegion)
+		),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+			&& isNot_Loading(enum_releaseRegion)
+			&& current_HumanPlayerCount(enum_releaseRegion) == 1
+			&& current_TotalPlayerCount(enum_releaseRegion) == 4
+			&& is_MPteams_FreeForAll(enum_releaseRegion)
+			&& on_MPround_start_later(enum_releaseRegion) // on_MPround_start_later() activates one second later than on_MPround_start()
+		),
 	}
 leaderboards_cancelTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [3] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1] ==== Alt Cancel Group ====		-> Cancel when not correct GameState
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
@@ -3267,9 +4057,59 @@ leaderboards_cancelTriggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_Level_startORreset(enum_releaseRegion)
 		),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(on_MPround_start_early(enum_releaseRegion)) // --ResetIf--> to reset below tally. Reset when crossing 0.5, because StartTrigger activates whn crossing 1.0 with on_MPround_start()
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
+		// [2+3] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_reset(enum_releaseRegion)
+		// [4] ==== Alt Cancel Group ====		-> Cancel when not in Multiplayer
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// [5] ==== Alt Cancel Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
+		// [2] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		),
 	}
 leaderboards_submitTriggers = {
-	"lb_ShootingChallenge":  any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Submit Group ====		-> Submit when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Reset Group ====			-> Reset when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	"lb_ShootingChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MOLE_KILLS_REQUIRED_FOR_WIN = 11
 		return 
 			never(
@@ -3284,9 +4124,139 @@ leaderboards_submitTriggers = {
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) > 3.0 // ---2 Lines---> prev_ShootingGalleryTimer() is the submitted ValueMeasure, These are extra checks to prevent false entries from getting into leaderboard
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) < 61.0 
 		}),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 1 // = 5 (minus 1, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
+				once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)		
+		}),	
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 4 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TitleStage, enum_releaseRegion)	
+		}),	
+
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 5 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)		
+		}),	
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: For the leaderboad, only count nonRespawning NPC deaths
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
+		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) - 2 // = 9 	(minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),	
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_REQUIRED_ROUND_WINS = 7
+		return 
+		// [1] ==== Alt Submit Group ====		-> Submit when MP_PLAYER_1 has won 7 rounds consecutively
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))			
+		// ========== ResetGroups ==========
+		// [2] ==== Alt Reset Group ====		-> Reset when enemy Player wins a round (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(1, [ // --Tally--> OrNextChain: CheckIf an EnemyPlayer Wins a Round
+					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)
+						&& never(on_MPround_start(enum_releaseRegion))),
+					])
+				)
+		// [3] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCount in AltGroup[1])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		}),
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== SubmitGroups ==========
+		// [1] ==== Alt Submit Group ====		-> Submit when player takes a hit
+			is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent submits when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+			&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)
+		// [2+3] ==== Alt Submit Group ====		-> Submit on PauseMenu->Reset
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& on_PauseMenu_reset(enum_releaseRegion)
+		// [4] ==== Alt Submit Group ====		-> Submit when leaving Multiplayer mode
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// ========== ResetGroups ==========
+		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+				// && on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
+					never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
+					&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
+		// [6] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
+		// [7] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only using !is_GameState()
+					never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+					&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
+		),
 	}
 //-----------------ValueMeasures-------------------
-function lb_ShootingChallenge_ValueMeasure() {
+function lb_ValueMeasure_ShootingChallenge() {
 	function valueMeasure_A(enum_releaseRegion) => // This is the value which is displayed; When this leaderboard.SubmitTrigger triggers, current value will be 0
 		measured(current_ShootingGalleryTimer_inCentiSeconds(enum_releaseRegion))
 	function valueMeasure_B(enum_releaseRegion) => // This is the value which will be submitted; When this leaderboard.SubmitTrigger triggers, prev/delta value will be the ShootingGalleryTimer, which is higher than 0, thus max_of()
@@ -3297,8 +4267,43 @@ function lb_ShootingChallenge_ValueMeasure() {
 		array_push(let_array_valueMeasures, valueMeasure_A(enum_releaseRegion))
 		array_push(let_array_valueMeasures, valueMeasure_B(enum_releaseRegion))}
 	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_TimeSpentInLevel() {
+	function valueMeasure(enum_releaseRegion) => 
+		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_TimeSpentInMultiplayerMatch() {
+	function valueMeasure(enum_releaseRegion) => 
+		// measured(repeated(0, on_FrameCounter_change(enum_releaseRegion))) // --repeated(0)--> hitCount infinitely
+		measured(tally(0, [
+			repeated(0, on_FrameCounter_change(enum_releaseRegion)), // --repeated(0)--> hitCount infinitely
+			repeated(30, on_FrameCounter_change(enum_releaseRegion)), // --repeated(30)--> Add 1 extra second, because leaderboard starts when 1 second passes
+			]))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+function lb_ValueMeasure_MultiplayerRoundsWon() {
+	function valueMeasure(enum_releaseRegion) => 
+		measured(repeated(0, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))) // --repeated(0)--> hitCount infinitely
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 leaderboards_valueMeasures = {
-	"lb_ShootingChallenge":  lb_ShootingChallenge_ValueMeasure(),
+	// "lb_template": lb_ValueMeasure_Template(),
+	"lb_ShootingChallenge": lb_ValueMeasure_ShootingChallenge(),
+	"lb_TimeTrialPerf75": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialHng": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialShernite": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_TimeTrialSher70": lb_ValueMeasure_TimeSpentInLevel(),
+	"lb_MPTimeTrial": lb_ValueMeasure_TimeSpentInMultiplayerMatch(),
+	"lb_MPChallenge": lb_ValueMeasure_MultiplayerRoundsWon(),
 	}
 // #endregion LB - triggers
 
@@ -3307,14 +4312,27 @@ leaderboards_valueMeasures = {
 // ====================
 // #region LB - text
 leaderboards_titles = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 
-	"lb_ShootingChallenge": 				{"en": "Whack-a-Mole: Quick Draw Champions"},	
+	"lb_ShootingChallenge": 				{"en": "Whack-a-Mole: Quick Draw Gunslingers"},
+	"lb_TimeTrialPerf75":					{"en": "Prologue Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialHng":						{"en": "Title Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialShernite":					{"en": "Sheriff Night Stage: Quick Draw Gunslingers"},
+	"lb_TimeTrialSher70":					{"en": "Sheriff Day Stage: Quick Draw Gunslingers"},
+	"lb_MPTimeTrial":						{"en": "Seven in the Chamber: Quick Draw Gunslingers"},
+	"lb_MPChallenge":						{"en": "Bulletproof Bravado: Untouchable Gunslingers"},	
+
 	}
 leaderboards_descriptions = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 
 	"lb_ShootingChallenge": 				{"en": "In the \"Training Stage\", eliminate 11 moles during the Shooting Challenge as fast as possible"},
+	"lb_TimeTrialPerf75": 					{"en": "Complete the \"Prologue Stage\" by swiftly vanquishing all outlaws and reuniting with Mother or Jinnie after Red's home is secure"},
+	"lb_TimeTrialHng": 						{"en": "Complete the \"Title Stage\" by swiftly vanquishing all outlaws and earning the respect of a loyal canine after the deed is done"},
+	"lb_TimeTrialShernite": 				{"en": "Complete the \"Sheriff Night Stage\" by swiftly vanquishing all outlaws and earning the gratitude of the old man after the town is safe"},
+	"lb_TimeTrialSher70": 					{"en": "Complete the \"Sheriff Day Stage\" by swiftly vanquishing all outlaws and receiving thanks from the captive after the coast is clear"},
+	"lb_MPTimeTrial": 						{"en": "In Multiplayer, win 7 consecutive 4-player free-for-all rounds as fast as possible"},
+	"lb_MPChallenge": 						{"en": "In Multiplayer, win as many consecutive 4-player free-for-all rounds as possible without taking a single hit"},
 	}
 // #endregion LB - text
 
@@ -3346,9 +4364,17 @@ function leaderboards_initialize() {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
-		return format("{0}{1}",
-			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
-			leaderboards_formatDevInfo(string_devInfo))}
+
+		let_descriptionString = leaderboards_getDescription(string_leaderboardDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_leaderboardDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + leaderboards_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
+	
 
 	for let_leaderboardKey in leaderboards_coreData {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]

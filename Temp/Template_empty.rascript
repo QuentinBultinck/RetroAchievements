@@ -245,24 +245,40 @@ memory_initialize()
 // =========================
 // #region ACH - core data
 // - Divided by category => when in debug mode, category tags are added to achievement titles
+achievement_POINTS_0 = 0		// Free - Freebie/informational achievement
+achievement_POINTS_1 = 1 		// Minor - Finding a hidden item, do some arbitrary/easter egg task
+achievement_POINTS_2 = 2 		// Basic - Defeating a few enemies
+achievement_POINTS_3 = 3 		// Easy - Completing an easy quest or level
+achievement_POINTS_4 = 4 		// Intermediate - Completing a harder quest or level
+achievement_POINTS_5 = 5 		// Advanced - Collecting rare items or completing a level
+achievement_POINTS_10 = 10		// Challenging - Defeating a major boss or collecting a VERY rare one-of-a-kind item
+achievement_POINTS_25 = 25 		// Hard - Completing the game 
+achievement_POINTS_50 = 50 		// VeryHard - Achieving 100% completion
+achievement_POINTS_100 = 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
+
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
 
 	// "a_Template": { // CONCEPT a_template
-	//	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Template": { // Category - info_here
 		"a_Template": 	{
-			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		}
 	"c_Template2": { // Category - info_here
 		"a_Template2": 	{
-			"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"}
+			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
 		}
 	}
 // -------------------------------------
+achievement_TYPE_Progression = "progression"
+achievement_TYPE_WinCondition = "win_condition"
+achievement_TYPE_Missable = "missable"
+achievement_TYPE_Standard = ""
+
 achievements_typeByCategory = { // TODO set achievement types
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
@@ -273,8 +289,8 @@ achievements_typeByCategory = { // TODO set achievement types
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": "xxxxxx",
-	"c_Template": 				sNULL}
+	// "c_Template": 	achievement_TYPE_Standard,
+	"c_Template": 		achievement_TYPE_Standard}
 	
 // #endregion ACH - core data
 
@@ -341,9 +357,15 @@ function achievements_initialize() {
 			}
 			return let_devInfoString}
 
-		return format("{0}{1}",
-			achievements_getDescription(string_achievementDevName, string_languageCode),
-			achievements_formatDevInfo(string_devInfo))}
+		let_descriptionString = achievements_getDescription(string_achievementDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_achievementDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + achievements_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
 
 	function achievements_getTrigger(string_achievementDevName) => 
 		achievements_triggers[string_achievementDevName]
@@ -353,6 +375,8 @@ function achievements_initialize() {
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
 		return let_type}	
 	
+	
+
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
 			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
@@ -365,8 +389,7 @@ function achievements_initialize() {
 				trigger = achievements_getTrigger(let_cheevmentName)
 			)
 		}}
-	}
-// #endregion ACH - initialization
+	}// #endregion ACH - initialization
 // #endregion ACHIEVEMENTS
 
 // ***************************************************************************************************** \\
@@ -391,12 +414,12 @@ richPresence_text = {
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
 richPresence_LookupTablesText = {
-	// "rp_Template": {
-	// 	"Lookup_A":						{"en": "xxxxxxxx"},
-	// 	"Lookup_B":						{"en": "xxxxxxxx"},
-	// 	"Lookup_C":						{"en": "xxxxxxxx"},
-	// 	"LOOKUP_FALLBACK":				{"en": "xxxxxxxx"}
-	// 	},
+	// "lupText_Template": {
+		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_A":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
+		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
+		// },
 	}
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
@@ -405,9 +428,19 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 richPresence_lookupTables = {
+	// "lup_Template": {
+		// "LookupTableText_Key": "lupText_Template",
+		// "LookUpTable": {
+		// 	enum_XXX_A:					"LookupTextKey_A",
+		// 	enum_XXX_B:					"LookupTextKey_B",
+		// 	enum_XXX_C:					"LookupTextKey_C",
+		// 	},
+		// },
 	}
 function richPresence_getLookupTable(string_lookupTableKey) =>
-	richPresence_lookupTables[string_lookupTableKey]
+	richPresence_lookupTables[string_lookupTableKey]["LookUpTable"]
+function richPresence_getLookupTableTextKey(string_lookupTableKey) =>
+	richPresence_lookupTables[string_lookupTableKey]["LookupTableText_Key"]
 // ------------------CustomZeroPadding-------------------
 function richPresence_addZeroPaddingLookupTable(string_lookupTableName, int_numberOfZerosToPad, int_maxLookupValueKey) {
 	// Example output: richPresence_addZeroPaddingLookupTable("rpp_DateTime_ZeroPadding", 1, 24) => adds below table to richPresence_lookupTables
@@ -468,6 +501,18 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // • RICH PRESENCE display script •
 // ================================
 // #region RP - display script
+
+// function rp_TemplateDisplayScript(enum_releaseRegion) { 
+	// function condition(enum_releaseRegion) =>
+	// 	is_ReleaseRegion(enum_releaseRegion)
+	// return rich_presence_conditional_display( 
+	// 	condition(enum_releaseRegion),
+	// 	richPresence_getText("rp_Template"),
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
+	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
+	// )}
+
 function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default, but adds the possibility for value insertion/placeholder text when offering multiregion support
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -491,9 +536,10 @@ function richPresence_initializeDisplays() {
 // • RICH PRESENCE parameters •
 // ===========================
 // #region RP - parameters
-richPresence_VALUE = 1		// rich_presence_value(name, expression, [format])
-richPresence_LOOKUP = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
-richPresence_MACRO = 3		// rich_presence_macro(macro, expression)
+richPresence_VALUE = 1			// rich_presence_value(name, expression, [format])
+richPresence_LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionary, [fallback])
+richPresence_LOOKUP_STRING = 3	//  rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
+richPresence_MACRO = 4			// rich_presence_macro(macro, expression)
 // -------------------------------------
 
 // -------------------------------------
@@ -505,31 +551,40 @@ richPresence_parameterData = {
 	// 		- Available macro formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_macromacro-expression
 	// 		- Available value formats => https://github.com/Jamiras/RATools/wiki/Rich-Presence-Functions#rich_presence_valuename-expression-format
 	// ------------------------------------------------------
+	
+	// "rpp_ValueTemplate": {
+		// "RPtype": richPresence_VALUE,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "ValueFormat": "VALUE"},
 
-	//	"rpp_ValueTemplate": {
-	//	 	"RPtype": richPresence_VALUE,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"ValueFormat": "VALUE"},
+	// "rpp_LookupHexTemplate": {
+		// "RPtype": richPresence_LOOKUP_HEX,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
-	//	 "rpp_LookupTemplate": {
-	//	 	"RPtype": richPresence_LOOKUP,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//		"LookupTableID": "lup_LookupTableKey",
-	//	 	"LookupFallback": richPresence_getLookupTableText("lup_LookupTableKey", "LOOKUP_FALLBACK")},
+	// "rpp_LookupStringTemplate": {
+		// "RPtype": richPresence_LOOKUP_STRING,
+		// "MemoryAddressToASCII": {
+		// 	RELEASE_REGION_USA: memory_getAddress(), 
+		// 	RELEASE_REGION_EUR: memory_getAddress(),
+		// 	RELEASE_REGION_JPN: memory_getAddress()},
+		// "LookupTableID": "lup_LookupTableKey",
+		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
 	//	"rpp_MacroTemplate": {
-	//	 	"RPtype": richPresence_MACRO,
-	//	 	"Expression": {
-	//	 		RELEASE_REGION_USA: always_false(), 
-	//	 		RELEASE_REGION_EUR: always_false(),
-	//	 		RELEASE_REGION_JPN: always_false()},
-	//	 	"MacroFormat": "Number"},	
+		// "RPtype": richPresence_MACRO,
+		// "Expression": {
+		// 	RELEASE_REGION_USA: always_false(), 
+		// 	RELEASE_REGION_EUR: always_false(),
+		// 	RELEASE_REGION_JPN: always_false()},
+		// "MacroFormat": "Number"},	
 	
 	
 
@@ -545,12 +600,19 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 		let_format = dict_paramValueData["ValueFormat"] 
 		return rich_presence_value(let_name, let_expression, let_format)}
 	
-	function richPresence_callLookupFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+	function richPresence_callLookupHexFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
 		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
 		let_expression = dict_paramLookupData["Expression"][enum_releaseRegion]
 		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
 		let_lookupFallback = dict_paramLookupData["LookupFallback"]
 		return rich_presence_lookup(let_name, let_expression, let_lookUpTable, let_lookupFallback)}
+
+	function richPresence_callLookupStringFunction(string_parameterKey, dict_paramLookupData, enum_releaseRegion) {
+		let_name = richPresence_createParameterName(dict_paramLookupData["LookupTableID"])
+		let_memAddr_ASCII = dict_paramLookupData["MemoryAddressToASCII"][enum_releaseRegion]
+		let_lookUpTable = richPresence_getLookupTable(dict_paramLookupData["LookupTableID"])
+		let_lookupFallback = dict_paramLookupData["LookupFallback"]
+		return rich_presence_ascii_string_lookup(let_name, let_memAddr_ASCII, let_lookUpTable, let_lookupFallback)}
 	
 	function richPresence_callMacroFunction(dict_paramMacroData, enum_releaseRegion) {
 		let_macro = dict_paramMacroData["MacroFormat"] 
@@ -560,7 +622,8 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 	let_parameterData = richPresence_parameterData[string_parameterKey]
 	let_RPtype = let_parameterData["RPtype"]
 	if (let_RPtype == richPresence_VALUE) return richPresence_callValueFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
-	else if (let_RPtype == richPresence_LOOKUP) return richPresence_callLookupFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_HEX) return richPresence_callLookupHexFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
+	else if (let_RPtype == richPresence_LOOKUP_STRING) return richPresence_callLookupStringFunction(string_parameterKey, let_parameterData, enum_releaseRegion)
 	else if (let_RPtype == richPresence_MACRO) return richPresence_callMacroFunction(let_parameterData, enum_releaseRegion)
 	else util_throwError(format("The rich presence parameter: {0} did not evaluate correctly", string_placeholderParameterKey))}
 // #endregion RP - parameters
@@ -571,10 +634,11 @@ function richPresence_callParameterFunction(string_parameterKey, enum_releaseReg
 // #region RP - initialization
 function richPresence_populateLookupTables() {	// Changes the richPresence_lookupTables IDs to the corresponding text in richPresence_text
 	for let_lookupTableKey in richPresence_lookupTables { 
-		let_lookupTable = richPresence_lookupTables[let_lookupTableKey]
+		let_lookupTable = richPresence_getLookupTable(let_lookupTableKey)
+		let_lookupTableTextKey = richPresence_getLookupTableTextKey(let_lookupTableKey)
 		for let_lookupKey in let_lookupTable {
-			let_lookupValue = richPresence_lookupTables[let_lookupTableKey][let_lookupKey]
-			richPresence_lookupTables[let_lookupTableKey][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableKey, let_lookupValue)
+			let_lookupValue = richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey]
+			richPresence_lookupTables[let_lookupTableKey]["LookUpTable"][let_lookupKey] = richPresence_getLookupTableText(let_lookupTableTextKey, let_lookupValue)
 		}
 	}}
 
@@ -610,7 +674,7 @@ leaderboards_coreData = {
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
 	// "lb_Template": { // CONCEPT lb_template
-	// 	"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	}
 // #endregion LB - core data
 
@@ -626,13 +690,52 @@ leaderboards_coreData = {
 // ========================
 // #region LB - triggers
 leaderboards_startTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [0] ==== Alt Start Group ====		-> Start when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [1] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Start Group ====		-> Start when ...
+		//  || is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 leaderboards_cancelTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [3] ==== Alt Cancel Group ====		-> Cancel when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 leaderboards_submitTriggers = {
+	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// // [1] ==== Alt Submit Group ====		-> Submit when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Reset Group ====			-> Reset when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
 	}
 //-----------------ValueMeasures-------------------
+function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
+	function valueMeasure(enum_releaseRegion) => 
+		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
 leaderboards_valueMeasures = {
+	// "lb_template": lb_ValueMeasure_Template(),
 	}
 // #endregion LB - triggers
 
@@ -641,10 +744,10 @@ leaderboards_valueMeasures = {
 // ====================
 // #region LB - text
 leaderboards_titles = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 	}
 leaderboards_descriptions = {
-	// "rp_Template": 						{"en": "xxxxxxxx"},
+	// "lb_Template": 						{"en": "xxxxxxxx"},
 	}
 // #endregion LB - text
 
@@ -676,9 +779,17 @@ function leaderboards_initialize() {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
-		return format("{0}{1}",
-			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
-			leaderboards_formatDevInfo(string_devInfo))}
+
+		let_descriptionString = leaderboards_getDescription(string_leaderboardDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_leaderboardDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + leaderboards_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
+	
 
 	for let_leaderboardKey in leaderboards_coreData {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
