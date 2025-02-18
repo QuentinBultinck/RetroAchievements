@@ -484,7 +484,7 @@ function on_PlayerInput_X_release(enum_controllerID, enum_releaseRegion) =>
 	current_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) > prev_flagState_PlayerInput_X(enum_controllerID, enum_releaseRegion) // InvertedBitFlag: 0 => pressed
 
 function current_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) {
-	let_string_addrKey = format("Bitset(byte1):ButtonsPressed-Controller{0}", enum_controllerID)
+	let_string_addrKey = format("Bitset(byte2):ButtonsPressed-Controller{0}", enum_controllerID)
 	return bit5(memory_getAddress(let_string_addrKey, enum_releaseRegion))}
 
 function prev_flagState_PlayerInput_O(enum_controllerID, enum_releaseRegion) =>
@@ -562,6 +562,17 @@ function on_PauseMenu_reset(enum_releaseRegion) {
 			)
 		}
 
+function on_PauseMenu_reset_release(enum_releaseRegion) { 
+	const_PAUSE_MENU_HIGHLIGHT_ID_Reset = 0x2 // PauseMenu HighlightItems start counting from 0x1 up to 0x4; "Reset" is second from top
+	return 
+		is_Menu_displayed(MENU_PauseMenu, enum_releaseRegion)
+		&& current_HighLightedMenuItem_A(enum_releaseRegion) == const_PAUSE_MENU_HIGHLIGHT_ID_Reset
+		&& (
+			on_PlayerInput_X_release(CONTROLLER_1, enum_releaseRegion)
+			|| on_PlayerInput_O_release(CONTROLLER_1, enum_releaseRegion)
+			)
+		}
+
 // ----------------TimeSpentInLevel---------------------
 function current_TimeSpentInLevel(enum_releaseRegion) {
 	let_memAddr_basePointer = memory_getAddress("Pointer:TimeSpentInLevel", enum_releaseRegion)
@@ -579,13 +590,21 @@ function on_TimeSpentInLevel_start(enum_releaseRegion) =>
 	current_TimeSpentInLevel(enum_releaseRegion) >= 1.0
 	&& prev_TimeSpentInLevel(enum_releaseRegion) < 1.0
 
-function on_TimeSpentInLevel_start_bis(enum_releaseRegion) => 
+function on_TimeSpentInLevel_start_later(enum_releaseRegion) => 
 	/* NOTE: 
-		- on_TimeSpentInLevel_start_bis() is true a few millieseconds later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
+		- on_TimeSpentInLevel_start_later() is true 1 second later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
 		- Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
 		*/
 	current_TimeSpentInLevel(enum_releaseRegion) >= 2.0
 	&& prev_TimeSpentInLevel(enum_releaseRegion) < 2.0
+
+function on_TimeSpentInLevel_start_early(enum_releaseRegion) => 
+	/* NOTE: 
+		- on_TimeSpentInLevel_start_early() is true 0.5 seconds later than on_TimeSpentInLevel_start() --- This is primarily used by multiplayer leaderboards
+		- Don't compare to 0.0 as were working with floats, and the value might not be exactly 0.0
+		*/
+	current_TimeSpentInLevel(enum_releaseRegion) >= 0.5
+	&& prev_TimeSpentInLevel(enum_releaseRegion) < 0.5
 
 function on_TimeSpentInLevel_reset(enum_releaseRegion) => 
 	current_TimeSpentInLevel(enum_releaseRegion) < prev_TimeSpentInLevel(enum_releaseRegion)
@@ -1000,8 +1019,11 @@ CHARACTER_zzTop2 = "zz2" // // GabrialNavarro(alt)
 function on_MPround_start(enum_releaseRegion) =>
 	on_TimeSpentInLevel_start(enum_releaseRegion)
 
-function on_MPround_start_bis(enum_releaseRegion) =>
-	on_TimeSpentInLevel_start_bis(enum_releaseRegion)
+function on_MPround_start_later(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start_later(enum_releaseRegion)
+
+function on_MPround_start_early(enum_releaseRegion) =>
+	on_TimeSpentInLevel_start_early(enum_releaseRegion)
 
 function on_MPround_reset(enum_releaseRegion) =>
 	on_TimeSpentInLevel_reset(enum_releaseRegion)
@@ -1671,11 +1693,23 @@ memory_initialize()
 // =========================
 // #region ACH - core data
 // - Divided by category => when in debug mode, category tags are added to achievement titles
+// DEV_NOTE: Achievement Scoring --> https://docs.retroachievements.org/developer-docs/achievement-scoring.html
+achievement_POINTS_0 = 0		// Free - Freebie/informational achievement
+achievement_POINTS_1 = 1 		// Minor - Finding a hidden item, do some arbitrary/easter egg task
+achievement_POINTS_2 = 2 		// Basic - Defeating a few enemies
+achievement_POINTS_3 = 3 		// Easy - Completing an easy quest or level
+achievement_POINTS_4 = 4 		// Intermediate - Completing a harder quest or level
+achievement_POINTS_5 = 5 		// Advanced - Collecting rare items or completing a level
+achievement_POINTS_10 = 10		// Challenging - Defeating a major boss or collecting a VERY rare one-of-a-kind item
+achievement_POINTS_25 = 25 		// Hard - Completing the game 
+achievement_POINTS_50 = 50 		// VeryHard - Achieving 100% completion
+achievement_POINTS_100 = 100 	// Impossible - Completing the game without taking a hit (extreme challenge achievements, typical for bonus sets)
+
 achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
-
+	
 	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
@@ -1683,82 +1717,87 @@ achievements_coreData = {
 	
 	"c_SPprogress": { // Category - Single Player Progression 
 		"a_CompleteTng": { // VERIFIED
-			"id": 495453, "points": 0000000, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
+			"id": 495453, "points": achievement_POINTS_5, "devInfo": "lvl_tng: Complete Movement Training, Weapon Training and Shooting Challenge"},
 		"a_CompletePerf": { // VERIFIED
-			"id": 497244, "points": 0000000, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
+			"id": 497244, "points": achievement_POINTS_5, "devInfo": "lvl_perf75: Kill all enemies + interact with Mom and Jinnie"},
 		"a_CompleteHng": { // VERIFIED
-			"id": 497833, "points": 0000000, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
+			"id": 497833, "points": achievement_POINTS_5, "devInfo": "lvl_hng: Kill all enemies + interact with dog"},
 		"a_CompleteShernite": { // VERIFIED
-			"id": 497874, "points": 0000000, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
+			"id": 497874, "points": achievement_POINTS_5, "devInfo": "lvl_shernite: Kill all enemies + interact with friendly NPC"},
 		"a_CompleteSher70": { // VERIFIED
-			"id": 498038, "points": 0000000, "devInfo": "lvl_sher70: Kill at least xx enemies (Talk with old man for thanks)"},
+			"id": 498038, "points": achievement_POINTS_5, "devInfo": "lvl_sher70: Kill at least xx enemies (Talk with old man for thanks)"},
 		}, 
 	"c_SPchallenge": { // Category - Single Player Challenges
 		"a_ChallengeTng": { // VERIFIED
-			"id": 497831, "points": 0000000, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only hit headshots"},
+			"id": 497831, "points": achievement_POINTS_10, "devInfo": "lvl_tng: Achieve 'Good Job' in shooting challenge + only hit headshots"},
 		"a_ChallengePerf": { // VERIFIED
-			"id": 497683, "points": 0000000, "devInfo": "lvl_perf: Finish level without taking damage (talk to mom or Jinnie after killing all enemies)"},
+			"id": 497683, "points": achievement_POINTS_10, "devInfo": "lvl_perf: Finish level without taking damage (talk to mom or Jinnie after killing all enemies)"},
 		// "a_ChallengeHng": { // VERIFIED // DISABLED - Manual Construction (refer to Trigger)
-			// "id": 497832, "points": 0000000, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
+			// "id": 497832, "points": achievement_POINTS_10, "devInfo": "lvl_hng: Finish level without missing any shots (talk to dog after killing all enemies)"},
 		"a_ChallengeShernite": { // VERIFIED
-			"id": 497875, "points": 0000000, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
+			"id": 497875, "points": achievement_POINTS_10, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
 		"a_ChallengeSher70": { // VERIFIED
-			"id": 498037, "points": 0000000, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
+			"id": 498037, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
 		"a_WinGame": { // VERIFIED
-			"id": 494562, "points": 0000000, "devInfo": "Win Game, when cash over $49.09, I think only possible in lvl_tng"},
+			"id": 494562, "points": achievement_POINTS_3, "devInfo": "Win Game, when cash over $49.09, lvl_tng and lvl_sher70 have respawning enemies"},
 		"a_DeadEyeMaster": { // VERIFIED
-			"id": 498358, "points": 0000000, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
+			"id": 498358, "points": achievement_POINTS_5, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
 		"a_TipHat": { // VERIFIED
-			"id": 494576, "points": 0000000, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements"},
+			"id": 494576, "points": achievement_POINTS_1, "devInfo": "Tutorial Achievement: How to tip your hat. Needed for the Sightseeing achievements (by standing idle and pressing and holding X or R1)"},
 		"a_Dodge": { // VERIFIED
-			"id": 494577, "points": 0000000, "devInfo": "Secret dodge input/animation"},
+			"id": 494577, "points": achievement_POINTS_2, "devInfo": "Secret dodge input/animation (by walking and pressing X or R1)"},
 		"a_SpinFire": { // VERIFIED
-			"id": 499616, "points": 0000000, "devInfo": "Hit at least 3 bullets during a secret Spinfire technique and without getting hit out of the technique (Press both X and O simultaneously with dual or single revolver equipped)"},	
+			"id": 499616, "points": achievement_POINTS_3, "devInfo": "Hit at least 3 bullets during a secret Spinfire technique and without getting hit out of the technique (Press both X and O simultaneously with dual or single revolver equipped)"},	
 		"a_HorseCover": { // VERIFIED
-			"id": 498510, "points": 0000000, "devInfo": "Take cover whilst on horseback"},
+			"id": 498510, "points": achievement_POINTS_2, "devInfo": "Take cover whilst on horseback (press and hold X while on horseback + move camera)"},
 		"a_SaloonThrow": { // VERIFIED
-			"id": 495633, "points": 0000000, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
+			"id": 495633, "points": achievement_POINTS_3, "devInfo": "lvl_saloon: Throw both enemies through the front door of the saloon"},
 		"a_HorseTomb": { // VERIFIED
-			"id": 496929, "points": 0000000, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
+			"id": 496929, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: Using the horse, ram into all 8 NPCs (using a weapon is not allowed)"},
 		"a_PerfRoofFall": { // VERIFIED
-			"id": 498497, "points": 0000000, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
+			"id": 498497, "points": achievement_POINTS_2, "devInfo": "lvl_perf75: Fall through the roof of the house into the the bed (player must break roof while walking over it AND fall through roof within xx frames)"},
 		"a_EyeTng": { // VERIFIED
-			"id": 494578, "points": 0000000, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
+			"id": 494578, "points": achievement_POINTS_3, "devInfo": "lvl_tng: TipHat Front_WhiteChest + near_BrokenCart"},
 		"a_EyeFlash": { // VERIFIED
-			"id": 498489, "points": 0000000, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
+			"id": 498489, "points": achievement_POINTS_3, "devInfo": "lvl_flash: TipHat On_RiverLogBridge + On_Outhouse (Jump on house roof first then jump on outhouse)"},
 		"a_EyeTrain": { // VERIFIED
-			"id": 498496, "points": 0000000, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
+			"id": 498496, "points": achievement_POINTS_3, "devInfo": "lvl_train: TipHat On_CliffRidge (get there by jumping on train roof then jump across, spamming jump is advised)"},
 		"a_EyeTomb": { // VERIFIED
-			"id": 498495, "points": 0000000, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
+			"id": 498495, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
 		"a_EyeFort": { // VERIFIED
-			"id": 498490, "points": 0000000, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
-			"id": 498491, "points": 0000000, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
+			"id": 498491, "points": achievement_POINTS_3, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		"a_EyeShootHng": { // VERIFIED
-			"id": 498492, "points": 0000000, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
+			"id": 498492, "points": achievement_POINTS_5, "devInfo": "lvl_hng: kill 5 enemies whilst standing on top of a building (in succession without dropping down + use SingleRevolver to kill)"},
 		"a_EyeShootShernite": { // VERIFIED
-			"id": 498494, "points": 0000000, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
+			"id": 498494, "points": achievement_POINTS_5, "devInfo": "lvl_shernite: from on top of big barrel kill 4 enemies (in succession without dropping down + use DualRevolvers to kill)"},
 		"a_EyeShootSher70": { // VERIFIED
-			"id": 498493, "points": 0000000, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
+			"id": 498493, "points": achievement_POINTS_5, "devInfo": "lvl_sher70: from on top of highest building roof kill xx enemies (in succession without dropping down + use Rifle to kill)"},
 		},
 	"c_MPchallenge": { // Category - Multiplayer
 		"a_WinRed": { // VERIFIED
-			"id": 498364, "points": 0000000, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
+			"id": 498364, "points": achievement_POINTS_5, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
 		"a_WinNrdDeathless": { // VERIFIED
-			"id": 498362, "points": 0000000, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
+			"id": 498362, "points": achievement_POINTS_5, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
 		"a_WinPigDynamite": { // VERIFIED
-			"id": 498363, "points": 0000000, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
+			"id": 498363, "points": achievement_POINTS_5, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
 		"a_WinBbyShotgun": { // VERIFIED
-			"id": 498359, "points": 0000000, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
+			"id": 498359, "points": achievement_POINTS_5, "devInfo": "Win as (bby), 4x free-for-all rounds consecutively, killing only with the shotgun (melee allowed)"},
 		"a_WinDcgRifle": { // VERIFIED
-			"id": 498360, "points": 0000000, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
+			"id": 498360, "points": achievement_POINTS_5, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
 		"a_WinMskHitless": { // VERIFIED
-			"id": 498361, "points": 0000000, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
+			"id": 498361, "points": achievement_POINTS_10, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
 		}
 	}
 // -------------------------------------
+achievement_TYPE_Progression = "progression"
+achievement_TYPE_WinCondition = "win_condition"
+achievement_TYPE_Missable = "missable"
+achievement_TYPE_Standard = ""
+
 achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
@@ -1769,11 +1808,11 @@ achievements_typeByCategory = {
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
-	// "c_Template": "xxxxxx",
-	"c_SPprogress": 		"progression", // NOTE: This prototype has no WinCondition -> Player which achieves all Progression achievements will be marked as beaten
-	"c_SPchallenge":		sNULL,
-	"c_SPbonus":			sNULL,
-	"c_MPchallenge":		sNULL} 
+	// "c_Template": 		achievement_TYPE_Standard,
+	"c_SPprogress": 		achievement_TYPE_Progression, // NOTE: This prototype has no achievement_TYPE_WinCondition -> Player needs to achieve all achievement_TYPE_Progression to reach "beaten" status
+	"c_SPchallenge":		achievement_TYPE_Standard,
+	"c_SPbonus":			achievement_TYPE_Standard,
+	"c_MPchallenge":		achievement_TYPE_Standard} 
 	
 // #endregion ACH - core data
 
@@ -2003,7 +2042,7 @@ achievements_triggers = {
 		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES)
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement
-			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._T:0=1.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000008=1970239851_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
+			// MANUAL_CONSTRUCTION Alt1: P:0xX0091204c!=1397769043_P:0xH00483750=13_I:0xX00421850_I:0xX00000170_0xX0000005c=0.1._I:0xX00421850_I:0xX00000170_A:0xX00000000_I:0xX00421850_I:0xX00000170_B:0xX0000002c_I:0xX00421850_I:0xX00000170_B:0xX00000030_0=0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_N:fF0000000c=f0.0_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000004_I:0xX00000014_C:dfF0000000c>f0.0.1._T:0=1.6._I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000004=1851877460_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:0xX00000000=2_I:0xX00421dac_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000188_I:0xX00000094_I:0xX000000c4_I:0xX0000000c_T:d0xX00000000<2
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -2017,7 +2056,7 @@ achievements_triggers = {
 				SubSource	Mem [32-bit:ShotsHitHead]
 							val 0 == val 0
 				*/
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xa0)
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xA0)
 			&& current_SinglePlayer_ShotsFired(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitBody(enum_releaseRegion) == 0xbeef
 			&& current_SinglePlayer_ShotsHitHead(enum_releaseRegion) == 0xbeef
@@ -3064,7 +3103,7 @@ achievements_descriptions = {
 	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
-	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it, by walking and pressing X or R1"}, 
+	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if it ain't a bullet with your name on it"}, 
 	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off a Spinfire technique by pressing X and O simultaneously while holding a revolver, and land at least 3 shots without being interrupted or knocked out of the move"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
@@ -3120,9 +3159,15 @@ function achievements_initialize() {
 			}
 			return let_devInfoString}
 
-		return format("{0}{1}",
-			achievements_getDescription(string_achievementDevName, string_languageCode),
-			achievements_formatDevInfo(string_devInfo))}
+		let_descriptionString = achievements_getDescription(string_achievementDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_achievementDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + achievements_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
 
 	function achievements_getTrigger(string_achievementDevName) => 
 		achievements_triggers[string_achievementDevName]
@@ -3132,6 +3177,8 @@ function achievements_initialize() {
 		if(let_type == sNULL) return "" // <-- will result in type: "standard"
 		return let_type}	
 	
+	
+
 	for let_categoryName in achievements_coreData { // This loop generates the achievements
 		for let_cheevmentName in achievements_coreData[let_categoryName] {
 			let_achievementData = achievements_coreData[let_categoryName][let_cheevmentName]
@@ -3887,17 +3934,17 @@ leaderboards_coreData = {
 	"lb_ShootingChallenge": { // VERIFIED
 		"id": 125651, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_tng: Achieve 'Good Job' for ShootingChallenge"},
 	"lb_TimeTrialPerf75": { // VERIFIED
-		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
+		"id": 126166, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_perf75 Completion (JinnieThankYou or MomThankYou)"},
 	"lb_TimeTrialHng": { // VERIFIED
-		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
+		"id": 126165, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
 	"lb_TimeTrialShernite": { // VERIFIED
-		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
 	"lb_TimeTrialSher70": { // VERIFIED
-		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
-	"lb_MPTimeTrial": { // QA lb_MPTimeTrial
-		"id": 000000, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
-	"lb_MPChallenge": { // QA lb_MPChallenge
-		"id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
+		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+	"lb_MPTimeTrial": { // VERIFIED
+		"id": 126163, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
+	"lb_MPChallenge": { // VERIFIED
+		"id": 126162, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
 	}
 // #endregion LB - core data
 
@@ -3981,7 +4028,7 @@ leaderboards_startTriggers = {
 			&& current_HumanPlayerCount(enum_releaseRegion) == 1
 			&& current_TotalPlayerCount(enum_releaseRegion) == 4
 			&& is_MPteams_FreeForAll(enum_releaseRegion)
-			&& on_MPround_start_bis(enum_releaseRegion) // on_MPround_start_bis() activates one second later than on_MPround_start()
+			&& on_MPround_start_later(enum_releaseRegion) // on_MPround_start_later() activates one second later than on_MPround_start()
 		),
 	}
 leaderboards_cancelTriggers = {
@@ -4018,19 +4065,22 @@ leaderboards_cancelTriggers = {
 		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
 	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
-	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
+			&& never(on_MPround_start_early(enum_releaseRegion)) // --ResetIf--> to reset below tally. Reset when crossing 0.5, because StartTrigger activates whn crossing 1.0 with on_MPround_start()
 			&& tally(1, [
 				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
 				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
 				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
 				])
-		// [2] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
+		// [2+3] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_PauseMenu_reset(enum_releaseRegion)
-		// [3] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+		// [4] ==== Alt Cancel Group ====		-> Cancel when not in Multiplayer
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// [5] ==== Alt Cancel Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
@@ -4044,10 +4094,7 @@ leaderboards_cancelTriggers = {
 				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
 				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
 				])
-		// [2] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Reset
-			|| is_ReleaseRegion(enum_releaseRegion)
-			&& on_PauseMenu_reset(enum_releaseRegion)
-		// [3] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+		// [2] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
@@ -4149,11 +4196,12 @@ leaderboards_submitTriggers = {
 		return 
 		// [1] ==== Alt Submit Group ====		-> Submit when MP_PLAYER_1 has won 7 rounds consecutively
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))
+			&& repeated(const_REQUIRED_ROUND_WINS, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))			
+		// ========== ResetGroups ==========
 		// [2] ==== Alt Reset Group ====		-> Reset when enemy Player wins a round (To reset HitCount in AltGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& tally(1, [
+				&& tally(1, [ // --Tally--> OrNextChain: CheckIf an EnemyPlayer Wins a Round
 					once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)
 						&& never(on_MPround_start(enum_releaseRegion))),
 					once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)
@@ -4162,19 +4210,21 @@ leaderboards_submitTriggers = {
 						&& never(on_MPround_start(enum_releaseRegion))),
 					])
 				)
-		// [2] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCount in AltGroup[1])
+		// [3] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCount in AltGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset(enum_releaseRegion))
-		// [3] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCount in AltGroup[1])
+		// [4] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCount in AltGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		}),
 	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== SubmitGroups ==========
 		// [1] ==== Alt Submit Group ====		-> Submit when player takes a hit
 			is_ReleaseRegion(enum_releaseRegion)
-			&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent submits when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
 			&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)
 		// [2+3] ==== Alt Submit Group ====		-> Submit on PauseMenu->Reset
 			|| is_ReleaseRegion(enum_releaseRegion)
@@ -4182,25 +4232,27 @@ leaderboards_submitTriggers = {
 			&& on_PauseMenu_reset(enum_releaseRegion)
 		// [4] ==== Alt Submit Group ====		-> Submit when leaving Multiplayer mode
 			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
-		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCount in AltGroup[2])
+		// ========== ResetGroups ==========
+		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
-				&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
-		// [6] ==== Alt Reset Group ====		-> Submit on PauseMenu->Reset (To reset HitCount in AltGroup[2])
+				// && on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
+					never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
+					&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
+		// [6] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& once(on_PauseMenu_reset(enum_releaseRegion)) // ---> Once is necessary as otherwise it may Reset the hitCount in AltGroup[2], thus not being able to submit
-				&& (
-					on_PlayerInput_O_release(CONTROLLER_1, enum_releaseRegion)
-					|| on_PlayerInput_X_release(CONTROLLER_1, enum_releaseRegion)
-					)
-				)
-		// [7] ==== Alt Reset Group ====		-> Submit when leaving Multiplayer mode (To reset HitCount in AltGroup[2])
+				&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
+		// [7] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only using !is_GameState()
+					never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+					&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
 		),
 	}
 //-----------------ValueMeasures-------------------
@@ -4312,9 +4364,17 @@ function leaderboards_initialize() {
 				let_devInfoString = format(" - [DEV: {0}]", string_devInfo)
 			}
 			return let_devInfoString}
-		return format("{0}{1}",
-			leaderboards_getDescription(string_leaderboardDevName, string_languageCode),
-			leaderboards_formatDevInfo(string_devInfo))}
+
+		let_descriptionString = leaderboards_getDescription(string_leaderboardDevName, string_languageCode)
+		if (length(let_descriptionString) > 255)
+			util_throwError(format("Description for achievement[{0}] exceeds limit of 255 characters", string_leaderboardDevName))
+
+		let_descriptionString_withDevInfo = let_descriptionString + leaderboards_formatDevInfo(string_devInfo)
+		if (length(let_descriptionString_withDevInfo) > 255)
+			return let_descriptionString
+		else 
+			return let_descriptionString_withDevInfo}
+	
 
 	for let_leaderboardKey in leaderboards_coreData {
 		let_leaderboardData = leaderboards_coreData[let_leaderboardKey]
