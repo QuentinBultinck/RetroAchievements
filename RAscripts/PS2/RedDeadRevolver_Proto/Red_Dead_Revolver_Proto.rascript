@@ -55,6 +55,10 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
+// TODO remove DevInfo 
+// TODO add BadgeArt
+// TODO finish RAguide
+
 */
 
 // #endregion DEVELOPER NOTES
@@ -1709,8 +1713,6 @@ achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
-	
-	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
@@ -3120,11 +3122,11 @@ achievements_descriptions = {
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
 	
 	"a_WinRed": 				{"en": "In a world of duels, only one gunslinger walks away. As \"Red\" win 5 consecutive 1v1 rounds in a Multiplayer Showdown match"},
-	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
+	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 5 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
 	"a_WinPigDynamite": 		{"en": "Some men fight with bullets, others with fire. As \"Pig Josh\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match using only dynamite"},
 	"a_WinBbyShotgun": 			{"en": "No age restrictions on firepower in the Wild West. As \"Baby\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the shotgun"},
 	"a_WinDcgRifle":			{"en": "She came for the stage, stayed for the shootout. As \"Dancing Grl\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the rifle"},
-	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
+	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
 	}
 // #endregion ACH - text
 
@@ -3916,7 +3918,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO design more Leaderboards
 // =========================
 // • LEADERBOARD core data •
 // =========================
@@ -4085,7 +4086,7 @@ leaderboards_cancelTriggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
-	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
