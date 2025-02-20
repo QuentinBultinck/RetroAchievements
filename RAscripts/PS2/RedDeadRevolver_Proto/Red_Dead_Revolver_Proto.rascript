@@ -1204,7 +1204,7 @@ const_Level_POI_Data = {
 		},
 	LEVEL_FortStage: { 
 		"Near_Throne": {"X": -18.0, "Y": 0.0, "Z": 1.0, "RadiusThreshold": 2.5},
-		"In_LeftCastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
+		"In_CastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
 		},
 	LEVEL_Mansion: { 
 		"On_Podium": {"X": 11.5, "Y": -63.0, "Z": 1.0, "RadiusThreshold": 1.5},
@@ -1769,7 +1769,7 @@ achievements_coreData = {
 		"a_EyeTomb": { // VERIFIED
 			"id": 498495, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
 		"a_EyeFort": { // VERIFIED
-			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_CastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
 			"id": 498491, "points": achievement_POINTS_3, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		"a_EyeShootHng": { // VERIFIED
@@ -2534,9 +2534,9 @@ achievements_triggers = {
 		}),
 	"a_EyeFlash": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_LEVEL = LEVEL_FlashbackStage
-		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
 		return
-		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+		// [1] ==== Alt Logic Group ==== 							-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -2544,7 +2544,7 @@ achievements_triggers = {
 				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
 				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
 			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
 			|| any_of(const_DICT_POI_DATA, string_POI_key =>
 					unless(
 						!is_ReleaseRegion(enum_releaseRegion)
@@ -2555,7 +2555,7 @@ achievements_triggers = {
 					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
 					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
 				) 
-		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+		// [4+5] ==== Alt Reset Groups ==== 						-> Reset when not in SinglePlayer Mode || not in correct Level
 			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
 	"a_EyeFort": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -3115,7 +3115,7 @@ achievements_descriptions = {
 	"a_EyeFlash":				{"en": "Memories drift like snow in lvl_flash, fleeting yet heavy. Tip your hat atop the River Log Bridge and the Outhouse—a quiet salute to the past, and the road that led you here"},
 	"a_EyeTrain":				{"en": "The best views come with a little risk. In the Train Stage hop on the train to reach the Cliff Ridge, then tip your hat—because nothing says 'I made it' like a dramatic pose above a moving locomotive"},
 	"a_EyeTomb":				{"en": "A town like in the Tombstone Stage ain't just gunfights and dust storms—it's got charm if you know where to look. Tip your hat near the Native Camps, the Flower Stall, and the Pottery Kiln, and take in the sights like a true cultured pioneer"},
-	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and atop the Left Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
+	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and inside a Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
 	"a_EyeMans":				{"en": "The \"Mansion Stage\" is fancy, shame about the lack of hospitality. Tip your hat on the Podium, by the Lion Fountain, in the Train Station, and inside the Roof Alcove—because if you're gonna wander through a villain's estate, might as well do it in style"},
 	"a_EyeShootHng":			{"en": "In the \"Title Stage\" take the high ground and take down 5 enemies from atop any of the buildings—because nothing says 'top of the food chain' like a clean shot from the highest point!"},
 	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
