@@ -55,15 +55,23 @@ As this is a prototype build. This game isn't well documented anywhere at all. T
 + Some characters in Multiplayer mode will bug out the game. eg. Character *"Soldier"*. The game will display an error message and freeze when loading the Multiplayer match. Simply retry/reset/reboot the game to try again. You just have to be lucky the other CPU players don't pick any of the bugged out characters. 
 
 
-### 🏆 All Single Player Achievements Grouped by Stage/Level
+## 🏆 All Single Player Achievements Grouped by Stage/Level
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to toggle open this summary</summary><br>
 
-| Level | Achievements <sub><sub>Required Chapter + (achievement_link)</sub></sub> |
+| Level/Stage | Achievements <sub><sub>(achievement_link)</sub></sub> |
 |:---:|---|
-| **Training Stage** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
-| **Prologue Stage** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
+| **Training Stage** <sub>(3)</sub> | - **Westbound and Ready** <sub> *([a_CompleteTng](#a_CompleteTng))* </sub> <br> - **Whack-a-Mole** <sub> *([a_ChallengeTng](#a_ChallengeTng))* </sub> <br> - **Lessons of the Trial** <sub> *([a_EyeTng](#a_EyeTng))* </sub> |
+| **Prologue Stage** <sub>(3)</sub> | - **A Son's Duty** <sub> *([a_CompletePerf](#a_CompletePerf))* </sub> <br> - **No Harm Comes Home** <sub> *([a_ChallengePerf](#a_ChallengePerf))* </sub> <br> - **Drop-In Lodging** <sub> *([a_PerfRoofFall](#a_PerfRoofFall))* </sub> |
+| **Title Stage** <sub>(3)</sub> | - **The Goodest Bounty Hunter** <sub> *([a_CompleteHng](#a_CompleteHng))* </sub> <br> - **Lead with Precision** <sub> *([a_ChallengeHng](#a_ChallengeHng))* </sub> <br> - **Revolver's Rain** <sub> *([a_EyeShootHng](#a_EyeShootHng))* </sub> |
+| **Sheriff Night Stage** <sub>(3)</sub> | - **Mad Sheriff, Grim Justice** <sub> *([a_CompleteShernite](#a_CompleteShernite))* </sub> <br> - **Reckoning at Midnight** <sub> *([a_ChallengeShernite](#a_ChallengeShernite))* </sub> <br> - **Gunslinger's Stage** <sub> *([a_EyeShootShernite](#a_EyeShootShernite))* </sub> |
+| **Sheriff Day Stage** <sub>(3)</sub> | - **No Mercy for Swine** <sub> *([a_CompleteSher70](#a_CompleteSher70))* </sub> <br> - **Sheriff by Sunrise** <sub> *([a_ChallengeSher70](#a_ChallengeSher70))* </sub> <br> - **Marksman's Perch** <sub> *([a_EyeShootSher70](#a_EyeShootSher70))* </sub> |
+| **Saloon Stage** <sub>(1)</sub> | - **Boots First, Questions Later** <sub> *([a_SaloonThrow](#a_SaloonThrow))* </sub> |
+| **Tombstone Stage** <sub>(2)</sub> | - **The Tombstone Stampede** <sub> *([a_HorseTomb](#a_HorseTomb))* </sub> <br> - **A Town of Stories** <sub> *([a_EyeTomb](#a_EyeTomb))* </sub> |
+| **Train Stage** <sub>(1)</sub> | - **Dramatic Heights** <sub> *([a_EyeTrain](#a_EyeTrain))* </sub> |
+| **Fort Stage** <sub>(1)</sub> | - **The King's Vantage** <sub> *([a_EyeFort](#a_EyeFort))* </sub> |
+| **Mansion Stage** <sub>(1)</sub> | - **Estate of Grace** <sub> *([a_EyeMans](#a_EyeMans))* </sub> |
 
 </details>
 
@@ -82,7 +90,7 @@ For more details, refer to the achievement categories: [Single Player Challenges
 > ***"Beaten"* Status**: Since all stages in the LevelSelectionMenu are unlocked by default, no achievement is tied to a *"Win Condition"*.
 Therefore, to achieve the *"Beaten"* status for the game on RetroAchievements, the player must unlock all achievements within this category. Thus all achievements marked as *"Progression"*.
 
-### Single Player Progression Achievements List
+### Single Player Progression Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -94,7 +102,7 @@ Therefore, to achieve the *"Beaten"* status for the game on RetroAchievements, t
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#Progression)
+🔗 [Back to Top of Achievement Category](#c_SPprogress)
 
 ---
 
@@ -112,11 +120,11 @@ This category encompasses a set of custom-made challenge achievements. There's a
 > #### Developer Note
 > I wanted to design at least one challenge achievement which incorporated some sort of accuracy stat. eg. *"Complete xx Stage with xx% accuracy"*. But because of limitations with the current development tools this idea was canned.
 
-### Single Player Challenge Achievements List
+### Single Player Challenge Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_ChallengeTng>**Whack-a-Mole**</h3><br><sub>*a_ChallengeTng*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | Within the **"Training Stage"**, eliminate **11** moles during the **Shooting Challenge**, in **under one minute** and whilst only going for **headshots**. <br><br> <h4>Fail Conditions</h4> - Hitting a bodyshot <br> - Failing to kill 11 moles within the time limit of 60 seconds. (The Shooting Challenge fails in this case)<br> <sub>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sub>  <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the Shooting Challenge starts. It is removed when the player hits a bodyshot <br> - A [Measured Indicator](#RA_Measured) tracks the number of mole kills up to **11** <br><br> <sub> **WARNING ⁃** *Each mole kill adds \$2.00 to the player's cash. When this cash value reaches above \$49.09 the game goes into a "Win State", resulting the level to reset. Thus this will fail the player's current progress for this achievement. (Also refer to achievement [a_WinGame](a_WinGame)).* </sub> |
+| <h3 id=a_ChallengeTng>**Whack-a-Mole**</h3><br><sub>*a_ChallengeTng*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | Within the **"Training Stage"**, eliminate **11** moles during the **Shooting Challenge**, in **under one minute** and whilst only going for **headshots**. <br><br> Try to aim high on their heads for the headshot to count. For some reason, if the player hits a mole close too low on the head, it won't be counted as a "headshot", but they'll still die in one shot, just like a normal "headshot". It seems like the hitbox for it to count towards a "headshot" is different than the hitbox for a one shot kill. <br><br> <h4>Fail Conditions</h4> - Hitting a bodyshot <br> - Failing to kill 11 moles within the time limit of 60 seconds. (The Shooting Challenge fails in this case)<br> <sub>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sub>  <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the Shooting Challenge starts. It is removed when the player hits a bodyshot <br> - A [Measured Indicator](#RA_Measured) tracks the number of mole kills up to **11** <br><br> <sub> **WARNING ⁃** *Each mole kill adds \$2.00 to the player's cash. When this cash value reaches above \$49.09 the game goes into a "Win State", resulting the level to reset. Thus this will fail the player's current progress for this achievement. (Also refer to achievement [a_WinGame](a_WinGame)).* </sub> |
 | <h3 id=a_ChallengePerf>**No Harm Comes Home**</h3><br><sub>*a_ChallengePerf*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In the **"Prologue Stage"**, defeat a total of **six** hostile NPCs, **without taking damage**. Interact with **Mother** or **Jinnie** after the deed is done to receive a **"Thank You"** message. <br><br> <h4>Fail Conditions</h4> - Taking damage <br> - Both Jinnie and Mother have died before being able to a receive "Thank You" message. <br> <sub>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*.</sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the level starts, this indicator is removed when the player takes damage. <br> - A [Measured Indicator](#RA_Measured) tracks the number of enemies killed, up to **six**. <br><br> <sub> **Warning ⁃** *"Billy The Kid" may be spawned in as a friendly NPC when the player manages te kill "Ugly Chris" too fast, before "Billy" can spawn. This would prevent this achievement from unlocking.* </sub> |
 | <h3 id=a_ChallengeHng>**Lead with Precision**</h3><br><sub>*a_ChallengeHng*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In the **"Title Stage"**, defeat a total of **six** hostile NPCs, **without missing a single shot**. Once all enemies are eliminated, talk/interact with the **dog, *"Rusty"***, to receive a **"Thank You"** message. <br><br> <h4>Fail Conditions</h4> - Missing a shot <br> - The dog dies before being able to receive the message. <br> <sub>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*. </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when at 100% shot accuracy. This trigger may also dissapear for a few frames/milliseconds while the game is still tracking flying bullets/shots. If they all land, the indicator should re-appear. <br> - A [Measured Indicator](#RA_Measured) tracks the current player's kill count up to **six**. |
 | <h3 id=a_ChallengeShernite>**Reckoning at Midnight**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | In the **"Sheriff Night Stage"**, complete the following within 2 minutes: defeat a total of **seven** enemies, then talk/interact with the captive to receive a **"Thank You"** message. <br><br> <h4>Fail Conditions</h4> - Timer passes 2 minutes. <br> - The captive dies before being able to receive his "Thank You" message. <br> <sub>If any fail condition is met, the player can easily retry the achievement by pressing *Reset* in the *Pause Menu*. </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when the level starts. It is removed when 2 minutes have passed. <br> - A [Measured Indicator](#RA_Measured) tracks the current player's kill count up to **seven**. |
@@ -141,7 +149,7 @@ This category of achievements showcases a few secret character animations, force
 > [!NOTE]
 > Most of these achievements need to be completed in Singleplayer. A few of the animation specific ones, may be unlocked in Multiplayer as well.
 
-### Single Player Bonus Achievements List
+### Single Player Bonus Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
@@ -192,7 +200,7 @@ This prototype build of *Red Dead Revolver* includes a basic version of the **Mu
 > These achievements are rather simplistic, but alas, it's what this prototype offer.
 > I wanted to design at least one achievement which incorporated some sort of accuracy stat. eg. *"Win xx multiplayer rounds consecutively with xx% accuracy"*. But because the game never saved a stat for *shotsHit* in Multiplayer, this was canned. It only saves shotsFired in Multiplayer.
 
-### Showdown Challenge Achievements List
+### Showdown Challenge Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
