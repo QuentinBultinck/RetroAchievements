@@ -55,6 +55,10 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
+// TODO remove DevInfo 
+// TODO add BadgeArt
+// TODO finish RAguide - Leaderboards - SPachievements grouped by Stage
+
 */
 
 // #endregion DEVELOPER NOTES
@@ -1064,6 +1068,9 @@ function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
 function prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
 	prev(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
 
+function prior_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
+	prior(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
+
 function on_MPplayer_ShowdownKills_Increment(enum_playerID, enum_releaseRegion) =>
 	current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion)
 
@@ -1072,6 +1079,12 @@ function on_MPplayer_winGame(enum_playerID, enum_releaseRegion) {
 	return 
 		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
 		&& prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
+
+function has_MPplayer_wonGame(enum_playerID, enum_releaseRegion) {
+	const_KILLS_REQUIRED_FOR_WIN = 2
+	return 
+		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
+		&& prior_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
 
 function current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) {
 	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
@@ -1200,7 +1213,7 @@ const_Level_POI_Data = {
 		},
 	LEVEL_FortStage: { 
 		"Near_Throne": {"X": -18.0, "Y": 0.0, "Z": 1.0, "RadiusThreshold": 2.5},
-		"In_LeftCastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
+		"In_CastleTower": {"X": 3.0, "Y": 8.0, "Z": 4.0, "RadiusThreshold": 2.0},
 		},
 	LEVEL_Mansion: { 
 		"On_Podium": {"X": 11.5, "Y": -63.0, "Z": 1.0, "RadiusThreshold": 1.5},
@@ -1709,8 +1722,6 @@ achievements_coreData = {
 	// DEV_NOTE: Achievement property 'badgeId'
 	// 		- Do not add badge ID to this core data. Just upload badges with RALibretro or via RA game page, otherwise might cause a headache keeping everything in sync
 	// ------------------------------------------------
-	
-	// TODO Point distribution
 
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
@@ -1767,7 +1778,7 @@ achievements_coreData = {
 		"a_EyeTomb": { // VERIFIED
 			"id": 498495, "points": achievement_POINTS_3, "devInfo": "lvl_tomb: TipHat Near_NativeCamps + Front_FlowerStall + Front_PotteryKiln (must be on foot)"},
 		"a_EyeFort": { // VERIFIED
-			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_LeftCastleTower (get there by jumping on the crates)"},
+			"id": 498490, "points": achievement_POINTS_3, "devInfo": "lvl_fort: TipHat Near_Throne + In_CastleTower (get there by jumping on the crates)"},
 		"a_EyeMans": { // VERIFIED
 			"id": 498491, "points": achievement_POINTS_3, "devInfo": "lvl_mans: TipHat On_Podium + Near_LionFountain + In_TrainStation (accessed by going through Tombstone) + In_RoofAlcove"},
 		"a_EyeShootHng": { // VERIFIED
@@ -2532,9 +2543,9 @@ achievements_triggers = {
 		}),
 	"a_EyeFlash": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_LEVEL = LEVEL_FlashbackStage
-		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 3 POIs
+		const_DICT_POI_DATA = get_POI_data(const_REQUIRED_LEVEL) // 2 POIs
 		return
-		// [1] ==== Alt Logic Group ==== 								-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
+		// [1] ==== Alt Logic Group ==== 							-> This group handles achievement unlock logic;  This group is responsible for unlocking the achievement	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -2542,7 +2553,7 @@ achievements_triggers = {
 				is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
 				&& on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion)))
 			&& trigger_when(on_TippingHat_CharacterAnimation_nearlyFinished(enum_releaseRegion))
-		// [2+3+4+5] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
+		// [2+3] ==== Alt POI Trigger Indicator Groups ==== 		-> These groups are only responsible for displaying a Trigger Indicator when the player is near the POI	
 			|| any_of(const_DICT_POI_DATA, string_POI_key =>
 					unless(
 						!is_ReleaseRegion(enum_releaseRegion)
@@ -2553,7 +2564,7 @@ achievements_triggers = {
 					&& is_PlayerNearPOI(const_REQUIRED_LEVEL, string_POI_key, enum_releaseRegion)
 					&& trigger_when(memUtil_alwaysFalse(enum_releaseRegion))
 				) 
-		// [6+7] ==== Alt Reset Groups ==== 							-> Reset when not in SinglePlayer Mode || not in correct Level
+		// [4+5] ==== Alt Reset Groups ==== 						-> Reset when not in SinglePlayer Mode || not in correct Level
 			|| AchGenerate_2x_AltResetGroups_SinglePlayerLevel(const_REQUIRED_LEVEL, enum_releaseRegion)
 		}),
 	"a_EyeFort": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
@@ -3113,18 +3124,18 @@ achievements_descriptions = {
 	"a_EyeFlash":				{"en": "Memories drift like snow in lvl_flash, fleeting yet heavy. Tip your hat atop the River Log Bridge and the Outhouse—a quiet salute to the past, and the road that led you here"},
 	"a_EyeTrain":				{"en": "The best views come with a little risk. In the Train Stage hop on the train to reach the Cliff Ridge, then tip your hat—because nothing says 'I made it' like a dramatic pose above a moving locomotive"},
 	"a_EyeTomb":				{"en": "A town like in the Tombstone Stage ain't just gunfights and dust storms—it's got charm if you know where to look. Tip your hat near the Native Camps, the Flower Stall, and the Pottery Kiln, and take in the sights like a true cultured pioneer"},
-	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and atop the Left Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
+	"a_EyeFort":				{"en": "Sure, most folks come to the Fort Stage for a fight, but you? You're here for the scenery. Tip your hat near the Throne and inside a Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
 	"a_EyeMans":				{"en": "The \"Mansion Stage\" is fancy, shame about the lack of hospitality. Tip your hat on the Podium, by the Lion Fountain, in the Train Station, and inside the Roof Alcove—because if you're gonna wander through a villain's estate, might as well do it in style"},
 	"a_EyeShootHng":			{"en": "In the \"Title Stage\" take the high ground and take down 5 enemies from atop any of the buildings—because nothing says 'top of the food chain' like a clean shot from the highest point!"},
 	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch on top of the big barrel and take out 4 enemies in succession without dropping down, using Dual Revolvers—show 'em how to make a stand when you're up high and firing fast!"},
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith building and eliminate 7 enemies using the Rifle, without dropping down—because why fight on the ground when you can rain bullets from above?"},
 	
 	"a_WinRed": 				{"en": "In a world of duels, only one gunslinger walks away. As \"Red\" win 5 consecutive 1v1 rounds in a Multiplayer Showdown match"},
-	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
+	"a_WinNrdDeathless": 		{"en": "Red ain't just back—he's better. As \"New Red\" win 5 consecutive free-for-all rounds in a Multiplayer Showdown match without dying once"},
 	"a_WinPigDynamite": 		{"en": "Some men fight with bullets, others with fire. As \"Pig Josh\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match using only dynamite"},
 	"a_WinBbyShotgun": 			{"en": "No age restrictions on firepower in the Wild West. As \"Baby\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the shotgun"},
 	"a_WinDcgRifle":			{"en": "She came for the stage, stayed for the shootout. As \"Dancing Grl\" win 4 consecutive free-for-all rounds in a Multiplayer Showdown match using only the rifle"},
-	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 2 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
+	"a_WinMskHitless": 			{"en": "Move like the wind, strike like the hawk. As \"M.Indian\" win 3 consecutive free-for-all rounds in a Multiplayer Showdown match without getting hit once"},
 	}
 // #endregion ACH - text
 
@@ -3916,7 +3927,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// TODO design more Leaderboards
 // =========================
 // • LEADERBOARD core data •
 // =========================
@@ -3938,9 +3948,9 @@ leaderboards_coreData = {
 	"lb_TimeTrialHng": { // VERIFIED
 		"id": 126165, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
 	"lb_TimeTrialShernite": { // VERIFIED
-		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (CaptiveThankYou)"},
 	"lb_TimeTrialSher70": { // VERIFIED
-		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (JijiThankYou)"},
 	"lb_MPTimeTrial": { // VERIFIED
 		"id": 126163, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
 	"lb_MPChallenge": { // VERIFIED
@@ -4066,6 +4076,7 @@ leaderboards_cancelTriggers = {
 	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
 	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== CancelGroups ==========
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(on_MPround_start_early(enum_releaseRegion)) // --ResetIf--> to reset below tally. Reset when crossing 0.5, because StartTrigger activates whn crossing 1.0 with on_MPround_start()
@@ -4080,21 +4091,31 @@ leaderboards_cancelTriggers = {
 		// [4] ==== Alt Cancel Group ====		-> Cancel when not in Multiplayer
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
-		// [5] ==== Alt Cancel Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
+		// ========== ResetGroups ==========
+		// [5] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
-	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // TODO submit and cancel are still wonky
+	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== CancelGroups ==========
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
-			&& tally(1, [
-				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
-				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
-				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+			&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitTrigger-AltGroup[5] can never submit. Using on_MPplayer_winGame() in this CancelGroup is not advised because of this.
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
 				])
-		// [2] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+		// [2] ==== Alt Cancel Group ====		-> Cancel when player takes a hit
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& repeated(2, // --repeated(2)--> Otherwise SubmitTrigger-AltGroup[1] can never submit, because the leaderboard cancels first.
+				current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion) - 2.0) // minus 2.0, because we're working with floats
+		// ========== ResetGroups ==========
+		// [3] ==== Alt Reset Group ====		-> Reset when a new round starts (To reset HitCounts in CancelGroups])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MPround_start(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ====		-> Reset when not in Multiplayer  (To reset HitCounts in CancelGroups])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
@@ -4234,8 +4255,16 @@ leaderboards_submitTriggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// [5] ==== Alt Submit Group ====		-> Submit when an enemy player wins a round
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
 		// ========== ResetGroups ==========
-		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
+		// [6] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
@@ -4243,16 +4272,25 @@ leaderboards_submitTriggers = {
 				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
 					never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
 					&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
-		// [6] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
+		// [7] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
-		// [7] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
+		// [8] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only using !is_GameState()
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only checking !is_GameState() for 1 frame.
 					never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 					&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
+		// [9] ==== Alt Reset Group ====		-> Reset when an enemy player wins a round (To reset HitCounts in SubmitGroups)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitGroup[5] can never submit. Using on_MPplayer_winGame() in this ResetGroup is not advised because of this.
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
+					])
+				) 
 		),
 	}
 //-----------------ValueMeasures-------------------
