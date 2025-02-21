@@ -57,7 +57,7 @@
 
 // TODO remove DevInfo 
 // TODO add BadgeArt
-// TODO finish RAguide
+// TODO finish RAguide - Leaderboards - SPachievements grouped by Stage
 
 */
 
@@ -1068,6 +1068,9 @@ function current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) {
 function prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
 	prev(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
 
+function prior_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) =>
+	prior(current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion))
+
 function on_MPplayer_ShowdownKills_Increment(enum_playerID, enum_releaseRegion) =>
 	current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) > prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion)
 
@@ -1076,6 +1079,12 @@ function on_MPplayer_winGame(enum_playerID, enum_releaseRegion) {
 	return 
 		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
 		&& prev_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
+
+function has_MPplayer_wonGame(enum_playerID, enum_releaseRegion) {
+	const_KILLS_REQUIRED_FOR_WIN = 2
+	return 
+		current_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) == const_KILLS_REQUIRED_FOR_WIN
+		&& prior_MPplayer_ShowdownKills(enum_playerID, enum_releaseRegion) < const_KILLS_REQUIRED_FOR_WIN}
 
 function current_MPplayer_EquippedWeaponID(enum_playerID, enum_releaseRegion) {
 	let_string_addrKey = format("Pointer:PlayerData-Player{0}", enum_playerID)
@@ -3939,9 +3948,9 @@ leaderboards_coreData = {
 	"lb_TimeTrialHng": { // VERIFIED
 		"id": 126165, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_hng Completion (DogThankYou)"},
 	"lb_TimeTrialShernite": { // VERIFIED
-		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (JijiThankYou)"},
+		"id": 126168, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_shernite Completion (CaptiveThankYou)"},
 	"lb_TimeTrialSher70": { // VERIFIED
-		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (CaptiveThankYou)"},
+		"id": 126167, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70 Completion (JijiThankYou)"},
 	"lb_MPTimeTrial": { // VERIFIED
 		"id": 126163, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
 	"lb_MPChallenge": { // VERIFIED
@@ -4067,6 +4076,7 @@ leaderboards_cancelTriggers = {
 	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
 	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== CancelGroups ==========
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(on_MPround_start_early(enum_releaseRegion)) // --ResetIf--> to reset below tally. Reset when crossing 0.5, because StartTrigger activates whn crossing 1.0 with on_MPround_start()
@@ -4081,21 +4091,31 @@ leaderboards_cancelTriggers = {
 		// [4] ==== Alt Cancel Group ====		-> Cancel when not in Multiplayer
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
-		// [5] ==== Alt Cancel Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
+		// ========== ResetGroups ==========
+		// [5] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in CancelGroup[1])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
 	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		// ========== CancelGroups ==========
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& never(on_MPround_start(enum_releaseRegion)) // --ResetIf--> to reset below tally
-			&& tally(1, [
-				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
-				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
-				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+			&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitTrigger-AltGroup[5] can never submit. Using on_MPplayer_winGame() in this CancelGroup is not advised because of this.
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+				repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
 				])
-		// [2] ==== Alt Reset Group ====		-> Reset when not in Multiplayer (To reset Tally hitcount in AltGroup[1])
+		// [2] ==== Alt Cancel Group ====		-> Cancel when player takes a hit
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& repeated(2, // --repeated(2)--> Otherwise SubmitTrigger-AltGroup[1] can never submit, because the leaderboard cancels first.
+				current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion) - 2.0) // minus 2.0, because we're working with floats
+		// ========== ResetGroups ==========
+		// [3] ==== Alt Reset Group ====		-> Reset when a new round starts (To reset HitCounts in CancelGroups])
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MPround_start(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ====		-> Reset when not in Multiplayer  (To reset HitCounts in CancelGroups])
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
@@ -4235,8 +4255,16 @@ leaderboards_submitTriggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// [5] ==== Alt Submit Group ====		-> Submit when an enemy player wins a round
+			|| is_ReleaseRegion(enum_releaseRegion)
+			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& tally(1, [
+				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+				])
 		// ========== ResetGroups ==========
-		// [5] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
+		// [6] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
@@ -4244,16 +4272,25 @@ leaderboards_submitTriggers = {
 				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
 					never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
 					&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
-		// [6] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
+		// [7] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
-		// [7] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
+		// [8] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
-				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only using !is_GameState()
+				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only checking !is_GameState() for 1 frame.
 					never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 					&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
+		// [9] ==== Alt Reset Group ====		-> Reset when an enemy player wins a round (To reset HitCounts in SubmitGroups)
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitGroup[5] can never submit. Using on_MPplayer_winGame() in this ResetGroup is not advised because of this.
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+					repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
+					])
+				) 
 		),
 	}
 //-----------------ValueMeasures-------------------
