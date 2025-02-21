@@ -1,14 +1,14 @@
-# **Retro Achievements Guide** <br> 🔶 ***GAME_TITLE_HERE*** <sub><sup> (PLATFORM_HERE) </sup></sub>
+# **Retro Achievements Guide** <br> 🔶 ***_GAME_TITLE_HERE_*** <sub><sup> (_PLATFORM_HERE_) </sup></sub>
 
 <p align="center">
-  <img width="xxx" height="xxx" src="link_here" alt="GAME_TITLE_HERE - Key Art">
+  <img width="xxx" height="xxx" src="_LINK_HERE_" alt="_GAME_TITLE_HERE_ - Key Art">
 </p>
 
 ---
 
 This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](LINK_TO_RA_GUIDE_GITHUB "GAME_TITLE_HERE (PLATFORM_HERE) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](_LINK_TO_RA_GUIDE_GITHUB_ "_GAME_TITLE_HERE_ (PLATFORM_HERE) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
@@ -25,7 +25,7 @@ This guide provides comprehensive details on how to unlock each achievement with
     💎 Achievement Guide
 </h1>
 
-<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/000000.png" alt="GAME_TITLE_HERE - RetroAchievements Mastery Icon">
+<img align="left" width="96" height="96" src="https://i.retroachievements.org/Images/000000.png" alt="_GAME_TITLE_HERE_ - RetroAchievements Mastery Icon">
 
 ```
 Set consists of xxxx achievements worth xxx points
@@ -33,13 +33,16 @@ Set consists of xxxx achievements worth xxx points
 Set released on DD MMMM YYYY
 ```
 
+_SOME_GENERAL_INFO_HERE_
+
+
 <h4 id=WalkthroughsResources>
     Walkthroughs & Resources
 </h4>
 
 If the explanation here doesn't suffice feel free to search up some guides, here are a few helpful resources:
 
-+ [Retro Achievements Game Page](https://retroachievements.org/game/0000 "Retro Achievements Game Page - GAME_TITLE_HERE") 
++ [Retro Achievements Game Page](https://retroachievements.org/game/0000 "Retro Achievements Game Page - _GAME_TITLE_HERE_") 
 + Resource_1
 + Resource_2
 + Resource_3
@@ -58,7 +61,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 
 <h1 id=Progression>
-    🏆 Progression <i><sub><sup>(__count__ achievements)</sup></sub></i>
+    🏆 Progression <i><sub><sup>(_COUNT_ achievements - _XX_ points)</sup></sub></i>
 </h1>
 
 The achievements under this category revolve around ...
@@ -66,14 +69,11 @@ The achievements under this category revolve around ...
 > [!WARNING]
 > Warning_info
 
-### Progression Guide
-
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
+### Progression Achievement List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -81,30 +81,23 @@ The achievements under this category revolve around ...
 
 ---
 
-</details>
-
-
-
-
-
-</details>
 
 <h1 id=Challenges>
-    🏆 Challenges <i><sub><sup>(__count__ achievements)</sup></sub></i>
+    🏆 Challenges <i><sub><sup>(_COUNT_ achievements - _XX_ points)</sup></sub></i>
 </h1>
 
-General_info_about_achievement_category
+_GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
-General_info_about_achievement_category
-- General_info_about_achievement_category
-- General_info_about_achievement_category
+_GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
+- _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
+- _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
 > #### Additional Notes
-> - additional_notes
+> - _ADDITIONAL_NOTES_
 >
-> - additional_notes
+> - _ADDITIONAL_NOTES_
 >
-> **SubTitle**: additional_notes
+> **SubTitle**: _ADDITIONAL_NOTES_
 
 ### Challenge Achievements Grouped by DifficultyMode
 
@@ -120,19 +113,14 @@ General_info_about_achievement_category
 
 ### Challenge Achievement List
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
+🔗 [Back to Top of Achievement Category](#Challenges)
 
 ---
-
-</details>
 
 
 
@@ -140,37 +128,32 @@ General_info_about_achievement_category
 
 
 <h1 id=Unlocks>
-    🏆 Unlocks <i><sub><sup>(__count__ achievements)</sup></sub></i>
+    🏆 Unlocks <i><sub><sup>(_COUNT_ achievements - _XX_ points)</sup></sub></i>
 </h1>
 
-General_info_about_achievement_category
+_GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
 > [!NOTE]
-> Note_info
+> _NOTE_INFO_
 
 > #### Additional Notes
-> - additional_notes
+> - _ADDITIONAL_NOTES_
 >
-> - additional_notes
+> - _ADDITIONAL_NOTES_
 >
-> **Sub_Title**: additional_notes
+> **Sub_Title**: _ADDITIONAL_NOTES_
 
 ### Unlock Achievement List
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
+🔗 [Back to Top of Achievement Category](#Unlocks)
 
 ---
-
-</details>
 
 
 
@@ -178,7 +161,7 @@ General_info_about_achievement_category
 
 
 <h1 id=Misc_AchievementCategory>
-    🏆 Misc_AchievementCategory <i><sub><sup>(__count__ achievements)</sup></sub></i>
+    🏆 Misc_AchievementCategory <i><sub><sup>(_COUNT_ achievements - _XX_ points)</sup></sub></i>
 </h1>
 
 General_info_about_achievement_category
@@ -195,20 +178,15 @@ General_info_about_achievement_category
 
 ### Misc_AchievementCategory Achievement List
 
-<details>
-    <summary><b><u>Click here</u> ◂</b> to open this guide</summary><br>
-
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=a_ChallengeShernite>**title_placeholder**</h3><br><sub>*a_ChallengeShernite*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _general_explanation_here_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_misc_note_here_* </sub> <br> <sub>**Developer note ⁃** *_developer_note_here_* </sub> |
+| <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
-🔗 [Back to Top of Achievement Category](#ShowdownChallenges)
+🔗 [Back to Top of Achievement Category](#Misc_AchievementCategory)
 
 ---
-
-</details>
 
 
 
@@ -227,13 +205,13 @@ Inside, you’ll find:
 - **Submit Conditions**: The steps necessary to successfully submit your score to the leaderboard.
 - **Score Calculation Details**: A breakdown of how the player's score is determined, with formulas and factors like accuracy, damage taken, time spent, and other gameplay metrics.
 
-With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize your performance and climb the ranks. Whether you're aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
+With this guide, the player will not only understand the mechanics behind each leaderboard but also gain insights into how to optimize performance and climb the ranks. Whether aiming to perfect a story chapter on higher difficulties or striving for the top spot in specific challenges, this section equips you with everything you need to know.
 
 ### Leaderboard List
 
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
-| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | _some_general_info_ <br><br> <h4>Start Requirements</h4> - info_about_start_requirements <br><br> <h4>Cancel Conditions</h4> - info_about_cancel_conditions <br><br> <h4>Submit Conditions</h4> - info_about_submit_conditions <br><br> <h4>Measured Value</h4> - info_about_measuredValue <br><br><sub>**Developer note ⁃** *The score shown during mission gameplay is not entirely accurate, especially when the player has spent money. The score shown in the post-mission reward menu is accurate and is the one which is submitted on the leaderboard.* </sub> |
+| <h3 id=lb_placeholderID>**title_placeholder**</h3><br><sub>*lb_placeholderID*</sub> <br><br> | _SOME_GENERAL_INFO_ <br><br> <h4>Start Requirements</h4> - INFO_ABOUT_START_REQUIREMENTS <br><br> <h4>Cancel Conditions</h4> - INFO_ABOUT_CANCEL_CONDITIONS <br><br> <h4>Submit Conditions</h4> - _INFO_ABOUT_SUBMIT_CONDITIONS_ <br><br> <h4>Measured Value</h4> - _INFO_ABOUT_MEASUREDVALUE_ <br><br><sub>**Developer note ⁃** *_NOTE_HERE_* </sub> |
 
 🔗 [Back to Table of Contents](#ToC)
 
@@ -251,7 +229,7 @@ With this guide, the player will not only understand the mechanics behind each l
 | RA-User | Role |
 |:---:|---|
 | <h4>[ASolidSnack](https://retroachievements.org/user/ASolidSnack)</h4> <img src="https://media.retroachievements.org/UserPic/ASolidSnack.png" alt="RA-User Avatar Image" width="96" height="96"> | <b> 🟉 *Achievement Set Developer* \| *Badge Design* \| *RA-Guide Author* </b> <br><br> |
-| <h4>[placeholder_contributer](https://retroachievements.org/user/placeholder_contributer)</h4> <img src="https://media.retroachievements.org/UserPic/placeholder_contributer.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by ... <br> - Tested the ... |
+| <h4>[placeholder_contributor](https://retroachievements.org/user/placeholder_contributer)</h4> <img src="https://media.retroachievements.org/UserPic/placeholder_contributer.png" alt="RA-User Avatar Image" width="96" height="96"> |  <b> 🟉 *Contributor* \| *Tester* </b> <br><br> - Contributed by ... <br> - Tested the ... |
 
 <h1 id=Footnotes>
     ✏️ Footnotes
