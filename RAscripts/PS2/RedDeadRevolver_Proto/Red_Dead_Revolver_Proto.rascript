@@ -1792,7 +1792,7 @@ achievements_coreData = {
 		"a_WinRed": { // VERIFIED
 			"id": 498364, "points": achievement_POINTS_5, "devInfo": "Win as (red), 5x 1v1 rounds consecutively"},
 		"a_WinNrdDeathless": { // VERIFIED
-			"id": 498362, "points": achievement_POINTS_5, "devInfo": "Win as (nrd), 3x free-for-all rounds consecutively, without dying once"},
+			"id": 498362, "points": achievement_POINTS_5, "devInfo": "Win as (nrd), 5x free-for-all rounds consecutively, without dying once"},
 		"a_WinPigDynamite": { // VERIFIED
 			"id": 498363, "points": achievement_POINTS_5, "devInfo": "Win as (pgj), 2x free-for-all rounds, killing only with dynamite (melee allowed)"},
 		"a_WinBbyShotgun": { // VERIFIED
@@ -1800,7 +1800,7 @@ achievements_coreData = {
 		"a_WinDcgRifle": { // VERIFIED
 			"id": 498360, "points": achievement_POINTS_5, "devInfo": "Win as (dcg), 4x free-for-all rounds consecutively, killing only with the rifle (melee allowed)"},
 		"a_WinMskHitless": { // VERIFIED
-			"id": 498361, "points": achievement_POINTS_10, "devInfo": "Win as (msk), 2x free-for-all rounds consecutively, without getting hit"},
+			"id": 498361, "points": achievement_POINTS_10, "devInfo": "Win as (msk), 3x free-for-all rounds consecutively, without getting hit"},
 		}
 	}
 // -------------------------------------
@@ -3272,7 +3272,7 @@ richPresence_LookupTablesText = {
 		"Train": 						{"en": "\"The Train Stage\""},
 		},
 	"lupText_StageActivity": {
-		"Training":				{"en": "training"},
+		"Training":				{"en": "sharpening his skills"}, // TODO update RP with this new line
 		"Fighting":				{"en": "gunslinging"},
 		"Exploring":			{"en": "exploring"},
 		"SavingFamily":			{"en": "saving his family"},
