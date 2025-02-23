@@ -55,10 +55,6 @@
 /*	EXCERPT from RAdocs:
 	In some cases, there is no single Win Condition, such as a puzzle game when progression can be done in any order. In these cases, earning all Progression achievements will mark the game as beaten.
 
-// TODO remove DevInfo 
-// TODO add BadgeArt
-// TODO finish RAguide - Leaderboards - SPachievements grouped by Stage
-
 */
 
 // #endregion DEVELOPER NOTES
@@ -68,7 +64,7 @@
 //#####################################################################################################\\
 // #region GENERAL UTILITY
 
-util_isDebugModeActive = true	// if true => extra information may be displayed on achievement titles & descriptions
+util_isDebugModeActive = false	// if true => extra information may be displayed on achievement titles & descriptions
 util_language = "en"	// ISO 639-1 language codes 
 
 iNULL = -1		// Two types are necessary because RAtools can't compare integers to strings
@@ -3118,7 +3114,7 @@ achievements_descriptions = {
 	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off a Spinfire technique by pressing X and O simultaneously while holding a revolver, and land at least 3 shots without being interrupted or knocked out of the move"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
 	"a_SaloonThrow": 			{"en": "In the \"Saloon Stage\", send every patron flying through the front doors with a throw or a good ol' boot. Press and hold X or R1 (while not aiming) to grab an enemy. Press X or R1 (while aiming and in melee range) to kick"},
-	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the Prologue Stage"},
+	"a_PerfRoofFall":			{"en": "Who needs a front door? Drop in with style by falling through the roof of the house in the \"Prologue Stage\""},
 	"a_HorseTomb":				{"en": "Who needs a six-shooter when you've got 1,000 pounds of horsepower? Trample every NPC in the \"Tombstone Stage\" while on horseback"},
 	"a_EyeTng": 				{"en": "The \"Training Stage\" holds secrets for the watchful. Tip your hat in front of a white chest and broken cart to reflect on what you've learned"},
 	"a_EyeFlash":				{"en": "Memories drift like snow in lvl_flash, fleeting yet heavy. Tip your hat atop the River Log Bridge and the Outhouse—a quiet salute to the past, and the road that led you here"},
@@ -3272,7 +3268,7 @@ richPresence_LookupTablesText = {
 		"Train": 						{"en": "\"The Train Stage\""},
 		},
 	"lupText_StageActivity": {
-		"Training":				{"en": "sharpening his skills"}, // TODO update RP with this new line
+		"Training":				{"en": "sharpening his skills"},
 		"Fighting":				{"en": "gunslinging"},
 		"Exploring":			{"en": "exploring"},
 		"SavingFamily":			{"en": "saving his family"},
