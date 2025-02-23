@@ -51,7 +51,7 @@ Lookup:ShowdownKills
 2=✯✯
 
 Lookup:StageActivity_4ByteLevelID
-6778484=training
+6778484=sharpening his skills
 1651339124=exploring
 1936613741=exploring
 1953656678=exploring

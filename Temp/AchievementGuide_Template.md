@@ -102,12 +102,12 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 ### Challenge Achievements Grouped by DifficultyMode
 
 <details>
-    <summary><b><u>Click here</u> ◂</b> to open this overview</summary><br>
+    <summary><b><u>Click here</u> ◂</b> to toggle open this summary</summary><br>
 
 | Difficulty | Achievements <sub><sub>Required Chapter + (achievement_link)</sub></sub> |
 |:---:|---|
-| **Easy** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
-| **Hard** <sub>(achievement_count)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
+| **Easy** <sub>(_ACHIEVEMENT_COUNT_)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
+| **Hard** <sub>(_ACHIEVEMENT_COUNT_)</sub> | - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> any Chapter ⇒ *([a_placeholderID](#a_placeholderID))* </sub> <br> - **achievement_title_placeholder** <sub> Chapter "xxxx" ⇒ *([a_placeholderID](#a_placeholderID))* </sub> |
 
 </details>
 
