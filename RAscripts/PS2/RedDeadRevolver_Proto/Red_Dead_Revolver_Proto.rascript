@@ -466,6 +466,12 @@ function on_FrameCounter_change(enum_releaseRegion) {
 	let_memAddr_FrameCounter = memory_getAddress("32-bit:FrameCounter(preferred)", enum_releaseRegion)
 	return dword(let_memAddr_FrameCounter) != prev(dword(let_memAddr_FrameCounter))}
 
+function on_SinglePlayer_WinGame(enum_releaseRegion) {
+	// NOTE: When in SinglePlayer and the player's money > $49.09, then the player "Wins the game", after a few seconds the Level reset
+	const_MONEY_WIN_THRESHOLD = 500 // (= $49.10)
+	return 
+		current_SinglePlayer_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
+		&& prev_SinglePlayer_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD}
 // ----------------PlayerInput---------------------
 CONTROLLER_1 = 1
 CONTROLLER_2 = 2
@@ -1744,10 +1750,12 @@ achievements_coreData = {
 		"a_ChallengeShernite": { // VERIFIED
 			"id": 497875, "points": achievement_POINTS_10, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
 		"a_ChallengeSher70": { // VERIFIED
-			"id": 498037, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Kill at least 15 enemies, without healing (with old man surviving to receive thanks)"},
+			"id": 498037, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Kill all nonRespawning enemies, without healing (with old man surviving to receive thanks)"},
+		"a_WinGameChallenge": { // VERIFIED // TODO Add Leaderboard for this as well.
+			"id": 501172, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Achieve Win Game, without healing + within 4 minutes"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
-		"a_WinGame": { // VERIFIED
+		"a_WinGameAny": { // VERIFIED
 			"id": 494562, "points": achievement_POINTS_3, "devInfo": "Win Game, when cash over $49.09, lvl_tng and lvl_sher70 have respawning enemies"},
 		"a_DeadEyeMaster": { // VERIFIED
 			"id": 498358, "points": achievement_POINTS_5, "devInfo": "Hit at least xx shots with one RapidFire volley (only achievable with Single/DualRevolvers)"},
@@ -2118,7 +2126,7 @@ achievements_triggers = {
 				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)
 				&& current_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT))
 			&& trigger_when(on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion))
-		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for displaying a Measured Indicator, tracking TimeSpentInLevel up to xx seconds
+		// [2] ==== Alt Measured Group ==== 			-> This group is only responsible for displaying a Measured Indicator, tracking enemy kills
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
 				|| is_Loading(enum_releaseRegion))
@@ -2146,7 +2154,8 @@ achievements_triggers = {
 		const_ARRAY_HOSTILE_NPCDATA_INDICES_all = util_concatArrays(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning)
 		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) // = 11 	Required to kill all of these once
 		const_ENEMY_COUNT_respawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning) // = 3 	Required to kill 3 in total, they keep respawning. So player should be allowed to kill the same NPC multiple times
-		const_ENEMY_COUNT_all = const_ENEMY_COUNT_nonRespawning + const_ENEMY_COUNT_respawning + 1 // = 14 + 1		(plus 1, to add extra challenge)
+		const_ENEMY_COUNT_all = const_ENEMY_COUNT_nonRespawning + const_ENEMY_COUNT_respawning // = 14
+		const_REQUIRED_ENEMY_KILLS = 11 // = const_ENEMY_COUNT_nonRespawning
 		const_ALLIED_NPCDATA_INDEX = 15 // Last entry in "LinkedList", refer to code notes
 		return
 		// [1] ==== Alt Logic Group ==== 				-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator as long as OldMan lives AND player hasn't healed
@@ -2159,10 +2168,10 @@ achievements_triggers = {
 				on_NPChealth_death(const_ALLIED_NPCDATA_INDEX, enum_releaseRegion)))
 			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0)
 			&& trigger_when(
-				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => // Respawning NPCs: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_REQUIRED_ENEMY_KILLS, int_NPCdataIndex => // Respawning NPCs: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
 					once(on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-				&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, const_ENEMY_COUNT_respawning, int_NPCdataIndex => // non-respawning NPCS: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
-					repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+				// && tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, const_ENEMY_COUNT_respawning, int_NPCdataIndex => // non-respawning NPCS: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
+				// 	repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
 				&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
 					once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
 					once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
@@ -2176,7 +2185,7 @@ achievements_triggers = {
 			&& unless(once( // Pause Lock: Once the OldMan dies
 				on_NPChealth_death(const_ALLIED_NPCDATA_INDEX, enum_releaseRegion)))
 			&& measured(
-				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_ENEMY_COUNT_all, (int_NPCdataIndex) {
+				tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_all, const_REQUIRED_ENEMY_KILLS, (int_NPCdataIndex) {
 					if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_respawning, int_NPCdataIndex)) // If this is a respawning NPC: player can kill this enemy multiple times. Thus can count MULTIPLE times toward the Measured Indicator
 						return repeated(3, on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion))
 					else if (array_contains(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, int_NPCdataIndex)) // ElseIf this is a non-respawning NPC: player can only kill this NPC once. Thus it should only count ONCE towards the Measured Indicator
@@ -2188,23 +2197,31 @@ achievements_triggers = {
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
 		}),
-	// -------c_SPbonus-------
-	"a_WinGame": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		/* NOTE: When in SinglePlayer and the player's money > $49.09, then the player Wins the game, after a few seconds the Level resets.
-			This should only be possible in lvl_tng, as the dummies keep respawning. Each kill is worth $2
-			Other levels don't have enough enemies to reach the $49.09 threshold
-			*/
-		const_MONEY_WIN_THRESHOLD = 500 // (= $49.10)
+	"a_WinGameChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_TIME_LIMIT = 240 // in seconds (= 4min)
 
 		return 
+		// [1] ==== Alt Logic + Triggered Group ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player heals
+				on_SinglePlayer_Health_heal(enum_releaseRegion)))
+			&& unless(once( // Pause Lock: Once TimeSpentInLevel passes allowed time
+				current_TimeSpentInLevel(enum_releaseRegion) >= const_TIME_LIMIT
+				&& prev_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT))
+			&& trigger_when(on_SinglePlayer_WinGame(enum_releaseRegion))
+		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),	
+	// -------c_SPbonus-------
+	"a_WinGameAny": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& is_GameState(GAMESTATE_SinglePlayer, enum_releaseRegion)
 			&& isNot_Loading(enum_releaseRegion)
-
-			&& current_SinglePlayer_Money(enum_releaseRegion) >= const_MONEY_WIN_THRESHOLD
-			&& prev_SinglePlayer_Money(enum_releaseRegion) < const_MONEY_WIN_THRESHOLD		
-		}),	
+			&& on_SinglePlayer_WinGame(enum_releaseRegion)
+		),	
 	"a_DeadEyeMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_HIT_COUNT = 5
 		const_RAPID_FIRE_INACTIVE_FRAMES_TILL_RESET = 210
@@ -3064,8 +3081,9 @@ achievements_titles = {
 	"a_ChallengeHng": 			{"en": "Lead with Precision"},
 	"a_ChallengeShernite": 		{"en": "Reckoning at Midnight"},
 	"a_ChallengeSher70": 		{"en": "Sheriff by Sunrise"},
+	"a_WinGameChallenge":		{"en": "It Always Was About the Money"},
 
-	"a_WinGame": 				{"en": "Overflowing Coffers"},
+	"a_WinGameAny": 			{"en": "Overflowing Coffers"},
 	"a_DeadEyeMaster": 			{"en": "Six-Shooter Symphony"},
 	"a_TipHat": 				{"en": "The Cowboy's Courtesy"},
 	"a_Dodge": 					{"en": "The Slick Shuffle"},
@@ -3105,9 +3123,10 @@ achievements_descriptions = {
 	"a_ChallengePerf":			{"en": "Take down every enemy in the \"Prologue Stage\" without taking damage, then have a word with your mother or Jinnie"},
 	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of Rusty's respect"},
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
-	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos—time to bring them bullets. Eliminate 15 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
+	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos—time to bring them bullets. Eliminate at least 11 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
+	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—In the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes without healing once"},
 
-	"a_WinGame": 				{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
+	"a_WinGameAny": 			{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if there ain't a bullet with your name on it"}, 
@@ -3123,7 +3142,7 @@ achievements_descriptions = {
 	"a_EyeFort":				{"en": "Sure, most folks come to the \"Fort Stage\" for a fight, but you? You're here for the scenery. Tip your hat near the Throne and inside a Castle Tower—because nothing says 'respect' like sightseeing in enemy territory"},
 	"a_EyeMans":				{"en": "The \"Mansion Stage\" is fancy, shame about the lack of hospitality. Tip your hat on the Podium, by the Lion Fountain, in the Train Station, and inside the Roof Alcove—because if you're gonna wander through a villain's estate, might as well do it in style"},
 	"a_EyeShootHng":			{"en": "In the \"Title Stage\", take the high ground and eliminate 5 enemies from atop any building using the single revolver—because why fight on the ground when you can rain bullets from above?"},
-	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch atop the big barrel and take down 4 enemies in succession without dropping down, using dual zevolvers—show 'em what it means to stand your ground with guns blazing!"},
+	"a_EyeShootShernite":		{"en": "In the \"Sheriff Night Stage\", perch atop the big barrel and take down 4 enemies in succession without dropping down, using dual revolvers—show 'em what it means to stand your ground with guns blazing!"},
 	"a_EyeShootSher70":			{"en": "In the \"Sheriff Day Stage\", climb to the roof of the blacksmith's building and eliminate 7 enemies using the rifle, without dropping down—because nothing says 'top of the food chain' like picking them off from the highest point!"},
 	
 	"a_WinRed": 				{"en": "Red ain't just back—he's better. As \"Red\" win 5 consecutive 1v1 rounds in a Multiplayer Showdown match"},
@@ -4007,14 +4026,72 @@ leaderboards_startTriggers = {
 		&& is_Level(LEVEL_TrainingStage, enum_releaseRegion)
 		&& on_TrainingStage_ShootingChallenge_start(enum_releaseRegion)
 		),
-	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
-	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
-	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
-	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_StartTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 1 // = 5 (minus 1, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
+				once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)	
+		}),
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 4 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TitleStage, enum_releaseRegion)	
+		}),	
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
+		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 5 (minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)		
+		}),	
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// NOTE: For the leaderboad, only count nonRespawning NPC deaths
+		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // This array accounts for all unique hostile NPCs which do not respawn
+		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) - 2 // = 9 	(minus 2, in case something goes wrong with NPCs)
+
+		return 
+		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => once(
+				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
+			&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
+				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+		}),	
 	
 	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
@@ -4027,14 +4104,24 @@ leaderboards_startTriggers = {
 			&& on_MPround_start(enum_releaseRegion)
 		),
 	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// [0] ==== Core Start Group ====		-> Start when a Multiplayer round starts
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
-			&& isNot_Loading(enum_releaseRegion)
+		// [0] ==== Core Start Group ====			-> Start when a Multiplayer round starts
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player takes damage
+				on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)))
 			&& current_HumanPlayerCount(enum_releaseRegion) == 1
 			&& current_TotalPlayerCount(enum_releaseRegion) == 4
 			&& is_MPteams_FreeForAll(enum_releaseRegion)
-			&& on_MPround_start_later(enum_releaseRegion) // on_MPround_start_later() activates one second later than on_MPround_start()
+			&& on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)
+		// [2] ==== Alt Reset Groups ==== 		-> Reset when not in Multiplayer Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		// [3] ==== Alt Reset Groups ==== 		-> Reset when a Multiplayer round starts
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MPround_start(enum_releaseRegion))
 		),
 	}
 leaderboards_cancelTriggers = {
@@ -4063,14 +4150,14 @@ leaderboards_cancelTriggers = {
 			|| is_ReleaseRegion(enum_releaseRegion)
 			&& on_Level_startORreset(enum_releaseRegion)
 		),
-	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_PrologueStage, enum_releaseRegion)),
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>	
+		always_false()),	
 	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_TitleStage, enum_releaseRegion)),
+		always_false()),	
 	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffNight, enum_releaseRegion)),
+		always_false()),	
 	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		lbGenerate_CancelTrigger_SPstage_TimeTrial(LEVEL_SheriffDay, enum_releaseRegion)),
+		always_false()),	
 	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		// ========== CancelGroups ==========
 		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
@@ -4094,27 +4181,28 @@ leaderboards_cancelTriggers = {
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
 	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ========== CancelGroups ==========
-		// [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
-			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitTrigger-AltGroup[5] can never submit. Using on_MPplayer_winGame() in this CancelGroup is not advised because of this.
-				repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
-				repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
-				repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
-				])
-		// [2] ==== Alt Cancel Group ====		-> Cancel when player takes a hit
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& repeated(2, // --repeated(2)--> Otherwise SubmitTrigger-AltGroup[1] can never submit, because the leaderboard cancels first.
-				current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion) - 2.0) // minus 2.0, because we're working with floats
-		// ========== ResetGroups ==========
-		// [3] ==== Alt Reset Group ====		-> Reset when a new round starts (To reset HitCounts in CancelGroups])
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& on_MPround_start(enum_releaseRegion))
-		// [4] ==== Alt Reset Group ====		-> Reset when not in Multiplayer  (To reset HitCounts in CancelGroups])
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		always_false()
+		// // ========== CancelGroups ==========
+		// // [1] ==== Alt Cancel Group ====		-> Cancel when an enemy player wins a round
+		// 	unless(!is_ReleaseRegion(enum_releaseRegion))
+		// 	&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitTrigger-AltGroup[5] can never submit. Using on_MPplayer_winGame() in this CancelGroup is not advised because of this.
+		// 		repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+		// 		repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+		// 		repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
+		// 		])
+		// // [2] ==== Alt Cancel Group ====		-> Cancel when player takes a hit
+		// 	|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		// 	&& repeated(2, // --repeated(2)--> Otherwise SubmitTrigger-AltGroup[1] can never submit, because the leaderboard cancels first.
+		// 		current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion) - 2.0) // minus 2.0, because we're working with floats
+		// // ========== ResetGroups ==========
+		// // [3] ==== Alt Reset Group ====		-> Reset when a new round starts (To reset HitCounts in CancelGroups])
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& on_MPround_start(enum_releaseRegion))
+		// // [4] ==== Alt Reset Group ====		-> Reset when not in Multiplayer  (To reset HitCounts in CancelGroups])
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
 	}
 leaderboards_submitTriggers = {
@@ -4141,73 +4229,14 @@ leaderboards_submitTriggers = {
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) > 3.0 // ---2 Lines---> prev_ShootingGalleryTimer() is the submitted ValueMeasure, These are extra checks to prevent false entries from getting into leaderboard
 			&& prev_ShootingGalleryTimer(enum_releaseRegion) < 61.0 
 		}),
-	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// NOTE: [ASCIIFlag(NPCevent):IsMomThanksActive] && [ASCIIFlag(NPCevent):IsJinnieThanksActive] is only activatable after killing all enemies in this level.
-		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,4,5,6,7,8] // --> "Billy The Kid" is also included. He may be friendly when killing the other hostile NPCs too quickly
-		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 1 // = 5 (minus 1, in case something goes wrong with NPCs)
-
-		return 
-		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion))
-			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
-				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-			&& tally(1, [ // ---Tally--> OrNext: TalkToMom OR TalkToJinnie
-				once(on_flagState_PrologueStage_IsJinnieThanksActive_toggleTrue(enum_releaseRegion)),
-				once(on_flagState_PrologueStage_IsMomThanksActive_toggleTrue(enum_releaseRegion))])
-		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
-			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_PrologueStage, enum_releaseRegion)		
-		}),	
-	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_ARRAY_HOSTILE_NPCDATA_INDICES = [1,2,3,4,5,7]
-		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 4 (minus 2, in case something goes wrong with NPCs)
-
-		return 
-		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion))
-			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
-				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
-		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
-			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_TitleStage, enum_releaseRegion)	
-		}),	
-
-	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_ARRAY_HOSTILE_NPCDATA_INDICES = [0, 2, 3, 4, 5, 6, 7]
-		const_ENEMY_COUNT = length(const_ARRAY_HOSTILE_NPCDATA_INDICES) - 2 // = 5 (minus 2, in case something goes wrong with NPCs)
-
-		return 
-		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion))
-			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
-				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
-		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
-			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)		
-		}),	
-	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// NOTE: For the leaderboad, only count nonRespawning NPC deaths
-		const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning = [1,5,6,7,8,9,10,11,12,13,14] // Accounts for all unique hostile NPCs which do not respawn
-		const_ENEMY_COUNT_nonRespawning = length(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning) - 2 // = 9 	(minus 2, in case something goes wrong with NPCs)
-
-		return 
-		// [1] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion))
-			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES_nonRespawning, const_ENEMY_COUNT_nonRespawning, int_NPCdataIndex => once(
-				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-			&& tally(1, [ // ---Tally---> OrNext: alt1 or alt2 (the NPCeventData "JijiThanks" may be pointed to by pointer_A OR pointer_B)
-				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt1_toggleTrue(enum_releaseRegion)),
-				once(on_flagState_SheriffDayStage_IsJijiThanksActive_alt2_toggleTrue(enum_releaseRegion))])
-		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
-			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
-		}),	
+	"lb_TimeTrialPerf75": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>	
+		always_true()),	
+	"lb_TimeTrialHng": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		always_true()),	
+	"lb_TimeTrialShernite": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		always_true()),	
+	"lb_TimeTrialSher70": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		always_true()),	
 	"lb_MPTimeTrial": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_ROUND_WINS = 7
 		return 
@@ -4237,56 +4266,74 @@ leaderboards_submitTriggers = {
 				&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		}),
 	"lb_MPChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// ========== SubmitGroups ==========
 		// [1] ==== Alt Submit Group ====		-> Submit when player takes a hit
 			is_ReleaseRegion(enum_releaseRegion)
-			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent submits when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
 			&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)
 		// [2+3] ==== Alt Submit Group ====		-> Submit on PauseMenu->Reset
 			|| is_ReleaseRegion(enum_releaseRegion)
-			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& on_PauseMenu_reset(enum_releaseRegion)
 		// [4] ==== Alt Submit Group ====		-> Submit when leaving Multiplayer mode
 			|| is_ReleaseRegion(enum_releaseRegion)
-			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
 		// [5] ==== Alt Submit Group ====		-> Submit when an enemy player wins a round
 			|| is_ReleaseRegion(enum_releaseRegion)
-			&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+			&& never(on_MPround_start(enum_releaseRegion))
 			&& tally(1, [
 				once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
 				once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
 				once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
 				])
-		// ========== ResetGroups ==========
-		// [6] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
-				// && on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
-				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
-					never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
-					&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
-		// [7] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
-		// [8] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only checking !is_GameState() for 1 frame.
-					never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
-					&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
-		// [9] ==== Alt Reset Group ====		-> Reset when an enemy player wins a round (To reset HitCounts in SubmitGroups)
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitGroup[5] can never submit. Using on_MPplayer_winGame() in this ResetGroup is not advised because of this.
-					repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
-					repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
-					repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
-					])
-				) 
+		// // ========== SubmitGroups ==========
+		// // [1] ==== Alt Submit Group ====		-> Submit when player takes a hit
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+		// 	&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent submits when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+		// 	&& on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion)
+		// // [2+3] ==== Alt Submit Group ====		-> Submit on PauseMenu->Reset
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+		// 	&& on_PauseMenu_reset(enum_releaseRegion)
+		// // [4] ==== Alt Submit Group ====		-> Submit when leaving Multiplayer mode
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+		// 	&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion)
+		// // [5] ==== Alt Submit Group ====		-> Submit when an enemy player wins a round
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& once(on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion)) // ---> Prevent submits when Player has not yet won a round 
+		// 	&& tally(1, [
+		// 		once(on_MPplayer_winGame(MP_PLAYER_2, enum_releaseRegion)),
+		// 		once(on_MPplayer_winGame(MP_PLAYER_3, enum_releaseRegion)),
+		// 		once(on_MPplayer_winGame(MP_PLAYER_4, enum_releaseRegion)),
+		// 		])
+		// // ========== ResetGroups ==========
+		// // [6] ==== Alt Reset Group ====		-> Reset when player takes a hit (To reset HitCounts in SubmitGroups)
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& current_MPplayer_ShowdownKills(MP_PLAYER_1, enum_releaseRegion) < 0x2 // ---> Prevent this from submitting when the player has "Won the round"; Without this Check, the player may still be hit (eg. by dynamites) when the text "Won the round" is displayed. 
+		// 		// && on_MPplayer_Health_takeDamage(MP_PLAYER_1, enum_releaseRegion))
+		// 		&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[1] can never submit, as this ResetGroup triggers first when only using on_MPplayer_Health_takeDamage()
+		// 			never(current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) == current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion))
+		// 			&& current_MPplayer_Health(MP_PLAYER_1, enum_releaseRegion) < current_MPplayer_MaxHealth(MP_PLAYER_1, enum_releaseRegion)))
+		// // [7] ==== Alt Reset Group ====		-> Reset on PauseMenu->Reset (To reset HitCounts in SubmitGroups)
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& on_PauseMenu_reset_release(enum_releaseRegion)) // --> Uses on_PlayerInput_O_release() instead of on_PlayerInput_O_press(). Using on_PauseMenu_reset() in this group will cause a Reset before SubmitGroup[2+3] has a chance to submit
+		// // [8] ==== Alt Reset Group ====		-> Reset when leaving Multiplayer mode (To reset HitCounts in SubmitGroups)
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& repeated(2, // --repeated(2)--> Without this 2 frame Check, SubmitGroup[4] can never submit, as this ResetGroup triggers first when only checking !is_GameState() for 1 frame.
+		// 			never(is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
+		// 			&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))) 
+		// // [9] ==== Alt Reset Group ====		-> Reset when an enemy player wins a round (To reset HitCounts in SubmitGroups)
+		// 	|| never_toAlt(
+		// 		is_ReleaseRegion(enum_releaseRegion)
+		// 		&& tally(2, [ // --Tally(2)--> Without this 2 frame Check, SubmitGroup[5] can never submit. Using on_MPplayer_winGame() in this ResetGroup is not advised because of this.
+		// 			repeated(2, has_MPplayer_wonGame(MP_PLAYER_2, enum_releaseRegion)),
+		// 			repeated(2, has_MPplayer_wonGame(MP_PLAYER_3, enum_releaseRegion)),
+		// 			repeated(2, has_MPplayer_wonGame(MP_PLAYER_4, enum_releaseRegion)),
+		// 			])
+		// 		) 
 		),
 	}
 //-----------------ValueMeasures-------------------
@@ -4323,7 +4370,8 @@ function lb_ValueMeasure_TimeSpentInMultiplayerMatch() {
 	return max_of(let_array_valueMeasures)}
 function lb_ValueMeasure_MultiplayerRoundsWon() {
 	function valueMeasure(enum_releaseRegion) => 
-		measured(repeated(0, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))) // --repeated(0)--> hitCount infinitely
+		measured(
+			repeated(0, on_MPplayer_winGame(MP_PLAYER_1, enum_releaseRegion))) // --repeated(0)--> hitCount infinitely; add subsequent round wins
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
