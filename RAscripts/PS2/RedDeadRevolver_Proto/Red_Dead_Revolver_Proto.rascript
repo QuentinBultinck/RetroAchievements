@@ -1751,7 +1751,7 @@ achievements_coreData = {
 			"id": 497875, "points": achievement_POINTS_10, "devInfo": "lvl_shernite: Kill all 7 enemies in under 2 minutes (talk to Captive after killing all enemies)"},
 		"a_ChallengeSher70": { // VERIFIED
 			"id": 498037, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Kill all nonRespawning enemies, without healing (with old man surviving to receive thanks)"},
-		"a_WinGameChallenge": { // VERIFIED // TODO Add Leaderboard for this as well.
+		"a_WinGameChallenge": { // VERIFIED
 			"id": 501172, "points": achievement_POINTS_10, "devInfo": "lvl_sher70: Achieve Win Game, without healing + within 4 minutes"},
 		},
 	"c_SPbonus": { // Category - Single Player Bonus Secrets + Level Sightseeing
@@ -2210,9 +2210,10 @@ achievements_triggers = {
 			&& unless(once( // Pause Lock: Once TimeSpentInLevel passes allowed time
 				current_TimeSpentInLevel(enum_releaseRegion) >= const_TIME_LIMIT
 				&& prev_TimeSpentInLevel(enum_releaseRegion) < const_TIME_LIMIT))
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0) // --CheckIf--> Stage has started from start
 			&& trigger_when(on_SinglePlayer_WinGame(enum_releaseRegion))
 		// [3+4+5] ==== Alt Reset Groups ==== 			-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
-			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)
 		}),	
 	// -------c_SPbonus-------
 	"a_WinGameAny": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -3970,6 +3971,8 @@ leaderboards_coreData = {
 		"id": 126163, "isLowerBetter": true, "leaderboardFormat": "FRAMES", "devInfo": "(Time Trial) Multiplayer: Win 7x 4-player free-for-all rounds consecutively"},
 	"lb_MPChallenge": { // VERIFIED
 		"id": 126162, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "(Most Wins) Multiplayer: Win consecutive 4-player free-for-all rounds, without taking a hit"},
+	"lb_WinGameChallenge": { // VERIFIED
+		"id": 126502, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "(Time Trial) lvl_sher70: Achieve Win Game, without healing"},	
 	}
 // #endregion LB - core data
 
@@ -4123,6 +4126,18 @@ leaderboards_startTriggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_MPround_start(enum_releaseRegion))
 		),
+	"lb_WinGameChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
+		// [1] ==== Alt Start Group ==== 			-> Start when the player earns over $49.09 ("Win Game") without healing
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& unless(once( // Pause Lock: Once the player heals
+				on_SinglePlayer_Health_heal(enum_releaseRegion)))
+			&& once(current_SinglePlayer_Kills(enum_releaseRegion) == 0) // --CheckIf--> Stage has started from start
+			&& on_SinglePlayer_WinGame(enum_releaseRegion)
+		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
+			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)
+		),
 	}
 leaderboards_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -4204,10 +4219,12 @@ leaderboards_cancelTriggers = {
 		// 		is_ReleaseRegion(enum_releaseRegion)
 		// 		&& !is_GameState(GAMESTATE_Multiplayer, enum_releaseRegion))
 		),
+	"lb_WinGameChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		always_false()),
 	}
 leaderboards_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-		// // [1] ==== Alt Submit Group ====		-> Submit when ...
+		// // [1] ==== Alt Submit Group ====			-> Submit when ...
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// // [2] ==== Alt Reset Group ====			-> Reset when ...
@@ -4335,6 +4352,8 @@ leaderboards_submitTriggers = {
 		// 			])
 		// 		) 
 		),
+	"lb_WinGameChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		always_true()),
 	}
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_ShootingChallenge() {
@@ -4386,6 +4405,7 @@ leaderboards_valueMeasures = {
 	"lb_TimeTrialSher70": lb_ValueMeasure_TimeSpentInLevel(),
 	"lb_MPTimeTrial": lb_ValueMeasure_TimeSpentInMultiplayerMatch(),
 	"lb_MPChallenge": lb_ValueMeasure_MultiplayerRoundsWon(),
+	"lb_WinGameChallenge": lb_ValueMeasure_TimeSpentInLevel(),
 	}
 // #endregion LB - triggers
 
@@ -4402,19 +4422,20 @@ leaderboards_titles = {
 	"lb_TimeTrialShernite":					{"en": "Sheriff Night Stage: Quick Draw Gunslingers"},
 	"lb_TimeTrialSher70":					{"en": "Sheriff Day Stage: Quick Draw Gunslingers"},
 	"lb_MPTimeTrial":						{"en": "Seven in the Chamber: Quick Draw Gunslingers"},
-	"lb_MPChallenge":						{"en": "Bulletproof Bravado: Untouchable Gunslingers"},	
-
+	"lb_MPChallenge":						{"en": "Bulletproof Bravado: Unscathed Gunslingers"},	
+	"lb_WinGameChallenge": 					{"en": "The $49 Dash: Quick Draw Gunslingers"},
 	}
 leaderboards_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
 
 	"lb_ShootingChallenge": 				{"en": "In the \"Training Stage\", eliminate 11 moles during the Shooting Challenge as fast as possible"},
-	"lb_TimeTrialPerf75": 					{"en": "Complete the \"Prologue Stage\" by swiftly vanquishing all outlaws and reuniting with Mother or Jinnie after Red's home is secure"},
-	"lb_TimeTrialHng": 						{"en": "Complete the \"Title Stage\" by swiftly vanquishing all outlaws and earning the respect of a loyal canine after the deed is done"},
-	"lb_TimeTrialShernite": 				{"en": "Complete the \"Sheriff Night Stage\" by swiftly vanquishing all outlaws and earning the gratitude of the old man after the town is safe"},
-	"lb_TimeTrialSher70": 					{"en": "Complete the \"Sheriff Day Stage\" by swiftly vanquishing all outlaws and receiving thanks from the captive after the coast is clear"},
+	"lb_TimeTrialPerf75": 					{"en": "Complete the \"Prologue Stage\" as fast as possible by vanquishing all outlaws and reuniting with Mother or Jinnie after Red's home is secure"},
+	"lb_TimeTrialHng": 						{"en": "Complete the \"Title Stage\" as fast as possible by vanquishing all outlaws and earning the respect of a loyal canine after the deed is done"},
+	"lb_TimeTrialShernite": 				{"en": "Complete the \"Sheriff Night Stage\" as fast as possible by vanquishing all outlaws and earning the gratitude of the old man after the town is safe"},
+	"lb_TimeTrialSher70": 					{"en": "Complete the \"Sheriff Day Stage\" as fast as possible by vanquishing all outlaws and receiving thanks from the captive after the coast is clear"},
 	"lb_MPTimeTrial": 						{"en": "In Multiplayer, win 7 consecutive 4-player free-for-all rounds as fast as possible"},
 	"lb_MPChallenge": 						{"en": "In Multiplayer, win as many consecutive 4-player free-for-all rounds as possible without taking a single hit"},
+	"lb_WinGameChallenge": 					{"en": "In the \"Sheriff Day Stage\", earn over $49.09 without healing as fast as possible"},
 	}
 // #endregion LB - text
 
