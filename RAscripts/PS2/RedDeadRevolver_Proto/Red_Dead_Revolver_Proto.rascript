@@ -3115,9 +3115,9 @@ achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 
 	"a_CompleteTng": 			{"en": "During the \"Training Stage\", complete the Movement Training, Weapon Training and Shooting Challenge"},
-	"a_CompletePerf": 			{"en": "After the fight ends in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
-	"a_CompleteHng": 			{"en": "Prove you worth to your loyal companion, Rusty, in the \"Title Stage\" by vanquishing all six outlaws"},
-	"a_CompleteShernite": 		{"en": "Take down all members of the evil sheriff's posse within the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
+	"a_CompletePerf": 			{"en": "After eliminating all six members of Ugly's band in the \"Prologue Stage\", receive words of gratitude from your mother and Jinnie"},
+	"a_CompleteHng": 			{"en": "Prove your worth to your loyal companion, Rusty, by vanquishing all six outlaws in the \"Title Stage\""},
+	"a_CompleteShernite": 		{"en": "Take down every member of the evil sheriff's posse within the \"Sheriff Night Stage\" and earn the heartfelt gratitude of the captive you've saved"},
 	"a_CompleteSher70": 		{"en": "Butcher Pig's gang of outlaws during the \"Sheriff Day Stage\" and earn an old veteran's admiration for restoring peace to his town"},
 
 	"a_ChallengeTng": 			{"en": "The Indian Master has seen many shooters, but few with true skill. Prove your worth in the \"Training Stage\" Shooting Challenge by eliminating 11 moles in under a minute, but only with headshots"},
@@ -3125,11 +3125,11 @@ achievements_descriptions = {
 	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of Rusty's respect"},
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos—time to bring them bullets. Eliminate at least 11 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
-	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—In the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes without healing once"},
+	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—in the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes without healing once"},
 
 	"a_WinGameAny": 			{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
 	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst"},
-	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing and holding X or R1"},
+	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge, even if there ain't a bullet with your name on it"}, 
 	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off the Spinfire technique by pressing X and O simultaneously while holding the revolver(s), and land at least 3 shots without being interrupted or knocked out of the move"},
 	"a_HorseCover": 			{"en": "A moving target is harder to hit—but even better when it knows how to duck. Take cover while on horseback"},
