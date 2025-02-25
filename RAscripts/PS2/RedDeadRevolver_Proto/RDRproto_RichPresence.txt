@@ -51,35 +51,35 @@ Lookup:ShowdownKills
 2=✯✯
 
 Lookup:StageActivity_4ByteLevelID
-6778484=sharpening his skills
-1651339124=exploring
-1936613741=exploring
-1953656678=exploring
-*=gunslinging
+6778484=sharpening his skills in the
+1651339124=exploring the
+1936613741=exploring the
+1953656678=exploring the
+*=gunslinging in the
 
 Lookup:StageActivity_8ByteLevelID
-6845281=exploring
-7235937=exploring
-892823154=saving his family
-1852796780=having a drink
-*=gunslinging
+6845281=exploring the
+7235937=exploring the
+892823154=saving his family in the
+1852796780=having a drink in the
+*=gunslinging in the
 
 Lookup:StageName_4ByteLevelID
-6778472="The Title Stage"
-6778484="The Training Stage"
-1651339124="The Tombstone Stage"
-1936613741="The Mansion Stage"
-1953656678="The Fort Stage"
-*="The Wild West"
+6778472="Title Stage"
+6778484="Training Stage"
+1651339124="Tombstone Stage"
+1936613741="Mansion Stage"
+1953656678="Fort Stage"
+*="Wild West"
 
 Lookup:StageName_8ByteLevelID
-6845281="The Flashback Stage"
-7235937="The Train Stage"
-808940133="The Sheriff Day Stage"
-892823154="The Prologue Stage"
-1768845925="The Sheriff Night Stage"
-1852796780="The Saloon Stage"
-*="The Wild West"
+6845281="Flashback Stage"
+7235937="Train Stage"
+808940133="Sheriff Day Stage"
+892823154="Prologue Stage"
+1768845925="Sheriff Night Stage"
+1852796780="Saloon Stage"
+*="Wild West"
 
 Lookup:TeamColor
 0=🔴
@@ -90,8 +90,8 @@ Lookup:TeamColor
 
 Display:
 ?0xX91204c=1397769043S0xX427c80=0S0xH483750=13?Playing Red Dead Revolver ~Prototype~ | Title Screen
-?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128ee!=0_C:0xH9128ef=0.1._N:0xH9128ef!=0_C:0xH9128f0=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is @StageActivity_4ByteLevelID(0xX9128ec) in @StageName_4ByteLevelID(0xX9128ec)
-?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128f0!=0_C:0xH9128f1=0.1._N:0xH9128f1!=0_C:0xH9128f2=0.1._N:0xH9128f2!=0_C:0xH9128f3=0.1._N:0xH9128f3!=0_C:0xH9128f4=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is @StageActivity_8ByteLevelID(0xX9128ee) in @StageName_8ByteLevelID(0xX9128ee)
+?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128ee!=0_C:0xH9128ef=0.1._N:0xH9128ef!=0_C:0xH9128f0=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is @StageActivity_4ByteLevelID(0xX9128ec) @StageName_4ByteLevelID(0xX9128ec)
+?P:0xX91204c!=1397769043_P:0xX427c80!=250_P:0xH483750=13_R:0xX9128ec!=d0xX9128ec_R:0xX9128f0!=d0xX9128f0_R:0xX9128f4!=d0xX9128f4_N:0xH9128f0!=0_C:0xH9128f1=0.1._N:0xH9128f1!=0_C:0xH9128f2=0.1._N:0xH9128f2!=0_C:0xH9128f3=0.1._N:0xH9128f3!=0_C:0xH9128f4=0.1._0=1.1.?Playing Red Dead Revolver ~Prototype~ | @CharacterName(0xX912954) is @StageActivity_8ByteLevelID(0xX9128ee) @StageName_8ByteLevelID(0xX9128ee)
 ?0xX91204c=1397769043_0xX427c80=200_0xH483750=255_0xL42171c=2?Playing a Showdown Multiplayer Match in @StageName_8ByteLevelID(0xX9128ee) | @TeamColor(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @CharacterName(0xX9129bc) @ShowdownKills(0xH42191c)
 ?0xX91204c=1397769043_0xX427c80=200_0xH483750=255_0xL42171c=3?Playing a Showdown Multiplayer Match in @StageName_8ByteLevelID(0xX9128ee) | @TeamColor(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @CharacterName(0xX9129bc) @ShowdownKills(0xH42191c) | @TeamColor(0xL912a20) @Human_OR_CPU(0xX912a38) 3 as @CharacterName(0xX912a24) @ShowdownKills(0xH4219d0)
 ?0xX91204c=1397769043_0xX427c80=200_0xH483750=255_0xL42171c=4?Playing a Showdown Multiplayer Match in @StageName_8ByteLevelID(0xX9128ee) | @TeamColor(0xL912950) @Human_OR_CPU(0xX912968) 1 as @CharacterName(0xX912954) @ShowdownKills(0xH421868) | @TeamColor(0xL9129b8) @Human_OR_CPU(0xX9129d0) 2 as @CharacterName(0xX9129bc) @ShowdownKills(0xH42191c) | @TeamColor(0xL912a20) @Human_OR_CPU(0xX912a38) 3 as @CharacterName(0xX912a24) @ShowdownKills(0xH4219d0) | @TeamColor(0xL912a88) @Human_OR_CPU(0xX912aa0) 4 as @CharacterName(0xX912a8c) @ShowdownKills(0xH421a84)
