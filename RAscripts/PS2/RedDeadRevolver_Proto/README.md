@@ -44,7 +44,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 
 + [Retro Achievements Game Page](https://retroachievements.org/game/32806 "Retro Achievements Game Page - Red Dead Revolver (Prototype)") 
 
-As this is a prototype build. This game isn't well documented anywhere at all. The best resource would probably be this RAguide, the RA forum topic of this game or the comment sections on the game page.
+As this is a prototype build, this game isn't well documented anywhere at all. The best resource would probably be this RAguide, the RA forum topic of this game or the comment sections on the game page.
 
 #### Essential Info & Tips
 
@@ -66,7 +66,7 @@ As this is a prototype build. This game isn't well documented anywhere at all. T
 | **Prologue Stage** <sub>(3)</sub> | - **A Son's Duty** <sub> *([a_CompletePerf](#a_CompletePerf))* </sub> <br> - **No Harm Comes Home** <sub> *([a_ChallengePerf](#a_ChallengePerf))* </sub> <br> - **Drop-In Lodging** <sub> *([a_PerfRoofFall](#a_PerfRoofFall))* </sub> |
 | **Title Stage** <sub>(3)</sub> | - **The Goodest Bounty Hunter** <sub> *([a_CompleteHng](#a_CompleteHng))* </sub> <br> - **Lead with Precision** <sub> *([a_ChallengeHng](#a_ChallengeHng))* </sub> <br> - **Revolver's Rain** <sub> *([a_EyeShootHng](#a_EyeShootHng))* </sub> |
 | **Sheriff Night Stage** <sub>(3)</sub> | - **Mad Sheriff, Grim Justice** <sub> *([a_CompleteShernite](#a_CompleteShernite))* </sub> <br> - **Reckoning at Midnight** <sub> *([a_ChallengeShernite](#a_ChallengeShernite))* </sub> <br> - **Gunslinger's Stage** <sub> *([a_EyeShootShernite](#a_EyeShootShernite))* </sub> |
-| **Sheriff Day Stage** <sub>(3)</sub> | - **No Mercy for Swine** <sub> *([a_CompleteSher70](#a_CompleteSher70))* </sub> <br> - **Sheriff by Sunrise** <sub> *([a_ChallengeSher70](#a_ChallengeSher70))* </sub> <br> - **Marksman's Perch** <sub> *([a_EyeShootSher70](#a_EyeShootSher70))* </sub> |
+| **Sheriff Day Stage** <sub>(4)</sub> | - **No Mercy for Swine** <sub> *([a_CompleteSher70](#a_CompleteSher70))* </sub> <br> - **Sheriff by Sunrise** <sub> *([a_ChallengeSher70](#a_ChallengeSher70))* </sub> <br> - **Marksman's Perch** <sub> *([a_EyeShootSher70](#a_EyeShootSher70))* </sub> <br> - **It Always Was About the Money** <sub> *([a_WinGameChallenge ](#a_WinGameChallenge ))* </sub> |
 | **Saloon Stage** <sub>(1)</sub> | - **Boots First, Questions Later** <sub> *([a_SaloonThrow](#a_SaloonThrow))* </sub> |
 | **Tombstone Stage** <sub>(2)</sub> | - **The Tombstone Stampede** <sub> *([a_HorseTomb](#a_HorseTomb))* </sub> <br> - **A Town of Stories** <sub> *([a_EyeTomb](#a_EyeTomb))* </sub> |
 | **Train Stage** <sub>(1)</sub> | - **Dramatic Heights** <sub> *([a_EyeTrain](#a_EyeTrain))* </sub> |
