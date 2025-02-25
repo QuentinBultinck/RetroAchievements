@@ -112,7 +112,7 @@ Therefore, to achieve the *"Beaten"* status for the game on RetroAchievements, t
 
 
 <h1 id=c_SPchallenge>
-    🏆 Single Player Challenges <i><sub><sup>(5 achievements - 50 points)</sup></sub></i>
+    🏆 Single Player Challenges <i><sub><sup>(6 achievements - 60 points)</sup></sub></i>
 </h1>
 
 This category encompasses a set of custom-made challenge achievements. There's at least one for each stage, which has combat encounters.
