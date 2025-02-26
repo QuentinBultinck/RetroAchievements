@@ -3128,7 +3128,7 @@ achievements_descriptions = {
 	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—in the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes without healing once"},
 
 	"a_WinGameAny": 			{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
-	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one 'Rapid Fire' burst. Activate Rapid Fire Mode, by aiming and performing a half circle motion with the left joystick"},
+	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one Rapid Fire Burst. Activate Rapid Fire Mode, by aiming and performing a half circle motion with the left joystick"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge by pressing X or R1 whilst walking forward, even if there ain't a bullet with your name on it"}, 
 	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off the Spinfire technique by pressing X and O simultaneously while holding the revolver(s), and land at least 3 shots without being interrupted or knocked out of the move"},
