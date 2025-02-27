@@ -13,8 +13,8 @@ Credits:
 ...............................................................................................
 
 Notes - Subset MultiCoop Patch:
-- This patch changes an arbitrary [1-byte] ASCII character in the word "include"; "c" -> "k" 
-- Initial full ASCII string: "DisplayTextBox error: You need to include a message as the first parameter!"
+- This patch changes an arbitrary a [1-byte] ASCII character in the word "Error"; "E" -> "e" 
+- Initial full ASCII string: ... "range of this node. Error!"
 
 Notes - FPS patch:
 - Using only the FPS patch results in 50 FPS, from 25 FPS
@@ -32,7 +32,7 @@ Notes - Widescreen patch:
 -----------------------------------------------------------------------------------------------------
 
 //Subset MultiCoop Patch                                8-bit               8-bit
--   /               /                   $0x42C223BA     63                  6b            Changed an ASCII character: "c" -> "k" 
+-   /               /                   $0x00F9CFB5     45                  65              [1-byte] ASCII changed (1st letter in word): "Error!" -> "error! 
 
 //FPS Increase - In-Game 
 -   $0x00721368     1                   $0x00E2E2F8     93A30000            24030001      Insert new MIPS instruction, so ths function which this instruiction is part of writes 1 to RAMaddress $0x0x721368
