@@ -25,12 +25,12 @@ Notes - Widescreen patch:
 
 
 (pnach PCSX2)
-RAMaddress +    RequiredRAMvalue        ROMaddress      InitialROMvalue     NewROMvalue     ExtraInfo
-                32-bit                  32-bit                              32-bit
+    RAMaddress +    RequiredRAMvalue        ROMaddress      InitialROMvalue     NewROMvalue     ExtraInfo
+                    32-bit                  32-bit                              32-bit
 -----------------------------------------------------------------------------------------------------
 
-//Subset MultiCoop Patch                                8-bit               8-bit
--   /               /                   $0x05C0F9F5     45                  65              1-byte ASCII changed (1st letter in word): "Error!" -> "error! 
+//Subset MultiCoop Patch                                    8-bit               8-bit
+-   $0x661CF5       /                       $0x05C0F9F5     45                  65              1-byte ASCII changed (1st letter in word): "Error!" -> "error! 
 
 //FPS Increase - In-Game
 patch=1,EE,0071FA68,word,00000001       $0x05AA1008     93A30000            24030001        Insert new MIPS instruction, so ths function which this instruiction is part of writes 1 to RAMaddress $0x721368
