@@ -13,15 +13,15 @@
 // $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
 //          - Definition of [Struct:FMVdata] at $0x6aae58
-// $134408: [PAL][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x8)--> [Struct:SofdecStreamData]
+// $134408: [PAL][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
 //          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
-//          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr is usually zeroed out (0x0).
+//          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
 //          
 //          
 //          ------Simplified_Documentation------
 //          [32-bit (base) Pointer:SofdecStreamData(preferred)]
-//          +0x134 - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          +0x154 - [5-byte ASCII:Sofdec_FMVID]
+//          +0x144 - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
+//          +0x164 - [5-byte ASCII:Sofdec_FMVID]
 //          
 //          
 //          ------Advanced_Documentation------
@@ -39,7 +39,7 @@
 //          # Sofdec_FMVIDs (string)
 //          |(list incomplete)
 //          |'''''''''''''''''''
-//          | "DWATTR" => Demo video, which plays when idle at the Start-/TitleMenu
+//          | "DWATTR" => Demo video, which plays when idle at the Start/TitleMenu
 //          | "PROLOG" => Intro video, which plays on game boot
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
@@ -450,6 +450,12 @@
 //          0x49 => it
 //          0x51 => en
 //          0x53 => es
+// $661CF5: [NTSCU][1-byte ASCII:Subset_MultiplayerCooperative]
+//          InitialValue = 0x45
+//          SubsetPatchValue = 0x65
+// $6632B5: [PAL][1-byte ASCII:Subset_MultiplayerCooperative]
+//          InitialValue = 0x45
+//          SubsetPatchValue = 0x65
 // $69B4F0: [32-bit] current weapon equipped
 // $6AAE58: [PAL][96-byte Struct:FMVdata]
 //          @Fixed Memory Location, although pointed to by $0x134218
@@ -491,9 +497,14 @@
 // $721368: [PAL][Lower4:FPScontrol |32-bit]
 //          @FPS Hack (PAL)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F45F8
+//          - The widescreen patch activates NTSCU mode (60Hz instead of 50 Hz), thus native 30 fps instead of 25 fps.
 //          
-//          InitialValue = 0x2 => 25 fps
-//          HackValue = 0x1 => 50 fps (0x0 can also be used)
+//          - 30 FPS is achieved when using Widescreen RApatch
+//          - 50 FPS is achieved when using only 50 fps RApatch
+//          - 60 FPS is achieved when using both Widescreen & 60 fps RApatches
+//          
+//          InitialValue = 0x2 => 25 fps OR 30 fps (when using Widescreen NTSCU Mode RaPatch)
+//          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -586,6 +597,7 @@
 //          .| - This ASCII pretty much lists the folder structure to the current Chapter (eg. "Levels/SinglePlayer/WrongTrain" or "Levels/SinglePlayer/M02_CanyonShoot")
 //          
 //          +0x20 - [32-bit (layer-1) Pointer]
+//          | - This pointer changes values, when changing Level
 //          .+0x2 - [Variable Size ASCII:LevelID(full)]
 //          .| - LevelIDs listed below
 //          .| - This ID stays the same for a whole StoryChapter level, regardless of the current StoryChapterSection
@@ -644,7 +656,7 @@
 //          | "WrongTrain_A" => Section 1 - inside the train
 //          | "WrongTrain_B" => Section 2 - on top of the train, after blowing up the vault
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | // (only consists of a single section)
+//          | "Hub_A" => Section 1 (only 1 section in this Chapter)
 //          |---Chapter 3, "Boneyard"---
 //          | "M03_C" => Section 1 - outside the church
 //          | "M03_B" => Section 2 - inside the church catacombs
@@ -814,43 +826,223 @@
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
 //          0x65 => In-game (SinglePlayer and Mulltiplayer all modes)
 //          0x0 => Not in-game (MainMenu and booting game)
-// $722540: in game?
-// $7238B8: [PAL][32-bit (base) Pointer:HUDcontrol_Gear(preferred)]
-//          +0xC - [32-bit (layer-1) Pointer]
-//          .+0x0 - [32-bit (layer-2) Pointer] -> HUDcontrol_Gear-Player1
-//          .| - This pointer valid in both SinglePlayer and Multiplayer Mode
-//          ..+0x70 - [32-bit (layer-3) Pointer]
-//          ...+0xEC - [32-bit:EquippedWeapon_ReserveAmmo(display)]
-//          ...| - This value displays the reserve ammunition
-//          ...| - Functional values via [Pointer(EntityData_B):PlayerActorData] at $0x965cc4
-//          ...
-//          ...+0xF0 - [32-bit:EquippedWeapon_LoadedBullets(display)]
-//          ...| - This value regulates the amount of bullets icons displayed
-//          ...
-//          ...+0xF4 - [32-bit:EquippedWeapon_MagazineSize(display)]
-//          ...| - This value actually regulates the display of the bullet icons
-//          ...| - Practically this value can be used to determine the max allowed bullets, which can be loaded inside the gun
-//          ...
-//          ...+0xF8 - [32-bit:DynamiteCountInInventory(display)]
-//          ...| - This value displays how many dynamite bundles the player has in the inventory
+// $7230C8: [32-bit (base) Pointer:ActiveLuaScripts]
+//          +0x14 - [16-bit:ActiveLuaScriptCount]
+//          | - This is the same amount of "active" ListItems in [Array:LuaScriptPointers], below
+//          
+//          +0x18 - [32-bit (layer-1) Pointer] -> [Variable Size Array:LuaScriptPointers]
+//          | - List of [32-bit (layer-2) Pointer] -> [Struct:LuaScriptData]
+//          | - Definition of [Struct:LuaScriptData] below
+//          
+//          
+//          
+//          [Definition Struct:LuaScriptData |??-byte]
+//          |''''''''''''''''''''
+//          |+0x54 - [32-bit (layer-1) Pointer]
+//          |.+0x4 - [32-bit (layer-2) Pointer]
+//          |..+0x2 - [Variable Size ASCII:LuaScriptNameID]
+//          |..| - Practically this can be used to identify Cinematics (in-engine cutscenes), as they're controlled by a LuaScript. But due to this value only being accessible via a dynamic array, this is inadvisable.
+//          |..| - LuaScriptNameIDs listed below
+//          '
+//          
+//          # LuaScriptNameIDs (string)
+//          |(only lists IDs useful for achievement logic)
+//          |''''''''''''''''
+//          | "Levels\SinglePlayer\M03_Cemetery\Resources\Cinematics\"
+//          | + "M03_C_Gunslinger_Intro" => Cinematic introducing the Gunslinger EnemyType
+//          | ...
+//          '
+// $7238B8: [PAL][32-bit (base) Pointer:HUDcontrol(preferred)]
+//          
+//          +0x8 - [Lower4:ActiveMenuPointerIndex |16-bit]
+//          | - This index determines which pointer should be referenced to access the current active InGameMenuData in [Array:UIcontrolPointers].
+//          | - This value does not always reset back to a default value when all InGameMenus are closed.
+//          | - 'InGameMenu' refers to the PauseMenu and any subsequent menus accessed via the PauseMenu as well as InGamePopupMenus (eg. Lore or hints) not opened via the PauseMenu
+//          | - Practically this value should only be used to determine which pointer to use to access the current active InGameMenuData
+//          |
+//          | - Eg. SinglePlayer Mode: Opening PauseMenu (value = 0x2) -> Opening LoreMenu (value = 0x3)
+//          | - Eg. Multiplayer Mode: Any player opens PauseMenu (value = 0x3) -> Opening LoreMenu (value = 0x4)
+//          |
+//          | 0x1 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_A], this pointer always stores HUDcontrol_Gear-Player1
+//          | 0x2 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_B], this pointer always stores HUDcontrol_Gear-Player2 in Multiplayer Mode, in SinglePlayer Mode this stores InGameMenuData
+//          | 0x3 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_C], this pointer always stores InGameMenuData
+//          | 0x4 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_D], this pointer always stores InGameMenuData
+//          | ...
+//          
+//          
+//          +0xC - [32-bit (layer-1) Pointer] -> [Variable Size Array:UIcontrolPointers]
 //          .
+//          ._____HUDcontrol_Gear-Player1_____
+//          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
+//          .| - This pointer always points to [Struct:HUDcontrol_Gear-Player1] when in SinglePlayer OR Multiplayer Mode
 //          .
-//          .+0xC - [32-bit (layer-2) Pointer] -> HUDcontrol_Gear-Player2
-//          .| - This pointer valid iMultiplayer Mode
-//          ..+0x70 - [32-bit (layer-3) Pointer]
-//          ...+0xEC - [32-bit:EquippedWeapon_ReserveAmmo(display)]
-//          ...| - This value displays the reserve ammunition
-//          ...| - Functional values via [Pointer(EntityData_B):PlayerActorData] at $0x965cc4
-//          ...
-//          ...+0xF0 - [32-bit:EquippedWeapon_LoadedBullets(display)]
-//          ...| - This value regulates the amount of bullets icons displayed
-//          ...
-//          ...+0xF4 - [32-bit:EquippedWeapon_MagazineSize(display)]
-//          ...| - This value actually regulates the display of the bullet icons
-//          ...| - Practically this value can be used to determine the max allowed bullets, which can be loaded inside the gun
-//          ...
-//          ...+0xF8 - [32-bit:DynamiteCountInInventory(display)]
-//          ...| - This value displays how many dynamite bundles the player has in the inventory
+//          ._____HUDcontrol_Gear-Player2_____ OR _____InGameMenuData_____
+//          .+0x4 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_B]
+//          .| - This pointer only points to [Struct:HUDcontrol_Gear-Player2] when in Multiplayer Mode with 2nd player active
+//          .| - This pointer will point to [Struct:InGameMenu] when in SinglePlayer Mode
+//          .
+//          ._____InGameMenuData_____
+//          .+0x8 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_C]
+//          .| - This pointer will point to [Struct:InGameMenu] when in any Mode
+//          .
+//          ._____InGameMenuData_____
+//          .+0xC - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_D]
+//          .| - This pointer will point to [Struct:InGameMenu] when in any Mode
+//          
+//          
+//          [Definition Struct:HUDcontrol_Gear |??-byte]
+//          |''''''''''''''''''''
+//          | - "HUDcontrol_Gear" refers to the top-right HUD for ammo and throwables
+//          |
+//          |+0x30 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:UItype] = "HUD"
+//          |
+//          |+0x70 - [32-bit (layer-1) Pointer]
+//          |.+0xEC - [32-bit:EquippedWeapon_ReserveAmmo(display)]
+//          |.| - This value displays the reserve ammunition
+//          |.| - Functional values via [Pointer(EntityData_B):PlayerActorData] at $0x965cc4
+//          |.
+//          |.+0xF0 - [32-bit:EquippedWeapon_LoadedBullets(display)]
+//          |.| - This value regulates the amount of bullets icons displayed
+//          |.
+//          |.+0xF4 - [32-bit:EquippedWeapon_MagazineSize(display)]
+//          |.| - This value actually regulates the display of the bullet icons
+//          |.| - Practically this value can be used to determine the max allowed bullets, which can be loaded inside the gun
+//          |.
+//          |.+0xF8 - [32-bit:ThrowableCountInInventory(display)]
+//          |.| - This value displays how many dynamite bundles the player has in the inventory
+//          '
+//          
+//          [Definition Struct:InGameMenu.PausedFrame |??-byte]
+//          |''''''''''''''''''''
+//          | - "InGameMenu.PausedFrame" refers to the PauseMenu
+//          |
+//          |+0x30 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:UItype] = "Pause"
+//          |
+//          |_____SelectedText_____
+//          |+0xC - [32-bit (layer-1) Pointer]
+//          |.+0x4 - [32-bit (layer-2) Pointer]
+//          |..
+//          |..+0xC8 - [8-bit:SelectableTextCount |16-bit]
+//          |..| - This count is equal to the amount of entries in the [Array:SelectableTextPointers], below
+//          |..
+//          |..+0xCC - [20-byte Array:SelectableTextPointers]
+//          |..| - This array stores (5x) [32-bit pointers],for PauseFrame, which points to data of the selected text. (Stores a bitFlag for when the textHighlight is active)
+//          |..
+//          |..+0xD8 - [Lower4:SelectedTextIndex |16-bit]
+//          |..| 0x0 => Top most text is selected (Resume Game)
+//          |..| 0x4 => bottom most text is selected (Quit Game)
+//          |
+//          |
+//          |+0x118 - [32-bit (layer-1) Pointer]
+//          |.+0x30 - [32-bit (layer-2) Pointer]
+//          |..+0x2 - [Variable Size ASCII:InGameMenuType] = "Frame"
+//          |.
+//          |._____TextLookupKeyID_____
+//          |.+0x6C - [32-bit:FrameTitle_TextLookupKeyID]
+//          |.| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+//          |.| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+//          |.| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text]
+//          |.| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text]
+//          |.| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+//          |.|
+//          |.| - Practically this can be used to identify which InGameMenu is displayed
+//          |.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+//          |.| - TextLookupKeyIDs listed below
+//          '
+//          
+//          [Definition Struct:InGameMenu.Frame |??-byte]
+//          |''''''''''''''''''''
+//          | - "InGameMenu.Frame" refers to any InGameMenu with a title + frame, which is not the PauseMenu (refer to TextLookupKeyIDs below)
+//          |
+//          |_____SelectedText_____
+//          |+0xC - [32-bit (layer-1) Pointer]
+//          |.+0x98 - [8-bit:SelectableTextCount |16-bit]
+//          |.| - This count is equal to the amount of entries in the [Array:SelectableTextPointers], below
+//          |.
+//          |.+0x9C - [Variable Size Array:SelectableTextPointers]
+//          |.| - Based on which Frame is being displayed (refer to TextLookupKeyIDs), the ListItems are different
+//          |.| - This array stores [32-bit pointers], which points to data of the selected text. (Stores a bitFlag for when the textHighlight is active)
+//          |.
+//          |.+0xA8 - [Lower4:SelectedTextIndex |16-bit]
+//          |.| 0x0 => Top most text is selected
+//          |.| 0x1,0x2,... => lower text is selected
+//          |
+//          |
+//          |+0x30 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
+//          |
+//          |
+//          |+0xB8 - [32-bit (layer-1) Pointer] -> FrameData
+//          |.+0x30 - [32-bit (layer-2) Pointer]
+//          |..+0x2 - [Variable Size ASCII:InGameMenuType] = "Frame"
+//          |.
+//          |._____TextLookupKeyID_____
+//          |.+0x6C - [32-bit:FrameTitle_TextLookupKeyID]
+//          |.| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+//          |.| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+//          |.| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text]
+//          |.| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text]
+//          |.| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+//          |.|
+//          |.| - Practically this can be used to identify which InGameMenu is displayed
+//          |.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+//          |.| - TextLookupKeyIDs listed below
+//          '
+//          
+//          [Definition Struct:InGameMenu.MessageBox |??-byte]
+//          |''''''''''''''''''''
+//          | - "InGameMenu.MessageBox" refers to the text inside the InGameMenu
+//          |
+//          |+0x30 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
+//          |
+//          |_____TextLookupKeyID_____
+//          |+0xC - [32-bit (layer-1) Pointer]
+//          |.+0x4 - [32-bit (layer-2) Pointer]
+//          |..
+//          |..+0x30 - [32-bit (layer-1) Pointer]
+//          |...+0x2 - [Variable Size ASCII:DisplayedText]
+//          |...| - Changing this ASCII does not re-render the text on screen.
+//          |...| - This ASCII is the displayed text all capitalized
+//          |...| - This ASCII is language-dependent
+//          |..
+//          |..+0x48 - [32-bit:MessageBoxText_TextLookupKeyID]
+//          |..| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+//          |..| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+//          |..| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text]
+//          |..| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text]
+//          |..| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+//          |..|
+//          |..| - Practically this can be used to identify what (non-selectable) text is displayed on the InGameMenu
+//          |..| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+//          |..| - TextLookupKeyIDs listed below
+//          '
+//          
+//          [Definition Struct:InGameMenu.Powers |??-byte]
+//          |''''''''''''''''''''
+//          | - "InGameMenu.Powers" refers to the PowersMenu
+//          |
+//          |+0x30 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:UItype] = "brands"
+//          '
+//          
+//          # TextLookupKeyIDs (hex)
+//          |(only lists IDs useful for achievement logic)
+//          |'''''''''''''''''''
+//          |---FrameTitle--- (InGameMenus with a title)
+//          | 0xe5e853d8 => "Paused" - PauseMenu
+//          | 0xfb67daf4 => "Lore" - PauseMenu->LoreMenu
+//          | 0xdea6139b => "Ammo Display" - (lore)
+//          | 0x33e14bf8 => "Restart" - PauseMenu->RestartConfirmationMenu
+//          | 0x8b239878 => "Quit" - PauseMenu->QuitConfirmationMenu
+//          | 0x9eb09a69 => "New Power" - NewPowerUnlockMenu
+//          | ...
+//          |---MessageBoxText---
+//          | 0xbe5d5443 => "Blood Frenzy" - PowerRune (NewPowerUnlockMenu)
+//          | ...
+//          '
 // $727318: [8-bit] gunslinger map id
 // $728FA0: [PAL][10-byte ASCII:SelectedPlayerProfileName]
 //          - Max size is 10 characters
@@ -868,7 +1060,6 @@
 //          --| currentTime = [32-bit:TimerControl(functional)]
 //          --| timeAtMatchEnd = [32-bit:TimerControl(functional)] + ([32-bit:MatchDuration] * 60 * 1,000)
 //          --| timeLeftInMatch =  timeAtMatchEnd - currentTime
-// $73B414: timer
 // $73B430: [PAL][8-bit:GameState |32-bit]
 //          - 0x0 => Player is in control of PlayerCharacter. Also 0x0 when in MainMenu
 //          - 0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
@@ -943,49 +1134,34 @@
 //          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x70 - [Struct(Coordinates):CameraLocation)]
 // $763D4C: [32-bit] turn ability flag
-// $77C7D0: something?? active stuff??
-//          
-//          Index to start of this stuff!!!
-// $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol_Gear(alt)]
-//          - Prefer using [Pointer:HUDcontrol_Gear(preferred)] at $0x7238b8
-// $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(alt)]
+// $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol(alt)]
+//          - Prefer using [Pointer:HUDcontrol(preferred)] at $0x7238b8
+// $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
-//          - Prefer using [32-bit:Checkpoint_RespawnPointID(preferred)] at $0x9114b4
-// $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
-//          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
-//          
-//          +0x2 - [13-byte ASCII:CheckpointID]
-//          | - Documentation at $0x96d022
-// $8FEAEC: [32-bit] Blood frenzy ability flag
-// $8FFAC8: [8-bit] main menu selection
-// $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
-//          +0x2 - [Variable Size ASCII:LevelID(alt)]
-//          | - Prefer using [Pointer:LevelID(preferred)] at $0x721820
-// $911444: [PAL][Lower4:DifficultyID(alt1) |32-bit]
-//          - Identical to [Lower4:DifficultyID] at $0x965c7c
-// $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
-//          - Identical to [Lower4:DifficultyID] at $0x965c7c
-// $9114B4: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
-//          - String CheckpointIDs accessed via [Pointer:CheckpointData_1] at $0x807840
-//          - RespawnPointIDs listed below
+//          - This Checkpoint_RespawnPointID only changes when a new Checkpoint initializes OR when non is active.
 //          
 //          # RespawnPointIDs (hex) - CheckpointIDs (string)
 //          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
 //          |''''''''''''''''''''''''
-//          | 0x0 => No checkpoint reached/initialized
+//          | 0x0 => No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu
 //          |
 //          |===Chapter 1, "The Wrong Train"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "WrongTrain_A"---
+//          | 0x4D9 - "Checkpoint_1" => Start of Chapter
+//          | 0x50C - "Checkpoint_2" => After acquiring the Redeemer Pistol
+//          | ---StoryChapterSection "WrongTrain_B"---
+//          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x333 - "Checkpoint_2" => Waking up after vault explosion. Cassidy wakes up the player
 //          |===Chapter 2, "Ride Like The Devil"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "Hub_A"---
+//          | 0x26C - "Checkpoint_1" => Start of Chapter
+//          | 0x565 - "Checkpoint_2" => Start of Boss Battle
 //          |===Chapter 3, "Boneyard"===
 //          | ---StoryChapterSection "M03_C"---
 //          | 0x328 - "Checkpoint_1" => At start of Chapter
 //          | 0x3DF - "Checkpoint_2" => Before Mark of Evil spawns near the church
 //          | ---StoryChapterSection "M03_B"---
-//          | 0x344 - "Checkpoint_1" => Start of catacombs
+//          | 0x344 - "Checkpoint_1" => Start of StoryChapterSection
 //          | 0x342 - "Checkpoint_2" => Entering catacombs arena
 //          | 0x362 - "Checkpoint_3" => Catacombs arena, after Banshee intro
 //          | 0x362 - "Checkpoint_4" => Catacombs arena, after defeating the Banshees
@@ -1042,6 +1218,29 @@
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
 //          '
+// $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
+//          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
+//          
+//          +0x2 - [13-byte ASCII:CheckpointID]
+//          | - Documentation at $0x96d022
+// $8FEAEC: [32-bit] Blood frenzy ability flag
+// $8FFAC8: [8-bit] main menu selection
+// $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
+//          +0x2 - [Variable Size ASCII:LevelID(alt)]
+//          | - Prefer using [Pointer:LevelID(preferred)] at $0x721820
+// $911444: [PAL][Lower4:DifficultyID(alt1) |32-bit]
+//          - Identical to [Lower4:DifficultyID] at $0x965c7c
+// $91145C: [PAL][Lower4:DifficultyID(alt2) |32-bit]
+//          - Identical to [Lower4:DifficultyID] at $0x965c7c
+// $911474: [PAL][Lower4:PlayerCount(preferred) |32-bit]
+//          0x1 => Singleplayer || Versus Mode with 1 player
+//          0x2 => Multiplayer Coop || Versus Mode with 2 players
+// $91147C: [PAL][Lower4:PlayerCount(alt1) |32-bit]
+// $911480: [PAL][Lower4:PlayerCount(alt2) |16-bit]
+// $9114B4: [PAL][32-bit:Checkpoint_RespawnPointID(alt)]
+//          - String CheckpointIDs accessed via [Pointer:CheckpointData_1] at $0x807840
+//          - This Checkpoint_RespawnPointID changes to other "transition" values when a new checkpoint initializes. Thus prefer using [32-bit:Checkpoint_RespawnPointID(preferred)] at $0x80783c
+//          - RespawnPointIDs listed at $0x80783c
 // $9114B8: [PAL][32-bit (base) Pointer:CheckpointData_0]
 //          - This pointer points to a memRegion with static data (fixed memory location)
 //          
@@ -1057,6 +1256,11 @@
 //          | - Time in minutes (eg. 0x5 = 5 minutes, 0x7 => 7 minutes...)
 //          | - 0x0 => No Time limit
 //          | - This value determines the total amount of minutes the match lasts. Changing this value during a match, will update the timer display accordingly (eg. Time set to 10 (0xA) minutes  --> manual change this value 7 (0x7) --> Timer display updates)
+// $9114F0: [PAL][Lower4:GameMode |32-bit]
+//          - This value only changes when loading a level
+//          0x0 => Singleplayer Mode || Multiplayer Coop Mode
+//          0x1 => Gunslinger Mode
+//          0x3 => Multiplayer Versus Mode
 // $911508: [32-bit:MatchDuration(alt)]
 //          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
 // $911768: 8-bit which pointer is used for the current HUD
@@ -1237,15 +1441,20 @@
 //          .+0x2 - [Variable Size ASCII:EntityNameID]
 //          .| - ASCII = "Chaz", this is a short name for Jericho Cross (PlayerCharacter)
 //          
-//          
 //          _____EntityComponents_____
 //          +0x58 - [32-bit (layer-1) Pointer:EntityComponentsDictionary] -> [Dictionary:EntityComponents]
+//          | - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:EntityComponentData]
+//          | - This dictionary is always sorted by the [32-bit:DictionaryKey]
+//          | - Based on GameMode, different EntityComponents are stored inside the dictionary or in different order
+//          | [Struct:EntityComponent.InventoryComponent].[32-bit:DictionaryKey] = 0x49
+//          | [Struct:EntityComponent.HealthComponent(player)].[32-bit:DictionaryKey] = 0x4B
+//          | [Struct:EntityComponent.AttackerManagerComponent].[32-bit:DictionaryKey] = 0x64
+//          | [Struct:EntityComponent.CharacterStateMachineComponent].[32-bit:DictionaryKey] = 0x7B
+//          .
 //          .+0x4C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.InventoryComponent]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x49
 //          .| - Definition of [Struct:EntityComponent.InventoryComponent] below
 //          .
 //          .+0x5C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.CharacterStateMachineComponent]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x7B
 //          .| - This pointer is only valid when playing Multiplayer Mode
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
 //          ...+0x0 - [32-bit (layer-4) Pointer]
@@ -1256,7 +1465,6 @@
 //          ......| - Definition of [Struct:Coordinates] below
 //          .
 //          .+0x64 - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.CharacterStateMachineComponent]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x7B
 //          .| - This pointer is only valid when playing SinglePlayer Mode
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
 //          ...+0x0 - [32-bit (layer-4) Pointer]
@@ -1267,12 +1475,10 @@
 //          ......| - Definition of [Struct:Coordinates] below
 //          .
 //          .+0x74 - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.HealthComponent(player)]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
 //          .| - This pointer is only valid when playing Multiplayer Cooperative Mode
 //          .| - Definition of [Struct:EntityComponent.HealthComponent(player)] below
 //          .
 //          .+0x7C - [32-bit (layer-2) Pointer:EntityComponentData] -> [Struct:EntityComponent.HealthComponent(player)]
-//          .| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
 //          .| - This pointer is only valid when playing SinglePlayer Mode OR Multiplayer Versus Mode
 //          .| - Definition of [Struct:EntityComponent.HealthComponent(player)] below
 //          
@@ -1287,6 +1493,7 @@
 //          ...+x2 - [Variable Size ASCII:Equipped_WeaponNameID]
 //          ...| - WeaponNameIDs listed below
 //          ..
+//          .._____EntityWeaponComponents_A_____
 //          ..+0x58 - [32-bit (layer-3) Pointer] -> [Dictionary:EntityWeaponComponents_A]
 //          ..| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:EntityWeaponComponentData]
 //          ..| - The ListItems get reordered when unlocking certain gameplay mechanics. (eg. when unlocking dynamite, some of the ListItems get reordered)
@@ -1310,6 +1517,7 @@
 //          ...| - This pointer is then only valid for the RedeemerRevolver as well as the CarbineRifle
 //          ...| - Once the player has unlocked dynamite, refer to [Pointer:EntityWeaponComponent_NormalWeapon(dynamiteUnlocked)]
 //          .
+//          ._____EntityWeaponComponents_B_____
 //          .+0xC - [32-bit (layer-2) Pointer]
 //          ..+0x0 - [32-bit (layer-3) Pointer]
 //          ...+0x58 - [32-bit (layer-4) Pointer] -> [Dictionary:EntityWeaponComponents_B]
@@ -1334,7 +1542,7 @@
 //          |...+0x2 - [11-byte ASCII] = "active_rune"
 //          |..
 //          |..+0xC - [32-bit (layer-3) Pointer]
-//          |...+0x2 - [Variable Size ASCII:PowerRuneNameID]
+//          |...+0x2 - [Variable Size ASCII:Selected_PowerRuneNameID]
 //          |...| - PowerRuneNameIDs listed below
 //          |.
 //          |._____RuneUnlocks + RuneLogicData_____
@@ -1354,10 +1562,18 @@
 //          |.
 //          |.+0x58 - [32-bit (layer-2) Pointer] -> [Dictionary:PowerRuneComponents]
 //          |.| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:PowerRuneComponentData]
-//          |.| - [Struct:PowerRuneComponent.RuneComponent].[32-bit:DictionaryKey] = 0x82
-//          |.| - [Struct:PowerRuneComponent.MysticArmourRuneComponent].[32-bit:DictionaryKey] = 0x8D
-//          |.| - ...
-//          |
+//          |.| [Struct:PowerRuneComponent.RuneComponent].[32-bit:DictionaryKey] = 0x82, (Used by BloodVisionRune and VampireJumpRune)
+//          |.| [Struct:PowerRuneComponent.DamageRuneComponent].[32-bit:DictionaryKey] = 0x86, (Used by SilverBrandRune and BloodFrenzyRune)
+//          |.| [Struct:PowerRuneComponent.VampireShieldRuneComponent].[32-bit:DictionaryKey] = 0x85
+//          |.| [Struct:PowerRuneComponent.SoulStealerRuneComponent].[32-bit:DictionaryKey] = 0x87
+//          |.| [Struct:PowerRuneComponent.VindicatorRuneComponent].[32-bit:DictionaryKey] = 0x88
+//          |.| [Struct:PowerRuneComponent.NullRuneComponent].[32-bit:DictionaryKey] = 0x89
+//          |.| [Struct:PowerRuneComponent.TurnRuneComponent].[32-bit:DictionaryKey] = 0x8B
+//          |.| [Struct:PowerRuneComponent.FearRuneComponent].[32-bit:DictionaryKey] = 0x8C
+//          |.| [Struct:PowerRuneComponent.BlackShroudRuneComponent].[32-bit:DictionaryKey] = 0x8D
+//          |.| [Struct:PowerRuneComponent.MysticArmourRuneComponent].[32-bit:DictionaryKey] = 0x8D
+//          |.| - [Struct:PowerRuneComponent] stores logic for that PowerRune (eg. IsPowerActiveFlag, PowerDuration, ReputationType, ReputationPointsTillPowerUnlock...)
+//          |.| - Definition of [Struct:PowerRuneComponent] below
 //          |
 //          |+0x4 - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_B]
 //          |+0x8 - [32-bit (layer-1) Pointer:ListItem_PowerRune_Ptr_C]
@@ -1366,27 +1582,56 @@
 //          
 //          [Definition Struct:PowerRuneComponent.RuneComponent |256-byte]
 //          |'''''''''''''''''''''''''''''
-//          |+0x8 - [32-bit (layer-xxx) Pointer]
+//          |+0x8 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:PowerRuneComponentName] = "RuneComponent"
 //          |
-//          |+0x20 - [32-bit (layer-xxx) Pointer]
+//          |+0x20 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:PowerRuneNameID]
 //          |.| - PowerRuneNameIDs listed below
 //          |
-//          |+0x74 - [32-bit:ReputationPointsTillPowerUnlock]
-//          || - This value regulates when the Player can unlock this power, when this value == [32-bit:RequiredReputationPoints], then the game unlocks this Power
+//          |+0x74 - [32-bit:ReputationPoints]
+//          || - This value regulates when the Player can unlock this power, when this value == [32-bit:RequiredReputationPoints], then the Player unlocks this Power
 //          || - This value also indirectly regulates the PowerSelectionUI
 //          |
-//          |+0x80 - [32-bit (layer-xxx) Pointer]
+//          |+0x80 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:ReputationType]
 //          |.| - ReputationTypes: "Evil", "Good", "Neutral"
-//          
-//          |+0x84 - [32-bit:RequiredReputationPoints]
+//          |
+//          |+0x84 - [32-bit:RequiredReputationPointsToUnlockPower]
+//          || - This value regulates when the Player can unlock this power, when [32-bit:ReputationPoints] == this value, then the Player unlocks this Power
 //          |
 //          |+0xFC - [Float:PowerTimeLeft |32-bit]
 //          || - Time in seconds; Countdown timer
 //          || FloatValue = 0.0 => Power is inactive
 //          || FloatValue > 0.0 => Power is active
+//          '
+//          
+//          [Definition Struct:PowerRuneComponent.MysticArmourRuneComponent |??-byte]
+//          |'''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:PowerRuneComponentName] = "MysticArmourRuneComponent"
+//          |
+//          |+0x20 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:PowerRuneNameID]
+//          |.| - PowerRuneNameIDs listed below
+//          |
+//          |+0x74 - [32-bit:ReputationPoints]
+//          || - This value regulates when the Player can unlock this power, when this value == [32-bit:RequiredReputationPoints], then the Player unlocks this Power
+//          || - This value also indirectly regulates the PowerSelectionUI
+//          |
+//          |+0x80 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:ReputationType]
+//          |.| - ReputationTypes: "Evil", "Good", "Neutral"
+//          |
+//          |+0x84 - [32-bit:RequiredReputationPointsToUnlockPower]
+//          || - This value regulates when the Player can unlock this power, when [32-bit:ReputationPoints] == this value, then the Player unlocks this Power
+//          |
+//          |+0xE8 - [Float:PowerTimeLeft |32-bit]
+//          || - Time in seconds; Countdown timer
+//          || FloatValue = 0.0 => Power is inactive
+//          || FloatValue > 0.0 => Power is active
+//          |
+//          |+0x108 - [bit0 BitFlag:IsPower_MysticArmour_Active |32-bit]
 //          '
 //          
 //          [Definition Struct:EntityComponent.CharacterStateMachineComponent |??-byte]
@@ -1413,15 +1658,31 @@
 //          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxHP; 0.0 = Death
 //          || - Reference [Float:PlayerHealth(display)] at $0x965d2c
 //          |
-//          |+0xA0 - [Float:BloodShield(functional) |32-bit]
+//          |+0xA0 - [Float:VampireShield(functional) |32-bit]
 //          || - FloatRange: [0.0 --- 100.0]; 100.0 = maxShield; 0.0 = empty
-//          || - Reference [Float:BloodShield(display)] at $0x965d2c
+//          || - Reference [Float:VampireShield(display)] at $0x965d2c
 //          |
 //          |+0xFC - [Float:BloodPowerGauge(functional) |32-bit]
 //          || - FloatRange: [0.0 --- 30.0]; 30.0 = maxBloodPower; 0.0 = empty
 //          || - Increments when picking up BloodClouds
 //          || - When at 30.0, the player can activate a Power, returning this value back to 0.0
 //          || - Reference |[Float:BloodPowerGauge(display)] at $0x965d2c
+//          '
+//          
+//          [Definition Struct:EntityComponent.AttackerManagerComponent |??-byte]
+//          |''''''''''''''''''''''''''''''
+//          |+0x8 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "AttackerManagerComponent"
+//          |
+//          |+0x1C - [32-bit (layer-1) Pointer]
+//          |.+0x0 - [32-bit (layer-2) Pointer]
+//          |..+0x0 - [32-bit (layer-3) Pointer] -> [Struct:EntityData-AttackingEnemyTypeA]
+//          |...+0x44 - [32-bit (layer-4) Pointer]
+//          |....+0x2 - [Variable Size ASCII:EntityNameID]
+//          |....| - This lists the name of the attacking/aggro'd entity
+//          |
+//          |+0x24 - [32-bit:EnemyCountAttackingEntity]
+//          || - This counts how many enemies are attacking/aggro'd to this entity
 //          '
 //          
 //          [Definition Struct:EntityWeaponComponent.WeaponComponent(weapon) |??-byte]
@@ -1457,15 +1718,15 @@
 //          |.+x2 - [Variable Size ASCII:WeaponNameID]
 //          |.| - WeaponNameIDs listed below
 //          |
-//          |+0x74 - [32-bit:DynamiteCountInInventory(functional-1)]
+//          |+0x74 - [32-bit:ThrowableCountInInventory(functional-1)]
 //          || - This value is always at 1 as long as dynamite bundles left in inventory > 0
 //          || - Manually changing this value, puts that amount of dynamite bundles in the player's inventory, but this is not the intended design. (eg. manually placing 0x10 on this value, puts 16 dynamite bundles in the inventory)
-//          || - Total number of dynamite bundles = [32-bit:DynamiteCountInInventory(functional-1)] + [32-bit:DynamiteCountInInventory(functional-2)]
+//          || - Total number of dynamite bundles = [32-bit:ThrowableCountInInventory(functional-1)] + [32-bit:ThrowableCountInInventory(functional-2)]
 //          |
-//          |+0x1D8 - [32-bit:DynamiteCountInInventory(functional-2)]
+//          |+0x1D8 - [32-bit:ThrowableCountInInventory(functional-2)]
 //          || - This value regulates the amount of dynamite bundles in the player's inventory
 //          || - Freezing this value above 0, gives the player unlimited dynamite bundles
-//          || - This count is always 1 count lower than the count shown on the [32-bit:DynamiteCountInInventory(display)] ($0x7238b8)
+//          || - This count is always 1 count lower than the count shown on the [32-bit:ThrowableCountInInventory(display)] ($0x7238b8)
 //          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more dynamite bundle, afterwards this functional value remains at 0 and the display value becomes 0.
 //          '
 //          
@@ -1493,6 +1754,7 @@
 //          '
 //          
 //          # PowerRuneNameIDs (string)
+//          |(list complete)(grouped by ReputationType)
 //          |''''''''''''''''''
 //          |---Neutral Powers--- (acquired independent from Good/Evil choices)
 //          | "VampireShieldRune => Blood Shield
@@ -1521,7 +1783,7 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This bitset handles which Lore sections are unlocked in the PauseMenu->LoreMenu
 //          - These flags unlock once the corresponding LorePopup is shown on screen for the first time for the selected PlayerProfile
-//          - This bitset is saved to the PlayerProfileSave. When doing new game, all previously unlocked flags will still remain unlocked
+//          - This bitset is saved to the PlayerProfileSave. When starting a new game, all previously unlocked flags will still remain unlocked
 //          
 //          [Definition Bitset:LoreUnlocks |3-byte]
 //          |'''''''''''''''''''''
@@ -1601,14 +1863,15 @@
 // $965D2C: [PAL][32-bit (base) Pointer:HUDcontrol_Health-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
+//          _____PlayerHealth_HUD_____ (top-left)
 //          +0xC - [32-bit (layer-1) Pointer]
 //          .+0x18 - [32-bit (layer-2) Pointer]
 //          ..+0xF0 - [Float:PlayerHealth(display) |32-bit]
 //          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxHP; 0.0 = death
 //          ..| - Reference [Float:PlayerHealth(functional)] at $0x965cc4
-//          ..+0xF4 - [Float:BloodShield(display) |32-bit]
+//          ..+0xF4 - [Float:VampireShield(display) |32-bit]
 //          ..| - FloatRange: [1.0 --- 0.0]; 1.0 = maxShield; 0.0 = empty
-//          ..| - Reference [Float:BloodShield(functional)] $0x965cc4
+//          ..| - Reference [Float:VampireShield(functional)] $0x965cc4
 //          ..
 //          ..
 //          ..+0xF8 - [32-bit (layer-3) Pointer] -> Blood Power Gauge
@@ -1625,7 +1888,7 @@
 //          ...| 0xC4988D => Red color, Evil Power
 //          ...| 0x1919D1 => Blue color, Good Power
 //          ...
-//          ...+0xE8 - [Float:HealthUI_BloodPowerTimeLeft(display)(alt2) |32-bit]
+//          ...+0xE8 - [Float:HealthUI_PowerTimeLeft(display)(alt2) |32-bit]
 //          ...| - FloatRange [1.0 --- 0.0]; 1.0 => Power time start; 0.0 => Power over
 //          ...
 //          ...+0xF0 - [Lower4:PowerDurationBarsLeft(display) |32-bit]
@@ -1634,7 +1897,7 @@
 //          ...| - When the BloodPower starts, this value starts a 0x7 (= 8 bars), this decrements by 1 each ... milliseconds. At 0x0 there is still 1 more bar displayed.
 //          .
 //          .
-//          .
+//          ._____BossHP_HUD_____ (top-middle)
 //          .+0x8 - [32-bit (layer-2) Pointer]
 //          ..+0xC - [32-bit (layer-3) Pointer]
 //          ...+0x2C - [32-bit (layer-4) Pointer]
@@ -1650,43 +1913,47 @@
 //          ....
 //          ....+0xF4 - [32-bit (layer-5) Pointer:BossEntityData] -> [Struct:EntityData]
 //          ....| - Defintion of [Struct:EntityData] at $0x721788
-//          .....+0x58 - [32-bit (layer-6) Pointer:BossEntityComponents] -> [Dictionary:EntityComponents] List of [Struct:ListItem_EntityComponent]
-//          .....| - EntityComponents may not be always in the same order in the list, between Chapters
+//          .....+0x58 - [32-bit (layer-6) Pointer] -> [Dictionary:BossEntityComponents]
+//          .....| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:PowerRuneComponentData]
+//          .....| - Based on the Boss and Chapter more or less BossEntityComponents are stored inside this dictionary
+//          .....| - This dictionary is always sorted by the [32-bit:DictionaryKey]
+//          .....| [Struct:EntityComponent.HealthComponent(boss)].[32-bit:DictionaryKey] = 0x4B
 //          ......
 //          ......+0x4C - [32-bit (layer-7) Pointer:BossEntityComponentData_A] -> [Struct:EntityComponent.HealthComponent(boss)]
-//          ......| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
-//          ......| - This pointer is only valid for Chapter 1
-//          .......+0x98 - [Float:BossHP(functional) |32-bit]
+//          ......| - This pointer is only valid for the Boss in Chapter 1
+//          ......| Definition of [Struct:EntityComponent.HealthComponent(boss)] below
 //          ......
 //          ......+0x5C - [32-bit (layer-7) Pointer:BossEntityComponentData_B] -> [Struct:EntityComponent.HealthComponent(boss)]
-//          ......| - The [32-bit:DictionaryKey] for this [Dictionary:EntityComponents].[Struct:ListItem_EntityComponent] = 0x4B
-//          ......| - This pointer is only valid for Chapter 2
-//          .......+0x98 - [Float:BossHP(functional) |32-bit]
+//          ......| - This pointer is only valid for the Boss in Chapter 2
+//          ......| Definition of [Struct:EntityComponent.HealthComponent(boss)] below
 //          .
 //          .
-//          .
+//          ._____PowerSelectionUI_HUD_____ (bottom-left)
 //          .+0x10 - [32-bit (layer-2) Pointer] -> [Struct:HUDcontrol_PowerSelectionUI |??-byte]
 //          ..+0xC4 - [Float:PowerSelectionUI_Opacity |32-bit]
 //          ...| - FloatRange [1.0 --- 0.0]; 1.0 => Fully visible; 0.0 => Invisible/hidden
 //          ...| - The PowerSelectionUI is dynamically displayed and hidden during gameplay
+//          ..
 //          ..+0xE8 - [32-bit (layer-3) Pointer]
-//          ..| - Changing this pointer so it points to another BloodPowerID (string), will update the middle/selected power icon of the bottom-left HUD accordingly
-//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Selected_BloodPowerID(display)]
-//          ...| - BloodPowerIDs listed below
+//          ..| - Changing this pointer so it points to another PowerRuneNameID (string), will update the middle/selected power icon of the bottom-left HUD accordingly
+//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Selected_PowerRuneNameID(display)]
+//          ...| - PowerRuneNameIDs listed at $0x965cc4
+//          ..
 //          ..+0xF0 - [32-bit (layer-3) Pointer]
-//          ..| - Changing this pointer so it points to another BloodPowerID (string), will update the right power icon of the bottom-left HUD accordingly
-//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Right_BloodPowerID(display)]
-//          ...| - BloodPowerIDs listed below
+//          ..| - Changing this pointer so it points to another PowerRuneNameID (string), will update the right power icon of the bottom-left HUD accordingly
+//          ...+0x2 - [Variable Size ASCII:PowerSelectionUI_Right_PowerRuneNameID(display)]
+//          ...| - PowerRuneNameIDs listed at $0x965cc4
 //          .
 //          .
 //          .+0x78 - [32-bit (layer-2) Pointer]
-//          .| - Changing this pointer so it points to another BloodPowerID (string), will update the top-left HUD power icon accordingly
-//          ..+0x2 - [Variable Size ASCII:HealthUI_Selected_BloodPowerID(display)]
-//          ..| - BloodPowerIDs listed below
+//          .| - Changing this pointer so it points to another PowerRuneNameID (string), will update the top-left HUD power icon accordingly
+//          ..+0x2 - [Variable Size ASCII:HealthUI_Selected_PowerRuneNameID(display)]
+//          ..| - PowerRuneNameIDs listed at $0x965cc4
 //          .
 //          .
-//          .+0x174 - [Float:HealthUI_BloodPowerTimeLeft(display)(alt1) |32-bit]
+//          .+0x174 - [Float:HealthUI_PowerTimeLeft(display)(alt1) |32-bit]
 //          .| - FloatRange [1.0 --- 0.0]; 1.0 => Power time start; 0.0 => Power over
+//          
 //          
 //          [Definition Struct:RGBhex |24-bit]
 //          |'''''''''''''''
@@ -1695,18 +1962,11 @@
 //          |+0x2 - [8-bit:Blue]
 //          '
 //          
-//          # BloodPowerIDs (string)
-//          |'''''''''''''''''
-//          |---Good Powers---
-//          | "SilverBrandRune" => Silver Bullet
-//          | "FearRune" => Fear
-//          | "MysticArmourRune" => Mystic Armor
-//          | "VindicatorRune" => Vindicator
-//          |---Evil Powers---
-//          | "BloodFrenzyRune" => Blood Frenzy
-//          | "TurnRune" => Turn
-//          | "BlackShroudRune" => Black Shroud
-//          | "SoulStealerRune" => Soul Stealer
+//          [Definition Struct:EntityComponent.HealthComponent(boss) |??-byte]
+//          |'''''''''''''''
+//          |+0x98 - [Float:BossHP(functional) |32-bit]
+//          || - 0.0 => death
+//          || - eg. Chapter 1 Boss on Cowboy difficulty: 1000.0
 //          '
 // $965D30: [PAL][300-byte Struct(PlayerData):Player-2]
 //          ===========================================
@@ -1811,32 +2071,17 @@
 // $9E8744: [Pointer]
 //          00 = Gunslinger data array start
 // $9FF2DC: [32-bit] Fear ability flag
-// $A66348: controls text to dispaly in msgBox
-//          Changing this to a valid key will switch text in msgBox
-//          Key of Dictionary entry
 // $A6F0B4: [32-bit] final boss
 //          3 = casside
 //          4 = tala
 // $AED58C: [32-bit] using ability flag
 // $AED8EC: [32-bit] Soul reaver ability flag
 // $AF80DC: [32-bit] evil ability flag
-// $DCBBB0: CreateVersusMatchMenu_TimeSetting
-// $F30A24: cutscene timer
-// $F39608: minute setting vs mode
-// $F54FB0: list of lpointers to runes
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
-// $11D5D60: blocks of time left
-// $1203834: F8 - functional FearRune
-// $1203D30: F8- functional BlackShroudRune
-// $120400C: F8 - functional TurnRune
-// $1204284: F8- functional BloodFrenzyRune
-// $120430C: F8 - functional timer duration Blood Frenzy
 // $15C4A5C: [32-bit] current weapon reserve ammo
 // $15C4A60: [32-bit] current weapon magazine ammo
 // $15C4A68: [32-bit] dynamites
-// $19FD7C0: active rune
-// $1CC6F08: vamp jump flag
 // $1FFF570: [Pointer chain]
 //           
 //           -+0xffffffac = pointer to the array of final boss
