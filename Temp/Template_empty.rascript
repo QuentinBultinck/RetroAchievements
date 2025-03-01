@@ -340,7 +340,7 @@ achievements_typeByCategory = { // TODO set achievement types
 // #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
 	}
