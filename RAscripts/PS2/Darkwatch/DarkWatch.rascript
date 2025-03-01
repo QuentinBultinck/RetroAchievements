@@ -136,6 +136,11 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
+
+function util_getLastItemInArray(array_a) {
+	let_array_copy = array_a
+	return array_pop(let_array_copy)}
+
 // #endregion UTILITY
 
 // ***************************************************************************************************************************************************************** \\
@@ -160,6 +165,16 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Pointer:LevelID": {
+		"pointerChainToMember": {
+			"ASCII:LevelID(full)": {
+				"pointerChainOffsets": [0x20],
+				"offsetToPointedToMember": 0x2},
+			"ASCII:StoryChapterSectionID(preferred)": {
+				"pointerChainOffsets": [0x24],
+				"offsetToPointedToMember": 0x2}
+			},
+		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -209,6 +224,7 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 // #region MEM - address storage
 memory_addresses = {
 	// "memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	"Flag:IsInGame(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x72252c, RELEASE_REGION_JPN: sNULL},
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
@@ -216,6 +232,8 @@ memory_addresses = {
 	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
 
 	"ASCII:GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
 
 	}
 
@@ -331,6 +349,18 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
 
+function current_flagState_IsInGame(enum_releaseRegion) =>
+	dword(memory_getAddress("Flag:IsInGame(preferred)", enum_releaseRegion))
+
+function is_InGame(enum_releaseRegion) {
+	const_FLAG_InGame = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
+	return current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame}
+
+function is_atMainMenu(enum_releaseRegion) {
+	const_FLAG_MainMenu = 0x0 // NOTE: Also 0x0 when game is booting up
+	return current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_MainMenu}
+
+
 // ----------------Divider---------------------
 
 // #endregion General Game Logic
@@ -339,24 +369,137 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 // ◦ Level ID ◦
 // ''''''''''''
 // #region Level ID
-// ----------------StoryChapterID---------------------
 CHAPTER_1_WrongTrain = 0x1
 CHAPTER_2_RideDevil = 0x2
+CHAPTER_3_Boneyard = 0x3
+CHAPTER_4_DevilMine = 0x4
 
+CHAPTER_SECTION_1 = 0
+CHAPTER_SECTION_2 = 1
+CHAPTER_SECTION_3 = 2
+
+CONST_LEVEL_DATA = {
+	// CHAPTER_X_Template: {
+		// "LevelID": "_templateID_",
+		// "StoryChapterSectionIDs": ["_templateID_"],
+		// },
+	CHAPTER_1_WrongTrain: {
+		"LevelID": "WrongTrain",
+		"StoryChapterSectionIDs": ["WrongTrain_A", "WrongTrain_B"],
+		},
+	CHAPTER_2_RideDevil: {
+		"LevelID": "M02_CanyonShoot",
+		"StoryChapterSectionIDs": ["Hub_A"],
+		},
+	CHAPTER_3_Boneyard: {
+		"LevelID": "M03_Cemetery",
+		"StoryChapterSectionIDs": ["M03_C", "M03_B", "M03_A"],
+		},
+	CHAPTER_4_DevilMine: {
+		"LevelID": "M05_DevilsBelly",
+		"StoryChapterSectionIDs": [],
+		},
+	}
+
+function LEVEL_DATA_getLevelID(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
+
+function LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"]
+
+function LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) =>
+	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][enum_chapterSection]
+
+// ----------------StoryChapterID---------------------
 function current_InProgressStoryChapterID(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:InProgress_StoryChapterID", enum_releaseRegion))
 
 function prev_InProgressStoryChapterID(enum_releaseRegion) =>
 	prev(current_InProgressStoryChapterID(enum_releaseRegion))
 
-function on_Chapter_complete(enum_chapter, enum_releaseRegion) =>
-	// NOTE: this can't be used to check for the last storyChapter; prefer using an FMV ID for that
+function is_StoryChapter(enum_chapter, enum_releaseRegion) =>
+	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
+
+function on_StoryChapter_complete(enum_chapter, enum_releaseRegion) =>
+	// WARNING: This can't be used to check for the last storyChapter; prefer using an FMV ID for that
 	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter + 1
 	&& prev_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
 
-// ----------------Divider---------------------
+// ----------------StoryChapterSectionID---------------------
+function is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = 
+		memGenerate_pointerChainAccessor("Pointer:LevelID", "ASCII:StoryChapterSectionID(preferred)", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:LevelID", "ASCII:StoryChapterSectionID(preferred)")
+	let_string_StoryChapterSectionID = LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) // NOTE: Only checks [1-byte] of ASCII
+	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_StoryChapterSectionID)}
+
+// ----------------LevelID---------------------
+function is_Level(enum_chapter, enum_releaseRegion) {	
+	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = 
+		memGenerate_pointerChainAccessor("Pointer:LevelID", "ASCII:LevelID(full)", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:LevelID", "ASCII:LevelID(full)")
+	let_string_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
+	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_LevelID)}
 
 // #endregion Level ID
+
+
+// .................
+// ◦ Checkpoint ID ◦
+// '''''''''''''''''
+// #region Checkpoint ID
+CHECKPOINT_1 = "1"
+CHECKPOINT_2 = "2"
+CHECKPOINT_3 = "3"
+CHECKPOINT_4 = "4"
+
+function current_RespawnPointID(enum_releaseRegion) =>
+	dword(memory_addresses("32-bit:Checkpoint_RespawnPointID(preferred)", enum_releaseRegion))
+
+function prev_RespawnPointID(enum_releaseRegion) =>
+	prev(current_RespawnPointID(enum_releaseRegion))
+
+function is_CheckpointID(enum_checkpoint, enum_releaseRegion) {
+	const_OFFSET_TO_UNIQUE_SUBSTRING = length("Checkpoint_")
+	let_memAddr_ASCII = 
+		memory_getAddress("ASCII:CheckpointID", enum_releaseRegion)
+		+ const_OFFSET_TO_UNIQUE_SUBSTRING
+	return is_ASCII_EqualTo(let_memAddr_ASCII, enum_checkpoint)}
+
+function is_AnyCheckpoint_active(enum_releaseRegion) =>
+	current_RespawnPointID(enum_releaseRegion) > 0
+
+function on_Checkpoint_1_initialize(enum_releaseRegion) // NOTE: This can be used to check if a StoryChapterSection/Level is started/restarted from the beginning 
+	is_CheckpointID(CHECKPOINT_1, enum_releaseRegion)
+	&& current_RespawnPointID(enum_releaseRegion) > 0 
+	&& prev_RespawnPointID(enum_releaseRegion) == 0
+
+function on_NewCheckpoint_initialize(enum_releaseRegion) =>
+	current_RespawnPointID(enum_releaseRegion) != prev_RespawnPointID(enum_releaseRegion)
+
+function is_Checkpoint_active(enum_checkpoint, enum_releaseRegion) =>
+	is_AnyCheckpoint_active(enum_releaseRegion)
+	&& is_CheckpointID(enum_checkpoint, enum_releaseRegion)
+
+function on_Checkpoint_initialize(enum_checkpoint, enum_releaseRegion) =>
+	is_CheckpointID(enum_checkpoint, enum_releaseRegion)
+	&& current_RespawnPointID(enum_releaseRegion) == enum_checkpoint
+	&& prev_RespawnPointID(enum_releaseRegion) != enum_checkpoint
+
+// -------------------------------------
+function on_StoryChapterSection_start(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
+	is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
+	&& on_Checkpoint_1_initialize(enum_releaseRegion)
+
+function on_LastStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
+	let_lastStoryChapterSection = util_getLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
+	return
+		is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)
+		&& on_Checkpoint_1_initialize(enum_releaseRegion)}
+
+// #endregion Checkpoint ID
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -431,7 +574,7 @@ achievements_coreData = {
 	"c_SPstory": { // Category - Singleplayer Story Progression
 		// "a_Template": { // CONCEPT a_SPstory
 		// 	"id": 000000, "points": 0000000, "devInfo": "Chapter 'xxxxxx' Completion"},
-		"a_WrongTrain": { // CONCEPT a_WrongTrain
+		"a_WrongTrain": { // CONCEPT a_WrongTrain // TODO test a_WrongTrain
 			"id": 000000, "points": 0000000, "devInfo": "Chapter 'WrongTrain' Completion"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
@@ -471,6 +614,18 @@ achievements_typeByCategory = { // TODO set achievement types
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
+function achGenerate_2x_AltResetGroups_SingleplayerLevelCompletion(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InSinglePlayerMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level || when not in game
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& (
+				!is_Level(const_LEVEL, enum_releaseRegion)
+				|| !is_InGame(enum_releaseRegion)
+			))
 
 // #endregion ACH - trigger generators
 
@@ -480,17 +635,24 @@ achievements_typeByCategory = { // TODO set achievement types
 // #region ACH - triggers
 achievements_triggers = {
 	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// // [0] ==== Core Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
 
 	// --------c_SPstory--------
-	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP 
-		// [1] ==== Alt Logic Group ==== 			-> This group handles the core logic; It's responsible for unlocking the achievement		
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_InSinglePlayerMode(enum_releaseRegion)
-			&& on_Chapter_complete(CHAPTER_1_WrongTrain, enum_releaseRegion)
-		),
+	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
+		const_LEVEL = CHAPTER_1_WrongTrain
+		// [1] ==== Alt Logic Group ==== 				-> This group handles the achievement logic; This group is responsible for unlocking the achievement		
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_StoryChapter(const_LEVEL, enum_releaseRegion)
+				&& on_LastStoryChapterSection_start(const_LEVEL, enum_releaseRegion))
+			&& on_StoryChapter_complete(const_LEVEL, enum_releaseRegion)
+		// [2+3+4] ==== 3x Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || when not in correct Level || when not in game
+			|| achGenerate_2x_AltResetGroups_SingleplayerLevelCompletion(const_LEVEL, enum_releaseRegion)
+		}),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
