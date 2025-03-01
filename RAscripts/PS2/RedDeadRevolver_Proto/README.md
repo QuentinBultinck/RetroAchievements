@@ -50,9 +50,11 @@ As this is a prototype build, this game isn't well documented anywhere at all. T
 
 + Due to the nature of this prototype build, the player character may easily get stuck on objects or go out of bounds when struck by enemy attacks, as these can push the character model into unintended areas. This might prevent progress on certain achievements. However, a simple level *Reset* via the *Pause Menu* can quickly give the player another chance. Since the levels aren’t very large, this shouldn’t be too much of a hassle.
 
-+ There are a few game bugs which may crash the game, alas this build doesn't use any save system. So no progress may be lost and the stages/levels are pretty short, so any crashes are minimal in achievement progress.
++ There are a few game bugs which may crash the game, alas this build doesn't use any save system. So no progress may be lost and the stages/levels are pretty short, so any crashes have minimal impact on the player's progress.
 
 + Some characters in Multiplayer mode will bug out the game. eg. Character *"Soldier"*. The game will display an error message and freeze when loading the Multiplayer match. Simply retry/reset/reboot the game to try again. You just have to be lucky the other CPU players don't pick any of the bugged out characters. 
+
++ This game/build has very long load times, with no indication when the game is effectively loading, make sure to use PCSX2's turbo mode to save on time.
 
 
 ## 🏆 All Single Player Achievements Grouped by Stage/Level
@@ -191,11 +193,13 @@ This category of achievements showcases a few secret character animations, force
 This prototype build of *Red Dead Revolver* includes a basic version of the **Multiplayer Mode**, referred to as **"Showdown"**, which is also featured in the full release version. All achievements in this category are centered around this mode.
 
 > [!NOTE]
-> **Multiplayer is disallowed** for this set! In other words: playing with more than 1 human player is not allowed. All achievements in this category need to be earned by playing versus CPU. 
+> - **Multiplayer is disallowed** for this set! In other words: playing with more than 1 human player is not allowed. All achievements in this category need to be earned by playing versus CPU. 
 >
-> All multiplayer achievements require to win a few rounds **"consecutively"**. This means the player must acquire a number of round-wins, one after another without losing any rounds in between.
+> - The Multiplayer Mode is pretty buggy. When any player, human or CPU, picks one of the bugged out characters like "Soldier", the game may crash displaying some debug error output. 
 >
-> Pressing *Reset* in the *Pause Menu* will reset the progress of the multiplayer achievements. It will reset the current number of consecutive round-wins.
+> - All multiplayer achievements require to win a few rounds **"consecutively"**. This means the player must acquire a number of round-wins, one after another without losing any rounds in between.
+>
+> - Pressing *Reset* in the *Pause Menu* will reset the progress of the multiplayer achievements. It will reset the current number of consecutive round-wins.
 
 > #### Developer Note
 > These achievements are rather simplistic, but alas, it's what this prototype offer.
