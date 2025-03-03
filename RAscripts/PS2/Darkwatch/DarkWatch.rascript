@@ -172,7 +172,7 @@ memory_StructDefs = {
 			"ASCIIFlag:Sofdec_IsFMVactive": {
 				"offsetToPointedToMember": 0x144},
 			"ASCII:Sofdec_FMVID": {
-				"offsetToPointedToMember": 0x164 },
+				"offsetToPointedToMember": 0x164},
 			},
 		},
 	"Pointer:LevelID": {
@@ -184,6 +184,24 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0x24],
 				"offsetToPointedToMember": 0x2}
 			},
+		},
+	"Pointer:PlayerInput": {
+		"offsetToMember": {
+			"Struct(ControllerInput):Controller-1": 0x4,
+			"Struct(ControllerInput):Controller-2": 0x38},
+		},
+	"Pointer:HUDcontrol_Health": {
+		"pointerChainToMember": {
+			"BitFlag:IsBossHPbarDisplayed": {
+				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0x2F]},
+			"Float:BossHP(display)(preferred)": {
+				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0xEC]},
+			},
+		}, 
+	"Struct:ControllerInput": {
+		"offsetToMember": {
+			"Bitflag:IsControllerConnected": 0x0,
+			"BitFlag:IsInputPressed_Cross": 0xB},
 		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -240,6 +258,7 @@ memory_addresses = {
 	"Lower4:GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
 	
 	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
+	"8-bit:GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 
 	"32-bit:LoadingState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80b650, RELEASE_REGION_JPN: sNULL}, // TODO this doesn't work in COOP
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
@@ -249,6 +268,9 @@ memory_addresses = {
 
 	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
 	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
+	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
+	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
+	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
 
 	}
 
@@ -313,6 +335,10 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
+
+function memUtil_ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
+	let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
+	return dword(let_dummyAddress) == 0xBAADF00D}
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -325,11 +351,45 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 	)
 // #endregion MEM - utility
 
+// ...............
+// ◦ Player Input ◦
+// '''''''''''''''
+// #region Player Input
+CONTROLLER_1 = 1
+CONTROLLER_2 = 2
+
+INPUT_Cross = "BitFlag:IsInputPressed_Cross"
+
+function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return bit0(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", enum_input)
+	)}
+
+function prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) =>
+	prev(current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion))
+
+function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) > prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
+function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) < prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
+// ----------------Divider---------------------
+
+// #endregion Player Input
+
 // ......................
 // ◦ General Game Logic ◦
 // ''''''''''''''''''''''
 // #region General Game Logic
 const_FLAG_InGame_true = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
+const_LOADING_STATE_Loading = 0x1000003C 
+const_GAME_STATE_AnyInGameMenu_active = 0x3
 // ----------------GameMode Identification---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
@@ -378,22 +438,126 @@ function current_flagState_IsInGame(enum_releaseRegion) =>
 function prev_flagState_IsInGame(enum_releaseRegion) =>
 	prev(current_flagState_IsInGame(enum_releaseRegion))
 
-function is_InGame(enum_releaseRegion) =>
-	current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+function current_pointerState_PlayerActorData(enum_releaseRegion) {
+	let_memAddr_Pointer = memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)
+	return dword(let_memAddr_Pointer)}
+
+function prior_pointerState_PlayerActorData(enum_releaseRegion) =>
+	prior(current_pointerState_PlayerActorData(enum_releaseRegion))
+
+function wasPrior_flagState_InGame_true(enum_releaseRegion) =>
+	prior_pointerState_PlayerActorData(enum_releaseRegion) != 0
+
+function prev_pointerState_PlayerActorData(enum_releaseRegion) =>
+	prev(current_pointerState_PlayerActorData(enum_releaseRegion))
+
+// function is_flagState_InGame_true(enum_releaseRegion) =>
+	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+
+// function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
+	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+	// && prev_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
+
+// function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
+	// current_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
+	// && prev_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+
+function is_flagState_InGame_true(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) != 0
+
+function is_flagState_InGame_false(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) == 0	
 
 function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
-	current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
-	&& prev_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
+	current_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
+	&& prev_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
+
+function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
+	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
 
 function current_LoadingState(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:LoadingState", enum_releaseRegion))
 
-function is_Loading(enum_releaseRegion) {
-	const_FLAG_Loading = 0x1000003C 
-	return current_LoadingState(enum_releaseRegion) == const_FLAG_Loading}
+function prev_LoadingState(enum_releaseRegion) =>
+	prev(current_LoadingState(enum_releaseRegion))
 
+function is_Loading(enum_releaseRegion) => 
+	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
 
-// ----------------Divider---------------------
+function on_Loading_start(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+	&& prev_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
+
+function on_Loading_end(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
+	&& prev_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+
+function current_GameState(enum_releaseRegion) =>
+	byte(memory_getAddress("8-bit:GameState", enum_releaseRegion))
+
+function prior_GameState(enum_releaseRegion) =>
+	prior(current_GameState(enum_releaseRegion))
+
+function prev_GameState(enum_releaseRegion) =>
+	prev(current_GameState(enum_releaseRegion))
+
+function is_AnyInGameMenu_active(enum_releaseRegion) =>
+	current_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+
+function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
+	current_GameState(enum_releaseRegion) != const_GAME_STATE_AnyInGameMenu_active
+	&& prev_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+// -----------------PauseMenu--------------------
+CONST_TEXT_LOOKUP_KEY_PauseMenu = 0xE5E853D8
+CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu = 0x33E14BF8 	
+
+function is_PauseMenu_active(enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[FF] of above 2 lines: R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX00000118_0xX0000006c=3857208280
+		NTSCU: 	xxxx
+
+		AddAddress	[Pointer:HUDcontrol(preferred)]
+		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+		
+		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0x118
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+		*/
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFF)
+
+function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	// && is_PauseMenu_RestartConfirmationMenu_active(enum_releaseRegion)
+	// && is_PauseMenu_RestartConfirmationMenu_Yes_highlighted(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[FD] of above 2 lines: R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
+		NTSCU: 	xxxx
+
+		AddAddress	[Pointer:HUDcontrol(preferred)]
+		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+		
+		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0xB8
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+		
+		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0x7C
+					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+		*/
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD)
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 // #endregion General Game Logic
 
@@ -553,6 +717,10 @@ function on_StoryChapterSection_start(enum_chapter, enum_chapterSection, enum_re
 	is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
 	&& on_Checkpoint_1_initialize(enum_releaseRegion)
 
+function is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion) {
+	let_lastStoryChapterSection = util_getIndexOfLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
+	return is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)}
+
 function on_LastStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
 	let_lastStoryChapterSection = util_getIndexOfLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
 	return
@@ -568,6 +736,7 @@ function on_LastStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
 CONST_ASCII_FLAG_SofdecIsFMVactive_true = "Sofd" // FullString: "SofdecStream"
 FMV_MainMenu = "PS2MAI"
 FMV_Shadow = "M01S4_"
+FMV_LazarusLives = "M02S1_"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -614,6 +783,42 @@ function is_atMainMenu(enum_releaseRegion) =>
 
 // #endregion FMV ID
 
+// ...............
+// ◦ HUD Control Health ◦
+// '''''''''''''''
+// #region HUD Control Health
+function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:HUDcontrol_Health", "BitFlag:IsBossHPbarDisplayed", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = bit0)
+	}
+
+function prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion) =>
+	prev(current_flagState_IsBossHPbarDisplayed(enum_releaseRegion))
+
+function is_BossHealthBar_Display_active(enum_releaseRegion) =>
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) == 1
+
+function on_BossHealthBar_Display_render(enum_releaseRegion) =>
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) > prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion)
+
+function on_BossHealthBar_Display_remove(enum_releaseRegion) => 
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) < prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion)
+
+function current_Boss_Health(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:HUDcontrol_Health", "Float:BossHP(display)(preferred)", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = float)
+	}
+
+function prev_Boss_Health(enum_releaseRegion) =>
+	prev(current_Boss_Health(enum_releaseRegion))
+
+// ----------------Divider---------------------
+
+// #endregion HUD Control Health
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -688,8 +893,10 @@ achievements_coreData = {
 	"c_SPstory": { // Category - Singleplayer Story Progression
 		// "a_Template": { // CONCEPT a_SPstory
 		// 	"id": 000000, "points": 0000000, "devInfo": "Chapter 'xxxxxx' Completion"},
-		"a_WrongTrain": { // CONCEPT a_WrongTrain // TODO test a_WrongTrain
-			"id": 000000, "points": 0000000, "devInfo": "Chapter 'WrongTrain' Completion"},
+		"a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		"a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"}, 
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
@@ -728,7 +935,7 @@ achievements_typeByCategory = { // TODO set achievement types
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
-function achGenerate_3x_AltResetGroups_SingleplayerLevelProgressionCompletion(enum_chapter, enum_releaseRegion) =>
+function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) =>
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer OR Gunslinger Mode
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -741,6 +948,42 @@ function achGenerate_3x_AltResetGroups_SingleplayerLevelProgressionCompletion(en
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_atMainMenu(enum_releaseRegion))
+	// [4] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->RestartConfirmationMenu->Restart
+		/* MANUAL_CONSTRUCTION[FD] of AltGroup[4]: R/R usage
+			- Child MANUAL_CONSTRUCTION[FD] at on_RestartConfirmationMenu_Restart()
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	xxxx
+
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+			AddAddress	[Pointer:HUDcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:HUDcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+						Val 0x0 == Val 0x1
+			*/
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_RestartConfirmationMenu_Restart(enum_releaseRegion))
+		// || never_toAlt(
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& repeated(2, 
+		// 		never(is_flagState_InGame_true(enum_releaseRegion))
+		// 		&& is_flagState_InGame_false(enum_releaseRegion)))
+		
 
 // #endregion ACH - trigger generators
 
@@ -755,34 +998,125 @@ achievements_triggers = {
 		// 	&& always_false()),
 
 	// --------c_SPstory--------
-	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
-		const_CHAPTER = CHAPTER_1_WrongTrain
-		const_CHAPTER_END_FMV = FMV_Shadow
+	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_1_WrongTrain // BUG - inGameToggle is weird
+		const_END_FMV = FMV_Shadow
 		return
 		// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion)
 				|| !is_InSinglePlayerMode(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_InGame(enum_releaseRegion)
+				is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
 				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& on_LastStoryChapterSection_start(const_CHAPTER, enum_releaseRegion))
-			&& once(on_FMV_start(const_CHAPTER_END_FMV, enum_releaseRegion))
-			&& trigger_when(on_FMV_end(const_CHAPTER_END_FMV, enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(
+				once(
+					never(on_FMV_start(const_END_FMV, enum_releaseRegion))
+					&& on_FMV_end(const_END_FMV, enum_releaseRegion))
+				&& on_Loading_start(enum_releaseRegion))
 		// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
 			|| unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion)
 				|| !is_InGunslingerMode(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_InGame(enum_releaseRegion)
+				is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
 				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& on_LastStoryChapterSection_start(const_CHAPTER, enum_releaseRegion))
-			&& once(on_FMV_start(const_CHAPTER_END_FMV, enum_releaseRegion))
-			&& trigger_when(on_FMV_end(const_CHAPTER_END_FMV, enum_releaseRegion))
-		// [3+4+5] ==== 2x Alt Reset Groups ==== 					-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu
-			|| achGenerate_3x_AltResetGroups_SingleplayerLevelProgressionCompletion(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(
+				once(
+					never(on_FMV_start(const_END_FMV, enum_releaseRegion))
+					&& on_FMV_end(const_END_FMV, enum_releaseRegion))
+				&& on_Loading_start(enum_releaseRegion))
+		// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+			/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
+				- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	xxxx
+				*/
+			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
+			
+		}),
+	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_2_RideDevil
+		return
+		// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames // TODO test is this repeated necessary??
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_Loading_start(enum_releaseRegion))
+		// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for 2 frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_Loading_start(enum_releaseRegion))
+		// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+			/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
+				- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	xxxx
+				*/
+			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion)
 		}),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
@@ -798,6 +1132,7 @@ achievements_titles = {
 
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
+	"a_RideDevil": 				{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -807,6 +1142,7 @@ achievements_descriptions = {
 
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
+	"a_RideDevil": 				{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
