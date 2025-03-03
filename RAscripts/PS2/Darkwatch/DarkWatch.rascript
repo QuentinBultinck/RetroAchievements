@@ -137,9 +137,11 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
-function util_getLastItemInArray(array_a) {
-	let_array_copy = array_a
-	return array_pop(let_array_copy)}
+function util_getIndexOfLastItemInArray(array_a) =>
+	length(array_a) - 1
+
+function util_getLastItemInArray(array_a) =>
+	array_a[util_getIndexOfLastItemInArray(array_a)]
 
 // #endregion UTILITY
 
@@ -165,6 +167,14 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Pointer:SofdecStreamData": {
+		"pointerChainToMember": {
+			"ASCIIFlag:Sofdec_IsFMVactive": {
+				"offsetToPointedToMember": 0x144},
+			"ASCII:Sofdec_FMVID": {
+				"offsetToPointedToMember": 0x164 },
+			},
+		},
 	"Pointer:LevelID": {
 		"pointerChainToMember": {
 			"ASCII:LevelID(full)": {
@@ -231,9 +241,14 @@ memory_addresses = {
 	
 	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
 
+	"32-bit:LoadingState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80b650, RELEASE_REGION_JPN: sNULL}, // TODO this doesn't work in COOP
+	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
+
 	"ASCII:GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CheckpointID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
 
 	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
+	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
 
 	}
 
@@ -314,6 +329,7 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 // ◦ General Game Logic ◦
 // ''''''''''''''''''''''
 // #region General Game Logic
+const_FLAG_InGame_true = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
 // ----------------GameMode Identification---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
@@ -335,6 +351,13 @@ function is_InGunslingerMode(enum_releaseRegion) {
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_Gunslinger
 	}
 
+function is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion) {
+	const_GAMEMODE_Gunslinger = 1
+	return 
+		current_PlayerCount(enum_releaseRegion) == 1
+		&& current_GameMode(enum_releaseRegion) <= const_GAMEMODE_Gunslinger // --CheckIf--> GameMode is 0 OR 1 (SinglePlayer OR Gunslinger)
+	}
+
 function is_InMultiplayerVersusMode(enum_releaseRegion) {
 	const_GAMEMODE_MultiplayerVersus = 3
 	return 
@@ -352,13 +375,22 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 function current_flagState_IsInGame(enum_releaseRegion) =>
 	dword(memory_getAddress("Flag:IsInGame(preferred)", enum_releaseRegion))
 
-function is_InGame(enum_releaseRegion) {
-	const_FLAG_InGame = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
-	return current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame}
+function prev_flagState_IsInGame(enum_releaseRegion) =>
+	prev(current_flagState_IsInGame(enum_releaseRegion))
 
-function is_atMainMenu(enum_releaseRegion) {
-	const_FLAG_MainMenu = 0x0 // NOTE: Also 0x0 when game is booting up
-	return current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_MainMenu}
+function is_InGame(enum_releaseRegion) =>
+	current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+
+function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
+	current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
+	&& prev_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
+
+function current_LoadingState(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:LoadingState", enum_releaseRegion))
+
+function is_Loading(enum_releaseRegion) {
+	const_FLAG_Loading = 0x1000003C 
+	return current_LoadingState(enum_releaseRegion) == const_FLAG_Loading}
 
 
 // ----------------Divider---------------------
@@ -377,6 +409,8 @@ CHAPTER_4_DevilMine = 0x4
 CHAPTER_SECTION_1 = 0
 CHAPTER_SECTION_2 = 1
 CHAPTER_SECTION_3 = 2
+
+MULTIPLAYER_LEVEL_Asylum = "DM_Asylum"
 
 CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
@@ -404,11 +438,18 @@ CONST_LEVEL_DATA = {
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
+function LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) =>
+	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][enum_chapterSection]
+
 function LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"]
 
-function LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) =>
-	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][enum_chapterSection]
+function LEVEL_DATA_getFirstStoryChapterSectionID(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][CHAPTER_SECTION_1]
+
+function LEVEL_DATA_getLastStoryChapterSectionID(enum_chapter) {
+	let_array_AllStoryChapterSectionIDs = LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter)
+	return util_getLastItemInArray(let_array_AllStoryChapterSectionIDs)}
 
 // ----------------StoryChapterID---------------------
 function current_InProgressStoryChapterID(enum_releaseRegion) =>
@@ -417,13 +458,20 @@ function current_InProgressStoryChapterID(enum_releaseRegion) =>
 function prev_InProgressStoryChapterID(enum_releaseRegion) =>
 	prev(current_InProgressStoryChapterID(enum_releaseRegion))
 
-function is_StoryChapter(enum_chapter, enum_releaseRegion) =>
+function is_StoryChapterID(enum_chapter, enum_releaseRegion) =>
 	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
 
 function on_StoryChapter_complete(enum_chapter, enum_releaseRegion) =>
 	// WARNING: This can't be used to check for the last storyChapter; prefer using an FMV ID for that
 	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter + 1
 	&& prev_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
+
+function is_GunslingerChapter_available(enum_chapter, enum_releaseRegion) {
+	/* TODO implement for last chapter
+		if (enum_chapter == last_Chapter) 
+			current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
+		*/
+	return current_InProgressStoryChapterID(enum_releaseRegion) >= enum_chapter + 1} // --CheckIf--> next chapter is inProgress in SinglePlayer Mode
 
 // ----------------StoryChapterSectionID---------------------
 function is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
@@ -435,13 +483,20 @@ function is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseR
 	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_StoryChapterSectionID)}
 
 // ----------------LevelID---------------------
-function is_Level(enum_chapter, enum_releaseRegion) {	
+function is_Level(string_levelID, enum_releaseRegion) {	
 	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
 	let_memAddr_ASCII = 
 		memGenerate_pointerChainAccessor("Pointer:LevelID", "ASCII:LevelID(full)", let_memAddr_BasePointer)
 		+ memory_getStruct_OffsetToPointedToMember("Pointer:LevelID", "ASCII:LevelID(full)")
-	let_string_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
-	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_LevelID)}
+	return is_ASCII_EqualTo(let_memAddr_ASCII, string_levelID)}
+
+function is_Level_StoryChapter(enum_chapter, enum_releaseRegion) {
+	let_substring_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
+	return is_Level(let_substring_LevelID, enum_releaseRegion)}
+
+function is_Level_Multiplayer(enum_multiplayerLevel, enum_releaseRegion) {
+	let_substring_LevelID = substring(enum_multiplayerLevel, 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
+	return is_Level(let_substring_LevelID, enum_releaseRegion)}
 
 // #endregion Level ID
 
@@ -456,7 +511,7 @@ CHECKPOINT_3 = "3"
 CHECKPOINT_4 = "4"
 
 function current_RespawnPointID(enum_releaseRegion) =>
-	dword(memory_addresses("32-bit:Checkpoint_RespawnPointID(preferred)", enum_releaseRegion))
+	dword(memory_getAddress("32-bit:Checkpoint_RespawnPointID(preferred)", enum_releaseRegion))
 
 function prev_RespawnPointID(enum_releaseRegion) =>
 	prev(current_RespawnPointID(enum_releaseRegion))
@@ -471,7 +526,7 @@ function is_CheckpointID(enum_checkpoint, enum_releaseRegion) {
 function is_AnyCheckpoint_active(enum_releaseRegion) =>
 	current_RespawnPointID(enum_releaseRegion) > 0
 
-function on_Checkpoint_1_initialize(enum_releaseRegion) // NOTE: This can be used to check if a StoryChapterSection/Level is started/restarted from the beginning 
+function on_Checkpoint_1_initialize(enum_releaseRegion) => // NOTE: This can be used to check if a StoryChapterSection/Level is started/restarted from the beginning 
 	is_CheckpointID(CHECKPOINT_1, enum_releaseRegion)
 	&& current_RespawnPointID(enum_releaseRegion) > 0 
 	&& prev_RespawnPointID(enum_releaseRegion) == 0
@@ -485,21 +540,80 @@ function is_Checkpoint_active(enum_checkpoint, enum_releaseRegion) =>
 
 function on_Checkpoint_initialize(enum_checkpoint, enum_releaseRegion) =>
 	is_CheckpointID(enum_checkpoint, enum_releaseRegion)
-	&& current_RespawnPointID(enum_releaseRegion) == enum_checkpoint
-	&& prev_RespawnPointID(enum_releaseRegion) != enum_checkpoint
+	&& on_NewCheckpoint_initialize(enum_releaseRegion)
 
 // -------------------------------------
+function on_FirstStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
+	let_firstStoryChapterSection = LEVEL_DATA_getFirstStoryChapterSectionID(enum_chapter)
+	return
+		is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)
+		&& on_NewCheckpoint_reached(enum_releaseRegion)}
+
 function on_StoryChapterSection_start(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
 	is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
 	&& on_Checkpoint_1_initialize(enum_releaseRegion)
 
 function on_LastStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
-	let_lastStoryChapterSection = util_getLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
+	let_lastStoryChapterSection = util_getIndexOfLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
 	return
 		is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)
 		&& on_Checkpoint_1_initialize(enum_releaseRegion)}
 
 // #endregion Checkpoint ID
+
+// ..........
+// ◦ FMV ID ◦
+// ''''''''''
+// #region FMV ID
+CONST_ASCII_FLAG_SofdecIsFMVactive_true = "Sofd" // FullString: "SofdecStream"
+FMV_MainMenu = "PS2MAI"
+FMV_Shadow = "M01S4_"
+
+function is_anyFMV_active(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return is_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function on_anyFMV_start(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)
+		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function on_anyFMV_end(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return 
+		is_ASCII_notEqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)
+		&& wasPrev_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function is_FMV_active(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& is_anyFMV_active(enum_releaseRegion)}
+
+function on_FMV_start(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& on_anyFMV_start(enum_releaseRegion)}
+
+function on_FMV_end(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		wasPrev_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& on_anyFMV_end(enum_releaseRegion)}
+// -------------------------------------
+function is_atMainMenu(enum_releaseRegion) =>
+	is_FMV_active(FMV_MainMenu, enum_releaseRegion)
+
+// #endregion FMV ID
+
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -614,18 +728,19 @@ achievements_typeByCategory = { // TODO set achievement types
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
-function achGenerate_2x_AltResetGroups_SingleplayerLevelCompletion(enum_chapter, enum_releaseRegion) =>
-	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer Mode
+function achGenerate_3x_AltResetGroups_SingleplayerLevelProgressionCompletion(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer OR Gunslinger Mode
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_InSinglePlayerMode(enum_releaseRegion))
-	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level || when not in game
+			&& !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& (
-				!is_Level(const_LEVEL, enum_releaseRegion)
-				|| !is_InGame(enum_releaseRegion)
-			))
+			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+	// [3] ==== Alt Reset Group ==== 			-> Reset when quit to MainMenu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_atMainMenu(enum_releaseRegion))
 
 // #endregion ACH - trigger generators
 
@@ -641,17 +756,33 @@ achievements_triggers = {
 
 	// --------c_SPstory--------
 	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP
-		const_LEVEL = CHAPTER_1_WrongTrain
-		// [1] ==== Alt Logic Group ==== 				-> This group handles the achievement logic; This group is responsible for unlocking the achievement		
+		const_CHAPTER = CHAPTER_1_WrongTrain
+		const_CHAPTER_END_FMV = FMV_Shadow
+		return
+		// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
 			unless(
 				!is_ReleaseRegion(enum_releaseRegion)
-				|| is_Loading(enum_releaseRegion))
+				|| is_Loading(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_StoryChapter(const_LEVEL, enum_releaseRegion)
-				&& on_LastStoryChapterSection_start(const_LEVEL, enum_releaseRegion))
-			&& on_StoryChapter_complete(const_LEVEL, enum_releaseRegion)
-		// [2+3+4] ==== 3x Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || when not in correct Level || when not in game
-			|| achGenerate_2x_AltResetGroups_SingleplayerLevelCompletion(const_LEVEL, enum_releaseRegion)
+				is_InGame(enum_releaseRegion)
+				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
+				&& on_LastStoryChapterSection_start(const_CHAPTER, enum_releaseRegion))
+			&& once(on_FMV_start(const_CHAPTER_END_FMV, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_CHAPTER_END_FMV, enum_releaseRegion))
+		// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| is_Loading(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_InGame(enum_releaseRegion)
+				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
+				&& on_LastStoryChapterSection_start(const_CHAPTER, enum_releaseRegion))
+			&& once(on_FMV_start(const_CHAPTER_END_FMV, enum_releaseRegion))
+			&& trigger_when(on_FMV_end(const_CHAPTER_END_FMV, enum_releaseRegion))
+		// [3+4+5] ==== 2x Alt Reset Groups ==== 					-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu
+			|| achGenerate_3x_AltResetGroups_SingleplayerLevelProgressionCompletion(const_CHAPTER, enum_releaseRegion)
 		}),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
