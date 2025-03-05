@@ -3241,9 +3241,9 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	// "rp_Template": 				{"en": "xxxxxxxx"},
-	"rp_MP_2P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8}"},
-	"rp_MP_3P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12}"},
-	"rp_MP_4P": 					{"en": "Playing a Showdown Multiplayer Match in {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12} | {13} {14} 4 as {15} {16}"},
+	"rp_MP_2P": 					{"en": "Playing a Showdown Multiplayer Match in the {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8}"},
+	"rp_MP_3P": 					{"en": "Playing a Showdown Multiplayer Match in the {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12}"},
+	"rp_MP_4P": 					{"en": "Playing a Showdown Multiplayer Match in the {0} | {1} {2} 1 as {3} {4} | {5} {6} 2 as {7} {8} | {9} {10} 3 as {11} {12} | {13} {14} 4 as {15} {16}"},
 
 	"rp_SP":						{"en": "Playing Red Dead Revolver ~Prototype~ | {0} is {1} {2}"}, 
 	"rp_TitleScreen":				{"en": "Playing Red Dead Revolver ~Prototype~ | Title Screen"},

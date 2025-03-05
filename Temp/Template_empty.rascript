@@ -144,7 +144,7 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 // ==========================
 // #region MEM - address storage
 memory_addresses = {
-	//	"memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	// "memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -157,16 +157,48 @@ function memory_getAddress(string_addrKey, enum_releaseRegion) {
 // • MEMORY UTILITY •
 // ===================
 // #region MEM - utility
+// #region Custom ASCII comparitors
+// NOTE: Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
+
+function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
+	let_array_comparisons = []
+	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
+		let_substring = substring(string_s, let_stepBy4Index, 4)
+		array_push(let_array_comparisons, ascii_string_equals(memAddr_ASCII + let_stepBy4Index, let_substring, transform = wrapper))
+	}
+	return all_of(let_array_comparisons, c => c)}
+
+function ASCII_NotEquals(memAddr_ASCII, string_s, wrapper = c => c) {
+	/* NOTE: Consider following ASCII "ABCDEF" --> if ASCII = "ABCDFF" it is not equal to the ASCII		
+		Example logic:
+			0xA != "ABCD"
+			|| 0xB != "EF"
+	*/
+	return __ornext( // --> __ornext() as otherwise RATools may generate unnecessary alt groups for these single orNext requirements
+		!ASCII_Equals(memAddr_ASCII, string_s, wrapper)
+	)}
+
+function is_ASCII_EqualTo(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s)
+
+function is_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s)
+
+function wasPrev_ASCII_EqualTo(memAddr_ASCII, string_s) =>
+	ASCII_Equals(memAddr_ASCII, string_s, c => prev(c))
+
+function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
+	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+// #endregion Custom ASCII comparitors
 function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
-	if(enum_releaseRegion == RELEASE_REGION_USA) {
-		
-	} else if(enum_releaseRegion == RELEASE_REGION_JPN) {
-		
-	} else if(enum_releaseRegion == RELEASE_REGION_EUR) {
-		
-	} else {
-		util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
-	}}
+	let_string_GameID = sNULL
+	if(enum_releaseRegion == RELEASE_REGION_USA) let_string_GameID = sNULL // FullString: "xxxxx"
+	else if(enum_releaseRegion == RELEASE_REGION_JPN) let_string_GameID = sNULL // FullString: "xxxxx"
+	else if(enum_releaseRegion == RELEASE_REGION_EUR) let_string_GameID = sNULL // FullString: "xxxxx"
+	
+	if (let_string_GameID == sNULL) util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
+	return is_ASCII_EqualTo(memory_getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
+	}
 
 // memUtil_floatToInt: will return an integer from the floored float value => refer to https://docs.retroachievements.org/AddSource-Flag/#interaction-with-floats
 	// 	- RAtools will clean => 	0 + float(0xaa) + 0	 --to-->	float(0xa)
@@ -175,6 +207,9 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
+function memUtil_ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
+	let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
+	return dword(let_dummyAddress) == 0xBAADF00D}
 function never_toAlt(comparison) => // never_toAlt() => creates a single alt group for a 'Reset If' comparison
 	(
 		(
@@ -267,11 +302,11 @@ achievements_coreData = {
 	"c_Template": { // Category - info_here
 		"a_Template": 	{
 			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
-		}
+		},
 	"c_Template2": { // Category - info_here
 		"a_Template2": 	{
 			"id": 000000, "points": achievement_POINTS_0, "devInfo": "xxxxxxx"}
-		}
+		},
 	}
 // -------------------------------------
 achievement_TYPE_Progression = "progression"
@@ -307,9 +342,10 @@ achievements_typeByCategory = { // TODO set achievement types
 // ========================
 // #region ACH - triggers
 achievements_triggers = {
-	// "a_Template": () => any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>  // WIP _template
-	// 	is_ReleaseRegion(enum_releaseRegion) &&
-	// 	always_false()),
+	// "a_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()),
 	}
 // #endregion ACH - triggers
 
@@ -812,3 +848,9 @@ function leaderboards_initialize() {
 //   █ █░▀█ █ ░█░ █ █▀█ █▄▄ █ █▄ █▀█ ░█░ █ █▄█ █░▀█     █▄▄ █▄█ █▄▀ ██▄   \\
 // ====================================================================== \\
 // #region RAScript Initialization
+function initializeRAscript() {
+	achievements_initialize()
+	richPresence_initialize()
+	leaderboards_initialize()}
+initializeRAscript()
+// #endregion RAScript Initialization

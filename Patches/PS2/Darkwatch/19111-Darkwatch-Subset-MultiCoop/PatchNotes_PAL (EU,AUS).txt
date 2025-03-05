@@ -32,7 +32,7 @@ Notes - Widescreen patch:
 -----------------------------------------------------------------------------------------------------
 
 //Subset MultiCoop Patch                                8-bit               8-bit
--   /               /                   $0x00F9CFB5     45                  65              [1-byte] ASCII changed (1st letter in word): "Error!" -> "error! 
+-   $0x6632B5       /                   $0x00F9CFB5     45                  65              [1-byte] ASCII changed (1st letter in word): "Error!" -> "error! 
 
 //FPS Increase - In-Game 
 -   $0x00721368     1                   $0x00E2E2F8     93A30000            24030001      Insert new MIPS instruction, so ths function which this instruiction is part of writes 1 to RAMaddress $0x0x721368
