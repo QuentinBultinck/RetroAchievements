@@ -935,7 +935,7 @@ achievements_typeByCategory = { // TODO set achievement types
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
-function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) =>
+function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer OR Gunslinger Mode
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -978,12 +978,120 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_RestartConfirmationMenu_Restart(enum_releaseRegion))
-		// || never_toAlt(
-		// 	is_ReleaseRegion(enum_releaseRegion)
-		// 	&& repeated(2, 
-		// 		never(is_flagState_InGame_true(enum_releaseRegion))
-		// 		&& is_flagState_InGame_false(enum_releaseRegion)))
 		
+function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InSinglePlayerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+			is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(
+			once(
+				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
+				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
+			&& on_Loading_start(enum_releaseRegion))
+	// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
+		|| unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InGunslingerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+			is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(
+			once(
+				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
+				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
+			&& on_Loading_start(enum_releaseRegion))
+	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+		/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
+			- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	xxxx
+			*/
+		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) 
+
+function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InSinglePlayerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+			is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(on_Loading_start(enum_releaseRegion))
+	// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
+		|| unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InGunslingerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+			is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for 2 frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
+			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(on_Loading_start(enum_releaseRegion))
+	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+		/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
+			- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	xxxx
+			*/
+		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion)
 
 // #endregion ACH - trigger generators
 
@@ -998,126 +1106,12 @@ achievements_triggers = {
 		// 	&& always_false()),
 
 	// --------c_SPstory--------
-	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
-		const_CHAPTER = CHAPTER_1_WrongTrain // BUG - inGameToggle is weird
-		const_END_FMV = FMV_Shadow
-		return
-		// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_InSinglePlayerMode(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_END_FMV, enum_releaseRegion))
-					&& on_FMV_end(const_END_FMV, enum_releaseRegion))
-				&& on_Loading_start(enum_releaseRegion))
-		// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
-			|| unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_InGunslingerMode(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(
-				once(
-					never(on_FMV_start(const_END_FMV, enum_releaseRegion))
-					&& on_FMV_end(const_END_FMV, enum_releaseRegion))
-				&& on_Loading_start(enum_releaseRegion))
-		// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
-				- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
-				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-				NTSCU: 	xxxx
-				*/
-			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
-			
-		}),
-	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
-		const_CHAPTER = CHAPTER_2_RideDevil
-		return
-		// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
-			unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_InSinglePlayerMode(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames // TODO test is this repeated necessary??
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_StoryChapterID(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(on_Loading_start(enum_releaseRegion))
-		// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
-			|| unless(
-				!is_ReleaseRegion(enum_releaseRegion)
-				|| !is_InGunslingerMode(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for 2 frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_GunslingerChapter_available(const_CHAPTER, enum_releaseRegion)
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
-
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(on_Loading_start(enum_releaseRegion))
-		// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
-				- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
-				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-				NTSCU: 	xxxx
-				*/
-			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion)
-		}),
+	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_1_WrongTrain, FMV_Shadow, enum_releaseRegion)),
+	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_2_RideDevil, enum_releaseRegion)),
+	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, xxxxx, enum_releaseRegion)), // TODO put down FMV ID
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
