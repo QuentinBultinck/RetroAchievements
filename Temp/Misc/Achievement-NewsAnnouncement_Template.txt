@@ -1,0 +1,51 @@
+               _     _                                     _     _   _                                                                                    _   
+     /\       | |   (_)                                   | |   | \ | |                       /\                                                         | |  
+    /  \   ___| |__  _  _____   _____ _ __ ___   ___ _ __ | |_  |  \| | _____      _____     /  \   _ __  _ __   ___  _   _  ___ ___ _ __ ___   ___ _ __ | |_ 
+   / /\ \ / __| '_ \| |/ _ \ \ / / _ \ '_ ` _ \ / _ \ '_ \| __| | . ` |/ _ \ \ /\ / / __|   / /\ \ | '_ \| '_ \ / _ \| | | |/ __/ _ \ '_ ` _ \ / _ \ '_ \| __|
+  / ____ \ (__| | | | |  __/\ V /  __/ | | | | |  __/ | | | |_  | |\  |  __/\ V  V /\__ \  / ____ \| | | | | | | (_) | |_| | (_|  __/ | | | | |  __/ | | | |_ 
+ /_/    \_\___|_| |_|_|\___| \_/ \___|_| |_| |_|\___|_| |_|\__| |_| \_|\___| \_/\_/ |___/ /_/    \_\_| |_|_| |_|\___/ \__,_|\___\___|_| |_| |_|\___|_| |_|\__|
+===============================================================================================================================================================
+
+Achievement News Annoucement temlate for usage in discord channel.
+
+The "Achievement News Annoucement" always uses ansi color codes (refer to https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06)
+
+
+..............
+|| Template || 
+''''''''''''''
+
+```ansi
+Title:       [1;31m GALDR [0m
+Console:     [0;34m WASM-4 [0m
+Developer:   [0;32m jonathand [0m
+Genre:       [0;35m Roguelike [0m
+Released:    [0;33m August 22, 2022 [0m
+```
+
+A new set was published by @ASolidSnack on YYYY-MM-DD
+
+_FLAVOR_TEXT_HERE_
+
+[Longplay](_LINK_HERE_)
+[RetroAchievements Game Page](_LINK_HERE_)
+
+
+..........
+|| Temp || 
+''''''''''
+
+```ansi
+Title:       [1;31m ~Prototype~ Red Dead Revolver [0m
+Console:     [0;31m PlayStation 2 [0m
+Developer:   [0;31m Angel Studios [0m
+Genre:       [0;31m Action-Adventure, Third-Person Shooter [0m
+Released:    [0;31m January 15, 2002 [0m
+```
+
+A new set was published by @ASolidSnack on 2025-3-7
+
+Ever wondered what Red looked like before he got polished? Step into a Wild West where Rockstar hadn’t taken over yet—Capcom’s Red Dead is like finding an old treasure map… but the 'X' leads to arcade-style chaos.
+
+[Longplay](https://www.youtube.com/watch?v=KfikutwvRGo)
+[RetroAchievements Game Page](https://retroachievements.org/game/32806)
