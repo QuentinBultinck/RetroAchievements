@@ -31,7 +31,7 @@ This guide provides comprehensive details on how to unlock each achievement with
 ```
 Set consists of 35 achievements worth 177 points
 
-Set released on DD MMMM YYYY
+Set released on 3 March 2025
 ```
 
 This set is primarily designed to showcase everything this build of *Red Dead Revolver* has to offer. As well as some secret/hidden features which did not make it to the full release. It should be fairly quick and easy to *"master"* this achievement set.

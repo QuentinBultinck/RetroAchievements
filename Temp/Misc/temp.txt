@@ -1,0 +1,191 @@
+[PAL][32-bit (base) Pointer:HUDcontrol(preferred)]
+
++0x8 - [Lower4:ActiveMenuPointerIndex |16-bit]
+| - This index determines which pointer should be referenced to access the current active InGameMenuData in [Array:UIcontrolPointers].
+| - This value does not always reset back to a default value when all InGameMenus are closed. 
+| - 'InGameMenu' refers to the PauseMenu and any subsequent menus accessed via the PauseMenu as well as InGamePopupMenus (eg. Lore or hints) not opened via the PauseMenu
+| - Practically this value should only be used to determine which pointer to use to access the current active InGameMenuData
+|
+| - Eg. SinglePlayer Mode: Opening PauseMenu (value = 0x2) -> Opening LoreMenu (value = 0x3)
+| - Eg. Multiplayer Mode: Any player opens PauseMenu (value = 0x3) -> Opening LoreMenu (value = 0x4)
+|
+| 0x1 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_A], this pointer always stores HUDcontrol_Gear-Player1
+| 0x2 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_B], this pointer always stores HUDcontrol_Gear-Player2 in Multiplayer Mode, in SinglePlayer Mode this stores InGameMenuData
+| 0x3 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_C], this pointer always stores InGameMenuData
+| 0x4 => Current active InGameMenuData is accessed via [Pointer:HUDcontrol_ptr-L2_D], this pointer always stores InGameMenuData
+| ...
+
+
++0xC - [32-bit (layer-1) Pointer] -> [Variable Size Array:UIcontrolPointers]
+.
+._____HUDcontrol_Gear-Player1_____
+.+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
+.| - This pointer always points to [Struct:HUDcontrol_Gear-Player1] when in SinglePlayer OR Multiplayer Mode
+.
+._____HUDcontrol_Gear-Player2_____ OR _____InGameMenuData_____
+.+0x4 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_B]
+.| - This pointer only points to [Struct:HUDcontrol_Gear-Player2] when in Multiplayer Mode with 2nd player active 
+.| - This pointer will point to [Struct:InGameMenu] when in SinglePlayer Mode
+.
+._____InGameMenuData_____
+.+0x8 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_C]
+.| - This pointer will point to [Struct:InGameMenu] when in any Mode
+.
+._____InGameMenuData_____
+.+0xC - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_D]
+.| - This pointer will point to [Struct:InGameMenu] when in any Mode
+
+
+[Definition Struct:HUDcontrol_Gear |??-byte]
+|''''''''''''''''''''
+| - "HUDcontrol_Gear" refers to the top-right HUD for ammo and throwables
+|
+|+0x30 - [32-bit (layer-1) Pointer]
+|.+0x2 - [Variable Size ASCII:UItype] = "HUD"
+|
+|+0x70 - [32-bit (layer-1) Pointer]
+|.+0xEC - [32-bit:EquippedWeapon_ReserveAmmo(display)]
+|.| - This value displays the reserve ammunition
+|.| - Functional values via [Pointer(EntityData_B):PlayerActorData] at $0x965cc4
+|.
+|.+0xF0 - [32-bit:EquippedWeapon_LoadedBullets(display)]
+|.| - This value regulates the amount of bullets icons displayed
+|.
+|.+0xF4 - [32-bit:EquippedWeapon_MagazineSize(display)]
+|.| - This value actually regulates the display of the bullet icons
+|.| - Practically this value can be used to determine the max allowed bullets, which can be loaded inside the gun
+|.
+|.+0xF8 - [32-bit:ThrowableCountInInventory(display)]
+|.| - This value displays how many dynamite bundles the player has in the inventory
+'
+
+[Definition Struct:InGameMenu.PausedFrame |??-byte]
+|''''''''''''''''''''
+| - "InGameMenu.PausedFrame" refers to the PauseMenu
+|
+|+0x30 - [32-bit (layer-1) Pointer]
+|.+0x2 - [Variable Size ASCII:UItype] = "Pause"
+|
+|_____SelectedText_____
+|+0xC - [32-bit (layer-1) Pointer]
+|.+0x4 - [32-bit (layer-2) Pointer]
+|..
+|..+0xC8 - [8-bit:SelectableTextCount |16-bit]
+|..| - This count is equal to the amount of entries in the [Array:SelectableTextPointers], below
+|..
+|..+0xCC - [20-byte Array:SelectableTextPointers]
+|..| - This array stores (5x) [32-bit pointers],for PauseFrame, which points to data of the selected text. (Stores a bitFlag for when the textHighlight is active)
+|..
+|..+0xD8 - [Lower4:SelectedTextIndex |16-bit] 
+|..| 0x0 => Top most text is selected (Resume Game)
+|..| 0x4 => bottom most text is selected (Quit Game)
+|
+|
+|+0x118 - [32-bit (layer-1) Pointer]
+|.+0x30 - [32-bit (layer-2) Pointer]
+|..+0x2 - [Variable Size ASCII:InGameMenuType] = "Frame"
+|.
+|._____TextLookupKeyID_____
+|.+0x6C - [32-bit:FrameTitle_TextLookupKeyID]
+|.| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+|.| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+|.| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text] 
+|.| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text] 
+|.| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+|.|
+|.| - Practically this can be used to identify which InGameMenu is displayed
+|.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+|.| - TextLookupKeyIDs listed below
+'
+
+[Definition Struct:InGameMenu.Frame |??-byte]
+|''''''''''''''''''''
+| - "InGameMenu.Frame" refers to any InGameMenu with a title + frame, which is not the PauseMenu (refer to TextLookupKeyIDs below)
+|
+|_____SelectedText_____
+|+0xC - [32-bit (layer-1) Pointer]
+|.+0x98 - [8-bit:SelectableTextCount |16-bit]
+|.| - This count is equal to the amount of entries in the [Array:SelectableTextPointers], below
+|.
+|.+0x9C - [Variable Size Array:SelectableTextPointers]
+|.| - Based on which Frame is being displayed (refer to TextLookupKeyIDs), the ListItems are different
+|.| - This array stores [32-bit pointers], which points to data of the selected text. (Stores a bitFlag for when the textHighlight is active)
+|.
+|.+0xA8 - [Lower4:SelectedTextIndex |16-bit] 
+|.| 0x0 => Top most text is selected
+|.| 0x1,0x2,... => lower text is selected
+|
+|
+|+0x30 - [32-bit (layer-1) Pointer]
+|.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
+|
+|
+|+0xB8 - [32-bit (layer-1) Pointer] -> FrameData
+|.+0x30 - [32-bit (layer-2) Pointer]
+|..+0x2 - [Variable Size ASCII:InGameMenuType] = "Frame"
+|.
+|._____TextLookupKeyID_____
+|.+0x6C - [32-bit:FrameTitle_TextLookupKeyID]
+|.| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+|.| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+|.| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text] 
+|.| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text] 
+|.| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+|.|
+|.| - Practically this can be used to identify which InGameMenu is displayed
+|.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+|.| - TextLookupKeyIDs listed below
+'
+
+[Definition Struct:InGameMenu.MessageBox |??-byte]
+|''''''''''''''''''''
+| - "InGameMenu.MessageBox" refers to the text inside the InGameMenu
+|
+|+0x30 - [32-bit (layer-1) Pointer]
+|.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
+|
+|_____TextLookupKeyID_____
+|+0xC - [32-bit (layer-1) Pointer]
+|.+0x4 - [32-bit (layer-2) Pointer]
+|..
+|..+0x30 - [32-bit (layer-1) Pointer]
+|...+0x2 - [Variable Size ASCII:DisplayedText]
+|...| - Changing this ASCII does not re-render the text on screen.
+|...| - This ASCII is the displayed text all capitalized
+|...| - This ASCII is language-dependent 
+|..
+|..+0x48 - [32-bit:MessageBoxText_TextLookupKeyID]
+|..| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+|..| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+|..| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text] 
+|..| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text] 
+|..| - Changing this [32-bit:Frame_TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text of the InGameMenu.Frame
+|..|
+|..| - Practically this can be used to identify what (non-selectable) text is displayed on the InGameMenu
+|..| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+|..| - TextLookupKeyIDs listed below
+'
+
+[Definition Struct:InGameMenu.Powers |??-byte]
+|''''''''''''''''''''
+| - "InGameMenu.Powers" refers to the PowersMenu
+|
+|+0x30 - [32-bit (layer-1) Pointer]
+|.+0x2 - [Variable Size ASCII:UItype] = "brands"
+'
+
+# TextLookupKeyIDs (hex)
+|(only lists IDs useful for achievement logic)
+|'''''''''''''''''''
+|---FrameTitle--- (InGameMenus with a title)
+| 0xe5e853d8 => "Paused" - PauseMenu
+| 0xfb67daf4 => "Lore" - PauseMenu->LoreMenu
+| 0xdea6139b => "Ammo Display" - (lore)
+| 0x33e14bf8 => "Restart" - PauseMenu->RestartConfirmationMenu
+| 0x8b239878 => "Quit" - PauseMenu->QuitConfirmationMenu
+| 0x9eb09a69 => "New Power" - NewPowerUnlockMenu
+| ...
+|---MessageBoxText---
+| 0xbe5d5443 => "Blood Frenzy" - PowerRune (NewPowerUnlockMenu)
+| ...
+'
