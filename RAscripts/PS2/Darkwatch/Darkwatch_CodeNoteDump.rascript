@@ -13,7 +13,7 @@
 // $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
 //          - Definition of [Struct:FMVdata] at $0x6aae58
-// $134408: [PAL][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
+// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
 //          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
 //          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
 //          
@@ -491,9 +491,27 @@
 //          @FPS Hack (NTSC-U)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F3308
 //          
-//          InitialValue = 0x0 => 30 fps
+//          InitialValue = 0x2 => 30 fps
 //          HackValue = 0x1 => 60 fps
+// $71FAF0: [NTSCU][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+//          +0x510 - [32-bit:LoadingState]
+//          | - Some values are different compared to PAL ($0x7213f0)
+//          |
+//          | 0x10000048 => Loading; Any type of loading (loading/saving memory card data, MainLoadingMenu, MedallionLoadingMenu)
+//          | 0x8009 => Not Loading (at MainMenu, during FMVs)
+//          | 0x8047 => Not Loading (when in-game)
+//          '
+// $71FAF4: [NTSCU][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
+//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $71FCCC: [NTSCU][10-byte ASCII:GameID]
+//          "SLUS_210.42" => NTSC-U/USA PS2 Game ID
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - Succeeding [2-byte ASCII] = ";1"
+// $71FF20: [NTSCU][32-bit (base) Pointer:LevelID(preferred)]
+//          @Regional equivalent of $0x721820 (PAL)
 // $71FF88: [8-bit] in gameplay flag
+// $720000: [NTSCU][32-bit (base) Pointer:PlayerInput(preferred)]
+//          @Regional equivalent of $0x721900 (PAL)
 // $721368: [PAL][Lower4:FPScontrol |32-bit]
 //          @FPS Hack (PAL)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F45F8
@@ -505,6 +523,16 @@
 //          
 //          InitialValue = 0x2 => 25 fps OR 30 fps (when using Widescreen NTSCU Mode RaPatch)
 //          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
+// $7213F0: [PAL][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+//          +0x450 - [32-bit:LoadingState]
+//          | - Some values are different compared to NTSCU ($0x71faf0)
+//          |
+//          | 0x1000003C => Loading; Any type of loading (loading/saving memory card data, MainLoadingMenu, MedallionLoadingMenu)
+//          | 0x8009 => Not Loading (at MainMenu, during FMVs)
+//          | 0x803B => Not Loading (when in-game)
+//          '
+// $7213F4: [PAL][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
+//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -586,7 +614,7 @@
 // $721820: [PAL][32-bit (base) Pointer:LevelID(preferred)]
 //          - This pointer points to ASCII data of the current loaded level. Each ASCII value listed here, substrings/returns different parts of the full LevelID
 //          
-//          +0x18 - [32-bit (layer-1) Pointer:]
+//          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer]
 //          ..+0x2 - [Variable Size ASCII:StoryChapterSectionID(false)]
 //          ..| - Prefer using [ASCII:StoryChapterSectionID(preferred)] below
@@ -614,8 +642,8 @@
 //          |'''''''''''''
 //          |---StoryChapters---
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
-//          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
-//          | "M03_Cemetery => Chapter 3, "Boneyard"
+//          | "M02_CanyonShoot" => Chapter 2, "Ride Like The Devil"
+//          | "M03_Cemetery" => Chapter 3, "Boneyard"
 //          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05". Supposedly M04 is cut content)
 //          | TBD => Chapter 5, "Darkwatch Outpost"
 //          | TBD => Chapter 6, "War Train"
@@ -704,7 +732,7 @@
 //          - This pointer may point to a memRegion which is mostly static
 //          
 //          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:PlayerInput]
+//          [32-bit (base) Pointer:PlayerInput(preferred)]
 //          +0x4 - [52-byte Struct(ControllerInput):Controller-1] ---------------
 //          +0x4 - [bit0 Bitflag:IsControllerConnected_Controller-1 |16-bit]
 //          
@@ -770,7 +798,7 @@
 //          
 //          
 //          ------Advanced_Documentation------
-//          [32-bit (base) Pointer:PlayerInput]
+//          [32-bit (base) Pointer:PlayerInput(preferred)]
 //          +0x4 - [52-byte Struct(ControllerInput):Controller-1]
 //          +0x38 - [52-byte Struct(ControllerInput):Controller-2]
 //          | - When connecting a 2nd controller to the PS2, the game will restructure this memRegion, so there's space for another [Struct:ControllerInput] for controller 2
@@ -870,7 +898,7 @@
 //          | ...
 //          
 //          
-//          +0xC - [32-bit (layer-1) Pointer] -> [Variable Size Array:UIcontrolPointers]
+//          +0xC - [32-bit (layer-1) Pointer:UIcontrolPointerArray] -> [Variable Size Array:UIcontrolPointers]
 //          .
 //          ._____HUDcontrol_Gear-Player1_____
 //          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
@@ -998,16 +1026,17 @@
 //          |+0x30 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
 //          |
-//          |_____TextLookupKeyID_____
+//          |
 //          |+0xC - [32-bit (layer-1) Pointer]
 //          |.+0x4 - [32-bit (layer-2) Pointer]
 //          |..
-//          |..+0x30 - [32-bit (layer-1) Pointer]
+//          |..+0x30 - [32-bit (layer-3) Pointer]
 //          |...+0x2 - [Variable Size ASCII:DisplayedText]
 //          |...| - Changing this ASCII does not re-render the text on screen.
 //          |...| - This ASCII is the displayed text all capitalized
 //          |...| - This ASCII is language-dependent
 //          |..
+//          |.._____TextLookupKeyID_____
 //          |..+0x48 - [32-bit:MessageBoxText_TextLookupKeyID]
 //          |..| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
 //          |..| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
@@ -1018,6 +1047,13 @@
 //          |..| - Practically this can be used to identify what (non-selectable) text is displayed on the InGameMenu
 //          |..| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
 //          |..| - TextLookupKeyIDs listed below
+//          |
+//          |
+//          |+0x7C - [32-bit (layer-1) Pointer]
+//          |.+0x58 - [Lower4:SelectableTextCount |32-bit]
+//          |.| - This count is how many entries/text lines can be highlighted/selected (eg. value = 0x2: Yes and No)
+//          |.+0x68 - [Lower4:SelectedTextIndex |32-bit]
+//          |.| - This value starts counting from 0x0; With 0x0 being the top most item
 //          '
 //          
 //          [Definition Struct:InGameMenu.Powers |??-byte]
@@ -1048,6 +1084,11 @@
 //          - Max size is 10 characters
 //          - ASCII value is set when creating a new PlayerProfile or when selecting an existing one
 //          - Each PlayerProfileName is required to be unique, can't have 2 PlayerProfiles with the same name
+// $729330: [NTSCU][8-bit:GameState |32-bit]
+//          @Regional equivalent of $0x73b430 (PAL)
+//          - Values are different when compared to PAL
+//          0x1 => Player is in control of PlayerCharacter || At MainMenu || In-Game
+//          0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
 // $72BBD8: Player in Movie Cutscene [8-Bit]
 //          0x01= Yes
 // $73B3F0: [PAL][32-bit:TurboMode(hack)]
@@ -1061,9 +1102,12 @@
 //          --| timeAtMatchEnd = [32-bit:TimerControl(functional)] + ([32-bit:MatchDuration] * 60 * 1,000)
 //          --| timeLeftInMatch =  timeAtMatchEnd - currentTime
 // $73B430: [PAL][8-bit:GameState |32-bit]
-//          - 0x0 => Player is in control of PlayerCharacter. Also 0x0 when in MainMenu
-//          - 0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
-//          - 0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
+//          - Values are different when compared to NTSCU
+//          0x0 => Player is in control of PlayerCharacter || At MainMenu || In-Game
+//          0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
+//          0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
+// $73B68C: [NTSCU][32-bit (base) Pointer:PlayerData]
+//          @Regional equivalent of $0x74d78c (PAL)
 // $73DCD0: [PAL][bit0 BitFlag:IsCinematicActiveStateTransitioning |32-bit]
 //          - 1 => whenever a cinematic is ending or starting (transition period)
 //          - 0 => when any cinematic is fully active and and not active
@@ -1134,40 +1178,44 @@
 //          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x70 - [Struct(Coordinates):CameraLocation)]
 // $763D4C: [32-bit] turn ability flag
+// $7F585C: [NTSCU][32-bit:Checkpoint_RespawnPointID(preferred)]
+//          @Regional equivalent of $0x80783c (PAL)
+//          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x8ff4d8
 // $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol(alt)]
 //          - Prefer using [Pointer:HUDcontrol(preferred)] at $0x7238b8
 // $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
 //          - This Checkpoint_RespawnPointID only changes when a new Checkpoint initializes OR when non is active.
+//          - This value becomes 0x0 when pressing PauseMenu->Restart, thus this can be used to check if the player presses Restart.
 //          
 //          # RespawnPointIDs (hex) - CheckpointIDs (string)
 //          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
 //          |''''''''''''''''''''''''
-//          | 0x0 => No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu
+//          | 0x0 =&gt; No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu; Not when using a checkpoint.
 //          |
 //          |===Chapter 1, "The Wrong Train"===
 //          | ---StoryChapterSection "WrongTrain_A"---
-//          | 0x4D9 - "Checkpoint_1" => Start of Chapter
-//          | 0x50C - "Checkpoint_2" => After acquiring the Redeemer Pistol
+//          | 0x4D9 - "Checkpoint_1" =&gt; Start of Chapter
+//          | 0x50C - "Checkpoint_2" =&gt; After acquiring the Redeemer Pistol
 //          | ---StoryChapterSection "WrongTrain_B"---
-//          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
-//          | 0x333 - "Checkpoint_2" => Waking up after vault explosion. Cassidy wakes up the player
+//          | [VariousValues] - "Checkpoint_1" =&gt; Start of StoryChapterSection
+//          | 0x333 - "Checkpoint_2" =&gt; Waking up after vault explosion. Cassidy wakes up the player
 //          |===Chapter 2, "Ride Like The Devil"===
 //          | ---StoryChapterSection "Hub_A"---
-//          | 0x26C - "Checkpoint_1" => Start of Chapter
-//          | 0x565 - "Checkpoint_2" => Start of Boss Battle
+//          | 0x26C - "Checkpoint_1" =&gt; Start of Chapter
+//          | 0x565 - "Checkpoint_2" =&gt; Start of Boss Battle
 //          |===Chapter 3, "Boneyard"===
 //          | ---StoryChapterSection "M03_C"---
-//          | 0x328 - "Checkpoint_1" => At start of Chapter
-//          | 0x3DF - "Checkpoint_2" => Before Mark of Evil spawns near the church
+//          | 0x328 - "Checkpoint_1" =&gt; At start of Chapter
+//          | 0x3DF - "Checkpoint_2" =&gt; Before Mark of Evil spawns near the church
 //          | ---StoryChapterSection "M03_B"---
-//          | 0x344 - "Checkpoint_1" => Start of StoryChapterSection
-//          | 0x342 - "Checkpoint_2" => Entering catacombs arena
-//          | 0x362 - "Checkpoint_3" => Catacombs arena, after Banshee intro
-//          | 0x362 - "Checkpoint_4" => Catacombs arena, after defeating the Banshees
+//          | 0x344 - "Checkpoint_1" =&gt; Start of StoryChapterSection
+//          | 0x342 - "Checkpoint_2" =&gt; Entering catacombs arena
+//          | 0x362 - "Checkpoint_3" =&gt; Catacombs arena, after Banshee intro
+//          | 0x362 - "Checkpoint_4" =&gt; Catacombs arena, after defeating the Banshees
 //          | ---StoryChapterSection "M03_A"---
-//          | ??? - "Checkpoint_1" =>
-//          | 0x2BC - "Checkpoint_2" => After Good/Evil choice
+//          | ??? - "Checkpoint_1" =&gt;
+//          | 0x2BC - "Checkpoint_2" =&gt; After Good/Evil choice
 //          | ...
 //          |===Chapter 4, "Devil's Belly Mine"===
 //          | ---StoryChapterSection "xxxxx"---
@@ -1224,6 +1272,12 @@
 //          +0x2 - [13-byte ASCII:CheckpointID]
 //          | - Documentation at $0x96d022
 // $8FEAEC: [32-bit] Blood frenzy ability flag
+// $8FF494: [NTSCU][Lower4:PlayerCount(preferred) |32-bit]
+//          @Regional equivalent of $0x911474 (PAL)
+// $8FF4D8: [NTSCU][32-bit (base) Pointer:CheckpointData_0]
+//          @Regional equivalent of $0x9114b8 (PAL)
+// $8FF510: [NTSCU][Lower4:GameMode |32-bit]
+//          @Regional equivalent of $0x9114f0 (PAL)
 // $8FFAC8: [8-bit] main menu selection
 // $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
 //          +0x2 - [Variable Size ASCII:LevelID(alt)]
@@ -1263,8 +1317,6 @@
 //          0x3 => Multiplayer Versus Mode
 // $911508: [32-bit:MatchDuration(alt)]
 //          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
-// $911768: 8-bit which pointer is used for the current HUD
-//          This value x 0x4
 // $911898: [PAL][32-bit (base) Pointer:MessageBoxData]
 //          @Fixed Memory Location, although pointed to by $0x7238b8
 //          - MessageBox is an in-game popup/submenu (for Lore/hints or the PowersMenu)
@@ -1290,7 +1342,12 @@
 //          | - These values regulate the location of the PlayerCharacterModel, not the horse.
 //          | - Definition of [Struct:Coordinates] at $0x965cc4
 //          | - (These are the functional coordinates)
-// $953C24: [32-bit] current weapon equipped
+// $953C24: [NTSCU][300-byte Struct(PlayerData):Player-1]
+//          ===========================================
+//          @Regional equivalent of $0x965c04 (PAL)
+//          
+//          [32-bit:EquippedWeapon_WeaponID-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953C28: [32-bit] current map timer
 // $953C3C: [32-bit] current map Firearms kills
 // $953C40: [32-bit] current map shots fired
@@ -1304,12 +1361,29 @@
 //          0x01 = Cowboy
 //          0x02 = Shootist
 //          0x03 = Deadeye
-// $953D18: [8-bit] current single player map in-progress
+// $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
+//          @Regional equivalent of $0x965cc4 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
+//          @Regional equivalent of $0x965cf8 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D1A: [8-bit] number of maps completed
 // $953D24: [32-bit] profiles
 //          0 = profile 1
 //          1 = profile 2
 //          2 = profile 3
+// $953D4C: [NTSCU][32-bit (base) Pointer:HUDcontrol_Health-Player1]
+//          @Regional equivalent of $0x965d2c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D50: [NTSCU][300-byte Struct(PlayerData):Player-2]
+//          ===========================================
+//          @Regional equivalent of $0x965d30 (PAL)
+//          - PlayerData for player2 is only populated when starting Multiplayer
+//          
+//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player2]
+//          @Member of [Struct(PlayerData):Player-2] (refer to $0x73b68c)
+// $95B042: [NTSCU][13-byte ASCII:CheckpointID]
+//          @Regional equivalent of $0x96d022 (PAL)
 // $960B3C: [32-bit] High calibar bullets ability flag
 // $960D6C: [32-bit] black shroud ability flag
 // $960F7C: [32-bit] shield ability flag
@@ -1432,6 +1506,7 @@
 // $965CC4: [PAL][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This base pointer is only active during gameplay
+//          - This pointer temporarily becomes 0x0 on PauseMenu->Restart
 //          
 //          +0x30 - [12-byte Struct(Coordinates):PlayerLocation(copy)]
 //          | - These coordinates are copied from [Struct:EntityComponent.CharacterStateMachineComponent].[Struct(Coordinates):PlayerLocation(functional)]
@@ -1911,8 +1986,12 @@
 //          ....| - FloatRange: [1.0 --- 0.0]; 1.0 = maxHP; 0.0 = death
 //          ....| - Reference [Pointer:BossEntityComponentData].[Float:BossHP(functional)] in this same pointer chain
 //          ....
+//          ....+0x2F- [bit0 BitFlag:IsBossHPbarDisplayed]
+//          ....| - This value directly controls if the Boss HP bar is displayed or not
+//          ....
 //          ....+0xF4 - [32-bit (layer-5) Pointer:BossEntityData] -> [Struct:EntityData]
 //          ....| - Defintion of [Struct:EntityData] at $0x721788
+//          ....| - When this pointer is zeroed out, there's no BossHP display active
 //          .....+0x58 - [32-bit (layer-6) Pointer] -> [Dictionary:BossEntityComponents]
 //          .....| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:PowerRuneComponentData]
 //          .....| - Based on the Boss and Chapter more or less BossEntityComponents are stored inside this dictionary

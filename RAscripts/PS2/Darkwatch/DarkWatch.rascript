@@ -203,6 +203,14 @@ memory_StructDefs = {
 			"Bitflag:IsControllerConnected": 0x0,
 			"BitFlag:IsInputPressed_Cross": 0xB},
 		},
+	"Struct:LoadingData": {
+		"pointerChainToMember": {
+			"32-bit:LoadingState": {
+				"pointerChainOffsets": {
+					RELEASE_REGION_USA: [0x510],
+					RELEASE_REGION_EUR: [0x450]}},
+			},
+		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -252,26 +260,24 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 // #region MEM - address storage
 memory_addresses = {
 	// "memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	"Flag:IsInGame(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x72252c, RELEASE_REGION_JPN: sNULL},
 	
-	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
-	"Lower4:GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
+	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
+	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
 	
-	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
-	"8-bit:GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
+	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
+	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
+	
+	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 
-	"32-bit:LoadingState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80b650, RELEASE_REGION_JPN: sNULL}, // TODO this doesn't work in COOP
-	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
+	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
 
-	"ASCII:GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
-	"ASCII:CheckpointID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
-
-	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
-	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
-	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
-	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
-	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
-
+	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: 0x134408, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
+	"Pointer:LoadingData_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
+	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: 0x71ff20, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
+	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
+	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
+	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -387,10 +393,9 @@ function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion)
 // ◦ General Game Logic ◦
 // ''''''''''''''''''''''
 // #region General Game Logic
-const_FLAG_InGame_true = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
-const_LOADING_STATE_Loading = 0x1000003C 
-const_GAME_STATE_AnyInGameMenu_active = 0x3
-// ----------------GameMode Identification---------------------
+CONST_LOADING_STATE_Loading = {RELEASE_REGION_USA: 0x10000048, RELEASE_REGION_EUR: 0x1000003C, RELEASE_REGION_JPN: sNULL}
+CONST_GAME_STATE_AnyInGameMenu_active = 0x3
+// ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
 
@@ -432,12 +437,7 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
 
-function current_flagState_IsInGame(enum_releaseRegion) =>
-	dword(memory_getAddress("Flag:IsInGame(preferred)", enum_releaseRegion))
-
-function prev_flagState_IsInGame(enum_releaseRegion) =>
-	prev(current_flagState_IsInGame(enum_releaseRegion))
-
+// ----------------GameStates---------------------
 function current_pointerState_PlayerActorData(enum_releaseRegion) {
 	let_memAddr_Pointer = memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)
 	return dword(let_memAddr_Pointer)}
@@ -450,17 +450,6 @@ function wasPrior_flagState_InGame_true(enum_releaseRegion) =>
 
 function prev_pointerState_PlayerActorData(enum_releaseRegion) =>
 	prev(current_pointerState_PlayerActorData(enum_releaseRegion))
-
-// function is_flagState_InGame_true(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
-
-// function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
-	// && prev_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
-
-// function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
-	// && prev_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
 
 function is_flagState_InGame_true(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) != 0
@@ -476,22 +465,27 @@ function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
 	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
 
-function current_LoadingState(enum_releaseRegion) =>
-	dword(memory_getAddress("32-bit:LoadingState", enum_releaseRegion))
+function current_LoadingState(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:LoadingData_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct:LoadingData", "32-bit:LoadingState", 
+		let_memAddr_BasePointer, enum_releaseRegion,
+		memAccessorFunction_toPointedToMember = dword)
+	}
 
 function prev_LoadingState(enum_releaseRegion) =>
 	prev(current_LoadingState(enum_releaseRegion))
 
 function is_Loading(enum_releaseRegion) => 
-	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function on_Loading_start(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
-	&& prev_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function on_Loading_end(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
-	&& prev_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function current_GameState(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:GameState", enum_releaseRegion))
@@ -503,14 +497,15 @@ function prev_GameState(enum_releaseRegion) =>
 	prev(current_GameState(enum_releaseRegion))
 
 function is_AnyInGameMenu_active(enum_releaseRegion) =>
-	current_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+	current_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
 
 function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
-	current_GameState(enum_releaseRegion) != const_GAME_STATE_AnyInGameMenu_active
-	&& prev_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+	current_GameState(enum_releaseRegion) != CONST_GAME_STATE_AnyInGameMenu_active
+	&& prev_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
+
 // -----------------PauseMenu--------------------
 CONST_TEXT_LOOKUP_KEY_PauseMenu = 0xE5E853D8
-CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu = 0x33E14BF8 	
+CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu = 0x33E14BF8
 
 function is_PauseMenu_active(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
@@ -579,7 +574,7 @@ MULTIPLAYER_LEVEL_Asylum = "DM_Asylum"
 CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
 		// "LevelID": "_templateID_",
-		// "StoryChapterSectionIDs": ["_templateID_"],
+		// "StoryChapterSectionIDs": ["_Section1_", "_Section2_"],
 		// },
 	CHAPTER_1_WrongTrain: {
 		"LevelID": "WrongTrain",
@@ -737,6 +732,7 @@ CONST_ASCII_FLAG_SofdecIsFMVactive_true = "Sofd" // FullString: "SofdecStream"
 FMV_MainMenu = "PS2MAI"
 FMV_Shadow = "M01S4_"
 FMV_LazarusLives = "M02S1_"
+FMV_CassidyDies = "M04S1_"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -1111,7 +1107,7 @@ achievements_triggers = {
 	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_2_RideDevil, enum_releaseRegion)),
 	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
-		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, xxxxx, enum_releaseRegion)), // TODO put down FMV ID
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)), // TODO put down FMV ID
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
