@@ -44,8 +44,8 @@
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
 //          |---Chapter 1, "The Wrong Train"---
-//          | "M01S1_" => Start of Chapter: Jericho enters train
-//          | "M01S2_" => Jericho blows up door vault
+//          | "M01S1_" => Start of Chapter: The Wrong Train
+//          | "M01S2_" => Lazarus Malkoth
 //          | "M01S4_" => End of Chapter: Shadow
 //          |---Chapter 2, "Ride Like The Devil"---
 //          | "M02S1_" => Start of Chapter: Lazarus Lives
@@ -55,10 +55,14 @@
 //          | "M05S1_" => End of Chapter: The Haunting
 //          |---Chapter 5, "Darkwatch Outpost"---
 //          | //
-//          |---Chapter 6, "Torture Maze"---
-//          | "M08S1_" => Start of Chapter: ??
-//          
+//          |---Chapter 6, "War Train"---
+//          | //
+//          |---Chapter 7, "Torture Maze"---
+//          | "M08S1_" => Start of Chapter: Darkwatch Citadel
+//          | "M09S2_" => General Clay Cartwright
+//          | "M09S3_" => End of Chapter: Giddy-up, Cowboy
 //          |---Chapter 8, "Baptism of Fire"---
+//          | "M10S1_" => Start of Chapter:
 //          | ...
 //          |---Chapter 9, "Citadel"---
 //          | ...
@@ -644,10 +648,9 @@
 //          | "M03_Cemetery" => Chapter 3, "Boneyard"
 //          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05". Supposedly M04 is cut content)
 //          | "M07_DWOutpost" => Chapter 5, "Darkwatch Outpost"
-//          | "M09_TortureMaze" => Chapter 6, "Torture Maze"
-//          
-//          | TBD => Chapter 7, "Torture Maze"
-//          | TBD => Chapter 8, "Baptism of Fire
+//          | "Wartrain => Chapter 6, "War Train"
+//          | "M09_TortureMaze" => Chapter 7, "Torture Maze"
+//          | "M10_TradingPost" => Chapter 8, "Baptism of Fire
 //          | TBD => Chapter 9, "Citadel"
 //          | TBD => Chapter 10, "Rescue"
 //          | TBD => Chapter 11, "The Deadlight Prism"
@@ -696,12 +699,17 @@
 //          |---Chapter 5, "Darkwatch Outpost"---
 //          | "M07_A" => Section 1 - Outpost
 //          | "M07_B" => Section 2 - Frozen Lab
-//          | "M07_C" => Section 3 - Travel to Darkwatch Citadel on horseback
-//          |---Chapter 6, "Torture Maze"---
-//          | "M09_A" => Section 1 - ??
-//          
-//          
+//          |---Chapter 6, "War Train"---
+//          | "M07_C" => Section 1 - Travel to Darkwatch Citadel on horseback
+//          |---Chapter 7, "Torture Maze"---
+//          | "M09_A" => Section 1 - Arena 1, Melee only
+//          | "M09_B" => Section 2 - Arena 2
+//          | "M09_C" => Section 3 - Arena 3, Steamy
+//          | "M09_D" => Section 4 - Sewers
+//          | "M09_E" => Section 5 - Arena 4
+//          | "M09_F" => Section 6 - Arena with sun (FMV Cartwright)
 //          |---Chapter 8, "Baptism of Fire"---
+//          | "M10_A" => Section 1 - Entering Town
 //          | ...
 //          |---Chapter 9, "Citadel"---
 //          | ...
@@ -1244,23 +1252,33 @@
 //          | ---StoryChapterSection "M07_B"---
 //          | 0x2DC - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
 //          | 0x387 - "Checkpoint_2" => After moral choice (1x TaintedSoul)
+//          |
+//          |===Chapter 6, "War Train"===
 //          | ---StoryChapterSection "M07_C"---
-//          | ??? - "Checkpoint_1" => Start of StoryChapterSection; WARNING: RespawnPointID is 0 for this checkpoint
+//          | (Checkpoint_1 is non-existent) => Before War Train spawns
 //          | 0x332 - "Checkpoint_2" => Fight vs War Train
 //          |
-//          |===Chapter 6, "Torture Maze"===
+//          |===Chapter 7, "Torture Maze"===
 //          | ---StoryChapterSection "M09_A"---
 //          | 0x331 - "Checkpoint_1" => Start of StoryChapterSection
-//          | ...
-//          |
-//          
-//          
-//          |===Chapter 7, "Torture Maze"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "M09_B"---
+//          | 0x3B2 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x45F - "Checkpoint_2" => Before civilians spawn
+//          | ---StoryChapterSection "M09_C"---
+//          | 0x31C - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3A4 - "Checkpoint_2" => After turning all the valves
+//          | ---StoryChapterSection "M09_D"---
+//          | 0x2B1 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M09_E"---
+//          | 0x34F - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x368 - "Checkpoint_2" => Arena fight part 2
+//          | 0x389 - "Checkpoint_3" => Arena fight part 3
+//          | ---StoryChapterSection "M09_F"---
+//          | 0x3BF - "Checkpoint_1" => Start of StoryChapterSection
 //          |
 //          |===Chapter 8, "Baptism of Fire"===
-//          | ---StoryChapterSection "xxxxx"---
+//          | ---StoryChapterSection "M10_A"---
+//          | 0x38A - "Checkpoint_1" => Start of StoryChapterSection
 //          | ...
 //          |
 //          |===Chapter 9, "Citadel"===
@@ -1624,7 +1642,7 @@
 //          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when wielding the Crossbow
 //          ...
-//          ...+0x34 - [32-bit (layer-4) Pointer:EntityWeaponComponent_BaiscPistol] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
+//          ...+0x34 - [32-bit (layer-4) Pointer:EntityWeaponComponent_BasicPistol] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
 //          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid for Chapter 1, when the player only has the BasicPistol equipped
 //          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityWeaponComponent_NormalWeapon(noDynamite)]
@@ -1827,7 +1845,7 @@
 //          
 //          [Definition Struct:EntityWeaponComponent.WeaponComponent(throwable) |??-byte]
 //          |''''''''''''''''''''''''''''''
-//          | - This struct contains data which regulates the throwable dynamite bundles
+//          | - This struct contains data which regulates the throwables (dynamite and splitter grenades)
 //          |
 //          |+0x8 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "WeaponComponent"
@@ -1837,15 +1855,15 @@
 //          |.| - WeaponNameIDs listed below
 //          |
 //          |+0x74 - [32-bit:ThrowableCountInInventory(functional-1)]
-//          || - This value is always at 1 as long as dynamite bundles left in inventory > 0
-//          || - Manually changing this value, puts that amount of dynamite bundles in the player's inventory, but this is not the intended design. (eg. manually placing 0x10 on this value, puts 16 dynamite bundles in the inventory)
-//          || - Total number of dynamite bundles = [32-bit:ThrowableCountInInventory(functional-1)] + [32-bit:ThrowableCountInInventory(functional-2)]
+//          || - This value is always at 1 as long as throwables left in inventory > 0
+//          || - Manually changing this value, puts that amount of throwables in the player's inventory, but this is not the intended design. (eg. manually placing 0x10 on this value, puts 16 throwables in the inventory)
+//          || - Total number of throwables = [32-bit:ThrowableCountInInventory(functional-1)] + [32-bit:ThrowableCountInInventory(functional-2)]
 //          |
 //          |+0x1D8 - [32-bit:ThrowableCountInInventory(functional-2)]
-//          || - This value regulates the amount of dynamite bundles in the player's inventory
-//          || - Freezing this value above 0, gives the player unlimited dynamite bundles
+//          || - This value regulates the amount of throwables  in the player's inventory
+//          || - Freezing this value above 0, gives the player unlimited throwables
 //          || - This count is always 1 count lower than the count shown on the [32-bit:ThrowableCountInInventory(display)] ($0x7238b8)
-//          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more dynamite bundle, afterwards this functional value remains at 0 and the display value becomes 0.
+//          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more throwable, afterwards this functional value remains at 0 and the display value becomes 0.
 //          '
 //          
 //          [Definition Struct:Coordinates |12-byte]

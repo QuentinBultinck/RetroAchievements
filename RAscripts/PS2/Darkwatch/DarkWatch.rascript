@@ -568,12 +568,16 @@ CHAPTER_2_RideDevil = 0x2
 CHAPTER_3_Boneyard = 0x3
 CHAPTER_4_DevilMine = 0x4
 CHAPTER_5_DarkwatchOutpost = 0x5
-CHAPTER_6_TortureMaze = 0x6
+CHAPTER_6_WarTrain = 0x6
+CHAPTER_7_TortureMaze = 0x7
+CHAPTER_8_BaptismFire = 0x8
 
 CHAPTER_SECTION_1 = 0
 CHAPTER_SECTION_2 = 1
 CHAPTER_SECTION_3 = 2
-CHAPTER_SECTION_4 = 2
+CHAPTER_SECTION_4 = 3
+CHAPTER_SECTION_5 = 4
+CHAPTER_SECTION_6 = 5
 
 MULTIPLAYER_LEVEL_Asylum = "DM_Asylum"
 MULTIPLAYER_LEVEL_DeathDealer = "DM_DeathDealer"
@@ -614,9 +618,13 @@ CONST_LEVEL_DATA = {
 		"LevelID": "M07_DWOutpost",
 		"StoryChapterSectionIDs": ["M07_A", "M07_B", "M07_C"],
 		},
-	CHAPTER_6_TortureMaze: {
+	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
-		"StoryChapterSectionIDs": ["M09_A"],
+		"StoryChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
+		},
+	CHAPTER_8_BaptismFire: {
+		"LevelID": "M10_TradingPost",
+		"StoryChapterSectionIDs": ["M10_A"],
 		},
 	}
 
@@ -760,7 +768,7 @@ FMV_Shadow = "M01S4_"
 FMV_LazarusLives = "M02S1_"
 FMV_CassidyDies = "M04S1_"
 FMV_TheHaunting = "M05S1_"
-// FMV_ xxx = "M07S1_"
+FMV_GiddyUp = "M09S3_"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -927,8 +935,12 @@ achievements_coreData = {
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
 		"a_DWOutpost": { // CONCEPT a_DWOutpost // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_5_DarkwatchOutpost Completion"},
+		"a_WarTrain": { // CONCEPT a_WarTrain // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
 		"a_TortureMaze": { // CONCEPT a_TortureMaze // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_6_TortureMaze Completion"},
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
+		"a_BaptismFire": { // CONCEPT a_BaptismFire // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
@@ -1148,7 +1160,11 @@ achievements_triggers = {
 		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)),
 	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_5_DarkwatchOutpost, enum_releaseRegion)),
+	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_6_WarTrain, enum_releaseRegion)),
 	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)),
+	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		always_false()),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
@@ -1159,6 +1175,11 @@ achievements_triggers = {
 // • ACHIEVEMENT text •
 // =====================
 // #region ACH - text
+
+/* IDEA's TEXT:
+	High Moon (instead of "High Noon")
+	Agent 000 (reference to new uniform casket)
+	*/
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 
@@ -1168,7 +1189,9 @@ achievements_titles = {
 	"a_DevilMine":	 			{"en": "xxxxxxxxx"},
 	"a_Boneyard":	 			{"en": "xxxxxxxxx"},
 	"a_DWOutpost":	 			{"en": "xxxxxxxxx"},
+	"a_WarTrain":	 			{"en": "xxxxxxxxx"},
 	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
+	"a_BaptismFire":	 		{"en": "xxxxxxxxx"}, 
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1182,7 +1205,9 @@ achievements_descriptions = {
 	"a_DevilMine":	 			{"en": "xxxxxxxxx"},
 	"a_Boneyard":	 			{"en": "xxxxxxxxx"},
 	"a_DWOutpost":	 			{"en": "xxxxxxxxx"},
+	"a_WarTrain":	 			{"en": "xxxxxxxxx"},
 	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
+	"a_BaptismFire":	 		{"en": "xxxxxxxxx"}, 
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
