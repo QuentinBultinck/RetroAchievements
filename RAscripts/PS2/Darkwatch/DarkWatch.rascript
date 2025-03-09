@@ -8,7 +8,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/19111
-// RATools version: v1.15.0 // TODO set last used RATools version here
+// RATools version: v1.15.0 
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -266,7 +266,7 @@ memory_addresses = {
 	
 	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
-	
+
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
@@ -504,8 +504,11 @@ function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
 	&& prev_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
 
 // -----------------PauseMenu--------------------
-CONST_TEXT_LOOKUP_KEY_PauseMenu = 0xE5E853D8
-CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu = 0x33E14BF8
+CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
+CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
+
 
 function is_PauseMenu_active(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
@@ -523,7 +526,7 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x118
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		*/
 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFF)
 
@@ -545,7 +548,7 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		
 		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x7C
@@ -564,12 +567,27 @@ CHAPTER_1_WrongTrain = 0x1
 CHAPTER_2_RideDevil = 0x2
 CHAPTER_3_Boneyard = 0x3
 CHAPTER_4_DevilMine = 0x4
+CHAPTER_5_DarkwatchOutpost = 0x5
+CHAPTER_6_TortureMaze = 0x6
 
 CHAPTER_SECTION_1 = 0
 CHAPTER_SECTION_2 = 1
 CHAPTER_SECTION_3 = 2
+CHAPTER_SECTION_4 = 2
 
 MULTIPLAYER_LEVEL_Asylum = "DM_Asylum"
+MULTIPLAYER_LEVEL_DeathDealer = "DM_DeathDealer"
+MULTIPLAYER_LEVEL_DeathDealerDay = "DM_DeathDealerDay"
+MULTIPLAYER_LEVEL_DevilsBelly = "DM_DevilsBelly"
+MULTIPLAYER_LEVEL_DonnerPass = "DM_DonnerPass"
+MULTIPLAYER_LEVEL_DonnerPassDay = "DM_DonnerPassDay"
+MULTIPLAYER_LEVEL_HangTownEast = "DM_HangTownEast"
+MULTIPLAYER_LEVEL_HangTownEastDay = "DM_HangTownEastDay"
+MULTIPLAYER_LEVEL_HangTownWest = "DM_HangTownWest"
+MULTIPLAYER_LEVEL_HangTownWestDay = "DM_HangTownWestDay"
+MULTIPLAYER_LEVEL_HellHole = "DM_HellHole"
+MULTIPLAYER_LEVEL_TradeCenter = "DM_TradeCenter"
+MULTIPLAYER_LEVEL_TradeCenterDay = "DM_TradeCenterDay"
 
 CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
@@ -590,7 +608,15 @@ CONST_LEVEL_DATA = {
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
-		"StoryChapterSectionIDs": [],
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
+		},
+	CHAPTER_5_DarkwatchOutpost: {
+		"LevelID": "M07_DWOutpost",
+		"StoryChapterSectionIDs": ["M07_A", "M07_B", "M07_C"],
+		},
+	CHAPTER_6_TortureMaze: {
+		"LevelID": "M09_TortureMaze",
+		"StoryChapterSectionIDs": ["M09_A"],
 		},
 	}
 
@@ -733,6 +759,8 @@ FMV_MainMenu = "PS2MAI"
 FMV_Shadow = "M01S4_"
 FMV_LazarusLives = "M02S1_"
 FMV_CassidyDies = "M04S1_"
+FMV_TheHaunting = "M05S1_"
+// FMV_ xxx = "M07S1_"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -888,11 +916,19 @@ achievements_coreData = {
 	
 	"c_SPstory": { // Category - Singleplayer Story Progression
 		// "a_Template": { // CONCEPT a_SPstory
-		// 	"id": 000000, "points": 0000000, "devInfo": "Chapter 'xxxxxx' Completion"},
+		// 	"id": 000000, "points": 0000000, "devInfo": "xxxx Completion"},
 		"a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
 		"a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"}, 
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
+		"a_Boneyard": { // CONCEPT a_Boneyard // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
+		"a_DevilMine": { // CONCEPT a_DevilMine // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
+		"a_DWOutpost": { // CONCEPT a_DWOutpost // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_5_DarkwatchOutpost Completion"},
+		"a_TortureMaze": { // CONCEPT a_TortureMaze // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_6_TortureMaze Completion"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
@@ -909,7 +945,7 @@ achievement_TYPE_WinCondition = "win_condition"
 achievement_TYPE_Missable = "missable"
 achievement_TYPE_Standard = ""
 
-achievements_typeByCategory = { // TODO set achievement types
+achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -963,7 +999,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			
 			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 			
 			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0x7C
@@ -1107,7 +1143,13 @@ achievements_triggers = {
 	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_2_RideDevil, enum_releaseRegion)),
 	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
-		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)), // TODO put down FMV ID
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)),
+	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)),
+	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_5_DarkwatchOutpost, enum_releaseRegion)),
+	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		always_false()),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1123,6 +1165,10 @@ achievements_titles = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
 	"a_RideDevil": 				{"en": "xxxxxxxxx"},
+	"a_DevilMine":	 			{"en": "xxxxxxxxx"},
+	"a_Boneyard":	 			{"en": "xxxxxxxxx"},
+	"a_DWOutpost":	 			{"en": "xxxxxxxxx"},
+	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1133,6 +1179,10 @@ achievements_descriptions = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
 	"a_RideDevil": 				{"en": "xxxxxxxxx"},
+	"a_DevilMine":	 			{"en": "xxxxxxxxx"},
+	"a_Boneyard":	 			{"en": "xxxxxxxxx"},
+	"a_DWOutpost":	 			{"en": "xxxxxxxxx"},
+	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}

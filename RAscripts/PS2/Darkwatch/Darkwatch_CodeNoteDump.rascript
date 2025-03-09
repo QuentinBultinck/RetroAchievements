@@ -44,22 +44,20 @@
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
 //          |---Chapter 1, "The Wrong Train"---
-//          | "M01S1_" => Jericho enters train
+//          | "M01S1_" => Start of Chapter: Jericho enters train
 //          | "M01S2_" => Jericho blows up door vault
-//          | "M01S3_" => ???
-//          | "M01S4_" => Jericho blows up Lazarus + Escape on horse
+//          | "M01S4_" => End of Chapter: Shadow
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | "M02S1_" => Lazarus escape from train wreck + Pursues Jericho
+//          | "M02S1_" => Start of Chapter: Lazarus Lives
 //          |---Chapter 3, "Boneyard"---
-//          | "M04S1_" => End of Chapter, Cassidy dies
+//          | "M04S1_" => End of Chapter: Cassidy Dies
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | ...
+//          | "M05S1_" => End of Chapter: The Haunting
 //          |---Chapter 5, "Darkwatch Outpost"---
-//          | ...
-//          |---Chapter 6, "War Train"---
-//          | ...
-//          |---Chapter 7, "Torture Maze"---
-//          | ...
+//          | //
+//          |---Chapter 6, "Torture Maze"---
+//          | "M08S1_" => Start of Chapter: ??
+//          
 //          |---Chapter 8, "Baptism of Fire"---
 //          | ...
 //          |---Chapter 9, "Citadel"---
@@ -645,8 +643,9 @@
 //          | "M02_CanyonShoot" => Chapter 2, "Ride Like The Devil"
 //          | "M03_Cemetery" => Chapter 3, "Boneyard"
 //          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05". Supposedly M04 is cut content)
-//          | TBD => Chapter 5, "Darkwatch Outpost"
-//          | TBD => Chapter 6, "War Train"
+//          | "M07_DWOutpost" => Chapter 5, "Darkwatch Outpost"
+//          | "M09_TortureMaze" => Chapter 6, "Torture Maze"
+//          
 //          | TBD => Chapter 7, "Torture Maze"
 //          | TBD => Chapter 8, "Baptism of Fire
 //          | TBD => Chapter 9, "Citadel"
@@ -681,23 +680,27 @@
 //          |(list incomplete)
 //          |'''''''''''''
 //          |---Chapter 1, "Wrong Train"---
-//          | "WrongTrain_A" => Section 1 - inside the train
-//          | "WrongTrain_B" => Section 2 - on top of the train, after blowing up the vault
+//          | "WrongTrain_A" => Section 1 - Inside the train
+//          | "WrongTrain_B" => Section 2 - Top of the train, after blowing up the vault
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | "Hub_A" => Section 1 (only 1 section in this Chapter)
+//          | "Hub_A" => Section 1 - Fight/escape on horseback
 //          |---Chapter 3, "Boneyard"---
-//          | "M03_C" => Section 1 - outside the church
-//          | "M03_B" => Section 2 - inside the church catacombs
-//          | "M03_A" => Section 3 - after the catacombs
-//          | ...
+//          | "M03_C" => Section 1 - Front of the church
+//          | "M03_B" => Section 2 - Inside the church catacombs
+//          | "M03_A" => Section 3 - Outside the catacombs
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | ...
+//          | "Hub_A" => Section 1 - Mine entrance
+//          | "Hub_B" => Section 2 - Deeper in mine
+//          | "Hub_C" => Section 3 - Blowing up reinforced door
+//          | "Hub_D" => Section 4 - Even deeper in mine
 //          |---Chapter 5, "Darkwatch Outpost"---
-//          | ...
-//          |---Chapter 6, "War Train"---
-//          | ...
-//          |---Chapter 7, "Torture Maze"---
-//          | ...
+//          | "M07_A" => Section 1 - Outpost
+//          | "M07_B" => Section 2 - Frozen Lab
+//          | "M07_C" => Section 3 - Travel to Darkwatch Citadel on horseback
+//          |---Chapter 6, "Torture Maze"---
+//          | "M09_A" => Section 1 - ??
+//          
+//          
 //          |---Chapter 8, "Baptism of Fire"---
 //          | ...
 //          |---Chapter 9, "Citadel"---
@@ -1191,77 +1194,115 @@
 //          # RespawnPointIDs (hex) - CheckpointIDs (string)
 //          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
 //          |''''''''''''''''''''''''
-//          | 0x0 =&gt; No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu; Not when using a checkpoint.
+//          | 0x0 => No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu; Not when using a checkpoint.
 //          |
 //          |===Chapter 1, "The Wrong Train"===
 //          | ---StoryChapterSection "WrongTrain_A"---
-//          | 0x4D9 - "Checkpoint_1" =&gt; Start of Chapter
-//          | 0x50C - "Checkpoint_2" =&gt; After acquiring the Redeemer Pistol
+//          | 0x4D9 - "Checkpoint_1" => Start of Chapter
+//          | 0x50C - "Checkpoint_2" => After acquiring the Redeemer Pistol
 //          | ---StoryChapterSection "WrongTrain_B"---
-//          | [VariousValues] - "Checkpoint_1" =&gt; Start of StoryChapterSection
-//          | 0x333 - "Checkpoint_2" =&gt; Waking up after vault explosion. Cassidy wakes up the player
+//          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x333 - "Checkpoint_2" => Waking up after vault explosion. Cassidy wakes up the player
+//          |
 //          |===Chapter 2, "Ride Like The Devil"===
 //          | ---StoryChapterSection "Hub_A"---
-//          | 0x26C - "Checkpoint_1" =&gt; Start of Chapter
-//          | 0x565 - "Checkpoint_2" =&gt; Start of Boss Battle
+//          | 0x26C - "Checkpoint_1" => Start of Chapter
+//          | 0x565 - "Checkpoint_2" => Start of Boss Battle
+//          |
 //          |===Chapter 3, "Boneyard"===
 //          | ---StoryChapterSection "M03_C"---
-//          | 0x328 - "Checkpoint_1" =&gt; At start of Chapter
-//          | 0x3DF - "Checkpoint_2" =&gt; Before Mark of Evil spawns near the church
+//          | 0x328 - "Checkpoint_1" => At start of Chapter
+//          | 0x3DF - "Checkpoint_2" => Before Mark of Evil spawns near the church
 //          | ---StoryChapterSection "M03_B"---
-//          | 0x344 - "Checkpoint_1" =&gt; Start of StoryChapterSection
-//          | 0x342 - "Checkpoint_2" =&gt; Entering catacombs arena
-//          | 0x362 - "Checkpoint_3" =&gt; Catacombs arena, after Banshee intro
-//          | 0x362 - "Checkpoint_4" =&gt; Catacombs arena, after defeating the Banshees
+//          | 0x344 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x342 - "Checkpoint_2" => Entering catacombs arena
+//          | 0x362 - "Checkpoint_3" => Catacombs arena, after Banshee intro
+//          | 0x362 - "Checkpoint_4" => Catacombs arena, after defeating the Banshees
 //          | ---StoryChapterSection "M03_A"---
-//          | ??? - "Checkpoint_1" =&gt;
-//          | 0x2BC - "Checkpoint_2" =&gt; After Good/Evil choice
-//          | ...
+//          | 0x2B6 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x2BC - "Checkpoint_2" => After Good/Evil choice
+//          |
 //          |===Chapter 4, "Devil's Belly Mine"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "Hub_A"---
+//          | 0x382 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)(1x TaintedSoul)
+//          | 0x3d3 - "Checkpoint_2" => Near first Mark of Evil fight??
+//          | ---StoryChapterSection "Hub_B"---
+//          | 0x347 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x3B3 - "Checkpoint_2" => After dropping down the hole; Intro of TNTreapers (1x TaintedSoul)
+//          | ---StoryChapterSection "Hub_C"---
+//          | 0x2F4 - "Checkpoint_1" => Start of StoryChapterSection with reinforced door (2x TaintedSoul)
+//          | 0x40A - "Checkpoint_2" => After blowing up reinforced door
+//          | ---StoryChapterSection "Hub_D"---
+//          | 0x33F - "Checkpoint_1" => Start of StoryChapterSection (2x TaintedSoul)
+//          | 0x3DB - "Checkpoint_2" => After dropping down gap, section with Mark of Evil
+//          |
 //          |===Chapter 5, "Darkwatch Outpost"===
-//          | ---StoryChapterSection "xxxxx"---
+//          | ---StoryChapterSection "M07_A"---
+//          | 0x2D8 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x396 - "Checkpoint_2" => Inner outpost, clear enemies part 1
+//          | 0x3B6 - "Checkpoint_3" => Inner outpost, clear enemies part 2
+//          | ---StoryChapterSection "M07_B"---
+//          | 0x2DC - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x387 - "Checkpoint_2" => After moral choice (1x TaintedSoul)
+//          | ---StoryChapterSection "M07_C"---
+//          | ??? - "Checkpoint_1" => Start of StoryChapterSection; WARNING: RespawnPointID is 0 for this checkpoint
+//          | 0x332 - "Checkpoint_2" => Fight vs War Train
+//          |
+//          |===Chapter 6, "Torture Maze"===
+//          | ---StoryChapterSection "M09_A"---
+//          | 0x331 - "Checkpoint_1" => Start of StoryChapterSection
 //          | ...
-//          |===Chapter 6, "War Train"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |
+//          
+//          
 //          |===Chapter 7, "Torture Maze"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 8, "Baptism of Fire"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 9, "Citadel"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 10, "Rescue"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 11, "The Deadlight Prism"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 12, "Invasion"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 13, "Hangtown"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 14, "The Morning After"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 15, "The Price of Passion"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 16, "Showdown"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 17, "The Right Train"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 18, "Deadfall"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
+//          |
 //          |===Chapter 19, "Curse of The West"===
 //          | ---StoryChapterSection "xxxxx"---
 //          | ...
@@ -1401,6 +1442,8 @@
 //          | 0x1 => RedeemerRevolver
 //          | 0x4 => CarbineRifle
 //          | 0x7 => ExplosiveCrossbow
+//          | 0x8 => RangeRifle (sniper)
+//          | 0x9 => Scepter (melee)
 //          | ...
 //          '
 // $965C08: [PAL][32-bit:TimeSpentInChapter]
