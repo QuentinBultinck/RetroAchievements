@@ -508,6 +508,9 @@ CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
 CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
 CONST_TEXT_LOOKUP_KEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
 CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_MysticArmor = 0x337DD749
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Vindicator = 0x76E981F2
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_BloodFrenzy = 0xBE5D5443
 
 
 function is_PauseMenu_active(enum_releaseRegion) =>
@@ -567,10 +570,20 @@ CHAPTER_1_WrongTrain = 0x1
 CHAPTER_2_RideDevil = 0x2
 CHAPTER_3_Boneyard = 0x3
 CHAPTER_4_DevilMine = 0x4
-CHAPTER_5_DarkwatchOutpost = 0x5
+CHAPTER_5_Outpost = 0x5
 CHAPTER_6_WarTrain = 0x6
 CHAPTER_7_TortureMaze = 0x7
 CHAPTER_8_BaptismFire = 0x8
+CHAPTER_Citadel = 0x100
+CHAPTER_9_Rescue = 0x9
+CHAPTER_10_Prism = 0xA
+CHAPTER_11_Invasion = 0xB
+CHAPTER_12_Hangtown = 0xC
+CHAPTER_13_MorningAfter = 0xD
+CHAPTER_14_Showdown = 0xE
+CHAPTER_15_RightTrain = 0xF
+CHAPTER_16_Deadfall = 0x10
+CHAPTER_17_CurseWest = 0x11
 
 CHAPTER_SECTION_1 = 0
 CHAPTER_SECTION_2 = 1
@@ -614,7 +627,7 @@ CONST_LEVEL_DATA = {
 		"LevelID": "M05_DevilsBelly",
 		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
 		},
-	CHAPTER_5_DarkwatchOutpost: {
+	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
 		"StoryChapterSectionIDs": ["M07_A", "M07_B", "M07_C"],
 		},
@@ -624,7 +637,47 @@ CONST_LEVEL_DATA = {
 		},
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
-		"StoryChapterSectionIDs": ["M10_A"],
+		"StoryChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
+		},
+	CHAPTER_Citadel: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["Citadel_Launch_AA"],
+		},
+	CHAPTER_9_Rescue: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B"],
+		},
+	CHAPTER_10_Prism: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
+		},
+	CHAPTER_11_Invasion: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
+		},
+	CHAPTER_12_Hangtown: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
+		},
+	CHAPTER_13_MorningAfter: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
+		},
+	CHAPTER_14_Showdown: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
+		},
+	CHAPTER_15_RightTrain: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["M19_A"],
+		},
+	CHAPTER_16_Deadfall: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
+		},
+	CHAPTER_17_CurseWest: : {
+		"LevelID": "_templateID_",
+		"StoryChapterSectionIDs": ["GroundZero_A"],
 		},
 	}
 
@@ -769,6 +822,9 @@ FMV_LazarusLives = "M02S1_"
 FMV_CassidyDies = "M04S1_"
 FMV_TheHaunting = "M05S1_"
 FMV_GiddyUp = "M09S3_"
+FMV_PromNight = "M11S2_"
+FMV_Monster = "M22S4_"
+FMV_Hero = "M22S3_"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -934,13 +990,31 @@ achievements_coreData = {
 		"a_DevilMine": { // CONCEPT a_DevilMine // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
 		"a_DWOutpost": { // CONCEPT a_DWOutpost // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_5_DarkwatchOutpost Completion"},
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
 		"a_WarTrain": { // CONCEPT a_WarTrain // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
 		"a_TortureMaze": { // CONCEPT a_TortureMaze // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
 		"a_BaptismFire": { // CONCEPT a_BaptismFire // DISABLED - MANUAL_CONSTRUCTION
 			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
+		"a_Rescue": { // CONCEPT a_Rescue // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
+		"a_Prism": { // CONCEPT a_Prism // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
+		"a_Invasion": { // CONCEPT a_Invasion // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
+		"a_Hangtown": { // CONCEPT a_Hangtown // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"}, // Ends with FMV_PromNight
+		"a_MorningAfter": { // CONCEPT a_MorningAfter // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
+		"a_Showdown": { // CONCEPT a_Showdown // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
+		"a_RightTrain": { // CONCEPT a_RightTrain // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
+		"a_Deadfall": { // CONCEPT a_Deadfall // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
+		"a_CurseWest": { // CONCEPT a_CurseWest // DISABLED - MANUAL_CONSTRUCTION
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
@@ -1159,13 +1233,31 @@ achievements_triggers = {
 	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)),
 	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
-		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_5_DarkwatchOutpost, enum_releaseRegion)),
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_5_Outpost, enum_releaseRegion)),
 	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_6_WarTrain, enum_releaseRegion)),
 	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)),
 	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
-		always_false()),
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_8_BaptismFire, enum_releaseRegion)),
+	"a_Rescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_9_Rescue, enum_releaseRegion)),
+	"a_Prism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_10_Prism, enum_releaseRegion)),
+	"a_Invasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_11_Invasion, enum_releaseRegion)),
+	"a_Hangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_12_Hangtown, FMV_PromNight, enum_releaseRegion)),
+	"a_MorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_13_MorningAfter, enum_releaseRegion)),
+	"a_Showdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_14_Showdown, enum_releaseRegion)),
+	"a_RightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_15_RightTrain, enum_releaseRegion)),
+	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_16_Deadfall, enum_releaseRegion)),
+	"a_CurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		always_false()), // Check ending FMV && good vs evil
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1192,6 +1284,15 @@ achievements_titles = {
 	"a_WarTrain":	 			{"en": "xxxxxxxxx"},
 	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
 	"a_BaptismFire":	 		{"en": "xxxxxxxxx"}, 
+	"a_Rescue": 				{"en": "xxxxxxxxx"},
+	"a_Prism": 					{"en": "xxxxxxxxx"},
+	"a_Invasion": 				{"en": "xxxxxxxxx"},
+	"a_Hangtown": 				{"en": "xxxxxxxxx"},
+	"a_MorningAfter": 			{"en": "xxxxxxxxx"},
+	"a_Showdown": 				{"en": "xxxxxxxxx"},
+	"a_RightTrain": 			{"en": "xxxxxxxxx"},
+	"a_Deadfall": 				{"en": "xxxxxxxxx"},
+	"a_CurseWest": 				{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1207,7 +1308,16 @@ achievements_descriptions = {
 	"a_DWOutpost":	 			{"en": "xxxxxxxxx"},
 	"a_WarTrain":	 			{"en": "xxxxxxxxx"},
 	"a_TortureMaze":	 		{"en": "xxxxxxxxx"},
-	"a_BaptismFire":	 		{"en": "xxxxxxxxx"}, 
+	"a_BaptismFire":	 		{"en": "xxxxxxxxx"},
+	"a_Rescue": 				{"en": "xxxxxxxxx"},
+	"a_Prism": 					{"en": "xxxxxxxxx"},
+	"a_Invasion": 				{"en": "xxxxxxxxx"},
+	"a_Hangtown": 				{"en": "xxxxxxxxx"},
+	"a_MorningAfter": 			{"en": "xxxxxxxxx"},
+	"a_Showdown": 				{"en": "xxxxxxxxx"},
+	"a_RightTrain": 			{"en": "xxxxxxxxx"},
+	"a_Deadfall": 				{"en": "xxxxxxxxx"},
+	"a_CurseWest": 				{"en": "xxxxxxxxx"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}

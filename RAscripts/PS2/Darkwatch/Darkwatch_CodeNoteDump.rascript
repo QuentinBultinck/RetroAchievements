@@ -44,48 +44,49 @@
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
 //          |---Chapter 1, "The Wrong Train"---
-//          | "M01S1_" => Start of Chapter: The Wrong Train
-//          | "M01S2_" => Lazarus Malkoth
-//          | "M01S4_" => End of Chapter: Shadow
+//          | "M01S1_" => Start of Chapter: "The Wrong Train"
+//          | "M01S2_" => Mid Chapter: "Lazarus Malkoth"
+//          | "M01S4_" => End of Chapter: "Shadow"
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | "M02S1_" => Start of Chapter: Lazarus Lives
+//          | "M02S1_" => Start of Chapter: "Lazarus Lives"
 //          |---Chapter 3, "Boneyard"---
-//          | "M04S1_" => End of Chapter: Cassidy Dies
+//          | "M04S1_" => End of Chapter: "Cassidy Dies"
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | "M05S1_" => End of Chapter: The Haunting
+//          | "M05S1_" => End of Chapter: "The Haunting"
 //          |---Chapter 5, "Darkwatch Outpost"---
-//          | //
+//          | "M07S1_" => Start of Chapter: "Outpost"
 //          |---Chapter 6, "War Train"---
 //          | //
 //          |---Chapter 7, "Torture Maze"---
-//          | "M08S1_" => Start of Chapter: Darkwatch Citadel
-//          | "M09S2_" => General Clay Cartwright
-//          | "M09S3_" => End of Chapter: Giddy-up, Cowboy
+//          | "M08S1_" => Start of Chapter: "Darkwatch Citadel"
+//          | "M09S2_" => Mid Chapter: "General Clay Cartwright"
+//          | "M09S3_" => End of Chapter: "Giddy-up, Cowboy"
 //          |---Chapter 8, "Baptism of Fire"---
-//          | "M10S1_" => Start of Chapter:
-//          | ...
-//          |---Chapter 9, "Citadel"---
-//          | ...
-//          |---Chapter 10, "Rescue"---
-//          | ...
-//          |---Chapter 11, "The Deadlight Prism"---
-//          | ...
-//          |---Chapter 12, "Invasion"---
-//          | ...
-//          |---Chapter 13, "Hangtown"---
-//          | ...
-//          |---Chapter 14, "The Morning After"---
-//          | ...
-//          |---Chapter 15, "The Price of Passion"---
-//          | ...
-//          |---Chapter 16, "Showdown"---
-//          | ...
-//          |---Chapter 17, "The Right Train"---
-//          | ...
-//          |---Chapter 18, "Deadfall"---
-//          | ...
-//          |---Chapter 19, "Curse of The West"---
-//          | ...
+//          | "M10S1_" => Start of Chapter: "Baptism of Fire"
+//          |---Chapter "Citadel"---
+//          | //
+//          |---Chapter 9, "Rescue"---
+//          | //
+//          |---Chapter 10, "The Deadlight Prism"---
+//          | //
+//          |---Chapter 11, "Invasion"---
+//          | //
+//          |---Chapter 12, "Hangtown"---
+//          | "M11S2_" => End of Chapter: "Prom Night"
+//          |---Chapter 13, "The Morning After"---
+//          | "M012S1" => Mid Chapter: "Lazarus Triumphant"
+//          |---Chapter 14, "Showdown"---
+//          | "M021S1" => Start of chapter: "Showdown"
+//          |---Chapter 15, "The Right Train"---
+//          | //
+//          |---Chapter 16, "Deadfall"---
+//          | //
+//          |---Chapter 17, "Curse of The West"---
+//          | "M22S1_" => Start of Chapter: "Angel" (Evil allegiance)
+//          | "M22S4_" => End of Chapter: "Monster" (Evil Ending)
+//          | "M22S2_" => Start of Chapter: "Devil" (Good allegiance)
+//          | "M22S3_" => End of Chapter: "Hero" (Good Ending)
+//          | "FINALD" => End of Story: End Credits
 //          '
 // $2CD9C4: [NTSCU][AssemblyInstruction:SplitScreenImageRender |32-bit]
 //          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
@@ -651,17 +652,16 @@
 //          | "Wartrain => Chapter 6, "War Train"
 //          | "M09_TortureMaze" => Chapter 7, "Torture Maze"
 //          | "M10_TradingPost" => Chapter 8, "Baptism of Fire
-//          | TBD => Chapter 9, "Citadel"
-//          | TBD => Chapter 10, "Rescue"
-//          | TBD => Chapter 11, "The Deadlight Prism"
-//          | TBD => Chapter 12, "Invasion"
-//          | TBD => Chapter 13, "Hangtown"
-//          | TBD => Chapter 14, "The Morning After"
-//          | TBD => Chapter 15, "The Price of Passion"
-//          | TBD => Chapter 16, "Showdown"
-//          | TBD => Chapter 17, "The Right Train"
-//          | TBD => Chapter 18, "Deadfall"
-//          | TBD => Chapter 19, "Curse of The West"
+//          | "Citadel_Launch" => Chapter "Citadel"
+//          | "M08_Regulator" => Chapter 9, "Rescue"
+//          | "M15_SplittingPaths" => Chapter 10, "The Deadlight Prism"
+//          | "M17_Invasion" => Chapter 11, "Invasion"
+//          | "M11_Hangtown" => Chapter 12, "Hangtown"
+//          | "M12_CitadelUnderAttack" => Chapter 13, "The Morning After"
+//          | "FallOfCitadel" => Chapter 14, "Showdown"
+//          | "M19_RidetoDeadfall" => Chapter 15, "The Right Train"
+//          | "M20_PenetratingDeadfall" => Chapter 16, "Deadfall"
+//          | "LVL_GroundZero" => Chapter 17, "Curse of The West"
 //          |
 //          |---VersusMaps---
 //          | "DM_Asylum" => Asylum
@@ -692,10 +692,10 @@
 //          | "M03_B" => Section 2 - Inside the church catacombs
 //          | "M03_A" => Section 3 - Outside the catacombs
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | "Hub_A" => Section 1 - Mine entrance
-//          | "Hub_B" => Section 2 - Deeper in mine
-//          | "Hub_C" => Section 3 - Blowing up reinforced door
-//          | "Hub_D" => Section 4 - Even deeper in mine
+//          | "Hub_A" => Section 1 - Mine zone 1, mine entrance
+//          | "Hub_B" => Section 2 - Mine zone 2, deeper in mine
+//          | "Hub_C" => Section 3 - Mine zone 3, blow up reinforced door
+//          | "Hub_D" => Section 4 - Mine zone 4, even deeper in mine
 //          |---Chapter 5, "Darkwatch Outpost"---
 //          | "M07_A" => Section 1 - Outpost
 //          | "M07_B" => Section 2 - Frozen Lab
@@ -707,32 +707,50 @@
 //          | "M09_C" => Section 3 - Arena 3, Steamy
 //          | "M09_D" => Section 4 - Sewers
 //          | "M09_E" => Section 5 - Arena 4
-//          | "M09_F" => Section 6 - Arena with sun (FMV Cartwright)
+//          | "M09_F" => Section 6 - Arena 4, with sunlight (FMV Cartwright)
 //          |---Chapter 8, "Baptism of Fire"---
-//          | "M10_A" => Section 1 - Entering Town
-//          | ...
-//          |---Chapter 9, "Citadel"---
-//          | ...
-//          |---Chapter 10, "Rescue"---
-//          | ...
-//          |---Chapter 11, "The Deadlight Prism"---
-//          | ...
-//          |---Chapter 12, "Invasion"---
-//          | ...
-//          |---Chapter 13, "Hangtown"---
-//          | ...
-//          |---Chapter 14, "The Morning After"---
-//          | ...
-//          |---Chapter 15, "The Price of Passion"---
-//          | ...
-//          |---Chapter 16, "Showdown"---
-//          | ...
-//          |---Chapter 17, "The Right Train"---
-//          | ...
-//          |---Chapter 18, "Deadfall"---
-//          | ...
-//          |---Chapter 19, "Curse of The West"---
-//          | ...
+//          | "M10_A" => Section 1 - Road to Trading Post, Mine Valley zone 1
+//          | "M10_B" => Section 2 - Road to Trading Post, Mine Valley zone 2
+//          | "M10_C" => Section 3 - Civilian Trading Post zone 1
+//          | "M10_D" => Section 4 - Civilian Trading Post zone 2
+//          |---Chapter "Citadel"---
+//          | "Citadel_Launch_AA" => Section 1 - Citadel Hub Area
+//          |---Chapter 9, "Rescue"---
+//          | "Hub_A" => Section 1 - Coyote Drive section
+//          | "Hub_B" => Section 2 - Regulator Defence
+//          |---Chapter 10, "The Deadlight Prism"---
+//          | "M15_D" => Section 1 - Battlefield in sunlight
+//          | "M15_E" => Section 2 - Long Range Battlefield in sunlight
+//          | "M15_F" => Section 3 - Path through canyons
+//          | "M15_A" => Section 4 - Path though canyon valley
+//          | "M15_C" => Section 5 - Deadlight Prism Defence
+//          |---Chapter 11, "Invasion"---
+//          | "M17_B" => Section 1 - Native Caves
+//          | "M17_C" => Section 2 - Native Village
+//          | "M17_D" => Section 3 - Native Villager Defence
+//          |---Chapter 12, "Hangtown"---
+//          | "M11_F" => Section 1 - Hangtown Entrance
+//          | "M11_G" => Section 2 - Hangtown Saloon Defence
+//          | "M11_H" => Section 3 - Hangtown Church
+//          |---Chapter 13, "The Morning After"---
+//          | "M12_AA" => Section 1 - Citadel Hub Area Under Attack
+//          | "M12_B" => Section 2 - Citadel Cave Area
+//          | "M12_C" => Section 3 - Citadel Area 2
+//          | "M12_D" => Section 4 - Citadal Reactor Area
+//          | "M12_A" => Section 5 - Citadel Deadlight Prism Area
+//          |---Chapter 14, "Showdown"---
+//          | "FallOfCitadel_A" => Section 1 - Boss Fight vs Big Lazarus
+//          | "FallOfCitadel_B" => Section 2 - MoralChoice
+//          |---Chapter 15, "The Right Train"---
+//          | "M19_A" => Section 1 - Train
+//          |---Chapter 16, "Deadfall"---
+//          | "Hub_A" => Section 1 - Entering Deadfall
+//          | "Hub_B" => Sectopn 2 - Deafall Streets part 1
+//          | "Hub_B2" => Section 3 - Deadfall Streets part 2
+//          | "Hub_C" => section 4 - Deadfall Apartments
+//          | "Hub_C2" => Section 5 - Deadfall Lava Filled Streets
+//          |---Chapter 17, "Curse of The West"---
+//          | "GroundZero_A" => Section 1 - Boss Fight
 //          '
 // $7218D0: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
@@ -1278,52 +1296,133 @@
 //          |
 //          |===Chapter 8, "Baptism of Fire"===
 //          | ---StoryChapterSection "M10_A"---
-//          | 0x38A - "Checkpoint_1" => Start of StoryChapterSection
-//          | ...
+//          | 0x38A - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | ... - "Checkpoint_2" => ???
+//          | 0x40F - "Checkpoint_3" => After killing all enemies in 1st zone, once
+//          | ---StoryChapterSection "M10_B"---
+//          | 0x340 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3A2 - "Checkpoint_2" => Entering House, more Marks of Evil spawn
+//          | ---StoryChapterSection "M10_C"---
+//          | 0x346 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x415 - "Checkpoint_2" => After MoralChoice (2x TaintedSoul)
+//          | 0x4BE - "Checkpoint_3" => After Killing all Shotgunners
+//          | ---StoryChapterSection "M10_D"---
+//          | 0x2BB - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3C9 - "Checkpoint_2" => Mark of Evil inside big barn
 //          |
-//          |===Chapter 9, "Citadel"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter "Citadel"===
+//          | ---StoryChapterSection "Citadel_Launch_AA"---
+//          | This is some sort of Hub area, to select the next 3 missions/Chapters
 //          |
-//          |===Chapter 10, "Rescue"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 9, "Rescue"===
+//          | ---StoryChapterSection "Hub_A"---
+//          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x458 - "Checkpoint_2" => After destroying 2nd Mark of Evil
+//          | 0x4BA- "Checkpoint_3" => After killing all enemies in town area
+//          | ---StoryChapterSection "Hub_B"---
+//          | 0x474 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x513 - "Checkpoint_2" => Regulator Defence, 1st wave done
 //          |
-//          |===Chapter 11, "The Deadlight Prism"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 10, "The Deadlight Prism"===
+//          | ---StoryChapterSection "M15_D"---
+//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x528 - "Checkpoint_2" => Before Banshee spawn (1x TaintedSoul)
+//          | ---StoryChapterSection "M15_E"---
+//          | 0x439 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M15_F"---
+//          | 0x4C7 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4E4 - "Checkpoint_2" => After dropping down cliff, ambush with fire
+//          | 0x4E4 - "Checkpoint_3" => After ambush with fire
+//          | ---StoryChapterSection "M15_A"---
+//          | 0x4F3 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x52C - "Checkpoint_2" => Further into canyon valley (1x TaintedSoul)
+//          | 0x55E - "Checkpoint_3" => Even further into canyon valley (1x TaintedSoul)
+//          | 0x58A - "Checkpoint_4" => Before Mark of Evil spawn (1x TaintedSoul)
+//          | ---StoryChapterSection "M15_C"---
+//          | 0x47A - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
 //          |
-//          |===Chapter 12, "Invasion"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 11, "Invasion"===
+//          | ---StoryChapterSection "M17_B"---
+//          | 0x472 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x4D8 - "Checkpoint_2" => Entering deeper in caves
+//          | 0x4EF - "Checkpoint_3" => Entering deeper in caves
+//          | ---StoryChapterSection "M17_C"---
+//          | 0x3C0 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x46A - "Checkpoint_2" => After MoralChoice (2x TaintedSoul)
+//          | 0x59D - "Checkpoint_3" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "M17_D"---
+//          | 0x45E - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x464 - "Checkpoint_2" => Enemy spawn behind defence
 //          |
-//          |===Chapter 13, "Hangtown"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 12, "Hangtown"===
+//          | ---StoryChapterSection "M11_F"---
+//          | 0x4A0 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x533 - "Checkpoint_2" => Before fight start
+//          | 0x55D - "Checkpoint_3" => Before fall back to hotel
+//          | 0x55D - "Checkpoint_4" => Before hotel explodes
+//          | ---StoryChapterSection "M11_G"---
+//          | 0x503 - "Checkpoint_1" => After MoralChoice (1x MoralChoice)
+//          | 0x55C - "Checkpoint_2" => After 1st wave
+//          | 0x59A - "Checkpoint_3" => After 1st Mark of Evil spawn
+//          | 0x59A - "Checkpoint_4" => Before 2nd Mark of Evil spawn
+//          | 0x5A0 - "Checkpoint_5" => After 2nd Mark of Evil destroy
+//          | ---StoryChapterSection "M11_H"---
+//          | 0x4A9 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4CE - "Checkpoint_2" => Near Church (1x TaintedSoul)
 //          |
-//          |===Chapter 14, "The Morning After"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 13, "The Morning After"===
+//          | ---StoryChapterSection "M12_AA"---
+//          | 0x451 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x535 - "Checkpoint_2" => After Tala leaves Citadel
+//          | ---StoryChapterSection "M12_B"---
+//          | 0x615 - "Checkpoint_1" => Start of StoryChapterSection (2x TaintedSoul)
+//          | 0x72C - "Checkpoint_2" => Further inside Citadel
+//          | 0x72D - "Checkpoint_3" => Along Train Tracks
+//          | ---StoryChapterSection "M12_C"---
+//          | 0x62A - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x633 - "Checkpoint_2" => Further inside Citadel
+//          | 0x633 - "Checkpoint_3" => Even further inside Citadel
+//          | ---StoryChapterSection "M12_D"---
+//          | 0x638 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M12_A"---
+//          | 0x36B - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x5A7 - "Checkpoint_2" => After killing shotgunner wave
 //          |
-//          |===Chapter 15, "The Price of Passion"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 14, "Showdown"===
+//          | ---StoryChapterSection "FallOfCitadel_A"---
+//          | 0x444 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4F8 - "Checkpoint_2" => BossFight part 2
+//          | 0x4F8 - "Checkpoint_3" => BossFight part 3, on bridge
+//          | ---StoryChapterSection "FallOfCitadel_B"---
+//          | // (no gameplay, only 1x MoralChoice)
 //          |
-//          |===Chapter 16, "Showdown"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 15, "The Right Train"===
+//          | ---StoryChapterSection "M19_A"---
+//          | 0x40C - "Checkpoint_1" => Start of StoryChapterSection, on horseback"
+//          | 0x4CC - "Checkpoint_2" => On the train
+//          | 0x5B4 - "Checkpoint_3" => On the train, inside wagon filled with reapers
+//          | 0x5A1 - "Checkpoint_4" => On the train, cleared wagon with reapers
 //          |
-//          |===Chapter 17, "The Right Train"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 16, "Deadfall"===
+//          | ---StoryChapterSection "Hub_A"---
+//          | // (no checkpoints)
+//          | ---StoryChapterSection "Hub_B"---
+//          | ??? - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4F9 - "Checkpoint_2" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "Hub_B2"---
+//          | 0x475 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4DF - "Checkpoint_2" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "Hub_C"---
+//          | 0x4DE - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x51A - "Checkpoint_2" => After Mark of Evil destroy, inside apartments (1x TaintedSoul)
+//          | ---StoryChapterSection "Hub_C2"---
+//          | 0x4DB - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4DF - "Checkpoint_2" => Before Mark of Evil spawn
 //          |
-//          |===Chapter 18, "Deadfall"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |
-//          |===Chapter 19, "Curse of The West"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          |===Chapter 17, "Curse of The West"===
+//          | ---StoryChapterSection "GroundZero_A"---
+//          | 0x534 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x62B - "Checkpoint_2" => BossFight part 2
 //          '
 // $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
@@ -1459,6 +1558,7 @@
 //          | 0x0 => BasicRevolver
 //          | 0x1 => RedeemerRevolver
 //          | 0x4 => CarbineRifle
+//          | 0x6 => RailRocket
 //          | 0x7 => ExplosiveCrossbow
 //          | 0x8 => RangeRifle (sniper)
 //          | 0x9 => Scepter (melee)
