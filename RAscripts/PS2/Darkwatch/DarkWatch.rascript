@@ -1285,6 +1285,7 @@ achievements_triggers = {
 	High Moon (instead of "High Noon")
 	Agent 000 (reference to new uniform casket)
 	The Crucible (referencing CHAPTER_7_TortureMaze)
+	A Reckoning in Blood
 	*/
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
@@ -1292,7 +1293,7 @@ achievements_titles = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "Hellbound Express"},
 	"a_RideDevil": 				{"en": "No Turning Back"},
-	"a_DevilMine":	 			{"en": "Whispers from the Grave"},
+	"a_DevilMine":	 			{"en": "Whispers From the Grave"},
 	"a_Boneyard":	 			{"en": "Veins of the Underworld"},
 	"a_DWOutpost":	 			{"en": "No Safe Haven"},
 	"a_WarTrain":	 			{"en": "Bullet-Storm Express"},
@@ -1306,7 +1307,6 @@ achievements_titles = {
 	"a_Showdown": 				{"en": "The Devil You Know"},
 	"a_RightTrain": 			{"en": "Damnation Express"},
 	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
-	"a_CurseWest": 				{"en": "A Reckoning in Blood"},
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
 	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
