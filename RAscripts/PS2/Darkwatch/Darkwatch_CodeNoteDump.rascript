@@ -871,6 +871,8 @@
 //          |+0x2C - [Float:RightAnalogStick_Yaw |32-bit]
 //          |+0x30 - [Float:RightAnalogStick_Pitch |32-bit]
 //          '
+// $721FB8: [NTSCU][32-bit (base) Pointer:HUDcontrol(preferred)]
+//          @Regional equivalent of $0x7238b8 (PAL)
 // $722528: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
 //          - This is actually a [32-bit Pointer] which is only functional when in-game, otherwise it's zeroed out (0x0)
@@ -2076,6 +2078,7 @@
 //          | 0x10 => TBD
 //          | 0x11 => TBD
 //          | 0x12 => TBD
+//          | 0x13 => TBD
 //          '
 // $965CFA: [PAL][8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
