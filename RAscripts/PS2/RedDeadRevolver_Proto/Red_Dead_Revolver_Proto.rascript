@@ -2198,7 +2198,7 @@ achievements_triggers = {
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffDay, enum_releaseRegion)	
 		}),
 	"a_WinGameChallenge": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		const_TIME_LIMIT = 240 // in seconds (= 4min)
+		const_TIME_LIMIT = 270 // in seconds (= 4min 30sec)
 
 		return 
 		// [1] ==== Alt Logic + Triggered Group ==== 	-> This group handles the core logic; It's responsible for unlocking the achievement + Displaying a Trigger Indicator
@@ -3125,10 +3125,10 @@ achievements_descriptions = {
 	"a_ChallengeHng": 			{"en": "Bullets don't lie, and neither do dogs. Take down every enemy in the \"Title Stage\" without wasting a single bullet, then see if you're worthy of Rusty's respect"},
 	"a_ChallengeShernite": 		{"en": "Justice waits for no one. Take down all 7 enemies in the \"Sheriff Night Stage\" within 2 minutes, then hear the captive's gratitude"},
 	"a_ChallengeSher70": 		{"en": "The Piggy Gang brought chaos—time to bring them bullets. Eliminate at least 11 enemies in the \"Sheriff Day Stage\" without healing and let the old man tip his hat in gratitude"},
-	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—in the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes without healing once"},
+	"a_WinGameChallenge":		{"en": "Some ride into the sunset with riches. Others ride fast. Do both—in the \"Sheriff Day Stage\", earn over $49.09 in under 4 minutes and 30 seconds without healing once"},
 
 	"a_WinGameAny": 			{"en": "Fortune favors the bold. Rack up over $49.09 in cash within a Singleplayer level to win it all!"},
-	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one Rapid Fire Burst. Activate Rapid Fire Mode, by aiming and performing a half circle motion with the left joystick"},
+	"a_DeadEyeMaster": 			{"en": "Fan the hammer like a true gunslinger. Land at least five shots in one Rapid Fire Burst. Activate Rapid Fire Mode, by aiming and performing a half circle motion with the right joystick"},
 	"a_TipHat": 				{"en": "A cowboy's salute speaks louder than words. Tip your hat, no matter the dust in your face, by standing idle and pressing X or R1"},
 	"a_Dodge": 					{"en": "A true cowboy knows when to step aside. Perform a dodge by pressing X or R1 whilst walking forward, even if there ain't a bullet with your name on it"}, 
 	"a_SpinFire":				{"en": "Anyone can shoot—only legends can shoot while spinning. In Singleplayer, pull off the Spinfire technique by pressing X and O simultaneously while holding the revolver(s), and land at least 3 shots without being interrupted or knocked out of the move"},
@@ -4073,7 +4073,7 @@ leaderboards_startTriggers = {
 				|| is_Loading(enum_releaseRegion))
 			&& tally_of(const_ARRAY_HOSTILE_NPCDATA_INDICES, const_ENEMY_COUNT, int_NPCdataIndex => once(
 				on_NPChealth_death(int_NPCdataIndex, enum_releaseRegion)))
-			&& on_flagState_TitleStage_IsDogThanksActive_toggleTrue(enum_releaseRegion)
+			&& on_flagState_SheriffNightStage_IsCaptiveThanksActive_toggleTrue(enum_releaseRegion)
 		// [2+3+4] ==== Alt Reset Groups ==== 		-> Reset when not in SinglePlayer Mode || not in correct Level || on Level start or reset
 			|| AchGenerate_3x_AltResetGroups_SinglePlayerLevel(LEVEL_SheriffNight, enum_releaseRegion)		
 		}),	

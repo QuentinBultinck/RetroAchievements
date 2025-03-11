@@ -13,7 +13,7 @@
 // $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
 //          - Definition of [Struct:FMVdata] at $0x6aae58
-// $134408: [PAL][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
+// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
 //          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
 //          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
 //          
@@ -44,46 +44,49 @@
 //          | "PS2MAI" => Main Menu background (looping) video
 //          |
 //          |---Chapter 1, "The Wrong Train"---
-//          | "M01S1_" => Jericho enters train
-//          | "M01S2_" => Jericho blows up door vault
-//          | "M01S3_" => ???
-//          | "M01S4_" => Jericho blows up Lazarus + Escape on horse
+//          | "M01S1_" => Start of Chapter: "The Wrong Train"
+//          | "M01S2_" => Mid Chapter: "Lazarus Malkoth"
+//          | "M01S4_" => End of Chapter: "Shadow"
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | "M02S1_" => Lazarus escape from train wreck + Pursues Jericho
+//          | "M02S1_" => Start of Chapter: "Lazarus Lives"
 //          |---Chapter 3, "Boneyard"---
-//          | "M04S1_" => End of Chapter, Cassidy dies
+//          | "M04S1_" => End of Chapter: "Cassidy Dies"
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | ...
+//          | "M05S1_" => End of Chapter: "The Haunting"
 //          |---Chapter 5, "Darkwatch Outpost"---
-//          | ...
+//          | "M07S1_" => Start of Chapter: "Outpost"
 //          |---Chapter 6, "War Train"---
-//          | ...
+//          | //
 //          |---Chapter 7, "Torture Maze"---
-//          | ...
+//          | "M08S1_" => Start of Chapter: "Darkwatch Citadel"
+//          | "M09S2_" => Mid Chapter: "General Clay Cartwright"
+//          | "M09S3_" => End of Chapter: "Giddy-up, Cowboy"
 //          |---Chapter 8, "Baptism of Fire"---
-//          | ...
-//          |---Chapter 9, "Citadel"---
-//          | ...
-//          |---Chapter 10, "Rescue"---
-//          | ...
-//          |---Chapter 11, "The Deadlight Prism"---
-//          | ...
-//          |---Chapter 12, "Invasion"---
-//          | ...
-//          |---Chapter 13, "Hangtown"---
-//          | ...
-//          |---Chapter 14, "The Morning After"---
-//          | ...
-//          |---Chapter 15, "The Price of Passion"---
-//          | ...
-//          |---Chapter 16, "Showdown"---
-//          | ...
-//          |---Chapter 17, "The Right Train"---
-//          | ...
-//          |---Chapter 18, "Deadfall"---
-//          | ...
-//          |---Chapter 19, "Curse of The West"---
-//          | ...
+//          | "M10S1_" => Start of Chapter: "Baptism of Fire"
+//          |---Chapter "Citadel"---
+//          | //
+//          |---Chapter 9, "Rescue"---
+//          | //
+//          |---Chapter 10, "The Deadlight Prism"---
+//          | //
+//          |---Chapter 11, "Invasion"---
+//          | //
+//          |---Chapter 12, "Hangtown"---
+//          | "M11S2_" => End of Chapter: "Prom Night"
+//          |---Chapter 13, "The Morning After"---
+//          | "M012S1" => Mid Chapter: "Lazarus Triumphant"
+//          |---Chapter 14, "Showdown"---
+//          | "M021S1" => Start of chapter: "Showdown"
+//          |---Chapter 15, "The Right Train"---
+//          | //
+//          |---Chapter 16, "Deadfall"---
+//          | //
+//          |---Chapter 17, "Curse of The West"---
+//          | "M22S1_" => Start of Chapter: "Angel" (Evil allegiance)
+//          | "M22S4_" => End of Chapter: "Monster" (Evil Ending)
+//          | "M22S2_" => Start of Chapter: "Devil" (Good allegiance)
+//          | "M22S3_" => End of Chapter: "Hero" (Good Ending)
+//          | "FINALD" => End of Story: End Credits
 //          '
 // $2CD9C4: [NTSCU][AssemblyInstruction:SplitScreenImageRender |32-bit]
 //          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
@@ -491,9 +494,27 @@
 //          @FPS Hack (NTSC-U)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F3308
 //          
-//          InitialValue = 0x0 => 30 fps
+//          InitialValue = 0x2 => 30 fps
 //          HackValue = 0x1 => 60 fps
+// $71FAF0: [NTSCU][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+//          +0x510 - [32-bit:LoadingState]
+//          | - Some values are different compared to PAL ($0x7213f0)
+//          |
+//          | 0x10000048 => Loading; Any type of loading (loading/saving memory card data, MainLoadingMenu, MedallionLoadingMenu)
+//          | 0x8009 => Not Loading (at MainMenu, during FMVs)
+//          | 0x8047 => Not Loading (when in-game)
+//          '
+// $71FAF4: [NTSCU][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
+//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $71FCCC: [NTSCU][10-byte ASCII:GameID]
+//          "SLUS_210.42" => NTSC-U/USA PS2 Game ID
+//          - Preceding [8-byte ASCII] = "cdrom0:\"
+//          - Succeeding [2-byte ASCII] = ";1"
+// $71FF20: [NTSCU][32-bit (base) Pointer:LevelID(preferred)]
+//          @Regional equivalent of $0x721820 (PAL)
 // $71FF88: [8-bit] in gameplay flag
+// $720000: [NTSCU][32-bit (base) Pointer:PlayerInput(preferred)]
+//          @Regional equivalent of $0x721900 (PAL)
 // $721368: [PAL][Lower4:FPScontrol |32-bit]
 //          @FPS Hack (PAL)
 //          - Refer to [AssemblyInstruction:FPScontrol(indirect)] at $0x4F45F8
@@ -505,6 +526,16 @@
 //          
 //          InitialValue = 0x2 => 25 fps OR 30 fps (when using Widescreen NTSCU Mode RaPatch)
 //          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
+// $7213F0: [PAL][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+//          +0x450 - [32-bit:LoadingState]
+//          | - Some values are different compared to NTSCU ($0x71faf0)
+//          |
+//          | 0x1000003C => Loading; Any type of loading (loading/saving memory card data, MainLoadingMenu, MedallionLoadingMenu)
+//          | 0x8009 => Not Loading (at MainMenu, during FMVs)
+//          | 0x803B => Not Loading (when in-game)
+//          '
+// $7213F4: [PAL][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
+//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -586,7 +617,7 @@
 // $721820: [PAL][32-bit (base) Pointer:LevelID(preferred)]
 //          - This pointer points to ASCII data of the current loaded level. Each ASCII value listed here, substrings/returns different parts of the full LevelID
 //          
-//          +0x18 - [32-bit (layer-1) Pointer:]
+//          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer]
 //          ..+0x2 - [Variable Size ASCII:StoryChapterSectionID(false)]
 //          ..| - Prefer using [ASCII:StoryChapterSectionID(preferred)] below
@@ -614,24 +645,23 @@
 //          |'''''''''''''
 //          |---StoryChapters---
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
-//          | "M02_CanyonShoot => Chapter 2, "Ride Like The Devil"
-//          | "M03_Cemetery => Chapter 3, "Boneyard"
+//          | "M02_CanyonShoot" => Chapter 2, "Ride Like The Devil"
+//          | "M03_Cemetery" => Chapter 3, "Boneyard"
 //          | "M05_DevilsBelly" => Chapter 4, "Devil's Belly Mine" (YES, it is "M05". Supposedly M04 is cut content)
-//          | TBD => Chapter 5, "Darkwatch Outpost"
-//          | TBD => Chapter 6, "War Train"
-//          | TBD => Chapter 7, "Torture Maze"
-//          | TBD => Chapter 8, "Baptism of Fire
-//          | TBD => Chapter 9, "Citadel"
-//          | TBD => Chapter 10, "Rescue"
-//          | TBD => Chapter 11, "The Deadlight Prism"
-//          | TBD => Chapter 12, "Invasion"
-//          | TBD => Chapter 13, "Hangtown"
-//          | TBD => Chapter 14, "The Morning After"
-//          | TBD => Chapter 15, "The Price of Passion"
-//          | TBD => Chapter 16, "Showdown"
-//          | TBD => Chapter 17, "The Right Train"
-//          | TBD => Chapter 18, "Deadfall"
-//          | TBD => Chapter 19, "Curse of The West"
+//          | "M07_DWOutpost" => Chapter 5, "Darkwatch Outpost"
+//          | "Wartrain => Chapter 6, "War Train"
+//          | "M09_TortureMaze" => Chapter 7, "Torture Maze"
+//          | "M10_TradingPost" => Chapter 8, "Baptism of Fire
+//          | "Citadel_Launch" => Chapter "Citadel"
+//          | "M08_Regulator" => Chapter 9, "Rescue"
+//          | "M15_SplittingPaths" => Chapter 10, "The Deadlight Prism"
+//          | "M17_Invasion" => Chapter 11, "Invasion"
+//          | "M11_Hangtown" => Chapter 12, "Hangtown"
+//          | "M12_CitadelUnderAttack" => Chapter 13, "The Morning After"
+//          | "FallOfCitadel" => Chapter 14, "Showdown"
+//          | "M19_RidetoDeadfall" => Chapter 15, "The Right Train"
+//          | "M20_PenetratingDeadfall" => Chapter 16, "Deadfall"
+//          | "LVL_GroundZero" => Chapter 17, "Curse of The West"
 //          |
 //          |---VersusMaps---
 //          | "DM_Asylum" => Asylum
@@ -653,47 +683,74 @@
 //          |(list incomplete)
 //          |'''''''''''''
 //          |---Chapter 1, "Wrong Train"---
-//          | "WrongTrain_A" => Section 1 - inside the train
-//          | "WrongTrain_B" => Section 2 - on top of the train, after blowing up the vault
+//          | "WrongTrain_A" => Section 1 - Inside the train
+//          | "WrongTrain_B" => Section 2 - Top of the train, after blowing up the vault
 //          |---Chapter 2, "Ride Like The Devil"---
-//          | "Hub_A" => Section 1 (only 1 section in this Chapter)
+//          | "Hub_A" => Section 1 - Fight/escape on horseback
 //          |---Chapter 3, "Boneyard"---
-//          | "M03_C" => Section 1 - outside the church
-//          | "M03_B" => Section 2 - inside the church catacombs
-//          | "M03_A" => Section 3 - after the catacombs
-//          | ...
+//          | "M03_C" => Section 1 - Front of the church
+//          | "M03_B" => Section 2 - Inside the church catacombs
+//          | "M03_A" => Section 3 - Outside the catacombs
 //          |---Chapter 4, "Devil's Belly Mine"---
-//          | ...
+//          | "Hub_A" => Section 1 - Mine zone 1, mine entrance
+//          | "Hub_B" => Section 2 - Mine zone 2, deeper in mine
+//          | "Hub_C" => Section 3 - Mine zone 3, blow up reinforced door
+//          | "Hub_D" => Section 4 - Mine zone 4, even deeper in mine
 //          |---Chapter 5, "Darkwatch Outpost"---
-//          | ...
+//          | "M07_A" => Section 1 - Outpost
+//          | "M07_B" => Section 2 - Frozen Lab
 //          |---Chapter 6, "War Train"---
-//          | ...
+//          | "M07_C" => Section 1 - Travel to Darkwatch Citadel on horseback
 //          |---Chapter 7, "Torture Maze"---
-//          | ...
+//          | "M09_A" => Section 1 - Arena 1, Melee only
+//          | "M09_B" => Section 2 - Arena 2
+//          | "M09_C" => Section 3 - Arena 3, Steamy
+//          | "M09_D" => Section 4 - Sewers
+//          | "M09_E" => Section 5 - Arena 4
+//          | "M09_F" => Section 6 - Arena 4, with sunlight (FMV Cartwright)
 //          |---Chapter 8, "Baptism of Fire"---
-//          | ...
-//          |---Chapter 9, "Citadel"---
-//          | ...
-//          |---Chapter 10, "Rescue"---
-//          | ...
-//          |---Chapter 11, "The Deadlight Prism"---
-//          | ...
-//          |---Chapter 12, "Invasion"---
-//          | ...
-//          |---Chapter 13, "Hangtown"---
-//          | ...
-//          |---Chapter 14, "The Morning After"---
-//          | ...
-//          |---Chapter 15, "The Price of Passion"---
-//          | ...
-//          |---Chapter 16, "Showdown"---
-//          | ...
-//          |---Chapter 17, "The Right Train"---
-//          | ...
-//          |---Chapter 18, "Deadfall"---
-//          | ...
-//          |---Chapter 19, "Curse of The West"---
-//          | ...
+//          | "M10_A" => Section 1 - Road to Trading Post, Mine Valley zone 1
+//          | "M10_B" => Section 2 - Road to Trading Post, Mine Valley zone 2
+//          | "M10_C" => Section 3 - Civilian Trading Post zone 1
+//          | "M10_D" => Section 4 - Civilian Trading Post zone 2
+//          |---Chapter "Citadel"---
+//          | "Citadel_Launch_AA" => Section 1 - Citadel Hub Area
+//          |---Chapter 9, "Rescue"---
+//          | "Hub_A" => Section 1 - Coyote Drive section
+//          | "Hub_B" => Section 2 - Regulator Defence
+//          |---Chapter 10, "The Deadlight Prism"---
+//          | "M15_D" => Section 1 - Battlefield in sunlight
+//          | "M15_E" => Section 2 - Long Range Battlefield in sunlight
+//          | "M15_F" => Section 3 - Path through canyons
+//          | "M15_A" => Section 4 - Path though canyon valley
+//          | "M15_C" => Section 5 - Deadlight Prism Defence
+//          |---Chapter 11, "Invasion"---
+//          | "M17_B" => Section 1 - Native Caves
+//          | "M17_C" => Section 2 - Native Village
+//          | "M17_D" => Section 3 - Native Villager Defence
+//          |---Chapter 12, "Hangtown"---
+//          | "M11_F" => Section 1 - Hangtown Entrance
+//          | "M11_G" => Section 2 - Hangtown Saloon Defence
+//          | "M11_H" => Section 3 - Hangtown Church
+//          |---Chapter 13, "The Morning After"---
+//          | "M12_AA" => Section 1 - Citadel Hub Area Under Attack
+//          | "M12_B" => Section 2 - Citadel Cave Area
+//          | "M12_C" => Section 3 - Citadel Area 2
+//          | "M12_D" => Section 4 - Citadal Reactor Area
+//          | "M12_A" => Section 5 - Citadel Deadlight Prism Area
+//          |---Chapter 14, "Showdown"---
+//          | "FallOfCitadel_A" => Section 1 - Boss Fight vs Big Lazarus
+//          | "FallOfCitadel_B" => Section 2 - MoralChoice
+//          |---Chapter 15, "The Right Train"---
+//          | "M19_A" => Section 1 - Train
+//          |---Chapter 16, "Deadfall"---
+//          | "Hub_A" => Section 1 - Entering Deadfall
+//          | "Hub_B" => Sectopn 2 - Deafall Streets part 1
+//          | "Hub_B2" => Section 3 - Deadfall Streets part 2
+//          | "Hub_C" => section 4 - Deadfall Apartments
+//          | "Hub_C2" => Section 5 - Deadfall Lava Filled Streets
+//          |---Chapter 17, "Curse of The West"---
+//          | "GroundZero_A" => Section 1 - Boss Fight
 //          '
 // $7218D0: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
@@ -704,7 +761,7 @@
 //          - This pointer may point to a memRegion which is mostly static
 //          
 //          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:PlayerInput]
+//          [32-bit (base) Pointer:PlayerInput(preferred)]
 //          +0x4 - [52-byte Struct(ControllerInput):Controller-1] ---------------
 //          +0x4 - [bit0 Bitflag:IsControllerConnected_Controller-1 |16-bit]
 //          
@@ -770,7 +827,7 @@
 //          
 //          
 //          ------Advanced_Documentation------
-//          [32-bit (base) Pointer:PlayerInput]
+//          [32-bit (base) Pointer:PlayerInput(preferred)]
 //          +0x4 - [52-byte Struct(ControllerInput):Controller-1]
 //          +0x38 - [52-byte Struct(ControllerInput):Controller-2]
 //          | - When connecting a 2nd controller to the PS2, the game will restructure this memRegion, so there's space for another [Struct:ControllerInput] for controller 2
@@ -814,6 +871,8 @@
 //          |+0x2C - [Float:RightAnalogStick_Yaw |32-bit]
 //          |+0x30 - [Float:RightAnalogStick_Pitch |32-bit]
 //          '
+// $721FB8: [NTSCU][32-bit (base) Pointer:HUDcontrol(preferred)]
+//          @Regional equivalent of $0x7238b8 (PAL)
 // $722528: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
 //          - This is actually a [32-bit Pointer] which is only functional when in-game, otherwise it's zeroed out (0x0)
@@ -870,7 +929,7 @@
 //          | ...
 //          
 //          
-//          +0xC - [32-bit (layer-1) Pointer] -> [Variable Size Array:UIcontrolPointers]
+//          +0xC - [32-bit (layer-1) Pointer:UIcontrolPointerArray] -> [Variable Size Array:UIcontrolPointers]
 //          .
 //          ._____HUDcontrol_Gear-Player1_____
 //          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
@@ -998,16 +1057,17 @@
 //          |+0x30 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:UItype] = "MessageBox"
 //          |
-//          |_____TextLookupKeyID_____
+//          |
 //          |+0xC - [32-bit (layer-1) Pointer]
 //          |.+0x4 - [32-bit (layer-2) Pointer]
 //          |..
-//          |..+0x30 - [32-bit (layer-1) Pointer]
+//          |..+0x30 - [32-bit (layer-3) Pointer]
 //          |...+0x2 - [Variable Size ASCII:DisplayedText]
 //          |...| - Changing this ASCII does not re-render the text on screen.
 //          |...| - This ASCII is the displayed text all capitalized
 //          |...| - This ASCII is language-dependent
 //          |..
+//          |.._____TextLookupKeyID_____
 //          |..+0x48 - [32-bit:MessageBoxText_TextLookupKeyID]
 //          |..| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
 //          |..| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
@@ -1018,6 +1078,13 @@
 //          |..| - Practically this can be used to identify what (non-selectable) text is displayed on the InGameMenu
 //          |..| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
 //          |..| - TextLookupKeyIDs listed below
+//          |
+//          |
+//          |+0x7C - [32-bit (layer-1) Pointer]
+//          |.+0x58 - [Lower4:SelectableTextCount |32-bit]
+//          |.| - This count is how many entries/text lines can be highlighted/selected (eg. value = 0x2: Yes and No)
+//          |.+0x68 - [Lower4:SelectedTextIndex |32-bit]
+//          |.| - This value starts counting from 0x0; With 0x0 being the top most item
 //          '
 //          
 //          [Definition Struct:InGameMenu.Powers |??-byte]
@@ -1048,6 +1115,11 @@
 //          - Max size is 10 characters
 //          - ASCII value is set when creating a new PlayerProfile or when selecting an existing one
 //          - Each PlayerProfileName is required to be unique, can't have 2 PlayerProfiles with the same name
+// $729330: [NTSCU][8-bit:GameState |32-bit]
+//          @Regional equivalent of $0x73b430 (PAL)
+//          - Values are different when compared to PAL
+//          0x1 => Player is in control of PlayerCharacter || At MainMenu || In-Game
+//          0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
 // $72BBD8: Player in Movie Cutscene [8-Bit]
 //          0x01= Yes
 // $73B3F0: [PAL][32-bit:TurboMode(hack)]
@@ -1061,9 +1133,12 @@
 //          --| timeAtMatchEnd = [32-bit:TimerControl(functional)] + ([32-bit:MatchDuration] * 60 * 1,000)
 //          --| timeLeftInMatch =  timeAtMatchEnd - currentTime
 // $73B430: [PAL][8-bit:GameState |32-bit]
-//          - 0x0 => Player is in control of PlayerCharacter. Also 0x0 when in MainMenu
-//          - 0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
-//          - 0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
+//          - Values are different when compared to NTSCU
+//          0x0 => Player is in control of PlayerCharacter || At MainMenu || In-Game
+//          0x1 => MainLoadingMenu is active, stays 0x1 for the duration of the first in-engine cutscene after exiting the MainLoadingMenu, becomes 0x0 once the player can control the PlayerCharacter.
+//          0x3 => Any InGameMenu is active. (eg. PauseMenu and submenus, menus for saving to the memory card, LoreMenus not necessarily opened via the PauseMenu) (Manually editing this value to 0x3 freezes the game until changed)
+// $73B68C: [NTSCU][32-bit (base) Pointer:PlayerData]
+//          @Regional equivalent of $0x74d78c (PAL)
 // $73DCD0: [PAL][bit0 BitFlag:IsCinematicActiveStateTransitioning |32-bit]
 //          - 1 => whenever a cinematic is ending or starting (transition period)
 //          - 0 => when any cinematic is fully active and and not active
@@ -1134,16 +1209,20 @@
 //          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x70 - [Struct(Coordinates):CameraLocation)]
 // $763D4C: [32-bit] turn ability flag
+// $7F585C: [NTSCU][32-bit:Checkpoint_RespawnPointID(preferred)]
+//          @Regional equivalent of $0x80783c (PAL)
+//          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x8ff4d8
 // $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol(alt)]
 //          - Prefer using [Pointer:HUDcontrol(preferred)] at $0x7238b8
 // $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
 //          - This Checkpoint_RespawnPointID only changes when a new Checkpoint initializes OR when non is active.
+//          - This value becomes 0x0 when pressing PauseMenu->Restart, thus this can be used to check if the player presses Restart.
 //          
 //          # RespawnPointIDs (hex) - CheckpointIDs (string)
 //          |(list incomplete) (StoryChapterSectionIDs listed at $0x721820)
 //          |''''''''''''''''''''''''
-//          | 0x0 => No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu
+//          | 0x0 => No checkpoint reached/initialized; When loading; When in-between Levels; When pressing Restart on PauseMenu; Not when using a checkpoint.
 //          |
 //          |===Chapter 1, "The Wrong Train"===
 //          | ---StoryChapterSection "WrongTrain_A"---
@@ -1152,10 +1231,12 @@
 //          | ---StoryChapterSection "WrongTrain_B"---
 //          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
 //          | 0x333 - "Checkpoint_2" => Waking up after vault explosion. Cassidy wakes up the player
+//          |
 //          |===Chapter 2, "Ride Like The Devil"===
 //          | ---StoryChapterSection "Hub_A"---
 //          | 0x26C - "Checkpoint_1" => Start of Chapter
 //          | 0x565 - "Checkpoint_2" => Start of Boss Battle
+//          |
 //          |===Chapter 3, "Boneyard"===
 //          | ---StoryChapterSection "M03_C"---
 //          | 0x328 - "Checkpoint_1" => At start of Chapter
@@ -1166,57 +1247,184 @@
 //          | 0x362 - "Checkpoint_3" => Catacombs arena, after Banshee intro
 //          | 0x362 - "Checkpoint_4" => Catacombs arena, after defeating the Banshees
 //          | ---StoryChapterSection "M03_A"---
-//          | ??? - "Checkpoint_1" =>
+//          | 0x2B6 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
 //          | 0x2BC - "Checkpoint_2" => After Good/Evil choice
-//          | ...
+//          |
 //          |===Chapter 4, "Devil's Belly Mine"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "Hub_A"---
+//          | 0x382 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)(1x TaintedSoul)
+//          | 0x3d3 - "Checkpoint_2" => Near first Mark of Evil fight??
+//          | ---StoryChapterSection "Hub_B"---
+//          | 0x347 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x3B3 - "Checkpoint_2" => After dropping down the hole; Intro of TNTreapers (1x TaintedSoul)
+//          | ---StoryChapterSection "Hub_C"---
+//          | 0x2F4 - "Checkpoint_1" => Start of StoryChapterSection with reinforced door (2x TaintedSoul)
+//          | 0x40A - "Checkpoint_2" => After blowing up reinforced door
+//          | ---StoryChapterSection "Hub_D"---
+//          | 0x33F - "Checkpoint_1" => Start of StoryChapterSection (2x TaintedSoul)
+//          | 0x3DB - "Checkpoint_2" => After dropping down gap, section with Mark of Evil
+//          |
 //          |===Chapter 5, "Darkwatch Outpost"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "M07_A"---
+//          | 0x2D8 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x396 - "Checkpoint_2" => Inner outpost, clear enemies part 1
+//          | 0x3B6 - "Checkpoint_3" => Inner outpost, clear enemies part 2
+//          | ---StoryChapterSection "M07_B"---
+//          | 0x2DC - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x387 - "Checkpoint_2" => After moral choice (1x TaintedSoul)
+//          |
 //          |===Chapter 6, "War Train"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "M07_C"---
+//          | (Checkpoint_1 is non-existent) => Before War Train spawns
+//          | 0x332 - "Checkpoint_2" => Fight vs War Train
+//          |
 //          |===Chapter 7, "Torture Maze"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "M09_A"---
+//          | 0x331 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M09_B"---
+//          | 0x3B2 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x45F - "Checkpoint_2" => Before civilians spawn
+//          | ---StoryChapterSection "M09_C"---
+//          | 0x31C - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3A4 - "Checkpoint_2" => After turning all the valves
+//          | ---StoryChapterSection "M09_D"---
+//          | 0x2B1 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M09_E"---
+//          | 0x34F - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x368 - "Checkpoint_2" => Arena fight part 2
+//          | 0x389 - "Checkpoint_3" => Arena fight part 3
+//          | ---StoryChapterSection "M09_F"---
+//          | 0x3BF - "Checkpoint_1" => Start of StoryChapterSection
+//          |
 //          |===Chapter 8, "Baptism of Fire"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 9, "Citadel"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 10, "Rescue"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 11, "The Deadlight Prism"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 12, "Invasion"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 13, "Hangtown"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 14, "The Morning After"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 15, "The Price of Passion"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 16, "Showdown"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 17, "The Right Train"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 18, "Deadfall"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
-//          |===Chapter 19, "Curse of The West"===
-//          | ---StoryChapterSection "xxxxx"---
-//          | ...
+//          | ---StoryChapterSection "M10_A"---
+//          | 0x38A - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | ... - "Checkpoint_2" => ???
+//          | 0x40F - "Checkpoint_3" => After killing all enemies in 1st zone, once
+//          | ---StoryChapterSection "M10_B"---
+//          | 0x340 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3A2 - "Checkpoint_2" => Entering House, more Marks of Evil spawn
+//          | ---StoryChapterSection "M10_C"---
+//          | 0x346 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x415 - "Checkpoint_2" => After MoralChoice (2x TaintedSoul)
+//          | 0x4BE - "Checkpoint_3" => After Killing all Shotgunners
+//          | ---StoryChapterSection "M10_D"---
+//          | 0x2BB - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x3C9 - "Checkpoint_2" => Mark of Evil inside big barn
+//          |
+//          |===Chapter "Citadel"===
+//          | ---StoryChapterSection "Citadel_Launch_AA"---
+//          | This is some sort of Hub area, to select the next 3 missions/Chapters
+//          |
+//          |===Chapter 9, "Rescue"===
+//          | ---StoryChapterSection "Hub_A"---
+//          | [VariousValues] - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x458 - "Checkpoint_2" => After destroying 2nd Mark of Evil
+//          | 0x4BA- "Checkpoint_3" => After killing all enemies in town area
+//          | ---StoryChapterSection "Hub_B"---
+//          | 0x474 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x513 - "Checkpoint_2" => Regulator Defence, 1st wave done
+//          |
+//          |===Chapter 10, "The Deadlight Prism"===
+//          | ---StoryChapterSection "M15_D"---
+//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x528 - "Checkpoint_2" => Before Banshee spawn (1x TaintedSoul)
+//          | ---StoryChapterSection "M15_E"---
+//          | 0x439 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M15_F"---
+//          | 0x4C7 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4E4 - "Checkpoint_2" => After dropping down cliff, ambush with fire
+//          | 0x4E4 - "Checkpoint_3" => After ambush with fire
+//          | ---StoryChapterSection "M15_A"---
+//          | 0x4F3 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x52C - "Checkpoint_2" => Further into canyon valley (1x TaintedSoul)
+//          | 0x55E - "Checkpoint_3" => Even further into canyon valley (1x TaintedSoul)
+//          | 0x58A - "Checkpoint_4" => Before Mark of Evil spawn (1x TaintedSoul)
+//          | ---StoryChapterSection "M15_C"---
+//          | 0x47A - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          |
+//          |===Chapter 11, "Invasion"===
+//          | ---StoryChapterSection "M17_B"---
+//          | 0x472 - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x4D8 - "Checkpoint_2" => Entering deeper in caves
+//          | 0x4EF - "Checkpoint_3" => Entering deeper in caves
+//          | ---StoryChapterSection "M17_C"---
+//          | 0x3C0 - "Checkpoint_1" => Start of StoryChapterSection (1x MoralChoice)
+//          | 0x46A - "Checkpoint_2" => After MoralChoice (2x TaintedSoul)
+//          | 0x59D - "Checkpoint_3" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "M17_D"---
+//          | 0x45E - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x464 - "Checkpoint_2" => Enemy spawn behind defence
+//          |
+//          |===Chapter 12, "Hangtown"===
+//          | ---StoryChapterSection "M11_F"---
+//          | 0x4A0 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x533 - "Checkpoint_2" => Before fight start
+//          | 0x55D - "Checkpoint_3" => Before fall back to hotel
+//          | 0x55D - "Checkpoint_4" => Before hotel explodes
+//          | ---StoryChapterSection "M11_G"---
+//          | 0x503 - "Checkpoint_1" => After MoralChoice (1x MoralChoice)
+//          | 0x55C - "Checkpoint_2" => After 1st wave
+//          | 0x59A - "Checkpoint_3" => After 1st Mark of Evil spawn
+//          | 0x59A - "Checkpoint_4" => Before 2nd Mark of Evil spawn
+//          | 0x5A0 - "Checkpoint_5" => After 2nd Mark of Evil destroy
+//          | ---StoryChapterSection "M11_H"---
+//          | 0x4A9 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4CE - "Checkpoint_2" => Near Church (1x TaintedSoul)
+//          |
+//          |===Chapter 13, "The Morning After"===
+//          | ---StoryChapterSection "M12_AA"---
+//          | 0x451 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x535 - "Checkpoint_2" => After Tala leaves Citadel
+//          | ---StoryChapterSection "M12_B"---
+//          | 0x615 - "Checkpoint_1" => Start of StoryChapterSection (2x TaintedSoul)
+//          | 0x72C - "Checkpoint_2" => Further inside Citadel
+//          | 0x72D - "Checkpoint_3" => Along Train Tracks
+//          | ---StoryChapterSection "M12_C"---
+//          | 0x62A - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x633 - "Checkpoint_2" => Further inside Citadel
+//          | 0x633 - "Checkpoint_3" => Even further inside Citadel
+//          | ---StoryChapterSection "M12_D"---
+//          | 0x638 - "Checkpoint_1" => Start of StoryChapterSection
+//          | ---StoryChapterSection "M12_A"---
+//          | 0x36B - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x5A7 - "Checkpoint_2" => After killing shotgunner wave
+//          |
+//          |===Chapter 14, "Showdown"===
+//          | ---StoryChapterSection "FallOfCitadel_A"---
+//          | 0x444 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4F8 - "Checkpoint_2" => BossFight part 2
+//          | 0x4F8 - "Checkpoint_3" => BossFight part 3, on bridge
+//          | ---StoryChapterSection "FallOfCitadel_B"---
+//          | // (no gameplay, only 1x MoralChoice)
+//          |
+//          |===Chapter 15, "The Right Train"===
+//          | ---StoryChapterSection "M19_A"---
+//          | 0x40C - "Checkpoint_1" => Start of StoryChapterSection, on horseback"
+//          | 0x4CC - "Checkpoint_2" => On the train
+//          | 0x5B4 - "Checkpoint_3" => On the train, inside wagon filled with reapers
+//          | 0x5A1 - "Checkpoint_4" => On the train, cleared wagon with reapers
+//          |
+//          |===Chapter 16, "Deadfall"===
+//          | ---StoryChapterSection "Hub_A"---
+//          | // (no checkpoints)
+//          | ---StoryChapterSection "Hub_B"---
+//          | ??? - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4F9 - "Checkpoint_2" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "Hub_B2"---
+//          | 0x475 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4DF - "Checkpoint_2" => Before Mark of Evil spawn
+//          | ---StoryChapterSection "Hub_C"---
+//          | 0x4DE - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x51A - "Checkpoint_2" => After Mark of Evil destroy, inside apartments (1x TaintedSoul)
+//          | ---StoryChapterSection "Hub_C2"---
+//          | 0x4DB - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x4DF - "Checkpoint_2" => Before Mark of Evil spawn
+//          |
+//          |===Chapter 17, "Curse of The West"===
+//          | ---StoryChapterSection "GroundZero_A"---
+//          | 0x534 - "Checkpoint_1" => Start of StoryChapterSection
+//          | 0x62B - "Checkpoint_2" => BossFight part 2
 //          '
 // $807840: [PAL][32-bit (base) Pointer:CheckpointData_1] -> [Struct:CheckpointData]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
@@ -1224,6 +1432,12 @@
 //          +0x2 - [13-byte ASCII:CheckpointID]
 //          | - Documentation at $0x96d022
 // $8FEAEC: [32-bit] Blood frenzy ability flag
+// $8FF494: [NTSCU][Lower4:PlayerCount(preferred) |32-bit]
+//          @Regional equivalent of $0x911474 (PAL)
+// $8FF4D8: [NTSCU][32-bit (base) Pointer:CheckpointData_0]
+//          @Regional equivalent of $0x9114b8 (PAL)
+// $8FF510: [NTSCU][Lower4:GameMode |32-bit]
+//          @Regional equivalent of $0x9114f0 (PAL)
 // $8FFAC8: [8-bit] main menu selection
 // $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
 //          +0x2 - [Variable Size ASCII:LevelID(alt)]
@@ -1263,8 +1477,6 @@
 //          0x3 => Multiplayer Versus Mode
 // $911508: [32-bit:MatchDuration(alt)]
 //          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
-// $911768: 8-bit which pointer is used for the current HUD
-//          This value x 0x4
 // $911898: [PAL][32-bit (base) Pointer:MessageBoxData]
 //          @Fixed Memory Location, although pointed to by $0x7238b8
 //          - MessageBox is an in-game popup/submenu (for Lore/hints or the PowersMenu)
@@ -1290,7 +1502,12 @@
 //          | - These values regulate the location of the PlayerCharacterModel, not the horse.
 //          | - Definition of [Struct:Coordinates] at $0x965cc4
 //          | - (These are the functional coordinates)
-// $953C24: [32-bit] current weapon equipped
+// $953C24: [NTSCU][300-byte Struct(PlayerData):Player-1]
+//          ===========================================
+//          @Regional equivalent of $0x965c04 (PAL)
+//          
+//          [32-bit:EquippedWeapon_WeaponID-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953C28: [32-bit] current map timer
 // $953C3C: [32-bit] current map Firearms kills
 // $953C40: [32-bit] current map shots fired
@@ -1304,12 +1521,29 @@
 //          0x01 = Cowboy
 //          0x02 = Shootist
 //          0x03 = Deadeye
-// $953D18: [8-bit] current single player map in-progress
+// $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
+//          @Regional equivalent of $0x965cc4 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
+//          @Regional equivalent of $0x965cf8 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D1A: [8-bit] number of maps completed
 // $953D24: [32-bit] profiles
 //          0 = profile 1
 //          1 = profile 2
 //          2 = profile 3
+// $953D4C: [NTSCU][32-bit (base) Pointer:HUDcontrol_Health-Player1]
+//          @Regional equivalent of $0x965d2c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D50: [NTSCU][300-byte Struct(PlayerData):Player-2]
+//          ===========================================
+//          @Regional equivalent of $0x965d30 (PAL)
+//          - PlayerData for player2 is only populated when starting Multiplayer
+//          
+//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player2]
+//          @Member of [Struct(PlayerData):Player-2] (refer to $0x73b68c)
+// $95B042: [NTSCU][13-byte ASCII:CheckpointID]
+//          @Regional equivalent of $0x96d022 (PAL)
 // $960B3C: [32-bit] High calibar bullets ability flag
 // $960D6C: [32-bit] black shroud ability flag
 // $960F7C: [32-bit] shield ability flag
@@ -1326,7 +1560,10 @@
 //          | 0x0 => BasicRevolver
 //          | 0x1 => RedeemerRevolver
 //          | 0x4 => CarbineRifle
+//          | 0x6 => RailRocket
 //          | 0x7 => ExplosiveCrossbow
+//          | 0x8 => RangeRifle (sniper)
+//          | 0x9 => Scepter (melee)
 //          | ...
 //          '
 // $965C08: [PAL][32-bit:TimeSpentInChapter]
@@ -1432,6 +1669,7 @@
 // $965CC4: [PAL][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This base pointer is only active during gameplay
+//          - This pointer temporarily becomes 0x0 on PauseMenu->Restart
 //          
 //          +0x30 - [12-byte Struct(Coordinates):PlayerLocation(copy)]
 //          | - These coordinates are copied from [Struct:EntityComponent.CharacterStateMachineComponent].[Struct(Coordinates):PlayerLocation(functional)]
@@ -1506,7 +1744,7 @@
 //          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid when wielding the Crossbow
 //          ...
-//          ...+0x34 - [32-bit (layer-4) Pointer:EntityWeaponComponent_BaiscPistol] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
+//          ...+0x34 - [32-bit (layer-4) Pointer:EntityWeaponComponent_BasicPistol] -> [Struct:EntityWeaponComponent.WeaponComponent(weapon)]
 //          ...| - Definition of [Struct:EntityWeaponComponent.WeaponComponent(weapon)] below
 //          ...| - This pointer is only valid for Chapter 1, when the player only has the BasicPistol equipped
 //          ...| - Once the player has the RedeemerRevolver, refer to [Pointer:EntityWeaponComponent_NormalWeapon(noDynamite)]
@@ -1709,7 +1947,7 @@
 //          
 //          [Definition Struct:EntityWeaponComponent.WeaponComponent(throwable) |??-byte]
 //          |''''''''''''''''''''''''''''''
-//          | - This struct contains data which regulates the throwable dynamite bundles
+//          | - This struct contains data which regulates the throwables (dynamite and splitter grenades)
 //          |
 //          |+0x8 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:EntityComponentName] = "WeaponComponent"
@@ -1719,15 +1957,15 @@
 //          |.| - WeaponNameIDs listed below
 //          |
 //          |+0x74 - [32-bit:ThrowableCountInInventory(functional-1)]
-//          || - This value is always at 1 as long as dynamite bundles left in inventory > 0
-//          || - Manually changing this value, puts that amount of dynamite bundles in the player's inventory, but this is not the intended design. (eg. manually placing 0x10 on this value, puts 16 dynamite bundles in the inventory)
-//          || - Total number of dynamite bundles = [32-bit:ThrowableCountInInventory(functional-1)] + [32-bit:ThrowableCountInInventory(functional-2)]
+//          || - This value is always at 1 as long as throwables left in inventory > 0
+//          || - Manually changing this value, puts that amount of throwables in the player's inventory, but this is not the intended design. (eg. manually placing 0x10 on this value, puts 16 throwables in the inventory)
+//          || - Total number of throwables = [32-bit:ThrowableCountInInventory(functional-1)] + [32-bit:ThrowableCountInInventory(functional-2)]
 //          |
 //          |+0x1D8 - [32-bit:ThrowableCountInInventory(functional-2)]
-//          || - This value regulates the amount of dynamite bundles in the player's inventory
-//          || - Freezing this value above 0, gives the player unlimited dynamite bundles
+//          || - This value regulates the amount of throwables  in the player's inventory
+//          || - Freezing this value above 0, gives the player unlimited throwables
 //          || - This count is always 1 count lower than the count shown on the [32-bit:ThrowableCountInInventory(display)] ($0x7238b8)
-//          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more dynamite bundle, afterwards this functional value remains at 0 and the display value becomes 0.
+//          || - When the display value is at 1, this functional value is at 0. The player can then throw 1 more throwable, afterwards this functional value remains at 0 and the display value becomes 0.
 //          '
 //          
 //          [Definition Struct:Coordinates |12-byte]
@@ -1840,6 +2078,7 @@
 //          | 0x10 => TBD
 //          | 0x11 => TBD
 //          | 0x12 => TBD
+//          | 0x13 => TBD
 //          '
 // $965CFA: [PAL][8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
@@ -1911,8 +2150,12 @@
 //          ....| - FloatRange: [1.0 --- 0.0]; 1.0 = maxHP; 0.0 = death
 //          ....| - Reference [Pointer:BossEntityComponentData].[Float:BossHP(functional)] in this same pointer chain
 //          ....
+//          ....+0x2F- [bit0 BitFlag:IsBossHPbarDisplayed]
+//          ....| - This value directly controls if the Boss HP bar is displayed or not
+//          ....
 //          ....+0xF4 - [32-bit (layer-5) Pointer:BossEntityData] -> [Struct:EntityData]
 //          ....| - Defintion of [Struct:EntityData] at $0x721788
+//          ....| - When this pointer is zeroed out, there's no BossHP display active
 //          .....+0x58 - [32-bit (layer-6) Pointer] -> [Dictionary:BossEntityComponents]
 //          .....| - Each ListItem in this dictionary consists of a [32-bit:DictionaryKey] + [32-bit Pointer:PowerRuneComponentData]
 //          .....| - Based on the Boss and Chapter more or less BossEntityComponents are stored inside this dictionary

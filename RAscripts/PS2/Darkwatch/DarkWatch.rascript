@@ -8,7 +8,7 @@
 // Platform: PlayStation 2
 // Achievement Guide: [Link_to_guide] // TODO setup guide page here => https://github.com/RetroAchievements/guides/wiki
 // RA Game Page: https://retroachievements.org/game/19111
-// RATools version: v1.15.0 // TODO set last used RATools version here
+// RATools version: v1.15.0 
 
 //#####################################################################################################\\
 //  //  //  // //  //  //  //  //  //  //     DEVELOPER NOTES      \\  \\  \\  \\  \\  \\  \\  \\  \\  \\ 
@@ -128,7 +128,7 @@ sNULL = "-1"
 RELEASE_REGION_USA = "NTSC-U"
 RELEASE_REGION_JPN = "NTSC-J"
 RELEASE_REGION_EUR = "PAL"
-RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_EUR] // TODO add region RELEASE_REGION_USA
+RELEASE_REGIONS_SUPPORTED = [RELEASE_REGION_EUR, RELEASE_REGION_USA]
 
 function util_throwError(string_errMsg) { // This function will throw an error in RATools because the key doesn't exist
 	let_dict = {}
@@ -203,6 +203,14 @@ memory_StructDefs = {
 			"Bitflag:IsControllerConnected": 0x0,
 			"BitFlag:IsInputPressed_Cross": 0xB},
 		},
+	"Struct:LoadingData": {
+		"pointerChainToMember": {
+			"32-bit:LoadingState": {
+				"pointerChainOffsets": {
+					RELEASE_REGION_USA: [0x510],
+					RELEASE_REGION_EUR: [0x450]}},
+			},
+		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -252,26 +260,25 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 // #region MEM - address storage
 memory_addresses = {
 	// "memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
-	"Flag:IsInGame(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x72252c, RELEASE_REGION_JPN: sNULL},
 	
-	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
-	"Lower4:GameMode": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
+	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
+	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
 	
-	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
-	"8-bit:GameState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
+	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
+	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 
-	"32-bit:LoadingState": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80b650, RELEASE_REGION_JPN: sNULL}, // TODO this doesn't work in COOP
-	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 
-	"ASCII:GameID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
-	"ASCII:CheckpointID": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
+	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
 
-	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
-	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
-	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
-	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
-	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
-
+	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: 0x134408, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
+	"Pointer:LoadingData_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
+	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: 0x71ff20, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
+	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
+	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
+	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
+	"Pointer:HUDcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -320,7 +327,7 @@ function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 
 function is_ReleaseRegion(enum_releaseRegion) {
 	let_string_GameID = sNULL
-	if(enum_releaseRegion == RELEASE_REGION_USA) let_string_GameID = sNULL // FullString: "xxxxx"
+	if(enum_releaseRegion == RELEASE_REGION_USA) let_string_GameID = "SLUS" // FullString: "SLUS_210.42"
 	else if(enum_releaseRegion == RELEASE_REGION_JPN) let_string_GameID = sNULL // FullString: "xxxxx"
 	else if(enum_releaseRegion == RELEASE_REGION_EUR) let_string_GameID = "SLES" // FullString: "SLES_535.64"
 	
@@ -387,10 +394,9 @@ function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion)
 // ◦ General Game Logic ◦
 // ''''''''''''''''''''''
 // #region General Game Logic
-const_FLAG_InGame_true = 0x14 // NOTE: Changes to 0x14 when the player loads into a level
-const_LOADING_STATE_Loading = 0x1000003C 
-const_GAME_STATE_AnyInGameMenu_active = 0x3
-// ----------------GameMode Identification---------------------
+CONST_LOADING_STATE_Loading = {RELEASE_REGION_USA: 0x10000048, RELEASE_REGION_EUR: 0x1000003C, RELEASE_REGION_JPN: sNULL}
+CONST_GAME_STATE_AnyInGameMenu_active = 0x3
+// ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
 
@@ -432,12 +438,7 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
 
-function current_flagState_IsInGame(enum_releaseRegion) =>
-	dword(memory_getAddress("Flag:IsInGame(preferred)", enum_releaseRegion))
-
-function prev_flagState_IsInGame(enum_releaseRegion) =>
-	prev(current_flagState_IsInGame(enum_releaseRegion))
-
+// ----------------GameStates---------------------
 function current_pointerState_PlayerActorData(enum_releaseRegion) {
 	let_memAddr_Pointer = memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)
 	return dword(let_memAddr_Pointer)}
@@ -450,17 +451,6 @@ function wasPrior_flagState_InGame_true(enum_releaseRegion) =>
 
 function prev_pointerState_PlayerActorData(enum_releaseRegion) =>
 	prev(current_pointerState_PlayerActorData(enum_releaseRegion))
-
-// function is_flagState_InGame_true(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
-
-// function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
-	// && prev_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
-
-// function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
-	// current_flagState_IsInGame(enum_releaseRegion) != const_FLAG_InGame_true
-	// && prev_flagState_IsInGame(enum_releaseRegion) == const_FLAG_InGame_true
 
 function is_flagState_InGame_true(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) != 0
@@ -476,22 +466,27 @@ function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
 	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
 
-function current_LoadingState(enum_releaseRegion) =>
-	dword(memory_getAddress("32-bit:LoadingState", enum_releaseRegion))
+function current_LoadingState(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:LoadingData_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct:LoadingData", "32-bit:LoadingState", 
+		let_memAddr_BasePointer, enum_releaseRegion,
+		memAccessorFunction_toPointedToMember = dword)
+	}
 
 function prev_LoadingState(enum_releaseRegion) =>
 	prev(current_LoadingState(enum_releaseRegion))
 
 function is_Loading(enum_releaseRegion) => 
-	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function on_Loading_start(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
-	&& prev_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function on_Loading_end(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) != const_LOADING_STATE_Loading
-	&& prev_LoadingState(enum_releaseRegion) == const_LOADING_STATE_Loading
+	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function current_GameState(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:GameState", enum_releaseRegion))
@@ -503,14 +498,24 @@ function prev_GameState(enum_releaseRegion) =>
 	prev(current_GameState(enum_releaseRegion))
 
 function is_AnyInGameMenu_active(enum_releaseRegion) =>
-	current_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+	current_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
 
 function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
-	current_GameState(enum_releaseRegion) != const_GAME_STATE_AnyInGameMenu_active
-	&& prev_GameState(enum_releaseRegion) == const_GAME_STATE_AnyInGameMenu_active
+	current_GameState(enum_releaseRegion) != CONST_GAME_STATE_AnyInGameMenu_active
+	&& prev_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
+
 // -----------------PauseMenu--------------------
-CONST_TEXT_LOOKUP_KEY_PauseMenu = 0xE5E853D8
-CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu = 0x33E14BF8 	
+CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
+CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_SilverBullet = 0x8BBEEDB1
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_MysticArmor = 0x337DD749
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Vindicator = 0x76E981F2
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_BloodFrenzy = 0xBE5D5443
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Turn = 0xC6607CC3
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_BlackShroud = 0x8657504F
+CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_SoulStealer = 0xEC61D4E0
 
 function is_PauseMenu_active(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
@@ -528,7 +533,7 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x118
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		*/
 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFF)
 
@@ -536,9 +541,9 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
 	// && is_PauseMenu_RestartConfirmationMenu_active(enum_releaseRegion)
 	// && is_PauseMenu_RestartConfirmationMenu_Yes_highlighted(enum_releaseRegion)
-	/* MANUAL_CONSTRUCTION[FD] of above 2 lines: R/R usage
+	/* MANUAL_CONSTRUCTION[1FD-2FD] of above 2 lines: R/R usage
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
-		NTSCU: 	xxxx
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 
 		AddAddress	[Pointer:HUDcontrol(preferred)]
 		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
@@ -550,13 +555,15 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		
 		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x7C
 					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
 		*/
-	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD)
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
+	&& dword(memory_getAddress("Pointer:HUDcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 // #endregion General Game Logic
@@ -565,21 +572,50 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 // ◦ Level ID ◦
 // ''''''''''''
 // #region Level ID
-CHAPTER_1_WrongTrain = 0x1
-CHAPTER_2_RideDevil = 0x2
-CHAPTER_3_Boneyard = 0x3
-CHAPTER_4_DevilMine = 0x4
+CHAPTER_1_WrongTrain = 1
+CHAPTER_2_RideDevil = 2
+CHAPTER_3_Boneyard = 3
+CHAPTER_4_DevilMine = 4
+CHAPTER_5_Outpost = 5
+CHAPTER_6_WarTrain = 6
+CHAPTER_7_TortureMaze = 7
+CHAPTER_8_BaptismFire = 8
+CHAPTER_Citadel = 9
+CHAPTER_9_Rescue = 10
+CHAPTER_10_Prism = 11
+CHAPTER_11_Invasion = 12
+CHAPTER_12_Hangtown = 13
+CHAPTER_13_MorningAfter = 14
+CHAPTER_14_Showdown = 15
+CHAPTER_15_RightTrain = 16
+CHAPTER_16_Deadfall = 17
+CHAPTER_17_CurseWest = 18
 
 CHAPTER_SECTION_1 = 0
 CHAPTER_SECTION_2 = 1
 CHAPTER_SECTION_3 = 2
+CHAPTER_SECTION_4 = 3
+CHAPTER_SECTION_5 = 4
+CHAPTER_SECTION_6 = 5
 
 MULTIPLAYER_LEVEL_Asylum = "DM_Asylum"
+MULTIPLAYER_LEVEL_DeathDealer = "DM_DeathDealer"
+MULTIPLAYER_LEVEL_DeathDealerDay = "DM_DeathDealerDay"
+MULTIPLAYER_LEVEL_DevilsBelly = "DM_DevilsBelly"
+MULTIPLAYER_LEVEL_DonnerPass = "DM_DonnerPass"
+MULTIPLAYER_LEVEL_DonnerPassDay = "DM_DonnerPassDay"
+MULTIPLAYER_LEVEL_HangTownEast = "DM_HangTownEast"
+MULTIPLAYER_LEVEL_HangTownEastDay = "DM_HangTownEastDay"
+MULTIPLAYER_LEVEL_HangTownWest = "DM_HangTownWest"
+MULTIPLAYER_LEVEL_HangTownWestDay = "DM_HangTownWestDay"
+MULTIPLAYER_LEVEL_HellHole = "DM_HellHole"
+MULTIPLAYER_LEVEL_TradeCenter = "DM_TradeCenter"
+MULTIPLAYER_LEVEL_TradeCenterDay = "DM_TradeCenterDay"
 
 CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
 		// "LevelID": "_templateID_",
-		// "StoryChapterSectionIDs": ["_templateID_"],
+		// "StoryChapterSectionIDs": ["_Section1_", "_Section2_"],
 		// },
 	CHAPTER_1_WrongTrain: {
 		"LevelID": "WrongTrain",
@@ -595,7 +631,63 @@ CONST_LEVEL_DATA = {
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
-		"StoryChapterSectionIDs": [],
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
+		},
+	CHAPTER_5_Outpost: {
+		"LevelID": "M07_DWOutpost",
+		"StoryChapterSectionIDs": ["M07_A", "M07_B"],
+		},
+	CHAPTER_6_WarTrain: {
+		"LevelID": "Wartrain",
+		"StoryChapterSectionIDs": ["M07_C"],
+		}, 
+	CHAPTER_7_TortureMaze: {
+		"LevelID": "M09_TortureMaze",
+		"StoryChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
+		},
+	CHAPTER_8_BaptismFire: {
+		"LevelID": "M10_TradingPost",
+		"StoryChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
+		},
+	CHAPTER_Citadel: {
+		"LevelID": "Citadel_Launch",
+		"StoryChapterSectionIDs": ["Citadel_Launch_AA"],
+		},
+	CHAPTER_9_Rescue: {
+		"LevelID": "M08_Regulator",
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B"],
+		},
+	CHAPTER_10_Prism: {
+		"LevelID": "M15_SplittingPaths",
+		"StoryChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
+		},
+	CHAPTER_11_Invasion: {
+		"LevelID": "M17_Invasion",
+		"StoryChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
+		},
+	CHAPTER_12_Hangtown: {
+		"LevelID": "M11_Hangtown",
+		"StoryChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
+		},
+	CHAPTER_13_MorningAfter: {
+		"LevelID": "M12_CitadelUnderAttack",
+		"StoryChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
+		},
+	CHAPTER_14_Showdown: {
+		"LevelID": "FallOfCitadel",
+		"StoryChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
+		},
+	CHAPTER_15_RightTrain: {
+		"LevelID": "M19_RidetoDeadfall",
+		"StoryChapterSectionIDs": ["M19_A"],
+		},
+	CHAPTER_16_Deadfall: {
+		"LevelID": "M20_PenetratingDeadfall",
+		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
+		},
+	CHAPTER_17_CurseWest: {
+		"LevelID": "LVL_GroundZero",
+		"StoryChapterSectionIDs": ["GroundZero_A"],
 		},
 	}
 
@@ -616,6 +708,7 @@ function LEVEL_DATA_getLastStoryChapterSectionID(enum_chapter) {
 	return util_getLastItemInArray(let_array_AllStoryChapterSectionIDs)}
 
 // ----------------StoryChapterID---------------------
+/* DISABLED - Not advised to use this
 function current_InProgressStoryChapterID(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:InProgress_StoryChapterID", enum_releaseRegion))
 
@@ -626,16 +719,12 @@ function is_StoryChapterID(enum_chapter, enum_releaseRegion) =>
 	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
 
 function on_StoryChapter_complete(enum_chapter, enum_releaseRegion) =>
-	// WARNING: This can't be used to check for the last storyChapter; prefer using an FMV ID for that
 	current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter + 1
 	&& prev_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
 
 function is_GunslingerChapter_available(enum_chapter, enum_releaseRegion) {
-	/* TODO implement for last chapter
-		if (enum_chapter == last_Chapter) 
-			current_InProgressStoryChapterID(enum_releaseRegion) == enum_chapter
-		*/
 	return current_InProgressStoryChapterID(enum_releaseRegion) >= enum_chapter + 1} // --CheckIf--> next chapter is inProgress in SinglePlayer Mode
+*/
 
 // ----------------StoryChapterSectionID---------------------
 function is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
@@ -737,6 +826,13 @@ CONST_ASCII_FLAG_SofdecIsFMVactive_true = "Sofd" // FullString: "SofdecStream"
 FMV_MainMenu = "PS2MAI"
 FMV_Shadow = "M01S4_"
 FMV_LazarusLives = "M02S1_"
+FMV_CassidyDies = "M04S1_"
+FMV_TheHaunting = "M05S1_"
+FMV_GiddyUp = "M09S3_"
+FMV_PromNight = "M11S2_"
+FMV_Monster = "M22S4_"
+FMV_Hero = "M22S3_"
+FMV_Credits = "FINALD"
 
 function is_anyFMV_active(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
@@ -892,11 +988,45 @@ achievements_coreData = {
 	
 	"c_SPstory": { // Category - Singleplayer Story Progression
 		// "a_Template": { // CONCEPT a_SPstory
-		// 	"id": 000000, "points": 0000000, "devInfo": "Chapter 'xxxxxx' Completion"},
+			// "id": 000000, "points": 0000000, "devInfo": "xxxx Completion"},
 		"a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+			"id": 504289, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
 		"a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"}, 
+			"id": 504290, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
+		"a_Boneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504291, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
+		"a_DevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504292, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
+		"a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504293, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
+		"a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504294, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
+		"a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504295, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
+		"a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504296, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
+		"a_Rescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504297, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
+		"a_Prism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504298, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
+		"a_Invasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504299, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
+		"a_Hangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504300, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
+		"a_MorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504301, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
+		"a_Showdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504302, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
+		"a_RightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504303, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
+		"a_Deadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504304, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
+		},
+	"c_SPend": { // Category - Singleplayer Story Ending
+		"a_CurseWestGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504305, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		"a_CurseWestEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504306, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
@@ -913,7 +1043,7 @@ achievement_TYPE_WinCondition = "win_condition"
 achievement_TYPE_Missable = "missable"
 achievement_TYPE_Standard = ""
 
-achievements_typeByCategory = { // TODO set achievement types
+achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -925,8 +1055,9 @@ achievements_typeByCategory = { // TODO set achievement types
 	
 	// "c_Template": 	achievement_TYPE_Standard,
 	"c_SPstory": 		achievement_TYPE_Progression,
+	"c_SPend": 			achievement_TYPE_WinCondition,
 	"c_SPchallenge": 	achievement_TYPE_Standard,
-	"c_Template": 	achievement_TYPE_Standard}
+	"c_Template": 		achievement_TYPE_Standard}
 	
 // #endregion ACH - core data
 
@@ -949,10 +1080,10 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_atMainMenu(enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->RestartConfirmationMenu->Restart
-		/* MANUAL_CONSTRUCTION[FD] of AltGroup[4]: R/R usage
-			- Child MANUAL_CONSTRUCTION[FD] at on_RestartConfirmationMenu_Restart()
+		/* MANUAL_CONSTRUCTION of AltGroup[4]: R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-2FD] with ResetIf+AndNext - refer to on_RestartConfirmationMenu_Restart()
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-			NTSCU: 	xxxx
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 
 			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
 			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
@@ -967,7 +1098,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			
 			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 			
 			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0x7C
@@ -980,25 +1111,18 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			&& on_RestartConfirmationMenu_Restart(enum_releaseRegion))
 		
 function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-	// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
-		unless(
-			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_InSinglePlayerMode(enum_releaseRegion))
+	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_StoryChapterID(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
 			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
 			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(
@@ -1006,90 +1130,35 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapte
 				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
 				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
 			&& on_Loading_start(enum_releaseRegion))
-	// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
-		|| unless(
-			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_InGunslingerMode(enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
-			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
-			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
-			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-			&& is_flagState_InGame_false(enum_releaseRegion))
-		&& trigger_when(
-			once(
-				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
-				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
-			&& on_Loading_start(enum_releaseRegion))
-	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-		/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
-			- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+	// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+		/* MANUAL_CONSTRUCTION of AltGroup[5]: R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-			NTSCU: 	xxxx
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) 
 
 function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-	// [1] ==== Alt Logic Group - SinglePlayer Mode ==== 	-> This group is responsible for unlocking the achievement in SinglePlayer Mode	
-		unless(
-			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_InSinglePlayerMode(enum_releaseRegion))
+	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_StoryChapterID(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
 			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_StoryChapterID(enum_chapter, enum_releaseRegion)
 			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(on_Loading_start(enum_releaseRegion))
-	// [2] ==== Alt Logic Group - Gunslinger Mode ==== 		-> This group is responsible for unlocking the achievement in Gunslinger Mode
-		|| unless(
-			!is_ReleaseRegion(enum_releaseRegion)
-			|| !is_InGunslingerMode(enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
-			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
-			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for 2 frames
-			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_GunslingerChapter_available(enum_chapter, enum_releaseRegion)
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-
-			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-			&& is_flagState_InGame_false(enum_releaseRegion))
-		&& trigger_when(on_Loading_start(enum_releaseRegion))
-	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-		/* MANUAL_CONSTRUCTION of AltGroup[6]: R/R usage
-			- Detailed breakdown of MANUAL_CONSTRUCTION[FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+	// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+		/* MANUAL_CONSTRUCTION of AltGroup[5]: R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-			NTSCU: 	xxxx
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion)
 
@@ -1111,7 +1180,97 @@ achievements_triggers = {
 	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_2_RideDevil, enum_releaseRegion)),
 	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
-		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, xxxxx, enum_releaseRegion)), // TODO put down FMV ID
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)),
+	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)),
+	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_5_Outpost, enum_releaseRegion)),
+	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_6_WarTrain, enum_releaseRegion)),
+	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)),
+	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_8_BaptismFire, enum_releaseRegion)),
+	"a_Rescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_9_Rescue, enum_releaseRegion)),
+	"a_Prism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_10_Prism, enum_releaseRegion)),
+	"a_Invasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_11_Invasion, enum_releaseRegion)),
+	"a_Hangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(CHAPTER_12_Hangtown, FMV_PromNight, enum_releaseRegion)),
+	"a_MorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_13_MorningAfter, enum_releaseRegion)),
+	"a_Showdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_14_Showdown, enum_releaseRegion)),
+	"a_RightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_15_RightTrain, enum_releaseRegion)),
+	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION, refer to achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV()
+		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_16_Deadfall, enum_releaseRegion)),
+	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_17_CurseWest
+		const_FMV_GoodEnding = FMV_Hero
+
+		return 
+		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(
+				once(
+					never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
+					&& on_FMV_end(const_FMV_GoodEnding, enum_releaseRegion))
+				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+			/* MANUAL_CONSTRUCTIONof AltGroup[5]: R/R usage
+				--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				*/
+			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
+		}),
+	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_17_CurseWest
+		const_FMV_EvilEnding = FMV_Monster
+
+		return 
+		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
+				is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(
+				once(
+					never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
+					&& on_FMV_end(const_FMV_EvilEnding, enum_releaseRegion))
+				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
+			/* MANUAL_CONSTRUCTION of AltGroup[5]: R/R usage
+				--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				*/
+			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
+		}),
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1121,12 +1280,35 @@ achievements_triggers = {
 // • ACHIEVEMENT text •
 // =====================
 // #region ACH - text
+
+/* IDEA's TEXT:
+	High Moon (instead of "High Noon")
+	Agent 000 (reference to new uniform casket)
+	The Crucible (referencing CHAPTER_7_TortureMaze)
+	A Reckoning in Blood
+	*/
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
 
 	// --------c_SPstory--------
-	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
-	"a_RideDevil": 				{"en": "xxxxxxxxx"},
+	"a_WrongTrain": 			{"en": "Hellbound Express"},
+	"a_RideDevil": 				{"en": "No Turning Back"},
+	"a_DevilMine":	 			{"en": "Whispers From the Grave"},
+	"a_Boneyard":	 			{"en": "Veins of the Underworld"},
+	"a_DWOutpost":	 			{"en": "No Safe Haven"},
+	"a_WarTrain":	 			{"en": "Bullet-Storm Express"},
+	"a_TortureMaze":	 		{"en": "Trial by Pain"},
+	"a_BaptismFire":	 		{"en": "Blazing Guns, Burning Souls"}, 
+	"a_Rescue": 				{"en": "No Grave for a Gunslinger"},
+	"a_Prism": 					{"en": "A Treasure Worth Dying For"},
+	"a_Invasion": 				{"en": "Warriors of the Shadow"},
+	"a_Hangtown": 				{"en": "Noose and Nightmare"},
+	"a_MorningAfter": 			{"en": "When the Sun Rose, It Found Ruins"},
+	"a_Showdown": 				{"en": "The Devil You Know"},
+	"a_RightTrain": 			{"en": "Damnation Express"},
+	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
+	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
+	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
@@ -1135,8 +1317,24 @@ achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 
 	// --------c_SPstory--------
-	"a_WrongTrain": 			{"en": "xxxxxxxxx"},
-	"a_RideDevil": 				{"en": "xxxxxxxxx"},
+	"a_WrongTrain": 			{"en": "You wanted a payday. Instead, you cashed in your soul. Complete Chapter 1, \"The Wrong Train\""},
+	"a_RideDevil": 				{"en": "The Reaper's ridin' close. Keep moving, or get buried where you stand. Complete Chapter 2, \"Ride Like the Devil\""},
+	"a_DevilMine":	 			{"en": "The dead don't like visitors, and they sure don't take kindly to trespassers. Complete Chapter 3, \"Boneyard\""},
+	"a_Boneyard":	 			{"en": "Something worse than gold fever haunts these tunnels. Complete Chapter 4, \"Devil's Belly Mine\""},
+	"a_DWOutpost":	 			{"en": "The cavalry ain't coming—hell's already moved in. Complete Chapter 5, \"Darkwatch Outpost\""},
+	"a_WarTrain":	 			{"en": "A horse, a six-shooter, and a train full of evil. Let's settle this. Complete Chapter 6, \"War Train\""},
+	"a_TortureMaze":	 		{"en": "General Cartwright doesn't take weak recruits—good thing you ain't weak. Complete Chapter 7, \"Torture Maze\""},
+	"a_BaptismFire":	 		{"en": "This is your welcome to Darkwatch—bullets, blood, and the stench of death. Complete Chapter 8, \"Baptism of Fire\""},
+	"a_Rescue": 				{"en": "They were left for dead. You're here to change that. Complete Chapter 9, \"Rescue\""},
+	"a_Prism": 					{"en": "Power like this don't belong in the hands of the wicked—or the weak. Complete Chapter 10, \"The Deadlight Prism\""},
+	"a_Invasion": 				{"en": "This land ain't for the taking—evil's got no claim here. Complete Chapter 11, \"Invasion\""},
+	"a_Hangtown": 				{"en": "The gallows still swing, but the dead don't stay hanging. Complete Chapter 12, \"Hangtown\""},
+	"a_MorningAfter": 			{"en": "Darkwatch stood for centuries. It only took one night to destroy it. Complete Chapter 13, \"The Morning After\""},
+	"a_Showdown": 				{"en": "Darkwatch is lost, but Lazarus still stands. Time to finish this. Complete Chapter 14, \"Showdown\""},
+	"a_RightTrain": 			{"en": "This train ain't heading west—it's heading straight into damnation. Complete Chapter 15, \"The Right Train\""},
+	"a_Deadfall": 				{"en": "Bullets fly, buildings crumble, and you're stuck in the middle of it. Complete Chapter 16, \"Deadfall\""},
+	"a_CurseWestGood": 			{"en": "The sun rises once more, washing away the sins of the night. Achieve the good ending during Chapter 17, \"Curse of the West\""},
+	"a_CurseWestEvil": 			{"en": "No man can stop you now. No god would dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\""},
 	// --------c_Unlocks--------
 	// --------c_Gunslinger--------
 	}
