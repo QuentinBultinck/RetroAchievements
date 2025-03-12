@@ -8,7 +8,7 @@
 
 This guide provides comprehensive details on how to unlock each achievement within the base set, offering clear steps and strategies to ensure your success. Additionally, it includes useful information on the leaderboards for those interested in tracking their progress and competing at higher levels.
 
-<sup>This guide mirrors the one available on the achievement set developer's *[Github](_LINK_TO_RA_GUIDE_GITHUB_ "Darkwatch (PlayStation 2) - Achievement Guide")*</sup>
+<sup>This guide mirrors the one available on the achievement set developer's *[Github](https://github.com/QuentinBultinck/RetroAchievements/tree/main/RAscripts/PS2/Darkwatch "Darkwatch (PlayStation 2) - Achievement Guide")*</sup>
 
 <h3 id=ToC> 📑 Table of Contents</h3>
 
@@ -68,7 +68,7 @@ If the explanation here doesn't suffice feel free to search up some guides, here
 These achievements are tied to the Singleplayer Story Chapters, but can also be unlocked in Gunslinger Mode.
 
 > #### Developer Note
-> All achievements in this category only require players to complete the final section of a specific chapter. For example, Chapter 3, *"Boneyard"* consists of three sections separated by a loading screen. If a player quits during the second section, they can resume from that sections beginning when continuing Single Player Story Mode at a later time.
+> All achievements in this category only require players to complete the final section of a specific chapter. For example, Chapter 3, *"Boneyard"* consists of three sections separated by a loading screen. If a player quits during the second section, they can resume from that section's beginning when continuing Single Player Story Mode at a later time.
 > Therefor these achievements only track whether the last section of a chapter was started from the beginning and successfully completed.
 
 ### Story Progression Achievement List
@@ -157,6 +157,7 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 | Title <sub><sup><i>(dev_id)</i></sup></sub> | Guidance & Insights |
 |:---:|---|
 | <h3 id=a_placeholderID>**title_placeholder**</h3><br><sub>*a_placeholderID*</sub> <br><br> ![Achievement badge icon](https://i.retroachievements.org/Badge/00000.png "Achievement badge icon") | _GENERAL_EXPLANATION_HERE_ <br><br> <h4>Fail Conditions</h4> - _fail_condition_info_ <br> <sub>If any fail condition is met, the player can easily retry the achievement by ... </sub> <br><br> <h4>Achievement Tracking</h4> - A [Trigger Indicator](#RA_Trigger) is displayed when ... <br> - A [Measured Indicator](#RA_Measured) tracks ... up to ... <br><br> <sub> **Misc note ⁃** *_MISC_NOTE_HERE_* </sub> <br> <sub>**Developer note ⁃** *_DEVELOPER_NOTE_HERE_* </sub> |
+
 🔗 [Back to Table of Contents](#ToC)
 
 🔗 [Back to Top of Achievement Category](#Challenges)
@@ -175,6 +176,36 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 This achievement category focuses on unlocking all concept art available in the Extras Menu at the Main Menu. Most pieces are tied to built-in Gunslinger challenges, but the game does not provide a viewable list of these challenges. Without guidance, players would have to rely on third-party resources to discover the unlock conditions.
 
 These achievements offer an alternative by not only showcasing the concept art but also clearly outlining the requirements to obtain them.
+
+### All Concept Art Unlockables
+
+
+<details>
+    <summary><b><u>Click here</u> ◂</b> to toggle open this summary</summary><br>
+
+<sup>(Ordered by Chapter number)</sup>
+
+| Unlockable <sup><sub>(achievement link)</sub></sup> | Unlock Method |
+|:---:|---|
+| <h3> Evolution of Jericho </h3> <sup>[Story Ending Achievements](#c_SPend)</sup> | Complete the Single Player Campaign on any difficulty |
+| <h3> Wrong Train Animatic </h3> <sup>[a_Train](#a_Train)</sup> | Complete Chapter 1, "The Wrong Train", with 65% or more accuracy |
+| <h3> Enemies 1 </h3> <sup>[a_Enemy1](#a_Enemy1)</sup> | Complete Chapter 3, "Boneyard", with 65% or more accuracy |
+| <h3> Environments 1 </h3> <sup>[a_Sights1](#a_Sights1)</sup> | Complete Chapter 5, "Darkwatch Outpost", with no deaths |
+| <h3> Cowboy Animatic </h3> <sup>[a_Cowboy](#a_Cowboy)</sup> | Complete Chapter 7, "Torture Maze", with 30 or more Melee kills |
+| <h3> Highmoon Trailer </h3> <sup>[a_Moon](#a_Moon)</sup> | Complete Chapter 9, "Rescue", in 15 minutes or less |
+| <h3> Attract Mode Movie </h3> <sup>[a_Attract](#a_Attract)</sup> | Complete Chapter 10, "The Deadlight Prism", with 80 or more kills |
+| <h3> Environments 2 </h3> <sup>[a_Sights2](#a_Sights2)</sup> | Complete Chapter 11, "Invasion", on Deadeye difficulty |
+| <h3> Rescue Intro Movie </h3> <sup>[a_Saver](#a_Saver)</sup> | Complete Chapter 12, "Hangtown", with 20 or more headshots |
+| <h3> Weapons </h3> <sup>[a_Guns](#a_Guns)</sup> | Complete Chapter 13, "The Morning After", with 70% or more accuracy |
+| <h3> Enemies 2 </h3> <sup>[a_Enemy2](#a_Enemy2)</sup> | Complete Chapter 14, "Showdown", with 20 or more melee kills |
+| <h3> Showdown Animatic </h3> <sup>[a_Shower](#a_Shower)</sup> | Complete Chapter 15, "The Right Train", on Shootist difficulty |
+| <h3> Vehicles </h3> <sup>[a_Drivers](#a_Drivers)</sup> | Complete Chapter 16, "Deadfall", with 20 or more headshots |
+| <h3> Bosses Art </h3> <sup>[a_Boss](#a_Boss)</sup> | Complete Chapter 17, "Curse of the West", on Shootist difficulty |
+| <h3> Environments 3 </h3> <sup>[a_Sights3](#a_Sights3)</sup> | Complete Chapter 17, "Curse of the West", in 10 minutes or less |
+| <h3> Darkwatch Archives </h3> <sup>[a_Archive](#a_Archive)</sup> | Complete all Gunslinger levels on Deadeye difficulty |
+
+</details>
+
 
 > [!NOTE]
 > _NOTE_INFO_

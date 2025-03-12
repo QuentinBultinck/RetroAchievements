@@ -496,7 +496,7 @@
 //          
 //          InitialValue = 0x2 => 30 fps
 //          HackValue = 0x1 => 60 fps
-// $71FAF0: [NTSCU][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+// $71FAF0: [NTSCU][32-bit (base) Pointer:MainUIdata_A] -> [Struct:MainUIdata]
 //          +0x510 - [32-bit:LoadingState]
 //          | - Some values are different compared to PAL ($0x7213f0)
 //          |
@@ -504,8 +504,8 @@
 //          | 0x8009 => Not Loading (at MainMenu, during FMVs)
 //          | 0x8047 => Not Loading (when in-game)
 //          '
-// $71FAF4: [NTSCU][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
-//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $71FAF4: [NTSCU][32-bit (base) Pointer:MainUIdata_B] -> [Struct:MainUIdata]
+//          - This points to a 2nd [Struct:MainUIdata], which updates less frequent than the one pointed to by [Pointer:MainUIdata_A]
 // $71FCCC: [NTSCU][10-byte ASCII:GameID]
 //          "SLUS_210.42" => NTSC-U/USA PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -526,7 +526,21 @@
 //          
 //          InitialValue = 0x2 => 25 fps OR 30 fps (when using Widescreen NTSCU Mode RaPatch)
 //          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
-// $7213F0: [PAL][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+// $7213F0: [PAL][32-bit (base) Pointer:MainUIdata_A] -> [Struct:MainUIdata]
+//          
+//          +0x38 - [32-bit:MainUIState_H]
+//          | 0x41 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
+//          
+//          +0x40 - [32-bit:MainUIState_I]
+//          | 0x102 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
+//          
+//          +0x48 - [32-bit:MainUIState_J]
+//          | 0x102 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
+//          
+//          +0x68 - [32-bit:MainUIState_N]
+//          | 0x1042 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
+//          | 0x41 => MainMenu->ExtrasMenu->Statistics->GunslingerStatsMenu
+//          
 //          +0x450 - [32-bit:LoadingState]
 //          | - Some values are different compared to NTSCU ($0x71faf0)
 //          |
@@ -534,8 +548,8 @@
 //          | 0x8009 => Not Loading (at MainMenu, during FMVs)
 //          | 0x803B => Not Loading (when in-game)
 //          '
-// $7213F4: [PAL][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
-//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $7213F4: [PAL][32-bit (base) Pointer:MainUIdata_B] -> [Struct:MainUIdata]
+//          - This points to a 2nd [Struct:MainUIdata], which updates less frequent than the one pointed to by [Pointer:MainUIdata_A]
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
@@ -1555,16 +1569,18 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
 //          # WeaponIDS (hex)
-//          |(list incomplete)
+//          |(list complete)
 //          |''''''''''''
-//          | 0x0 => BasicRevolver
-//          | 0x1 => RedeemerRevolver
-//          | 0x4 => CarbineRifle
-//          | 0x6 => RailRocket
-//          | 0x7 => ExplosiveCrossbow
-//          | 0x8 => RangeRifle (sniper)
+//          | 0x0 => Pistol (starter revolver, in Chapter 1)
+//          | 0x1 => Redeemer
+//          | 0x2 => Dual Pistols
+//          | 0x3 => Horse Revolver (cut content??, may be revolver whilst riding on horseback)
+//          | 0x4 => Carbine (rifle)
+//          | 0x5 => Shotgun
+//          | 0x6 => Rail Rocket (rocket launcher)
+//          | 0x7 => Crossbow
+//          | 0x8 => Range Rifle (sniper rifle)
 //          | 0x9 => Scepter (melee)
-//          | ...
 //          '
 // $965C08: [PAL][32-bit:TimeSpentInChapter]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
@@ -2016,7 +2032,49 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
 //          +0x4 - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Story]
+//          | - This array stores multiple [Struct:ChapterStats], definition below. For SinglePlayer Mode
+//          | - Saves stats per Chapter, although this can't be viewed for Story Mode, it always show all stats summed up for Story Mode (Overall Stats)
+//          
 //          +0xC - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Gunslinger]
+//          | - This array stores multiple [Struct:ChapterStats], definition below. For Gunslinger Mode
+//          | - Saves stats per Chapter, can be viewed by Chapter or Overall (all stats summed up)
+//          
+//          [Defintion Struct:ChapterStats |56-byte]
+//          |'''''''''''''''''''''''
+//          | - This struct saves gameplay statistics of a specific Chapter
+//          |
+//          |+0x0 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:LevelID]
+//          |.| - LevelIDs listed at $0x721820
+//          |
+//          |+0x8 - [32-bit:MissionTime]
+//          || - Time spent in Chapter
+//          || - Time in milliseconds; ThisValue / 60.000 = timeInMinutes
+//          |
+//          |+0xC - [32-bit:PlayerDeaths]
+//          |+0x14 - [Lower4:Difficulty |32-bit]
+//          || - DifficultyIDs listed at $0x965c7c
+//          |+0x1C - [32-bit:Kills]
+//          |+0x20 - [32-bit:ShotsFired]
+//          |+0x24 - [32-bit:ShotsHit]
+//          || - Accuracy = ShotsHit / ShotsFired
+//          |+0x28 - [32-bit:Headshots]
+//          |+0x2C - [32-bit:MeleeKills]
+//          |
+//          |+0x34 - [32-bit (layer-1) Pointer] -> [40-byte Struct:KillsByWeapon]
+//          || - [Struct:KillsByWeapon] Decides the "Favorite Weapon", by checking which weapon has the highest kills.
+//          || - The weapon with the lowest WeaponID is picked the "Favorite Weapon", when multiple weapons have the same killCount. (WeaponIDs listed at $0x965c04)
+//          |.+0x0 - [32-bit:Kills_Pistol]
+//          |.+0x4 - [32-bit:Kills_Redeemer]
+//          |.+0x8 - [32-bit:Kills_DualPistols]
+//          |.+0xC - [32-bit:Kills_HorseRevolver]
+//          |.+0x10 - [32-bit:Kills_Carbine]
+//          |.+0x14 - [32-bit:Kills_Shotgun]
+//          |.+0x18 - [32-bit:Kills_RailRocket]
+//          |.+0x1C - [32-bit:Kills_RangeRifle]
+//          |.+0x20 - [32-bit:Kills_Crossbow]
+//          |.+0x24 - [32-bit:Kills_Scepter]
+//          '
 // $965CE8: [PAL][3-byte Bitset:LoreUnlocks] (19 flags)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This bitset handles which Lore sections are unlocked in the PauseMenu->LoreMenu
@@ -2320,6 +2378,25 @@
 // $AED58C: [32-bit] using ability flag
 // $AED8EC: [32-bit] Soul reaver ability flag
 // $AF80DC: [32-bit] evil ability flag
+// $EFA270: 56 byte
+// $EFA2B0: time in chapter
+// $EFA2B4: deaths
+// $EFA2BC: difficulty
+// $EFA2C4: kills
+// $EFA2C8: shotsfired
+// $EFA2CC: shotshit
+// $EFA2D0: headshots
+// $EFA2D4: melee kills
+// $F038E0: Pistol
+// $F038E4: Redeemer
+// $F038E8: dual pistol
+// $F038EC: horse revolver
+// $F038F0: carbine
+// $F038F4: shotgun
+// $F038F8: railrocket
+// $F038FC: crsobbow
+// $F03900: range rifle
+// $F03904: scepter
 // $FAEE24: [PAL][32-bit (base) Pointer:PlayerInput(alt)]
 //          - Prefer using [Pointer:PlayerInput(preferred)] at $0x721900
 // $15C4A5C: [32-bit] current weapon reserve ammo

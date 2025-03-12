@@ -203,8 +203,16 @@ memory_StructDefs = {
 			"Bitflag:IsControllerConnected": 0x0,
 			"BitFlag:IsInputPressed_Cross": 0xB},
 		},
-	"Struct:LoadingData": {
+	"Struct:MainUIdata": {
 		"pointerChainToMember": {
+			"32-bit:MainUIState_H": {
+				"pointerChainOffsets": 0x38},
+			"32-bit:MainUIState_I": {
+				"pointerChainOffsets": 0x40},
+			"32-bit:MainUIState_J": {
+				"pointerChainOffsets": 0x48},
+			"32-bit:MainUIState_N": {
+				"pointerChainOffsets": 0x68},
 			"32-bit:LoadingState": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_USA: [0x510],
@@ -273,7 +281,7 @@ memory_addresses = {
 	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
 
 	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: 0x134408, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
-	"Pointer:LoadingData_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
+	"Pointer:MainUIdata_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
 	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: 0x71ff20, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
 	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
 	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
@@ -396,6 +404,54 @@ function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion)
 // #region General Game Logic
 CONST_LOADING_STATE_Loading = {RELEASE_REGION_USA: 0x10000048, RELEASE_REGION_EUR: 0x1000003C, RELEASE_REGION_JPN: sNULL}
 CONST_GAME_STATE_AnyInGameMenu_active = 0x3
+// -----------------MainUIdata--------------------
+MAIN_UI_STATE_H = "32-bit:MainUIState_H"
+MAIN_UI_STATE_I = "32-bit:MainUIState_I"
+MAIN_UI_STATE_J = "32-bit:MainUIState_J"
+MAIN_UI_STATE_N = "32-bit:MainUIState_N"
+
+function current_MainUIState(enum_mainUIState, enum_releaseRegion) {	
+	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Struct:MainUIdata", enum_mainUIState, let_memAddr_BasePointer)}
+
+function is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion) {
+	const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu = 0x41
+	const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu = 0x102
+	const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu = 0x102
+	const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu = 0x1042
+	return 
+		current_MainUIState(MAIN_UI_STATE_H, enum_releaseRegion) == const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu
+		current_MainUIState(MAIN_UI_STATE_I, enum_releaseRegion) == const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu
+		current_MainUIState(MAIN_UI_STATE_J, enum_releaseRegion) == const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu
+		current_MainUIState(MAIN_UI_STATE_N, enum_releaseRegion) == const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu
+	}
+
+function on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) =>
+	is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion)
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+function current_LoadingState(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct:MainUIdata", "32-bit:LoadingState", 
+		let_memAddr_BasePointer, enum_releaseRegion,
+		memAccessorFunction_toPointedToMember = dword)
+	}
+
+function prev_LoadingState(enum_releaseRegion) =>
+	prev(current_LoadingState(enum_releaseRegion))
+
+function is_Loading(enum_releaseRegion) => 
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_start(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_end(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
 // ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
@@ -465,28 +521,6 @@ function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
 function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
 	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
 	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
-
-function current_LoadingState(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress("Pointer:LoadingData_A", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor_byReleaseRegion(
-		"Struct:LoadingData", "32-bit:LoadingState", 
-		let_memAddr_BasePointer, enum_releaseRegion,
-		memAccessorFunction_toPointedToMember = dword)
-	}
-
-function prev_LoadingState(enum_releaseRegion) =>
-	prev(current_LoadingState(enum_releaseRegion))
-
-function is_Loading(enum_releaseRegion) => 
-	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
-
-function on_Loading_start(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
-	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
-
-function on_Loading_end(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
-	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
 
 function current_GameState(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:GameState", enum_releaseRegion))
@@ -1031,10 +1065,48 @@ achievements_coreData = {
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
 		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		"a_Boss": { // CONCEPT a_Boss
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
+		"a_Enemy1": { // CONCEPT a_Enemy1
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
+		"a_Enemy2": { // CONCEPT a_Enemy2
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
+		"a_Train": { // CONCEPT a_Train
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
+		"a_Guns": { // CONCEPT a_Guns
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
+		"a_Drivers": { // CONCEPT a_Drivers
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
+		"a_Sights1": { // CONCEPT a_Sights1
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
+		"a_Sights2": { // CONCEPT a_Sights2
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
+		"a_Sights3": { // CONCEPT a_Sights3
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		"a_Attract": { // CONCEPT a_Attract
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
+		"a_Cowboy": { // CONCEPT a_Cowboy
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
+		"a_Shower": { // CONCEPT a_Shower
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
+		"a_Saver": { // CONCEPT a_Saver
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
+		"a_Moon": { // CONCEPT a_Moon
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+		"a_Archive": { // CONCEPT a_Archive
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
 		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		},
+	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
+		// "a_SunPower": { // CONCEPT a_SunPower
+		// 	"id": 000000, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		// "a_FanHammer": { // CONCEPT a_FanHammer
+		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
+		// "a_MultiKill": { // CONCEPT a_MultiKill (Title: Bloodlust)
+		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Kill xx enemies in short duration of eachother (explosive or powers??)"},
 		},
 	}
 // -------------------------------------
@@ -1056,8 +1128,9 @@ achievements_typeByCategory = {
 	// "c_Template": 	achievement_TYPE_Standard,
 	"c_SPstory": 		achievement_TYPE_Progression,
 	"c_SPend": 			achievement_TYPE_WinCondition,
-	"c_SPchallenge": 	achievement_TYPE_Standard,
-	"c_Template": 		achievement_TYPE_Standard}
+	"c_Unlocks": 		achievement_TYPE_Standard,
+	"c_Gunslinger": 	achievement_TYPE_Standard,
+	"c_Bonus": 			achievement_TYPE_Standard}
 	
 // #endregion ACH - core data
 
@@ -1272,6 +1345,71 @@ achievements_triggers = {
 			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
 		}),
 	// --------c_Unlocks--------
+	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			// && CheckIf: Once gunslinger Level was started...
+			// && CheckIf: (optional??) Once gunslinger Level has ended...
+			// && CheckIf: Stats are correct to unlock concept art - use [Pointer:PlayerSavedStats]
+			&& on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
+			// ResetIf: LevelID incorrect || when starting a new Gunslinger game/continue Gunslinger game from MainMenu
+			),
+	"a_Enemy1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Enemy2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Train": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Guns": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Drivers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Sights1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Sights2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Sights3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Attract": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Cowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Shower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Saver": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Moon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
 	// --------c_Gunslinger--------
 	}
 // #endregion ACH - triggers
@@ -1310,6 +1448,21 @@ achievements_titles = {
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
 	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
+	"a_Boss":					{"en": "xxxxxxxxx"},
+	"a_Enemy1":					{"en": "xxxxxxxxx"},
+	"a_Enemy2":					{"en": "xxxxxxxxx"},
+	"a_Train":					{"en": "xxxxxxxxx"},
+	"a_Guns":					{"en": "xxxxxxxxx"},
+	"a_Drivers":				{"en": "xxxxxxxxx"},
+	"a_Sights1":				{"en": "xxxxxxxxx"},
+	"a_Sights2":				{"en": "xxxxxxxxx"},
+	"a_Sights3":				{"en": "xxxxxxxxx"},
+	"a_Attract":				{"en": "xxxxxxxxx"},
+	"a_Cowboy":					{"en": "xxxxxxxxx"},
+	"a_Shower":					{"en": "xxxxxxxxx"},
+	"a_Saver":					{"en": "xxxxxxxxx"},
+	"a_Moon":					{"en": "xxxxxxxxx"},
+	"a_Archive":				{"en": "xxxxxxxxx"},
 	// --------c_Gunslinger--------
 	}
 // -------------------------------------
@@ -1336,6 +1489,21 @@ achievements_descriptions = {
 	"a_CurseWestGood": 			{"en": "The sun rises once more, washing away the sins of the night. Achieve the good ending during Chapter 17, \"Curse of the West\""},
 	"a_CurseWestEvil": 			{"en": "No man can stop you now. No god would dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\""},
 	// --------c_Unlocks--------
+	"a_Boss":					{"en": "You earned the right to witness the horrors you've defeated. Unlock the \"Bosses Art\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty"},
+	"a_Enemy1":					{"en": "Unlock the \"Enemies 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy"},
+	"a_Enemy2":					{"en": "Unlock the \"Enemies 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills"},
+	"a_Train":					{"en": "Unlock the \"Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy"},
+	"a_Guns":					{"en": "Unlock the \"Weapons\" concept art by completing Chapter 13, \"The Morning After\", with 70% or more accuracy"},
+	"a_Drivers":				{"en": "Unlock the \"Vehicles\" concept art by completing Chapter 16, \"Deadfall\", with 20 or more headshots"},
+	"a_Sights1":				{"en": "Unlock the \"Environments 1\" concept art by completing Chapter 5, \"Darkwatch Outpost\", with no death"},
+	"a_Sights2":				{"en": "Unlock the \"Environments 2\" concept art by completing Chapter 11, \"Invasion\", on Deadeye difficulty"},
+	"a_Sights3":				{"en": "Unlock the \"Environments 3\" concept art by completing Chapter 17, \"Curse of the West\", in 10 minutes or less"},
+	"a_Attract":				{"en": "Unlock the \"Attract Mode Movie\" concept art by completing Chapter 10, \"The Deadlight Prism\", with 80 or more kills"},
+	"a_Cowboy":					{"en": "Unlock the \"Cowboy Animatic\" concept art by completing Chapter 7, \"Torture Maze\", with 30 or more Melee kills"},
+	"a_Shower":					{"en": "Unlock the \"Showdown Animatic\" concept art by completing Chapter 15, \"The Right Train\", on Shootist difficulty"},
+	"a_Saver":					{"en": "Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshots"},
+	"a_Moon":					{"en": "Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less"},
+	"a_Archive":				{"en": "Unlock the \"Darkwatch Archives\" concept art by completing all Gunslinger levels on Deadeye difficulty"},
 	// --------c_Gunslinger--------
 	}
 // #endregion ACH - text
