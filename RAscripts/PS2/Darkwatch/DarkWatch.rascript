@@ -1346,13 +1346,45 @@ achievements_triggers = {
 		}),
 	// --------c_Unlocks--------
 	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// NOTE: Gunslinger Mode can never continue mid Chapter (from start of ChapterSection midway thtough Chapter, Gunslinger always starts from start of Chapter)
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			// && CheckIf: Once gunslinger Level was started...
-			// && CheckIf: (optional??) Once gunslinger Level has ended...
+			once(
+				is_InGunslingerMode(enum_releaseRegion)
+				&& is_StoryChapterSection(CHAPTER_17_CurseWest, CHAPTER_SECTION_1, enum_releaseRegion)
+				&& on_ChapterStartFromBeginning(CHAPTER_17_CurseWest, enum_releaseRegion) // TODO implement with MissionTime(Temp,ChapterSection,ChapterTotal) - "Temp" delta check AND "ChapterSection,ChapterTotal" == 0
+					// MissionTime_Temp detla check
+					// && MissionTime_ChapterSection AND MissionTime_ChapterTotal == 0
+					// && is_StoryChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
+				&& on_ChapterSectionStartFromBeginning(enum_chapter, enum_chapterSection, enum_releaseRegion) // TODO implement with MissionTime(Temp,ChapterSection) - "Temp" delta check AND "ChapterSection" == 0
+					// MissionTime_Temp detla check
+					// && MissionTime_ChapterSection == 0
+					// && is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
+				)
+			// && CheckIf: (optional??) Once gunslinger Level has ended AND [Struct:GameStats(ChapterTotal)] are correct/the required stats for unlock
+			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+				// && is_difficultyID
+				// && is_KillsChapterTotal >= xx
+
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
 			// && CheckIf: Stats are correct to unlock concept art - use [Pointer:PlayerSavedStats]
+			&& 
 			&& on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
+		// [0] ==== Reset Group ==== 			-> Reset when not in Gunslinger Mode
 			// ResetIf: LevelID incorrect || when starting a new Gunslinger game/continue Gunslinger game from MainMenu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion))
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_InGunslingerMode(enum_releaseRegion))
 			),
 	"a_Enemy1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
