@@ -271,11 +271,15 @@ memory_addresses = {
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
+	"Lower4:DifficultyID(preferred)": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c7c, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
 	
 	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
+	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
+	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
 	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
@@ -286,7 +290,7 @@ memory_addresses = {
 	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
 	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
 	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
-	"Pointer:HUDcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
+	"Pointer:UIcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -415,20 +419,27 @@ function current_MainUIState(enum_mainUIState, enum_releaseRegion) {
 	return memGenerate_pointerChainAccessor("Struct:MainUIdata", enum_mainUIState, let_memAddr_BasePointer)}
 
 function is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion) {
+	// TODO implement with new RAMdig [Pointer:UIcontrol(preferred)] -> [Struct:MainMenuControl] -> MainMenuSubMenuID && MainMenuTitle_TextLookupKeyID
+
 	const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu = 0x41
 	const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu = 0x102
 	const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu = 0x102
 	const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu = 0x1042
 	return 
-		current_MainUIState(MAIN_UI_STATE_H, enum_releaseRegion) == const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu
-		current_MainUIState(MAIN_UI_STATE_I, enum_releaseRegion) == const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu
-		current_MainUIState(MAIN_UI_STATE_J, enum_releaseRegion) == const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu
-		current_MainUIState(MAIN_UI_STATE_N, enum_releaseRegion) == const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu
+		is_atMainMenu(enum_releaseRegion)
+		&& current_MainUIState(MAIN_UI_STATE_H, enum_releaseRegion) == const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu
+		&& current_MainUIState(MAIN_UI_STATE_I, enum_releaseRegion) == const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu
+		&& current_MainUIState(MAIN_UI_STATE_J, enum_releaseRegion) == const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu
+		&& current_MainUIState(MAIN_UI_STATE_N, enum_releaseRegion) == const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu
 	}
 
 function on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) =>
 	is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+function is_GunslingerLevelSelectMenu_displayed(enum_releaseRegion) {
+
+}
 
 function current_LoadingState(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
@@ -493,6 +504,14 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		current_PlayerCount(enum_releaseRegion) == 1
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
+// ----------------Difficulty---------------------
+DIFFICULTY_Greenhorn = 0x0
+DIFFICULTY_Cowboy = 0x1
+DIFFICULTY_Shootist = 0x2
+DIFFICULTY_Deadeye = 0x3
+
+function is_Difficulty(enum_difficulty, enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) == enum_difficulty
 
 // ----------------GameStates---------------------
 function current_pointerState_PlayerActorData(enum_releaseRegion) {
@@ -557,11 +576,11 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX00000118_0xX0000006c=3857208280
 		NTSCU: 	xxxx
 
-		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	[Pointer:UIcontrol(preferred)]
 		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	[Pointer:UIcontrol(preferred)]
 		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 		
@@ -579,11 +598,11 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 
-		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	[Pointer:UIcontrol(preferred)]
 		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:HUDcontrol(preferred)]
+		AddAddress	[Pointer:UIcontrol(preferred)]
 		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 		
@@ -596,7 +615,7 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
 		*/
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
-	&& dword(memory_getAddress("Pointer:HUDcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
@@ -649,97 +668,97 @@ MULTIPLAYER_LEVEL_TradeCenterDay = "DM_TradeCenterDay"
 CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
 		// "LevelID": "_templateID_",
-		// "StoryChapterSectionIDs": ["_Section1_", "_Section2_"],
+		// "ChapterSectionIDs": ["_Section1_", "_Section2_"],
 		// },
 	CHAPTER_1_WrongTrain: {
 		"LevelID": "WrongTrain",
-		"StoryChapterSectionIDs": ["WrongTrain_A", "WrongTrain_B"],
+		"ChapterSectionIDs": ["WrongTrain_A", "WrongTrain_B"],
 		},
 	CHAPTER_2_RideDevil: {
 		"LevelID": "M02_CanyonShoot",
-		"StoryChapterSectionIDs": ["Hub_A"],
+		"ChapterSectionIDs": ["Hub_A"],
 		},
 	CHAPTER_3_Boneyard: {
 		"LevelID": "M03_Cemetery",
-		"StoryChapterSectionIDs": ["M03_C", "M03_B", "M03_A"],
+		"ChapterSectionIDs": ["M03_C", "M03_B", "M03_A"],
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
-		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
+		"ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
 		},
 	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
-		"StoryChapterSectionIDs": ["M07_A", "M07_B"],
+		"ChapterSectionIDs": ["M07_A", "M07_B"],
 		},
 	CHAPTER_6_WarTrain: {
 		"LevelID": "Wartrain",
-		"StoryChapterSectionIDs": ["M07_C"],
+		"ChapterSectionIDs": ["M07_C"],
 		}, 
 	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
-		"StoryChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
+		"ChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
 		},
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
-		"StoryChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
+		"ChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
 		},
 	CHAPTER_Citadel: {
 		"LevelID": "Citadel_Launch",
-		"StoryChapterSectionIDs": ["Citadel_Launch_AA"],
+		"ChapterSectionIDs": ["Citadel_Launch_AA"],
 		},
 	CHAPTER_9_Rescue: {
 		"LevelID": "M08_Regulator",
-		"StoryChapterSectionIDs": ["Hub_A", "Hub_B"],
+		"ChapterSectionIDs": ["Hub_A", "Hub_B"],
 		},
 	CHAPTER_10_Prism: {
 		"LevelID": "M15_SplittingPaths",
-		"StoryChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
+		"ChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
 		},
 	CHAPTER_11_Invasion: {
 		"LevelID": "M17_Invasion",
-		"StoryChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
+		"ChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
 		},
 	CHAPTER_12_Hangtown: {
 		"LevelID": "M11_Hangtown",
-		"StoryChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
+		"ChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
 		},
 	CHAPTER_13_MorningAfter: {
 		"LevelID": "M12_CitadelUnderAttack",
-		"StoryChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
+		"ChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
 		},
 	CHAPTER_14_Showdown: {
 		"LevelID": "FallOfCitadel",
-		"StoryChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
+		"ChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
 		},
 	CHAPTER_15_RightTrain: {
 		"LevelID": "M19_RidetoDeadfall",
-		"StoryChapterSectionIDs": ["M19_A"],
+		"ChapterSectionIDs": ["M19_A"],
 		},
 	CHAPTER_16_Deadfall: {
 		"LevelID": "M20_PenetratingDeadfall",
-		"StoryChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
+		"ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
 		},
 	CHAPTER_17_CurseWest: {
 		"LevelID": "LVL_GroundZero",
-		"StoryChapterSectionIDs": ["GroundZero_A"],
+		"ChapterSectionIDs": ["GroundZero_A"],
 		},
 	}
 
 function LEVEL_DATA_getLevelID(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["LevelID"]
 
-function LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) =>
-	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][enum_chapterSection]
+function LEVEL_DATA_getChapterSectionID(enum_chapter, enum_chapterSection) =>
+	CONST_LEVEL_DATA[enum_chapter]["ChapterSectionIDs"][enum_chapterSection]
 
-function LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter) =>
-	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"]
+function LEVEL_DATA_getAllChapterSectionIDs(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["ChapterSectionIDs"]
 
-function LEVEL_DATA_getFirstStoryChapterSectionID(enum_chapter) =>
-	CONST_LEVEL_DATA[enum_chapter]["StoryChapterSectionIDs"][CHAPTER_SECTION_1]
+function LEVEL_DATA_getFirstChapterSectionID(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["ChapterSectionIDs"][CHAPTER_SECTION_1]
 
-function LEVEL_DATA_getLastStoryChapterSectionID(enum_chapter) {
-	let_array_AllStoryChapterSectionIDs = LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter)
-	return util_getLastItemInArray(let_array_AllStoryChapterSectionIDs)}
+function LEVEL_DATA_getLastChapterSectionIndex(enum_chapter) {
+	let_array_AllChapterSectionIDs = LEVEL_DATA_getAllChapterSectionIDs(enum_chapter)
+	return util_getIndexOfLastItemInArray(let_array_AllChapterSectionIDs)}
 
 // ----------------StoryChapterID---------------------
 /* DISABLED - Not advised to use this
@@ -760,14 +779,14 @@ function is_GunslingerChapter_available(enum_chapter, enum_releaseRegion) {
 	return current_InProgressStoryChapterID(enum_releaseRegion) >= enum_chapter + 1} // --CheckIf--> next chapter is inProgress in SinglePlayer Mode
 */
 
-// ----------------StoryChapterSectionID---------------------
-function is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
+// ----------------ChapterSectionID---------------------
+function is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
 	let_memAddr_ASCII = 
 		memGenerate_pointerChainAccessor("Pointer:LevelID", "ASCII:StoryChapterSectionID(preferred)", let_memAddr_BasePointer)
 		+ memory_getStruct_OffsetToPointedToMember("Pointer:LevelID", "ASCII:StoryChapterSectionID(preferred)")
-	let_string_StoryChapterSectionID = LEVEL_DATA_getStoryChapterSectionID(enum_chapter, enum_chapterSection) // NOTE: Only checks [1-byte] of ASCII
-	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_StoryChapterSectionID)}
+	let_string_ChapterSectionID = LEVEL_DATA_getChapterSectionID(enum_chapter, enum_chapterSection) // NOTE: Only checks [1-byte] of ASCII
+	return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_ChapterSectionID)}
 
 // ----------------LevelID---------------------
 function is_Level(string_levelID, enum_releaseRegion) {	
@@ -831,26 +850,71 @@ function on_Checkpoint_initialize(enum_checkpoint, enum_releaseRegion) =>
 
 // -------------------------------------
 function on_FirstStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
-	let_firstStoryChapterSection = LEVEL_DATA_getFirstStoryChapterSectionID(enum_chapter)
+	let_firstChapterSection = LEVEL_DATA_getFirstChapterSectionID(enum_chapter)
 	return
-		is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)
+		is_ChapterSection(enum_chapter, let_firstChapterSection, enum_releaseRegion)
 		&& on_NewCheckpoint_reached(enum_releaseRegion)}
 
 function on_StoryChapterSection_start(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
-	is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
+	is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
 	&& on_Checkpoint_1_initialize(enum_releaseRegion)
 
-function is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion) {
-	let_lastStoryChapterSection = util_getIndexOfLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
-	return is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)}
+function is_LastChapterSection_active(enum_chapter, enum_releaseRegion) {
+	let_lastChapterSection = LEVEL_DATA_getLastChapterSectionIndex(enum_chapter)
+	return is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)}
 
-function on_LastStoryChapterSection_start(enum_chapter, enum_releaseRegion) {
-	let_lastStoryChapterSection = util_getIndexOfLastItemInArray(LEVEL_DATA_getAllStoryChapterSectionIDs(enum_chapter))
+function on_LastChapterSection_start(enum_chapter, enum_releaseRegion) {
+	let_lastChapterSection = LEVEL_DATA_getLastChapterSectionIndex(enum_chapter)
 	return
-		is_StoryChapterSection(enum_chapter, let_lastStoryChapterSection, enum_releaseRegion)
+		is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)
 		&& on_Checkpoint_1_initialize(enum_releaseRegion)}
 
 // #endregion Checkpoint ID
+
+// ..............
+// ◦ Statistics ◦
+// ''''''''''''''
+// #region Statistics
+function current_MissionTime_Temp(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_Temp", enum_releaseRegion))
+
+function prev_MissionTime_Temp(enum_releaseRegion) =>
+	prev(current_MissionTime_Temp(enum_releaseRegion))
+
+function on_MissionTime_Temp_start(enum_releaseRegion) =>
+	current_MissionTime_Temp(enum_releaseRegion) >= 0
+	prev_MissionTime_Temp(enum_releaseRegion) == 0
+
+function current_MissionTime_ChapterSection(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_ChapterSection", enum_releaseRegion))
+	
+function current_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_ChapterTotal", enum_releaseRegion))
+
+// -------------------------------------
+function on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion) =>
+	is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+	&& is_ChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
+	&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
+
+function on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
+	is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+	&& is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
+	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
+
+function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion) {
+	let_lastChapterSection = LEVEL_DATA_getLastChapterSectionIndex(enum_chapter)
+	return 
+		is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+		&& is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)
+		&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+		&& on_MissionTime_Temp_start(enum_releaseRegion)
+	}
+
+// #endregion Statistics
 
 // ..........
 // ◦ FMV ID ◦
@@ -949,6 +1013,8 @@ function prev_Boss_Health(enum_releaseRegion) =>
 // ----------------Divider---------------------
 
 // #endregion HUD Control Health
+
+
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -1161,11 +1227,11 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
 			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
 
-			AddAddress	[Pointer:HUDcontrol(preferred)]
+			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-			AddAddress	[Pointer:HUDcontrol(preferred)]
+			AddAddress	[Pointer:UIcontrol(preferred)]
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 			
@@ -1187,15 +1253,15 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapte
 	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(
@@ -1215,15 +1281,15 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter
 	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-			is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 			never(is_flagState_InGame_true(enum_releaseRegion))
-			&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(on_Loading_start(enum_releaseRegion))
@@ -1288,15 +1354,15 @@ achievements_triggers = {
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
 			&& trigger_when(
@@ -1320,15 +1386,15 @@ achievements_triggers = {
 		// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has started from the beginning
-				is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleTrue(enum_releaseRegion))
 			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
 			&& trigger_when(
@@ -1345,47 +1411,40 @@ achievements_triggers = {
 			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
 		}),
 	// --------c_Unlocks--------
-	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+		const_REQUIRED_CHAPTER = CHAPTER_17_CurseWest
+		const_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
+		
+		return 
 		// NOTE: Gunslinger Mode can never continue mid Chapter (from start of ChapterSection midway thtough Chapter, Gunslinger always starts from start of Chapter)
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			// && CheckIf: Once gunslinger Level was started...
-			once(
-				is_InGunslingerMode(enum_releaseRegion)
-				&& is_StoryChapterSection(CHAPTER_17_CurseWest, CHAPTER_SECTION_1, enum_releaseRegion)
-				&& on_ChapterStartFromBeginning(CHAPTER_17_CurseWest, enum_releaseRegion) // TODO implement with MissionTime(Temp,ChapterSection,ChapterTotal) - "Temp" delta check AND "ChapterSection,ChapterTotal" == 0
-					// MissionTime_Temp detla check
-					// && MissionTime_ChapterSection AND MissionTime_ChapterTotal == 0
-					// && is_StoryChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
-				&& on_ChapterSectionStartFromBeginning(enum_chapter, enum_chapterSection, enum_releaseRegion) // TODO implement with MissionTime(Temp,ChapterSection) - "Temp" delta check AND "ChapterSection" == 0
-					// MissionTime_Temp detla check
-					// && MissionTime_ChapterSection == 0
-					// && is_StoryChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
-				)
-			// && CheckIf: (optional??) Once gunslinger Level has ended AND [Struct:GameStats(ChapterTotal)] are correct/the required stats for unlock
-			&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				&& on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				&& on_LastChapterSection_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required stats are achieved for Unlock
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
-				// && is_difficultyID
-				// && is_KillsChapterTotal >= xx
 
+				&& is_Difficulty(const_REQUIRED_DIFFICULTY, enum_releaseRegion)
+
+				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastStoryChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
-			// && CheckIf: Stats are correct to unlock concept art - use [Pointer:PlayerSavedStats]
-			&& 
 			&& on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
 		// [0] ==== Reset Group ==== 			-> Reset when not in Gunslinger Mode
 			// ResetIf: LevelID incorrect || when starting a new Gunslinger game/continue Gunslinger game from MainMenu
 			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion))
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_GunslingerLevelSelectMenu_displayed(enum_releaseRegion))
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& !is_InGunslingerMode(enum_releaseRegion))
-			),
+			}),
 	"a_Enemy1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
