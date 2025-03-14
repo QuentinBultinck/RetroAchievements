@@ -133,6 +133,11 @@ _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 - _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 - _GENERAL_INFO_ABOUT_ACHIEVEMENT_CATEGORY_
 
+> [!WARNING]
+> For these achievements, the player must complete a specific chapter from start to finish in a single session—without quitting. In SinglePlayer Mode (non-Gunslinger Mode), exiting the game midway through a chapter and resuming later will invalidate the challenge.
+> 
+> However, in Gunslinger Mode, this restriction doesn’t apply, as the player always starts from the beginning of a chapter. In regular SinglePlayer Mode, progress carries over between sessions, allowing players to continue from their last checkpoint, which is why quitting midway is not allowed for these achievements.
+
 > #### Additional Notes
 > - _ADDITIONAL_NOTES_
 >

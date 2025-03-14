@@ -198,6 +198,18 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0xEC]},
 			},
 		}, 
+	"Pointer:UIcontrol": {
+		"pointerChainToMember": {
+			"Pointer:UIcontrol_ptr-L2_A": {
+				"pointerChainOffsets": [0xC, 0x0]},
+			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:MainMenuControl]------
+			"ASCII:MainMenuSubMenuID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x30],
+				"offsetToPointedToMember": 0x2},
+			"32-bit:MainMenuTitle_TextLookupKeyID": {
+				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},
+			},
+		}, 
 	"Struct:ControllerInput": {
 		"offsetToMember": {
 			"Bitflag:IsControllerConnected": 0x0,
@@ -271,15 +283,16 @@ memory_addresses = {
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
-	"Lower4:DifficultyID(preferred)": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c7c, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
+	"Lower4:DifficultyID(preferred)": {RELEASE_REGION_USA: 0x953c9c, RELEASE_REGION_EUR: 0x965c7c, RELEASE_REGION_JPN: sNULL},
 	
 	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
+	// "8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
-	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
-	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
-	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x0, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL}, // TODO find USA RAM
+	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
 	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
@@ -354,6 +367,8 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
+function memUtil_alwaysFalse(enum_releaseRegion) => // Force always_false() as sometime RATools removes it when it is necessary
+	dword(memory_getAddress("8-bit:AlwaysNULL", enum_releaseRegion)) == 0xDEADBEEF
 
 function memUtil_ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
 	let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
@@ -408,61 +423,86 @@ function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion)
 // #region General Game Logic
 CONST_LOADING_STATE_Loading = {RELEASE_REGION_USA: 0x10000048, RELEASE_REGION_EUR: 0x1000003C, RELEASE_REGION_JPN: sNULL}
 CONST_GAME_STATE_AnyInGameMenu_active = 0x3
-// -----------------MainUIdata--------------------
-MAIN_UI_STATE_H = "32-bit:MainUIState_H"
-MAIN_UI_STATE_I = "32-bit:MainUIState_I"
-MAIN_UI_STATE_J = "32-bit:MainUIState_J"
-MAIN_UI_STATE_N = "32-bit:MainUIState_N"
 
-function current_MainUIState(enum_mainUIState, enum_releaseRegion) {	
-	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor("Struct:MainUIdata", enum_mainUIState, let_memAddr_BasePointer)}
+// #region MainMenu SubMenu Identification
+// -----------------MainMenu SubMenu Identification--------------------
+MAINMENU_SUBMENU_StatisticsMenu = "profile_statistics"
+MAINMENU_SUBMENU_DifficultySelectMenu = "difficulty_select"
+MAINMENU_SUBMENU_ChapterSelectMenu = "chapter_select"
+TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger = 0x0F9681AA
 
-function is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion) {
-	// TODO implement with new RAMdig [Pointer:UIcontrol(preferred)] -> [Struct:MainMenuControl] -> MainMenuSubMenuID && MainMenuTitle_TextLookupKeyID
+function current_MainMenu_SubMenuTitle(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", "32-bit:MainMenuTitle_TextLookupKeyID", let_memAddr_BasePointer)}
 
-	const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu = 0x41
-	const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu = 0x102
-	const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu = 0x102
-	const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu = 0x1042
-	return 
-		is_atMainMenu(enum_releaseRegion)
-		&& current_MainUIState(MAIN_UI_STATE_H, enum_releaseRegion) == const_MAIN_UI_STATE_H_PostChapterGunslingerStatsMenu
-		&& current_MainUIState(MAIN_UI_STATE_I, enum_releaseRegion) == const_MAIN_UI_STATE_I_PostChapterGunslingerStatsMenu
-		&& current_MainUIState(MAIN_UI_STATE_J, enum_releaseRegion) == const_MAIN_UI_STATE_J_PostChapterGunslingerStatsMenu
-		&& current_MainUIState(MAIN_UI_STATE_N, enum_releaseRegion) == const_MAIN_UI_STATE_N_PostChapterGunslingerStatsMenu
-	}
+function prev_MainMenu_SubMenuTitle(enum_releaseRegion) =>
+	prev(current_MainMenu_SubMenuTitle(enum_releaseRegion))
+	
+function on_MainMenu_SubMenuTitle_changeTo(enum_textLookupKey, enum_releaseRegion) =>
+	current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) != enum_textLookupKey
+	
+function on_MainMenu_SubMenuTitle_changeFrom(enum_textLookupKey, enum_releaseRegion) =>
+	current_MainMenu_SubMenuTitle(enum_releaseRegion) != enum_textLookupKey
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
 
-function on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) =>
-	is_PostChapterGunslingerStatsMenu_displayed(enum_releaseRegion)
+function on_MainMenu_newSubMenu(enum_releaseRegion) {
+	// NOTE: When a new MainMenuSubMenu is created AND an old MainMenuSubMenu is cleared, [Pointer:UIcontrol_ptr-L2_A] changes values; 
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_memAccessor_SubPointer = memGenerate_pointerChainAccessor("Pointer:UIcontrol", "Pointer:UIcontrol_ptr-L2_A", let_memAddr_BasePointer)
+	return let_memAccessor_SubPointer != prev(let_memAccessor_SubPointer)}
+
+function is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII_MainMenuSubMenuID =  
+		memGenerate_pointerChainAccessor("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")
+	return is_ASCII_EqualTo(let_memAddr_ASCII_MainMenuSubMenuID, enum_mainMenuSubMenuID)}
+
+function wasPrev_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII_MainMenuSubMenuID =  
+		memGenerate_pointerChainAccessor("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")
+	return wasPrev_ASCII_EqualTo(let_memAddr_ASCII_MainMenuSubMenuID, enum_mainMenuSubMenuID)}
+
+function on_MainMenu_SubMenu_render(enum_mainMenuSubMenuID, enum_textLookupKey, enum_releaseRegion) =>
+	is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& on_MainMenu_newSubMenu(enum_releaseRegion)
+
+function on_MainMenu_SubMenu_close(enum_mainMenuSubMenuID, enum_textLookupKey, enum_releaseRegion) =>
+	wasPrev_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& on_MainMenu_newSubMenu(enum_releaseRegion)
+
+function on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion) => 
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+
+function on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) => // NOTE: This triggers earlier than on_MainMenu_PostChapterGunslingerStatsMenu_close()
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
-function is_GunslingerLevelSelectMenu_displayed(enum_releaseRegion) {
+function on_MainMenu_PostChapterGunslingerStatsMenu_close(enum_releaseRegion) => // NOTE: This triggers later than on_MainMenu_PostChapterGunslingerStatsMenu_continue()
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_close(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
 
-}
+function on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion) =>
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_ChapterSelectMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
 
-function current_LoadingState(enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
-	return memGenerate_pointerChainAccessor_byReleaseRegion(
-		"Struct:MainUIdata", "32-bit:LoadingState", 
-		let_memAddr_BasePointer, enum_releaseRegion,
-		memAccessorFunction_toPointedToMember = dword)
-	}
+function on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion) => // NOTE: This triggers when selecting a difficulty, thus starting the Chapter
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_DifficultySelectMenu, enum_releaseRegion)
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
-function prev_LoadingState(enum_releaseRegion) =>
-	prev(current_LoadingState(enum_releaseRegion))
 
-function is_Loading(enum_releaseRegion) => 
-	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+// #endregion MainMenu SubMenu Identification
 
-function on_Loading_start(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
-	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
-
-function on_Loading_end(enum_releaseRegion) =>
-	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
-	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
-
+// #region Game Modes
 // ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
@@ -504,6 +544,8 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		current_PlayerCount(enum_releaseRegion) == 1
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
+// #endregion Game Modes
+// #region Difficulty
 // ----------------Difficulty---------------------
 DIFFICULTY_Greenhorn = 0x0
 DIFFICULTY_Cowboy = 0x1
@@ -513,7 +555,31 @@ DIFFICULTY_Deadeye = 0x3
 function is_Difficulty(enum_difficulty, enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) == enum_difficulty
 
-// ----------------GameStates---------------------
+// #endregion Difficulty
+// #region Game States
+// ----------------LoadingState---------------------
+function current_LoadingState(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct:MainUIdata", "32-bit:LoadingState", 
+		let_memAddr_BasePointer, enum_releaseRegion,
+		memAccessorFunction_toPointedToMember = dword)
+	}
+
+function prev_LoadingState(enum_releaseRegion) =>
+	prev(current_LoadingState(enum_releaseRegion))
+
+function is_Loading(enum_releaseRegion) => 
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_start(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_end(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+// ----------------Other Game States---------------------
 function current_pointerState_PlayerActorData(enum_releaseRegion) {
 	let_memAddr_Pointer = memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)
 	return dword(let_memAddr_Pointer)}
@@ -557,18 +623,20 @@ function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
 	current_GameState(enum_releaseRegion) != CONST_GAME_STATE_AnyInGameMenu_active
 	&& prev_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
 
+// #endregion Game States
+// #region Pause Menu
 // -----------------PauseMenu--------------------
-CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
-CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_SilverBullet = 0x8BBEEDB1
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_MysticArmor = 0x337DD749
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Vindicator = 0x76E981F2
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_BloodFrenzy = 0xBE5D5443
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_Turn = 0xC6607CC3
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_BlackShroud = 0x8657504F
-CONST_TEXT_LOOKUP_KEY_NewPowerMenu_MsgBoxText_SoulStealer = 0xEC61D4E0
+TEXTLOOKUPKEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
+TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
+TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SilverBullet = 0x8BBEEDB1
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_MysticArmor = 0x337DD749
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator = 0x76E981F2
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_BloodFrenzy = 0xBE5D5443
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Turn = 0xC6607CC3
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_BlackShroud = 0x8657504F
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer = 0xEC61D4E0
 
 function is_PauseMenu_active(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
@@ -586,7 +654,7 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x118
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_PauseMenu_FrameTitle_Paused 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_PauseMenu_FrameTitle_Paused 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		*/
 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFF)
 
@@ -608,7 +676,7 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 		
 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 		
 		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 		AddAddress	->[Mem 32-bit] 0x7C
@@ -619,6 +687,7 @@ function on_RestartConfirmationMenu_Restart(enum_releaseRegion) =>
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
+// #endregion Pause Menu
 // #endregion General Game Logic
 
 // ............
@@ -739,7 +808,7 @@ CONST_LEVEL_DATA = {
 		"ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
 		},
 	CHAPTER_17_CurseWest: {
-		"LevelID": "LVL_GroundZero",
+		"LevelID": "GroundZero",
 		"ChapterSectionIDs": ["GroundZero_A"],
 		},
 	}
@@ -882,8 +951,8 @@ function prev_MissionTime_Temp(enum_releaseRegion) =>
 	prev(current_MissionTime_Temp(enum_releaseRegion))
 
 function on_MissionTime_Temp_start(enum_releaseRegion) =>
-	current_MissionTime_Temp(enum_releaseRegion) >= 0
-	prev_MissionTime_Temp(enum_releaseRegion) == 0
+	current_MissionTime_Temp(enum_releaseRegion) > 0
+	&& prev_MissionTime_Temp(enum_releaseRegion) == 0
 
 function current_MissionTime_ChapterSection(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:MissionTime_ChapterSection", enum_releaseRegion))
@@ -1133,34 +1202,34 @@ achievements_coreData = {
 		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		"a_Boss": { // CONCEPT a_Boss
 			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
-		"a_Enemy1": { // CONCEPT a_Enemy1
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
-		"a_Enemy2": { // CONCEPT a_Enemy2
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
-		"a_Train": { // CONCEPT a_Train
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
-		"a_Guns": { // CONCEPT a_Guns
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
-		"a_Drivers": { // CONCEPT a_Drivers
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
-		"a_Sights1": { // CONCEPT a_Sights1
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
-		"a_Sights2": { // CONCEPT a_Sights2
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		"a_Sights3": { // CONCEPT a_Sights3
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
-		"a_Attract": { // CONCEPT a_Attract
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
-		"a_Cowboy": { // CONCEPT a_Cowboy
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
-		"a_Shower": { // CONCEPT a_Shower
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
-		"a_Saver": { // CONCEPT a_Saver
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
-		"a_Moon": { // CONCEPT a_Moon
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
-		"a_Archive": { // CONCEPT a_Archive
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
+		// "a_Enemy1": { // CONCEPT a_Enemy1
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
+		// "a_Enemy2": { // CONCEPT a_Enemy2
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
+		// "a_Train": { // CONCEPT a_Train
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
+		// "a_Guns": { // CONCEPT a_Guns
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
+		// "a_Drivers": { // CONCEPT a_Drivers
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
+		// "a_Sights1": { // CONCEPT a_Sights1
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
+		// "a_Sights2": { // CONCEPT a_Sights2
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
+		// "a_Sights3": { // CONCEPT a_Sights3
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		// "a_Attract": { // CONCEPT a_Attract
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
+		// "a_Cowboy": { // CONCEPT a_Cowboy
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
+		// "a_Shower": { // CONCEPT a_Shower
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
+		// "a_Saver": { // CONCEPT a_Saver
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
+		// "a_Moon": { // CONCEPT a_Moon
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+		// "a_Archive": { // CONCEPT a_Archive
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
@@ -1205,6 +1274,20 @@ achievements_typeByCategory = {
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
+function achGenerate_3x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InGunslingerMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			// && on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion)
+			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+	// [3] ==== Alt Reset Group ==== 		-> Reset when LevelID is incorrect
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
 function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer OR Gunslinger Mode
 		never_toAlt(
@@ -1237,7 +1320,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			
 			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == CONST_TEXT_LOOKUP_KEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: is_PauseMenu_RestartConfirmationMenu_active()
 			
 			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0x7C
@@ -1411,39 +1494,37 @@ achievements_triggers = {
 			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) 
 		}),
 	// --------c_Unlocks--------
-	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_REQUIRED_CHAPTER = CHAPTER_17_CurseWest
-		const_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
-		
+		const_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist		
 		return 
-		// NOTE: Gunslinger Mode can never continue mid Chapter (from start of ChapterSection midway thtough Chapter, Gunslinger always starts from start of Chapter)
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-				&& on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-				&& on_LastChapterSection_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required stats are achieved for Unlock
+				on_LastChapterSection_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required difficulty is selected
 				never(is_flagState_InGame_true(enum_releaseRegion))
 
 				&& is_Difficulty(const_REQUIRED_DIFFICULTY, enum_releaseRegion)
 
-				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& on_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
-		// [0] ==== Reset Group ==== 			-> Reset when not in Gunslinger Mode
-			// ResetIf: LevelID incorrect || when starting a new Gunslinger game/continue Gunslinger game from MainMenu
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& is_GunslingerLevelSelectMenu_displayed(enum_releaseRegion))
-			|| never_toAlt(
-				is_ReleaseRegion(enum_releaseRegion)
-				&& !is_InGunslingerMode(enum_releaseRegion))
+				&& is_flagState_InGame_false(enum_releaseRegion))			
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Trigger Group ==== 			-> This group is only responsible for displaying a Trigger Indicator when the required difficulty is correct
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Required difficulty is selected
+				is_Difficulty(const_REQUIRED_DIFFICULTY, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3+4+5] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+			|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(const_REQUIRED_CHAPTER, enum_releaseRegion)
 			}),
 	"a_Enemy1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
