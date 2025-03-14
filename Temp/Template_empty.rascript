@@ -207,6 +207,9 @@ function memUtil_floatToInt(float_value, enum_releaseRegion) {
 	let_memAccessor_alwaysNull = high4(memory_getAddress(DATATYPE_4Bit, "AlwaysNull_Or_ValueNeverChanges", enum_releaseRegion))
 	return let_memAccessor_alwaysNull + float_value + let_memAccessor_alwaysNull}
 
+function memUtil_alwaysFalse(enum_releaseRegion) => // Force always_false() as sometime RATools removes it when it is necessary
+	dword(memory_getAddress("8-bit:AlwaysNULL", enum_releaseRegion)) == 0xDEADBEEF
+	
 function memUtil_ManualConstruction_PlaceHolderRequirement(int_placeHolderIndex) { // int_placeHolderIndex allowedRange [0x1-0xFFF] // This function can be used to quickyly generate a placeHolder Requirement for easily overwriting/copyPasting MANUAL CONSTRUCTION code
 	let_dummyAddress = (int_placeHolderIndex * 0x10000) + 0xBEEF
 	return dword(let_dummyAddress) == 0xBAADF00D}
