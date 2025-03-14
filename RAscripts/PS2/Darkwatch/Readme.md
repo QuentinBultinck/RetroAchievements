@@ -203,9 +203,9 @@ These achievements offer an alternative by not only showcasing the concept art b
 | <h3> Rescue Intro Movie </h3> <sup>[a_Saver](#a_Saver)</sup> | Complete Chapter 12, "Hangtown", with 20 or more headshots |
 | <h3> Weapons </h3> <sup>[a_Guns](#a_Guns)</sup> | Complete Chapter 13, "The Morning After", with 70% or more accuracy |
 | <h3> Enemies 2 </h3> <sup>[a_Enemy2](#a_Enemy2)</sup> | Complete Chapter 14, "Showdown", with 20 or more melee kills |
-| <h3> Showdown Animatic </h3> <sup>[a_Shower](#a_Shower)</sup> | Complete Chapter 15, "The Right Train", on Shootist difficulty |
+| <h3> Showdown Animatic </h3> <sup>[a_Shower](#a_Shower)</sup> | Complete Chapter 15, "The Right Train", on Shootist or Deadeye difficulty |
 | <h3> Vehicles </h3> <sup>[a_Drivers](#a_Drivers)</sup> | Complete Chapter 16, "Deadfall", with 20 or more headshots |
-| <h3> Bosses Art </h3> <sup>[a_Boss](#a_Boss)</sup> | Complete Chapter 17, "Curse of the West", on Shootist difficulty |
+| <h3> Bosses Art </h3> <sup>[a_Boss](#a_Boss)</sup> | Complete Chapter 17, "Curse of the West", on Shootist or Deadeye difficulty  |
 | <h3> Environments 3 </h3> <sup>[a_Sights3](#a_Sights3)</sup> | Complete Chapter 17, "Curse of the West", in 10 minutes or less |
 | <h3> Darkwatch Archives </h3> <sup>[a_Archive](#a_Archive)</sup> | Complete all Gunslinger levels on Deadeye difficulty |
 
