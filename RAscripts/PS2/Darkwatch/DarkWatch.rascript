@@ -293,9 +293,15 @@ memory_addresses = {
 	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_Temp-Player1": {RELEASE_REGION_USA: 0x953C40, RELEASE_REGION_EUR: 0x965c20, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CA8, RELEASE_REGION_EUR: 0x965c88, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c74, RELEASE_REGION_EUR: 0x965c54, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_Temp-Player1": {RELEASE_REGION_USA: 0x953C44, RELEASE_REGION_EUR: 0x965c24, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CAC, RELEASE_REGION_EUR: 0x965c8c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c78, RELEASE_REGION_EUR: 0x965C58, RELEASE_REGION_JPN: sNULL},
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
-	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x0095b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
+	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x95b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
 
 	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: 0x134408, RELEASE_REGION_EUR: 0x134408, RELEASE_REGION_JPN: sNULL},
 	"Pointer:MainUIdata_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
@@ -501,7 +507,6 @@ function on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion) => //
 
 
 // #endregion MainMenu SubMenu Identification
-
 // #region Game Modes
 // ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
@@ -545,17 +550,6 @@ function is_InMultiplayerCoopMode(enum_releaseRegion) {
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
 // #endregion Game Modes
-// #region Difficulty
-// ----------------Difficulty---------------------
-DIFFICULTY_Greenhorn = 0x0
-DIFFICULTY_Cowboy = 0x1
-DIFFICULTY_Shootist = 0x2
-DIFFICULTY_Deadeye = 0x3
-
-function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
-	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) >= enum_difficulty
-
-// #endregion Difficulty
 // #region Game States
 // ----------------LoadingState---------------------
 function current_LoadingState(enum_releaseRegion) {
@@ -1101,7 +1095,78 @@ function prev_Boss_Health(enum_releaseRegion) =>
 
 // #endregion HUD Control Health
 
+// ...............
+// ◦ Player Data ◦
+// '''''''''''''''
+// #region Player Data
+PLAYER_1 = "1"
+PLAYER_2 = "2"
+// #region Difficulty
+// ----------------Difficulty---------------------
+DIFFICULTY_Greenhorn = 0x0
+DIFFICULTY_Cowboy = 0x1
+DIFFICULTY_Shootist = 0x2
+DIFFICULTY_Deadeye = 0x3
 
+function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) >= enum_difficulty
+
+// #endregion Difficulty
+// #region Accuracy
+// ----------------Accuracy---------------------
+function current_ShotsFired_Temp(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_Temp-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_Temp(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_Temp-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+	
+function current_ShotsFired_ChapterSection(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_ChapterSection-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_ChapterSection(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_ChapterSection-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsFired_ChapterTotal(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_ChapterTotal-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_ChapterTotal-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+// -------------------------------------
+funcion current_calculated_TotalAccuracy(enum_Player, enum_releaseRegion) => 
+	// PENDING_SUPPORT: Multiple R/R instances - Currently not able to display a Measured Indicator of accuracy
+	/* MANUAL_CONSTRUCTION[ACC] - R/R usage
+		- Impossible as we need more than 1 instance of R/R to calculate this...
+		PAL:	xxxx
+		NTSCU:	xxxx
+		------------
+		
+		*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+	&& current_ShotsFired_Temp(enum_Player, enum_releaseRegion) 
+	+ current_ShotsFired_ChapterSection(enum_Player, enum_releaseRegion)
+	+ current_ShotsHit_Temp(enum_Player, enum_releaseRegion) 
+	+ current_ShotsHit_ChapterSection(enum_Player, enum_releaseRegion) == 0xDEADBEEF
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+
+function current_calculated_Accuracy_ChapterTotal(enum_Player, enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[ACC] - R/R usage
+		Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		| Force 32-bit to float
+					[32-bit:ShotsHit_ChapterTotal] / Recall		| Divide by float, creates a float
+		*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+	&& current_ShotsFired_ChapterTotal(enum_Player, enum_releaseRegion) 
+	+ current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion) == 0xDEADBEEF
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+	
+
+// #endregion Accuracy
+// #endregion Player Data
 
 // ................
 // ◦ Sub_Header_2 ◦
@@ -1218,7 +1283,7 @@ achievements_coreData = {
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Unlocks"
 		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
-		"a_Boss": { // CONCEPT a_Boss // TODO a_Boss is implemented, now implement the rest...
+		"a_Boss": { // VERIFIED a_Boss
 			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
 		// "a_Enemy1": { // CONCEPT a_Enemy1
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
@@ -1234,8 +1299,8 @@ achievements_coreData = {
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // CONCEPT a_Sights2
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		"a_Sights3": { // CONCEPT a_Sights3 // DISABLED - MANUAL_CONSTRUCTION
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		// "a_Sights3": { // VERIFIED a_Sights3 // DISABLED - MANUAL_CONSTRUCTION
+		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
 		// "a_Attract": { // CONCEPT a_Attract
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
 		// "a_Cowboy": { // CONCEPT a_Cowboy
@@ -1552,10 +1617,45 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
 			&& always_false()),
-	"a_Train": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_Train": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		// PENDING_SUPPORT: Multiplte R/R instances - To display a Measured Indicator of Accuracy during gameplay 
+		const_REQUIRED_CHAPTER = CHAPTER_1_WrongTrain
+		const_MIN_REQUIRED_ACCURACY = 0.65 // 65%
+		return 
+		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[ACC] (below line): R/R usage
+					PAL:	xxxx
+					NTSCU:	xxxx
+					-----------
+					Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		| Force 32-bit to float
+					Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		| Divide by float, creates a float
+								Recall >= const_MIN_REQUIRED_ACCURACY			*/
+				&& current_calculated_Accuracy_ChapterTotal(enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))			
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Trigger Group ==== 			-> This group is only responsible for displaying a Trigger Indicator when the required difficulty is correct
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3+4+5] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+			|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(const_REQUIRED_CHAPTER, enum_releaseRegion)
+		}),
 	"a_Guns": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
