@@ -1058,9 +1058,9 @@ function is_atMainMenu(enum_releaseRegion) =>
 
 // #endregion FMV ID
 
-// ...............
+// ......................
 // ◦ HUD Control Health ◦
-// '''''''''''''''
+// ''''''''''''''''''''''
 // #region HUD Control Health
 function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
@@ -1138,31 +1138,35 @@ function current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:ShotsHit_ChapterTotal-Player{0}", enum_Player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
 // -------------------------------------
-funcion current_calculated_TotalAccuracy(enum_Player, enum_releaseRegion) => 
-	// PENDING_SUPPORT: Multiple R/R instances - Currently not able to display a Measured Indicator of accuracy
-	/* MANUAL_CONSTRUCTION[ACC] - R/R usage
-		- Impossible as we need more than 1 instance of R/R to calculate this...
-		PAL:	xxxx
-		NTSCU:	xxxx
-		------------
-		
-		*/
-	memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
-	&& current_ShotsFired_Temp(enum_Player, enum_releaseRegion) 
+function current_calculated_Accuracy_FullTotal(enum_Player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION(Function) - R/R usage
+	PAL:	A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_{recall}=3735928559
+	NTSCU:	xxxx
+	------------
+	AddSource	[32-bit:ShotsFired_Temp] + [32-bit:ShotsFired_ChapterTotal]
+	AddSource	[32-bit:ShotsFired_ChapterSection]
+	Remember 	Val	0
+	Remember	Recall / 1.0								--> Force 32-bit to Float
+	AddSource	[32-bit:ShotsHit_Temp] / Recall				--> Divide by float, creates a float
+	AddSource	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by float, creates a float
+	Remember	[32-bit:ShotsHit_ChapterSection] / Recall	--> Divide by float, creates a float
+				Recall == 0xDEADBEEF 							*/
+	current_ShotsFired_Temp(enum_Player, enum_releaseRegion) 
+	+ current_ShotsFired_ChapterTotal(enum_Player, enum_releaseRegion)
 	+ current_ShotsFired_ChapterSection(enum_Player, enum_releaseRegion)
 	+ current_ShotsHit_Temp(enum_Player, enum_releaseRegion) 
-	+ current_ShotsHit_ChapterSection(enum_Player, enum_releaseRegion) == 0xDEADBEEF
-	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+	+ current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion)
+	+ current_ShotsHit_ChapterSection(enum_Player, enum_releaseRegion)
 
-function current_calculated_Accuracy_ChapterTotal(enum_Player, enum_releaseRegion) =>
-	/* MANUAL_CONSTRUCTION[ACC] - R/R usage
-		Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		| Force 32-bit to float
-					[32-bit:ShotsHit_ChapterTotal] / Recall		| Divide by float, creates a float
-		*/
-	memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
-	&& current_ShotsFired_ChapterTotal(enum_Player, enum_releaseRegion) 
-	+ current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion) == 0xDEADBEEF
-	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+function current_calculated_Accuracy_ChapterTotal(enum_Player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION[Function] - R/R usage
+	PAL:	K:0xX00965c54/f1.0_A:0xX00965c58/{recall}_f0.0=3735928559
+	NTSCU:	xxxxx
+	-------------
+	Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+	AddSource	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by float, creates a float
+				Float 0.0 == 0xDEADBEEF
+	*/
+	current_ShotsFired_ChapterTotal(enum_Player, enum_releaseRegion) 
+	+ current_ShotsHit_ChapterTotal(enum_Player, enum_releaseRegion)
 	
 
 // #endregion Accuracy
@@ -1289,8 +1293,8 @@ achievements_coreData = {
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
 		// "a_Enemy2": { // CONCEPT a_Enemy2
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
-		// "a_Train": { // CONCEPT a_Train
-		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
+		// "a_Train": { // // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
 		// "a_Guns": { // CONCEPT a_Guns
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
 		// "a_Drivers": { // CONCEPT a_Drivers
@@ -1299,8 +1303,8 @@ achievements_coreData = {
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // CONCEPT a_Sights2
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		// "a_Sights3": { // VERIFIED a_Sights3 // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
 		// "a_Attract": { // CONCEPT a_Attract
 		// 	"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
 		// "a_Cowboy": { // CONCEPT a_Cowboy
@@ -1617,12 +1621,15 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
 			&& always_false()),
-	"a_Train": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
-		// PENDING_SUPPORT: Multiplte R/R instances - To display a Measured Indicator of Accuracy during gameplay 
+	"a_Train": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (3x) MANUAL_CONSTRUCTION
 		const_REQUIRED_CHAPTER = CHAPTER_1_WrongTrain
 		const_MIN_REQUIRED_ACCURACY = 0.65 // 65%
 		return 
-		// [1] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+		// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			/* MANUAL_CONSTRUCTION (AltGroup[1+7])
+				PAL:	P:0xX007215cc!=1397050451_I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_d0xX00965c08=0.1._I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00965c70=0_N:0xX00965c08>0_d0xX00965c08=0.1._Z:0xX00965cc4!=0_K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00965cc4=0_d0xX00965cc4!=0.1._Z:0xX00965cc4!=0_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:p0xX00965cc4!=0_0xX00965cc4=0.2._I:0xX00134408_T:0xX00000164=1295143760_I:0xX00134408_T:0x 00000168=18753_I:0xX00134408_T:0xX00000144=1684434771_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000002=1718579824_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000006=1600482409_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000a=1952543859_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000e=1769239401_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0x 00000012=29539_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX0000000c_I:0xX00000000_T:0xX00000048=261521834_I:0xX00721900_T:0xM0000000f>d0xM0000000f
+				NTSCU:	P:0xX0071fccc!=1398099027_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_d0xX00953c28=0.1._I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00953c90=0_N:0xX00953c28>0_d0xX00953c28=0.1._Z:0xX00953ce4!=0_K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00953ce4=0_d0xX00953ce4!=0.1._Z:0xX00953ce4!=0_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:p0xX00953ce4!=0_0xX00953ce4=0.2._I:0xX00134408_T:0xX00000164=1295143760_I:0xX00134408_T:0x 00000168=18753_I:0xX00134408_T:0xX00000144=1684434771_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000002=1718579824_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000006=1600482409_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000a=1952543859_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000e=1769239401_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0x 00000012=29539_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX0000000c_I:0xX00000000_T:0xX00000048=261521834_I:0xX00720000_T:0xM0000000f>d0xM0000000f
+				*/
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
@@ -1631,14 +1638,16 @@ achievements_triggers = {
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved
 				never(is_flagState_InGame_true(enum_releaseRegion))
 				
-				/* MANUAL_CONSTRUCTION[ACC] (below line): R/R usage
-					PAL:	xxxx
-					NTSCU:	xxxx
+				/* MANUAL_CONSTRUCTION[0ACC-5ACC] (below line): R/R usage
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
 					-----------
-					Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		| Force 32-bit to float
-					Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		| Divide by float, creates a float
-								Recall >= const_MIN_REQUIRED_ACCURACY			*/
-				&& current_calculated_Accuracy_ChapterTotal(enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+					Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+					Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4ACC)
 
 				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
@@ -1648,12 +1657,57 @@ achievements_triggers = {
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))			
 			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2] ==== Alt Trigger Group ==== 			-> This group is only responsible for displaying a Trigger Indicator when the required difficulty is correct
+		// [2] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
+			/* MANUAL_CONSTRUCTION (AltGroup[2+8])
+				PAL:	P:0xX007215cc!=1397050451_A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._Q:0xX00965cc4!=0_T:0=1
+				NTSCU:	P:0xX0071fccc!=1398099027_A:0xX00953c40+0xX00953c74_A:0xX00953ca8_K:0_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._Q:0xX00953ce4!=0_T:0=1
+				*/
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-5ACC] (below Measured): R/R usage
+				PAL:	A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c40+0xX00953c74_A:0xX00953ca8_K:0_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				-----------
+				Remember	[32-bit:ShotsFired_Temp] + [32-bit:ShotsFired_ChapterSection]
+				Remember	Recall / 1.0								--> Force 32-bit to Float
+				AddSource	[32-bit:ShotsHit_Temp] / Recall				--> Divide by Float, returns a Float
+				Remember	[32-bit:ShotsHit_ChapterSection] / Recall	--> Divide by Float, returns a Float
+				Remember	Recall * 100.0
+				Measured	Recall == 100.0				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(
+				current_calculated_Accuracy_FullTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 	
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x5ACC)
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning
+						on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_true(enum_releaseRegion),
+				format = "percent")
 			&& trigger_when(always_false())
-		// [3+4+5] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+		// [3] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
+			/* MANUAL_CONSTRUCTION (AltGroup[3+9])
+				PAL:	P:0xX007215cc!=1397050451_K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_K:{recall}*f100.0_G:{recall}=f100.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._Q:0xX00965cc4=0_T:0=1
+				NTSCU:	P:0xX0071fccc!=1398099027_K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_K:{recall}*f100.0_G:{recall}=f100.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._Q:0xX00953ce4=0_T:0=1
+				*/
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-6ACC] (below Measured): R/R usage
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				-----------
+				Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+				Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+				Remember	Recall * 100.0
+				Measured	Recall == 100.0			*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(				
+				current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x6ACC)
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning
+						on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_false(enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [4+5+6] ==== Reset Groups ==== 					-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
 			|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(const_REQUIRED_CHAPTER, enum_releaseRegion)
 		}),
 	"a_Guns": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
@@ -1697,8 +1751,8 @@ achievements_triggers = {
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
 			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2+7] ==== Alt Trigger Group ==== 		-> This group is only responsible for displaying a Trigger Indicator when the required difficulty is correct
-			/* MANUAL_CONSTRUCTION of AltGroup[2+7]
+		// [2+7] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
+			/* MANUAL_CONSTRUCTION (AltGroup[2+7])
 				PAL:	P:0xX007215cc!=1397050451_A:d0xX00965c08_N:d0xX00965c70>=4294966295_A:0xX00965c08_P:0xX00965c70<=1000.1._A:0xX00965c08_P:0xX00965c70>600000_I:0xX00721820_I:0xX00000020_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000006=1700422766_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_d0xX00965c08=0.1._A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_T:0=1
 				NTSCU:	P:0xX0071fccc!=1398099027_A:d0xX00953c28_N:d0xX00953c90>=4294966295_A:0xX00953c28_P:0xX00953c90<=1000.1._A:0xX00953c28_P:0xX00953c90>600000_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1700422766_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_d0xX00953c28=0.1._A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_T:0=1
 				*/ 
@@ -1710,7 +1764,7 @@ achievements_triggers = {
 			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
 			
-			/* MANUAL_CONSTRUCTION[AA] of below measured() - R/R usage
+			/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured) - R/R usage
 				PAL:	A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
 				NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
 				''''''''''''''
