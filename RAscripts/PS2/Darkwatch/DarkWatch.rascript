@@ -1295,15 +1295,15 @@ achievements_coreData = {
 		// "a_Template": { // CONCEPT a_Unlocks"
 		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		"a_Boss": { // VERIFIED a_Boss
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
+			"id": 506183, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
 		// "a_Enemy1": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
+			// "id": 506186, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
 		// "a_Enemy2": { // CONCEPT a_Enemy2
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
 		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
+			// "id": 506185, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
 		// "a_Guns": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
+			// "id": 506187, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
 		// "a_Drivers": { // CONCEPT a_Drivers
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
 		// "a_Sights1": { // CONCEPT a_Sights1
@@ -1311,7 +1311,7 @@ achievements_coreData = {
 		// "a_Sights2": { // CONCEPT a_Sights2
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
 		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+			// "id": 506184, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
 		// "a_Attract": { // CONCEPT a_Attract
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
 		// "a_Cowboy": { // CONCEPT a_Cowboy
@@ -1321,7 +1321,7 @@ achievements_coreData = {
 		// "a_Saver": { // CONCEPT a_Saver
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
 		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
 		// "a_Archive": { // CONCEPT a_Archive
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
