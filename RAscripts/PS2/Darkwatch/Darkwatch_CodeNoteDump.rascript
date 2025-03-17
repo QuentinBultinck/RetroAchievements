@@ -529,19 +529,6 @@
 //          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
 // $7213F0: [PAL][32-bit (base) Pointer:MainUIdata_A] -> [Struct:MainUIdata]
 //          
-//          +0x38 - [32-bit:MainUIState_H]
-//          | 0x41 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
-//          
-//          +0x40 - [32-bit:MainUIState_I]
-//          | 0x102 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
-//          
-//          +0x48 - [32-bit:MainUIState_J]
-//          | 0x102 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
-//          
-//          +0x68 - [32-bit:MainUIState_N]
-//          | 0x1042 => PostChapterGunslingerStatsMenu (displayed only after a Gunslinger Chapter ends)
-//          | 0x41 => MainMenu->ExtrasMenu->Statistics->GunslingerStatsMenu
-//          
 //          +0x450 - [32-bit:LoadingState]
 //          | - Some values are different compared to NTSCU ($0x71faf0)
 //          |
@@ -657,7 +644,7 @@
 //          
 //          
 //          # LevelIDs (string)
-//          |(list incomplete)
+//          |(list complete)
 //          |'''''''''''''
 //          |---StoryChapters---
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
@@ -948,7 +935,7 @@
 //          +0xC - [32-bit (layer-1) Pointer:UIcontrolPointerArray] -> [Variable Size Array:UIcontrolPointers]
 //          .
 //          ._____HUDcontrol_Gear-Player1_____
-//          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
+//          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A]
 //          .| - This pointer always points to [Struct:MainMenuControl] when at MainMenu or any submenus at MainMenu
 //          .| - This pointer always points to [Struct:HUDcontrol_Gear-Player1] when in SinglePlayer OR Multiplayer Mode
 //          .
@@ -1155,16 +1142,22 @@
 //          | 0x31B54255 => "Cooperative" (when in Multiplayer Coop Mode)
 //          | ...
 //          |---FrameTitle--- (InGameMenus with a title)
-//          | 0xe5e853d8 => "Paused" - PauseMenu
-//          | 0xfb67daf4 => "Lore" - PauseMenu->LoreMenu
-//          | 0xdea6139b => "Ammo Display" - (lore)
-//          | 0x33e14bf8 => "Restart" - PauseMenu->RestartConfirmationMenu
-//          | 0x8b239878 => "Quit" - PauseMenu->QuitConfirmationMenu
-//          | 0x9eb09a69 => "New Power" - NewPowerUnlockMenu
+//          | 0xE5E853D8 => "Paused" - PauseMenu
+//          | 0xFB67DAF4 => "Lore" - PauseMenu->LoreMenu
+//          | 0xDEA6139B => "Ammo Display" - (lore)
+//          | 0x33E14BF8 => "Restart" - PauseMenu->RestartConfirmationMenu
+//          | 0x8B239878 => "Quit" - PauseMenu->QuitConfirmationMenu
+//          | 0x9EB09A69 => "New Power" - NewPowerMenu
 //          | ...
-//          |---MessageBoxText---
-//          | 0xbe5d5443 => "Blood Frenzy" - PowerRune (NewPowerUnlockMenu)
-//          | ...
+//          |---NewPowerMenu----MessageBoxText---
+//          | 0x8BBEEDB1 => "Silver Bullet"
+//          | 0x2AD14BD8 => "Fear"
+//          | 0x337DD749 => "Mystic Armor"
+//          | 0x76E981F2 => "Vindicator"
+//          | 0xBE5D5443 => "Blood Frenzy"
+//          | 0xC6607CC3 => "Turn"
+//          | 0x8657504F => "Black Shroud"
+//          | 0xEC61D4E0 => "Soul Stealer"
 //          '
 // $727318: [8-bit] gunslinger map id
 // $728FA0: [PAL][10-byte ASCII:SelectedPlayerProfileName]
@@ -1206,7 +1199,6 @@
 // $73DD40: (unverified)
 //          [PAL][32-bit:CinematicID(unverified)]
 //          - To ID an in-engine cinematic, but this is not always consistent when restarting a chapter or when using checkpoints
-// $73E088: MainMenuID??
 // $74D78C: [PAL][32-bit (base) Pointer:PlayerData]
 //          - Points to data at a fixed memory location
 //          
@@ -1576,32 +1568,84 @@
 //          ===========================================
 //          @Regional equivalent of $0x965c04 (PAL)
 //          
-//          [32-bit:EquippedWeapon_WeaponID-Player1]
+//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player1]
+//          @Regional equivalent of $0x965c04 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
-// $953C28: [32-bit] current map timer
-// $953C3C: [32-bit] current map Firearms kills
-// $953C40: [32-bit] current map shots fired
-// $953C44: [32-bit] current map shots hit enemies
-// $953C4C: [32-bit] current map melee kills
-// $953C70: [32-bit] last gunslinger map kills
-// $953C74: [32-bit] last gunslinger map accuracy
-// $953C80: Last Gunslinger Map Melee Kills [16-bit]
-// $953C9C: Game Difficulty [16-Bit]
-//          0x00 = Greenhorn
-//          0x01 = Cowboy
-//          0x02 = Shootist
-//          0x03 = Deadeye
+// $953C28: [NTSCU][32-bit:MissionTime_Temp]
+//          @Regional equivalent of $0x965c08 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C3C: [NTSCU][32-bit:Kills_Temp-Player1]
+//          @Regional equivalent of $0x965c1c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C40: [NTSCU][32-bit:ShotsFired_Temp-Player1]
+//          @Regional equivalent of $0x965c20 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C44: [NTSCU][32-bit:ShotsHit_Temp-Player1]
+//          @Regional equivalent of $0x965c24 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C48: [NTSCU][32-bit:HeadshotKills_Temp-Player1]
+//          @Regional equivalent of $0x965c28 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C4C: [NTSCU][32-bit:MeleeKills_Temp-Player1]
+//          @Regional equivalent of $0x965c2c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C5C: [NTSCU][32-bit:MissionTime_ChapterTotal]
+//          @Regional equivalent of $0x965c3c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C60: [NTSCU][32-bit:PlayerDeaths_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c40 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C70: [NTSCU][32-bit:Kills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c50 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C74: [NTSCU][32-bit:ShotsFired_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c54 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C78: [NTSCU][32-bit:ShotsHit_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c58 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C7C: [NTSCU][32-bit:HeadshotKills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c5c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C80: [NTSCU][32-bit:MeleeKills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c60 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C90: [NTSCU][32-bit:MissionTime_ChapterSection]
+//          @Regional equivalent of $0x965c70 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C94: [NTSCU][32-bit:PlayerDeaths_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c74 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C9C: [NTSCU][Lower4:DifficultyID(preferred) |32-bit]
+//          @Regional equivalent of $0x965c7c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CA4: [NTSCU][32-bit:Kills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c84 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CA8: [NTSCU][32-bit:ShotsFired_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c88 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CAC: [NTSCU][32-bit:ShotsHit_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c8c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CB0: [NTSCU][32-bit:HeadshotKills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c90 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CB4: [NTSCU][32-bit:MeleeKills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c94 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Regional equivalent of $0x965cc4 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Regional equivalent of $0x965cf8 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
-// $953D1A: [8-bit] number of maps completed
-// $953D24: [32-bit] profiles
-//          0 = profile 1
-//          1 = profile 2
-//          2 = profile 3
+// $953D1A: [NTSCU][8-bit:FurthestProgressed_StoryChapterID |16-bit]
+//          @Regional equivalent of $0x965cfa (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D24: [NTSCU][32-bit:SelectedPlayerProfileID]
+//          @Regional equivalent of $0x965d04 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D4C: [NTSCU][32-bit (base) Pointer:HUDcontrol_Health-Player1]
 //          @Regional equivalent of $0x965d2c (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
@@ -1611,6 +1655,7 @@
 //          - PlayerData for player2 is only populated when starting Multiplayer
 //          
 //          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player2]
+//          @Regional equivalent of $0x965d30 (PAL)
 //          @Member of [Struct(PlayerData):Player-2] (refer to $0x73b68c)
 // $95B042: [NTSCU][13-byte ASCII:CheckpointID]
 //          @Regional equivalent of $0x96d022 (PAL)
@@ -1643,7 +1688,6 @@
 //          - This value is added to [32-bit:MissionTime_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete). THEN this value restarts counting from 0
 //          
 //          - Time in milliseconds (1s = 1,000ms || 60,000 ms = 1 minute)
-// $965C0C: playerdeaths_temp
 // $965C1C: [PAL][32-bit:Kills_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This value is added to [32-bit:MissionTime_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
@@ -2249,6 +2293,7 @@
 // $965D04: [PAL][32-bit:SelectedPlayerProfileID]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Max allowed PlayerProfiles is 10
+//          
 //          0xFFFFFFFF => on game boot, until a PlayerProfile is selected; Also when playing Multiplayer
 //          [0x0-0x9] => PlayerProfile-1 up to PlayerProfile-10; only when playing SinglePlayer
 // $965D08: [PAL][32-bit (base) Pointer:SelectedPlayerProfileName(alt2)]
