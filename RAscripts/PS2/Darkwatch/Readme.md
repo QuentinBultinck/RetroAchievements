@@ -182,6 +182,13 @@ This achievement category focuses on unlocking all concept art available in the 
 
 These achievements offer an alternative by not only showcasing the concept art but also clearly outlining the requirements to obtain them.
 
+> ### Accuracy Statistic
+> If an achievement/unlock requires a minimum accuracy target, the RetroAchievements overlay will always display a Measured Indicator showing the player's current accuracy.
+> 
+> #### How does the game measure Accuracy?
+> - Every shot fired from any weapon counts as *"one shot"*—melee attacks are excluded.
+> - Special weapons like the Rail Rocket, Crossbow, and throwable explosives also count as *"one shot"*, but only when their explosive effect triggers. If an enemy is hit within the explosion radius, it counts as one successful hit, increasing the accuracy stat accordingly.
+
 ### All Concept Art Unlockables
 
 
