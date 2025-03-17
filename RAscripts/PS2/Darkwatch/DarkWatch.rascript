@@ -293,12 +293,44 @@ memory_addresses = {
 	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953C94, RELEASE_REGION_EUR: 0x965c74, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C60, RELEASE_REGION_EUR: 0x965c40, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_Temp-Player1": {RELEASE_REGION_USA: 0x953C3C, RELEASE_REGION_EUR: 0x965c1c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CA4, RELEASE_REGION_EUR: 0x965c84, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C70, RELEASE_REGION_EUR: 0x965c50, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsFired_Temp-Player1": {RELEASE_REGION_USA: 0x953C40, RELEASE_REGION_EUR: 0x965c20, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsFired_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CA8, RELEASE_REGION_EUR: 0x965c88, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsFired_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c74, RELEASE_REGION_EUR: 0x965c54, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsHit_Temp-Player1": {RELEASE_REGION_USA: 0x953C44, RELEASE_REGION_EUR: 0x965c24, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsHit_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CAC, RELEASE_REGION_EUR: 0x965c8c, RELEASE_REGION_JPN: sNULL},
 	"32-bit:ShotsHit_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c78, RELEASE_REGION_EUR: 0x965C58, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_Temp-Player1": {RELEASE_REGION_USA: 0x953C48, RELEASE_REGION_EUR: 0x965c28, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB0, RELEASE_REGION_EUR: 0x965c90, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C7C, RELEASE_REGION_EUR: 0x965c5c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_Temp-Player1": {RELEASE_REGION_USA: 0x953C4C, RELEASE_REGION_EUR: 0x965c2c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB4, RELEASE_REGION_EUR: 0x965c94, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C80, RELEASE_REGION_EUR: 0x965c60, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DC0, RELEASE_REGION_EUR: 0x965DA0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D8C, RELEASE_REGION_EUR: 0x965D6C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_Temp-Player2": {RELEASE_REGION_USA: 0x953D68, RELEASE_REGION_EUR: 0x965D48, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD0, RELEASE_REGION_EUR: 0x965DB0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D9C, RELEASE_REGION_EUR: 0x965D7C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_Temp-Player2": {RELEASE_REGION_USA: 0x953D6C, RELEASE_REGION_EUR: 0x965D4C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD4, RELEASE_REGION_EUR: 0x965DB4, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA0, RELEASE_REGION_EUR: 0x965D80, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_Temp-Player2": {RELEASE_REGION_USA: 0x953D70, RELEASE_REGION_EUR: 0x965D50, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD8, RELEASE_REGION_EUR: 0x965DB8, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA4, RELEASE_REGION_EUR: 0x965D84, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_Temp-Player2": {RELEASE_REGION_USA: 0x953D74, RELEASE_REGION_EUR: 0x965D54, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DDC, RELEASE_REGION_EUR: 0x965DBC, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA8, RELEASE_REGION_EUR: 0x965D88, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_Temp-Player2": {RELEASE_REGION_USA: 0x953D78, RELEASE_REGION_EUR: 0x965D58, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DE0, RELEASE_REGION_EUR: 0x965DC0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DAC, RELEASE_REGION_EUR: 0x965D8C, RELEASE_REGION_JPN: sNULL},
 
 	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
 	"ASCII:CheckpointID": {RELEASE_REGION_USA: 0x95b042, RELEASE_REGION_EUR: 0x96d022, RELEASE_REGION_JPN: sNULL},
@@ -1177,6 +1209,31 @@ function current_calculated_Accuracy_ChapterTotal(enum_Player, enum_releaseRegio
 	
 
 // #endregion Accuracy
+// #region Other Stats
+// ----------------PlayerDeaths---------------------
+function current_PlayerDeaths_ChapterSection(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:PlayerDeaths_ChapterSection-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_PlayerDeaths_ChapterTotal(enum_Player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:PlayerDeaths_ChapterTotal-Player{0}", enum_Player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_PlayerDeaths_ChapterSection(enum_Player, enum_releaseRegion) =>
+	prev(current_PlayerDeaths_ChapterSection(enum_Player, enum_releaseRegion))
+
+function prev_PlayerDeaths_ChapterTotal(enum_Player, enum_releaseRegion) =>
+	prev(current_PlayerDeaths_ChapterTotal(enum_Player, enum_releaseRegion))
+
+function on_PlayerDeaths_ChapterSection_increment(enum_Player, enum_releaseRegion) =>
+	current_PlayerDeaths_ChapterSection(enum_Player, enum_releaseRegion) > prev_PlayerDeaths_ChapterSection(enum_Player, enum_releaseRegion)
+
+function on_PlayerDeaths_ChapterTotal_increment(enum_Player, enum_releaseRegion) =>
+	current_PlayerDeaths_ChapterTotal(enum_Player, enum_releaseRegion) > prev_PlayerDeaths_ChapterTotal(enum_Player, enum_releaseRegion)
+
+// ----------------Kills---------------------
+
+// #endregion Other Stats
 // #endregion Player Data
 
 // ................
@@ -1306,8 +1363,8 @@ achievements_coreData = {
 			// "id": 506187, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
 		// "a_Drivers": { // CONCEPT a_Drivers
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
-		// "a_Sights1": { // CONCEPT a_Sights1
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
+		"a_Sights1": { // VERIFIED
+			"id": 506219, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // CONCEPT a_Sights2
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
 		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -1368,20 +1425,7 @@ achievements_typeByCategory = {
 // ==================================
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
-function achGenerate_3x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) =>
-	// [1] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode
-		never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_InGunslingerMode(enum_releaseRegion))
-	// [2] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			// && on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion)
-			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
-	// [3] ==== Alt Reset Group ==== 		-> Reset when LevelID is incorrect
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+// ---------------SinglePlayerLevelProgression----------------------
 function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer OR Gunslinger Mode
 		never_toAlt(
@@ -1396,7 +1440,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_atMainMenu(enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->RestartConfirmationMenu->Restart
-		/* MANUAL_CONSTRUCTION of AltGroup[4]: R/R usage
+		/* MANUAL_CONSTRUCTION (AltGroup[4]): R/R usage
 			--> MANUAL_CONSTRUCTION[1FD-2FD] with ResetIf+AndNext - refer to on_RestartConfirmationMenu_Restart()
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
@@ -1478,6 +1522,22 @@ function achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(enum_chapter
 			*/
 		|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter, enum_releaseRegion)
 
+// ---------------GunslingerUnlocks----------------------
+function achGenerate_3x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InGunslingerMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			// && on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion)
+			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+	// [3] ==== Alt Reset Group ==== 		-> Reset when LevelID is incorrect
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+
 function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_minRequiredAccuracy, enum_releaseRegion) => // WARNING - (3x) MANUAL_CONSTRUCTION
 	// NOTE: enum_minRequiredAccuracy needs to be a Float (eg. min required accuracy is 65% --> Float: 0.65)
 	// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
@@ -1551,7 +1611,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 				&& is_flagState_InGame_false(enum_releaseRegion),
 			format = "percent")
 		&& trigger_when(always_false())
-	// [4+5+6] ==== Reset Groups ==== 					-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+	// [4+5+6] ==== (3x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
 		|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion)
 
 function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLimit, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
@@ -1605,7 +1665,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLim
 						on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				)
 			&& trigger_when(always_false())
-		// [3+4+5] ==== Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+		// [3+4+5] ==== (3x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
 			|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion)
 		}
 
@@ -1679,7 +1739,7 @@ achievements_triggers = {
 					&& on_FMV_end(const_FMV_GoodEnding, enum_releaseRegion))
 				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			/* MANUAL_CONSTRUCTIONof AltGroup[5]: R/R usage
+			/* MANUAL_CONSTRUCTIONof AltGroup[5/10]: R/R usage
 				--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
 				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
@@ -1711,7 +1771,7 @@ achievements_triggers = {
 					&& on_FMV_end(const_FMV_EvilEnding, enum_releaseRegion))
 				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
 		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			/* MANUAL_CONSTRUCTION of AltGroup[5]: R/R usage
+			/* MANUAL_CONSTRUCTION of AltGroup[5/10]: R/R usage
 				--> MANUAL_CONSTRUCTION[1FD-2FD] at achGenerate_4x_AltResetGroups_SingleplayerLevelProgression()->AltGroup[4]
 				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
@@ -1804,10 +1864,37 @@ achievements_triggers = {
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
 			&& always_false()),
-	"a_Sights1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_Sights1": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+		const_REQUIRED_CHAPTER = CHAPTER_5_Outpost
+		return 
+		// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + with 0 playerDeaths
+				never(is_flagState_InGame_true(enum_releaseRegion))				
+				&& current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) == 0
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_REQUIRED_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Trigger Group ==== 					-> This group only responsible for displaying a Trigger Indicator as long as player has not died
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When player has died once
+				on_PlayerDeaths_ChapterSection_increment(PLAYER_1, enum_releaseRegion)
+				|| on_PlayerDeaths_ChapterTotal_increment(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
+			&& trigger_when(always_false())
+		// [3+4+5] ==== (3x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect
+			|| achGenerate_3x_AltResetGroups_GunslingerUnlocks(const_REQUIRED_CHAPTER, enum_releaseRegion)
+		}),
 	"a_Sights2": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
@@ -1867,8 +1954,8 @@ achievements_titles = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "Hellbound Express"},
 	"a_RideDevil": 				{"en": "No Turning Back"},
-	"a_DevilMine":	 			{"en": "Whispers From the Grave"},
-	"a_Boneyard":	 			{"en": "Veins of the Underworld"},
+	"a_Boneyard":	 			{"en": "Whispers From the Grave"},
+	"a_DevilMine":	 			{"en": "Veins of the Underworld"},
 	"a_DWOutpost":	 			{"en": "No Safe Haven"},
 	"a_WarTrain":	 			{"en": "Bullet-Storm Express"},
 	"a_TortureMaze":	 		{"en": "Trial by Pain"},
@@ -1908,8 +1995,8 @@ achievements_descriptions = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "You wanted a payday. Instead, you cashed in your soul. Complete Chapter 1, \"The Wrong Train\""},
 	"a_RideDevil": 				{"en": "The Reaper's ridin' close. Keep moving, or get buried where you stand. Complete Chapter 2, \"Ride Like the Devil\""},
-	"a_DevilMine":	 			{"en": "The dead don't like visitors, and they sure don't take kindly to trespassers. Complete Chapter 3, \"Boneyard\""},
-	"a_Boneyard":	 			{"en": "Something worse than gold fever haunts these tunnels. Complete Chapter 4, \"Devil's Belly Mine\""},
+	"a_Boneyard":	 			{"en": "The dead don't like visitors, and they sure don't take kindly to trespassers. Complete Chapter 3, \"Boneyard\""},
+	"a_DevilMine":	 			{"en": "Something worse than gold fever haunts these tunnels. Complete Chapter 4, \"Devil's Belly Mine\""},
 	"a_DWOutpost":	 			{"en": "The cavalry ain't coming—hell's already moved in. Complete Chapter 5, \"Darkwatch Outpost\""},
 	"a_WarTrain":	 			{"en": "A horse, a six-shooter, and a train full of evil. Let's settle this. Complete Chapter 6, \"War Train\""},
 	"a_TortureMaze":	 		{"en": "General Cartwright doesn't take weak recruits—good thing you ain't weak. Complete Chapter 7, \"Torture Maze\""},
@@ -1931,7 +2018,7 @@ achievements_descriptions = {
 	"a_Train":					{"en": "Unlock the \"Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy"},
 	"a_Guns":					{"en": "Unlock the \"Weapons\" concept art by completing Chapter 13, \"The Morning After\", with 70% or more accuracy"},
 	"a_Drivers":				{"en": "Unlock the \"Vehicles\" concept art by completing Chapter 16, \"Deadfall\", with 20 or more headshots"},
-	"a_Sights1":				{"en": "Unlock the \"Environments 1\" concept art by completing Chapter 5, \"Darkwatch Outpost\", with no death"},
+	"a_Sights1":				{"en": "Unlock the \"Environments 1\" concept art by completing Chapter 5, \"Darkwatch Outpost\", with no deaths"},
 	"a_Sights2":				{"en": "Unlock the \"Environments 2\" concept art by completing Chapter 11, \"Invasion\", on Deadeye difficulty"},
 	"a_Sights3":				{"en": "Unlock the \"Environments 3\" concept art by completing Chapter 17, \"Curse of the West\", in 10 minutes or less"},
 	"a_Attract":				{"en": "Unlock the \"Attract Mode Movie\" concept art by completing Chapter 10, \"The Deadlight Prism\", with 80 or more kills"},
