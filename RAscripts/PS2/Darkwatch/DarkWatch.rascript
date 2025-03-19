@@ -687,7 +687,7 @@ function is_PauseMenu_active(enum_releaseRegion) =>
 
 function on_PauseMenu_Restart(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
-	/* MANUAL_CONSTRUCTION[1FD-2FD] (above 2 lines): R/R usage
+	/* MANUAL_CONSTRUCTION[1FD-2FD]: R/R usage
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		---------
@@ -714,7 +714,7 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 
 function on_PauseMenu_Quit(enum_releaseRegion) =>
 	is_AnyInGameMenu_active(enum_releaseRegion)
-	/* MANUAL_CONSTRUCTION[1FD-3FD] (above 2 lines): R/R usage
+	/* MANUAL_CONSTRUCTION[1FD-3FD]: R/R usage
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		-----------
@@ -739,6 +739,36 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
+function on_PauseMenu_Restart_OR_Quit(enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[1FD-4FD]: R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
+		NTSCU: 	xxxx
+		-----------
+		AddAddress	[Pointer:UIcontrol(preferred)]
+		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+		AddAddress	[Pointer:UIcontrol(preferred)]
+		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+		
+		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0xB8
+		OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+		
+		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0xB8
+					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+		
+		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0x7C
+					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+		*/
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4FD)
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 // #endregion Pause Menu
 // #endregion General Game Logic
@@ -1387,43 +1417,43 @@ achievements_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_SPstory": { // Category - Singleplayer Story Progression
-		// "a_WrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 504289, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
-		// "a_RideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		"a_WrongTrain": { // TODO // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504289, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		// "a_RideDevil": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504290, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
-		// "a_Boneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Boneyard": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504291, "points": 0000000, "devInfo": "CHAPTER_3_Boneyard Completion"},
-		// "a_DevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_DevilMine": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504292, "points": 0000000, "devInfo": "CHAPTER_4_DevilMine Completion"},
-		// "a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_DWOutpost": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504293, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
-		// "a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_WarTrain": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504294, "points": 0000000, "devInfo": "C:HAPTER_6_WarTrain Completion"}, 
-		// "a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_TortureMaze": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504295, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
-		// "a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_BaptismFire": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504296, "points": 0000000, "devInfo": "CHAPTER_8_BaptismFire Completion"}, 
-		// "a_Rescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Rescue": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504297, "points": 0000000, "devInfo": "CHAPTER_9_Rescue Completion"},
-		// "a_Prism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Prism": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504298, "points": 0000000, "devInfo": "CHAPTER_10_Prism Completion"},
-		// "a_Invasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Invasion": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504299, "points": 0000000, "devInfo": "CHAPTER_11_Invasion Completion"},
-		// "a_Hangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Hangtown": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504300, "points": 0000000, "devInfo": "CHAPTER_12_Hangtown Completion"},
-		// "a_MorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_MorningAfter": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504301, "points": 0000000, "devInfo": "CHAPTER_13_MorningAfter Completion"},
-		// "a_Showdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Showdown": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504302, "points": 0000000, "devInfo": "CHAPTER_14_Showdown Completion"},
-		// "a_RightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_RightTrain": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504303, "points": 0000000, "devInfo": "CHAPTER_15_RightTrain Completion"},
-		// "a_Deadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_Deadfall": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504304, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_SPend": { // Category - Singleplayer Story Ending // TODO update to only allow to be unlocked in SinglePlayer Mode NOT Gunslinger Mode
-		// "a_CurseWestGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION 
+		// "a_CurseWestGood": { // TODO // DISABLED - MANUAL_CONSTRUCTION 
 			// "id": 504305, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+		// "a_CurseWestEvil": { // TODO // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504306, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
@@ -1431,30 +1461,30 @@ achievements_coreData = {
 			// "id": 506183, "points": 0000000, "devInfo": "Unlock Concept Art 'Bosses Art'"},
 		// "a_Enemy1": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506186, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 1"},
-		"a_Enemy2": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-			"id": 506261, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
+		// "a_Enemy2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506261, "points": 0000000, "devInfo": "Unlock Concept Art 'Enemies 2'"},
 		// "a_Train": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506185, "points": 0000000, "devInfo": "Unlock Concept Art 'Wrong Train Animatic'"},
 		// "a_Guns": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506187, "points": 0000000, "devInfo": "Unlock Concept Art 'Weapons'"},
-		// "a_Drivers": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506264, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
-		// "a_Sights1": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506219, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
+		// "a_Drivers": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506264, "points": 0000000, "devInfo": "Unlock Concept Art 'Vehicles'"},
+		// "a_Sights1": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506219, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506387, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		// "a_Sights3": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506184, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
-		// "a_Attract": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506262, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
-		"a_Cowboy": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-			"id": 506260, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
+		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506184, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		// "a_Attract": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506262, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
+		// "a_Cowboy": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506260, "points": 0000000, "devInfo": "Unlock Concept Art 'Cowboy Animatic'"},
 		// "a_Shower": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506388, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
-		// "a_Saver": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
-		// "a_Moon": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-		// 	"id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+		// "a_Saver": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
+		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
 		// "a_Archive": { // CONCEPT a_Archive
 			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
@@ -1511,18 +1541,14 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
-	// [3] ==== Alt Reset Group ==== 			-> Reset when quit to MainMenu
-		|| never_toAlt(
-			is_ReleaseRegion(enum_releaseRegion)
-			&& is_atMainMenu(enum_releaseRegion))
-	// [4] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->RestartConfirmationMenu->Restart
-		/* MANUAL_CONSTRUCTION (AltGroup[4]): R/R usage --> altered MANUAL_CONSTRUCTION[1FD-2FD]
-			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+	// [3] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Restart OR on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION (AltGroup[3]) --> altered MANUAL_CONSTRUCTION[1FD-4FD]
+			PAL: 	xxxxx
+			NTSCU: 	xxxx
 			---------
 			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
 			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
-
+			
 			AddAddress	[Pointer:UIcontrol(preferred)]
 			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
 			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
@@ -1533,11 +1559,15 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 			
 			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
 			
 			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0x7C
-			ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
 			ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
@@ -1545,7 +1575,44 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 						Val 0x0 == Val 0x1					*/
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_PauseMenu_Restart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-2FD]
+			&& on_PauseMenu_Restart_OR_Quit(enum_releaseRegion))
+
+
+	// // [3] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->Quit
+	// 	|| never_toAlt(
+	// 		is_ReleaseRegion(enum_releaseRegion)
+	// 		&& is_atMainMenu(enum_releaseRegion))
+	// // [4] ==== Alt Reset Group ==== 			-> Reset on pressing PauseMenu->Restart
+	// 	/* MANUAL_CONSTRUCTION (AltGroup[4]): R/R usage --> altered MANUAL_CONSTRUCTION[1FD-2FD]
+	// 		PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+	// 		NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+	// 		---------
+	// 		AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+	// 		AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+	// 		AddAddress	[Pointer:UIcontrol(preferred)]
+	// 		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+	// 		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+	// 		AddAddress	[Pointer:UIcontrol(preferred)]
+	// 		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+	// 		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+	// 		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+	// 		AddAddress	->[Mem 32-bit] 0xB8
+	// 		AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+	// 		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+	// 		AddAddress	->[Mem 32-bit] 0x7C
+	// 		ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+	// 		AddAddress	[Pointer:PlayerInput(preferred)]
+	// 		ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+	// 					Val 0x0 == Val 0x1					*/
+	// 	|| never_toAlt(
+	// 		is_ReleaseRegion(enum_releaseRegion)
+	// 		&& on_PauseMenu_Restart(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-2FD]
 		
 function achGenerate_FullTrigger_SingleplayerLevelProgression_EndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	/* MANUAL_CONSTRUCTION (AltGroup[5])
@@ -1821,7 +1888,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 		PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 		NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 		*/
-	// [1] ==== Alt Logic Group ==== 						-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+	// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 			on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
@@ -1862,7 +1929,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 				&& is_flagState_InGame_false(enum_releaseRegion)
 			)
 		&& trigger_when(always_false())
-	// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+	// [4+5+6+7] ==== (4x) Reset Groups ==== 			-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
 function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, int_requiredHeadshotKills, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
@@ -2092,6 +2159,9 @@ achievements_triggers = {
 		return 
 		// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When player has died once
+				on_PlayerDeaths_ChapterSection_increment(PLAYER_1, enum_releaseRegion)
+				|| on_PlayerDeaths_ChapterTotal_increment(PLAYER_1, enum_releaseRegion)))
 			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 				on_Chapter_startFromBeginning(const_REQUIRED_CHAPTER, enum_releaseRegion))
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2186,7 +2256,7 @@ achievements_triggers = {
 		}),
 	"a_Cowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_REQUIRED_MELEEKILLS = 30
-		/* MANUAL_CONSTRUCTION (AltGroup[7/14]): R/R usage
+		/* MANUAL_CONSTRUCTION (AltGroup[7/14])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
