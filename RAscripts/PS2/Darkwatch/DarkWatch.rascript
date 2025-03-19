@@ -134,6 +134,13 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
+function util_concatArrays(array_1, array_2) { // This function will concatenate two arrays (add values of array_2 to array_1)
+	let_array_concat = array_1
+	for let_index in range(0, length(array_2) - 1) {
+		array_push(let_array_concat, array_2[let_index])
+	}
+	return let_array_concat}
+
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
 
@@ -167,6 +174,14 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Pointer:PlayerSavedStats": {
+		"pointerChainToMember": {
+			"Array:SavedStats_Story": {
+				"pointerChainOffsets": [0x4]},
+			"Array:SavedStats_Gunslinger": {
+				"pointerChainOffsets": [0xC]},
+			},
+		}, 
 	"Pointer:SofdecStreamData": {
 		"pointerChainToMember": {
 			"ASCIIFlag:Sofdec_IsFMVactive": {
@@ -209,7 +224,18 @@ memory_StructDefs = {
 			"32-bit:MainMenuTitle_TextLookupKeyID": {
 				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},
 			},
-		}, 
+		}, 	
+	"Struct:ChapterStats": {
+		"sizeInBytes": 56,
+		"offsetToMember": {
+			"32-bit:MissionTime": 0x8,
+			"Lower4:Difficulty": 0x14},
+		"pointerChainToMember": {
+			"ASCII:LevelID": {
+				"pointerChainOffsets": [0x0],
+				"offsetToPointedToMember": 0x2},
+			},
+		},
 	"Struct:ControllerInput": {
 		"offsetToMember": {
 			"Bitflag:IsControllerConnected": 0x0,
@@ -270,7 +296,14 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
-
+function memGenerate_pointerChainAccessor_fromOffsets(memAdrr_basePointer, array_pointerChainOffsets, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_addAddressChain = dword(memAdrr_basePointer)
+	for let_index in range(0, length(array_pointerChainOffsets) - 1) {
+		if (let_index == length(array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with creating pointer chain for memAddr: {0}", memAdrr_basePointer))}
 
 // #endregion MEM - struct definitions
 
@@ -287,7 +320,7 @@ memory_addresses = {
 	
 	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
-	// "8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
+	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL},
 
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
@@ -339,9 +372,11 @@ memory_addresses = {
 	"Pointer:MainUIdata_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
 	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: 0x71ff20, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
 	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
+	"Pointer:UIcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
+
 	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
 	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
-	"Pointer:UIcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
+	"Pointer:PlayerSavedStats-Player1": {RELEASE_REGION_USA: 0x953CF8, RELEASE_REGION_EUR: 0x965cd8, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -821,78 +856,97 @@ CONST_LEVEL_DATA = {
 	// CHAPTER_X_Template: {
 		// "LevelID": "_templateID_",
 		// "ChapterSectionIDs": ["_Section1_", "_Section2_"],
+		// "IsGunslingerLevel": true,
 		// },
 	CHAPTER_1_WrongTrain: {
 		"LevelID": "WrongTrain",
 		"ChapterSectionIDs": ["WrongTrain_A", "WrongTrain_B"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_2_RideDevil: {
 		"LevelID": "M02_CanyonShoot",
 		"ChapterSectionIDs": ["Hub_A"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_3_Boneyard: {
 		"LevelID": "M03_Cemetery",
 		"ChapterSectionIDs": ["M03_C", "M03_B", "M03_A"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
 		"ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
 		"ChapterSectionIDs": ["M07_A", "M07_B"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_6_WarTrain: {
 		"LevelID": "Wartrain",
 		"ChapterSectionIDs": ["M07_C"],
+		"IsGunslingerLevel": true,
 		}, 
 	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
 		"ChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
 		"ChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_Citadel: {
 		"LevelID": "Citadel_Launch",
 		"ChapterSectionIDs": ["Citadel_Launch_AA"],
+		"IsGunslingerLevel": false,
 		},
 	CHAPTER_9_Rescue: {
 		"LevelID": "M08_Regulator",
 		"ChapterSectionIDs": ["Hub_A", "Hub_B"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_10_Prism: {
 		"LevelID": "M15_SplittingPaths",
 		"ChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_11_Invasion: {
 		"LevelID": "M17_Invasion",
 		"ChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_12_Hangtown: {
 		"LevelID": "M11_Hangtown",
 		"ChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_13_MorningAfter: {
 		"LevelID": "M12_CitadelUnderAttack",
 		"ChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_14_Showdown: {
 		"LevelID": "FallOfCitadel",
 		"ChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_15_RightTrain: {
 		"LevelID": "M19_RidetoDeadfall",
 		"ChapterSectionIDs": ["M19_A"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_16_Deadfall: {
 		"LevelID": "M20_PenetratingDeadfall",
 		"ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
+		"IsGunslingerLevel": true,
 		},
 	CHAPTER_17_CurseWest: {
 		"LevelID": "GroundZero",
 		"ChapterSectionIDs": ["GroundZero_A"],
+		"IsGunslingerLevel": true,
 		},
 	}
 
@@ -911,6 +965,9 @@ function LEVEL_DATA_getFirstChapterSectionID(enum_chapter) =>
 function LEVEL_DATA_getLastChapterSectionIndex(enum_chapter) {
 	let_array_AllChapterSectionIDs = LEVEL_DATA_getAllChapterSectionIDs(enum_chapter)
 	return util_getIndexOfLastItemInArray(let_array_AllChapterSectionIDs)}
+
+function LEVEL_DATA_getAllGunslingerLevels() => 
+	array_map(CONST_LEVEL_DATA, (enum_chapter) ) // TODO check if we can implement this with array_reduce() in latest RATools version for "a_Archive" && achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty()
 
 // ----------------StoryChapterID---------------------
 /* DISABLED - Not advised to use this
@@ -964,7 +1021,6 @@ function is_Level_Multiplayer(enum_multiplayerLevel, enum_releaseRegion) {
 	return is_Level(let_substring_LevelID, enum_releaseRegion)}
 
 // #endregion Level ID
-
 
 // .................
 // ◦ Checkpoint ID ◦
@@ -1090,6 +1146,10 @@ function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegi
 		&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 		&& on_MissionTime_Temp_start(enum_releaseRegion)
 	}
+
+function on_AnyChapterSection_startFromBeginning(enum_releaseRegion) =>
+	current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
 
 // #endregion Statistics
 
@@ -1344,6 +1404,25 @@ function current_calculated_MeleeKills_FullTotal(enum_Player, enum_releaseRegion
 
 
 // #endregion Other Stats
+
+// #region Saved Stats
+// ----------------SavedStats_Gunslinger---------------------
+CONST_NUMBER_OF_CHAPTERS = 17 
+
+function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember("Pointer:PlayerSavedStats", "Array:SavedStats_Gunslinger")
+	let_offsetTo_SaveStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	array_push(let_array_pointerChainOffsets, let_offsetTo_SaveStat_Difficulty)
+
+	return memGenerate_pointerChainAccessor_fromOffsets(
+		let_memAddr_BasePointer, let_array_pointerChainOffsets, 
+		memAccessorFunction_toPointedToMember = low4)
+	}
+
+// #region Saved Stats
+
 // #endregion Player Data
 
 // ................
@@ -1485,12 +1564,14 @@ achievements_coreData = {
 			// "id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
 		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
-		// "a_Archive": { // CONCEPT a_Archive
-			// "id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
+		"a_Archive": { // CONCEPT a_Archive
+			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
-		// 	"id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_WeaponMaster": { // CONCEPT a_WeaponMaster
+			// "id": 000000, "points": 0000000, "devInfo": "Have each weapon marked as 'Favorite Weapon' for at least 1 Chapter in SavedStats"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
 		// "a_SunPower": { // CONCEPT a_SunPower
@@ -1689,7 +1770,7 @@ function achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_rele
 	// [2] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // TODO this logic is updated 
+			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
 	// [3] ==== Alt Reset Group ==== 		-> Reset when LevelID is incorrect
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -1996,6 +2077,16 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+// -------------------------------------
+function achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
+	let_array_comparisons = []
+	for let_index in range(0, CONST_NUMBER_OF_CHAPTERS - 1) 
+		array_push(let_array_comparisons, current_SavedStatGunslinger_Difficulty(let_index, enum_releaseRegion) == DIFFICULTY_Deadeye)	
+	return tally_of(let_array_comparisons, CONST_NUMBER_OF_CHAPTERS, let_difficultyComparison => 
+		once(
+			never(!let_difficultyComparison) 
+			&& let_difficultyComparison)
+		)}
 
 // #endregion ACH - trigger generators
 
@@ -2281,7 +2372,7 @@ achievements_triggers = {
 	"a_Shower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_MIN_REQUIRED_DIFFICULTY = DIFFICULTY_Shootist
 		return achGenerate_FullTrigger_GunslingerUnlock_Difficulty(CHAPTER_15_RightTrain, const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)}), // --> (1x) MANUAL_CONSTRUCTION
-	"a_Saver": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION 
+	"a_Saver": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_REQUIRED_HEADSHOTKILLS = 20
 		/* MANUAL_CONSTRUCTION (AltGroup[7/14])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
@@ -2299,10 +2390,67 @@ achievements_triggers = {
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		return achGenerate_FullTrigger_GunslingerUnlock_Time(CHAPTER_9_Rescue, const_TIME_LIMIT, enum_releaseRegion)}),	// --> (2x) MANUAL_CONSTRUCTION
-	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Any Gunslinger ChapterSection is started from beginning 
+				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
+			&& once( // --CheckIf--> Player leaves InGame + All Gunslinger Chapters completed on Deadeye Difficulty
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& all_of(LEVEL_DATA_getl)
+
+				&& achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) // --> Without delta check: This allows the achievement to still be unlocked by simply replaying any Gunslinger Chapter on Deadeye difficulty, even if all Chapters have already been completed on that difficulty.
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Measured Group ==== 	-> This group is responsible for displaying a Measured Indicator of how many Gunslinger Chapters have been completed to Deadeye difficulty 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& measured(current_calculated_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) >= CONST_NUMBER_OF_CHAPTERS)
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3] ==== Alt Reset Group ==== 		-> Reset when not in Gunslinger Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_InGunslingerMode(enum_releaseRegion))
+		// [4] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+		// [5/10] ==== Alt Reset Group ==== 		-> Reset when pressing PauseMenu->Quit
+			/* MANUAL_CONSTRUCTION (AltGroup[5/10]): R/R usage
+				--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				-------------
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+							Val 0x0 == Val 0x1					*/
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+		),
 	// --------c_Gunslinger--------
 	}
 // #endregion ACH - triggers
