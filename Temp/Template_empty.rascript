@@ -135,7 +135,14 @@ function memGenerate_pointerChainAccessor_byReleaseRegion(string_structKey, stri
 	}	
 	util_throwError(format("Something went wrong with dereferencing pointer chain for structure: {0} - Pointer chain to: {1}", string_structKey, string_pointerChainKey))}
 
-
+function memGenerate_pointerChainAccessor_fromOffsets(memAdrr_basePointer, array_pointerChainOffsets, int_offsetToPointedToMember = 0, memAccessorFunction_toPointedToMember = dword) {
+	let_addAddressChain = dword(memAdrr_basePointer)
+	for let_index in range(0, length(array_pointerChainOffsets) - 1) {
+		if (let_index == length(array_pointerChainOffsets) - 1)
+			return memAccessorFunction_toPointedToMember(let_addAddressChain + array_pointerChainOffsets[let_index] + int_offsetToPointedToMember)
+		else let_addAddressChain = dword(let_addAddressChain + array_pointerChainOffsets[let_index])
+	}	
+	util_throwError(format("Something went wrong with creating pointer chain for memAddr: {0}", memAdrr_basePointer))}
 
 // #endregion MEM - struct definitions
 
