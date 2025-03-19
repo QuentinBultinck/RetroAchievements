@@ -1451,10 +1451,10 @@ achievements_coreData = {
 			// "id": 504304, "points": 0000000, "devInfo": "CHAPTER_16_Deadfall Completion"},
 		},
 	"c_SPend": { // Category - Singleplayer Story Ending // TODO update to only allow to be unlocked in SinglePlayer Mode NOT Gunslinger Mode
-		// "a_CurseWestGood": { // TODO // DISABLED - MANUAL_CONSTRUCTION 
-			// "id": 504305, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
-		// "a_CurseWestEvil": { // TODO // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 504306, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
+		"a_CurseWestGood": { // TODO // DISABLED - MANUAL_CONSTRUCTION 
+			"id": 504305, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Good ending"},		
+		"a_CurseWestEvil": { // TODO // DISABLED - MANUAL_CONSTRUCTION
+			"id": 504306, "points": 0000000, "devInfo": "CHAPTER_17_CurseWest Completion, Evil ending"},
 		},
 	"c_Unlocks": { // Category - Unlockables in Gunslinger Mode // "Built-in" Gunslinger Challenges
 		// "a_Boss": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -1537,6 +1537,55 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+	// [3] ==== Alt Reset Group ==== 			-> Reset when at MainMenu --> Necessary next to AltResetGroup[4], to reset hitCounts on AltLogicGroup
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_atMainMenu(enum_releaseRegion))
+	// [4] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Restart OR on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION (AltGroup[4]) --> altered MANUAL_CONSTRUCTION[1FD-4FD], with ResetIf/AndNext/OrNext
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+			---------
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+						Val 0x0 == Val 0x1					*/
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_Restart_OR_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-4FD]
+
+function achGenerate_4x_AltResetGroups_SingleplayerWinCondition(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// [1] ==== Alt Reset Group ==== 			-> Reset when not in SinglePlayer
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InSinglePlayerMode(enum_releaseRegion))
 	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -1993,6 +2042,7 @@ achievements_triggers = {
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_15_RightTrain, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
 	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 		achGenerate_FullTrigger_SingleplayerLevelProgression_NoFMV(CHAPTER_16_Deadfall, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	// --------c_SPend--------
 	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
 		const_FMV_GoodEnding = FMV_Hero
@@ -2016,8 +2066,8 @@ achievements_triggers = {
 					never(on_FMV_start(const_FMV_GoodEnding, enum_releaseRegion))
 					&& on_FMV_end(const_FMV_GoodEnding, enum_releaseRegion))
 				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
-		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_17_CurseWest
@@ -2042,8 +2092,8 @@ achievements_triggers = {
 					never(on_FMV_start(const_FMV_EvilEnding, enum_releaseRegion))
 					&& on_FMV_end(const_FMV_EvilEnding, enum_releaseRegion))
 				&& on_FMV_end(FMV_Credits, enum_releaseRegion))
-		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer OR Gunslinger Mode || when not in correct Level || when quit to MainMenu || on pressing PauseMenu->RestartConfirmationMenu->Restart
-			|| achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		// [2+3+4+5] ==== 4x Alt Reset Groups ==== 				-> Reset when not in SinglePlayer || when not in correct Level || when at MainMenu || on PauseMenu->Restart OR on PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_SingleplayerWinCondition(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
 	// --------c_Unlocks--------
 	"a_Boss": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
