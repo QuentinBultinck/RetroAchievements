@@ -150,6 +150,12 @@ function util_getIndexOfLastItemInArray(array_a) =>
 function util_getLastItemInArray(array_a) =>
 	array_a[util_getIndexOfLastItemInArray(array_a)]
 
+function util_generateArrayOfIntegers_startAtZero(int_lastInteger) {
+	let_array_Integers = []
+	for let_index in range(0, int_lastInteger) 
+		array_push(let_array_Integers, let_index)
+	return let_array_Integers}
+
 // #endregion UTILITY
 
 // ***************************************************************************************************************************************************************** \\
@@ -215,6 +221,10 @@ memory_StructDefs = {
 		}, 
 	"Pointer:UIcontrol": {
 		"pointerChainToMember": {
+			"Lower4:ActiveMenuPointerIndex": {
+				"pointerChainOffsets": [0x8]},
+			"Array:UIcontrolPointers": {
+				"pointerChainOffsets": [0xC]},
 			"Pointer:UIcontrol_ptr-L2_A": {
 				"pointerChainOffsets": [0xC, 0x0]},
 			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:MainMenuControl]------
@@ -222,7 +232,7 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x0, 0x30],
 				"offsetToPointedToMember": 0x2},
 			"32-bit:MainMenuTitle_TextLookupKeyID": {
-				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},
+				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},				
 			},
 		}, 	
 	"Struct:ChapterStats": {
@@ -243,14 +253,6 @@ memory_StructDefs = {
 		},
 	"Struct:MainUIdata": {
 		"pointerChainToMember": {
-			"32-bit:MainUIState_H": {
-				"pointerChainOffsets": 0x38},
-			"32-bit:MainUIState_I": {
-				"pointerChainOffsets": 0x40},
-			"32-bit:MainUIState_J": {
-				"pointerChainOffsets": 0x48},
-			"32-bit:MainUIState_N": {
-				"pointerChainOffsets": 0x68},
 			"32-bit:LoadingState": {
 				"pointerChainOffsets": {
 					RELEASE_REGION_USA: [0x510],
@@ -772,6 +774,7 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
 	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3FD)
+
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 function on_PauseMenu_Restart_OR_Quit(enum_releaseRegion) =>
@@ -966,8 +969,11 @@ function LEVEL_DATA_getLastChapterSectionIndex(enum_chapter) {
 	let_array_AllChapterSectionIDs = LEVEL_DATA_getAllChapterSectionIDs(enum_chapter)
 	return util_getIndexOfLastItemInArray(let_array_AllChapterSectionIDs)}
 
+function LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["IsGunslingerLevel"]
+
 function LEVEL_DATA_getAllGunslingerLevels() => 
-	array_map(CONST_LEVEL_DATA, (enum_chapter) ) // TODO check if we can implement this with array_reduce() in latest RATools version for "a_Archive" && achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty()
+	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter))
 
 // ----------------StoryChapterID---------------------
 /* DISABLED - Not advised to use this
@@ -1407,7 +1413,7 @@ function current_calculated_MeleeKills_FullTotal(enum_Player, enum_releaseRegion
 
 // #region Saved Stats
 // ----------------SavedStats_Gunslinger---------------------
-CONST_NUMBER_OF_CHAPTERS = 17 
+CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
 
 function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
@@ -1564,8 +1570,8 @@ achievements_coreData = {
 			// "id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
 		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
-		"a_Archive": { // CONCEPT a_Archive
-			"id": 000000, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
+		// "a_Archive": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
@@ -2078,14 +2084,17 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 			*/
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 // -------------------------------------
-function achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
+function achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
 	let_array_comparisons = []
 	for let_index in range(0, CONST_NUMBER_OF_CHAPTERS - 1) 
-		array_push(let_array_comparisons, current_SavedStatGunslinger_Difficulty(let_index, enum_releaseRegion) == DIFFICULTY_Deadeye)	
-	return tally_of(let_array_comparisons, CONST_NUMBER_OF_CHAPTERS, let_difficultyComparison => 
-		once(
-			never(!let_difficultyComparison) 
-			&& let_difficultyComparison)
+		array_push(let_array_comparisons, current_SavedStatGunslinger_Difficulty(let_index, enum_releaseRegion) == DIFFICULTY_Deadeye)
+
+	return measured(
+		tally_of(let_array_comparisons, CONST_NUMBER_OF_CHAPTERS, let_difficultyComparison => 
+			once(
+				never(!let_difficultyComparison) 
+				&& let_difficultyComparison)
+			)
 		)}
 
 // #endregion ACH - trigger generators
@@ -2390,16 +2399,17 @@ achievements_triggers = {
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
 		return achGenerate_FullTrigger_GunslingerUnlock_Time(CHAPTER_9_Rescue, const_TIME_LIMIT, enum_releaseRegion)}),	// --> (2x) MANUAL_CONSTRUCTION
-	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+		let_array_AllGunslingerLevels_Indexes = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		return
 		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--> Any Gunslinger ChapterSection is started from beginning 
 				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
 			&& once( // --CheckIf--> Player leaves InGame + All Gunslinger Chapters completed on Deadeye Difficulty
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& all_of(LEVEL_DATA_getl)
-
-				&& achGenerate_TallyOf_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) // --> Without delta check: This allows the achievement to still be unlocked by simply replaying any Gunslinger Chapter on Deadeye difficulty, even if all Chapters have already been completed on that difficulty.
+				&& all_of(let_array_AllGunslingerLevels_Indexes, int_index => 
+					current_SavedStatGunslinger_Difficulty(int_index, enum_releaseRegion) == DIFFICULTY_Deadeye) // ---> No delta check included: This allow the achievement to be unlocked even if all Chapters have already been completed on Deadeye difficulty
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -2408,7 +2418,7 @@ achievements_triggers = {
 			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
 		// [2] ==== Alt Measured Group ==== 	-> This group is responsible for displaying a Measured Indicator of how many Gunslinger Chapters have been completed to Deadeye difficulty 
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& measured(current_calculated_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) >= CONST_NUMBER_OF_CHAPTERS)
+			&& achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion)
 			&& memUtil_alwaysFalse(enum_releaseRegion)
 		// [3] ==== Alt Reset Group ==== 		-> Reset when not in Gunslinger Mode
 			|| never_toAlt(
@@ -2450,7 +2460,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
-		),
+		}),
 	// --------c_Gunslinger--------
 	}
 // #endregion ACH - triggers
