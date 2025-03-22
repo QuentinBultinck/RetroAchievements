@@ -2511,9 +2511,6 @@ achievements_titles = {
 	"a_Attract":				{"en": "Death's Calling Card"},
 	"a_Cowboy":					{"en": "Butcher of the Citadel"},
 	"a_Shower":					{"en": "Hell on the Rails"},
-	xxxx
-
-	xxx
 	"a_Saver":					{"en": "One Shot, One Salvation"},
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
@@ -2548,14 +2545,14 @@ achievements_descriptions = {
 	"a_Enemy2":					{"en": "Some folks hide behind guns. You settle things the old-fashioned way. Unlock the \"Enemies 2\" concept art by completing Chapter 14, \"Showdown\", with 20 or more melee kills in Gunslinger Mode"},
 	"a_Train":					{"en": "Ain't much room for shaky hands when the devil himself is ridin' the rails. Unlock the \"Wrong Train Animatic\" concept art by completing Chapter 1, \"The Wrong Train\", with 65% or more accuracy in Gunslinger Mode"},
 	"a_Guns":					{"en": "A real gunslinger measures his worth in bullets. Miss too many, and the West will carve your tombstone early. Unlock the \"Weapons\" concept art by completing Chapter 13, \"The Morning After\", with 70% or more accuracy in Gunslinger Mode"},
-	"a_Drivers":				{"en": "Ain't no safer way to stop the dead than a bullet between the eyes. Unlock the \"Vehicles\" concept art by completing Chapter 16, \"Deadfall\", with 20 or more headshots. in Gunslinger Mode"},
+	"a_Drivers":				{"en": "Ain't no safer way to stop the dead than a bullet between the eyes. Unlock the \"Vehicles\" concept art by completing Chapter 16, \"Deadfall\", with 20 or more headshot kills in Gunslinger Mode"},
 	"a_Sights1":				{"en": "The outpost was supposed to be safe—guess nobody told the things crawling inside. Stay standing, or get buried with the rest. Unlock the \"Environments 1\" concept art by completing Chapter 5, \"Darkwatch Outpost\", with no deaths in Gunslinger Mode"},
 	"a_Sights2":				{"en": "This was their home, their last stand. Now it's just another battlefield—if you live long enough to see it. Unlock the \"Environments 2\" concept art by completing Chapter 11, \"Invasion\", on Deadeye difficulty in Gunslinger Mode"},
 	"a_Sights3":				{"en": "Every second the beast lingers, the curse digs deeper. End it fast, or the West won't remember your name at all. Unlock the \"Environments 3\" concept art by completing Chapter 17, \"Curse of the West\", in 10 minutes or less in Gunslinger Mode"},
 	"a_Attract":				{"en": "One man, eighty bodies—death keeps count, and so do you. Hope your saddlebag's big enough for the souls you're dragging. Unlock the \"Attract Mode Movie\" concept art by completing Chapter 10, \"The Deadlight Prism\", with 80+ kills in Gunslinger Mode"},
 	"a_Cowboy":					{"en": "Lead kills from a distance, but steel? Steel makes 'em remember. Let your blade do the talking. Unlock the \"Cowboy Animatic\" concept art by completing Chapter 7, \"Torture Maze\", with 30 or more melee kills in Gunslinger Mode"},
 	"a_Shower":					{"en": "You boarded with a plan, but evil was already waiting. The only way off is through the wreckage. Unlock the \"Showdown Animatic\" concept art by completing Chapter 15, \"The Right Train\", on Shootist or Deadeye difficulty in Gunslinger Mode"},
-	"a_Saver":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshots in Gunslinger Mode"},
+	"a_Saver":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshot kills in Gunslinger Mode"},
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger--------
