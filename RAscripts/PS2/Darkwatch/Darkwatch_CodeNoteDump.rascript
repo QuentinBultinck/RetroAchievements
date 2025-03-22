@@ -1,39 +1,18 @@
 // Darkwatch
 // #ID = 19111
 
-// $134214: [PAL][32-bit (base) Pointer:SofdecStreamData(alt)] -> [Struct:SofdecStreamData]
-//          - Prefer using [Pointer:SofdecStreamData(preferred)] at $0x134408
+// $134214: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] -> [Struct:SofdecStreamData]
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
-//          - Definition of [Struct:SofdecStreamData] at $0x134408
-//          
-//          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:SofdecStreamData(alt)]
-//          +0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          +0x14C - [5-byte ASCII:Sofdec_FMVID]
-// $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
-//          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
-//          - Definition of [Struct:FMVdata] at $0x6aae58
-// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
 //          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
 //          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
 //          
+//          +0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
+//          | - "SofdecStream" => FMV is being played
+//          | - anyOtherValue => FMV is NOT being played
 //          
-//          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:SofdecStreamData(preferred)]
-//          +0x144 - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          +0x164 - [5-byte ASCII:Sofdec_FMVID]
-//          
-//          
-//          ------Advanced_Documentation------
-//          [Definition Struct:SofdecStreamData |1000-byte??]
-//          |'''''''''''''''''''''''''''''''''''''''''
-//          |+0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          || - "SofdecStream" => FMV is being played
-//          || - anyOtherValue => FMV is NOT being played
-//          |
-//          |+0x14C - [6-byte ASCII:Sofdec_FMVID]
-//          || - This is actually the SofdecStreamID (about 17-byte long), but the first 5-byte of this ID can be used to identify which FMV is being played
-//          || - Sofdec_FMVIDs listed below
+//          +0x14C - [6-byte ASCII:Sofdec_FMVID]
+//          | - This is actually the SofdecStreamID (about 17-byte long), but the first 5-byte of this ID can be used to identify which FMV is being played
+//          | - Sofdec_FMVIDs listed below
 //          '
 //          
 //          # Sofdec_FMVIDs (string)
@@ -88,6 +67,13 @@
 //          | "M22S3_" => End of Chapter: "Hero" (Good Ending)
 //          | "FINALD" => End of Story: End Credits
 //          '
+// $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
+//          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
+//          - Definition of [Struct:FMVdata] at $0x6aae58
+// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(alt)]
+//          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
+//          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
+//          - Prefer using [Pointer:SofdecStreamData(preferred)], which has the same offsets depending on PAL or NTSCU
 // $2CD9C4: [NTSCU][AssemblyInstruction:SplitScreenImageRender |32-bit]
 //          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value is a MIPS/ASM instruction, which is part of a function responsible of rendering split screen Multiplayer
@@ -1077,6 +1063,13 @@
 //          |.| - Practically this can be used to identify which InGameMenu is displayed
 //          |.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
 //          |.| - TextLookupKeyIDs listed below
+//          |
+//          |
+//          |+0x7C - [32-bit (layer-1) Pointer]
+//          |.+0x58 - [Lower4:SelectableTextCount |32-bit]
+//          |.| - This count is how many entries/text lines can be highlighted/selected (eg. value = 0x2: Yes and No)
+//          |.+0x68 - [Lower4:SelectedTextIndex |32-bit]
+//          |.| - This value starts counting from 0x0; With 0x0 being the top most item
 //          '
 //          
 //          [Definition Struct:InGameMenu.MessageBox |??-byte]
@@ -1389,8 +1382,8 @@
 //          |
 //          |===Chapter 10, "The Deadlight Prism"===
 //          | ---StoryChapterSection "M15_D"---
-//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection
-//          | 0x528 - "Checkpoint_2" => Before Banshee spawn (1x TaintedSoul)
+//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x528 - "Checkpoint_2" => Before Banshee spawn
 //          | ---StoryChapterSection "M15_E"---
 //          | 0x439 - "Checkpoint_1" => Start of StoryChapterSection
 //          | ---StoryChapterSection "M15_F"---
@@ -1637,6 +1630,9 @@
 // $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Regional equivalent of $0x965cc4 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CF8: [NTSCU][32-bit (base) Pointer:PlayerSavedStats-Player1]
+//          @Regional equivalent of $0x965cd8 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Regional equivalent of $0x965cf8 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
@@ -1766,6 +1762,7 @@
 //          - This value is added to [32-bit:PlayerDeaths_ChapterTotal] WHEN ChapterSection complete OR on Quit
 // $965C7C: [PAL][Lower4:DifficultyID(preferred) |32-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
 //          
 //          # DifficultyIDs (hex)
 //          |''''''''''''
@@ -2187,6 +2184,7 @@
 //          [Defintion Struct:ChapterStats |56-byte]
 //          |'''''''''''''''''''''''
 //          | - This struct saves gameplay statistics of a specific Chapter
+//          | - This struct is only updated on completion of the corresponding Chapter, not when quiting
 //          |
 //          |+0x0 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:LevelID]
