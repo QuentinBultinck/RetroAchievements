@@ -496,7 +496,7 @@
 //          
 //          InitialValue = 0x2 => 30 fps
 //          HackValue = 0x1 => 60 fps
-// $71FAF0: [NTSCU][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+// $71FAF0: [NTSCU][32-bit (base) Pointer:MainUIdata_A] -> [Struct:MainUIdata]
 //          +0x510 - [32-bit:LoadingState]
 //          | - Some values are different compared to PAL ($0x7213f0)
 //          |
@@ -504,12 +504,13 @@
 //          | 0x8009 => Not Loading (at MainMenu, during FMVs)
 //          | 0x8047 => Not Loading (when in-game)
 //          '
-// $71FAF4: [NTSCU][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
-//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $71FAF4: [NTSCU][32-bit (base) Pointer:MainUIdata_B] -> [Struct:MainUIdata]
+//          - This points to a 2nd [Struct:MainUIdata], which updates less frequent than the one pointed to by [Pointer:MainUIdata_A]
 // $71FCCC: [NTSCU][10-byte ASCII:GameID]
 //          "SLUS_210.42" => NTSC-U/USA PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - Succeeding [2-byte ASCII] = ";1"
+// $71FCF0: [NTSCU][8-bit:AlwaysNULL |32-bit]
 // $71FF20: [NTSCU][32-bit (base) Pointer:LevelID(preferred)]
 //          @Regional equivalent of $0x721820 (PAL)
 // $71FF88: [8-bit] in gameplay flag
@@ -526,7 +527,8 @@
 //          
 //          InitialValue = 0x2 => 25 fps OR 30 fps (when using Widescreen NTSCU Mode RaPatch)
 //          HackValue = 0x1 => 50 fps OR 60 fps (0x0 can also be used)
-// $7213F0: [PAL][32-bit (base) Pointer:LoadingData_A] -> [Struct:LoadingData]
+// $7213F0: [PAL][32-bit (base) Pointer:MainUIdata_A] -> [Struct:MainUIdata]
+//          
 //          +0x450 - [32-bit:LoadingState]
 //          | - Some values are different compared to NTSCU ($0x71faf0)
 //          |
@@ -534,12 +536,13 @@
 //          | 0x8009 => Not Loading (at MainMenu, during FMVs)
 //          | 0x803B => Not Loading (when in-game)
 //          '
-// $7213F4: [PAL][32-bit (base) Pointer:LoadingData_B] -> [Struct:LoadingData]
-//          - This points to a 2nd [Struct:LoadingData], which updates less frequent than the one pointed to by [Pointer:LoadingData_A]
+// $7213F4: [PAL][32-bit (base) Pointer:MainUIdata_B] -> [Struct:MainUIdata]
+//          - This points to a 2nd [Struct:MainUIdata], which updates less frequent than the one pointed to by [Pointer:MainUIdata_A]
 // $7215CC: [PAL][10-byte ASCII:GameID]
 //          "SLES_535.64" => PAL/EU PS2 Game ID
 //          - Preceding [8-byte ASCII] = "cdrom0:\"
 //          - Succeeding [2-byte ASCII] = ";1"
+// $7215F0: [PAL][8-bit:AlwaysNULL |32-bit]
 // $721778: (unverified)
 //          [PAL][32-bit (base) Pointer:VampireVision]
 //          +0xA8 - [8-bit:VampireVisionState]
@@ -641,7 +644,7 @@
 //          
 //          
 //          # LevelIDs (string)
-//          |(list incomplete)
+//          |(list complete)
 //          |'''''''''''''
 //          |---StoryChapters---
 //          | "WrongTrain" => Chapter 1, "Wrong Train" (YES, it's not "M01_WrongTrain")
@@ -661,7 +664,7 @@
 //          | "FallOfCitadel" => Chapter 14, "Showdown"
 //          | "M19_RidetoDeadfall" => Chapter 15, "The Right Train"
 //          | "M20_PenetratingDeadfall" => Chapter 16, "Deadfall"
-//          | "LVL_GroundZero" => Chapter 17, "Curse of The West"
+//          | "GroundZero" => Chapter 17, "Curse of The West"
 //          |
 //          |---VersusMaps---
 //          | "DM_Asylum" => Asylum
@@ -871,7 +874,7 @@
 //          |+0x2C - [Float:RightAnalogStick_Yaw |32-bit]
 //          |+0x30 - [Float:RightAnalogStick_Pitch |32-bit]
 //          '
-// $721FB8: [NTSCU][32-bit (base) Pointer:HUDcontrol(preferred)]
+// $721FB8: [NTSCU][32-bit (base) Pointer:UIcontrol(preferred)]
 //          @Regional equivalent of $0x7238b8 (PAL)
 // $722528: [PAL][32-bit Flag:IsInGame(alt)]
 //          - Prefer using [32-bit Flag:IsInGame(preferred)] at $0x72252c
@@ -911,7 +914,7 @@
 //          | + "M03_C_Gunslinger_Intro" => Cinematic introducing the Gunslinger EnemyType
 //          | ...
 //          '
-// $7238B8: [PAL][32-bit (base) Pointer:HUDcontrol(preferred)]
+// $7238B8: [PAL][32-bit (base) Pointer:UIcontrol(preferred)]
 //          
 //          +0x8 - [Lower4:ActiveMenuPointerIndex |16-bit]
 //          | - This index determines which pointer should be referenced to access the current active InGameMenuData in [Array:UIcontrolPointers].
@@ -932,7 +935,8 @@
 //          +0xC - [32-bit (layer-1) Pointer:UIcontrolPointerArray] -> [Variable Size Array:UIcontrolPointers]
 //          .
 //          ._____HUDcontrol_Gear-Player1_____
-//          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A] -> [Struct:HUDcontrol_Gear-Player1]
+//          .+0x0 - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_A]
+//          .| - This pointer always points to [Struct:MainMenuControl] when at MainMenu or any submenus at MainMenu
 //          .| - This pointer always points to [Struct:HUDcontrol_Gear-Player1] when in SinglePlayer OR Multiplayer Mode
 //          .
 //          ._____HUDcontrol_Gear-Player2_____ OR _____InGameMenuData_____
@@ -947,6 +951,31 @@
 //          ._____InGameMenuData_____
 //          .+0xC - [32-bit (layer-2) Pointer:UIcontrol_ptr-L2_D]
 //          .| - This pointer will point to [Struct:InGameMenu] when in any Mode
+//          
+//          
+//          [Definition Struct:MainMenuControl |??-byte]
+//          |''''''''''''''''''''
+//          | - This struct handles data and logic for the MainMenu and its submenus
+//          |
+//          |+0x30 - [32-bit (layer-3) Pointer]
+//          |.+0x2 - [Variable Size ASCII:MainMenuSubMenuID]
+//          |.| - MainMenuSubMenuIDs listed below
+//          |
+//          |+0xC - [32-bit (layer-1) Pointer]
+//          |.+0x0 - [32-bit (layer-2) Pointer]
+//          |..
+//          |..+0x30 - [32-bit (layer-3) Pointer]
+//          |...+0x2 - [Variable Size ASCII:UItype] = "title"
+//          |..
+//          |..+0x48 - [32-bit:MainMenuTitle_TextLookupKeyID]
+//          |..| - This LookupKeyID is the same ID which is used to access specific text via a LookupTable/HashMap, which is stored somewhere in memory.
+//          |..| - The HashMap can easily be found by just searching for this exact [32-bit:TextLookupKeyID] via MemorySearch, there are multiple HashMaps stored in memory storing different packages of text
+//          |..| - The HashMaps stores a list of [32-bit:TextLookupKeyID] + [32-bit Pointer:Text]
+//          |..| --- [32-bit Pointer:Text] --(+0x2)--> [ASCII:Text]
+//          |..| - Changing this [32-bit:TextLookupKeyID] to any other valid TextLookupKeyIDs inside the same HashMap will change the title text
+//          |..| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
+//          |..| - TextLookupKeyIDs listed below
+//          '
 //          
 //          
 //          [Definition Struct:HUDcontrol_Gear |??-byte]
@@ -1095,20 +1124,40 @@
 //          |.+0x2 - [Variable Size ASCII:UItype] = "brands"
 //          '
 //          
+//          
+//          # MainMenuSubMenuIDs (string)
+//          |'''''''''''''''''''
+//          | "chapter_select" => ChapterSelectMenu
+//          | "coop-profile" => MultiplayerCooperativeProfileSelectMenu
+//          | "profile_statistics" => StatisticsMenu
+//          | "difficulty_select" => DifficultySelectMenu (before starting a new Chapter)
+//          '
+//          
 //          # TextLookupKeyIDs (hex)
 //          |(only lists IDs useful for achievement logic)
 //          |'''''''''''''''''''
+//          |---MainMenuSubMenuTitle---
+//          | 0x0F9681AA => "Gunslinger" (when in Gunslinger Mode)
+//          | 0xDEB00B09 => "Chapter" (when in ChapterSelectMenu)
+//          | 0x31B54255 => "Cooperative" (when in Multiplayer Coop Mode)
+//          | ...
 //          |---FrameTitle--- (InGameMenus with a title)
-//          | 0xe5e853d8 => "Paused" - PauseMenu
-//          | 0xfb67daf4 => "Lore" - PauseMenu->LoreMenu
-//          | 0xdea6139b => "Ammo Display" - (lore)
-//          | 0x33e14bf8 => "Restart" - PauseMenu->RestartConfirmationMenu
-//          | 0x8b239878 => "Quit" - PauseMenu->QuitConfirmationMenu
-//          | 0x9eb09a69 => "New Power" - NewPowerUnlockMenu
+//          | 0xE5E853D8 => "Paused" - PauseMenu
+//          | 0xFB67DAF4 => "Lore" - PauseMenu->LoreMenu
+//          | 0xDEA6139B => "Ammo Display" - (lore)
+//          | 0x33E14BF8 => "Restart" - PauseMenu->RestartConfirmationMenu
+//          | 0x8B239878 => "Quit" - PauseMenu->QuitConfirmationMenu
+//          | 0x9EB09A69 => "New Power" - NewPowerMenu
 //          | ...
-//          |---MessageBoxText---
-//          | 0xbe5d5443 => "Blood Frenzy" - PowerRune (NewPowerUnlockMenu)
-//          | ...
+//          |---NewPowerMenu----MessageBoxText---
+//          | 0x8BBEEDB1 => "Silver Bullet"
+//          | 0x2AD14BD8 => "Fear"
+//          | 0x337DD749 => "Mystic Armor"
+//          | 0x76E981F2 => "Vindicator"
+//          | 0xBE5D5443 => "Blood Frenzy"
+//          | 0xC6607CC3 => "Turn"
+//          | 0x8657504F => "Black Shroud"
+//          | 0xEC61D4E0 => "Soul Stealer"
 //          '
 // $727318: [8-bit] gunslinger map id
 // $728FA0: [PAL][10-byte ASCII:SelectedPlayerProfileName]
@@ -1127,7 +1176,7 @@
 // $73B410: [PAL][32-bit:TimerControl(functional)]
 //          - Time in milliseconds (1sec = 1,000ms)
 //          - This value directly regulates the timer in a Multiplayer Verus Match. Be wary, this value does not start/restart from a default value (0x0) on the start of the Verus Mode timer.
-//          - To determine the effective time left in a match, rather use [32-bit:TimeSpentInChapter] (refer to $0x74d78c), which always starts counting from 0x0.
+//          - To determine the effective time left in a match, rather use [32-bit:MissionTime_Total] (refer to $0x74d78c), which always starts counting from 0x0.
 //          - OR use [32-bit:MatchDuration] (refer to $0x9114e0), with following formula:
 //          --| currentTime = [32-bit:TimerControl(functional)]
 //          --| timeAtMatchEnd = [32-bit:TimerControl(functional)] + ([32-bit:MatchDuration] * 60 * 1,000)
@@ -1164,23 +1213,36 @@
 //          | - Documentation on StructMembers refer torespective code notes, since this struct is static
 //          | - StructMembers are used for all modes: SinglePlayer, Multiplayer Coop and Versus
 //          |
+//          |------[Struct:GameStats(Temp)]------
 //          |+0x0 - [32-bit:EquippedWeapon_WeaponID]
-//          |+0x4 - [32-bit:TimeSpentInChapter]
-//          |+0x18 - [32-bit:KillsInChapter]
-//          |+0x1C - [32-bit:ShotsFiredInChapter]
-//          |+0x20 - [32-bit:ShotsHitInChapter]
-//          |+0x24 - [32-bit:HeadshotKillsInChapter]
-//          |+0x28 - [32-bit:MeleeKillsInChapter]
+//          |+0x4 - [32-bit:MissionTime_Temp]
+//          |+0x18 - [32-bit:Kills_Temp]
+//          |+0x1C - [32-bit:ShotsFired_Temp]
+//          |+0x20 - [32-bit:ShotsHit_Temp]
+//          |+0x24 - [32-bit:HeadshotKills_Temp]
+//          |+0x28 - [32-bit:MeleeKills_Temp]
 //          |
-//          |+0x70 - [32-bit:PlayerDeathsInChapter]
+//          |------[Struct:GameStats(ChapterTotal)]------
+//          |+0x38 - [32-bit:MissionTime_ChapterTotal]
+//          |+0x3C - [32-bit:PlayerDeaths_ChapterTotal]
+//          |+0x44 - [Lower4:DifficultyID(alt) |32-bit]
+//          |+0x4C - [32-bit:Kills_ChapterTotal]
+//          |+0x50 - [32-bit:ShotsFired_ChapterTotal]
+//          |+0x54 - [32-bit:ShotsHit_ChapterTotal]
+//          |+0x58 - [32-bit:HeadshotKills_ChapterTotal]
+//          |+0x5C - [32-bit:MeleeKills_ChapterTotal]
+//          |
+//          |------[Struct:GameStats(ChapterSection)]------
+//          |+0x6C - [32-bit:MissionTime_ChapterSection]
+//          |+0x70 - [32-bit:PlayerDeaths_ChapterSection]
 //          |+0x78 - [Lower4:DifficultyID(preferred) |32-bit]
-//          |+0x7D - [8-bit:FavoriteWeapon_WeaponID]
-//          |+0x80 - [32-bit:TotalKillsInChapter]
-//          |+0x84 - [32-bit:TotalShotsFiredInChapter]
-//          |+0x88 - [32-bit:TotalShotsHitInChapter]
-//          |+0x8c - [32-bit:TotalHeadshotKillsInChapter]
-//          |+0x90 - [32-bit:TotalMeleeKillsInChapter]
+//          |+0x80 - [32-bit:Kills_ChapterSection]
+//          |+0x84 - [32-bit:ShotsFired_ChapterSection]
+//          |+0x88 - [32-bit:ShotsHit_ChapterSection]
+//          |+0x8c - [32-bit:HeadshotKills_ChapterSection]
+//          |+0x90 - [32-bit:MeleeKills_ChapterSection]
 //          |
+//          |------OtherData------
 //          |+0x9c - [32-bit Pointer:SelectedPlayerProfileName(alt1)]
 //          |+0xA0 - [bit0 BitFlag:Controls_IsLookInverted |8-bit]
 //          |+0xA1 - [bit0 BitFlag:Controls_IsVibrationEnabled |8-bit]
@@ -1212,8 +1274,8 @@
 // $7F585C: [NTSCU][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          @Regional equivalent of $0x80783c (PAL)
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x8ff4d8
-// $8075AC: [PAL][32-bit (base) Pointer:HUDcontrol(alt)]
-//          - Prefer using [Pointer:HUDcontrol(preferred)] at $0x7238b8
+// $8075AC: [PAL][32-bit (base) Pointer:UIcontrol(alt)]
+//          - Prefer using [Pointer:UIcontrol(preferred)] at $0x7238b8
 // $80783C: [PAL][32-bit:Checkpoint_RespawnPointID(preferred)]
 //          @Fixed Memory Location, although pointed to by [32-bit (base) Pointer:CheckpointData_0] at $0x9114b8
 //          - This Checkpoint_RespawnPointID only changes when a new Checkpoint initializes OR when non is active.
@@ -1471,7 +1533,7 @@
 //          | - 0x0 => No Time limit
 //          | - This value determines the total amount of minutes the match lasts. Changing this value during a match, will update the timer display accordingly (eg. Time set to 10 (0xA) minutes  --> manual change this value 7 (0x7) --> Timer display updates)
 // $9114F0: [PAL][Lower4:GameMode |32-bit]
-//          - This value only changes when loading a level
+//          - This value only changes when loading a level; It does not reset or change when going back to MainMenu
 //          0x0 => Singleplayer Mode || Multiplayer Coop Mode
 //          0x1 => Gunslinger Mode
 //          0x3 => Multiplayer Versus Mode
@@ -1506,32 +1568,84 @@
 //          ===========================================
 //          @Regional equivalent of $0x965c04 (PAL)
 //          
-//          [32-bit:EquippedWeapon_WeaponID-Player1]
+//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player1]
+//          @Regional equivalent of $0x965c04 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
-// $953C28: [32-bit] current map timer
-// $953C3C: [32-bit] current map Firearms kills
-// $953C40: [32-bit] current map shots fired
-// $953C44: [32-bit] current map shots hit enemies
-// $953C4C: [32-bit] current map melee kills
-// $953C70: [32-bit] last gunslinger map kills
-// $953C74: [32-bit] last gunslinger map accuracy
-// $953C80: Last Gunslinger Map Melee Kills [16-bit]
-// $953C9C: Game Difficulty [16-Bit]
-//          0x00 = Greenhorn
-//          0x01 = Cowboy
-//          0x02 = Shootist
-//          0x03 = Deadeye
+// $953C28: [NTSCU][32-bit:MissionTime_Temp]
+//          @Regional equivalent of $0x965c08 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C3C: [NTSCU][32-bit:Kills_Temp-Player1]
+//          @Regional equivalent of $0x965c1c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C40: [NTSCU][32-bit:ShotsFired_Temp-Player1]
+//          @Regional equivalent of $0x965c20 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C44: [NTSCU][32-bit:ShotsHit_Temp-Player1]
+//          @Regional equivalent of $0x965c24 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C48: [NTSCU][32-bit:HeadshotKills_Temp-Player1]
+//          @Regional equivalent of $0x965c28 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C4C: [NTSCU][32-bit:MeleeKills_Temp-Player1]
+//          @Regional equivalent of $0x965c2c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C5C: [NTSCU][32-bit:MissionTime_ChapterTotal]
+//          @Regional equivalent of $0x965c3c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C60: [NTSCU][32-bit:PlayerDeaths_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c40 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C70: [NTSCU][32-bit:Kills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c50 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C74: [NTSCU][32-bit:ShotsFired_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c54 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C78: [NTSCU][32-bit:ShotsHit_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c58 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C7C: [NTSCU][32-bit:HeadshotKills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c5c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C80: [NTSCU][32-bit:MeleeKills_ChapterTotal-Player1]
+//          @Regional equivalent of $0x965c60 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C90: [NTSCU][32-bit:MissionTime_ChapterSection]
+//          @Regional equivalent of $0x965c70 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C94: [NTSCU][32-bit:PlayerDeaths_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c74 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953C9C: [NTSCU][Lower4:DifficultyID(preferred) |32-bit]
+//          @Regional equivalent of $0x965c7c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CA4: [NTSCU][32-bit:Kills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c84 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CA8: [NTSCU][32-bit:ShotsFired_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c88 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CAC: [NTSCU][32-bit:ShotsHit_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c8c (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CB0: [NTSCU][32-bit:HeadshotKills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c90 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CB4: [NTSCU][32-bit:MeleeKills_ChapterSection-Player1]
+//          @Regional equivalent of $0x965c94 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Regional equivalent of $0x965cc4 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Regional equivalent of $0x965cf8 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
-// $953D1A: [8-bit] number of maps completed
-// $953D24: [32-bit] profiles
-//          0 = profile 1
-//          1 = profile 2
-//          2 = profile 3
+// $953D1A: [NTSCU][8-bit:FurthestProgressed_StoryChapterID |16-bit]
+//          @Regional equivalent of $0x965cfa (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D24: [NTSCU][32-bit:SelectedPlayerProfileID]
+//          @Regional equivalent of $0x965d04 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D4C: [NTSCU][32-bit (base) Pointer:HUDcontrol_Health-Player1]
 //          @Regional equivalent of $0x965d2c (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
@@ -1541,6 +1655,7 @@
 //          - PlayerData for player2 is only populated when starting Multiplayer
 //          
 //          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player2]
+//          @Regional equivalent of $0x965d30 (PAL)
 //          @Member of [Struct(PlayerData):Player-2] (refer to $0x73b68c)
 // $95B042: [NTSCU][13-byte ASCII:CheckpointID]
 //          @Regional equivalent of $0x96d022 (PAL)
@@ -1555,46 +1670,100 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
 //          # WeaponIDS (hex)
-//          |(list incomplete)
+//          |(list complete)
 //          |''''''''''''
-//          | 0x0 => BasicRevolver
-//          | 0x1 => RedeemerRevolver
-//          | 0x4 => CarbineRifle
-//          | 0x6 => RailRocket
-//          | 0x7 => ExplosiveCrossbow
-//          | 0x8 => RangeRifle (sniper)
+//          | 0x0 => Pistol (starter revolver, in Chapter 1)
+//          | 0x1 => Redeemer
+//          | 0x2 => Dual Pistols
+//          | 0x3 => Horse Revolver (cut content??, may be revolver whilst riding on horseback)
+//          | 0x4 => Carbine (rifle)
+//          | 0x5 => Shotgun
+//          | 0x6 => Rail Rocket (rocket launcher)
+//          | 0x7 => Crossbow
+//          | 0x8 => Range Rifle (sniper rifle)
 //          | 0x9 => Scepter (melee)
-//          | ...
 //          '
-// $965C08: [PAL][32-bit:TimeSpentInChapter]
+// $965C08: [PAL][32-bit:MissionTime_Temp]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - This resets back to the saved value, [32-bit:TotalTimeSpentInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C1C: [PAL][32-bit:KillsInChapter-Player1]
+//          - This value is added to [32-bit:MissionTime_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete). THEN this value restarts counting from 0
+//          
+//          - Time in milliseconds (1s = 1,000ms || 60,000 ms = 1 minute)
+// $965C1C: [PAL][32-bit:Kills_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - This value is added to [32-bit:MissionTime_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+//          
 //          - Counts both melee and gun kills
-//          - Also counts own PlayerDeaths, +1 for each PlayerDeath.
-//          - This resets back to the saved value, [32-bit:TotalKillsInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C20: [PAL][32-bit:ShotsFiredInChapter-Player1]
+//          - For some reason this adds +1 for when the player dies.
+// $965C20: [PAL][32-bit:ShotsFired_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - This resets back to the saved value, [32-bit:TotalShotsFiredInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C24: [PAL][32-bit:ShotsHitInChapter-Player1]
+//          - This value is added to [32-bit:ShotsFired_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+// $965C24: [PAL][32-bit:ShotsHit_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - This resets back to the saved value, [32-bit:TotalShotsHitInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C28: [PAL][32-bit:HeadshotKillsInChapter-Player1]
+//          - This value is added to [32-bit:ShotsHit_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+// $965C28: [PAL][32-bit:HeadshotKills_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - This resets back to the saved value, [32-bit:TotalHeadshotKillsInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C2C: [PAL][32-bit:MeleeKillsInChapter-Player1]
+//          - This value is added to [32-bit:HeadshotKills_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+// $965C2C: [PAL][32-bit:MeleeKills_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - This resets back to the saved value, [32-bit:TotalMeleeKillsInChapter], on CheckpointRespawn. In Multiplayer a CheckpointRespawn only occurs when both Players are dead at the same time. (as Players respawn next to each other, when 1 Player is still alive)
-// $965C70: [PAL][32-bit:TotalTimeSpentInChapter]
+//          - This value is added to [32-bit:MeleeKills_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+// $965C3C: [PAL][32-bit:MissionTime_ChapterTotal]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Time in milliseconds (1s = 1,000ms)
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:TimeSpentInChapter] is added to this value
-//          - This is the value which determines the statistics on MainMenu->StatsMenu
-// $965C74: [PAL][32-bit:PlayerDeathsInChapter]
+//          - [32-bit:MissionTime_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+//          
+//          - Time in milliseconds (1s = 1,000ms || 60,000 ms = 1 minute)
+// $965C40: [PAL][32-bit:PlayerDeaths_ChapterTotal-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Increments by 1 on CheckpointRespawn. In Singleplayer only when the character dies. In Multiplayer this only increments when ALL players are dead at the same time (as players respawn next to each other as long as one player is alive)
+//          - [32-bit:PlayerDeaths_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+// $965C48: [PAL][Lower4:DifficultyID(alt) |32-bit]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [Lower4:DifficultyID(preferred)] is copied to this memAddr WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+// $965C50: [PAL][32-bit:Kills_ChapterTotal-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:Kills_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+//          
+//          - Counts both melee and gun kills
+// $965C54: [PAL][32-bit:ShotsFired_ChapterTotal-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:ShotsFired_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+// $965C58: [PAL][32-bit:ShotsHit_ChapterTotal-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:ShotsHit_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+// $965C5C: [PAL][32-bit:HeadshotKills_ChapterTotal-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:HeadshotKills_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+// $965C60: [PAL][32-bit:MeleeKills_ChapterTotal-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:MeleeKills_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
+//          - This value starts at 0 WHEN starting new Chapter/Level
+//          
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+// $965C70: [PAL][32-bit:MissionTime_ChapterSection]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:MissionTime_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:MissionTime_ChapterTotal] WHEN ChapterSection complete OR on Quit
+//          
+//          - Time in milliseconds (1s = 1,000ms || 60,000 ms = 1 minute)
+// $965C74: [PAL][32-bit:PlayerDeaths_ChapterSection-Player1]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - This value only increments by 1 on CheckpointRespawn, after PlayerDeath
+//          - This value is added to [32-bit:PlayerDeaths_ChapterTotal] WHEN ChapterSection complete OR on Quit
 // $965C7C: [PAL][Lower4:DifficultyID(preferred) |32-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
@@ -1604,36 +1773,28 @@
 //          | 0x1 => Cowboy
 //          | 0x2 => Shootist
 //          | 0x3 => Deadeye
-// $965C81: (unverified)
-//          [PAL][8-bit:FavoriteWeapon_WeaponID-Player1]
+// $965C84: [PAL][32-bit:Kills_ChapterSection-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - WeaponIDS listed at $0x965c04
-// $965C84: [PAL][32-bit:TotalKillsInChapter-Player1]
-//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - [32-bit:Kills_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:Kills_ChapterTotal] WHEN ChapterSection complete OR on Quit
+//          
 //          - Counts both melee and gun kills
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:KillsInChapter] is added to this value
-//          - This is the value which is saved to [Array:SavedStats] (refer to $0x965cd8)
-// $965C88: [PAL][32-bit:TotalShotsFiredInChapter-Player1]
+// $965C88: [PAL][32-bit:ShotsFired_ChapterSection-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:ShotsFiredInChapter] is added to this value
-//          - This is the value which is saved to [Array:SavedStats] (refer to $0x965cd8)
-// $965C8C: [PAL][32-bit:TotalShotsHitInChapter-Player1]
+//          - [32-bit:ShotsFired_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:ShotsFired_ChapterTotal] WHEN ChapterSection complete OR on Quit
+// $965C8C: [PAL][32-bit:ShotsHit_ChapterSection-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:ShotsHitInChapter] is added to this value
-//          - This is the value which is saved to [Array:SavedStats] (refer to $0x965cd8)
-// $965C90: [PAL][32-bit:TotalHeadshotKillsInChapter-Player1]
+//          - [32-bit:ShotsHit_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:ShotsHit_ChapterTotal] WHEN ChapterSection complete OR on Quit
+// $965C90: [PAL][32-bit:HeadshotKills_ChapterSection-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:HeadshotKillsInChapter] is added to this value
-//          - This is the value which is saved to [Array:SavedStats] (refer to $0x965cd8)
-// $965C94: [PAL][32-bit:TotalMeleeKillsInChapter-Player1]
+//          - [32-bit:HeadshotKills_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:HeadshotKills_ChapterTotal] WHEN ChapterSection complete OR on Quit
+// $965C94: [PAL][32-bit:MeleeKills_ChapterSection-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
-//          - Only updates when reaching a checkpoint or finishing a Chapter, does not update on PlayerDeath
-//          - On update: [32-bit:MeleeKillsInChapter] is added to this value
-//          - This is the value which is saved to [Array:SavedStats] (refer to $0x965cd8)
+//          - [32-bit:MeleeKills_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          - This value is added to [32-bit:MeleeKills_ChapterTotal] WHEN ChapterSection complete OR on Quit
 // $965CA0: [PAL][32-bit (base) Pointer:SelectedPlayerProfileName(alt1)]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
@@ -2016,7 +2177,49 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
 //          +0x4 - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Story]
+//          | - This array stores multiple [Struct:ChapterStats], definition below. For SinglePlayer Mode
+//          | - Saves stats per Chapter, although this can't be viewed for Story Mode, it always show all stats summed up for Story Mode (Overall Stats)
+//          
 //          +0xC - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Gunslinger]
+//          | - This array stores multiple [Struct:ChapterStats], definition below. For Gunslinger Mode
+//          | - Saves stats per Chapter, can be viewed by Chapter or Overall (all stats summed up)
+//          
+//          [Defintion Struct:ChapterStats |56-byte]
+//          |'''''''''''''''''''''''
+//          | - This struct saves gameplay statistics of a specific Chapter
+//          |
+//          |+0x0 - [32-bit (layer-1) Pointer]
+//          |.+0x2 - [Variable Size ASCII:LevelID]
+//          |.| - LevelIDs listed at $0x721820
+//          |
+//          |+0x8 - [32-bit:MissionTime]
+//          || - Time spent in Chapter
+//          || - Time in milliseconds; ThisValue / 60.000 = timeInMinutes
+//          |
+//          |+0xC - [32-bit:PlayerDeaths]
+//          |+0x14 - [Lower4:Difficulty |32-bit]
+//          || - DifficultyIDs listed at $0x965c7c
+//          |+0x1C - [32-bit:Kills]
+//          |+0x20 - [32-bit:ShotsFired]
+//          |+0x24 - [32-bit:ShotsHit]
+//          || - Accuracy = ShotsHit / ShotsFired
+//          |+0x28 - [32-bit:Headshots]
+//          |+0x2C - [32-bit:MeleeKills]
+//          |
+//          |+0x34 - [32-bit (layer-1) Pointer] -> [40-byte Struct:KillsByWeapon]
+//          || - [Struct:KillsByWeapon] Decides the "Favorite Weapon", by checking which weapon has the highest kills.
+//          || - The weapon with the lowest WeaponID is picked the "Favorite Weapon", when multiple weapons have the same killCount. (WeaponIDs listed at $0x965c04)
+//          |.+0x0 - [32-bit:Kills_Pistol]
+//          |.+0x4 - [32-bit:Kills_Redeemer]
+//          |.+0x8 - [32-bit:Kills_DualPistols]
+//          |.+0xC - [32-bit:Kills_HorseRevolver]
+//          |.+0x10 - [32-bit:Kills_Carbine]
+//          |.+0x14 - [32-bit:Kills_Shotgun]
+//          |.+0x18 - [32-bit:Kills_RailRocket]
+//          |.+0x1C - [32-bit:Kills_RangeRifle]
+//          |.+0x20 - [32-bit:Kills_Crossbow]
+//          |.+0x24 - [32-bit:Kills_Scepter]
+//          '
 // $965CE8: [PAL][3-byte Bitset:LoreUnlocks] (19 flags)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This bitset handles which Lore sections are unlocked in the PauseMenu->LoreMenu
@@ -2090,6 +2293,7 @@
 // $965D04: [PAL][32-bit:SelectedPlayerProfileID]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Max allowed PlayerProfiles is 10
+//          
 //          0xFFFFFFFF => on game boot, until a PlayerProfile is selected; Also when playing Multiplayer
 //          [0x0-0x9] => PlayerProfile-1 up to PlayerProfile-10; only when playing SinglePlayer
 // $965D08: [PAL][32-bit (base) Pointer:SelectedPlayerProfileName(alt2)]

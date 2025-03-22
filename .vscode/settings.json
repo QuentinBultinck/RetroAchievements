@@ -49,6 +49,8 @@
         "NOTE",
 
         "DEV_NOTE"
+
+        "PENDING_SUPPORT"
     ],
     "todo-tree.general.tagGroups": {        
         "#region": [
@@ -253,6 +255,14 @@
             "hideFromStatusBar": false, 
             "hideFromActivityBar": true,
             "hideFromTree": false
+        },        
+        "PENDING_SUPPORT": {
+            "foreground": "#56c1ff",
+            "background": "#00406b",
+            "opacity" : 42,
+            "type": "text-and-comment", 
+            "icon": "plug",
+            "hideFromStatusBar": false, 
         }
     },
     "todo-tree.highlights.enabled": true,
