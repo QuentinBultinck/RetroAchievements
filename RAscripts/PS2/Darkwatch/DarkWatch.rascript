@@ -181,12 +181,9 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 // -------------------------------------
 memory_StructDefs = {
 	"Pointer:PlayerSavedStats": {
-		"pointerChainToMember": {
-			"Array:SavedStats_Story": {
-				"pointerChainOffsets": [0x4]},
-			"Array:SavedStats_Gunslinger": {
-				"pointerChainOffsets": [0xC]},
-			},
+		"offsetToMember": {
+			"Pointer:SavedStats_Story": 0x4,
+			"Pointer:SavedStats_Gunslinger": 0xC},
 		}, 
 	"Pointer:SofdecStreamData": {
 		"pointerChainToMember": {
@@ -239,12 +236,26 @@ memory_StructDefs = {
 		"sizeInBytes": 56,
 		"offsetToMember": {
 			"32-bit:MissionTime": 0x8,
-			"Lower4:Difficulty": 0x14},
+			"Lower4:Difficulty": 0x14,
+			"Pointer:WeaponEquipTimes": 0x34},
 		"pointerChainToMember": {
 			"ASCII:LevelID": {
 				"pointerChainOffsets": [0x0],
 				"offsetToPointedToMember": 0x2},
 			},
+		},
+	"Struct:WeaponEquipTimes": {
+		"offsetToMember": {
+			"32-bit:WeaponEquipTime_Pistol": 0x0,
+			"32-bit:WeaponEquipTime_Redeemer": 0x4,
+			"32-bit:WeaponEquipTime_DualPistols": 0x8,
+			"32-bit:WeaponEquipTime_HorseRevolver": 0xC,
+			"32-bit:WeaponEquipTime_Carbine": 0x10,
+			"32-bit:WeaponEquipTime_Shotgun": 0x14,
+			"32-bit:WeaponEquipTime_RailRocket": 0x18,
+			"32-bit:WeaponEquipTime_RangeRifle": 0x1C,
+			"32-bit:WeaponEquipTime_Crossbow": 0x20,
+			"32-bit:WeaponEquipTime_Scepter": 0x24},
 		},
 	"Struct:ControllerInput": {
 		"offsetToMember": {
@@ -323,13 +334,13 @@ memory_addresses = {
 	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
 
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
-
-	"32-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953C94, RELEASE_REGION_EUR: 0x965c74, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C60, RELEASE_REGION_EUR: 0x965c40, RELEASE_REGION_JPN: sNULL},
 	"32-bit:Kills_Temp-Player1": {RELEASE_REGION_USA: 0x953C3C, RELEASE_REGION_EUR: 0x965c1c, RELEASE_REGION_JPN: sNULL},
@@ -348,7 +359,6 @@ memory_addresses = {
 	"32-bit:MeleeKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB4, RELEASE_REGION_EUR: 0x965c94, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MeleeKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C80, RELEASE_REGION_EUR: 0x965c60, RELEASE_REGION_JPN: sNULL},
 
-	"32-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DC0, RELEASE_REGION_EUR: 0x965DA0, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D8C, RELEASE_REGION_EUR: 0x965D6C, RELEASE_REGION_JPN: sNULL},
 	"32-bit:Kills_Temp-Player2": {RELEASE_REGION_USA: 0x953D68, RELEASE_REGION_EUR: 0x965D48, RELEASE_REGION_JPN: sNULL},
@@ -1265,7 +1275,7 @@ PLAYER_1 = "1"
 PLAYER_2 = "2"
 // #region Difficulty
 // ----------------Difficulty---------------------
-DIFFICULTY_Greenhorn = 0x0
+DIFFICULTY_Greenhorn = 0x0	// --> These are the DifficultyIDs
 DIFFICULTY_Cowboy = 0x1
 DIFFICULTY_Shootist = 0x2
 DIFFICULTY_Deadeye = 0x3
@@ -1274,6 +1284,79 @@ function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
 	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) >= enum_difficulty
 
 // #endregion Difficulty
+// #region Weapon ID
+// ----------------WeaponID---------------------
+WEAPON_Pistol = 0x0		// --> These are the WeaponIDs
+WEAPON_Redeemer = 0x1
+WEAPON_DualPistols = 0x2
+WEAPON_HorseRevolver = 0x3
+WEAPON_Carbine = 0x4
+WEAPON_Shotgun = 0x5
+WEAPON_RailRocket = 0x6
+WEAPON_Crossbow = 0x7
+WEAPON_RangeRifle = 0x8
+WEAPON_Scepter = 0x9
+
+const_WEAPON_DATA = {
+	WEAPON_Pistol: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Pistol",
+		"isDarkwatchWeapon": false // --> Starting Pistol
+		},
+	WEAPON_Redeemer: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Redeemer",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_DualPistols: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_DualPistols",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_HorseRevolver: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_HorseRevolver",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Carbine: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Carbine",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Shotgun: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Shotgun",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RailRocket: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RailRocket",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Crossbow: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Crossbow",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RangeRifle: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RangeRifle",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Scepter: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Scepter",
+		"isDarkwatchWeapon": true
+		},
+}
+
+function WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["memberKey_WeaponEquipTime"]
+
+function WEAPON_DATA_IsDarkwatchWeapon(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["isDarkwatchWeapon"]
+
+function WEAPON_DATA_getAllDarkwatchWeaponIDs() =>
+	array_filter(const_WEAPON_DATA, enum_weapon => WEAPON_DATA_IsDarkwatchWeapon(enum_weapon))
+
+function WEAPON_DATA_getAllWeaponIDs() =>
+	array_map(const_WEAPON_DATA, enum_weapon => enum_weapon)
+
+function current_EquippedWeapon(enum_weapon, enum_releaseRegion) =>
+	byte(memory_getAddress("8-bit:EquippedWeapon_WeaponID-Player1", enum_releaseRegion)) == enum_weapon
+
+// #endregion Weapon ID
+
 // #region Accuracy
 // ----------------Accuracy---------------------
 function current_ShotsFired_Temp(enum_Player, enum_releaseRegion) {
@@ -1415,16 +1498,57 @@ function current_calculated_MeleeKills_FullTotal(enum_Player, enum_releaseRegion
 // ----------------SavedStats_Gunslinger---------------------
 CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
 
+function current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_MissionTime
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
+	}
+
+function prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) =>
+	prev(current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion))
+
+function on_SavedStatGunslinger_MissionTime_change(int_savedStatIndex, enum_releaseRegion) =>
+	current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) != prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion)
+
 function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember("Pointer:PlayerSavedStats", "Array:SavedStats_Gunslinger")
-	let_offsetTo_SaveStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
-	array_push(let_array_pointerChainOffsets, let_offsetTo_SaveStat_Difficulty)
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_Difficulty
+	]
 
 	return memGenerate_pointerChainAccessor_fromOffsets(
 		let_memAddr_BasePointer, let_array_pointerChainOffsets, 
 		memAccessorFunction_toPointedToMember = low4)
+	}
+
+function current_SavedStatGunslinger_WeaponEquipTime(int_savedStatIndex, enum_weapon, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	let_memberKey_WeaponEquipTime = WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon)
+	let_offsetToMember_WeaponEquipTime = memory_getStruct_OffsetToMember("Struct:WeaponEquipTimes", let_memberKey_WeaponEquipTime)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_Pointer_WeaponEquipTimes,
+		let_offsetToMember_WeaponEquipTime
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
 	}
 
 // #endregion Saved Stats
@@ -1576,8 +1700,8 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
-		// "a_WeaponMaster": { // CONCEPT a_WeaponMaster
-			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 weapons registered as a "Favorite Weapon" for at least one of Chapter in Gunslinger Mode"},
+		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size
+			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
 		// "a_SunPower": { // CONCEPT a_SunPower
@@ -2085,17 +2209,73 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 // -------------------------------------
 function achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
-	let_array_comparisons = []
-	for let_index in range(0, CONST_NUMBER_OF_CHAPTERS - 1) 
-		array_push(let_array_comparisons, current_SavedStatGunslinger_Difficulty(let_index, enum_releaseRegion) == DIFFICULTY_Deadeye)
-
-	return measured(
-		tally_of(let_array_comparisons, CONST_NUMBER_OF_CHAPTERS, let_difficultyComparison => 
+	let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+	return measured(tally_of(let_array_AllGunslingerLevelIndices, CONST_NUMBER_OF_CHAPTERS, let_gunslingerLevelStatIndex => 
 			once(
-				never(!let_difficultyComparison) 
-				&& let_difficultyComparison)
+				never(current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) != DIFFICULTY_Deadeye) 
+				&& current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) == DIFFICULTY_Deadeye)
 			)
-		)}
+		)
+	}
+
+function achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_releaseRegion) { // DISABLED - Exceeds achievement logic size
+	let_array_Weapons_AllhWeaponIDs = WEAPON_DATA_getAllWeaponIDs()
+	let_uniqueDarkwatchWeaponsCount = length(WEAPON_DATA_getAllDarkwatchWeaponIDs()) // = 9 (excluding WEAPON_Pistol)
+
+	return tally_of(let_array_Weapons_AllhWeaponIDs, let_uniqueDarkwatchWeaponsCount, (enum_weapon_toCheck) { // Loop through all 9 Darkwatch weapons (WEAPON_Pistol excluded)
+		if (enum_weapon_toCheck == WEAPON_Pistol) return always_false() // --> Pistol is the starting weapon, don't check this.
+
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		let_array_AllComparisons = []
+		for let_gunslingerLevelStatIndex in let_array_AllGunslingerLevelIndices { // Loop through all 17 Gunslinger Chapters/Levels' SavedStats
+
+			// Returns a subset array of let_array_Weapons_AllhWeaponIDs without the enum_weapon_toCheck
+			let_array_Weapons_ToCheckAgainst = array_filter(let_array_Weapons_AllhWeaponIDs, (enum_w) { 
+				if (enum_w == enum_weapon_toCheck) return false
+				else return true
+			})
+
+
+			// ---------Generate AddHitClause---------
+			let_array_comparisons_AddHitClause = []
+			for enum_weapon_ToCheckAgainst in let_array_Weapons_ToCheckAgainst {
+				if (enum_weapon_toCheck > enum_weapon_ToCheckAgainst) // CheckIf: WeaponID(enum_weapon_toCheck) is greater than WeaponID(enum_weapon_ToCheckAgainst); when WeaponEquipTime is equal to another WeaponEquipTime, the weapon with the lowest WeaponID is 'Favorite Weapon'
+					array_push(let_array_comparisons_AddHitClause, 
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						> current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+				else 
+					array_push(let_array_comparisons_AddHitClause,
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						>= current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))				
+			}
+			array_push(let_array_comparisons_AddHitClause, 
+				current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+				!= 0x0)
+
+
+			// ---------Generate SubHitClause---------
+			let_array_comparisons_SubHitClause = []
+			for enum_weapon_ToCheckAgainst in let_array_Weapons_ToCheckAgainst {
+				if (enum_weapon_toCheck > enum_weapon_ToCheckAgainst) // CheckIf: WeaponID(enum_weapon_toCheck) is greater than WeaponID(enum_weapon_ToCheckAgainst); when WeaponEquipTime is equal to another WeaponEquipTime, the weapon with the lowest WeaponID is 'Favorite Weapon'
+					array_push(let_array_comparisons_SubHitClause, 
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						<= current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+				else 
+					array_push(let_array_comparisons_SubHitClause,
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						< current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+			}
+			array_push(let_array_comparisons_SubHitClause, 
+				current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+				!= 0x0)
+				
+				
+			array_push(let_array_AllComparisons, once(all_of(let_array_comparisons_AddHitClause, let_comparison => let_comparison)))
+			array_push(let_array_AllComparisons, deduct(once(all_of(let_array_comparisons_SubHitClause, let_comparison => let_comparison))))
+		}
+		// ---------Expression of current let_GunslingerLevelIndex---------
+		return tally(1, let_array_AllComparisons)
+	})}
 
 // #endregion ACH - trigger generators
 
@@ -2400,7 +2580,7 @@ achievements_triggers = {
 			*/
 		return achGenerate_FullTrigger_GunslingerUnlock_Time(CHAPTER_9_Rescue, const_TIME_LIMIT, enum_releaseRegion)}),	// --> (2x) MANUAL_CONSTRUCTION
 	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
-		let_array_AllGunslingerLevels_Indexes = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
 		return
 		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -2408,7 +2588,7 @@ achievements_triggers = {
 				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
 			&& once( // --CheckIf--> Player leaves InGame + All Gunslinger Chapters completed on Deadeye Difficulty
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& all_of(let_array_AllGunslingerLevels_Indexes, int_index => 
+				&& all_of(let_array_AllGunslingerLevelIndices, int_index => 
 					current_SavedStatGunslinger_Difficulty(int_index, enum_releaseRegion) == DIFFICULTY_Deadeye) // ---> No delta check included: This allow the achievement to be unlocked even if all Chapters have already been completed on Deadeye difficulty
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
@@ -2462,6 +2642,63 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
+	"a_WeaponMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION // DISCONTINUED - Exceeds achievement logic size
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		return
+		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Measured Indicator of how many Darkwatch Weapons have been favorited at least once 
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Any Gunslinger ChapterSection is started from beginning 
+				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
+			&& once( // --CheckIf--> Player leaves InGame
+				never(is_flagState_InGame_true(enum_releaseRegion))				
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			// && measured(achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_releaseRegion)) // DISABLED - Exceeds achievement logic size
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not in Gunslinger Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_InGunslingerMode(enum_releaseRegion))
+		// [3] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+		// [4/8] ==== Alt Reset Group ==== 		-> Reset when pressing PauseMenu->Quit
+			/* MANUAL_CONSTRUCTION (AltGroup[5/10]): R/R usage
+				--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				-------------
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+							Val 0x0 == Val 0x1					*/
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -2516,6 +2753,7 @@ achievements_titles = {
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
+	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -2558,6 +2796,7 @@ achievements_descriptions = {
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger--------
+	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
 
