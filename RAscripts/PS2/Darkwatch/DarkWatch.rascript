@@ -1577,7 +1577,7 @@ achievements_coreData = {
 		// "a_Template": { // CONCEPT a_Gunslinger
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_WeaponMaster": { // CONCEPT a_WeaponMaster
-			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 weapons registered as a "Favorite Weapon" in the GunslingerStatsMenu for at least one of Chapter"},
+			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 weapons registered as a "Favorite Weapon" for at least one of Chapter in Gunslinger Mode"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
 		// "a_SunPower": { // CONCEPT a_SunPower
@@ -2496,6 +2496,7 @@ achievements_titles = {
 	"a_Showdown": 				{"en": "The Devil You Know"},
 	"a_RightTrain": 			{"en": "Damnation Express"},
 	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
+	// --------c_SPend--------
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
 	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
@@ -2521,24 +2522,25 @@ achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 
 	// --------c_SPstory--------
-	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\""},
-	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\""},
-	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\""},
-	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\""},
-	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\""},
-	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\""},
-	"a_TortureMaze":	 		{"en": "General Cartwright don't train survivors—he trains killers. If you're still breathing, you might just be worth something. Complete Chapter 7, \"Torture Maze\""},
-	"a_BaptismFire":	 		{"en": "A warm welcome to Darkwatch? Try fire, lead, and bodies hitting the dirt. Complete Chapter 8, \"Baptism of Fire\""},
-	"a_Rescue": 				{"en": "They were left to rot, but not on your watch. Time to remind the dead who's still kicking. Complete Chapter 9, \"Rescue\""},
-	"a_Prism": 					{"en": "Power like this don't belong in any man's hands—least of all the wicked. Complete Chapter 10, \"The Deadlight Prism\""},
-	"a_Invasion": 				{"en": "This land ain't free for the taking, and it damn sure don't belong to the dead. Complete Chapter 11, \"Invasion\""},
-	"a_Hangtown": 				{"en": "The gallows still swing, but the dead don't stay hanging. Time to lay them down for good. Complete Chapter 12, \"Hangtown\""},
-	"a_MorningAfter": 			{"en": "Darkwatch stood against the darkness for centuries. One night was all it took to bring it crashing down. Complete Chapter 13, \"The Morning After\""},
-	"a_Showdown": 				{"en": "Darkwatch lies in ashes, but the nightmare ain't over—not yet. Time to put an end to the devil that started it all. Complete Chapter 14, \"Showdown\""},
-	"a_RightTrain": 			{"en": "This train ain't heading west—it's heading straight into damnation. Complete Chapter 15, \"The Right Train\""},
-	"a_Deadfall": 				{"en": "The city's burning, the bullets are flying, and you're standing in the middle of hell itself. Complete Chapter 16, \"Deadfall\""},
-	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free—at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\""},
-	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\""},
+	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\", in Single Player or Gunslinger Mode"},
+	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\", in Single Player or Gunslinger Mode"},
+	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
+	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\", in Single Player or Gunslinger Mode"},
+	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\", in Single Player or Gunslinger Mode"},
+	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\", in Single Player or Gunslinger Mode"},
+	"a_TortureMaze":	 		{"en": "General Cartwright don't train survivors—he trains killers. If you're still breathing, you might just be worth something. Complete Chapter 7, \"Torture Maze\", in Single Player or Gunslinger Mode"},
+	"a_BaptismFire":	 		{"en": "A warm welcome to Darkwatch? Try fire, lead, and bodies hitting the dirt. Complete Chapter 8, \"Baptism of Fire\", in Single Player or Gunslinger Mode"},
+	"a_Rescue": 				{"en": "They were left to rot, but not on your watch. Time to remind the dead who's still kicking. Complete Chapter 9, \"Rescue\", in Single Player or Gunslinger Mode"},
+	"a_Prism": 					{"en": "Power like this don't belong in any man's hands—least of all the wicked. Complete Chapter 10, \"The Deadlight Prism\", in Single Player or Gunslinger Mode"},
+	"a_Invasion": 				{"en": "This land ain't free for the taking, and it damn sure don't belong to the dead. Complete Chapter 11, \"Invasion\", in Single Player or Gunslinger Mode"},
+	"a_Hangtown": 				{"en": "The gallows still swing, but the dead don't stay hanging. Time to lay them down for good. Complete Chapter 12, \"Hangtown\", in Single Player or Gunslinger Mode"},
+	"a_MorningAfter": 			{"en": "Darkwatch stood against the darkness for centuries. One night was all it took to bring it crashing down. Complete Chapter 13, \"The Morning After\", in Single Player or Gunslinger Mode"},
+	"a_Showdown": 				{"en": "Darkwatch lies in ashes, but the nightmare ain't over—not yet. Time to put an end to the devil that started it all. Complete Chapter 14, \"Showdown\", in Single Player or Gunslinger Mode"},
+	"a_RightTrain": 			{"en": "This train ain't heading west—it's heading straight into damnation. Complete Chapter 15, \"The Right Train\", in Single Player or Gunslinger Mode"},
+	"a_Deadfall": 				{"en": "The city's burning, the bullets are flying, and you're standing in the middle of hell itself. Complete Chapter 16, \"Deadfall\", in Single Player or Gunslinger Mode"},
+	// --------c_SPend--------
+	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free—at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
+	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	// --------c_Unlocks--------
 	"a_Boss":					{"en": "Earn the right to witness the horrors you've defeated. Unlock the \"Bosses Art\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
 	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
