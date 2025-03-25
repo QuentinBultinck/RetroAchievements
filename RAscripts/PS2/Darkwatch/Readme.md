@@ -107,13 +107,12 @@ These achievements are tied to the completion of the Single Player Story Chapter
     🏆 Story Ending <i><sub><sup>(2 achievements - _XX_ points)</sup></sub></i>
 </h1>
 
-These achievements are tied to the two different Single Player Story Endings.
+These achievements are tied to the two different endings in Single Player Story Mode. They are restricted to Single Player Mode because using Gunslinger Mode to replay the final Chapter would bypass key story moments.
 
-> [!NOTE]
-> The moral choice at end of Chapter 14, **"Showdown"**, after the boss fight, is the choice which decides what ending the player will receive at the end of the game.
+If you’ve already completed the story once, the best way to unlock the other ending is to restart from Chapter 14, **"Showdown"**, and make the opposite moral choice at the end. This decision, made after the boss fight in **"Showdown"**, determines which ending you’ll receive at the conclusion of the game.
 
 > [!WARNING]
-> These two Single Player achievements can **NOT** be unlocked in Gunslinger Mode, unlike the [Story Progression achievements](#c_SPstory), which can be earned in Gunslinger Mode.
+> These two Single Player achievements can **NOT** be unlocked in Gunslinger Mode, unlike the [Story Progression achievements](#c_SPstory), which can be earned in Gunslinger Mode. The reason for this is mentioned above.
 
 ### Story Ending Achievement List
 
@@ -192,7 +191,7 @@ Additionally, these achievements can still be unlocked even if the corresponding
 > If an achievement/unlock requires a minimum accuracy target, the RetroAchievements overlay will always display a Measured Indicator showing the player's current accuracy.
 > 
 > #### How does the game measure *accuracy*?
-> - Every shot fired from any weapon counts as *"one shot"*, this includes a shot from a shotgun for, melee attacks are excluded from this.
+> - Every shot fired from any weapon counts as *"one shot"*, this includes a shot from a shotgun for example, melee attacks are excluded from this.
 > - Special weapons like the Rail Rocket, Crossbow, and throwable explosives also count as *"one shot"*, but only when their explosive effect triggers. If an enemy is hit within the explosion radius, it counts as one successful hit, increasing the accuracy stat accordingly.
 
 > #### Developer Note
