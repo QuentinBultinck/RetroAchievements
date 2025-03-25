@@ -39,6 +39,7 @@
         "DISABLED",
         "OFF",
         "INACTIVE",
+        "DISCONTINUED"
 
         "UNVERIFIED",
         "TEST",
@@ -77,7 +78,8 @@
         "DISABLED": [
             "DISABLED",
             "OFF",
-            "INACTIVE"
+            "INACTIVE",
+            "DISCONTINUED"
         ],
         "UNVERIFIED": [
             "TEST",

@@ -181,12 +181,9 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 // -------------------------------------
 memory_StructDefs = {
 	"Pointer:PlayerSavedStats": {
-		"pointerChainToMember": {
-			"Array:SavedStats_Story": {
-				"pointerChainOffsets": [0x4]},
-			"Array:SavedStats_Gunslinger": {
-				"pointerChainOffsets": [0xC]},
-			},
+		"offsetToMember": {
+			"Pointer:SavedStats_Story": 0x4,
+			"Pointer:SavedStats_Gunslinger": 0xC},
 		}, 
 	"Pointer:SofdecStreamData": {
 		"pointerChainToMember": {
@@ -239,12 +236,26 @@ memory_StructDefs = {
 		"sizeInBytes": 56,
 		"offsetToMember": {
 			"32-bit:MissionTime": 0x8,
-			"Lower4:Difficulty": 0x14},
+			"Lower4:Difficulty": 0x14,
+			"Pointer:WeaponEquipTimes": 0x34},
 		"pointerChainToMember": {
 			"ASCII:LevelID": {
 				"pointerChainOffsets": [0x0],
 				"offsetToPointedToMember": 0x2},
 			},
+		},
+	"Struct:WeaponEquipTimes": {
+		"offsetToMember": {
+			"32-bit:WeaponEquipTime_Pistol": 0x0,
+			"32-bit:WeaponEquipTime_Redeemer": 0x4,
+			"32-bit:WeaponEquipTime_DualPistols": 0x8,
+			"32-bit:WeaponEquipTime_HorseRevolver": 0xC,
+			"32-bit:WeaponEquipTime_Carbine": 0x10,
+			"32-bit:WeaponEquipTime_Shotgun": 0x14,
+			"32-bit:WeaponEquipTime_RailRocket": 0x18,
+			"32-bit:WeaponEquipTime_RangeRifle": 0x1C,
+			"32-bit:WeaponEquipTime_Crossbow": 0x20,
+			"32-bit:WeaponEquipTime_Scepter": 0x24},
 		},
 	"Struct:ControllerInput": {
 		"offsetToMember": {
@@ -323,13 +334,13 @@ memory_addresses = {
 	// "8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL}, // DISABLED - Unused
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
 
 	"32-bit:Checkpoint_RespawnPointID(preferred)": {RELEASE_REGION_USA: 0x7f585c, RELEASE_REGION_EUR: 0x80783c, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
-
-	"32-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953C94, RELEASE_REGION_EUR: 0x965c74, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C60, RELEASE_REGION_EUR: 0x965c40, RELEASE_REGION_JPN: sNULL},
 	"32-bit:Kills_Temp-Player1": {RELEASE_REGION_USA: 0x953C3C, RELEASE_REGION_EUR: 0x965c1c, RELEASE_REGION_JPN: sNULL},
@@ -348,7 +359,6 @@ memory_addresses = {
 	"32-bit:MeleeKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB4, RELEASE_REGION_EUR: 0x965c94, RELEASE_REGION_JPN: sNULL},
 	"32-bit:MeleeKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C80, RELEASE_REGION_EUR: 0x965c60, RELEASE_REGION_JPN: sNULL},
 
-	"32-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DC0, RELEASE_REGION_EUR: 0x965DA0, RELEASE_REGION_JPN: sNULL},
 	"32-bit:PlayerDeaths_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D8C, RELEASE_REGION_EUR: 0x965D6C, RELEASE_REGION_JPN: sNULL},
 	"32-bit:Kills_Temp-Player2": {RELEASE_REGION_USA: 0x953D68, RELEASE_REGION_EUR: 0x965D48, RELEASE_REGION_JPN: sNULL},
@@ -1265,15 +1275,91 @@ PLAYER_1 = "1"
 PLAYER_2 = "2"
 // #region Difficulty
 // ----------------Difficulty---------------------
-DIFFICULTY_Greenhorn = 0x0
+DIFFICULTY_Greenhorn = 0x0	// --> These are the DifficultyIDs
 DIFFICULTY_Cowboy = 0x1
 DIFFICULTY_Shootist = 0x2
 DIFFICULTY_Deadeye = 0x3
 
+function current_Difficulty(enum_releaseRegion) => 
+	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion))
+
 function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
-	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion)) >= enum_difficulty
+	current_Difficulty(enum_releaseRegion) >= enum_difficulty
 
 // #endregion Difficulty
+// #region Weapon ID
+// ----------------WeaponID---------------------
+WEAPON_Pistol = 0x0		// --> These are the WeaponIDs
+WEAPON_Redeemer = 0x1
+WEAPON_DualPistols = 0x2
+WEAPON_HorseRevolver = 0x3
+WEAPON_Carbine = 0x4
+WEAPON_Shotgun = 0x5
+WEAPON_RailRocket = 0x6
+WEAPON_Crossbow = 0x7
+WEAPON_RangeRifle = 0x8
+WEAPON_Scepter = 0x9
+
+const_WEAPON_DATA = {
+	WEAPON_Pistol: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Pistol",
+		"isDarkwatchWeapon": false // --> Starting Pistol
+		},
+	WEAPON_Redeemer: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Redeemer",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_DualPistols: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_DualPistols",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_HorseRevolver: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_HorseRevolver",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Carbine: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Carbine",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Shotgun: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Shotgun",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RailRocket: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RailRocket",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Crossbow: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Crossbow",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RangeRifle: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RangeRifle",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Scepter: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Scepter",
+		"isDarkwatchWeapon": true
+		},
+}
+
+function WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["memberKey_WeaponEquipTime"]
+
+function WEAPON_DATA_IsDarkwatchWeapon(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["isDarkwatchWeapon"]
+
+function WEAPON_DATA_getAllDarkwatchWeaponIDs() =>
+	array_filter(const_WEAPON_DATA, enum_weapon => WEAPON_DATA_IsDarkwatchWeapon(enum_weapon))
+
+function WEAPON_DATA_getAllWeaponIDs() =>
+	array_map(const_WEAPON_DATA, enum_weapon => enum_weapon)
+
+function current_EquippedWeapon(enum_weapon, enum_releaseRegion) =>
+	byte(memory_getAddress("8-bit:EquippedWeapon_WeaponID-Player1", enum_releaseRegion)) == enum_weapon
+
+// #endregion Weapon ID
+
 // #region Accuracy
 // ----------------Accuracy---------------------
 function current_ShotsFired_Temp(enum_Player, enum_releaseRegion) {
@@ -1415,16 +1501,57 @@ function current_calculated_MeleeKills_FullTotal(enum_Player, enum_releaseRegion
 // ----------------SavedStats_Gunslinger---------------------
 CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
 
+function current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_MissionTime
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
+	}
+
+function prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) =>
+	prev(current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion))
+
+function on_SavedStatGunslinger_MissionTime_change(int_savedStatIndex, enum_releaseRegion) =>
+	current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) != prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion)
+
 function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
-	let_array_pointerChainOffsets = memory_getStruct_offsetSequenceToMember("Pointer:PlayerSavedStats", "Array:SavedStats_Gunslinger")
-	let_offsetTo_SaveStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
-	array_push(let_array_pointerChainOffsets, let_offsetTo_SaveStat_Difficulty)
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_Difficulty
+	]
 
 	return memGenerate_pointerChainAccessor_fromOffsets(
 		let_memAddr_BasePointer, let_array_pointerChainOffsets, 
 		memAccessorFunction_toPointedToMember = low4)
+	}
+
+function current_SavedStatGunslinger_WeaponEquipTime(int_savedStatIndex, enum_weapon, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	let_memberKey_WeaponEquipTime = WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon)
+	let_offsetToMember_WeaponEquipTime = memory_getStruct_OffsetToMember("Struct:WeaponEquipTimes", let_memberKey_WeaponEquipTime)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_Pointer_WeaponEquipTimes,
+		let_offsetToMember_WeaponEquipTime
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
 	}
 
 // #endregion Saved Stats
@@ -1513,7 +1640,7 @@ achievements_coreData = {
 		// "a_DWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504293, "points": 0000000, "devInfo": "CHAPTER_5_Outpost Completion"},
 		// "a_WarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 504294, "points": 0000000, "devInfo": "C:HAPTER_6_WarTrain Completion"}, 
+			// "id": 504294, "points": 0000000, "devInfo": "CHAPTER_6_WarTrain Completion"}, 
 		// "a_TortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 504295, "points": 0000000, "devInfo": "CHAPTER_7_TortureMaze Completion"}, 
 		// "a_BaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -1576,8 +1703,8 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_Template": { // CONCEPT a_Gunslinger
 			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
-		// "a_WeaponMaster": { // CONCEPT a_WeaponMaster
-			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 weapons registered as a "Favorite Weapon" in the GunslingerStatsMenu for at least one of Chapter"},
+		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size
+			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
 		// "a_SunPower": { // CONCEPT a_SunPower
@@ -2085,17 +2212,73 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 // -------------------------------------
 function achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
-	let_array_comparisons = []
-	for let_index in range(0, CONST_NUMBER_OF_CHAPTERS - 1) 
-		array_push(let_array_comparisons, current_SavedStatGunslinger_Difficulty(let_index, enum_releaseRegion) == DIFFICULTY_Deadeye)
-
-	return measured(
-		tally_of(let_array_comparisons, CONST_NUMBER_OF_CHAPTERS, let_difficultyComparison => 
+	let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+	return measured(tally_of(let_array_AllGunslingerLevelIndices, CONST_NUMBER_OF_CHAPTERS, let_gunslingerLevelStatIndex => 
 			once(
-				never(!let_difficultyComparison) 
-				&& let_difficultyComparison)
+				never(current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) != DIFFICULTY_Deadeye) 
+				&& current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) == DIFFICULTY_Deadeye)
 			)
-		)}
+		)
+	}
+
+function achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_releaseRegion) { // DISABLED - Exceeds achievement logic size
+	let_array_Weapons_AllhWeaponIDs = WEAPON_DATA_getAllWeaponIDs()
+	let_uniqueDarkwatchWeaponsCount = length(WEAPON_DATA_getAllDarkwatchWeaponIDs()) // = 9 (excluding WEAPON_Pistol)
+
+	return tally_of(let_array_Weapons_AllhWeaponIDs, let_uniqueDarkwatchWeaponsCount, (enum_weapon_toCheck) { // Loop through all 9 Darkwatch weapons (WEAPON_Pistol excluded)
+		if (enum_weapon_toCheck == WEAPON_Pistol) return always_false() // --> Pistol is the starting weapon, don't check this.
+
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		let_array_AllComparisons = []
+		for let_gunslingerLevelStatIndex in let_array_AllGunslingerLevelIndices { // Loop through all 17 Gunslinger Chapters/Levels' SavedStats
+
+			// Returns a subset array of let_array_Weapons_AllhWeaponIDs without the enum_weapon_toCheck
+			let_array_Weapons_ToCheckAgainst = array_filter(let_array_Weapons_AllhWeaponIDs, (enum_w) { 
+				if (enum_w == enum_weapon_toCheck) return false
+				else return true
+			})
+
+
+			// ---------Generate AddHitClause---------
+			let_array_comparisons_AddHitClause = []
+			for enum_weapon_ToCheckAgainst in let_array_Weapons_ToCheckAgainst {
+				if (enum_weapon_toCheck > enum_weapon_ToCheckAgainst) // CheckIf: WeaponID(enum_weapon_toCheck) is greater than WeaponID(enum_weapon_ToCheckAgainst); when WeaponEquipTime is equal to another WeaponEquipTime, the weapon with the lowest WeaponID is 'Favorite Weapon'
+					array_push(let_array_comparisons_AddHitClause, 
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						> current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+				else 
+					array_push(let_array_comparisons_AddHitClause,
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						>= current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))				
+			}
+			array_push(let_array_comparisons_AddHitClause, 
+				current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+				!= 0x0)
+
+
+			// ---------Generate SubHitClause---------
+			let_array_comparisons_SubHitClause = []
+			for enum_weapon_ToCheckAgainst in let_array_Weapons_ToCheckAgainst {
+				if (enum_weapon_toCheck > enum_weapon_ToCheckAgainst) // CheckIf: WeaponID(enum_weapon_toCheck) is greater than WeaponID(enum_weapon_ToCheckAgainst); when WeaponEquipTime is equal to another WeaponEquipTime, the weapon with the lowest WeaponID is 'Favorite Weapon'
+					array_push(let_array_comparisons_SubHitClause, 
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						<= current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+				else 
+					array_push(let_array_comparisons_SubHitClause,
+						current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+						< current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_ToCheckAgainst, enum_releaseRegion))
+			}
+			array_push(let_array_comparisons_SubHitClause, 
+				current_SavedStatGunslinger_WeaponEquipTime(let_gunslingerLevelStatIndex, enum_weapon_toCheck, enum_releaseRegion) 
+				!= 0x0)
+				
+				
+			array_push(let_array_AllComparisons, once(all_of(let_array_comparisons_AddHitClause, let_comparison => let_comparison)))
+			array_push(let_array_AllComparisons, deduct(once(all_of(let_array_comparisons_SubHitClause, let_comparison => let_comparison))))
+		}
+		// ---------Expression of current let_GunslingerLevelIndex---------
+		return tally(1, let_array_AllComparisons)
+	})}
 
 // #endregion ACH - trigger generators
 
@@ -2400,7 +2583,7 @@ achievements_triggers = {
 			*/
 		return achGenerate_FullTrigger_GunslingerUnlock_Time(CHAPTER_9_Rescue, const_TIME_LIMIT, enum_releaseRegion)}),	// --> (2x) MANUAL_CONSTRUCTION
 	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
-		let_array_AllGunslingerLevels_Indexes = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
 		return
 		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -2408,7 +2591,7 @@ achievements_triggers = {
 				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
 			&& once( // --CheckIf--> Player leaves InGame + All Gunslinger Chapters completed on Deadeye Difficulty
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& all_of(let_array_AllGunslingerLevels_Indexes, int_index => 
+				&& all_of(let_array_AllGunslingerLevelIndices, int_index => 
 					current_SavedStatGunslinger_Difficulty(int_index, enum_releaseRegion) == DIFFICULTY_Deadeye) // ---> No delta check included: This allow the achievement to be unlocked even if all Chapters have already been completed on Deadeye difficulty
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
@@ -2462,6 +2645,63 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
+	"a_WeaponMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION // DISCONTINUED - Exceeds achievement logic size
+		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		return
+		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Measured Indicator of how many Darkwatch Weapons have been favorited at least once 
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> Any Gunslinger ChapterSection is started from beginning 
+				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
+			&& once( // --CheckIf--> Player leaves InGame
+				never(is_flagState_InGame_true(enum_releaseRegion))				
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			// && measured(achGenerate_TallyOf_GunslingerAllDarkwatchWeaponsFavoritedOnce(enum_releaseRegion)) // DISABLED - Exceeds achievement logic size
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2] ==== Alt Reset Group ==== 		-> Reset when not in Gunslinger Mode
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& !is_InGunslingerMode(enum_releaseRegion))
+		// [3] ==== Alt Reset Group ==== 		-> Reset when starting a new Chapter from MainMenu
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+		// [4/8] ==== Alt Reset Group ==== 		-> Reset when pressing PauseMenu->Quit
+			/* MANUAL_CONSTRUCTION (AltGroup[5/10]): R/R usage
+				--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				-------------
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+							Val 0x0 == Val 0x1					*/
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+		}),
 	}
 // #endregion ACH - triggers
 
@@ -2496,6 +2736,7 @@ achievements_titles = {
 	"a_Showdown": 				{"en": "The Devil You Know"},
 	"a_RightTrain": 			{"en": "Damnation Express"},
 	"a_Deadfall": 				{"en": "Where the Dead Still Fall"},
+	// --------c_SPend--------
 	"a_CurseWestGood": 			{"en": "Dawn Over Darkness"},
 	"a_CurseWestEvil": 			{"en": "The Devil Wears Spurs"},
 	// --------c_Unlocks--------
@@ -2515,30 +2756,32 @@ achievements_titles = {
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
+	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
 
 	// --------c_SPstory--------
-	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\""},
-	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\""},
-	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\""},
-	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\""},
-	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\""},
-	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\""},
-	"a_TortureMaze":	 		{"en": "General Cartwright don't train survivors—he trains killers. If you're still breathing, you might just be worth something. Complete Chapter 7, \"Torture Maze\""},
-	"a_BaptismFire":	 		{"en": "A warm welcome to Darkwatch? Try fire, lead, and bodies hitting the dirt. Complete Chapter 8, \"Baptism of Fire\""},
-	"a_Rescue": 				{"en": "They were left to rot, but not on your watch. Time to remind the dead who's still kicking. Complete Chapter 9, \"Rescue\""},
-	"a_Prism": 					{"en": "Power like this don't belong in any man's hands—least of all the wicked. Complete Chapter 10, \"The Deadlight Prism\""},
-	"a_Invasion": 				{"en": "This land ain't free for the taking, and it damn sure don't belong to the dead. Complete Chapter 11, \"Invasion\""},
-	"a_Hangtown": 				{"en": "The gallows still swing, but the dead don't stay hanging. Time to lay them down for good. Complete Chapter 12, \"Hangtown\""},
-	"a_MorningAfter": 			{"en": "Darkwatch stood against the darkness for centuries. One night was all it took to bring it crashing down. Complete Chapter 13, \"The Morning After\""},
-	"a_Showdown": 				{"en": "Darkwatch lies in ashes, but the nightmare ain't over—not yet. Time to put an end to the devil that started it all. Complete Chapter 14, \"Showdown\""},
-	"a_RightTrain": 			{"en": "This train ain't heading west—it's heading straight into damnation. Complete Chapter 15, \"The Right Train\""},
-	"a_Deadfall": 				{"en": "The city's burning, the bullets are flying, and you're standing in the middle of hell itself. Complete Chapter 16, \"Deadfall\""},
-	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free—at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\""},
-	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\""},
+	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\", in Single Player or Gunslinger Mode"},
+	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\", in Single Player or Gunslinger Mode"},
+	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
+	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\", in Single Player or Gunslinger Mode"},
+	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\", in Single Player or Gunslinger Mode"},
+	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\", in Single Player or Gunslinger Mode"},
+	"a_TortureMaze":	 		{"en": "General Cartwright don't train survivors—he trains killers. If you're still breathing, you might just be worth something. Complete Chapter 7, \"Torture Maze\", in Single Player or Gunslinger Mode"},
+	"a_BaptismFire":	 		{"en": "A warm welcome to Darkwatch? Try fire, lead, and bodies hitting the dirt. Complete Chapter 8, \"Baptism of Fire\", in Single Player or Gunslinger Mode"},
+	"a_Rescue": 				{"en": "They were left to rot, but not on your watch. Time to remind the dead who's still kicking. Complete Chapter 9, \"Rescue\", in Single Player or Gunslinger Mode"},
+	"a_Prism": 					{"en": "Power like this don't belong in any man's hands—least of all the wicked. Complete Chapter 10, \"The Deadlight Prism\", in Single Player or Gunslinger Mode"},
+	"a_Invasion": 				{"en": "This land ain't free for the taking, and it damn sure don't belong to the dead. Complete Chapter 11, \"Invasion\", in Single Player or Gunslinger Mode"},
+	"a_Hangtown": 				{"en": "The gallows still swing, but the dead don't stay hanging. Time to lay them down for good. Complete Chapter 12, \"Hangtown\", in Single Player or Gunslinger Mode"},
+	"a_MorningAfter": 			{"en": "Darkwatch stood against the darkness for centuries. One night was all it took to bring it crashing down. Complete Chapter 13, \"The Morning After\", in Single Player or Gunslinger Mode"},
+	"a_Showdown": 				{"en": "Darkwatch lies in ashes, but the nightmare ain't over—not yet. Time to put an end to the devil that started it all. Complete Chapter 14, \"Showdown\", in Single Player or Gunslinger Mode"},
+	"a_RightTrain": 			{"en": "This train ain't heading west—it's heading straight into damnation. Complete Chapter 15, \"The Right Train\", in Single Player or Gunslinger Mode"},
+	"a_Deadfall": 				{"en": "The city's burning, the bullets are flying, and you're standing in the middle of hell itself. Complete Chapter 16, \"Deadfall\", in Single Player or Gunslinger Mode"},
+	// --------c_SPend--------
+	"a_CurseWestGood": 			{"en": "The night breaks, the curse fades, and the West is free—at least for now. Achieve the good ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
+	"a_CurseWestEvil": 			{"en": "Ain't a soul left who can stop you. Ain't a god left who'd dare try. Achieve the evil ending during Chapter 17, \"Curse of the West\", in Single Player Mode"},
 	// --------c_Unlocks--------
 	"a_Boss":					{"en": "Earn the right to witness the horrors you've defeated. Unlock the \"Bosses Art\" concept art by completing Chapter 17, \"Curse of the West\", on Shootist difficulty in Gunslinger Mode"},
 	"a_Enemy1":					{"en": "A graveyard ain't the place for wasted bullets. Make every shot count, or end up six feet under. Unlock the \"Enemies 1\" concept art by completing Chapter 3, \"Boneyard\", with 65% or more accuracy in Gunslinger Mode"},
@@ -2556,6 +2799,7 @@ achievements_descriptions = {
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger--------
+	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
 
@@ -2899,6 +3143,30 @@ function richPresence_initialize() {
 // • LEADERBOARD core data •
 // =========================
 // #region LB - core data
+// -----------------Enums lb_Watchers--------------------
+LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime = 25200000.0 // 25.200.000 ms = 7 hours || MissionTime is the base value of the custom scoring system for lb_Watchers
+LB_WATCHERS_SETIINGS_BaseScore_MissionTime = 25000.0 // 25.000
+LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER = { // Because DIFFICULTY_Greenhorn = 0x0
+	DIFFICULTY_Greenhorn: 0x1,
+	DIFFICULTY_Cowboy: 0x2,
+	DIFFICULTY_Shootist: 0x3,
+	DIFFICULTY_Deadeye: 0x4}
+LB_WATCHERS_SETIINGS_ScoreIncrease_Kills = 70.0
+LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills = 30.0
+LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills = 10.0
+LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit = 12.0 // 1 Hit = BaseScore + (Score_ShotsHit - Score_Shotsfired)
+LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired = 5.0 // 1 Miss = BaseScore - Score_Shotsfired
+LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths = 5000.0
+
+LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime = 7200000.0 // 7.200.000 ms = 2 hours || MissionTime is the base value of the custom scoring system for lb_Watchers
+LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime = 25000.0 // 25.000
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills = 10000.0 // 10.000
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills = 1500.0
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills = 1000.0
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit = 17.0 // 1 Hit = BaseScore + (Score_ShotsHit - Score_Shotsfired)
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired = 10.0 // 1 Miss = BaseScore - Score_Shotsfired
+LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths = 5000.0
+// -------------------------------------
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
 	// -----------------------------
@@ -2908,6 +3176,42 @@ leaderboards_coreData = {
 
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
+	// ------lb_Watchers------ // MANUAL_CONSTRUCTION (lb_Watchers) - (VALUEMEASURE) is identical in all lb_Watchers, not "lb_WatchersCurseWest" - (CANCEL,SUBMIT) is different depending on LevelID
+	// "lb_WatchersWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
+	// "lb_WatchersRideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
+	// "lb_WatchersBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
+	// "lb_WatchersDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
+	// "lb_WatchersDWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
+	// "lb_WatchersWarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
+	// "lb_WatchersTortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
+	// "lb_WatchersBaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
+	// "lb_WatchersRescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
+	// "lb_WatchersPrism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
+	// "lb_WatchersInvasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
+	// "lb_WatchersHangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
+	// "lb_WatchersMorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
+	// "lb_WatchersShowdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
+	// "lb_WatchersRightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
+	// "lb_WatchersDeadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
+	// "lb_WatchersCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
+	// ------lb_Challenges------
 	}
 // #endregion LB - core data
 
@@ -2916,6 +3220,136 @@ leaderboards_coreData = {
 // ==================================
 // #region LB - trigger generators
 //	- For leaderboard logic that's reoccuring across multiple triggers
+function lbGenerate_FullStartTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Alt Start Group ====		-> Start when Chapter begins from ChapterSection 1
+		is_ReleaseRegion(enum_releaseRegion)
+		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+		&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion)
+
+function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// [1] ==== Alt Cancel Group ====		-> Cancel when LevelID is incorrect
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+	// [2] ==== Alt Cancel Group ==== 		-> Cancel when not in SinglePlayer OR Gunslinger Mode
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+	// [3] ==== Alt Cancel Group ==== 		-> Cancel MissionTime_ChapterTotal exceeds LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& current_MissionTime_ChapterTotal(enum_releaseRegion) > LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+		&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+	// [4] ==== Alt Cancel Group ====		-> Cancel when pressing PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION:CancelOn_PauseMenu_Quit - (AltGroup[4/8]) R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00721900_0xM0000000f>d0xM0000000f
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00720000_0xM0000000f>d0xM0000000f
+			-------------
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+							->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+							->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+							Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)		
+				*/	
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& on_PauseMenu_Quit(enum_releaseRegion) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+		
+function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// [1] ==== Alt Submit Group - SinglePlayer Mode ====	-> Submit when Chapter was started from beginning AND finished, then submits on_Loading_start() - When in SinglePlayer Mode
+		unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InSinglePlayerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> Chapter is started from beginning
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Chapter is started from beginning 
+			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended + MissionTime does not exceed 7 hours
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& on_Loading_start(enum_releaseRegion)
+	// [2] ==== Alt Submit Group - Gunslinger Mode ====		-> Submit when Chapter was started from beginning AND finished, then submits on_MainMenu_PostChapterGunslingerStatsMenu_continue() - When in Gunslinger Mode
+		|| unless(
+			!is_ReleaseRegion(enum_releaseRegion)
+			|| !is_InGunslingerMode(enum_releaseRegion))
+		&& once( // --CheckIf--> Chapter is started from beginning
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Chapter is started from beginning 
+			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> LastChapterSection from the Chapter has ended + MissionTime does not exceed 7 hours
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> LastChapterSection from the Chapter has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
+	// [3] ==== Alt Reset Group ====						-> Reset when LevelID is incorrect
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ==== 						-> Reset when not in SinglePlayer OR Gunslinger Mode
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+	// [5] ==== Alt Reset Group ==== 						-> Reset when pressing PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit - (AltGroup[5/10]) R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+			-------------
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+							Val 0x0 == Val 0x1
+				*/	
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+
 // #endregion LB - trigger generators
 
 // ========================
@@ -2934,6 +3368,41 @@ leaderboards_startTriggers = {
 		//  || is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	// ------lb_Watchers------
+	"lb_WatchersWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_1_WrongTrain, enum_releaseRegion)),
+	"lb_WatchersRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_2_RideDevil, enum_releaseRegion)),
+	"lb_WatchersBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_3_Boneyard, enum_releaseRegion)),
+	"lb_WatchersDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_4_DevilMine, enum_releaseRegion)),
+	"lb_WatchersDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_5_Outpost, enum_releaseRegion)),
+	"lb_WatchersWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_6_WarTrain, enum_releaseRegion)),
+	"lb_WatchersTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_7_TortureMaze, enum_releaseRegion)),
+	"lb_WatchersBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_8_BaptismFire, enum_releaseRegion)),
+	"lb_WatchersRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_9_Rescue, enum_releaseRegion)),
+	"lb_WatchersPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_10_Prism, enum_releaseRegion)),
+	"lb_WatchersInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_11_Invasion, enum_releaseRegion)),
+	"lb_WatchersHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_12_Hangtown, enum_releaseRegion)),
+	"lb_WatchersMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_13_MorningAfter, enum_releaseRegion)),
+	"lb_WatchersShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_14_Showdown, enum_releaseRegion)),
+	"lb_WatchersRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_15_RightTrain, enum_releaseRegion)),
+	"lb_WatchersDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
+	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
 	}
 leaderboards_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -2947,16 +3416,86 @@ leaderboards_cancelTriggers = {
 		// 	|| is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()
 		// ),
+	// ------lb_Chapters------
+	"lb_WatchersWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_1_WrongTrain, enum_releaseRegion)),
+	"lb_WatchersRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_2_RideDevil, enum_releaseRegion)),
+	"lb_WatchersBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_3_Boneyard, enum_releaseRegion)),
+	"lb_WatchersDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_4_DevilMine, enum_releaseRegion)),
+	"lb_WatchersDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_5_Outpost, enum_releaseRegion)),
+	"lb_WatchersWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_6_WarTrain, enum_releaseRegion)),
+	"lb_WatchersTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_7_TortureMaze, enum_releaseRegion)),
+	"lb_WatchersBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_8_BaptismFire, enum_releaseRegion)),
+	"lb_WatchersRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_9_Rescue, enum_releaseRegion)),
+	"lb_WatchersPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_10_Prism, enum_releaseRegion)),
+	"lb_WatchersInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_11_Invasion, enum_releaseRegion)),
+	"lb_WatchersHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_12_Hangtown, enum_releaseRegion)),
+	"lb_WatchersMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_13_MorningAfter, enum_releaseRegion)),
+	"lb_WatchersShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_14_Showdown, enum_releaseRegion)),
+	"lb_WatchersRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_15_RightTrain, enum_releaseRegion)),
+	"lb_WatchersDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
+	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
 	}
 leaderboards_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
-	// 	// [1] ==== Alt Submit Group ====			-> Submit when ...
-	// 		is_ReleaseRegion(enum_releaseRegion)
-	// 		&& always_false()
-	// 	// [2] ==== Alt Reset Group ====			-> Reset when ...
-	// 		|| is_ReleaseRegion(enum_releaseRegion)
-	// 		&& always_false()
-	// 	),
+		// // [1] ==== Alt Submit Group ====			-> Submit when ...
+		// 	is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// // [2] ==== Alt Reset Group ====			-> Reset when ...
+		// 	|| is_ReleaseRegion(enum_releaseRegion)
+		// 	&& always_false()
+		// ),
+	// ------lb_Watchers------
+	"lb_WatchersWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_1_WrongTrain, enum_releaseRegion)),
+	"lb_WatchersRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_2_RideDevil, enum_releaseRegion)),
+	"lb_WatchersBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_3_Boneyard, enum_releaseRegion)),
+	"lb_WatchersDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_4_DevilMine, enum_releaseRegion)),
+	"lb_WatchersDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_5_Outpost, enum_releaseRegion)),
+	"lb_WatchersWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_6_WarTrain, enum_releaseRegion)),
+	"lb_WatchersTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_7_TortureMaze, enum_releaseRegion)),
+	"lb_WatchersBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_8_BaptismFire, enum_releaseRegion)),
+	"lb_WatchersRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_9_Rescue, enum_releaseRegion)),
+	"lb_WatchersPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_10_Prism, enum_releaseRegion)),
+	"lb_WatchersInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_11_Invasion, enum_releaseRegion)),
+	"lb_WatchersHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_12_Hangtown, enum_releaseRegion)),
+	"lb_WatchersMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_13_MorningAfter, enum_releaseRegion)),
+	"lb_WatchersShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_14_Showdown, enum_releaseRegion)),
+	"lb_WatchersRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_15_RightTrain, enum_releaseRegion)),
+	"lb_WatchersDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
+	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
+		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
 	}
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
@@ -2967,8 +3506,251 @@ function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
+
+function lb_ValueMeasure_AllStatsScore() { // WARNING - (1x) MANUAL_CONSTRUCTION
+	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
+		A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=0_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=1_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=2_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=0_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=1_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=2_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=0_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=1_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=2_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=0_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=1_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=2_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0
+		*/
+	/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
+		// WARNING - Edit in DifficultyModifier [0x1-0x4]
+		PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0
+		NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0
+		--------
+			(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
+
+			+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			+ [Kills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			* [Difficulty] [1-4] 		| in alt groups			*/
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) =>
+		measured(
+			current_ShotsHit_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			+ current_Kills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			+ current_ShotsHit_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+			
+			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+
+			+ current_MissionTime_Temp(enum_releaseRegion)
+			+ current_MissionTime_ChapterSection(enum_releaseRegion)
+			+ current_MissionTime_ChapterTotal(enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& current_MissionTime_Temp(enum_releaseRegion)
+					+ current_MissionTime_ChapterSection(enum_releaseRegion)
+					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
+	/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterEnd - (below Measured) R/R usage
+		// WARNING - Edit in DifficultyModifier [0x1-0x4]
+		PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0
+		NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0
+		--------
+			(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
+
+			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+			* [Difficulty] [1-4] 		| in alt groups				*/
+	function valueMeasure_ChapterEnd(enum_difficulty, enum_releaseRegion) => // This is the valueMeasure which is submitted
+		measured(
+			current_MissionTime_ChapterTotal(enum_releaseRegion)
+
+			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+			
+			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
+				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Greenhorn, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Cowboy, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Shootist, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Deadeye, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Greenhorn, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Cowboy, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Shootist, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Deadeye, enum_releaseRegion))
+		}
+	return max_of(let_array_valueMeasures)}
+
+function lb_ValueMeasure_AllStatsScore_BossFight() { // WARNING - (1x) MANUAL_CONSTRUCTION
+	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
+		xxxx
+		*/
+	/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
+		// WARNING - Edit in DifficultyModifier [0x1-0x4]
+		PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0
+		NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0
+		--------
+			(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
+
+			+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			+ [Kills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			* [Difficulty] [1-4] 		| in alt groups			*/
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) =>
+		measured(
+			current_ShotsHit_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			+ current_Kills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			+ current_ShotsHit_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+			
+			* LB_WATCHERS_SETIINGS_BOSSFIGHT_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+
+			+ current_MissionTime_Temp(enum_releaseRegion)
+			+ current_MissionTime_ChapterSection(enum_releaseRegion)
+			+ current_MissionTime_ChapterTotal(enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& current_MissionTime_Temp(enum_releaseRegion)
+					+ current_MissionTime_ChapterSection(enum_releaseRegion)
+					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+	/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterEnd - (below Measured) R/R usage
+		// WARNING - Edit in DifficultyModifier [0x1-0x4]
+		PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0
+		NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0
+		--------
+			(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
+
+			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			* [Difficulty] [1-4] 		| in alt groups				*/
+	function valueMeasure_ChapterEnd(enum_difficulty, enum_releaseRegion) => // This is the valueMeasure which is submitted
+		measured(
+			current_MissionTime_ChapterTotal(enum_releaseRegion)
+
+			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+			
+			* LB_WATCHERS_SETIINGS_BOSSFIGHT_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
+				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Greenhorn, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Cowboy, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Shootist, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Deadeye, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Greenhorn, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Cowboy, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Shootist, enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Deadeye, enum_releaseRegion))
+		}
+	return max_of(let_array_valueMeasures)}
+
 leaderboards_valueMeasures = {
 	// "lb_template": lb_ValueMeasure_Template(),
+	// ------lb_Watchers------
+	"lb_WatchersWrongTrain": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersRideDevil": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersBoneyard": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersDevilMine": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersDWOutpost": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersWarTrain": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersTortureMaze": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersBaptismFire": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersRescue": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersPrism": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersInvasion": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersHangtown": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersMorningAfter": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersShowdown": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersRightTrain": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersDeadfall": lb_ValueMeasure_AllStatsScore(),
+	"lb_WatchersCurseWest": lb_ValueMeasure_AllStatsScore_BossFight(),
 	}
 // #endregion LB - triggers
 
@@ -2978,9 +3760,47 @@ leaderboards_valueMeasures = {
 // #region LB - text
 leaderboards_titles = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	// ------lb_Watchers------
+	"lb_WatchersWrongTrain": 			{"en": "The Wrong Train — Elite Regulators Watchlist"},
+	"lb_WatchersRideDevil": 			{"en": "Ride Like the Devil — Elite Regulators Watchlist"},
+	"lb_WatchersBoneyard": 				{"en": "Boneyard — Elite Regulators Watchlist"},
+	"lb_WatchersDevilMine": 			{"en": "Devil's Belly Mine — Elite Regulators Watchlist"},
+	"lb_WatchersDWOutpost": 			{"en": "Darkwatch Outpost — Elite Regulators Watchlist"},
+	"lb_WatchersWarTrain": 				{"en": "War Train — Elite Regulators Watchlist"},
+	"lb_WatchersTortureMaze": 			{"en": "Torture Maze — Elite Regulators Watchlist"},
+	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire — Elite Regulators Watchlist"},
+	"lb_WatchersRescue": 				{"en": "Rescue — Elite Regulators Watchlist"},
+	"lb_WatchersPrism": 				{"en": "The Deadlist Prism — Elite Regulators Watchlist"},
+	"lb_WatchersInvasion": 				{"en": "Invasion — Elite Regulators Watchlist"},
+	"lb_WatchersHangtown": 				{"en": "Hangtown — Elite Regulators Watchlist"},
+	"lb_WatchersMorningAfter": 			{"en": "The Morning After — Elite Regulators Watchlist"},
+	"lb_WatchersShowdown": 				{"en": "Showdown — Elite Regulators Watchlist"},
+	"lb_WatchersRightTrain": 			{"en": "The Right Train — Elite Regulators Watchlist"},
+	"lb_WatchersDeadfall": 				{"en": "Deadfall — Elite Regulators Watchlist"},
+	"lb_WatchersCurseWest": 			{"en": "Curse of the West — Elite Regulators Watchlist"},
+	// ------lb_Challenges------
 	}
 leaderboards_descriptions = {
 	// "lb_Template": 						{"en": "xxxxxxxx"},
+	// ------lb_Watchers------
+	"lb_WatchersWrongTrain": 			{"en": "The Reaper was on board, but you weren't on his list. Make sure your name lands on this one instead—finish Chapter 1, \"The Wrong Train\", with precision and speed"},
+	"lb_WatchersRideDevil": 			{"en": "The Reaper's close, and the devil's got the reins. Only the fastest and deadliest make this list. Dominate Chapter 2, \"Ride Like the Devil\", with sheer speed and precision to earn your spot"},
+	"lb_WatchersBoneyard": 				{"en": "The dead don't take kindly to visitors. If you're still standing when the dust settles, you've earned your place among the best. Survive Chapter 3, \"Boneyard\", with ruthless efficiency to make the list"},
+	"lb_WatchersDevilMine": 			{"en": "Plenty have gone into these tunnels—few ever come out. Only the sharpest shots and the quickest hands make it out in one piece. Carve your name in stone by dominating Chapter 4, \"Devil's Belly Mine"},
+	"lb_WatchersDWOutpost": 			{"en": "Sanctuary is a thing of the past—now it's just you, the undead, and your gun. If you can hold the line with speed and precision, you'll earn your name on this list. Prove it in Chapter 5, \"Darkwatch Outpost\""},
+	"lb_WatchersWarTrain": 				{"en": "The steel rails run straight through hell, and you're riding shotgun. Survive the slaughter and show them who runs this train. The best gunslingers earn their place by ruling Chapter 6, \"War Train\""},
+	"lb_WatchersTortureMaze": 			{"en": "This ain't a test of strength—it's a test of survival. If you made it through and still had the guts to fight, you just might belong on this list. Show 'em how it's done in Chapter 7, \"Torture Maze\""},
+	"lb_WatchersBaptismFire": 			{"en": "Blood, fire, and gunpowder—your introduction to the Darkwatch is anything but gentle. If you fought your way through and left nothing but wreckage, this list might just have your name on it. Conquer Chapter 8, \"Baptism of Fire\""},
+	"lb_WatchersRescue": 				{"en": "The dead don't rest, but neither do you. If you took down everything in your way and made sure no one was left behind, then you've earned your place. Only the strongest warriors top Chapter 9, \"Rescue\""},
+	"lb_WatchersPrism": 				{"en": "Power corrupts, but you? You ain't backing down. If you fought through the chaos and took control of this nightmare, you've got a shot at the Watchlist. Prove your mettle in Chapter 10, \"The Deadlight Prism\""},
+	"lb_WatchersInvasion": 				{"en": "This land ain't theirs to take, and you made damn sure they knew it. If you sent the dead back where they belong with ruthless efficiency, your name deserves a place on this list. Dominate Chapter 11, \"Invasion\""},
+	"lb_WatchersHangtown": 				{"en": "The gallows still swing, but the dead ain't hanging. You cut them down—again. If your aim was true and your hands steady, you earned your place among the best. Prove it in Chapter 12, \"Hangtown\""},
+	"lb_WatchersMorningAfter": 			{"en": "Centuries of vigilance burned in a single night. But you? You didn't burn with it. If you fought through the wreckage and left nothing but bodies in your wake, you've earned your place. Survive Chapter 13, \"The Morning After\""},
+	"lb_WatchersShowdown": 				{"en": "Darkwatch is rubble, but the fight ain't over. If you had the guts to stare into the abyss and fire the last shot, this list might just bear your name. End it for good in Chapter 14, \"Showdown\""},
+	"lb_WatchersRightTrain": 			{"en": "This train ain't bound for anywhere holy—just straight into the jaws of damnation. If you tore through the horrors on board and sent them screaming into the void, you belong on this list. Dominate Chapter 15, \"The Right Train\""},
+	"lb_WatchersDeadfall": 				{"en": "The city's crumbling, the sky's burning, and you're knee-deep in hell. If you walked through the fire and left nothing standing in your way, you've got a spot among the best. Prove your worth in Chapter 16, \"Deadfall\""},
+	"lb_WatchersCurseWest": 			{"en": "The night is over, or the nightmare is just beginning. Whether you brought salvation or destruction, the West won't forget your name. Only the most ruthless or righteous make the list. Shape your fate in Chapter 17, \"Curse of the West\""},
+	// ------lb_Challenges------
 	}
 // #endregion LB - text
 

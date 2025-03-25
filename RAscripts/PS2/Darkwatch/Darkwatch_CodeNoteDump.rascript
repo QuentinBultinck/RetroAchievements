@@ -1,39 +1,18 @@
 // Darkwatch
 // #ID = 19111
 
-// $134214: [PAL][32-bit (base) Pointer:SofdecStreamData(alt)] -> [Struct:SofdecStreamData]
-//          - Prefer using [Pointer:SofdecStreamData(preferred)] at $0x134408
+// $134214: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] -> [Struct:SofdecStreamData]
 //          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
-//          - Definition of [Struct:SofdecStreamData] at $0x134408
-//          
-//          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:SofdecStreamData(alt)]
-//          +0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          +0x14C - [5-byte ASCII:Sofdec_FMVID]
-// $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
-//          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
-//          - Definition of [Struct:FMVdata] at $0x6aae58
-// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(preferred)] --(+0x18)--> [Struct:SofdecStreamData]
 //          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
 //          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
 //          
+//          +0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
+//          | - "SofdecStream" => FMV is being played
+//          | - anyOtherValue => FMV is NOT being played
 //          
-//          ------Simplified_Documentation------
-//          [32-bit (base) Pointer:SofdecStreamData(preferred)]
-//          +0x144 - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          +0x164 - [5-byte ASCII:Sofdec_FMVID]
-//          
-//          
-//          ------Advanced_Documentation------
-//          [Definition Struct:SofdecStreamData |1000-byte??]
-//          |'''''''''''''''''''''''''''''''''''''''''
-//          |+0x12C - [12-byte ASCIIFlag:Sofdec_IsFMVactive]
-//          || - "SofdecStream" => FMV is being played
-//          || - anyOtherValue => FMV is NOT being played
-//          |
-//          |+0x14C - [6-byte ASCII:Sofdec_FMVID]
-//          || - This is actually the SofdecStreamID (about 17-byte long), but the first 5-byte of this ID can be used to identify which FMV is being played
-//          || - Sofdec_FMVIDs listed below
+//          +0x14C - [6-byte ASCII:Sofdec_FMVID]
+//          | - This is actually the SofdecStreamID (about 17-byte long), but the first 5-byte of this ID can be used to identify which FMV is being played
+//          | - Sofdec_FMVIDs listed below
 //          '
 //          
 //          # Sofdec_FMVIDs (string)
@@ -88,6 +67,13 @@
 //          | "M22S3_" => End of Chapter: "Hero" (Good Ending)
 //          | "FINALD" => End of Story: End Credits
 //          '
+// $134218: [PAL][32-bit (base) Pointer:FMVdata] -> [Struct:FMVdata]
+//          - This pointer is only functional when an FMV is being played. When no FMV is active, this memAddr may be used by other game logic.
+//          - Definition of [Struct:FMVdata] at $0x6aae58
+// $134408: [PAL][NTSCU][32-bit (base) Pointer:SofdecStreamData(alt)]
+//          - "Sofdec" is a video codec which handles Full Motion Video (FMV) playback
+//          - This pointer is only valid when an FMV is being played. When no FMV is active, may be used by other logic
+//          - Prefer using [Pointer:SofdecStreamData(preferred)], which has the same offsets depending on PAL or NTSCU
 // $2CD9C4: [NTSCU][AssemblyInstruction:SplitScreenImageRender |32-bit]
 //          @Widescreen Hack (NTSC-U) - Image Render SplitScreen Multiplayer
 //          - This value is a MIPS/ASM instruction, which is part of a function responsible of rendering split screen Multiplayer
@@ -1077,6 +1063,13 @@
 //          |.| - Practically this can be used to identify which InGameMenu is displayed
 //          |.| - TextLookupKeyIDs are language-independent (The same TextLookupKeyID is used for multiple languages)
 //          |.| - TextLookupKeyIDs listed below
+//          |
+//          |
+//          |+0x7C - [32-bit (layer-1) Pointer]
+//          |.+0x58 - [Lower4:SelectableTextCount |32-bit]
+//          |.| - This count is how many entries/text lines can be highlighted/selected (eg. value = 0x2: Yes and No)
+//          |.+0x68 - [Lower4:SelectedTextIndex |32-bit]
+//          |.| - This value starts counting from 0x0; With 0x0 being the top most item
 //          '
 //          
 //          [Definition Struct:InGameMenu.MessageBox |??-byte]
@@ -1213,16 +1206,29 @@
 //          | - Documentation on StructMembers refer torespective code notes, since this struct is static
 //          | - StructMembers are used for all modes: SinglePlayer, Multiplayer Coop and Versus
 //          |
+//          |+0x0 - [8-bit:EquippedWeapon_WeaponID |32-bit]
+//          |
+//          |
 //          |------[Struct:GameStats(Temp)]------
-//          |+0x0 - [32-bit:EquippedWeapon_WeaponID]
+//          | - These stats are updated dynamically, during gameplay.
+//          | - These stats are saved to [Struct:GameStats(ChapterSection)] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this stats reset to 0
+//          |
 //          |+0x4 - [32-bit:MissionTime_Temp]
 //          |+0x18 - [32-bit:Kills_Temp]
 //          |+0x1C - [32-bit:ShotsFired_Temp]
 //          |+0x20 - [32-bit:ShotsHit_Temp]
 //          |+0x24 - [32-bit:HeadshotKills_Temp]
 //          |+0x28 - [32-bit:MeleeKills_Temp]
+//          |+0x30 - [32-bit Pointer:WeaponEquipTimes_Temp] -> [40-byte Struct:WeaponEquipTimes]
+//          || - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
+//          |
+//          |
 //          |
 //          |------[Struct:GameStats(ChapterTotal)]------
+//          | - Stats from [Struct:GameStats(ChapterSection)] are added to this [Struct:GameStats(ChapterTotal)] WHEN ChapterSection completes OR on Quit
+//          | - Stats in [Struct:GameStats(ChapterTotal)] start at 0 WHEN starting new Chapter/Level
+//          | - Stats in [Struct:GameStats(ChapterTotal)] determine the statistics which can be viewed in the MainMenu->ExtrasMenu->StatisticsMenu (refer to $0x965cd8)
+//          |
 //          |+0x38 - [32-bit:MissionTime_ChapterTotal]
 //          |+0x3C - [32-bit:PlayerDeaths_ChapterTotal]
 //          |+0x44 - [Lower4:DifficultyID(alt) |32-bit]
@@ -1231,8 +1237,15 @@
 //          |+0x54 - [32-bit:ShotsHit_ChapterTotal]
 //          |+0x58 - [32-bit:HeadshotKills_ChapterTotal]
 //          |+0x5C - [32-bit:MeleeKills_ChapterTotal]
+//          |+0x64 - [32-bit Pointer:WeaponEquipTimes_ChapterTotal] -> [40-byte Struct:WeaponEquipTimes]
+//          || - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
+//          |
+//          |
 //          |
 //          |------[Struct:GameStats(ChapterSection)]------
+//          | - Stats from [Struct:GameStats(Temp)] are added to this [Struct:GameStats(ChapterSection)] WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
+//          | - Stats from this [Struct:GameStats(ChapterSection)] are added to [Struct:GameStats(ChapterTotal)] WHEN ChapterSection completes OR on Quit
+//          |
 //          |+0x6C - [32-bit:MissionTime_ChapterSection]
 //          |+0x70 - [32-bit:PlayerDeaths_ChapterSection]
 //          |+0x78 - [Lower4:DifficultyID(preferred) |32-bit]
@@ -1241,6 +1254,10 @@
 //          |+0x88 - [32-bit:ShotsHit_ChapterSection]
 //          |+0x8c - [32-bit:HeadshotKills_ChapterSection]
 //          |+0x90 - [32-bit:MeleeKills_ChapterSection]
+//          |+0x98 - [32-bit Pointer:WeaponEquipTimes_ChapterSection] -> [40-byte Struct:WeaponEquipTimes]
+//          || - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
+//          |
+//          |
 //          |
 //          |------OtherData------
 //          |+0x9c - [32-bit Pointer:SelectedPlayerProfileName(alt1)]
@@ -1389,8 +1406,8 @@
 //          |
 //          |===Chapter 10, "The Deadlight Prism"===
 //          | ---StoryChapterSection "M15_D"---
-//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection
-//          | 0x528 - "Checkpoint_2" => Before Banshee spawn (1x TaintedSoul)
+//          | 0x4AC - "Checkpoint_1" => Start of StoryChapterSection (1x TaintedSoul)
+//          | 0x528 - "Checkpoint_2" => Before Banshee spawn
 //          | ---StoryChapterSection "M15_E"---
 //          | 0x439 - "Checkpoint_1" => Start of StoryChapterSection
 //          | ---StoryChapterSection "M15_F"---
@@ -1568,7 +1585,7 @@
 //          ===========================================
 //          @Regional equivalent of $0x965c04 (PAL)
 //          
-//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player1]
+//          [NTSCU][8-bit:EquippedWeapon_WeaponID-Player1 |32-bit]
 //          @Regional equivalent of $0x965c04 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953C28: [NTSCU][32-bit:MissionTime_Temp]
@@ -1637,6 +1654,9 @@
 // $953CE4: [NTSCU][32-bit (base) Pointer(EntityData_B):PlayerActorData-Player1] -> [Struct:EntityData-Player1]
 //          @Regional equivalent of $0x965cc4 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953CF8: [NTSCU][32-bit (base) Pointer:PlayerSavedStats-Player1]
+//          @Regional equivalent of $0x965cd8 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D18: [NTSCU][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Regional equivalent of $0x965cf8 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
@@ -1654,7 +1674,7 @@
 //          @Regional equivalent of $0x965d30 (PAL)
 //          - PlayerData for player2 is only populated when starting Multiplayer
 //          
-//          [NTSCU][32-bit:EquippedWeapon_WeaponID-Player2]
+//          [NTSCU][8-bit:EquippedWeapon_WeaponID-Player2 |32-bit]
 //          @Regional equivalent of $0x965d30 (PAL)
 //          @Member of [Struct(PlayerData):Player-2] (refer to $0x73b68c)
 // $95B042: [NTSCU][13-byte ASCII:CheckpointID]
@@ -1666,7 +1686,7 @@
 // $965C04: [PAL][300-byte Struct(PlayerData):Player-1]
 //          ===========================================
 //          
-//          [PAL][32-bit:EquippedWeapon_WeaponID-Player1]
+//          [PAL][8-bit:EquippedWeapon_WeaponID-Player1 |32-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
 //          # WeaponIDS (hex)
@@ -1706,6 +1726,9 @@
 // $965C2C: [PAL][32-bit:MeleeKills_Temp-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - This value is added to [32-bit:MeleeKills_ChapterSection] WHEN at certain occasions (event/cutscene/checkpointReached/Quit). THEN this value restarts counting from 0
+// $965C34: [PAL][32-bit (base) Pointer:WeaponEquipTimes_Temp] -> [Struct:WeaponEquipTimes]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
 // $965C3C: [PAL][32-bit:MissionTime_ChapterTotal]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - [32-bit:MissionTime_ChapterSection] is added to this value WHEN ChapterSection complete OR on Quit
@@ -1754,6 +1777,9 @@
 //          - This value starts at 0 WHEN starting new Chapter/Level
 //          
 //          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
+// $965C68: [PAL][32-bit (base) Pointer:WeaponEquipTimes_ChapterTotal] -> [Struct:WeaponEquipTimes]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
 // $965C70: [PAL][32-bit:MissionTime_ChapterSection]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - [32-bit:MissionTime_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
@@ -1766,6 +1792,7 @@
 //          - This value is added to [32-bit:PlayerDeaths_ChapterTotal] WHEN ChapterSection complete OR on Quit
 // $965C7C: [PAL][Lower4:DifficultyID(preferred) |32-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - This is the value which determines the statistics on MainMenu->StatsMenu (refer to [Pointer:PlayerSavedStats] at $0x965cd8)
 //          
 //          # DifficultyIDs (hex)
 //          |''''''''''''
@@ -1795,6 +1822,9 @@
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - [32-bit:MeleeKills_Temp] is added to this value WHEN at certain occasions (event/cutscene/checkpointReached/Quit/ChapterSection complete)
 //          - This value is added to [32-bit:MeleeKills_ChapterTotal] WHEN ChapterSection complete OR on Quit
+// $965C9C: [PAL][32-bit (base) Pointer:WeaponEquipTimes_ChapterSection] -> [Struct:WeaponEquipTimes]
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
+//          - Definition of [Struct:WeaponEquipTimes] at $0x965cd8
 // $965CA0: [PAL][32-bit (base) Pointer:SelectedPlayerProfileName(alt1)]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
@@ -2176,17 +2206,18 @@
 // $965CD8: [PAL][32-bit (base) Pointer:PlayerSavedStats-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
-//          +0x4 - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Story]
+//          +0x4 - [32-bit (layer-1) Pointer:SavedStats_Story] -> [Array:SavedStats_Story]
 //          | - This array stores multiple [Struct:ChapterStats], definition below. For SinglePlayer Mode
 //          | - Saves stats per Chapter, although this can't be viewed for Story Mode, it always show all stats summed up for Story Mode (Overall Stats)
 //          
-//          +0xC - [32-bit (layer-1) Pointer] -> [Array:SavedStats_Gunslinger]
+//          +0xC - [32-bit (layer-1) Pointer:SavedStats_Gunslinger] -> [Array:SavedStats_Gunslinger]
 //          | - This array stores multiple [Struct:ChapterStats], definition below. For Gunslinger Mode
 //          | - Saves stats per Chapter, can be viewed by Chapter or Overall (all stats summed up)
 //          
 //          [Defintion Struct:ChapterStats |56-byte]
 //          |'''''''''''''''''''''''
 //          | - This struct saves gameplay statistics of a specific Chapter
+//          | - This struct is only updated on completion of the corresponding Chapter, not when quiting
 //          |
 //          |+0x0 - [32-bit (layer-1) Pointer]
 //          |.+0x2 - [Variable Size ASCII:LevelID]
@@ -2206,19 +2237,26 @@
 //          |+0x28 - [32-bit:Headshots]
 //          |+0x2C - [32-bit:MeleeKills]
 //          |
-//          |+0x34 - [32-bit (layer-1) Pointer] -> [40-byte Struct:KillsByWeapon]
-//          || - [Struct:KillsByWeapon] Decides the "Favorite Weapon", by checking which weapon has the highest kills.
-//          || - The weapon with the lowest WeaponID is picked the "Favorite Weapon", when multiple weapons have the same killCount. (WeaponIDs listed at $0x965c04)
-//          |.+0x0 - [32-bit:Kills_Pistol]
-//          |.+0x4 - [32-bit:Kills_Redeemer]
-//          |.+0x8 - [32-bit:Kills_DualPistols]
-//          |.+0xC - [32-bit:Kills_HorseRevolver]
-//          |.+0x10 - [32-bit:Kills_Carbine]
-//          |.+0x14 - [32-bit:Kills_Shotgun]
-//          |.+0x18 - [32-bit:Kills_RailRocket]
-//          |.+0x1C - [32-bit:Kills_RangeRifle]
-//          |.+0x20 - [32-bit:Kills_Crossbow]
-//          |.+0x24 - [32-bit:Kills_Scepter]
+//          |+0x34 - [32-bit (layer-1) Pointer:WeaponEquipTimes] -> [40-byte Struct:WeaponEquipTimes]
+//          || - Definition of [Struct:WeaponEquipTimes] below
+//          '
+//          
+//          [Definition Struct:WeaponEquipTimes |40-byte]
+//          |''''''''''''''''''''''''''''''''
+//          | - [Struct:WeaponEquipTimes] decides the "Favorite Weapon", by checking which weapon was equipped for the longest.
+//          | -  When multiple weapons have the same EquipTime. The weapon with the lowest WeaponID is picked as the "Favorite Weapon". (WeaponIDs listed at $0x965c04)
+//          | - WeaponEquipTimes are saved in milliseconds (1,000 ms = 1 sec); Max value is 0xFFFFFFFF (= around 1,193 hours), then overflows...
+//          |
+//          |+0x0 - [32-bit:WeaponEquipTime_Pistol]
+//          |+0x4 - [32-bit:WeaponEquipTime_Redeemer]
+//          |+0x8 - [32-bit:WeaponEquipTime_DualPistols]
+//          |+0xC - [32-bit:WeaponEquipTime_HorseRevolver]
+//          |+0x10 - [32-bit:WeaponEquipTime_Carbine]
+//          |+0x14 - [32-bit:WeaponEquipTime_Shotgun]
+//          |+0x18 - [32-bit:WeaponEquipTime_RailRocket]
+//          |+0x1C - [32-bit:WeaponEquipTime_RangeRifle]
+//          |+0x20 - [32-bit:WeaponEquipTime_Crossbow]
+//          |+0x24 - [32-bit:WeaponEquipTime_Scepter]
 //          '
 // $965CE8: [PAL][3-byte Bitset:LoreUnlocks] (19 flags)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
@@ -2419,7 +2457,7 @@
 //          ===========================================
 //          - PlayerData for player2 is only populated when starting Multiplayer
 //          
-//          [PAL][32-bit:EquippedWeapon_WeaponID-Player2]
+//          [PAL][8-bit:EquippedWeapon_WeaponID-Player2 |32-bit]
 //          @Member of [Struct(PlayerData):Player-2] (refer to $0x74d78c)
 //          - Documentation refer to [Struct(PlayerData):Player-1]
 // $965D48: [PAL][32-bit:KillsInChapter-Player2]
