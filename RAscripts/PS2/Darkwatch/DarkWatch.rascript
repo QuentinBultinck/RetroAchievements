@@ -332,8 +332,11 @@ memory_addresses = {
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
+	"Lower4:MultiplayerVersusGameModeID(non-functional)": {RELEASE_REGION_USA: 0x8FF534, RELEASE_REGION_EUR: 0x911514, RELEASE_REGION_JPN: sNULL},
 	"Lower4:DifficultyID(preferred)": {RELEASE_REGION_USA: 0x953c9c, RELEASE_REGION_EUR: 0x965c7c, RELEASE_REGION_JPN: sNULL},
-	
+
+	"8-bit:MatchDuration(non-functional)": {RELEASE_REGION_USA: 0x8FF524, RELEASE_REGION_EUR: 0x911504, RELEASE_REGION_JPN: sNULL},
+	"8-bit:DeathmatchSetting_KillsToWin(non-functional)": {RELEASE_REGION_USA: 0x8FF528, RELEASE_REGION_EUR: 0x911508, RELEASE_REGION_JPN: sNULL},
 	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
 	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
 	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL},
@@ -572,7 +575,7 @@ LANGUAGE_Spanish = 0x53
 
 function current_DisplayLanguage(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:DisplayLanguageID", enum_releaseRegion))
-// #endregion Misc
+// #endregion Misc Logic
 
 // #region MainMenu SubMenu Identification
 // -----------------MainMenu SubMenu Identification--------------------
@@ -683,8 +686,7 @@ function is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion) {
 function is_InMultiplayerVersusMode(enum_releaseRegion) {
 	const_GAMEMODE_MultiplayerVersus = 3
 	return 
-		current_PlayerCount(enum_releaseRegion) == 1
-		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerVersus
+		current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerVersus
 	}
 
 function is_InMultiplayerCoopMode(enum_releaseRegion) {
@@ -886,6 +888,44 @@ function on_PauseMenu_Restart_OR_Quit(enum_releaseRegion) =>
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 // #endregion Pause Menu
+
+// #region Multiplayer Match Settings
+// ----------------Multiplayer Match Settings---------------------
+MP_VS_GAMEMODE_Deathmatch = 0x1
+MP_VS_GAMEMODE_SoulHunter = 0x4
+
+MP_VS_MATCHDURATION_NoTimeLimit = 0xFF
+MP_VS_MATCHDURATION_5min = 0x5
+MP_VS_MATCHDURATION_10mins = 0xA
+MP_VS_MATCHDURATION_15mins = 0xF
+MP_VS_MATCHDURATION_30mins = 0x1E
+
+MP_VS_KillsToWin_NoKillLimit = 0xFF
+MP_VS_KillsToWin_5Kills = 0x5
+MP_VS_KillsToWin_10Kills = 0xA
+MP_VS_KillsToWin_15Kills = 0xF
+MP_VS_KillsToWin_25Kills = 0x19
+MP_VS_KillsToWin_50Kills = 0x32
+
+function current_MultiplayerVersusGameMode(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:MultiplayerVersusGameModeID(non-functional)", enum_releaseRegion))
+
+function is_MultiplayerVersusGameMode(enum_multiplayerVersusGameMode, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_multiplayerVersusGameMode
+
+function current_DeathmatchSetting_KillsToWin(enum_releaseRegion) =>
+	low4(memory_getAddress("8-bit:DeathmatchSetting_KillsToWin(non-functional)", enum_releaseRegion))
+
+function is_DeathmatchSetting_KillsToWin(enum_multiplayerVersusKillsToWin, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_multiplayerVersusKillsToWin
+
+function current_MultiplayerSetting_MatchDuration(enum_releaseRegion) =>
+	low4(memory_getAddress("8-bit:MatchDuration(non-functional)", enum_releaseRegion))
+
+function is_MultiplayerSetting_MatchDuration(enum_MultiplayerMatchDuration, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_MultiplayerMatchDuration
+// #endregion Multiplayer Match Settings
+
 // #endregion General Game Logic
 
 // ............
@@ -941,7 +981,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_1_WrongTrain: {
 		"LevelID": "WrongTrain",
 		"FullString_ChapterSectionIDs": ["WrongTrain_A", "WrongTrain_B"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x8, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 8, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x696e5f41, 0x696e5f42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -954,7 +994,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_3_Boneyard: {
 		"LevelID": "M03_Cemetery",
 		"FullString_ChapterSectionIDs": ["M03_C", "M03_B", "M03_A"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x30335F43, 0x30335F42, 0x30335F41], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -962,7 +1002,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
 		"FullString_ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_C", "Hub_D"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x75625F41, 0x75625F42, 0x75625F43, 0x75625F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -970,7 +1010,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
 		"FullString_ChapterSectionIDs": ["M07_A", "M07_B"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x30375F41, 0x30375F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -983,7 +1023,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
 		"FullString_ChapterSectionIDs": ["M09_A", "M09_B", "M09_C", "M09_D", "M09_E", "M09_F"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x30395F41, 0x30395F42, 0x30395F43, 0x30395F44, 0x30395F45, 0x30395F46], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -991,7 +1031,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
 		"FullString_ChapterSectionIDs": ["M10_A", "M10_B", "M10_C", "M10_D"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x31305F41, 0x31305F42, 0x31305F43, 0x31305F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1004,7 +1044,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_9_Rescue: {
 		"LevelID": "M08_Regulator",
 		"FullString_ChapterSectionIDs": ["Hub_A", "Hub_B"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x75625F41, 0x75625F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1012,7 +1052,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_10_Prism: {
 		"LevelID": "M15_SplittingPaths",
 		"FullString_ChapterSectionIDs": ["M15_D", "M15_E", "M15_F", "M15_A", "M15_C"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x31355F44, 0x31355F45, 0x31355F46, 0x31355F41, 0x31355F43], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1020,7 +1060,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_11_Invasion: {
 		"LevelID": "M17_Invasion",
 		"FullString_ChapterSectionIDs": ["M17_B", "M17_C", "M17_D"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x31375F42, 0x31375F43, 0x31375F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1028,7 +1068,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_12_Hangtown: {
 		"LevelID": "M11_Hangtown",
 		"FullString_ChapterSectionIDs": ["M11_F", "M11_G", "M11_H"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x1, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 1, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x31315F46, 0x31315F47, 0x31315F48], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1036,7 +1076,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_13_MorningAfter: {
 		"LevelID": "M12_CitadelUnderAttack",
 		"FullString_ChapterSectionIDs": ["M12_AA", "M12_B", "M12_C", "M12_D", "M12_A"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x2, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 2, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x325F4141, 0x325F4200, 0x325F4300, 0x325F4400, 0x325F4100], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1044,7 +1084,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_14_Showdown: {
 		"LevelID": "FallOfCitadel",
 		"FullString_ChapterSectionIDs": ["FallOfCitadel_A", "FallOfCitadel_B"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x11, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 11, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["in_A", "in_B"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x656C5F41, 0x656C5F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1057,7 +1097,7 @@ CONST_LEVEL_DATA = {
 	CHAPTER_16_Deadfall: {
 		"LevelID": "M20_PenetratingDeadfall",
 		"FullString_ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
-		"OffsetTo_32BitBE_Substring_ChapterSectionID": 0x2, // --> Last 4-byte of "ChapterSectionID"
+		"OffsetTo_32BitBE_Substring_ChapterSectionID": 2, // --> Last 4-byte of "ChapterSectionID"
 		"Substring_ChapterSectionIDs": ["Hub_A", "Hub_B", "Hub_B2", "Hub_C", "Hub_C2"],
 		"32BitBE_Substring_ChapterSectionIDs_asHex": [0x625F4100, 0x625F4200, 0x625F4232, 0x625F4300, 0x625F4332], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
@@ -1066,7 +1106,7 @@ CONST_LEVEL_DATA = {
 		"LevelID": "GroundZero",
 		"FullString_ChapterSectionIDs": ["GroundZero_A"],
 		"IsGunslingerLevel": true,
-		},
+		},	
 	}
 
 function LEVEL_DATA_getLevelID(enum_chapter) =>
@@ -1116,6 +1156,79 @@ function LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter) =>
 function LEVEL_DATA_getAllGunslingerLevels() => 
 	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter))
 
+CONST_MP_LEVEL_DATA = {
+	MULTIPLAYER_LEVEL_Asylum: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Asyl"), // DM_ 'Asyl' um  
+		"OffsetTo_Substring_LevelID": 3,
+		},
+	MULTIPLAYER_LEVEL_DeathDealer: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ler") * 100, // DM_DeathDea 'ler' | *100 to also include 4th zeroed out byte 
+		"OffsetTo_Substring_LevelID": 11,
+		},
+	MULTIPLAYER_LEVEL_DeathDealerDay: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("lerD"), // DM_DeathDea 'lerD' ay
+		"OffsetTo_Substring_LevelID": 11,
+		},
+	MULTIPLAYER_LEVEL_DevilsBelly: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Devi"), // DM_ 'Devi' lsBelly  
+		"OffsetTo_Substring_LevelID": 3,
+		},
+	MULTIPLAYER_LEVEL_DonnerPass: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ass") * 100, // DM_DonnerP 'ass' | *100 to also include 4th zeroed out byte 
+		"OffsetTo_Substring_LevelID": 10,
+		},
+	MULTIPLAYER_LEVEL_DonnerPassDay: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("assD"), // DM_DonnerP 'assD' ay
+		"OffsetTo_Substring_LevelID": 10,
+		},
+	MULTIPLAYER_LEVEL_HangTownEast: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ast") * 100, // DM_HangTownE 'ast' | *100 to also include 4th zeroed out byte 
+		"OffsetTo_Substring_LevelID": 12,
+		},
+	MULTIPLAYER_LEVEL_HangTownEastDay: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("astD"), // DM_HangTownE 'astD' ay
+		"OffsetTo_Substring_LevelID": 12,
+		},
+	MULTIPLAYER_LEVEL_HangTownWest: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("est") * 100, // DM_HangTownW 'est' | *100 to also include 4th zeroed out byte 
+		"OffsetTo_Substring_LevelID": 12,
+		},
+	MULTIPLAYER_LEVEL_HangTownWestDay: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("estD"), // DM_HangTownW 'estD' ay 
+		"OffsetTo_Substring_LevelID": 12,
+		},
+	MULTIPLAYER_LEVEL_HellHole: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Hell"), // DM_ 'Hell' Hole    
+		"OffsetTo_Substring_LevelID": 3,
+		},
+	MULTIPLAYER_LEVEL_TradeCenter: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ter") * 100, // DM_TradeCen 'ter' | *100 to also include 4th zeroed out byte 
+		"OffsetTo_Substring_LevelID": 11,
+		},
+	MULTIPLAYER_LEVEL_TradeCenterDay: {
+		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("terD"), // DM_TradeCen 'terD' ay
+		"OffsetTo_Substring_LevelID": 11,	
+		},
+	}
+
+function MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel) =>
+	CONST_MP_LEVEL_DATA[enum_MPlevel]["OffsetTo_Substring_LevelID"]
+
+function MP_LEVEL_DATA_get32BitSubstringLevelID_asString(enum_MPlevel) {
+	let_int_offsetTo_SubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
+	return substring(enum_MPlevel, let_int_offsetTo_SubstringLevelID, 4)} // NOTE: Substring --> Only check [4-byte] of ASCII
+
+function MP_LEVEL_DATA_get32BitSubstringLevelID_asHex(enum_MPlevel) =>
+	CONST_MP_LEVEL_DATA[enum_MPlevel]["32BitSubstring_LevelID_asHex"]
+
+function MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(int_offsetTo_substringLevelID) =>
+	array_filter(CONST_MP_LEVEL_DATA, (enum_MPlevel) {
+		if (MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel) == int_offsetTo_substringLevelID)
+			return true
+		else 
+			return false
+	})
+
 // ----------------StoryModeProgression---------------------
 function current_SinglePlayerStoryProgression(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:InProgress_StoryChapterID", enum_releaseRegion))
@@ -1164,13 +1277,17 @@ function ASCII_MEM_ADDR_LevelID(enum_releaseRegion) {
 function is_Level(string_levelID, enum_releaseRegion) => 
 	is_ASCII_EqualTo(ASCII_MEM_ADDR_LevelID(enum_releaseRegion), string_levelID)
 
-function is_Level_StoryChapter(enum_chapter, enum_releaseRegion) {
-	let_substring_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
+function is_LevelSubstring(substring_levelID, int_offsetTo_substringLevelID, enum_releaseRegion) => 
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_LevelID(enum_releaseRegion) + int_offsetTo_substringLevelID, substring_levelID)
+
+function is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion) {
+	let_substring_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check FIRST [4-byte] of ASCII
 	return is_Level(let_substring_LevelID, enum_releaseRegion)}
 
-function is_Level_Multiplayer(enum_multiplayerLevel, enum_releaseRegion) {
-	let_substring_LevelID = substring(enum_multiplayerLevel, 0, 4) // NOTE: Substring --> Only check [4-byte] of ASCII
-	return is_Level(let_substring_LevelID, enum_releaseRegion)}
+function is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion) {
+	let_substring_LevelID =  MP_LEVEL_DATA_get32BitSubstringLevelID_asString(enum_MPlevel)
+	let_int_offsetTo_SubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
+	return is_LevelSubstring(let_substring_LevelID, let_int_offsetTo_SubstringLevelID, enum_releaseRegion)}
 
 // #endregion Level ID
 
@@ -1278,14 +1395,14 @@ function on_calculated_TotalMissionTime_overflow(enum_releaseRegion) => // NOTE:
 
 // -------------------------------------
 function on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion) =>
-	is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+	is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 	&& is_ChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
 	&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
 	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 	&& on_MissionTime_Temp_start(enum_releaseRegion)
 
 function on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
-	is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+	is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 	&& is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
 	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 	&& on_MissionTime_Temp_start(enum_releaseRegion)
@@ -1293,7 +1410,7 @@ function on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSection,
 function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion) {
 	let_lastChapterSection = LEVEL_DATA_getLastFullStringChapterSectionIndex(enum_chapter)
 	return 
-		is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+		is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 		&& is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)
 		&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 		&& on_MissionTime_Temp_start(enum_releaseRegion)
@@ -1903,7 +2020,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerLevelProgression(enum_chapter
 	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	// [3] ==== Alt Reset Group ==== 			-> Reset when at MainMenu --> Necessary next to AltResetGroup[4], to reset hitCounts on AltLogicGroup
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -1952,7 +2069,7 @@ function achGenerate_4x_AltResetGroups_SingleplayerWinCondition(enum_chapter, en
 	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	// [3] ==== Alt Reset Group ==== 			-> Reset when at MainMenu --> Necessary next to AltResetGroup[4], to reset hitCounts on AltLogicGroup
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -2056,7 +2173,7 @@ function achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_rele
 	// [3] ==== Alt Reset Group ==== 		-> Reset when LevelID is incorrect
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 		-> Reset when pressing PauseMenu->Quit
 		/* MANUAL_CONSTRUCTION (AltGroup[4]): R/R usage
 			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
@@ -3044,9 +3161,9 @@ richPresence_text = {
 		*/
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 
-	"rp_Versus":							{"en": "{0} xxxxxxxx"},
-	"rp_Coop":								{"en": "{0} xxxxxxxx"},
-	"rp_Gunslinger":						{"en": "{0} xxxxxxxx"},
+	"rp_Versus":							{"en": "{0} Playing Darkwatch ᛭ Multiplayer Versus Mode ᛭ {1} Gunslinger{2} {3} {4} {5}"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch ᛭"},
+	"rp_Gunslinger":						{"en": "{0} Playing Darkwatch ᛭"},
 	"rp_SinglePlayer_OneChapterSection":			{"en": "{0} Playing Darkwatch ᛭ {1} in {2}"},
 	"rp_SinglePlayer_MultiChapterSection":			{"en": "{0} Playing Darkwatch ᛭ {1} in {2}"},
 	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Story Complete {1}{2} Ending"},
@@ -3055,7 +3172,7 @@ richPresence_text = {
 	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Story Complete {1}{2} Ending"},
 	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch 🕇 Story Completion: {1}%"},
 	"rp_DefaultPlus_NoProfile": 			{"en": "{0} Playing Darkwatch 🕇"},
-	"rp_Default":							{"en": "Playing Darkwatch ✟"}}	// TODO implement rp_Default + rp_DefaultPlus
+	"rp_Default":							{"en": "Playing Darkwatch ✟"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -3063,6 +3180,30 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_B":				{"en": "xxxxxxxx"},
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
+	"lupText_MPplayerSingularOrPlural": {
+		"Singular":				{"en": " is"}, 		// 1 Gunslinger is ...
+		"Plural":				{"en": "s are"},	// 2 Gunslingers are ...
+		},
+	"lupText_MPgameModeFlavorText": {
+		"LOOKUP_FALLBACK":			{"en": "locked in a deadly standoff"},
+		"Deathmatch":				{"en": "battling for dominance"},
+		"SoulHunter":				{"en": "claiming souls"},
+		},
+	"lupText_MPlevel_DayOrNight": {
+		"DayTime":		{"en": "☀️"},
+		"NightTime":	{"en": "🌙"},
+		},
+	"lupText_MPlevel": {
+		"LOOKUP_FALLBACK":			{"en": "in \"The Wild West\""},
+		"Asylum":			 		{"en": "it \"Darkwatch's Asylum\""},
+		"DeathDealer":		 		{"en": "at \"The Death Dealer\""},
+		"DevilsBelly":		 		{"en": "in \"The Devil's Belly Mine\""},
+		"DonnerPass":		 		{"en": "at \"Donner Pass\""},
+		"HangTownEast":		 		{"en": "in \"Hangtown East\""},
+		"HangTownWest":		 		{"en": "in \"Hangtown West\""},
+		"HellHole":		 			{"en": "at \"The Hellhole\""},
+		"TradeCenter":		 		{"en": "at \"The Trade Center\""},
+		},
 	"lupText_Chapter": { // TODO write RP
 		"LOOKUP_FALLBACK":		{"en": "\"The Wild West\""},
 		"WrongTrain": 			{"en": "Chapter 1, \"The Wrong Train\""},
@@ -3183,8 +3324,8 @@ function rpGenerate_LookupTableKey_MultiChapterSectionFlavorText(enum_chapter, e
 
 function rpCalculate_LookupTableKey_MultiChapterSectionFlavorText(int_offsetToSubstringChapterSectionID, enum_releaseRegion) =>
 	(dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)) 
-	+ dword_be(ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion) 
-	+ int_offsetToSubstringChapterSectionID)) * CONST_HASH_SPICE_LookupTableKey_MultiChapterSectionFlavorText
+		+ dword_be(ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion) + int_offsetToSubstringChapterSectionID)
+		) * CONST_HASH_SPICE_LookupTableKey_MultiChapterSectionFlavorText
 	// dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion))
 
 
@@ -3197,6 +3338,56 @@ richPresence_lookupTables = {
 		// 	enum_XXX_C:					"LookupTextKey_C",
 		// 	},
 		// },
+	"lup_MPplayerSingularOrPlural": {
+		"LookupTableText_Key": "lupText_MPplayerSingularOrPlural",
+		"LookUpTable": {
+			1: 	"Singular",
+			2: 	"Plural",
+			},
+		},
+	"lup_MPgameModeFlavorText": {
+		"LookupTableText_Key": "lupText_MPgameModeFlavorText",
+		"LookUpTable": {
+			MP_VS_GAMEMODE_Deathmatch: 	"Deathmatch",
+			MP_VS_GAMEMODE_SoulHunter: 	"SoulHunter",
+			},
+		},
+	"lup_MPlevel_DayOrNight": {
+		"LookupTableText_Key": "lupText_MPlevel_DayOrNight",
+		"LookUpTable": {
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_Asylum):				"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealer): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealerDay): 		"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DevilsBelly): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPass): 			"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPassDay): 		"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEast): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEastDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWest): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWestDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HellHole): 			"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenter): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenterDay): 		"DayTime",
+			},
+		},
+	"lup_MPlevel": {
+		"LookupTableText_Key": "lupText_MPlevel",
+		"LookUpTable": {
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_Asylum):				"Asylum",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealer): 		"DeathDealer",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealerDay): 		"DeathDealer",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DevilsBelly): 		"DevilsBelly",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPass): 			"DonnerPass",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPassDay): 		"DonnerPass",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEast): 		"HangTownEast",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEastDay): 	"HangTownEast",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWest): 		"HangTownWest",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWestDay): 	"HangTownWest",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HellHole): 			"HellHole",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenter): 		"TradeCenter",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenterDay): 		"TradeCenter",
+			},
+		},
 	"lup_Chapter": {
 		"LookupTableText_Key": "lupText_Chapter",
 		"LookUpTable": {
@@ -3369,7 +3560,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 // ================================
 // #region RP - display script
 
-// function rp_TemplateDisplayScript(enum_releaseRegion) { 
+// function rp_TemplateDisplayScript(enum_releaseRegion) {
 	// function condition(enum_releaseRegion) =>
 	// 	is_ReleaseRegion(enum_releaseRegion)
 	// return rich_presence_conditional_display( 
@@ -3379,16 +3570,81 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
 	// )}
-
-
- 
-function rp_SinglePlayer_OneChapterSection(enum_releaseRegion) { 
+function rp_Versus_offsetToSubstringLevelID_3(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_atMainMenu(enum_releaseRegion)
+		&& is_InMultiplayerVersusMode(enum_releaseRegion)
+		&& any_of(MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(3), enum_MPlevel =>
+			is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion))
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText_withRegionSuperScript("rp_Versus", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_PlayerCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_MPplayerSingularOrPlural", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_MPgameModeFlavorText", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_MPlevel_offsetToSubstringLevelID_3", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_3", enum_releaseRegion) // 5
+	)}
+function rp_Versus_offsetToSubstringLevelID_10(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_atMainMenu(enum_releaseRegion)
+		&& is_InMultiplayerVersusMode(enum_releaseRegion)
+		&& any_of(MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(10), enum_MPlevel =>
+			is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion))
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText_withRegionSuperScript("rp_Versus", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_PlayerCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_MPplayerSingularOrPlural", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_MPgameModeFlavorText", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_MPlevel_offsetToSubstringLevelID_10", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_10", enum_releaseRegion) // 5
+	)}
+function rp_Versus_offsetToSubstringLevelID_11(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_atMainMenu(enum_releaseRegion)
+		&& is_InMultiplayerVersusMode(enum_releaseRegion)
+		&& any_of(MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(11), enum_MPlevel =>
+			is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion))
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText_withRegionSuperScript("rp_Versus", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_PlayerCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_MPplayerSingularOrPlural", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_MPgameModeFlavorText", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_MPlevel_offsetToSubstringLevelID_11", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_11", enum_releaseRegion) // 5
+	)}
+function rp_Versus_offsetToSubstringLevelID_12(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_atMainMenu(enum_releaseRegion)
+		&& is_InMultiplayerVersusMode(enum_releaseRegion)
+		&& any_of(MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(12), enum_MPlevel =>
+			is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion))
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText_withRegionSuperScript("rp_Versus", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_PlayerCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_MPplayerSingularOrPlural", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_MPgameModeFlavorText", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_MPlevel_offsetToSubstringLevelID_12", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_12", enum_releaseRegion) // 5
+	)}
+function rp_SinglePlayer_OneChapterSection(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_InSinglePlayerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
 		&& any_of(LEVEL_DATA_getAllOneChapterSectionChapters(), enum_chapter => 
-			is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_SinglePlayer_OneChapterSection", enum_releaseRegion),
@@ -3401,8 +3657,8 @@ function rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSection
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_InSinglePlayerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(0x1), enum_chapter =>
-			is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(1), enum_chapter =>
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_SinglePlayer_MultiChapterSection", enum_releaseRegion),
@@ -3415,8 +3671,8 @@ function rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSection
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_InSinglePlayerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(0x2), enum_chapter =>
-			is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(2), enum_chapter =>
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_SinglePlayer_MultiChapterSection", enum_releaseRegion),
@@ -3429,8 +3685,8 @@ function rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSection
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_InSinglePlayerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(0x8), enum_chapter =>
-			is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(8), enum_chapter =>
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_SinglePlayer_MultiChapterSection", enum_releaseRegion),
@@ -3443,8 +3699,8 @@ function rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSection
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_InSinglePlayerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(0x11), enum_chapter =>
-			is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+		&& any_of(LEVEL_DATA_getAllMultipleChapterSectionChapters_withOffsetToSubstringChapterSectionID(11), enum_chapter =>
+			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
 		richPresence_getText_withRegionSuperScript("rp_SinglePlayer_MultiChapterSection", enum_releaseRegion),
@@ -3539,17 +3795,21 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_SinglePlayer_OneChapterSection(enum_releaseRegion)
-		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion)
-		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion)
-		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_8(enum_releaseRegion)
-		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_11(enum_releaseRegion)
-		rp_TitleScreen_StoryFin(enum_releaseRegion) // CONCEPT
-		rp_TitleScreen_StoryProgress(enum_releaseRegion) // CONCEPT
-		rp_TitleScreen_NoProfile(enum_releaseRegion) // CONCEPT
-		rp_DefaultPlus_StoryFin(enum_releaseRegion) // CONCEPT
-		rp_DefaultPlus_StoryProgress(enum_releaseRegion) // CONCEPT
-		rp_DefaultPlus_NoProfile(enum_releaseRegion) // CONCEPT
+		rp_Versus_offsetToSubstringLevelID_3(enum_releaseRegion) // VERIFIED
+		rp_Versus_offsetToSubstringLevelID_10(enum_releaseRegion) // VERIFIED
+		rp_Versus_offsetToSubstringLevelID_11(enum_releaseRegion) // VERIFIED
+		rp_Versus_offsetToSubstringLevelID_12(enum_releaseRegion) // VERIFIED
+		rp_SinglePlayer_OneChapterSection(enum_releaseRegion) // VERIFIED
+		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion) // VERIFIED
+		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion) // VERIFIED
+		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_8(enum_releaseRegion) // VERIFIED
+		rp_SinglePlayer_MultiChapterSection_withOffsetToSubstringChapterSectionID_11(enum_releaseRegion) // VERIFIED
+		rp_TitleScreen_StoryFin(enum_releaseRegion) // VERIFIED
+		rp_TitleScreen_StoryProgress(enum_releaseRegion) // VERIFIED
+		rp_TitleScreen_NoProfile(enum_releaseRegion) // VERIFIED
+		rp_DefaultPlus_StoryFin(enum_releaseRegion) // VERIFIED
+		rp_DefaultPlus_StoryProgress(enum_releaseRegion) // VERIFIED
+		rp_DefaultPlus_NoProfile(enum_releaseRegion) // VERIFIED
 	}} 
 // #endregion RP - display script
 
@@ -3658,7 +3918,78 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_MultiChapterSectionFlavorText(0x11, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_MultiChapterSectionFlavorText",
 		"LookupFallback": richPresence_getLookupTableText("lupText_MultiChapterSectionFlavorText", "LOOKUP_FALLBACK")},
-
+	"rpp_MPplayerSingularOrPlural": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_PlayerCount(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: current_PlayerCount(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_MPplayerSingularOrPlural",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPplayerSingularOrPlural", "Plural")},
+	"rpp_MPgameModeFlavorText": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: current_MultiplayerVersusGameMode(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: current_MultiplayerVersusGameMode(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_MPgameModeFlavorText",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPgameModeFlavorText", "LOOKUP_FALLBACK")},
+	
+	
+	"rpp_MPlevel_offsetToSubstringLevelID_3": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 3, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 3},
+		"LookupTableID": "lup_MPlevel",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
+	"rpp_MPlevel_offsetToSubstringLevelID_10": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 10, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 10},
+		"LookupTableID": "lup_MPlevel",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
+	"rpp_MPlevel_offsetToSubstringLevelID_11": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 11, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 11},
+		"LookupTableID": "lup_MPlevel",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
+	"rpp_MPlevel_offsetToSubstringLevelID_12": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 12, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 12},
+		"LookupTableID": "lup_MPlevel",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
+	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_3": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 3, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 3},
+		"LookupTableID": "lup_MPlevel_DayOrNight",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
+	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_10": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 10, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 10},
+		"LookupTableID": "lup_MPlevel_DayOrNight",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
+	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_11": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 11, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 11},
+		"LookupTableID": "lup_MPlevel_DayOrNight",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
+	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_12": {
+		"RPtype": richPresence_LOOKUP_STRING,
+		"MemoryAddressToASCII": {
+			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 12, 
+			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 12},
+		"LookupTableID": "lup_MPlevel_DayOrNight",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
 	"rpp_OneChapterSectionFlavorText": {
 		"RPtype": richPresence_LOOKUP_STRING,
 		"MemoryAddressToASCII": {
@@ -3681,6 +4012,13 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: current_calculated_SinglePlayerStoryProgressionPercentage(RELEASE_REGION_USA),
 			RELEASE_REGION_EUR: current_calculated_SinglePlayerStoryProgressionPercentage(RELEASE_REGION_EUR)},
 		"MacroFormat": "Number"},
+	"rpp_PlayerCount": {
+		"RPtype": richPresence_MACRO,
+		"Expression": {
+			RELEASE_REGION_USA: current_PlayerCount(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: current_PlayerCount(RELEASE_REGION_EUR)},
+		"MacroFormat": "Number"},
+	
 	
 	}
 // -------------------------------------
@@ -3847,7 +4185,7 @@ function lbGenerate_FullStartTrigger_ChapterCompletion(enum_chapter, enum_releas
 function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Cancel Group ====		-> Cancel when LevelID is incorrect
 		is_ReleaseRegion(enum_releaseRegion)
-		&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion)
+		&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 	// [2] ==== Alt Cancel Group ==== 		-> Cancel when not in SinglePlayer OR Gunslinger Mode
 		|| is_ReleaseRegion(enum_releaseRegion)
 		&& !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
@@ -3928,7 +4266,7 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 	// [3] ==== Alt Reset Group ====						-> Reset when LevelID is incorrect
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
-			&& !is_Level_StoryChapter(enum_chapter, enum_releaseRegion))
+			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 						-> Reset when not in SinglePlayer OR Gunslinger Mode
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
