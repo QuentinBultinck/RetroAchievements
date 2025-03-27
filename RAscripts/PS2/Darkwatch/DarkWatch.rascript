@@ -697,7 +697,7 @@ function is_InMultiplayerVersusMode(enum_releaseRegion) {
 function is_InMultiplayerCoopMode(enum_releaseRegion) {
 	const_GAMEMODE_MultiplayerCoop = 0 // NOTE: same GameModeID as SinglePlayer
 	return 
-		current_PlayerCount(enum_releaseRegion) == 1
+		current_PlayerCount(enum_releaseRegion) == 2
 		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
 	}
 // #endregion Game Modes
@@ -3172,8 +3172,8 @@ richPresence_text = {
 
 	"rp_Versus":							{"en": "{0} Playing Darkwatch 🕇 Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
 	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch 🕇 setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2} on {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3} on {4} difficulty"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2}, on {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3}, on {4} difficulty"},
 	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
 	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Completion: {1}%"},
 	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Complete: {1}{2} Ending"},
@@ -3300,7 +3300,7 @@ richPresence_LookupTablesText = {
 		"Deadfall-5":			{"en": "xxxxxxx"},
 		"CurseWest-1":			{"en": "xxxxxxx"},
 		},
-	"lupText_ChapterFlavorText_SinglePlayer": {  // TODO write lupText_ChapterFlavorText_SinglePlayer
+	"lupText_ChapterFlavorText_SinglePlayer": {
 		"LOOKUP_FALLBACK":		{"en": "Jericho Cross is fending off the darkness"},
 		"WrongTrain-1":			{"en": "Jericho Cross came for gold, but what he's stealing is his own damnation"},
 		"WrongTrain-2":			{"en": "Cassidy warned him, but Jericho opened the vault anyway—now they fight to survive"},
@@ -3313,46 +3313,46 @@ richPresence_LookupTablesText = {
 		"DevilMine-3":			{"en": "The mine wants to keep its secrets, but Jericho came packing dynamite"},
 		"DevilMine-4":			{"en": "Jericho ain't alone down here—but what he finds ain't what he expected"},
 		"Outpost-1":			{"en": "Jericho enters Darkwatch's stronghold, but the fight's already lost"},
-		"Outpost-2":			{"en": "A frozen lab, a buried secret—Darkwatch played with fire, and hell answered"},
-		"WarTrain-1":			{"en": "xxxxxxx"},
-		"TortureMaze-1":		{"en": "xxxxxxx"},	
-		"TortureMaze-2":		{"en": "xxxxxxx"},	
-		"TortureMaze-3":		{"en": "xxxxxxx"},	
-		"TortureMaze-4":		{"en": "xxxxxxx"},	
-		"TortureMaze-5":		{"en": "xxxxxxx"},	
-		"TortureMaze-6":		{"en": "xxxxxxx"},	
-		"BaptismFire-1":		{"en": "xxxxxxx"},	
-		"BaptismFire-2":		{"en": "xxxxxxx"},	
-		"BaptismFire-3":		{"en": "xxxxxxx"},	
-		"BaptismFire-4":		{"en": "xxxxxxx"},
-		"Citadel-1":			{"en": "xxxxxxx"},	
-		"Rescue-1":				{"en": "xxxxxxx"},
-		"Rescue-2":				{"en": "xxxxxxx"},
-		"Prism-1":				{"en": "xxxxxxx"},
-		"Prism-2":				{"en": "xxxxxxx"},
-		"Prism-3":				{"en": "xxxxxxx"},
-		"Prism-4":				{"en": "xxxxxxx"},
-		"Prism-5":				{"en": "xxxxxxx"},
-		"Invasion-1":			{"en": "xxxxxxx"},
-		"Invasion-2":			{"en": "xxxxxxx"},
-		"Invasion-3":			{"en": "xxxxxxx"},
-		"Hangtown-1":			{"en": "xxxxxxx"},
-		"Hangtown-2":			{"en": "xxxxxxx"},
-		"Hangtown-3":			{"en": "xxxxxxx"},
-		"MorningAfter-1":		{"en": "xxxxxxx"},
-		"MorningAfter-2":		{"en": "xxxxxxx"},
-		"MorningAfter-3":		{"en": "xxxxxxx"},
-		"MorningAfter-4":		{"en": "xxxxxxx"},
-		"MorningAfter-5":		{"en": "xxxxxxx"},
-		"Showdown-1":			{"en": "xxxxxxx"},
-		"Showdown-2":			{"en": "xxxxxxx"},
-		"RightTrain-1":			{"en": "xxxxxxx"},
-		"Deadfall-1":			{"en": "xxxxxxx"},
-		"Deadfall-2":			{"en": "xxxxxxx"},
-		"Deadfall-3":			{"en": "xxxxxxx"},
-		"Deadfall-4":			{"en": "xxxxxxx"},
-		"Deadfall-5":			{"en": "xxxxxxx"},
-		"CurseWest-1":			{"en": "xxxxxxx"},
+		"Outpost-2":			{"en": "Jericho steps into the unknown—whatever Darkwatch was hiding here, it ain't staying buried"},
+		"WarTrain-1":			{"en": "Evil's got a new ride, but Jericho's about to derail their plans"},
+		"TortureMaze-1":		{"en": "No guns, no mercy—Cartwright's test starts with blood and steel"},	
+		"TortureMaze-2":		{"en": "Killing is easy—protecting the weak? That's Jericho's real test"},	
+		"TortureMaze-3":		{"en": "Shapes in the fog, death in the air—Jericho's got to cut through both"},	
+		"TortureMaze-4":		{"en": "Cartwright's test leads Jericho into the depths—survive the sewers, or rot in them"},	
+		"TortureMaze-5":		{"en": "Jericho's trial ain't over ‘til he outguns a town full of dead gunslingers"},	
+		"TortureMaze-6":		{"en": "Cartwright takes away Jericho's edge—if he wants to survive, he'll need more than fangs"},	
+		"BaptismFire-1":		{"en": "Jericho's got his badge—now it's time to prove it in fire and blood"},	
+		"BaptismFire-2":		{"en": "Jericho and Tala carve a path through the valley—no evil left standing"},	
+		"BaptismFire-3":		{"en": "The Trading Post's already burning—Jericho's just here to finish the job"},	
+		"BaptismFire-4":		{"en": "The Trading Post's got one shot at survival—Jericho makes sure it ain't wasted"},
+		"Citadel-1":			{"en": "Jericho's got a moment to breathe, but there ain't no saloons here—just the next battle waiting to be fought"},	
+		"Rescue-1":				{"en": "Gatling guns roar, wheels thunder—Jericho's bringing hell to the dead"},
+		"Rescue-2":				{"en": "The Regulators need saving, and Jericho's the only one left to do it"},
+		"Prism-1":				{"en": "The valley's crawling with evil, but Jericho and his squad came to take it back"},
+		"Prism-2":				{"en": "The undead strike from afar, but Jericho's aim is deadlier"},
+		"Prism-3":				{"en": "The winding canyons don't hide evil for long—Jericho's coming through"},
+		"Prism-4":				{"en": "No way but forward—Jericho wades through the canyon's depths, carving a bloody trai"},
+		"Prism-5":				{"en": "The sun's up, but Jericho's still got his power—now he's got no excuse not to win"},
+		"Invasion-1":			{"en": "Dark tunnels, old bones, and fresh enemies—Jericho fights his way through"},
+		"Invasion-2":			{"en": "Smoke rises, bodies fall—Jericho fights to take the village back"},
+		"Invasion-3":			{"en": "Jericho holds the line—the dead ain't taking this village"},
+		"Hangtown-1":			{"en": "The streets ain't safe yet—Jericho's here to clean up"},
+		"Hangtown-2":			{"en": "Bottles ain't the only thing getting smashed—Jericho fights to keep the saloon standing"},
+		"Hangtown-3":			{"en": "Hangtown's already lost, but Jericho's here to put the last of the dead to rest"},
+		"MorningAfter-1":		{"en": "The citadel is burning, and Jericho's got no choice but to fight for what's left"},
+		"MorningAfter-2":		{"en": "The enemy ain't just at the gates—now they're in the caves. Jericho stands his ground"},
+		"MorningAfter-3":		{"en": "The citadel ain't fallen yet—Jericho fights to keep it standing"},
+		"MorningAfter-4":		{"en": "The citadel's power source is under attack, but Jericho's standing between it and the abyss"},
+		"MorningAfter-5":		{"en": "Lazarus is making his move—Jericho races to stop him before it's too late"},
+		"Showdown-1":			{"en": "The devil's at full strength, but Jericho's here to put him down anyway"},
+		"Showdown-2":			{"en": "The battle's won, but Jericho's got a choice to make—redemption or power"},
+		"RightTrain-1":			{"en": "The train's bound for hell, and Jericho's gotta take it back"},
+		"Deadfall-1":			{"en": "Darkwatch's final push starts here—Jericho leads the charge into the city"},
+		"Deadfall-2":			{"en": "Ain't no cover from the shells or the monsters—Jericho fights through the crumbling streets"},
+		"Deadfall-3":			{"en": "The deeper Jericho goes, the worse it gets—the city streets are hell itself"},
+		"Deadfall-4":			{"en": "The walls are closing in, but Jericho fights his way through the city's crumbling buildings"},
+		"Deadfall-5":			{"en": "The city's tearing itself apart, but Jericho ain't stopping now"},
+		"CurseWest-1":			{"en": "This fight ain't just for Jericho—it's for the whole damn West, even if they ain't ready for what's coming"},
 		},
 	"lupText_IconEvil": {
 		"RepEvil":				{"en": "🩸"},
@@ -3791,9 +3791,8 @@ function rp_Versus_Setup(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
 		&& is_atMainMenu(enum_releaseRegion)
-		&& current_PlayerCount(enum_releaseRegion) == 2
+		&& current_PlayerCount(enum_releaseRegion) >= 2
 		&& is_flagState_InGame_false(enum_releaseRegion)
-		&& is_AnyEndingAchieved(enum_releaseRegion)
 		&& tally(1, [ // --Tally--> OrNext chain
 			once(is_MainMenu_SubMenuID(MAINMENU_SUBMENU_MultiplayerProfileSelectMenu, enum_releaseRegion)),
 			once(is_MainMenu_SubMenuID(MAINMENU_SUBMENU_CreateMultiplayerMatchMenu, enum_releaseRegion)),
@@ -3803,7 +3802,8 @@ function rp_Versus_Setup(enum_releaseRegion) {
 			&& on_MainMenu_newSubMenu(enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText_withRegionSuperScript("rp_Versus_Setup", enum_releaseRegion)
+		richPresence_getText_withRegionSuperScript("rp_Versus_Setup", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion) // 0
 	)}
 
 function rp_Coop_SingleChapterSection(enum_releaseRegion) {
@@ -4100,6 +4100,7 @@ function richPresence_initializeDisplays() {
 		rp_Versus_offsetToSubstringLevelID_10(enum_releaseRegion) // VERIFIED
 		rp_Versus_offsetToSubstringLevelID_11(enum_releaseRegion) // VERIFIED
 		rp_Versus_offsetToSubstringLevelID_12(enum_releaseRegion) // VERIFIED
+		rp_Versus_Setup(enum_releaseRegion) // VERIFIED
 		rp_Coop_SingleChapterSection(enum_releaseRegion) // CONCEPT
 		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion) // CONCEPT
 		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion) // CONCEPT
@@ -4215,58 +4216,58 @@ richPresence_parameterData = {
 	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_1": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x1, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x1, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_2": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x2, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x2, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_8": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x8, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x8, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_11": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x11, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x11, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
 	
 	"rpp_ChapterFlavorText_SinglePlayer_MultipleChapterSections_offsetToSubstringChapterSectionID_1": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x1, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x1, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_SinglePlayer_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_SinglePlayer", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_SinglePlayer_MultipleChapterSections_offsetToSubstringChapterSectionID_2": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x2, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x2, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_SinglePlayer_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_SinglePlayer", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_SinglePlayer_MultipleChapterSections_offsetToSubstringChapterSectionID_8": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x8, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x8, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_SinglePlayer_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_SinglePlayer", "LOOKUP_FALLBACK")},
 	"rpp_ChapterFlavorText_SinglePlayer_MultipleChapterSections_offsetToSubstringChapterSectionID_11": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x11, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(0x11, RELEASE_REGION_EUR)},
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_SinglePlayer_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_SinglePlayer", "LOOKUP_FALLBACK")},
 	"rpp_MPplayerSingularOrPlural": {
