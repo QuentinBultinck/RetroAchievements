@@ -3164,21 +3164,21 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	/* CONCEPT rp unicode characters
-		Default: ♰ ☩ ᛭ ✟ ✞ ✝ ✠ ⛨ 🕂 🕇 🕆
+		Default: ♰ ☩ ᛭ ✟ ✞ ✝ ✠ ⛨ 🕂 🕇 🕆  🕂 ᛭
 		Good-Evil: ⚡ 🔆 ☀️ ✨ - 🩸 🌙 🌕 ☠ - ⚖
 		
 		*/
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 
-	"rp_Versus":							{"en": "{0} Playing Darkwatch ᛭ Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
-	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch ᛭ setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch ᛭ Multiplayer Cooperative ᛭ {1} in {2} on {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ᛭ {1} ᛭ {2} in {3} on {4} difficulty"},
-	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Coop Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Coop Story Completion: {1}%"},
-	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ᛭ Main Menu 🕇 Story Completion: {1}%"},
-	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch ᛭ Main Menu"},
+	"rp_Versus":							{"en": "{0} Playing Darkwatch 🕇 Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
+	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch 🕇 setting up a Multiplayer Verus Match"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2} on {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3} on {4} difficulty"},
+	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Completion: {1}%"},
+	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Completion: {1}%"},
+	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch 🕇 Main Menu"},
 	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Story Complete: {1}{2} Ending"},
 	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch 🕇 Story Completion: {1}%"},
 	"rp_DefaultPlus_NoProfile": 			{"en": "{0} Playing Darkwatch 🕇"},
@@ -3192,7 +3192,7 @@ richPresence_LookupTablesText = {
 		// },
 	"lupText_SinglePlayerMode": {
 		"SinglePlayer":				{"en": "Single Player"},
-		"Gunslinger":				{"en": "Gunslinger"},
+		"Gunslinger":				{"en": "Gunslinger Mode"},
 		},
 	"lupText_Difficulty": {
 		"Greenhorn": 		{"en": "Greenhorn"},
@@ -3302,18 +3302,18 @@ richPresence_LookupTablesText = {
 		},
 	"lupText_ChapterFlavorText_SinglePlayer": {  // TODO write lupText_ChapterFlavorText_SinglePlayer
 		"LOOKUP_FALLBACK":		{"en": "Jericho Cross is fending off the darkness"},
-		"WrongTrain-1":			{"en": "Jericho Cross is robbing Darkwatch"},
-		"WrongTrain-2":			{"en": "Jericho and Cassidy are locked into battle against the Reaper"},
-		"RideDevil-1":			{"en": "Jericho and Cassidy must ride like the devil"},
-		"Boneyard-1":			{"en": "xxxxxxx"},
-		"Boneyard-2":			{"en": "xxxxxxx"},
-		"Boneyard-3":			{"en": "xxxxxxx"},
-		"DevilMine-1":			{"en": "xxxxxxx"},
-		"DevilMine-2":			{"en": "xxxxxxx"},
-		"DevilMine-3":			{"en": "xxxxxxx"},
-		"DevilMine-4":			{"en": "xxxxxxx"},
-		"Outpost-1":			{"en": "xxxxxxx"},
-		"Outpost-2":			{"en": "xxxxxxx"},
+		"WrongTrain-1":			{"en": "Jericho Cross came for gold, but what he's stealing is his own damnation"},
+		"WrongTrain-2":			{"en": "Cassidy warned him, but Jericho opened the vault anyway—now they fight to survive"},
+		"RideDevil-1":			{"en": "Cassidy leads, Jericho rides, and the Reaper's breathing down their necks"},
+		"Boneyard-1":			{"en": "Jericho and Cassidy walk among the dead, but the dead ain't resting easy"},
+		"Boneyard-2":			{"en": "Beneath the Church, Jericho walks through the bones of the forgotten"},
+		"Boneyard-3":			{"en": "The dead still call his name, but now, Jericho hears them differently"},
+		"DevilMine-1":			{"en": "Jericho lost Cassidy, but the darkness ain't done with him yet"},
+		"DevilMine-2":			{"en": "Jericho ventures deeper into the tunnels—the air is thick, and he ain't alone"},
+		"DevilMine-3":			{"en": "The mine wants to keep its secrets, but Jericho came packing dynamite"},
+		"DevilMine-4":			{"en": "Jericho ain't alone down here—but what he finds ain't what he expected"},
+		"Outpost-1":			{"en": "Jericho enters Darkwatch's stronghold, but the fight's already lost"},
+		"Outpost-2":			{"en": "A frozen lab, a buried secret—Darkwatch played with fire, and hell answered"},
 		"WarTrain-1":			{"en": "xxxxxxx"},
 		"TortureMaze-1":		{"en": "xxxxxxx"},	
 		"TortureMaze-2":		{"en": "xxxxxxx"},	
@@ -3500,7 +3500,7 @@ richPresence_lookupTables = {
 			},
 		},
 	"lup_ChapterFlavorText_Cooperative_SingleChapterSection": {
-		"LookupTableText_Key": "lupText_ChapterFlavorText_SinglePlayer",
+		"LookupTableText_Key": "lupText_ChapterFlavorText_Cooperative",
 		"LookUpTable": {
 			LEVEL_DATA_getLevelID_substring(CHAPTER_2_RideDevil): 		"RideDevil-1",
 			LEVEL_DATA_getLevelID_substring(CHAPTER_6_WarTrain): 		"WarTrain-1",
@@ -3510,7 +3510,7 @@ richPresence_lookupTables = {
 			},
 		},
 	"lup_ChapterFlavorText_Cooperative_MultipleChapterSections": {
-		"LookupTableText_Key": "lupText_ChapterFlavorText_SinglePlayer",
+		"LookupTableText_Key": "lupText_ChapterFlavorText_Cooperative",
 		"LookUpTable": {
 			rpGenerate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(CHAPTER_1_WrongTrain, CHAPTER_SECTION_1): 		"WrongTrain-1",
 			rpGenerate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(CHAPTER_1_WrongTrain, CHAPTER_SECTION_2): 		"WrongTrain-2",
