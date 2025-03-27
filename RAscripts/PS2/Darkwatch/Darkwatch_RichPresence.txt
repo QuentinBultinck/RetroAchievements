@@ -20,14 +20,14 @@ Lookup:Chapter
 *="The Wild West"
 
 Lookup:ChapterFlavorText_Cooperative_MultipleChapterSections
--1125301327,-1125301320,-802886430,-802886423,-802886416,-802886409,-801510174,-801510167,-338826014,-338826007,-338826000,-335155998,-335155991,-333320990,-333320983,-333320976,-333320969,-333320962,-333320955,-224136222,-224136215,-224136208,-224136201,-223218683,-223218676,-223218669,-219548702,-219548688,-219548681,-219548674,-219548667,-217713687,-217713680,-217713673,-84271077,-84270622,-84269285,-84267493,-84265701,1256990491,1256992283,1256992633,1256994075,1256994425=Under the pale moonlight, Jericho Cross is fighting against the relentless undead
--418333912=Jericho Cross is robbing Darkwatch
--418333905=Jericho and Cassidy are locked into battle against the Reaper
-*=The Regulators are locked into a battle against darkness
+-1125301327,-1125301320,-802886430,-802886423,-802886416,-802886409,-801510174,-801510167,-338826014,-338826007,-338826000,-335155998,-335155991,-333320990,-333320983,-333320976,-333320969,-333320962,-333320955,-224136222,-224136215,-224136208,-224136201,-223218683,-223218676,-223218669,-219548702,-219548688,-219548681,-219548674,-219548667,-217713687,-217713680,-217713673,-84271077,-84270622,-84269285,-84267493,-84265701,1256990491,1256992283,1256992633,1256994075,1256994425=Under the pale moonlight, The Regulators are fending off the darkness
+-418333912=The Outlaws are robbing Darkwatch
+-418333905=The Outlaws are locked into battle against the Reaper
+*=The Regulators are fending off the darkness
 
 Lookup:ChapterFlavorText_Cooperative_SingleChapterSection
-1597124685=Jericho and Cassidy must ride like the devil
-1597583693,1635019075,1953653079,1970238023=Under the pale moonlight, Jericho Cross is fighting against the relentless undead
+1597124685=The Outlaws are riding like the devil
+1597583693,1635019075,1953653079,1970238023=Under the pale moonlight, The Regulators are fighting against the relentless undead
 *=The Regulators are locked into a battle against darkness
 
 Lookup:ChapterFlavorText_SinglePlayer_MultipleChapterSections
