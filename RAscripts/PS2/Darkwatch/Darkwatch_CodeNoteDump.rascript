@@ -605,6 +605,7 @@
 //          '
 // $721820: [PAL][32-bit (base) Pointer:LevelID(preferred)]
 //          - This pointer points to ASCII data of the current loaded level. Each ASCII value listed here, substrings/returns different parts of the full LevelID
+//          - Each ASCII documented here is followed by [1-byte ASCII] = 0x00, noting the end of the string
 //          
 //          +0x18 - [32-bit (layer-1) Pointer]
 //          .+0x0 - [32-bit (layer-2) Pointer]
@@ -669,7 +670,7 @@
 //          '
 //          
 //          # StoryChapterSectionIDs (string)
-//          |(list incomplete)
+//          |(list complete)
 //          |'''''''''''''
 //          |---Chapter 1, "Wrong Train"---
 //          | "WrongTrain_A" => Section 1 - Inside the train
@@ -1119,11 +1120,15 @@
 //          
 //          
 //          # MainMenuSubMenuIDs (string)
+//          |(list incomplete)
 //          |'''''''''''''''''''
 //          | "chapter_select" => ChapterSelectMenu
-//          | "coop-profile" => MultiplayerCooperativeProfileSelectMenu
+//          | "coop-profile" => CoopProfileSelectMenu
 //          | "profile_statistics" => StatisticsMenu
 //          | "difficulty_select" => DifficultySelectMenu (before starting a new Chapter)
+//          | "multiplayer_profile_select_ps2" => MultiplayerProfileSelectMenu
+//          | "create_match" => CreateMultiplayerMatchMenu
+//          | "extras" => ExtrasMenu
 //          '
 //          
 //          # TextLookupKeyIDs (hex)
@@ -1517,6 +1522,12 @@
 //          @Regional equivalent of $0x9114b8 (PAL)
 // $8FF510: [NTSCU][Lower4:GameMode |32-bit]
 //          @Regional equivalent of $0x9114f0 (PAL)
+// $8FF524: [NTSCU][8-bit:MatchDuration(non-functional) |32-bit]
+//          @Regional equivalent of $0x911504 (PAL)
+// $8FF528: [NTSCU][8-bit:DeathmatchSetting_KillsToWin(non-functional) |32-bit]
+//          @Regional equivalent of $0x911508 (PAL)
+// $8FF534: [NTSCU][Lower4:MultiplayerVersusGameModeID(non-functional) |32-bit]
+//          @Regional equivalent of $0x911514 (PAL)
 // $8FFAC8: [8-bit] main menu selection
 // $911430: [PAL][32-bit (base) Pointer:LevelID(alt)]
 //          +0x2 - [Variable Size ASCII:LevelID(alt)]
@@ -1551,11 +1562,35 @@
 //          | - This value determines the total amount of minutes the match lasts. Changing this value during a match, will update the timer display accordingly (eg. Time set to 10 (0xA) minutes  --> manual change this value 7 (0x7) --> Timer display updates)
 // $9114F0: [PAL][Lower4:GameMode |32-bit]
 //          - This value only changes when loading a level; It does not reset or change when going back to MainMenu
+//          
 //          0x0 => Singleplayer Mode || Multiplayer Coop Mode
 //          0x1 => Gunslinger Mode
 //          0x3 => Multiplayer Versus Mode
-// $911508: [32-bit:MatchDuration(alt)]
-//          - Identical to [32-bit:MatchDuration(functional] at $0x9114e0
+// $911504: [PAL][8-bit:MatchDuration(non-functional) |32-bit]
+//          - Prefer using [32-bit:MatchDuration(functional] at $0x9114e0
+//          - Match duration in minutes
+//          - This value only changes when starting a MP Versus Match
+//          
+//          0xFF => No Time Limit
+//          0x5 => 5 Minutes
+//          0xA => 10 Minutes
+//          0xF => 15 Minutes
+//          0x1E => 30 Minutes
+// $911508: [PAL][8-bit:DeathmatchSetting_KillsToWin(non-functional) |32-bit]
+//          - Kills required to win the match
+//          - This value only changes when starting a MP Versus Match
+//          
+//          0xFF => No Kill Limit
+//          0x5 => 5 Kills
+//          0xA => 10 Kills
+//          0xF => 15 Kills
+//          0x19 => 25 Kills
+//          0x32=> 50 Kills
+// $911514: [PAL][Lower4:MultiplayerVersusGameModeID(non-functional) |32-bit]
+//          - This value only changes when starting a MP Versus Match
+//          
+//          0x1 => Deathmatch
+//          0x4 => Soul Hunter
 // $911898: [PAL][32-bit (base) Pointer:MessageBoxData]
 //          @Fixed Memory Location, although pointed to by $0x7238b8
 //          - MessageBox is an in-game popup/submenu (for Lore/hints or the PowersMenu)
@@ -1663,7 +1698,13 @@
 // $953D1A: [NTSCU][8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          @Regional equivalent of $0x965cfa (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
-// $953D24: [NTSCU][32-bit:SelectedPlayerProfileID]
+// $953D20: [NTSCU][bit0 BitFlag:IsStoryGoodEndingAchieved |8-bit]
+//          @Regional equivalent of $0x965d00 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D21: [NTSCU][bit0 BitFlag:IsStoryEvilEndingAchieved |8-bit]
+//          @Regional equivalent of $0x965d01 (PAL)
+//          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
+// $953D24: [NTSCU][32-bit:SelectedPlayerProfileID-Player1]
 //          @Regional equivalent of $0x965d04 (PAL)
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x73b68c)
 // $953D4C: [NTSCU][32-bit (base) Pointer:HUDcontrol_Health-Player1]
@@ -2203,6 +2244,7 @@
 //          | "BlackShroudRune" => Black Shroud
 //          | "SoulStealerRune" => Soul Stealer
 //          '
+// $965CD4: [PAL][]
 // $965CD8: [PAL][32-bit (base) Pointer:PlayerSavedStats-Player1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          
@@ -2295,31 +2337,35 @@
 // $965CF8: [PAL][8-bit:InProgress_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Current Chapter marked as "in-progress" OR the currently active Chapter
-//          - Identification is also possible via [Pointer:LevelID(preferred)] at $0x721820
-//          - This value also regulates which powers are unlocked (at MainMenu->StatsMenu)
+//          - Due to how the Chapters are ordered, especially Chapters 9 to 11, I advise against using this memAddr to ID Chapters/Levels
+//          - Prefer identification via [Pointer:LevelID(preferred)] at $0x721820
 //          - This also unlocks movies at MainMenu->Extras->Movies, depending on which Chapter is currently ID'd here
+//          - This value can be used to identify SinglePlayer Story Mode progression/completion
 //          
 //          # StoryChapterIDs (hex)
+//          |(list complete)
 //          |'''''''''''''
 //          | 0x1 => Chapter 1, "Wrong Train"
 //          | 0x2 => Chapter 2, "Ride Like The Devil"
 //          | 0x3 => Chapter 3, "Boneyard"
-//          | 0x4 => TBD
-//          | 0x5 => TBD
-//          | 0x6 => TBD
-//          | 0x7 => TBD
-//          | 0x8 => TBD
-//          | 0x9 => TBD
-//          | 0xA => TBD
-//          | 0xB => TBD
-//          | 0xC => TBD
-//          | 0xD => TBD
-//          | 0xE => TBD
-//          | 0xF => TBD
-//          | 0x10 => TBD
-//          | 0x11 => TBD
-//          | 0x12 => TBD
-//          | 0x13 => TBD
+//          | 0x4 => Chapter 4, "Devil's Belly Mine"
+//          | 0x5 => Chapter 5, "Darkwatch Outpost"
+//          | 0x6 => Chapter 6, "War Train"
+//          | 0x7 => Chapter 7, "Torture Maze"
+//          | 0x8 => Chapter 8, "Baptism of Fire"
+//          | 0x8 => Hub Area "Citadel" (mission select: Chapters 9,10,11; can be completed in any order)
+//          | 0xA => Chapter 9, "Rescue"
+//          | 0xB => Hub Area "Citadel" (mission select: Chapters 9,10,11; can be completed in any order)
+//          | 0xC => Chapter 10, "The Deadlight Prism"
+//          | 0xD => Hub Area "Citadel" (mission select: Chapters 9,10,11; can be completed in any order)
+//          | 0xE => Chapter 11, "Invasion"
+//          | 0xF => Hub Area "Citadel" (only mission available: Chapter 12)
+//          | 0x10 => Chapter 12, "Hangtown"
+//          | 0x11 => Chapter 13, "The Morning After"
+//          | 0x12 => Chapter 14, "Showdown"
+//          | 0x13 => Chapter 15, "The Right Train"
+//          | 0x14 => Chapter 16, "Deadfall"
+//          | 0x15 => Chapter 17, "Curse of the West" (to check if this Chapter is completed, use [BitFlag:IsStoryGoodEndingAchieved] OR [BitFlag:IsStoryEvilEndingAchieved])
 //          '
 // $965CFA: [PAL][8-bit:FurthestProgressed_StoryChapterID |16-bit]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
@@ -2328,7 +2374,7 @@
 //          - This also unlocks all movies at MainMenu->Extras->Movies (including "Devil" and "Hero", only unlockable with a Good playthrough)
 // $965D01: [PAL][bit0 BitFlag:IsStoryEvilEndingAchieved |8-bit]
 //          - This also unlocks all movies at MainMenu->Extras->Movies (including "Angel" and "Monster", only unlockable with an Evil playthrough)
-// $965D04: [PAL][32-bit:SelectedPlayerProfileID]
+// $965D04: [PAL][32-bit:SelectedPlayerProfileID:Player-1]
 //          @Member of [Struct(PlayerData):Player-1] (refer to $0x74d78c)
 //          - Max allowed PlayerProfiles is 10
 //          
