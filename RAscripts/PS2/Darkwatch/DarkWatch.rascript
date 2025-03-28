@@ -476,20 +476,63 @@ memUtil_asciiToFloat = {
   "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
   "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
 
-function memUtil_asciiStringToHex(string_s) { // length of string_s maximum 4; Returns a little endian hex, not big endian
-	// NOTE Example: string_s = "Wron" --> Returns 0x72576F6E ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)
+function memUtil_asciiStringToHexLE(string_s, int_numberOfZeroedOutBytesToCheckBeforeString = 0) { // NOTE: Returns a Little Endian hex; int_numberOfZeroedOutBytesToCheckBeforeString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x6E 6F 72 57 ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x6E6F7257) --LittleEndianView--> [6E 6F 72 57] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x72 57 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x72570000) --LittleEndianView--> [00 00 57 72] "  Wr"
+		*/
+
 	let_stringLength = length(string_s)
 
-	if (let_stringLength > 4)
-		util_throwError(format("String length of: {0}, is too large to handle", let_stringLength))
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckBeforeString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckBeforeString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckBeforeString))
 
 	let_hexValue = 0
-	for let_characterIndex in range(0, length(string_s) - 1) {
+
+	if (int_numberOfZeroedOutBytesToCheckBeforeString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 3) let_hexValue = let_hexValue * 0x1000000
+
+	for let_characterIndex in range(0, let_stringLength - 1) {
 		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
 		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
 		else if (let_characterIndex == 1) let_hexValue = let_hexValue + (let_characterAsHex * 0x100)
 		else if (let_characterIndex == 2) let_hexValue = let_hexValue + (let_characterAsHex * 0x10000)
 		else let_hexValue = let_hexValue + (let_characterAsHex * 0x1000000)}
+
+	return let_hexValue}
+
+function memUtil_asciiStringToHexBE(string_s, int_numberOfZeroedOutBytesToCheckAfterString = 0) { // NOTE: Returns a Big Endian hex; int_numberOfZeroedOutBytesToCheckAfterString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x57 72 6F 6E  ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57726F6E) --BigEndianView--> [57 72 6F 6E] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x57 72 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57720000) --BigEndianView--> [57 72 00 00] "Wr  "
+		*/
+
+	let_stringLength = length(string_s)
+
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckAfterString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckAfterString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckAfterString))
+
+	let_hexValue = 0
+	for let_characterIndex in range(0, let_stringLength - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else if (let_characterIndex == 2) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else let_hexValue = (let_hexValue * 0x100) + let_characterAsHex}
+
+	if (int_numberOfZeroedOutBytesToCheckAfterString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 3) let_hexValue = let_hexValue * 0x1000000
+
 	return let_hexValue}
 
 // #endregion Custom ASCII comparitors
@@ -1163,55 +1206,55 @@ function LEVEL_DATA_getAllGunslingerLevels() =>
 
 CONST_MP_LEVEL_DATA = {
 	MULTIPLAYER_LEVEL_Asylum: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Asyl"), // DM_ 'Asyl' um  
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("Asyl"), // DM_ 'Asyl' um  
 		"OffsetTo_Substring_LevelID": 3,
 		},
 	MULTIPLAYER_LEVEL_DeathDealer: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ler") * 100, // DM_DeathDea 'ler' | *100 to also include 4th zeroed out byte 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("ler", 1), //DM_DeathDea 'ler'
 		"OffsetTo_Substring_LevelID": 11,
 		},
 	MULTIPLAYER_LEVEL_DeathDealerDay: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("lerD"), // DM_DeathDea 'lerD' ay
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("lerD"), // DM_DeathDea 'lerD' ay
 		"OffsetTo_Substring_LevelID": 11,
 		},
 	MULTIPLAYER_LEVEL_DevilsBelly: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Devi"), // DM_ 'Devi' lsBelly  
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("Devi"), // DM_ 'Devi' lsBelly  
 		"OffsetTo_Substring_LevelID": 3,
 		},
 	MULTIPLAYER_LEVEL_DonnerPass: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ass") * 100, // DM_DonnerP 'ass' | *100 to also include 4th zeroed out byte 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("ass", 1), //DM_DonnerP 'ass'
 		"OffsetTo_Substring_LevelID": 10,
 		},
 	MULTIPLAYER_LEVEL_DonnerPassDay: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("assD"), // DM_DonnerP 'assD' ay
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("assD"), // DM_DonnerP 'assD' ay
 		"OffsetTo_Substring_LevelID": 10,
 		},
 	MULTIPLAYER_LEVEL_HangTownEast: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ast") * 100, // DM_HangTownE 'ast' | *100 to also include 4th zeroed out byte 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("ast", 1), //DM_HangTownE 'ast'
 		"OffsetTo_Substring_LevelID": 12,
 		},
 	MULTIPLAYER_LEVEL_HangTownEastDay: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("astD"), // DM_HangTownE 'astD' ay
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("astD"), // DM_HangTownE 'astD' ay
 		"OffsetTo_Substring_LevelID": 12,
 		},
 	MULTIPLAYER_LEVEL_HangTownWest: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("est") * 100, // DM_HangTownW 'est' | *100 to also include 4th zeroed out byte 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("est", 1), //DM_HangTownW 'est'
 		"OffsetTo_Substring_LevelID": 12,
 		},
 	MULTIPLAYER_LEVEL_HangTownWestDay: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("estD"), // DM_HangTownW 'estD' ay 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("estD"), // DM_HangTownW 'estD' ay 
 		"OffsetTo_Substring_LevelID": 12,
 		},
 	MULTIPLAYER_LEVEL_HellHole: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("Hell"), // DM_ 'Hell' Hole    
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("Hell"), // DM_ 'Hell' Hole    
 		"OffsetTo_Substring_LevelID": 3,
 		},
 	MULTIPLAYER_LEVEL_TradeCenter: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("ter") * 100, // DM_TradeCen 'ter' | *100 to also include 4th zeroed out byte 
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("ter", 1), //DM_TradeCen 'ter'
 		"OffsetTo_Substring_LevelID": 11,
 		},
 	MULTIPLAYER_LEVEL_TradeCenterDay: {
-		"32BitSubstring_LevelID_asHex": memUtil_asciiStringToHex("terD"), // DM_TradeCen 'terD' ay
+		"32BitSubstring_LevelID_asHexBE": memUtil_asciiStringToHexBE("terD"), // DM_TradeCen 'terD' ay
 		"OffsetTo_Substring_LevelID": 11,	
 		},
 	}
@@ -1223,8 +1266,8 @@ function MP_LEVEL_DATA_get32BitSubstringLevelID_asString(enum_MPlevel) {
 	let_int_offsetTo_SubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
 	return substring(enum_MPlevel, let_int_offsetTo_SubstringLevelID, 4)} // NOTE: Substring --> Only check [4-byte] of ASCII
 
-function MP_LEVEL_DATA_get32BitSubstringLevelID_asHex(enum_MPlevel) =>
-	CONST_MP_LEVEL_DATA[enum_MPlevel]["32BitSubstring_LevelID_asHex"]
+function MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(enum_MPlevel) =>
+	CONST_MP_LEVEL_DATA[enum_MPlevel]["32BitSubstring_LevelID_asHexBE"]
 
 function MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(int_offsetTo_substringLevelID) =>
 	array_filter(CONST_MP_LEVEL_DATA, (enum_MPlevel) {
@@ -1233,6 +1276,15 @@ function MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(int_offsetTo_s
 		else 
 			return false
 	})
+
+function MP_LEVEL_DATA_getAllUniqueOffsetsToSubstringLevelID() {
+	let_array_UniqueOffsetsToSubstringLevelID = []
+	for enum_MPlevel in CONST_MP_LEVEL_DATA {
+		let_OffsetToSubstringLevelID = MP_LEVEL_DATA_getOffsetToSubstringLevelID(enum_MPlevel)
+		if (!array_contains(let_array_UniqueOffsetsToSubstringLevelID, let_OffsetToSubstringLevelID))
+			array_push(let_array_UniqueOffsetsToSubstringLevelID, let_OffsetToSubstringLevelID)
+	}
+	return let_array_UniqueOffsetsToSubstringLevelID}
 
 // ----------------StoryModeProgression---------------------
 function current_SinglePlayerStoryProgression(enum_releaseRegion) =>
@@ -1272,18 +1324,19 @@ function is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion
 	}}
 
 // ----------------LevelID---------------------
-function ASCII_MEM_ADDR_LevelID(enum_releaseRegion) {
+function ASCII_MEM_ADDR_LevelID(enum_releaseRegion, int_offsetTo_substringLevelID = 0) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
 	let_memAddr_ASCII = 
 		memGenerate_pointerChainAccessor("Pointer:LevelID", "ASCII:LevelID(full)", let_memAddr_BasePointer)
 		+ memory_getStruct_OffsetToPointedToMember("Pointer:LevelID", "ASCII:LevelID(full)")
+		+ int_offsetTo_substringLevelID
 	return let_memAddr_ASCII}
 	
 function is_Level(string_levelID, enum_releaseRegion) => 
 	is_ASCII_EqualTo(ASCII_MEM_ADDR_LevelID(enum_releaseRegion), string_levelID)
 
 function is_LevelSubstring(substring_levelID, int_offsetTo_substringLevelID, enum_releaseRegion) => 
-	is_ASCII_EqualTo(ASCII_MEM_ADDR_LevelID(enum_releaseRegion) + int_offsetTo_substringLevelID, substring_levelID)
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_LevelID(enum_releaseRegion, int_offsetTo_substringLevelID), substring_levelID)
 
 function is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion) {
 	let_substring_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // NOTE: Substring --> Only check FIRST [4-byte] of ASCII
@@ -3172,8 +3225,8 @@ richPresence_text = {
 
 	"rp_Versus":							{"en": "{0} Playing Darkwatch 🕇 Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
 	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch 🕇 setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2}, on {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3}, on {4} difficulty"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2}, {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3}, {4} difficulty"},
 	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
 	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Completion: {1}%"},
 	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Complete: {1}{2} Ending"},
@@ -3386,20 +3439,12 @@ function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableT
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
 // -----------------LookupTables--------------------
 CONST_HASH_SPICE_LookupTableKey_ChapterFlavorText_MultipleChapterSections = 0x7
-
 function rpGenerate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(enum_chapter, enum_chapterSection) {
 	let_substring_LevelID = substring(LEVEL_DATA_getLevelID(enum_chapter), 0, 4) // "WrongTrain" -> "wron"
 	return 
-		(memUtil_asciiStringToHex(let_substring_LevelID) 
-		+ LEVEL_DATA_GetSubstringChapterSectionIDasHex(enum_chapter, enum_chapterSection)) 
-		* CONST_HASH_SPICE_LookupTableKey_ChapterFlavorText_MultipleChapterSections}
-
-function rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(int_offsetToSubstringChapterSectionID, enum_releaseRegion) =>
-	(dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)) 
-		+ dword_be(ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion) + int_offsetToSubstringChapterSectionID)
-		) * CONST_HASH_SPICE_LookupTableKey_ChapterFlavorText_MultipleChapterSections
-	// dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion))
-
+		(memUtil_asciiStringToHexLE(let_substring_LevelID) 
+			+ LEVEL_DATA_GetSubstringChapterSectionIDasHex(enum_chapter, enum_chapterSection)
+			) * CONST_HASH_SPICE_LookupTableKey_ChapterFlavorText_MultipleChapterSections}
 
 richPresence_lookupTables = {
 	// "lup_Template": {
@@ -3443,37 +3488,37 @@ richPresence_lookupTables = {
 	"lup_MPlevel_DayOrNight": {
 		"LookupTableText_Key": "lupText_MPlevel_DayOrNight",
 		"LookUpTable": {
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_Asylum):				"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealer): 		"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealerDay): 		"DayTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DevilsBelly): 		"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPass): 			"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPassDay): 		"DayTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEast): 		"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEastDay): 	"DayTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWest): 		"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWestDay): 	"DayTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HellHole): 			"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenter): 		"NightTime",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenterDay): 		"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_Asylum):			"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DeathDealer): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DeathDealerDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DevilsBelly): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DonnerPass): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DonnerPassDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownEast): 	"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownEastDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownWest): 	"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownWestDay): 	"DayTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HellHole): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_TradeCenter): 		"NightTime",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_TradeCenterDay): 	"DayTime",
 			},
 		},
 	"lup_MPlevel": {
 		"LookupTableText_Key": "lupText_MPlevel",
 		"LookUpTable": {
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_Asylum):				"Asylum",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealer): 		"DeathDealer",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DeathDealerDay): 		"DeathDealer",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DevilsBelly): 		"DevilsBelly",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPass): 			"DonnerPass",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_DonnerPassDay): 		"DonnerPass",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEast): 		"HangTownEast",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownEastDay): 	"HangTownEast",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWest): 		"HangTownWest",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HangTownWestDay): 	"HangTownWest",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_HellHole): 			"HellHole",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenter): 		"TradeCenter",
-			MP_LEVEL_DATA_get32BitSubstringLevelID_asString(MULTIPLAYER_LEVEL_TradeCenterDay): 		"TradeCenter",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_Asylum):			"Asylum",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DeathDealer): 		"DeathDealer",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DeathDealerDay): 	"DeathDealer",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DevilsBelly): 		"DevilsBelly",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DonnerPass): 		"DonnerPass",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_DonnerPassDay): 	"DonnerPass",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownEast): 	"HangTownEast",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownEastDay): 	"HangTownEast",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownWest): 	"HangTownWest",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HangTownWestDay): 	"HangTownWest",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_HellHole): 		"HellHole",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_TradeCenter): 		"TradeCenter",
+			MP_LEVEL_DATA_get32BitSubstringLevelID_asHexBE(MULTIPLAYER_LEVEL_TradeCenterDay): 	"TradeCenter",
 			},
 		},
 	"lup_Chapter": {
@@ -3719,6 +3764,23 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
 	// )}
+
+function rp_Versus_InGame(enum_releaseRegion) {
+	function condition(enum_releaseRegion) =>
+		is_ReleaseRegion(enum_releaseRegion)
+		&& !is_atMainMenu(enum_releaseRegion)
+		&& is_InMultiplayerVersusMode(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+	return rich_presence_conditional_display( 
+		condition(enum_releaseRegion),
+		richPresence_getText_withRegionSuperScript("rp_Versus", enum_releaseRegion),
+		richPresence_callParameterFunction("rpp_DisplayLanguage", enum_releaseRegion), // 0
+		richPresence_callParameterFunction("rpp_PlayerCount", enum_releaseRegion), // 1
+		richPresence_callParameterFunction("rpp_MPplayerSingularOrPlural", enum_releaseRegion), // 2
+		richPresence_callParameterFunction("rpp_MPgameModeFlavorText", enum_releaseRegion), // 3
+		richPresence_callParameterFunction("rpp_MPlevel", enum_releaseRegion), // 4
+		richPresence_callParameterFunction("rpp_MPlevel_DayOrNight", enum_releaseRegion) // 5
+	)}
 function rp_Versus_offsetToSubstringLevelID_3(enum_releaseRegion) {
 	function condition(enum_releaseRegion) =>
 		is_ReleaseRegion(enum_releaseRegion)
@@ -4096,23 +4158,24 @@ function rp_Default() {
 function richPresence_initializeDisplays() {
 	rp_Default()
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		rp_Versus_offsetToSubstringLevelID_3(enum_releaseRegion) // VERIFIED
-		rp_Versus_offsetToSubstringLevelID_10(enum_releaseRegion) // VERIFIED
-		rp_Versus_offsetToSubstringLevelID_11(enum_releaseRegion) // VERIFIED
-		rp_Versus_offsetToSubstringLevelID_12(enum_releaseRegion) // VERIFIED
+		// rp_Versus_offsetToSubstringLevelID_3(enum_releaseRegion) // VERIFIED
+		// rp_Versus_offsetToSubstringLevelID_10(enum_releaseRegion) // VERIFIED
+		// rp_Versus_offsetToSubstringLevelID_11(enum_releaseRegion) // VERIFIED
+		// rp_Versus_offsetToSubstringLevelID_12(enum_releaseRegion) // VERIFIED
+		rp_Versus_InGame(enum_releaseRegion) // VERIFIED // TODO refactor like this rp_Versus_InGame(), remove all ..._withOffsetToSubstringChapterSectionID_...()
 		rp_Versus_Setup(enum_releaseRegion) // VERIFIED
-		rp_Coop_SingleChapterSection(enum_releaseRegion) // CONCEPT
-		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion) // CONCEPT
-		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion) // CONCEPT
-		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_8(enum_releaseRegion) // CONCEPT
-		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_11(enum_releaseRegion) // CONCEPT
+		rp_Coop_SingleChapterSection(enum_releaseRegion) // VERIFIED
+		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion) // VERIFIED
+		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion) // VERIFIED
+		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_8(enum_releaseRegion) // VERIFIED
+		rp_Coop_MultipleChapterSections_withOffsetToSubstringChapterSectionID_11(enum_releaseRegion) // VERIFIED
 		rp_SinglePlayer_SingleChapterSection(enum_releaseRegion) // VERIFIED
 		rp_SinglePlayer_MultipleChapterSections_withOffsetToSubstringChapterSectionID_1(enum_releaseRegion) // VERIFIED
 		rp_SinglePlayer_MultipleChapterSections_withOffsetToSubstringChapterSectionID_2(enum_releaseRegion) // VERIFIED
 		rp_SinglePlayer_MultipleChapterSections_withOffsetToSubstringChapterSectionID_8(enum_releaseRegion) // VERIFIED
 		rp_SinglePlayer_MultipleChapterSections_withOffsetToSubstringChapterSectionID_11(enum_releaseRegion) // VERIFIED
-		rp_TitleScreen_CoopStoryFin(enum_releaseRegion) // CONCEPT
-		rp_TitleScreen_CoopStoryProgress(enum_releaseRegion) // CONCEPT
+		rp_TitleScreen_CoopStoryFin(enum_releaseRegion) // VERIFIED
+		rp_TitleScreen_CoopStoryProgress(enum_releaseRegion) // VERIFIED
 		rp_TitleScreen_StoryFin(enum_releaseRegion) // VERIFIED
 		rp_TitleScreen_StoryProgress(enum_releaseRegion) // VERIFIED
 		rp_TitleScreen_NoProfile(enum_releaseRegion) // VERIFIED
@@ -4131,8 +4194,23 @@ richPresence_LOOKUP_HEX = 2		// rich_presence_lookup(name, expression, dictionar
 richPresence_LOOKUP_STRING = 3	//  rich_presence_ascii_string_lookup(name, memAddr_ASCII, dictionary, [fallback])
 richPresence_MACRO = 4			// rich_presence_macro(macro, expression)
 // -------------------------------------
+function rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(int_offsetToSubstringChapterSectionID, enum_releaseRegion) =>
+	(dword(ASCII_MEM_ADDR_LevelID(enum_releaseRegion)) 
+		+ dword_be(ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion) + int_offsetToSubstringChapterSectionID)
+		) * CONST_HASH_SPICE_LookupTableKey_ChapterFlavorText_MultipleChapterSections
 
-
+function rpCalculate_LookupTableKey_MPlevel(enum_releaseRegion) {
+	let_array_measures = []
+	let_array_allUniqueOffsetsToSubstringLevelID = MP_LEVEL_DATA_getAllUniqueOffsetsToSubstringLevelID()
+	for let_offsetToSubstringLevelID in let_array_allUniqueOffsetsToSubstringLevelID {
+		let_measured = measured(
+			dword_be(ASCII_MEM_ADDR_LevelID(enum_releaseRegion, let_offsetToSubstringLevelID)),
+			when = any_of(MP_LEVEL_DATA_getAllLevelIDsWithOffsetToSubstringLevelID(let_offsetToSubstringLevelID), enum_MPlevel =>
+				is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion))
+		)
+		array_push(let_array_measures, let_measured)
+	}
+	return max_of(let_array_measures)}
 // -------------------------------------
 richPresence_parameterData = {
 	// DEV_NOTE: rich presence
@@ -4285,7 +4363,13 @@ richPresence_parameterData = {
 		"LookupTableID": "lup_MPgameModeFlavorText",
 		"LookupFallback": richPresence_getLookupTableText("lupText_MPgameModeFlavorText", "LOOKUP_FALLBACK")},
 	
-	
+	"rpp_MPlevel": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_MPlevel(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_MPlevel(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_MPlevel",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
 	"rpp_MPlevel_offsetToSubstringLevelID_3": {
 		"RPtype": richPresence_LOOKUP_STRING,
 		"MemoryAddressToASCII": {
@@ -4314,6 +4398,13 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 12},
 		"LookupTableID": "lup_MPlevel",
 		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel", "LOOKUP_FALLBACK")},
+	"rpp_MPlevel_DayOrNight": {
+		"RPtype": richPresence_LOOKUP_HEX,
+		"Expression": {
+			RELEASE_REGION_USA: rpCalculate_LookupTableKey_MPlevel(RELEASE_REGION_USA), 
+			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_MPlevel(RELEASE_REGION_EUR)},
+		"LookupTableID": "lup_MPlevel_DayOrNight",
+		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
 	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_3": {
 		"RPtype": richPresence_LOOKUP_STRING,
 		"MemoryAddressToASCII": {
