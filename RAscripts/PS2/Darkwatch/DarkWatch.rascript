@@ -3251,24 +3251,24 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	/* CONCEPT rp unicode characters
-		Default: ♰ ☩ ᛭ ✟ ✞ ✝ ✠ ⛨ 🕂 🕇 🕆  🕂 ᛭
+		Default: ♰ ☩ ✟ ✞ ✝ ✠ ⛨ 🕂 ✟ 🕆  🕂 ᛭
 		Good-Evil: ⚡ 🔆 ☀️ ✨ - 🩸 🌙 🌕 ☠ - ⚖
 		
 		*/
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 
-	"rp_Versus":							{"en": "{0} Playing Darkwatch 🕇 Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
-	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch 🕇 setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch 🕇 Multiplayer Cooperative ᛭ {1} ᛭ {2}, {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch 🕇 {1} ᛭ {2} ᛭ {3}, {4} difficulty"},
-	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Coop Story Completion: {1}%"},
-	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch 🕇 Main Menu ᛭ Story Completion: {1}%"},
-	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch 🕇 Main Menu"},
-	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch 🕇 Story Complete: {1}{2} Ending"},
-	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch 🕇 Story Completion: {1}%"},
-	"rp_DefaultPlus_NoProfile": 			{"en": "{0} Playing Darkwatch 🕇"},
+	"rp_Versus":							{"en": "{0} Playing Darkwatch ✟ Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
+	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch ✟ setting up a Multiplayer Verus Match"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch ✟ Multiplayer Cooperative ᛭ {1} ᛭ {2}, {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ✟ {1} ᛭ {2} ᛭ {3}, {4} difficulty"},
+	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Completion: {1}%"},
+	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Completion: {1}%"},
+	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch ✟ Main Menu"},
+	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Story Complete: {1}{2} Ending"},
+	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Story Completion: {1}%"},
+	"rp_DefaultPlus_NoProfile": 			{"en": "{0} Playing Darkwatch ✟"},
 	"rp_Default":							{"en": "Playing Darkwatch ✟"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
@@ -3332,62 +3332,62 @@ richPresence_LookupTablesText = {
 		"Deadfall": 			{"en": "Chapter 16, \"Deadfall\""},
 		"CurseWest": 			{"en": "Chapter 17, \"Curse of the West\""},
 		},
-	"lupText_ChapterFlavorText_Cooperative": { // TODO write lupText_ChapterFlavorText_Cooperative
+	"lupText_ChapterFlavorText_Cooperative": {
 		"LOOKUP_FALLBACK":		{"en": "Two Regulators, one mission—cleanse the frontier or die trying"},
-		"WrongTrain-1":			{"en": "The Outlaws are robbing a train"},
-		"WrongTrain-2":			{"en": "The Outlaws' heist was doomed from the start—now, they're trying to protect their souls"},
-		"RideDevil-1":			{"en": "xxxxxxx"},
-		"Boneyard-1":			{"en": "xxxxxxx"},
-		"Boneyard-2":			{"en": "xxxxxxx"},
-		"Boneyard-3":			{"en": "xxxxxxx"},
-		"DevilMine-1":			{"en": "xxxxxxx"},
-		"DevilMine-2":			{"en": "xxxxxxx"},
-		"DevilMine-3":			{"en": "xxxxxxx"},
-		"DevilMine-4":			{"en": "xxxxxxx"},
-		"Outpost-1":			{"en": "xxxxxxx"},
-		"Outpost-2":			{"en": "xxxxxxx"},
-		"WarTrain-1":			{"en": "xxxxxxx"},
-		"TortureMaze-1":		{"en": "xxxxxxx"},	
-		"TortureMaze-2":		{"en": "xxxxxxx"},	
-		"TortureMaze-3":		{"en": "xxxxxxx"},	
-		"TortureMaze-4":		{"en": "xxxxxxx"},	
-		"TortureMaze-5":		{"en": "xxxxxxx"},	
-		"TortureMaze-6":		{"en": "xxxxxxx"},	
-		"BaptismFire-1":		{"en": "xxxxxxx"},	
-		"BaptismFire-2":		{"en": "xxxxxxx"},	
-		"BaptismFire-3":		{"en": "xxxxxxx"},	
-		"BaptismFire-4":		{"en": "xxxxxxx"},
-		"Citadel-1":			{"en": "xxxxxxx"},	
-		"Rescue-1":				{"en": "xxxxxxx"},
-		"Rescue-2":				{"en": "xxxxxxx"},
-		"Prism-1":				{"en": "xxxxxxx"},
-		"Prism-2":				{"en": "xxxxxxx"},
-		"Prism-3":				{"en": "xxxxxxx"},
-		"Prism-4":				{"en": "xxxxxxx"},
-		"Prism-5":				{"en": "xxxxxxx"},
-		"Invasion-1":			{"en": "xxxxxxx"},
-		"Invasion-2":			{"en": "xxxxxxx"},
-		"Invasion-3":			{"en": "xxxxxxx"},
-		"Hangtown-1":			{"en": "xxxxxxx"},
-		"Hangtown-2":			{"en": "xxxxxxx"},
-		"Hangtown-3":			{"en": "xxxxxxx"},
-		"MorningAfter-1":		{"en": "xxxxxxx"},	
-		"MorningAfter-2":		{"en": "xxxxxxx"},	
-		"MorningAfter-3":		{"en": "xxxxxxx"},	
-		"MorningAfter-4":		{"en": "xxxxxxx"},	
-		"MorningAfter-5":		{"en": "xxxxxxx"},	
-		"Showdown-1":			{"en": "xxxxxxx"},
-		"Showdown-2":			{"en": "xxxxxxx"},
-		"RightTrain-1":			{"en": "xxxxxxx"},
-		"Deadfall-1":			{"en": "xxxxxxx"},
-		"Deadfall-2":			{"en": "xxxxxxx"},
-		"Deadfall-3":			{"en": "xxxxxxx"},
-		"Deadfall-4":			{"en": "xxxxxxx"},
-		"Deadfall-5":			{"en": "xxxxxxx"},
-		"CurseWest-1":			{"en": "xxxxxxx"},
+		"WrongTrain-1":			{"en": "The Outlaws thought they were hitting gold—turns out, they cracked open hell instead"},
+		"WrongTrain-2":			{"en": "The Outlaws heist turned into a nightmare—now they fight to escape with their souls"},
+		"RideDevil-1":			{"en": "With the Reaper on their heels, the Gunslingers ride hard—one watching the trail, the other watching their back"},
+		"Boneyard-1":			{"en": "Side by side, the Gunslingers walk through graves where the dead don't rest easy"},
+		"Boneyard-2":			{"en": "Beneath the church, the Gunslingers step into the dark—whatever's down there, they'll face it together"},
+		"Boneyard-3":			{"en": "The deeper they go, the louder the whispers—one wrong move, and the Gunslingers will be just another story in the dirt"},
+		"DevilMine-1":			{"en": "The Gunslingers step into the mine, one watching ahead, the other covering their six—no one's coming to pull them out"},
+		"DevilMine-2":			{"en": "The air grows thinner, the tunnels tighter, and the Gunslingers know something's moving in the dark"},
+		"DevilMine-3":			{"en": "One lights the fuse, the other covers their back—the mine won't give up its secrets easy, but dynamite helps"},
+		"DevilMine-4":			{"en": "A voice calls from the depths—one Gunslinger wants to run, the other needs to know who's calling"},
+		"Outpost-1":			{"en": "The Gunslingers move in together—one clears the way, the other keeps their rifle steady. The outpost ain't empty"},
+		"Outpost-2":			{"en": "Whatever Darkwatch was hiding, the Gunslingers are about to uncover it—if they live long enough"},
+		"WarTrain-1":			{"en": "Evil hijacked this train, but the Gunslingers aim to derail their plans—permanently"},
+		"TortureMaze-1":		{"en": "Cartwright wants to see if they're worth keeping alive—the Regulators plan to prove it in blood"},
+		"TortureMaze-2":		{"en": "One holds the line, the other protects the innocent—Cartwright's test just got real"},	
+		"TortureMaze-3":		{"en": "The maze twists, the pipes scream—the Gunslingers push forward through the heat and the horror"},	
+		"TortureMaze-4":		{"en": "The maze ain't done yet—the Gunslingers drop into the sewers, where worse things wait"},	
+		"TortureMaze-5":		{"en": "The Gunslingers came for a trial, but now they're in a shootout with the damned"},	
+		"TortureMaze-6":		{"en": "Cartwright stacked the odds—now the Gunslingers fight with steel and grit alone"},	
+		"BaptismFire-1":		{"en": "The Gunslingers earned the badge, but they ain't baptised yet—fire and blood will settle that"},	
+		"BaptismFire-2":		{"en": "Side by side, the Regulators carve through the valley—evil don't stand a chance"},	
+		"BaptismFire-3":		{"en": "Flames rise, bullets fly—the Regulators battle to reclaim the Trading Post"},	
+		"BaptismFire-4":		{"en": "The Trading Post's last stand—one holds the barricade, the other makes every shot count"},
+		"Citadel-1":			{"en": "The Regulators got a moment to breathe—no whiskey, no rest, just the next mission waiting"},	
+		"Rescue-1":				{"en": "Wheels thunder, Gatling guns roar—one steers, the other lets hell loose on the dead"},
+		"Rescue-2":				{"en": "The Regulators break through—saving their own is all that matters"},
+		"Prism-1":				{"en": "The Regulators charge into the valley—the Prism won't be lost without a fight"},
+		"Prism-2":				{"en": "Undead pick them off from afar, but the Regulators got steady hands and sharper aim"},
+		"Prism-3":				{"en": "The twisting canyons try to hide the enemy—one watches the cliffs, the other cuts through the shadows"},
+		"Prism-4":				{"en": "The canyon walls close in, the path forward is soaked in blood—neither Regulator is turning back"},
+		"Prism-5":				{"en": "The Prism's power floods through them—sunlight be damned, the Regulators fight on"},
+		"Invasion-1":			{"en": "The Regulators cut through the caves—old bones, fresh enemies, and no time to waste"},
+		"Invasion-2":			{"en": "Smoke rises, bodies fall—one clears the village streets, the other picks off the stragglers"},
+		"Invasion-3":			{"en": "The last stand begins—if the Regulators fall, so does the village"},
+		"Hangtown-1":			{"en": "The streets ain't safe—two Regulators step in to clean up the mess"},
+		"Hangtown-2":			{"en": "Bottles break, bullets fly—the Regulators fight to keep the saloon standing"},
+		"Hangtown-3":			{"en": "Hangtown's lost, but the Regulators are here to put the dead down for good"},
+		"MorningAfter-1":		{"en": "The citadel burns, but the Regulators ain't letting it fall without a fight"},	
+		"MorningAfter-2":		{"en": "The enemy's deep in the caves—two Regulators hold the line underground"},	
+		"MorningAfter-3":		{"en": "Darkwatch still stands—for now. The Regulators fight to keep it that way"},	
+		"MorningAfter-4":		{"en": "The citadel's power source is under attack—two Regulators stand between it and oblivion"},	
+		"MorningAfter-5":		{"en": "Lazarus is making his move—the Regulators have to stop him before it's too late"},	
+		"Showdown-1":			{"en": "Lazarus is stronger than ever, but the Regulators don't back down from a fight"},
+		"Showdown-2":			{"en": "The battle's over, but the Regulators have one last choice—redemption or power?"},
+		"RightTrain-1":			{"en": "The train's bound for hell, and the Regulators are here to take it back"},
+		"Deadfall-1":			{"en": "Darkwatch's retaliation starts here—the Regulators lead the charge"},
+		"Deadfall-2":			{"en": "No cover, no mercy—the Regulators fight through the wreckage of Deadfall"},
+		"Deadfall-3":			{"en": "The deeper they go, the worse it gets—the Regulators wade through the chaos"},
+		"Deadfall-4":			{"en": "Buildings crumble, streets burn—Deadfall is falling, but the Regulators push on"},
+		"Deadfall-5":			{"en": "The city's tearing itself apart, but the Regulators won't stop now"},
+		"CurseWest-1":			{"en": "This ain't just their fight—it's for the whole damn West, whether it's ready or not"},
 		},
 	"lupText_ChapterFlavorText_SinglePlayer": {
-		"LOOKUP_FALLBACK":		{"en": "Ain’t no rest for the wicked—or for Jericho Cross"},
+		"LOOKUP_FALLBACK":		{"en": "Ain't no rest for the wicked—or for Jericho Cross"},
 		"WrongTrain-1":			{"en": "Jericho Cross came for gold, but what he's stealing is his own damnation"},
 		"WrongTrain-2":			{"en": "Cassidy warned him, but Jericho opened the vault anyway—now they fight to survive"},
 		"RideDevil-1":			{"en": "Cassidy leads, Jericho rides, and the Reaper's breathing down their necks"},
@@ -3404,8 +3404,8 @@ richPresence_LookupTablesText = {
 		"TortureMaze-1":		{"en": "No guns, no mercy—Cartwright's test starts with blood and steel"},	
 		"TortureMaze-2":		{"en": "Killing is easy—protecting the weak? That's Jericho's real test"},	
 		"TortureMaze-3":		{"en": "Shapes in the fog, death in the air—Jericho's got to cut through both"},	
-		"TortureMaze-4":		{"en": "Cartwright's test leads Jericho into the depths—survive the sewers, or rot in them"},	
-		"TortureMaze-5":		{"en": "Jericho's trial ain't over ‘til he outguns a town full of dead gunslingers"},	
+		"TortureMaze-4":		{"en": "Cartwright's test leads Jericho into the depths—he must survive the sewers or be doomed to rot in them."},	
+		"TortureMaze-5":		{"en": "Jericho's trial ain't over 'til he outguns a town full of dead gunslingers"},	
 		"TortureMaze-6":		{"en": "Cartwright takes away Jericho's edge—if he wants to survive, he'll need more than fangs"},	
 		"BaptismFire-1":		{"en": "Jericho's got his badge—now it's time to prove it in fire and blood"},	
 		"BaptismFire-2":		{"en": "Jericho and Tala carve a path through the valley—no evil left standing"},	
@@ -3417,7 +3417,7 @@ richPresence_LookupTablesText = {
 		"Prism-1":				{"en": "The valley's crawling with evil, but Jericho and his squad came to take it back"},
 		"Prism-2":				{"en": "The undead strike from afar, but Jericho's aim is deadlier"},
 		"Prism-3":				{"en": "The winding canyons don't hide evil for long—Jericho's coming through"},
-		"Prism-4":				{"en": "No way but forward—Jericho wades through the canyon's depths, carving a bloody trai"},
+		"Prism-4":				{"en": "No way but forward—Jericho wades through the canyon's depths, carving a bloody trail"},
 		"Prism-5":				{"en": "The sun's up, but Jericho's still got his power—now he's got no excuse not to win"},
 		"Invasion-1":			{"en": "Dark tunnels, old bones, and fresh enemies—Jericho fights his way through"},
 		"Invasion-2":			{"en": "Smoke rises, bodies fall—Jericho fights to take the village back"},
@@ -4161,41 +4161,12 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: current_Difficulty(RELEASE_REGION_USA),
 			RELEASE_REGION_EUR: current_Difficulty(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_Difficulty",
-		"LookupFallback": richPresence_getLookupTableText("lupText_Difficulty", "Cowboy")},	
-	
+		"LookupFallback": richPresence_getLookupTableText("lupText_Difficulty", "Cowboy")},		
 	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections": {
 		"RPtype": richPresence_LOOKUP_HEX,
 		"Expression": {
 			RELEASE_REGION_USA: rpMeasured_LookupTableKey_ChapterFlavorText_MultipleChapterSections(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: rpMeasured_LookupTableKey_ChapterFlavorText_MultipleChapterSections(RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
-		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
-	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_1": {
-		"RPtype": richPresence_LOOKUP_HEX,
-		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(1, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
-		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
-	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_2": {
-		"RPtype": richPresence_LOOKUP_HEX,
-		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(2, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
-		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
-	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_8": {
-		"RPtype": richPresence_LOOKUP_HEX,
-		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(8, RELEASE_REGION_EUR)},
-		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
-		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
-	"rpp_ChapterFlavorText_Cooperative_MultipleChapterSections_offsetToSubstringChapterSectionID_11": {
-		"RPtype": richPresence_LOOKUP_HEX,
-		"Expression": {
-			RELEASE_REGION_USA: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_USA), 
-			RELEASE_REGION_EUR: rpCalculate_LookupTableKey_ChapterFlavorText_MultipleChapterSections(11, RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_ChapterFlavorText_Cooperative_MultipleChapterSections",
 		"LookupFallback": richPresence_getLookupTableText("lupText_ChapterFlavorText_Cooperative", "LOOKUP_FALLBACK")},
 	
@@ -4235,34 +4206,7 @@ richPresence_parameterData = {
 			RELEASE_REGION_EUR: rpMeasured_LookupTableKey_MPlevel(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_MPlevel_DayOrNight",
 		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
-	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_3": {
-		"RPtype": richPresence_LOOKUP_STRING,
-		"MemoryAddressToASCII": {
-			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 3, 
-			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 3},
-		"LookupTableID": "lup_MPlevel_DayOrNight",
-		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
-	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_10": {
-		"RPtype": richPresence_LOOKUP_STRING,
-		"MemoryAddressToASCII": {
-			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 10, 
-			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 10},
-		"LookupTableID": "lup_MPlevel_DayOrNight",
-		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
-	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_11": {
-		"RPtype": richPresence_LOOKUP_STRING,
-		"MemoryAddressToASCII": {
-			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 11, 
-			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 11},
-		"LookupTableID": "lup_MPlevel_DayOrNight",
-		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
-	"rpp_MPlevel_DayOrNight_offsetToSubstringLevelID_12": {
-		"RPtype": richPresence_LOOKUP_STRING,
-		"MemoryAddressToASCII": {
-			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA) + 12, 
-			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR) + 12},
-		"LookupTableID": "lup_MPlevel_DayOrNight",
-		"LookupFallback": richPresence_getLookupTableText("lupText_MPlevel_DayOrNight", "NightTime")},
+
 	"rpp_ChapterFlavorText_Cooperative_SingleChapterSection": {
 		"RPtype": richPresence_LOOKUP_STRING,
 		"MemoryAddressToASCII": {
@@ -4283,8 +4227,7 @@ richPresence_parameterData = {
 			RELEASE_REGION_USA: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: ASCII_MEM_ADDR_LevelID(RELEASE_REGION_EUR)},
 		"LookupTableID": "lup_Chapter",
-		"LookupFallback": richPresence_getLookupTableText("lupText_Chapter", "LOOKUP_FALLBACK")},
-	
+		"LookupFallback": richPresence_getLookupTableText("lupText_Chapter", "LOOKUP_FALLBACK")},	
 	
 	"rpp_StoryCompletion": {
 		"RPtype": richPresence_MACRO,
@@ -4297,8 +4240,7 @@ richPresence_parameterData = {
 		"Expression": {
 			RELEASE_REGION_USA: current_PlayerCount(RELEASE_REGION_USA), 
 			RELEASE_REGION_EUR: current_PlayerCount(RELEASE_REGION_EUR)},
-		"MacroFormat": "Number"},
-	
+		"MacroFormat": "Number"},	
 	
 	}
 // -------------------------------------
