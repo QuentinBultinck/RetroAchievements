@@ -1,0 +1,212 @@
+Lookup:Chapter
+1596993869=Chapter 8, "Baptism of Fire"
+1596994125=Chapter 16, "Deadfall"
+1597059405=Chapter 12, "Hangtown"
+1597124685=Chapter 2, "Ride Like the Devil"
+1597124941=Chapter 13, "The Morning After"
+1597190221=Chapter 3, "Boneyard"
+1597321293=Chapter 4, "Devil's Belly Mine"
+1597321549=Chapter 10, "The Deadlight Prism"
+1597452365=Chapter 5, "Darkwatch Outpost"
+1597452621=Chapter 11, "Invasion"
+1597517901=Chapter 9, "Rescue"
+1597583437=Chapter 7, "Torture Maze"
+1597583693=Chapter 15, "The Right Train"
+1635019075="The Darkwatch Citadel"
+1819042118=Chapter 14, "Showdown"
+1852797527=Chapter 1, "The Wrong Train"
+1953653079=Chapter 6, "War Train"
+1970238023=Chapter 17, "Curse of the West"
+*="The Wild West"
+
+Lookup:ChapterFlavorText_Cooperative_MultipleChapterSections
+-1125301327=Lazarus is stronger than ever, but the Regulators don't back down from a fight
+-1125301320=The battle's over, but the Regulators have one last choice—redemption or power?
+-802886430=The Gunslingers step into the mine, one watching ahead, the other covering their six—no one's coming to pull them out
+-802886423=The air grows thinner, the tunnels tighter, and the Gunslingers know something's moving in the dark
+-802886416=One lights the fuse, the other covers their back—the mine won't give up its secrets easy, but dynamite helps
+-802886409=A voice calls from the depths—one Gunslinger wants to run, the other needs to know who's calling
+-801510174=Wheels thunder, Gatling guns roar—one steers, the other lets hell loose on the dead
+-801510167=The Regulators break through—saving their own is all that matters
+-418333912=The Outlaws thought they were hitting gold—turns out, they cracked open hell instead
+-418333905=The Outlaws heist turned into a nightmare—now they fight to escape with their souls
+-338826014=The deeper they go, the louder the whispers—one wrong move, and the Gunslingers will be just another story in the dirt
+-338826007=Beneath the church, the Gunslingers step into the dark—whatever's down there, they'll face it together
+-338826000=Side by side, the Gunslingers walk through graves where the dead don't rest easy
+-335155998=The Gunslingers move in together—one clears the way, the other keeps their rifle steady. The outpost ain't empty
+-335155991=Whatever Darkwatch was hiding, the Gunslingers are about to uncover it—if they live long enough
+-333320990=Cartwright wants to see if they're worth keeping alive—the Regulators plan to prove it in blood
+-333320983=One holds the line, the other protects the innocent—Cartwright's test just got real
+-333320976=The maze twists, the pipes scream—the Gunslingers push forward through the heat and the horror
+-333320969=The maze ain't done yet—the Gunslingers drop into the sewers, where worse things wait
+-333320962=The Gunslingers came for a trial, but now they're in a shootout with the damned
+-333320955=Cartwright stacked the odds—now the Gunslingers fight with steel and grit alone
+-224136222=The Gunslingers earned the badge, but they ain't baptised yet—fire and blood will settle that
+-224136215=Side by side, the Regulators carve through the valley—evil don't stand a chance
+-224136208=Flames rise, bullets fly—the Regulators battle to reclaim the Trading Post
+-224136201=The Trading Post's last stand—one holds the barricade, the other makes every shot count
+-223218683=The streets ain't safe—two Regulators step in to clean up the mess
+-223218676=Bottles break, bullets fly—the Regulators fight to keep the saloon standing
+-223218669=Hangtown's lost, but the Regulators are here to put the dead down for good
+-219548702=The canyon walls close in, the path forward is soaked in blood—neither Regulator is turning back
+-219548688=The Prism's power floods through them—sunlight be damned, the Regulators fight on
+-219548681=The Regulators charge into the valley—the Prism won't be lost without a fight
+-219548674=Undead pick them off from afar, but the Regulators got steady hands and sharper aim
+-219548667=The twisting canyons try to hide the enemy—one watches the cliffs, the other cuts through the shadows
+-217713687=The Regulators cut through the caves—old bones, fresh enemies, and no time to waste
+-217713680=Smoke rises, bodies fall—one clears the village streets, the other picks off the stragglers
+-217713673=The last stand begins—if the Regulators fall, so does the village
+-84271077=Lazarus is making his move—the Regulators have to stop him before it's too late
+-84270622=The citadel burns, but the Regulators ain't letting it fall without a fight
+-84269285=The enemy's deep in the caves—two Regulators hold the line underground
+-84267493=Darkwatch still stands—for now. The Regulators fight to keep it that way
+-84265701=The citadel's power source is under attack—two Regulators stand between it and oblivion
+1256990491=Darkwatch's retaliation starts here—the Regulators lead the charge
+1256992283=No cover, no mercy—the Regulators fight through the wreckage of Deadfall
+1256992633=The deeper they go, the worse it gets—the Regulators wade through the chaos
+1256994075=Buildings crumble, streets burn—Deadfall is falling, but the Regulators push on
+1256994425=The city's tearing itself apart, but the Regulators won't stop now
+*=Two Regulators, one mission—cleanse the frontier or die trying
+
+Lookup:ChapterFlavorText_Cooperative_SingleChapterSection
+1597124685=With the Reaper on their heels, the Gunslingers ride hard—one watching the trail, the other watching their back
+1597583693=The train's bound for hell, and the Regulators are here to take it back
+1635019075=The Regulators got a moment to breathe—no whiskey, no rest, just the next mission waiting
+1953653079=Evil hijacked this train, but the Gunslingers aim to derail their plans—permanently
+1970238023=This ain't just their fight—it's for the whole damn West, whether it's ready or not
+*=Two Regulators, one mission—cleanse the frontier or die trying
+
+Lookup:ChapterFlavorText_SinglePlayer_MultipleChapterSections
+-1125301327=The devil's at full strength, but Jericho's here to put him down anyway
+-1125301320=The battle's won, but Jericho's got a choice to make—redemption or power
+-802886430=Jericho lost Cassidy, but the darkness ain't done with him yet
+-802886423=Jericho ventures deeper into the tunnels—the air is thick, and he ain't alone
+-802886416=The mine wants to keep its secrets, but Jericho came packing dynamite
+-802886409=Jericho ain't alone down here—but what he finds ain't what he expected
+-801510174=Gatling guns roar, wheels thunder—Jericho's bringing hell to the dead
+-801510167=The Regulators need saving, and Jericho's the only one left to do it
+-418333912=Jericho Cross came for gold, but what he's stealing is his own damnation
+-418333905=Cassidy warned him, but Jericho opened the vault anyway—now they fight to survive
+-338826014=The dead still call his name, but now, Jericho hears them differently
+-338826007=Beneath the Church, Jericho walks through the bones of the forgotten
+-338826000=Jericho and Cassidy walk among the dead, but the dead ain't resting easy
+-335155998=Jericho enters Darkwatch's stronghold, but the fight's already lost
+-335155991=Jericho steps into the unknown—whatever Darkwatch was hiding here, it ain't staying buried
+-333320990=No guns, no mercy—Cartwright's test starts with blood and steel
+-333320983=Killing is easy—protecting the weak? That's Jericho's real test
+-333320976=Shapes in the fog, death in the air—Jericho's got to cut through both
+-333320969=Cartwright's test leads Jericho into the depths—he must survive the sewers or be doomed to rot in them.
+-333320962=Jericho's trial ain't over 'til he outguns a town full of dead gunslingers
+-333320955=Cartwright takes away Jericho's edge—if he wants to survive, he'll need more than fangs
+-224136222=Jericho's got his badge—now it's time to prove it in fire and blood
+-224136215=Jericho and Tala carve a path through the valley—no evil left standing
+-224136208=The Trading Post's already burning—Jericho's just here to finish the job
+-224136201=The Trading Post's got one shot at survival—Jericho makes sure it ain't wasted
+-223218683=The streets ain't safe yet—Jericho's here to clean up
+-223218676=Bottles ain't the only thing getting smashed—Jericho fights to keep the saloon standing
+-223218669=Hangtown's already lost, but Jericho's here to put the last of the dead to rest
+-219548702=No way but forward—Jericho wades through the canyon's depths, carving a bloody trail
+-219548688=The sun's up, but Jericho's still got his power—now he's got no excuse not to win
+-219548681=The valley's crawling with evil, but Jericho and his squad came to take it back
+-219548674=The undead strike from afar, but Jericho's aim is deadlier
+-219548667=The winding canyons don't hide evil for long—Jericho's coming through
+-217713687=Dark tunnels, old bones, and fresh enemies—Jericho fights his way through
+-217713680=Smoke rises, bodies fall—Jericho fights to take the village back
+-217713673=Jericho holds the line—the dead ain't taking this village
+-84271077=Lazarus is making his move—Jericho races to stop him before it's too late
+-84270622=The citadel is burning, and Jericho's got no choice but to fight for what's left
+-84269285=The enemy ain't just at the gates—now they're in the caves. Jericho stands his ground
+-84267493=The citadel ain't fallen yet—Jericho fights to keep it standing
+-84265701=The citadel's power source is under attack, but Jericho's standing between it and the abyss
+1256990491=Darkwatch's final push starts here—Jericho leads the charge into the city
+1256992283=Ain't no cover from the shells or the monsters—Jericho fights through the crumbling streets
+1256992633=The deeper Jericho goes, the worse it gets—the city streets are hell itself
+1256994075=The walls are closing in, but Jericho fights his way through the city's crumbling buildings
+1256994425=The city's tearing itself apart, but Jericho ain't stopping now
+*=Ain't no rest for the wicked—or for Jericho Cross
+
+Lookup:ChapterFlavorText_SinglePlayer_SingleChapterSection
+1597124685=Cassidy leads, Jericho rides, and the Reaper's breathing down their necks
+1597583693=The train's bound for hell, and Jericho's gotta take it back
+1635019075=Jericho's got a moment to breathe, but there ain't no saloons here—just the next battle waiting to be fought
+1953653079=Evil's got a new ride, but Jericho's about to derail their plans
+1970238023=This fight ain't just for Jericho—it's for the whole damn West, even if they ain't ready for what's coming
+*=Ain't no rest for the wicked—or for Jericho Cross
+
+Lookup:Difficulty
+0=Greenhorn
+2=Shootist
+3=Deadeye
+*=Cowboy
+
+Lookup:DisplayLanguage
+70=ᶠʳ
+71=ᵈᵉ
+73=ᶦᵗ
+83=ᵉˢ
+*=ᵉⁿ
+
+Lookup:IconEvil
+1=🩸
+
+Lookup:IconGood
+1=⚡
+
+Lookup:MPgameModeFlavorText
+1=battling for dominance
+4=claiming souls
+*=locked in a deadly standoff
+
+Lookup:MPlevel
+1098086764=it "Darkwatch's Asylum"
+1147500137=in "The Devil's Belly Mine"
+1214606444=at "The Hellhole"
+1634956032,1634956100=at "Donner Pass"
+1634956288,1634956356=in "Hangtown East"
+1702065152,1702065220=in "Hangtown West"
+1818587648,1818587716=at "The Death Dealer"
+1952805376,1952805444=at "The Trade Center"
+*=in "The Wild West"
+
+Lookup:MPlevel_DayOrNight
+1634956100,1634956356,1702065220,1818587716,1952805444=☀️
+*=🌙
+
+Lookup:MPplayerSingularOrPlural
+1= is
+*=s are
+
+Lookup:SinglePlayerMode
+1=Gunslinger Mode
+*=Single Player
+
+Display:
+?0xX7215cc=1397050451_0xL9114f0=3_0xX965cc4!=0SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Multiplayer Versus ᛭ @Number(0xL911474) Gunslinger@MPplayerSingularOrPlural(0xL911474) @MPgameModeFlavorText(0xL911514) @MPlevel(I:0xX721820_I:0xX000020_M:0xG000005_I:0xX721820_I:0xX000020_O:0xX000005=1819898689_I:0xX721820_I:0xX000020_O:0xX000005=1769366852_I:0xX721820_I:0xX000020_Q:0xX000005=1819043144$I:0xX721820_I:0xX000020_M:0xG00000d_I:0xX721820_I:0xX000020_O:0xW00000d=7497068_I:0xX721820_I:0xX000020_O:0xX00000d=1148347756_I:0xX721820_I:0xX000020_O:0xW00000d=7497076_I:0xX721820_I:0xX000020_Q:0xX00000d=1148347764$I:0xX721820_I:0xX000020_M:0xG00000c_I:0xX721820_I:0xX000020_O:0xW00000c=7566177_I:0xX721820_I:0xX000020_Q:0xX00000c=1148416865$I:0xX721820_I:0xX000020_M:0xG00000e_I:0xX721820_I:0xX000020_O:0xW00000e=7631713_I:0xX721820_I:0xX000020_O:0xX00000e=1148482401_I:0xX721820_I:0xX000020_O:0xW00000e=7631717_I:0xX721820_I:0xX000020_Q:0xX00000e=1148482405) @MPlevel_DayOrNight(I:0xX721820_I:0xX000020_M:0xG000005_I:0xX721820_I:0xX000020_O:0xX000005=1819898689_I:0xX721820_I:0xX000020_O:0xX000005=1769366852_I:0xX721820_I:0xX000020_Q:0xX000005=1819043144$I:0xX721820_I:0xX000020_M:0xG00000d_I:0xX721820_I:0xX000020_O:0xW00000d=7497068_I:0xX721820_I:0xX000020_O:0xX00000d=1148347756_I:0xX721820_I:0xX000020_O:0xW00000d=7497076_I:0xX721820_I:0xX000020_Q:0xX00000d=1148347764$I:0xX721820_I:0xX000020_M:0xG00000c_I:0xX721820_I:0xX000020_O:0xW00000c=7566177_I:0xX721820_I:0xX000020_Q:0xX00000c=1148416865$I:0xX721820_I:0xX000020_M:0xG00000e_I:0xX721820_I:0xX000020_O:0xW00000e=7631713_I:0xX721820_I:0xX000020_O:0xX00000e=1148482401_I:0xX721820_I:0xX000020_O:0xW00000e=7631717_I:0xX721820_I:0xX000020_Q:0xX00000e=1148482405)
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL911474>=2_0xX965cc4=0_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1953265005_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1634496617_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX00000a=1601332601_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000e=1718579824.1._I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1634038371_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1834968436.1._0=1.1._N:0xX7215cc=1397050451_I:0xX7238b8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ setting up a Multiplayer Verus Match
+?0xX7215cc=1397050451_0xL911474=2_0xL9114f0=0SI:0xX134214_0xX00014c!=1295143760_I:0xX721820_I:0xX000020_0xX000002=1597124685SI:0xX134214_0xX00014c!=1295143760_I:0xX721820_I:0xX000020_0xX000002=1953653079SI:0xX134214_0xX00014c!=1295143760_I:0xX721820_I:0xX000020_0xX000002=1635019075SI:0xX134214_0xX00014c!=1295143760_I:0xX721820_I:0xX000020_0xX000002=1597583693SI:0xX134214_0xX00014c!=1295143760_I:0xX721820_I:0xX000020_0xX000002=1970238023SI:0xX134214_0x 000150!=18753_I:0xX721820_I:0xX000020_0xX000002=1597124685SI:0xX134214_0x 000150!=18753_I:0xX721820_I:0xX000020_0xX000002=1953653079SI:0xX134214_0x 000150!=18753_I:0xX721820_I:0xX000020_0xX000002=1635019075SI:0xX134214_0x 000150!=18753_I:0xX721820_I:0xX000020_0xX000002=1597583693SI:0xX134214_0x 000150!=18753_I:0xX721820_I:0xX000020_0xX000002=1970238023SI:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_0xX000002=1597124685SI:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_0xX000002=1953653079SI:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_0xX000002=1635019075SI:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_0xX000002=1597583693SI:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_0xX000002=1970238023?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Multiplayer Cooperative ᛭ @ChapterFlavorText_Cooperative_SingleChapterSection(I:0xX721820_I:0xX000020_M:0xX000002) ᛭ @Chapter(I:0xX721820_I:0xX000020_M:0xX000002), @Difficulty(0xL965c7c) difficulty
+?0xX7215cc=1397050451_0xL911474=2_0xL9114f0=0_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_O:0xX000002=1852797527_I:0xX721820_I:0xX000020_O:0xX000002=1597190221_I:0xX721820_I:0xX000020_O:0xX000002=1597321293_I:0xX721820_I:0xX000020_O:0xX000002=1597452365_I:0xX721820_I:0xX000020_O:0xX000002=1597583437_I:0xX721820_I:0xX000020_O:0xX000002=1596993869_I:0xX721820_I:0xX000020_O:0xX000002=1597517901_I:0xX721820_I:0xX000020_O:0xX000002=1597321549_I:0xX721820_I:0xX000020_O:0xX000002=1597452621_I:0xX721820_I:0xX000020_O:0xX000002=1597059405_I:0xX721820_I:0xX000020_O:0xX000002=1597124941_I:0xX721820_I:0xX000020_O:0xX000002=1819042118_I:0xX721820_I:0xX000020_0xX000002=1596994125?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Multiplayer Cooperative ᛭ @ChapterFlavorText_Cooperative_MultipleChapterSections(I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG00000a*7_I:0xX721820_I:0xX000020_Q:0xX000002=1852797527$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG000003*7_I:0xX721820_I:0xX000020_O:0xX000002=1597190221_I:0xX721820_I:0xX000020_O:0xX000002=1597321293_I:0xX721820_I:0xX000020_O:0xX000002=1597452365_I:0xX721820_I:0xX000020_O:0xX000002=1597583437_I:0xX721820_I:0xX000020_O:0xX000002=1596993869_I:0xX721820_I:0xX000020_O:0xX000002=1597517901_I:0xX721820_I:0xX000020_O:0xX000002=1597321549_I:0xX721820_I:0xX000020_O:0xX000002=1597452621_I:0xX721820_I:0xX000020_Q:0xX000002=1597059405$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG000004*7_I:0xX721820_I:0xX000020_O:0xX000002=1597124941_I:0xX721820_I:0xX000020_Q:0xX000002=1596994125$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG00000d*7_I:0xX721820_I:0xX000020_Q:0xX000002=1819042118) ᛭ @Chapter(I:0xX721820_I:0xX000020_M:0xX000002), @Difficulty(0xL965c7c) difficulty
+?0xX7215cc=1397050451_0xL911474=1_0xL9114f0<=1_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0xX000002!=1920235621_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0x 000006!=29537_I:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_O:0xX000002=1597124685_I:0xX721820_I:0xX000020_O:0xX000002=1953653079_I:0xX721820_I:0xX000020_O:0xX000002=1635019075_I:0xX721820_I:0xX000020_O:0xX000002=1597583693_I:0xX721820_I:0xX000020_0xX000002=1970238023?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ @SinglePlayerMode(0xL9114f0) ᛭ @ChapterFlavorText_SinglePlayer_SingleChapterSection(I:0xX721820_I:0xX000020_M:0xX000002) ᛭ @Chapter(I:0xX721820_I:0xX000020_M:0xX000002), @Difficulty(0xL965c7c) difficulty
+?0xX7215cc=1397050451_0xL911474=1_0xL9114f0<=1_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0xX000002!=1920235621_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0x 000006!=29537_I:0xX134214_0xX00012c!=1684434771_I:0xX721820_I:0xX000020_O:0xX000002=1852797527_I:0xX721820_I:0xX000020_O:0xX000002=1597190221_I:0xX721820_I:0xX000020_O:0xX000002=1597321293_I:0xX721820_I:0xX000020_O:0xX000002=1597452365_I:0xX721820_I:0xX000020_O:0xX000002=1597583437_I:0xX721820_I:0xX000020_O:0xX000002=1596993869_I:0xX721820_I:0xX000020_O:0xX000002=1597517901_I:0xX721820_I:0xX000020_O:0xX000002=1597321549_I:0xX721820_I:0xX000020_O:0xX000002=1597452621_I:0xX721820_I:0xX000020_O:0xX000002=1597059405_I:0xX721820_I:0xX000020_O:0xX000002=1597124941_I:0xX721820_I:0xX000020_O:0xX000002=1819042118_I:0xX721820_I:0xX000020_0xX000002=1596994125?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ @SinglePlayerMode(0xL9114f0) ᛭ @ChapterFlavorText_SinglePlayer_MultipleChapterSections(I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG00000a*7_I:0xX721820_I:0xX000020_Q:0xX000002=1852797527$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG000003*7_I:0xX721820_I:0xX000020_O:0xX000002=1597190221_I:0xX721820_I:0xX000020_O:0xX000002=1597321293_I:0xX721820_I:0xX000020_O:0xX000002=1597452365_I:0xX721820_I:0xX000020_O:0xX000002=1597583437_I:0xX721820_I:0xX000020_O:0xX000002=1596993869_I:0xX721820_I:0xX000020_O:0xX000002=1597517901_I:0xX721820_I:0xX000020_O:0xX000002=1597321549_I:0xX721820_I:0xX000020_O:0xX000002=1597452621_I:0xX721820_I:0xX000020_Q:0xX000002=1597059405$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG000004*7_I:0xX721820_I:0xX000020_O:0xX000002=1597124941_I:0xX721820_I:0xX000020_Q:0xX000002=1596994125$I:0xX721820_I:0xX000020_A:0xX000002*7_I:0xX721820_I:0xX000024_M:0xG00000d*7_I:0xX721820_I:0xX000020_Q:0xX000002=1819042118) ᛭ @Chapter(I:0xX721820_I:0xX000020_M:0xX000002), @Difficulty(0xL965c7c) difficulty
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL911474=2_0xX965cc4=0_A:0xH965d00_0xH965d01>=1_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1885431907_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1601332596_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1701602675.1._I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1717987684_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1819632489_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1935636852.1._I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1886351203_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1869770847.1._0=1.1._N:0xX7215cc=1397050451_I:0xX7238b8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Main Menu ᛭ Coop Story Complete: @IconGood(0xH965d00)@IconEvil(0xH965d01) Ending
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL911474=2_0xX965cc4=0_A:0xH965d00_0xH965d01<1_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1885431907_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1601332596_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1701602675.1._I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1717987684_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1819632489_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1935636852.1._I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1886351203_I:0xX7238b8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1869770847.1._0=1.1._N:0xX7215cc=1397050451_I:0xX7238b8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Main Menu ᛭ Coop Story Completion: @Number(A:0xH965cf8/f0.22_M:0)%
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX965d04!=4294967295_0xL911474=1_0xX965cc4=0_A:0xH965d00_0xH965d01>=1?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Main Menu ᛭ Story Complete: @IconGood(0xH965d00)@IconEvil(0xH965d01) Ending
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX965d04!=4294967295_0xL911474=1_0xX965cc4=0_A:0xH965d00_0xH965d01<1?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Main Menu ᛭ Story Completion: @Number(A:0xH965cf8/f0.22_M:0)%
+?0xX7215cc=1397050451_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX965d04=4294967295_0xX965cc4=0_A:0xH965d00_0xH965d01<1?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Main Menu
+?0xX7215cc=1397050451_0xX965d04!=4294967295_0xL911474=1_A:0xH965d00_0xH965d01>=1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Story Complete: @IconGood(0xH965d00)@IconEvil(0xH965d01) Ending
+?0xX7215cc=1397050451_0xX965d04!=4294967295_0xL911474=1_A:0xH965d00_0xH965d01<1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟ Story Completion: @Number(A:0xH965cf8/f0.22_M:0)%
+?0xX7215cc=1397050451_0xX965d04=4294967295_A:0xH965d00_0xH965d01<1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵉᵘ @DisplayLanguage(0xX65f3b8) Playing Darkwatch ✟
+?0xX71fccc=1398099027_0xL8ff510=3_0xX953ce4!=0SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Multiplayer Versus ᛭ @Number(0xL8ff494) Gunslinger@MPplayerSingularOrPlural(0xL8ff494) @MPgameModeFlavorText(0xL8ff534) @MPlevel(I:0xX71ff20_I:0xX000020_M:0xG000005_I:0xX71ff20_I:0xX000020_O:0xX000005=1819898689_I:0xX71ff20_I:0xX000020_O:0xX000005=1769366852_I:0xX71ff20_I:0xX000020_Q:0xX000005=1819043144$I:0xX71ff20_I:0xX000020_M:0xG00000d_I:0xX71ff20_I:0xX000020_O:0xW00000d=7497068_I:0xX71ff20_I:0xX000020_O:0xX00000d=1148347756_I:0xX71ff20_I:0xX000020_O:0xW00000d=7497076_I:0xX71ff20_I:0xX000020_Q:0xX00000d=1148347764$I:0xX71ff20_I:0xX000020_M:0xG00000c_I:0xX71ff20_I:0xX000020_O:0xW00000c=7566177_I:0xX71ff20_I:0xX000020_Q:0xX00000c=1148416865$I:0xX71ff20_I:0xX000020_M:0xG00000e_I:0xX71ff20_I:0xX000020_O:0xW00000e=7631713_I:0xX71ff20_I:0xX000020_O:0xX00000e=1148482401_I:0xX71ff20_I:0xX000020_O:0xW00000e=7631717_I:0xX71ff20_I:0xX000020_Q:0xX00000e=1148482405) @MPlevel_DayOrNight(I:0xX71ff20_I:0xX000020_M:0xG000005_I:0xX71ff20_I:0xX000020_O:0xX000005=1819898689_I:0xX71ff20_I:0xX000020_O:0xX000005=1769366852_I:0xX71ff20_I:0xX000020_Q:0xX000005=1819043144$I:0xX71ff20_I:0xX000020_M:0xG00000d_I:0xX71ff20_I:0xX000020_O:0xW00000d=7497068_I:0xX71ff20_I:0xX000020_O:0xX00000d=1148347756_I:0xX71ff20_I:0xX000020_O:0xW00000d=7497076_I:0xX71ff20_I:0xX000020_Q:0xX00000d=1148347764$I:0xX71ff20_I:0xX000020_M:0xG00000c_I:0xX71ff20_I:0xX000020_O:0xW00000c=7566177_I:0xX71ff20_I:0xX000020_Q:0xX00000c=1148416865$I:0xX71ff20_I:0xX000020_M:0xG00000e_I:0xX71ff20_I:0xX000020_O:0xW00000e=7631713_I:0xX71ff20_I:0xX000020_O:0xX00000e=1148482401_I:0xX71ff20_I:0xX000020_O:0xW00000e=7631717_I:0xX71ff20_I:0xX000020_Q:0xX00000e=1148482405)
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL8ff494>=2_0xX953ce4=0_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1953265005_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1634496617_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX00000a=1601332601_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000e=1718579824.1._I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1634038371_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1834968436.1._0=1.1._N:0xX71fccc=1398099027_I:0xX721fb8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵘˢ ᵉⁿ Playing Darkwatch ✟ setting up a Multiplayer Verus Match
+?0xX71fccc=1398099027_0xL8ff494=2_0xL8ff510=0SI:0xX134214_0xX00014c!=1295143760_I:0xX71ff20_I:0xX000020_0xX000002=1597124685SI:0xX134214_0xX00014c!=1295143760_I:0xX71ff20_I:0xX000020_0xX000002=1953653079SI:0xX134214_0xX00014c!=1295143760_I:0xX71ff20_I:0xX000020_0xX000002=1635019075SI:0xX134214_0xX00014c!=1295143760_I:0xX71ff20_I:0xX000020_0xX000002=1597583693SI:0xX134214_0xX00014c!=1295143760_I:0xX71ff20_I:0xX000020_0xX000002=1970238023SI:0xX134214_0x 000150!=18753_I:0xX71ff20_I:0xX000020_0xX000002=1597124685SI:0xX134214_0x 000150!=18753_I:0xX71ff20_I:0xX000020_0xX000002=1953653079SI:0xX134214_0x 000150!=18753_I:0xX71ff20_I:0xX000020_0xX000002=1635019075SI:0xX134214_0x 000150!=18753_I:0xX71ff20_I:0xX000020_0xX000002=1597583693SI:0xX134214_0x 000150!=18753_I:0xX71ff20_I:0xX000020_0xX000002=1970238023SI:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_0xX000002=1597124685SI:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_0xX000002=1953653079SI:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_0xX000002=1635019075SI:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_0xX000002=1597583693SI:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_0xX000002=1970238023?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Multiplayer Cooperative ᛭ @ChapterFlavorText_Cooperative_SingleChapterSection(I:0xX71ff20_I:0xX000020_M:0xX000002) ᛭ @Chapter(I:0xX71ff20_I:0xX000020_M:0xX000002), @Difficulty(0xL953c9c) difficulty
+?0xX71fccc=1398099027_0xL8ff494=2_0xL8ff510=0_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_O:0xX000002=1852797527_I:0xX71ff20_I:0xX000020_O:0xX000002=1597190221_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321293_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452365_I:0xX71ff20_I:0xX000020_O:0xX000002=1597583437_I:0xX71ff20_I:0xX000020_O:0xX000002=1596993869_I:0xX71ff20_I:0xX000020_O:0xX000002=1597517901_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321549_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452621_I:0xX71ff20_I:0xX000020_O:0xX000002=1597059405_I:0xX71ff20_I:0xX000020_O:0xX000002=1597124941_I:0xX71ff20_I:0xX000020_O:0xX000002=1819042118_I:0xX71ff20_I:0xX000020_0xX000002=1596994125?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Multiplayer Cooperative ᛭ @ChapterFlavorText_Cooperative_MultipleChapterSections(I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG00000a*7_I:0xX71ff20_I:0xX000020_Q:0xX000002=1852797527$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG000003*7_I:0xX71ff20_I:0xX000020_O:0xX000002=1597190221_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321293_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452365_I:0xX71ff20_I:0xX000020_O:0xX000002=1597583437_I:0xX71ff20_I:0xX000020_O:0xX000002=1596993869_I:0xX71ff20_I:0xX000020_O:0xX000002=1597517901_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321549_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452621_I:0xX71ff20_I:0xX000020_Q:0xX000002=1597059405$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG000004*7_I:0xX71ff20_I:0xX000020_O:0xX000002=1597124941_I:0xX71ff20_I:0xX000020_Q:0xX000002=1596994125$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG00000d*7_I:0xX71ff20_I:0xX000020_Q:0xX000002=1819042118) ᛭ @Chapter(I:0xX71ff20_I:0xX000020_M:0xX000002), @Difficulty(0xL953c9c) difficulty
+?0xX71fccc=1398099027_0xL8ff494=1_0xL8ff510<=1_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0xX000002!=1920235621_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0x 000006!=29537_I:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_O:0xX000002=1597124685_I:0xX71ff20_I:0xX000020_O:0xX000002=1953653079_I:0xX71ff20_I:0xX000020_O:0xX000002=1635019075_I:0xX71ff20_I:0xX000020_O:0xX000002=1597583693_I:0xX71ff20_I:0xX000020_0xX000002=1970238023?ᵘˢ ᵉⁿ Playing Darkwatch ✟ @SinglePlayerMode(0xL8ff510) ᛭ @ChapterFlavorText_SinglePlayer_SingleChapterSection(I:0xX71ff20_I:0xX000020_M:0xX000002) ᛭ @Chapter(I:0xX71ff20_I:0xX000020_M:0xX000002), @Difficulty(0xL953c9c) difficulty
+?0xX71fccc=1398099027_0xL8ff494=1_0xL8ff510<=1_I:0xX134214_O:0xX00014c!=1295143760_I:0xX134214_O:0x 000150!=18753_I:0xX134214_0xX00012c!=1684434771_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0xX000002!=1920235621_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_O:0x 000006!=29537_I:0xX134214_0xX00012c!=1684434771_I:0xX71ff20_I:0xX000020_O:0xX000002=1852797527_I:0xX71ff20_I:0xX000020_O:0xX000002=1597190221_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321293_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452365_I:0xX71ff20_I:0xX000020_O:0xX000002=1597583437_I:0xX71ff20_I:0xX000020_O:0xX000002=1596993869_I:0xX71ff20_I:0xX000020_O:0xX000002=1597517901_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321549_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452621_I:0xX71ff20_I:0xX000020_O:0xX000002=1597059405_I:0xX71ff20_I:0xX000020_O:0xX000002=1597124941_I:0xX71ff20_I:0xX000020_O:0xX000002=1819042118_I:0xX71ff20_I:0xX000020_0xX000002=1596994125?ᵘˢ ᵉⁿ Playing Darkwatch ✟ @SinglePlayerMode(0xL8ff510) ᛭ @ChapterFlavorText_SinglePlayer_MultipleChapterSections(I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG00000a*7_I:0xX71ff20_I:0xX000020_Q:0xX000002=1852797527$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG000003*7_I:0xX71ff20_I:0xX000020_O:0xX000002=1597190221_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321293_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452365_I:0xX71ff20_I:0xX000020_O:0xX000002=1597583437_I:0xX71ff20_I:0xX000020_O:0xX000002=1596993869_I:0xX71ff20_I:0xX000020_O:0xX000002=1597517901_I:0xX71ff20_I:0xX000020_O:0xX000002=1597321549_I:0xX71ff20_I:0xX000020_O:0xX000002=1597452621_I:0xX71ff20_I:0xX000020_Q:0xX000002=1597059405$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG000004*7_I:0xX71ff20_I:0xX000020_O:0xX000002=1597124941_I:0xX71ff20_I:0xX000020_Q:0xX000002=1596994125$I:0xX71ff20_I:0xX000020_A:0xX000002*7_I:0xX71ff20_I:0xX000024_M:0xG00000d*7_I:0xX71ff20_I:0xX000020_Q:0xX000002=1819042118) ᛭ @Chapter(I:0xX71ff20_I:0xX000020_M:0xX000002), @Difficulty(0xL953c9c) difficulty
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL8ff494=2_0xX953ce4=0_A:0xH953d20_0xH953d21>=1_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1885431907_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1601332596_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1701602675.1._I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1717987684_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1819632489_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1935636852.1._I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1886351203_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1869770847.1._0=1.1._N:0xX71fccc=1398099027_I:0xX721fb8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Main Menu ᛭ Coop Story Complete: @IconGood(0xH953d20)@IconEvil(0xH953d21) Ending
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xL8ff494=2_0xX953ce4=0_A:0xH953d20_0xH953d21<1_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1885431907_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1601332596_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1701602675.1._I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1717987684_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000006=1819632489_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX00000a=1935636852.1._I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_N:0xX000002=1886351203_I:0xX721fb8_I:0xX00000c_I:0xX000000_I:0xX000030_C:0xX000006=1869770847.1._0=1.1._N:0xX71fccc=1398099027_I:0xX721fb8_I:0xX00000c_R:0xX000000!=d0xX000000?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Main Menu ᛭ Coop Story Completion: @Number(A:0xH953d18/f0.22_M:0)%
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX953d24!=4294967295_0xL8ff494=1_0xX953ce4=0_A:0xH953d20_0xH953d21>=1?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Main Menu ᛭ Story Complete: @IconGood(0xH953d20)@IconEvil(0xH953d21) Ending
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX953d24!=4294967295_0xL8ff494=1_0xX953ce4=0_A:0xH953d20_0xH953d21<1?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Main Menu ᛭ Story Completion: @Number(A:0xH953d18/f0.22_M:0)%
+?0xX71fccc=1398099027_I:0xX134214_0xX00014c=1295143760_I:0xX134214_0x 000150=18753_I:0xX134214_0xX00012c=1684434771_0xX953d24=4294967295_0xX953ce4=0_A:0xH953d20_0xH953d21<1?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Main Menu
+?0xX71fccc=1398099027_0xX953d24!=4294967295_0xL8ff494=1_A:0xH953d20_0xH953d21>=1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Story Complete: @IconGood(0xH953d20)@IconEvil(0xH953d21) Ending
+?0xX71fccc=1398099027_0xX953d24!=4294967295_0xL8ff494=1_A:0xH953d20_0xH953d21<1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵘˢ ᵉⁿ Playing Darkwatch ✟ Story Completion: @Number(A:0xH953d18/f0.22_M:0)%
+?0xX71fccc=1398099027_0xX953d24=4294967295_A:0xH953d20_0xH953d21<1SI:0xX134214_0xX00014c!=1295143760SI:0xX134214_0x 000150!=18753SI:0xX134214_0xX00012c!=1684434771?ᵘˢ ᵉⁿ Playing Darkwatch ✟
+Playing Darkwatch ✟

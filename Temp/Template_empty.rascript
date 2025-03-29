@@ -451,14 +451,15 @@ function achievements_initialize() {
 // #region RICH PRESENCE
 // TODO implement Rich Presence
 
-// =====================
+// ======================
 // • RICH PRESENCE text •
-// =====================
+// ======================
 // #region RP - text
 //	- Contains text for the rich presence script
 richPresence_text = {
-	// "rp_Template": 									{"en": "xxxxxxxx"},
-	"rp_Default":										{"en": "xxxxxxxx"}}	// TODO implement rp_Default + rp_DefaultPlus
+	// "rp_Template": 				{"en": "xxxxxxxx"},
+	"rp_DefaultPlus":				{"en": "xxxxxxxx"},
+	"rp_Default":					{"en": "xxxxxxxx"}}
 richPresence_LookupTablesText = {
 	// "lupText_Template": {
 		// "LOOKUP_FALLBACK":				{"en": "xxxxxxxx"},
@@ -467,8 +468,18 @@ richPresence_LookupTablesText = {
 		// "LookupTextKey_C":				{"en": "xxxxxxxx"},
 		// },
 	}
+richPresence_ReleaseRegion_toSuperScript = {
+	// NOTE: Text to superscript --> https://lingojam.com/SuperscriptGenerator
+	RELEASE_REGION_USA: "ᵘˢ",
+	RELEASE_REGION_EUR: "ᵉᵘ",
+	RELEASE_REGION_JPN: "ʲᵖ",
+	}
+	
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
+
+funciotn richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
+	format("{0} {1}", richPresence_ReleaseRegion_toSuperScript[enum_releaseRegion], richPresence_getText(string_textKey))
 
 function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
 	richPresence_LookupTablesText[string_lookupTableKey][let_lookupTableTextKey][util_language]
@@ -553,7 +564,7 @@ function richPresence_initializeZeroPaddingLookupTables() { // Function is calle
 	// 	is_ReleaseRegion(enum_releaseRegion)
 	// return rich_presence_conditional_display( 
 	// 	condition(enum_releaseRegion),
-	// 	richPresence_getText("rp_Template"),
+	// 	richPresence_getText_withRegionSuperScript("rp_Template", enum_releaseRegion),
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 0
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion), // 1
 	// 	richPresence_callParameterFunction("rpp_TemplateParameter", enum_releaseRegion) // 2
@@ -564,17 +575,17 @@ function rp_DefaultPlus(enum_releaseRegion) { // rp_DefaultPlus => is rp_Default
 		is_ReleaseRegion(enum_releaseRegion)
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
-		richPresence_getText("rp_DefaultPlus")
+		richPresence_getText_withRegionSuperScript("rp_DefaultPlus", enum_releaseRegion)
 	)}
 function rp_Default() {
-	return rich_presence_display(	
+	return rich_presence_display(
 		richPresence_getText("rp_Default")
 	)}
 // -------------------------------------
 function richPresence_initializeDisplays() {
-	rp_Default()
+	rp_Default() // TODO rp_Default
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-
+		// rp_DefaultPlus(enum_releaseRegion) // CONCEPT rp_DefaultPlus
 	}} 
 // #endregion RP - display script
 
@@ -624,13 +635,13 @@ richPresence_parameterData = {
 		// "LookupTableID": "lup_LookupTableKey",
 		// "LookupFallback": richPresence_getLookupTableText("lupText_LookupTableKey", "LOOKUP_FALLBACK")},
 
-	//	"rpp_MacroTemplate": {
+	// "rpp_MacroTemplate": {
 		// "RPtype": richPresence_MACRO,
 		// "Expression": {
 		// 	RELEASE_REGION_USA: always_false(), 
 		// 	RELEASE_REGION_EUR: always_false(),
 		// 	RELEASE_REGION_JPN: always_false()},
-		// "MacroFormat": "Number"},	
+		// "MacroFormat": "Number"},
 	
 	
 
