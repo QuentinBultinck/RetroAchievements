@@ -2063,8 +2063,40 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		// "a_Template": { // CONCEPT a_Gunslinger
-			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		"a_GunWrongTrain": { // CONCEPT 
+			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunRideDevil": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx%  and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunBoneyard": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring xx kills with the Crossbow and also with the Carbine"},
+		// "a_GunDevilMine": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, using only the Redeemer to kill"},
+		// "a_GunDWOutpost": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without losing any HP"},
+		// "a_GunWarTrain": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP"},
+		// "a_GunTortureMaze": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, using only the Scepter to kill"},
+		// "a_GunBaptismFire": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, using the Rail Rocket only as a melee weapon to score at least xx kills"},
+		// "a_GunRescue": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP"},
+		// "a_GunPrism": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, using only the dual pistols to kill"},
+		// "a_GunInvasion": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, without losing more than xx% HP (vampire shield excluded)"},
+		// "a_GunHangtown": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using only the Shotgun to kill"},
+		// "a_GunMorningAfter": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, only going for melee kills"},
+		// "a_GunShowdown": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, without using any vampire powers"},
+		// "a_GunRightTrain": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time"},
+		// "a_GunDeadfall": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, using only the Range Rifle to kill, with a min. accuracy of xx%"},
+		// "a_GunCurseWest": { // CONCEPT
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with an accuracy of xx% and without losing more than "}, 
 		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
@@ -2416,13 +2448,14 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 	// [4+5+6+7] ==== (4x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 
-function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLimit, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLimit, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION // BUG - add Measured (In-Game) AND Measured (Not In-Game)
 	// NOTE: int_timeLimit in milliseconds (1 min = 60.000 ms)
 	return 
 	// [1/7] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-			on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			is_flagState_InGame_true(enum_releaseRegion)
+			&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2443,7 +2476,8 @@ function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLim
 	// [2/8] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-			on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			is_flagState_InGame_true(enum_releaseRegion)
+			&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
 		&& unless( // --PauseIf--> MissionTime exceeds time limit
 			current_calculated_TotalMissionTime(enum_releaseRegion) > int_timeLimit)
 		/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured): R/R usage
@@ -2482,8 +2516,6 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 		*/
 	// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-			on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2527,8 +2559,6 @@ function achGenerate_FullTrigger_GunslingerUnlock_MeleeKills(enum_chapter, int_r
 function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, int_requiredHeadshotKills, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Logic Group ==== 					-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-			on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2856,8 +2886,8 @@ achievements_triggers = {
 	"a_Sights3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
 		const_TIME_LIMIT = 600000.0 // 600.000 ms = 10 mins
 		/* MANUAL_CONSTRUCTION (AltGroup[2/8])
-			PAL:	P:0xX007215cc!=1397050451_A:d0xX00965c08_N:d0xX00965c70>=4294966295_A:0xX00965c08_P:0xX00965c70<=1000.1._A:0xX00965c08_P:0xX00965c70>600000_A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000006=1700422766_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
-			NTSCU:	P:0xX0071fccc!=1398099027_A:d0xX00953c28_N:d0xX00953c90>=4294966295_A:0xX00953c28_P:0xX00953c90<=1000.1._A:0xX00953c28_P:0xX00953c90>600000_A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1700422766_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
+			PAL:	xxxxx
+			NTSCU:	xxxxx
 			*/ 
 		/* MANUAL_CONSTRUCTION (AltGroup[6/12])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
@@ -2874,8 +2904,6 @@ achievements_triggers = {
 		return
 		// [1/8] ==== Alt Logic Group ==== 						-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-				on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
 			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 				on_Chapter_startFromBeginning(CHAPTER_10_Prism, enum_releaseRegion))
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2936,8 +2964,8 @@ achievements_triggers = {
 	"a_Moon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
 		const_TIME_LIMIT = 900000.0 // 900.000 ms = 15 mins
 		/* MANUAL_CONSTRUCTION (AltGroup[2/8])
-			PAL:	P:0xX007215cc!=1397050451_A:d0xX00965c08_N:d0xX00965c70>=4294966295_A:0xX00965c08_P:0xX00965c70<=1000.1._A:0xX00965c08_P:0xX00965c70>f900000.0_A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1597517901_I:0xX00721820_I:0xX00000024_N:0xX00000002=1600288072_I:0xX00721820_I:0xX00000024_N:0xH00000006=65_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
-			NTSCU:	P:0xX0071fccc!=1398099027_A:d0xX00953c28_N:d0xX00953c90>=4294966295_A:0xX00953c28_P:0xX00953c90<=1000.1._A:0xX00953c28_P:0xX00953c90>f900000.0_A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1597517901_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1600288072_I:0xX0071ff20_I:0xX00000024_N:0xH00000006=65_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
+			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_N:d0xX00965c70>=4294966295_A:0xX00965c08_P:0xX00965c70<=1000.1._A:0xX00965c08_P:0xX00965c70>f900000.0_A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1597517901_I:0xX00721820_I:0xX00000024_N:0xX00000002=1600288072_I:0xX00721820_I:0xX00000024_N:0xH00000006=65_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
+			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_N:d0xX00953c90>=4294966295_A:0xX00953c28_P:0xX00953c90<=1000.1._A:0xX00953c28_P:0xX00953c90>f900000.0_A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1597517901_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1600288072_I:0xX0071ff20_I:0xX00000024_N:0xH00000006=65_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
 			*/ 
 		/* MANUAL_CONSTRUCTION (AltGroup[6/12])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
@@ -3007,6 +3035,131 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
+	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+		const_CHAPTER = CHAPTER_1_WrongTrain
+		const_TIME_LIMIT = 240.000 // in milliseconds (1s = 1.000ms)
+		return 
+		// [1/7] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			&& once( // --CheckIf--> Level/Chapter is started from beginning
+				on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Level/Chapter has ended + MissionTime is within time limit
+				never(is_flagState_InGame_true(enum_releaseRegion))
+
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+
+				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/8] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			&& unless( // --PauseIf--> MissionTime exceeds time limit
+				current_calculated_TotalMissionTime(enum_releaseRegion) > const_TIME_LIMIT)
+			/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured): R/R usage
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+				NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+				''''''''''''''
+				AddSource	[32-bit:MissionTime_Temp]
+				AddSource	[32-bit:MissionTime_ChapterSection]
+				Remember	Val 0
+				Remember	Recall / 1000.0							| current_calculated_TotalMissionTime() in seconds
+				AddSource	(const_TIME_LIMIT/1000) - Recall
+				Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/				
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_Temp(enum_releaseRegion) 
+				+ current_MissionTime_ChapterSection(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+						on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [3+4+5+6] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			/* MANUAL_CONSTRUCTION (AltGroup[6/12]): R/R usage
+				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+				*/
+			|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_GunCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
 	"a_WeaponMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION // DISCONTINUED - Exceeds achievement logic size
 		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
 		return
@@ -3118,6 +3271,23 @@ achievements_titles = {
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
+	"a_GunWrongTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunRideDevil": 			{"en": "xxxxxxxxx"},
+	"a_GunBoneyard": 			{"en": "xxxxxxxxx"},
+	"a_GunDevilMine": 			{"en": "xxxxxxxxx"},
+	"a_GunDWOutpost": 			{"en": "xxxxxxxxx"},
+	"a_GunWarTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunTortureMaze": 		{"en": "xxxxxxxxx"},
+	"a_GunBaptismFire": 		{"en": "xxxxxxxxx"},
+	"a_GunRescue": 				{"en": "xxxxxxxxx"},
+	"a_GunPrism": 				{"en": "xxxxxxxxx"},
+	"a_GunInvasion": 			{"en": "xxxxxxxxx"},
+	"a_GunHangtown": 			{"en": "xxxxxxxxx"},
+	"a_GunMorningAfter": 		{"en": "xxxxxxxxx"},
+	"a_GunShowdown": 			{"en": "xxxxxxxxx"},
+	"a_GunRightTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunDeadfall": 			{"en": "xxxxxxxxx"},
+	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
@@ -3161,6 +3331,23 @@ achievements_descriptions = {
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
 	// --------c_Gunslinger--------
+	"a_GunWrongTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunRideDevil": 			{"en": "xxxxxxxxx"},
+	"a_GunBoneyard": 			{"en": "xxxxxxxxx"},
+	"a_GunDevilMine": 			{"en": "xxxxxxxxx"},
+	"a_GunDWOutpost": 			{"en": "xxxxxxxxx"},
+	"a_GunWarTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunTortureMaze": 		{"en": "xxxxxxxxx"},
+	"a_GunBaptismFire": 		{"en": "xxxxxxxxx"},
+	"a_GunRescue": 				{"en": "xxxxxxxxx"},
+	"a_GunPrism": 				{"en": "xxxxxxxxx"},
+	"a_GunInvasion": 			{"en": "xxxxxxxxx"},
+	"a_GunHangtown": 			{"en": "xxxxxxxxx"},
+	"a_GunMorningAfter": 		{"en": "xxxxxxxxx"},
+	"a_GunShowdown": 			{"en": "xxxxxxxxx"},
+	"a_GunRightTrain": 			{"en": "xxxxxxxxx"},
+	"a_GunDeadfall": 			{"en": "xxxxxxxxx"},
+	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
@@ -3228,7 +3415,8 @@ function achievements_initialize() {
 				trigger = achievements_getTrigger(let_cheevmentName)
 			)
 		}}
-	}// #endregion ACH - initialization
+	}
+// #endregion ACH - initialization
 // #endregion ACHIEVEMENTS
 
 // ***************************************************************************************************** \\
@@ -3302,7 +3490,7 @@ richPresence_LookupTablesText = {
 		},
 	"lupText_MPlevel": {
 		"LOOKUP_FALLBACK":			{"en": "in \"The Wild West\""},
-		"Asylum":			 		{"en": "it \"Darkwatch's Asylum\""},
+		"Asylum":			 		{"en": "at \"Darkwatch's Asylum\""},
 		"DeathDealer":		 		{"en": "at \"The Death Dealer\""},
 		"DevilsBelly":		 		{"en": "in \"The Devil's Belly Mine\""},
 		"DonnerPass":		 		{"en": "at \"Donner Pass\""},
@@ -4963,7 +5151,7 @@ leaderboards_descriptions = {
 	"lb_WatchersWrongTrain": 			{"en": "The Reaper was on board, but you weren't on his list. Make sure your name lands on this one instead—finish Chapter 1, \"The Wrong Train\", with precision and speed"},
 	"lb_WatchersRideDevil": 			{"en": "The Reaper's close, and the devil's got the reins. Only the fastest and deadliest make this list. Dominate Chapter 2, \"Ride Like the Devil\", with sheer speed and precision to earn your spot"},
 	"lb_WatchersBoneyard": 				{"en": "The dead don't take kindly to visitors. If you're still standing when the dust settles, you've earned your place among the best. Survive Chapter 3, \"Boneyard\", with ruthless efficiency to make the list"},
-	"lb_WatchersDevilMine": 			{"en": "Plenty have gone into these tunnels—few ever come out. Only the sharpest shots and the quickest hands make it out in one piece. Carve your name in stone by dominating Chapter 4, \"Devil's Belly Mine"},
+	"lb_WatchersDevilMine": 			{"en": "Plenty have gone into these tunnels—few ever come out. Only the sharpest shots and the quickest hands make it out in one piece. Carve your name in stone by dominating Chapter 4, \"Devil's Belly\" Mine"},
 	"lb_WatchersDWOutpost": 			{"en": "Sanctuary is a thing of the past—now it's just you, the undead, and your gun. If you can hold the line with speed and precision, you'll earn your name on this list. Prove it in Chapter 5, \"Darkwatch Outpost\""},
 	"lb_WatchersWarTrain": 				{"en": "The steel rails run straight through hell, and you're riding shotgun. Survive the slaughter and show them who runs this train. The best gunslingers earn their place by ruling Chapter 6, \"War Train\""},
 	"lb_WatchersTortureMaze": 			{"en": "This ain't a test of strength—it's a test of survival. If you made it through and still had the guts to fight, you just might belong on this list. Show 'em how it's done in Chapter 7, \"Torture Maze\""},
