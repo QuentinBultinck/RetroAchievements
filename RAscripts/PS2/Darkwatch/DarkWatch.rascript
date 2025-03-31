@@ -1473,17 +1473,20 @@ function current_MissionTime_ChapterTotal(enum_releaseRegion) =>
 function prev_MissionTime_ChapterTotal(enum_releaseRegion) =>
 	prev(current_MissionTime_ChapterTotal(enum_releaseRegion))
 
-function current_calculated_TotalMissionTime(enum_releaseRegion) =>
-	current_MissionTime_Temp(enum_releaseRegion) + current_MissionTime_ChapterSection(enum_releaseRegion)
+function current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) =>
+	// NOTE: only valid when is_flagState_InGame_true() - when is_flagState_InGame_false(): only check current_MissionTime_ChapterTotal()
+	current_MissionTime_Temp(enum_releaseRegion) 
+	+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+	+ current_MissionTime_ChapterTotal(enum_releaseRegion)
 	
-function prev_calculated_TotalMissionTime(enum_releaseRegion) =>
-	prev(current_calculated_TotalMissionTime(enum_releaseRegion))
+function prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) =>
+	prev(current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion))
 
-function on_calculated_TotalMissionTime_overflow(enum_releaseRegion) => // NOTE: Triggers when 32-bit overflow occurs; calculated_TotalMissionTime() increments based on FPS (25FPS increments by 40; 60FPS increments by 16.67)
-	0xFFFFFFFF - 1000 <= prev_calculated_TotalMissionTime(enum_releaseRegion) // --> 1 second (= 1000ms) under 0xFFFFFFFF
-	// && prev_calculated_TotalMissionTime(enum_releaseRegion) <= 0xFFFFFFFF // DISABLED - Line is alwaysTrue (unnecessary)
-	// && 0x0 <= current_calculated_TotalMissionTime(enum_releaseRegion) // DISABLED - Line is alwaysTrue (unnecessary)
-	&& current_calculated_TotalMissionTime(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
+function on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion) => // NOTE: Triggers when 32-bit overflow occurs; calculated_TotalMissionTime() increments based on FPS (25FPS increments by 40; 60FPS increments by 16.67)
+	0xFFFFFFFF - 1000 <= prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) // --> 1 second (= 1000ms) under 0xFFFFFFFF
+	// && prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) <= 0xFFFFFFFF // DISABLED - Line is alwaysTrue (unnecessary)
+	// && 0x0 <= current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) // DISABLED - Line is alwaysTrue (unnecessary)
+	&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
 
 // -------------------------------------
 function on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion) =>
@@ -2047,8 +2050,8 @@ achievements_coreData = {
 			// "id": 506219, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 1'"},
 		// "a_Sights2": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506387, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 2'"},
-		// "a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 506184, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
+		"a_Sights3": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 506184, "points": 0000000, "devInfo": "Unlock Concept Art 'Environments 3'"},
 		// "a_Attract": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506262, "points": 0000000, "devInfo": "Unlock Concept Art 'Attract Mode Movie'"},
 		// "a_Cowboy": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -2057,14 +2060,14 @@ achievements_coreData = {
 			// "id": 506388, "points": 0000000, "devInfo": "Unlock Concept Art 'Showdown Animatic'"},
 		// "a_Saver": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506263, "points": 0000000, "devInfo": "Unlock Concept Art 'Rescue Intro Movie'"},
-		// "a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
+		"a_Moon": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			"id": 506188, "points": 0000000, "devInfo": "Unlock Concept Art 'Highmoon Trailer'"},
 		// "a_Archive": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		"a_GunWrongTrain": { // CONCEPT 
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunWrongTrain": { // CONCEPT 
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx%  and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // CONCEPT
@@ -2451,11 +2454,11 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLimit, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION // BUG - add Measured (In-Game) AND Measured (Not In-Game)
 	// NOTE: int_timeLimit in milliseconds (1 min = 60.000 ms)
 	return 
-	// [1/7] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+	// [1/8] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 			is_flagState_InGame_true(enum_releaseRegion)
-			&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
 		&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
@@ -2473,36 +2476,63 @@ function achGenerate_FullTrigger_GunslingerUnlock_Time(enum_chapter, int_timeLim
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-	// [2/8] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
+	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 			is_flagState_InGame_true(enum_releaseRegion)
-			&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
+			&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
 		&& unless( // --PauseIf--> MissionTime exceeds time limit
-			current_calculated_TotalMissionTime(enum_releaseRegion) > int_timeLimit)
-		/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured): R/R usage
+			is_flagState_InGame_true(enum_releaseRegion)
+			&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > int_timeLimit)
+		/* MANUAL_CONSTRUCTION[AA01-AA02]:MeasuredTimeWhileInGame (below Measured): R/R usage
 			// WARNING - Edit int_timeLimit
-			PAL:	A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
-			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+			PAL:	A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
 			''''''''''''''
 			AddSource	[32-bit:MissionTime_Temp]
 			AddSource	[32-bit:MissionTime_ChapterSection]
+			AddSource	[32-bit:MissionTime_ChapterTotal]
 			Remember	Val 0
-			Remember	Recall / 1000.0							| current_calculated_TotalMissionTime() in seconds
+			Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
 			AddSource	(int_timeLimit/1000) - Recall
 			Measured	Val 0 == (int_timeLimit/1000) 		*/				
 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
 		&& measured(
 			current_MissionTime_Temp(enum_releaseRegion) 
-			+ current_MissionTime_ChapterSection(enum_releaseRegion) == int_timeLimit / 1000,
+			+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+			+ current_MissionTime_ChapterTotal(enum_releaseRegion) == int_timeLimit / 1000,
 			when = 
 				memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+				&& is_flagState_InGame_true(enum_releaseRegion)
 				&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 			)
 		&& trigger_when(always_false())
-	// [3+4+5+6] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
-		/* MANUAL_CONSTRUCTION (AltGroup[6/12]): R/R usage
+	// [3/10] ==== Alt Measured Group (Not In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
+		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+			is_flagState_InGame_true(enum_releaseRegion)
+			&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion))) 
+		/* MANUAL_CONSTRUCTION[AA01-AA03]:MeasuredTimeWhileNotInGame (below Measured): R/R usage 
+			// WARNING - Edit int_timeLimit
+			PAL:	K:0xX00965c3c/f1000.0_A:f600.0-{recall}_M:0=f600.0
+			NTSCU:	K:0xX00953c5c/f1000.0_A:f600.0-{recall}_M:0=f600.0
+			''''''''''''''
+			Remember	[32-bit:MissionTime_ChapterTotal] / 1000.0					| current_MissionTime_ChapterTotal() in seconds
+			AddSource	(int_timeLimit/1000) - Recall
+			Measured	Val 0 == (int_timeLimit/1000) 		*/				
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+		&& measured(
+			current_MissionTime_ChapterTotal(enum_releaseRegion) == int_timeLimit / 1000,
+			when = 
+				memUtil_ManualConstruction_PlaceHolderRequirement(0xAA03)
+				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+			)
+		&& trigger_when(always_false())
+	// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit (AltGroup[7/14]): R/R usage
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
@@ -2885,11 +2915,15 @@ achievements_triggers = {
 		return achGenerate_FullTrigger_GunslingerUnlock_Difficulty(CHAPTER_11_Invasion, const_MIN_REQUIRED_DIFFICULTY, enum_releaseRegion)}), // --> (1x) MANUAL_CONSTRUCTION
 	"a_Sights3": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
 		const_TIME_LIMIT = 600000.0 // 600.000 ms = 10 mins
-		/* MANUAL_CONSTRUCTION (AltGroup[2/8])
-			PAL:	xxxxx
-			NTSCU:	xxxxx
+		/* MANUAL_CONSTRUCTION (AltGroup[2/9])
+			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._N:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c>f600000.0_A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_Q:0xX00965cc4!=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000006=1700422766_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
+			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._N:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c>f600000.0_A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0_Q:0xX00953ce4!=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1700422766_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
 			*/ 
-		/* MANUAL_CONSTRUCTION (AltGroup[6/12])
+		/* MANUAL_CONSTRUCTION (AltGroup[3/10])
+			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._K:0xX00965c3c/f1000.0_A:f600.0-{recall}_M:0=f600.0_Q:0xX00965cc4=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000002=1970238023_I:0xX00721820_I:0xX00000024_N:0xX00000006=1700422766_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
+			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._K:0xX00953c5c/f1000.0_A:f600.0-{recall}_M:0=f600.0_Q:0xX00953ce4=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1970238023_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1700422766_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773490_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
+			*/ 
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit (AltGroup[7/14])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
@@ -2963,11 +2997,15 @@ achievements_triggers = {
 		return achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(CHAPTER_12_Hangtown, const_REQUIRED_HEADSHOTKILLS, enum_releaseRegion)}), // --> (1x) MANUAL_CONSTRUCTION
 	"a_Moon": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
 		const_TIME_LIMIT = 900000.0 // 900.000 ms = 15 mins
-		/* MANUAL_CONSTRUCTION (AltGroup[2/8])
-			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_N:d0xX00965c70>=4294966295_A:0xX00965c08_P:0xX00965c70<=1000.1._A:0xX00965c08_P:0xX00965c70>f900000.0_A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1597517901_I:0xX00721820_I:0xX00000024_N:0xX00000002=1600288072_I:0xX00721820_I:0xX00000024_N:0xH00000006=65_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
-			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_N:d0xX00953c90>=4294966295_A:0xX00953c28_P:0xX00953c90<=1000.1._A:0xX00953c28_P:0xX00953c90>f900000.0_A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1597517901_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1600288072_I:0xX0071ff20_I:0xX00000024_N:0xH00000006=65_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
+		/* MANUAL_CONSTRUCTION (AltGroup[2/9])
+			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._N:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c>f900000.0_A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_Q:0xX00965cc4!=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1597517901_I:0xX00721820_I:0xX00000024_N:0xX00000002=1600288072_I:0xX00721820_I:0xX00000024_N:0xH00000006=65_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
+			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._N:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c>f900000.0_A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0_Q:0xX00953ce4!=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1597517901_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1600288072_I:0xX0071ff20_I:0xX00000024_N:0xH00000006=65_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
 			*/ 
-		/* MANUAL_CONSTRUCTION (AltGroup[6/12])
+		/* MANUAL_CONSTRUCTION (AltGroup[3/10])
+			PAL:	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._K:0xX00965c3c/f1000.0_A:f900.0-{recall}_M:0=f900.0_Q:0xX00965cc4=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1597517901_I:0xX00721820_I:0xX00000024_N:0xX00000002=1600288072_I:0xX00721820_I:0xX00000024_N:0xH00000006=65_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
+			NTSCU:	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._K:0xX00953c5c/f1000.0_A:f900.0-{recall}_M:0=f900.0_Q:0xX00953ce4=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1597517901_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1600288072_I:0xX0071ff20_I:0xX00000024_N:0xH00000006=65_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
+			*/ 
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit (AltGroup[7/14])
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			*/
@@ -3035,67 +3073,68 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
-	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
-		const_CHAPTER = CHAPTER_1_WrongTrain
-		const_TIME_LIMIT = 240.000 // in milliseconds (1s = 1.000ms)
-		return 
-		// [1/7] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
-			unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-				is_flagState_InGame_true(enum_releaseRegion)
-				&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
-			&& once( // --CheckIf--> Level/Chapter is started from beginning
-				on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Level/Chapter is started from beginning 
-				on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Level/Chapter has ended + MissionTime is within time limit
-				never(is_flagState_InGame_true(enum_releaseRegion))
+	// "a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+	// 	const_CHAPTER = CHAPTER_1_WrongTrain
+	// 	const_TIME_LIMIT = 240000 // 240.000 ms = 4 min
+	// 	return 
+	// 	// [1/7] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+	// 		unless(!is_ReleaseRegion(enum_releaseRegion))
+	// 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+	// 			is_flagState_InGame_true(enum_releaseRegion)
+	// 			&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+	// 		&& once( // --CheckIf--> Level/Chapter is started from beginning
+	// 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+	// 		&& once( // --CheckIf--> LastChapterSection from the Level/Chapter is started from beginning 
+	// 			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+	// 		&& once( // --CheckIf--> LastChapterSection from the Level/Chapter has ended + MissionTime is within time limit
+	// 			never(is_flagState_InGame_true(enum_releaseRegion))
 
-				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+	// 			&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
 
-				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/8] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
-			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
-				is_flagState_InGame_true(enum_releaseRegion)
-				&& on_calculated_TotalMissionTime_overflow(enum_releaseRegion)))
-			&& unless( // --PauseIf--> MissionTime exceeds time limit
-				current_calculated_TotalMissionTime(enum_releaseRegion) > const_TIME_LIMIT)
-			/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured): R/R usage
-				// WARNING - Edit const_TIME_LIMIT
-				PAL:	A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
-				NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
-				''''''''''''''
-				AddSource	[32-bit:MissionTime_Temp]
-				AddSource	[32-bit:MissionTime_ChapterSection]
-				Remember	Val 0
-				Remember	Recall / 1000.0							| current_calculated_TotalMissionTime() in seconds
-				AddSource	(const_TIME_LIMIT/1000) - Recall
-				Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/				
-			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
-			&& measured(
-				current_MissionTime_Temp(enum_releaseRegion) 
-				+ current_MissionTime_ChapterSection(enum_releaseRegion) == const_TIME_LIMIT / 1000,
-				when = 
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
-					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-						on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-				)
-			&& trigger_when(always_false())
-		// [3+4+5+6] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
-			/* MANUAL_CONSTRUCTION (AltGroup[6/12]): R/R usage
-				PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-				NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
-				*/
-			|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
-		}),
+	// 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+	// 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+	// 		&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+	// 			never(is_flagState_InGame_true(enum_releaseRegion))
+	// 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+	// 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+	// 			&& is_flagState_InGame_false(enum_releaseRegion))
+	// 		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+	// 	// [2/8] ==== Alt Measured Group ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit
+	// 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+	// 		&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+	// 			is_flagState_InGame_true(enum_releaseRegion)
+	// 			&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+	// 		&& unless( // --PauseIf--> MissionTime exceeds time limit
+	// 			is_flagState_InGame_true(enum_releaseRegion)
+	// 			&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
+	// 		/* MANUAL_CONSTRUCTION[AA01-AA02] (below Measured): R/R usage
+	// 			// WARNING - Edit const_TIME_LIMIT
+	// 			PAL:	A:0xX00965c08_A:0xX00965c70_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+	// 			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0_K:{recall}/f1000.0_A:f600.0-{recall}_M:0=f600.0
+	// 			''''''''''''''
+	// 			AddSource	[32-bit:MissionTime_Temp]
+	// 			AddSource	[32-bit:MissionTime_ChapterSection]
+	// 			Remember	Val 0
+	// 			Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
+	// 			AddSource	(const_TIME_LIMIT/1000) - Recall
+	// 			Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/				
+	// 		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+	// 		&& measured(
+	// 			current_MissionTime_Temp(enum_releaseRegion) 
+	// 			+ current_MissionTime_ChapterSection(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+	// 			when = 
+	// 				memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+	// 				&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
+	// 					on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+	// 			)
+	// 		&& trigger_when(always_false())
+	// 	// [3+4+5+6] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+	// 		/* MANUAL_CONSTRUCTION (AltGroup[6/12]): R/R usage
+	// 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+	// 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+	// 			*/
+	// 		|| achGenerate_4x_AltResetGroups_GunslingerUnlocks(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+	// 	}),
 	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
