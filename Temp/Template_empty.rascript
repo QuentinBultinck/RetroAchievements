@@ -435,7 +435,8 @@ function achievements_initialize() {
 				trigger = achievements_getTrigger(let_cheevmentName)
 			)
 		}}
-	}// #endregion ACH - initialization
+	}
+// #endregion ACH - initialization
 // #endregion ACHIEVEMENTS
 
 // ***************************************************************************************************** \\
