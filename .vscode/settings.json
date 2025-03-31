@@ -169,7 +169,7 @@
         "QA": {
             "foreground": "#eaff71",
             "background": "#8a8100",
-            "type": "text-and-comment",  
+            "type": "tag-and-comment",  
             "opacity": 37,
             "icon": "tools"
         },
