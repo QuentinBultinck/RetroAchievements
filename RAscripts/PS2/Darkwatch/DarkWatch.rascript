@@ -1527,6 +1527,9 @@ function prev_MissionTime_ChapterSection(enum_releaseRegion) =>
 function current_MissionTime_ChapterTotal(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:MissionTime_ChapterTotal", enum_releaseRegion))
 
+function prior_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	prior(current_MissionTime_ChapterTotal(enum_releaseRegion))
+
 function prev_MissionTime_ChapterTotal(enum_releaseRegion) =>
 	prev(current_MissionTime_ChapterTotal(enum_releaseRegion))
 
@@ -4065,6 +4068,7 @@ richPresence_LookupTablesText = {
 		"Spanish":				{"en": "ᵉˢ"},
 		"German":				{"en": "ᵈᵉ"},
 		"French":				{"en": "ᶠʳ"},
+		"Japanese":				{"en": "ʲᵃ"},
 		},
 	}
 richPresence_ReleaseRegion_toSuperScript = {
@@ -4964,44 +4968,42 @@ leaderboards_coreData = {
 	//	- RADocs => https://docs.retroachievements.org/Leaderboards/
 	//	- Example leaderboards => https://retroachievements.org/game/3152
 
-	// TODO implement new lb_watchers Logic via User.txt - VALUEMEASURE[VALUE] is already done for all lb_watchers
-
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
 	// ------lb_Watchers------ // MANUAL_CONSTRUCTION (lb_Watchers) - (VALUEMEASURE) is identical in all lb_Watchers, not "lb_WatchersCurseWest" - (CANCEL,SUBMIT) is different depending on LevelID
 	// "lb_WatchersWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
-	"lb_WatchersRideDevil": { // TODO  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
-	"lb_WatchersBoneyard": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
+	"lb_WatchersBoneyard": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
-	"lb_WatchersDevilMine": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersDevilMine": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
-	"lb_WatchersDWOutpost": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersDWOutpost": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
-	"lb_WatchersWarTrain": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersWarTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
-	"lb_WatchersTortureMaze": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersTortureMaze": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
-	"lb_WatchersBaptismFire": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersBaptismFire": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
-	"lb_WatchersRescue": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersRescue": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
-	"lb_WatchersPrism": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersPrism": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
-	"lb_WatchersInvasion": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersInvasion": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
-	"lb_WatchersHangtown": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersHangtown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
-	"lb_WatchersMorningAfter": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersMorningAfter": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
-	"lb_WatchersShowdown": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersShowdown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
-	"lb_WatchersRightTrain": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersRightTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
-	"lb_WatchersDeadfall": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersDeadfall": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
-	"lb_WatchersCurseWest": { // TODO // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	"lb_WatchersCurseWest": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	// ------lb_Challenges------
 	}
@@ -5303,24 +5305,8 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
 		xxxxx
 		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[Value,4,8,12/16,20,24,28])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[1,5,9,13/17,21,25,29])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[2,6,10,14/18,22,26,30])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[3,7,11,15/19,23,27,31])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
 
-	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,4,8,12/16,20,24,28] --> ValueMeasure displayed during during gameplay
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
@@ -5370,7 +5356,7 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 
 			+ current_MissionTime_Temp(enum_releaseRegion)
 			+ current_MissionTime_ChapterSection(enum_releaseRegion)
@@ -5382,7 +5368,8 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 				&& current_MissionTime_Temp(enum_releaseRegion)
 					+ current_MissionTime_ChapterSection(enum_releaseRegion)
 					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
-	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,5,9,13/17,21,25,29] --> ValueMeasure displayed during loading screens or FMVs
+	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure is submitted in Gunslinger Mode
+		//NOTE: In GunslingerMode, ChapterStats saved during gameplay are NOT zeroed out when the Chapter finishes, thus this ValueMeasure is submitted in GunslingerMode
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
@@ -5408,7 +5395,8 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
@@ -5416,9 +5404,12 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) > 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 	
-	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,6,10,14/18,22,26,30] --> ValueMeasure displayed when the Chapter is finished in SinglePlayer
+	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
+		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			// TODO this is the only thing that is left to manually edit into each lb_watchers
+
 			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
 			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
 			--------
@@ -5442,7 +5433,8 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
@@ -5454,58 +5446,15 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 				&& current_MissionTime_Temp(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
-	
-	function valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[3,7,11,15/19,23,27,31] --> ValueMeasure displayed when the Chapter is finished in GunslingerMode
-		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_Gunslinger - (below Measured) R/R usage
-			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	I:0xX00965cd8_I:0xX0000000C_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX0000000C_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX0000000C_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX0000000C_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX0000000C_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX0000000C_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX0000000C_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
-			NTSCU:	I:0xX00953cf8_I:0xX0000000C_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX0000000C_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX0000000C_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX0000000C_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX0000000C_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX0000000C_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX0000000C_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
-			--------
-				(1 - ([SavedStats_Gunslinger_MissionTime] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
-
-				+ [SavedStats_Gunslinger_ShotsHit] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-				- [SavedStats_Gunslinger_ShotFired] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-				- [SavedStats_Gunslinger_PlayerDeaths] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-				+ [SavedStats_Gunslinger_Kills] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-				+ [SavedStats_Gunslinger_HeadshotKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-				+ [SavedStats_Gunslinger_MeleeKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
-
-				* [Difficulty] [1-4] 		| in alt groups				*/
-		measured(
-			current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion)
-
-			+ current_SavedStatGunslinger_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_SavedStatGunslinger_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- current_SavedStatGunslinger_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ current_SavedStatGunslinger_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
-			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
-			when = 
-				is_ReleaseRegion(enum_releaseRegion)
-				&& current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
-				&& is_flagState_InGame_false(enum_releaseRegion)
-				&& is_InGunslingerMode(enum_releaseRegion)
-				&& once( // --CheckIf--> Chapter is started; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
-					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-				&& current_MissionTime_Temp(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
-	
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
 		for enum_difficulty in [DIFFICULTY_Greenhorn, DIFFICULTY_Cowboy, DIFFICULTY_Shootist, DIFFICULTY_Deadeye] {
-			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // (ValueMeasure[Value,4,8,12/16,20,24,28])
-			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // (ValueMeasure[1,5,9,13/17,21,25,29])
-			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // (ValueMeasure[2,6,10,14/18,22,26,30])
-			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion)) // (ValueMeasure[3,7,11,15/19,23,27,31])
+			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // ValueMeasure[Value,3,6,9/12,15,18,21]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // ValueMeasure[1,4,7,10/13,16,19,22]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
 			}
 		}
 	return max_of(let_array_valueMeasures)}
@@ -5514,24 +5463,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore_BossFight (whole ValueMeasure) 
 		xxxx
 		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[Value,4,8,12/16,20,24,28])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[1,5,9,13/17,21,25,29])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[2,6,10,14/18,22,26,30])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-	/* MANUAL_CONSTRUCTION (ValueMeasure[3,7,11,15/19,23,27,31])
-		PAL:	xxxxx
-		NTSCU:	xxxxx
-		*/
-
-	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // --> ValueMeasure displayed during during gameplay
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,4,8,12/16,20,24,28] --> ValueMeasure displayed during during gameplay
 		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	xxxxx
@@ -5581,7 +5513,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 
 			+ current_MissionTime_Temp(enum_releaseRegion)
 			+ current_MissionTime_ChapterSection(enum_releaseRegion)
@@ -5594,7 +5526,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 					+ current_MissionTime_ChapterSection(enum_releaseRegion)
 					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 	
-	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // --> ValueMeasure displayed during loading screens or FMVs
+	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,5,9,13/17,21,25,29] --> ValueMeasure displayed during loading screens or FMVs
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	xxxxx
@@ -5620,7 +5552,8 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
@@ -5628,7 +5561,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) > 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 	
-	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // --> ValueMeasure displayed when the Chapter is finished in SinglePlayer
+	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,6,10,14/18,22,26,30] --> ValueMeasure displayed when the Chapter is finished in SinglePlayer
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	xxxxx
@@ -5654,7 +5587,8 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
@@ -5666,9 +5600,9 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& current_MissionTime_Temp(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)	
-	function valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion) => // --> ValueMeasure displayed when the Chapter is finished in GunslingerMode
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit will trigger a few frames after [MissionTime_ChapterTotal] is zeroed out
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+	function valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[3,7,11,15/19,23,27,31] --> ValueMeasure displayed when the Chapter is finished in GunslingerMode
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_Gunslinger - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
 			PAL:	xxxxx
@@ -5694,7 +5628,8 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
@@ -5706,8 +5641,8 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& current_MissionTime_Temp(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0
-				&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit will trigger a few frames after [MissionTime_ChapterTotal] is zeroed out
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 
 
 	let_array_valueMeasures = []
