@@ -1289,10 +1289,10 @@ function LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter) =>
 function LEVEL_DATA_getAllGunslingerLevels() => 
 	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter))
 
-function LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter) =>
+function LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_GunslingerMode"]
 
-function LEVLE_DATA_getSavedStatIndex_Story(enum_chapter) =>
+function LEVEL_DATA_getSavedStatIndex_Story(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_SinglePlayerMode"]
 
 CONST_MP_LEVEL_DATA = {
@@ -1947,7 +1947,7 @@ function current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegio
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -1966,7 +1966,7 @@ function current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -1983,7 +1983,7 @@ function current_SavedStatGunslinger_PlayerDeaths(enum_chapter, enum_releaseRegi
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -1997,7 +1997,7 @@ function current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseReg
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2011,7 +2011,7 @@ function current_SavedStatGunslinger_Kills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2025,7 +2025,7 @@ function current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2039,7 +2039,7 @@ function current_SavedStatGunslinger_ShotsFired(enum_chapter, enum_releaseRegion
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2053,7 +2053,7 @@ function current_SavedStatGunslinger_ShotsHit(enum_chapter, enum_releaseRegion) 
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2069,7 +2069,7 @@ function current_SavedStatGunslinger_WeaponEquipTime(enum_chapter, enum_weapon, 
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")	
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
 	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 	let_memberKey_WeaponEquipTime = WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon)
 	let_offsetToMember_WeaponEquipTime = memory_getStruct_OffsetToMember("Struct:WeaponEquipTimes", let_memberKey_WeaponEquipTime)
@@ -2089,7 +2089,7 @@ function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2103,7 +2103,7 @@ function current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2117,7 +2117,7 @@ function current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2131,7 +2131,7 @@ function current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) 
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2145,7 +2145,7 @@ function current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2159,7 +2159,7 @@ function current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2173,7 +2173,7 @@ function current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -2187,7 +2187,7 @@ function current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
-	let_savedStatIndex = LEVLE_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
 	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
@@ -3726,7 +3726,7 @@ achievements_descriptions = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\", in Single Player or Gunslinger Mode"},
 	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\", in Single Player or Gunslinger Mode"},
-	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
+	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcome. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
 	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\", in Single Player or Gunslinger Mode"},
 	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\", in Single Player or Gunslinger Mode"},
 	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\", in Single Player or Gunslinger Mode"},
@@ -4975,34 +4975,34 @@ leaderboards_coreData = {
 		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
 	// "lb_WatchersRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
-	"lb_WatchersBoneyard": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
-	"lb_WatchersDevilMine": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
-	"lb_WatchersDWOutpost": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
-	"lb_WatchersWarTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
-	"lb_WatchersTortureMaze": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
-	"lb_WatchersBaptismFire": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
-	"lb_WatchersRescue": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
-	"lb_WatchersPrism": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
-	"lb_WatchersInvasion": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
-	"lb_WatchersHangtown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
-	"lb_WatchersMorningAfter": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
-	"lb_WatchersShowdown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
-	"lb_WatchersRightTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
-	"lb_WatchersDeadfall": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
+	// "lb_WatchersBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
+	// "lb_WatchersDevilMine": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127407, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_4_DevilMine, from start to finish (single session)"},
+	// "lb_WatchersDWOutpost": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127408, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_5_Outpost, from start to finish (single session)"},
+	// "lb_WatchersWarTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127409, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_6_WarTrain, from start to finish (single session)"},
+	// "lb_WatchersTortureMaze": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
+	// "lb_WatchersBaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
+	// "lb_WatchersRescue": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
+	// "lb_WatchersPrism": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
+	// "lb_WatchersInvasion": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
+	// "lb_WatchersHangtown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
+	// "lb_WatchersMorningAfter": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
+	// "lb_WatchersShowdown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
+	// "lb_WatchersRightTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
+	// "lb_WatchersDeadfall": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
 	"lb_WatchersCurseWest": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		"id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	// ------lb_Challenges------
@@ -5301,11 +5301,7 @@ function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
 
-function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
-		xxxxx
-		*/
-
+function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_CONSTRUCTION
 	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
 		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
@@ -5459,15 +5455,12 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (4x) MANUAL_
 		}
 	return max_of(let_array_valueMeasures)}
 
-function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore_BossFight (whole ValueMeasure) 
-		xxxx
-		*/
-	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,4,8,12/16,20,24,28] --> ValueMeasure displayed during during gameplay
-		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
+function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3x) MANUAL_CONSTRUCTION
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
+		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	xxxxx
-			NTSCU:	xxxx
+			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}
 			--------
 				(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
@@ -5509,6 +5502,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
 			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+					
 			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
@@ -5525,12 +5519,12 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& current_MissionTime_Temp(enum_releaseRegion)
 					+ current_MissionTime_ChapterSection(enum_releaseRegion)
 					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
-	
-	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,5,9,13/17,21,25,29] --> ValueMeasure displayed during loading screens or FMVs
-		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) R/R usage
+	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure is submitted in Gunslinger Mode
+		//NOTE: In GunslingerMode, ChapterStats saved during gameplay are NOT zeroed out when the Chapter finishes, thus this ValueMeasure is submitted in GunslingerMode
+		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	xxxxx
-			NTSCU:	xxxx
+			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}
 			--------
 				(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
@@ -5561,11 +5555,12 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) > 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 	
-	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,6,10,14/18,22,26,30] --> ValueMeasure displayed when the Chapter is finished in SinglePlayer
+	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
+		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
 		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
 			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	xxxxx
-			NTSCU:	xxxx
+			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
 			--------
 				(1 - ([SavedStats_Story_MissionTime] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
@@ -5586,7 +5581,7 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 			+ current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
 			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
-			
+
 			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 			,
 			when = 
@@ -5596,62 +5591,19 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (4
 				&& is_InSinglePlayerMode(enum_releaseRegion)
 				&& once( // --CheckIf--> Chapter is started; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
 					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-				&& current_MissionTime_Temp(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit will trigger a few frames after [MissionTime_ChapterTotal] is zeroed out
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
-	function valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[3,7,11,15/19,23,27,31] --> ValueMeasure displayed when the Chapter is finished in GunslingerMode
-		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_Gunslinger - (below Measured) R/R usage
-			// WARNING - Edit in DifficultyModifier [0x1-0x4]
-			PAL:	xxxxx
-			NTSCU:	xxxx
-			--------
-				(1 - ([SavedStats_Gunslinger_MissionTime] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
-
-				+ [SavedStats_Gunslinger_ShotsHit] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-				- [SavedStats_Gunslinger_ShotFired] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-				- [SavedStats_Gunslinger_PlayerDeaths] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
-				+ [SavedStats_Gunslinger_Kills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-				+ [SavedStats_Gunslinger_HeadshotKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-				+ [SavedStats_Gunslinger_MeleeKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
-
-				* [Difficulty] [1-4] 		| in alt groups				*/
-		measured(
-			current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion)
-
-			+ current_SavedStatGunslinger_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-			- current_SavedStatGunslinger_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-			- current_SavedStatGunslinger_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
-			+ current_SavedStatGunslinger_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-			+ current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-			+ current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
-			
-			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
-			,
-			when = 
-				is_ReleaseRegion(enum_releaseRegion)
-				&& current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
-				&& is_flagState_InGame_false(enum_releaseRegion)
-				&& is_InGunslingerMode(enum_releaseRegion)
-				&& once( // --CheckIf--> Chapter is started; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
-					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-				&& current_MissionTime_Temp(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
-				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit will trigger a few frames after [MissionTime_ChapterTotal] is zeroed out
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
-
+								&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+							&& current_MissionTime_Temp(enum_releaseRegion) == 0
+							&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+							&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
+							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
 		for enum_difficulty in [DIFFICULTY_Greenhorn, DIFFICULTY_Cowboy, DIFFICULTY_Shootist, DIFFICULTY_Deadeye] {
-			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion))
-			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion))
-			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion))
-			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_Gunslinger(enum_chapter, enum_difficulty, enum_releaseRegion))
+			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // ValueMeasure[Value,3,6,9/12,15,18,21]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // ValueMeasure[1,4,7,10/13,16,19,22]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
 			}
 		}
 	return max_of(let_array_valueMeasures)}
