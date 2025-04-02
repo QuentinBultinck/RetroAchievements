@@ -3351,7 +3351,7 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
-	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template // WARNING - (6x) MANUAL_CONSTRUCTION
+	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (6x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_1_WrongTrain
 		const_TIME_LIMIT = 240000 // 240.000 ms = 4 min
 		const_HP_THRESHOLD = CONST_MAX_PLAYER_HP * 0.5 // % of max HP
@@ -3867,20 +3867,20 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	/* CONCEPT rp unicode characters
-		Default: ♰ ☩ ✟ ✞ ✝ ✠ ⛨ 🕂 ✟ 🕆  🕂 ᛭
+		Default: ♰ ☩ ✟ ✞ ✝ ✠ ⛨ 🕂 🕆 🕂 ᛭
 		Good-Evil: ⚡ 🔆 ☀️ ✨ - 🩸 🌙 🌕 ☠ - ⚖
 		
 		*/
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 
-	"rp_Versus":							{"en": "{0} Playing Darkwatch ✟ Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
+	"rp_Versus":							{"en": "{0} Playing Darkwatch ✟ Multiplayer Versus 🕂 {1} Gunslinger{2} {3} {4} {5}"},
 	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch ✟ setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch ✟ Multiplayer Cooperative ᛭ {1} ᛭ {2}, {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ✟ {1} ᛭ {2} ᛭ {3}, {4} difficulty"},
-	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Completion: {1}%"},
-	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Completion: {1}%"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch ✟ Multiplayer Cooperative 🕂 {1} 🕂 {2}, {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ✟ {1} 🕂 {2} 🕂 {3}, {4} difficulty"},
+	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Coop Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Coop Story Completion: {1}%"},
+	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Story Completion: {1}%"},
 	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch ✟ Main Menu"},
 	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Story Complete: {1}{2} Ending"},
 	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Story Completion: {1}%"},
@@ -4931,7 +4931,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// BUG lb_watchers on NTSCU, check live entries
 
 // =========================
 // • LEADERBOARD core data •
@@ -4970,7 +4969,7 @@ leaderboards_coreData = {
 
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
-	// ------lb_Watchers------ // MANUAL_CONSTRUCTION (lb_Watchers) - (VALUEMEASURE) is identical in all lb_Watchers, not "lb_WatchersCurseWest" - (CANCEL,SUBMIT) is different depending on LevelID
+	// ------lb_Watchers------
 	// "lb_WatchersWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
 	// "lb_WatchersRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
@@ -4987,24 +4986,24 @@ leaderboards_coreData = {
 		// "id": 127410, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_7_TortureMaze, from start to finish (single session)"},
 	// "lb_WatchersBaptismFire": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127411, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_8_BaptismFire, from start to finish (single session)"},
-	// "lb_WatchersRescue": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersRescue": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127412, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_9_Rescue, from start to finish (single session)"},
-	// "lb_WatchersPrism": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersPrism": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127413, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_10_Prism, from start to finish (single session)"},
-	// "lb_WatchersInvasion": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersInvasion": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127414, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_11_Invasion, from start to finish (single session)"},
-	// "lb_WatchersHangtown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersHangtown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127417, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_12_Hangtown, from start to finish (single session)"},
-	// "lb_WatchersMorningAfter": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersMorningAfter": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127416, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_13_MorningAfter, from start to finish (single session)"},
-	// "lb_WatchersShowdown": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersShowdown": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127419, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_14_Showdown, from start to finish (single session)"},
-	// "lb_WatchersRightTrain": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersRightTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127418, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_15_RightTrain, from start to finish (single session)"},
-	// "lb_WatchersDeadfall": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersDeadfall": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
-	"lb_WatchersCurseWest": { // PENDING // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
-		"id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
+	// "lb_WatchersCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
 	// ------lb_Challenges------
 	}
 // #endregion LB - core data
