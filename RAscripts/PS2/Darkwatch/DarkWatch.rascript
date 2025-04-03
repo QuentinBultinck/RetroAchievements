@@ -229,7 +229,14 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x0, 0x30],
 				"offsetToPointedToMember": 0x2},
 			"32-bit:MainMenuTitle_TextLookupKeyID": {
-				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},				
+				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},	
+			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:HUDcontrol_Gear-Player1]------
+			"32-bit:ThrowableCountInInventory(display)": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xF8]},	
+			"ASCII:Equipped_ThrowableNameID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0x100],
+				"offsetToPointedToMember": 0x2},
+				
 			},
 		}, 	
 	"Struct:ChapterStats": {
@@ -871,22 +878,22 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		---------
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-		
-		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0x7C
-					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
-		*/
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+						->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+			*/
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
 	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2FD)
@@ -926,30 +933,127 @@ function on_PauseMenu_Restart_OR_Quit(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		-----------
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-		OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
-		
-		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0x7C
-					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
-		*/
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+						->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+			*/
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
 	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+function on_NewPowerMenu_render(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-2CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c=2662373993_I:{recall}_d0xX0000006c!=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle != "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2CCD)
+
+function is_NewPowerMenu_displayed(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-5CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_I:0xX000000b8_0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddress	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	-->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"
+			*/	
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x5CCD)
+
+function is_NewPowerMenu_Power(enum_textLookupKeyPowerName, enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[1CCD-4CCD]:CheckNewPowerMenuPowerName - R/R usage
+		// WARNING - Edit in enum_textLookupKeyPowerName
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xC
+			AddAddress	->[Mem 32-bit] 0x4
+						->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+			*/
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	// && is_NewPowerMenu_displayed(enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == enum_textLookupKeyPowerName
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4CCD)
+
+function on_NewPowerMenu_close(enum_releaseRegion) => 
+	/* MANUAL_CONSTRUCTION[1CCD-3CCD]:on_NewPowerMenu_close - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c!=2662373993_I:{recall}_d0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle == "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3CCD)
+
 
 // #endregion Pause Menu
 
@@ -1674,9 +1778,40 @@ function current_Boss_Health(enum_releaseRegion) {
 function prev_Boss_Health(enum_releaseRegion) =>
 	prev(current_Boss_Health(enum_releaseRegion))
 
-// ----------------Divider---------------------
-
 // #endregion HUD Control Health
+
+// ....................
+// ◦ HUD Control Gear ◦
+// ''''''''''''''''''''
+// #region HUD Control Gear
+THROWABLE_Dynamite = "Dyna" // FullString: "Dynamite"
+THROWABLE_SplitterGrenades = "Spli" // FullString: "SplitterGrenades"
+
+function current_ThrowableType(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:Equipped_ThrowableNameID")
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "ASCII:Equipped_ThrowableNameID", 
+		let_memAddr_BasePointer, int_offsetToPointedToMember = let_offsetTo_ASCII,
+		memAccessorFunction_toPointedToMember = dword)}
+
+function prev_ThrowableType(enum_releaseRegion) =>
+	prev(current_ThrowableType(enum_releaseRegion))
+
+function on_ThrowableType_switch(enum_releaseRegion) =>
+	current_ThrowableType(enum_releaseRegion) != prev_ThrowableType(enum_releaseRegion)
+
+function current_ThrowableCountInInventory(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", "32-bit:ThrowableCountInInventory(display)", let_memAddr_BasePointer)}
+
+function prev_ThrowableCountInInventory(enum_releaseRegion) =>
+	prev(current_ThrowableCountInInventory(enum_releaseRegion))
+
+function on_Throwable_use(enum_releaseRegion) =>
+	current_ThrowableCountInInventory(enum_releaseRegion) < prev_ThrowableCountInInventory(enum_releaseRegion)
+
+// #endregion HUD Control Gear
 
 // ...............
 // ◦ Player Data ◦
@@ -1784,7 +1919,7 @@ const_WEAPON_DATA = {
 		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Scepter",
 		"isDarkwatchWeapon": true
 		},
-}
+	}
 
 function WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon) =>
 	const_WEAPON_DATA[enum_weapon]["memberKey_WeaponEquipTime"]
@@ -1798,8 +1933,12 @@ function WEAPON_DATA_getAllDarkwatchWeaponIDs() =>
 function WEAPON_DATA_getAllWeaponIDs() =>
 	array_map(const_WEAPON_DATA, enum_weapon => enum_weapon)
 
-function current_EquippedWeapon(enum_weapon, enum_releaseRegion) =>
-	byte(memory_getAddress("8-bit:EquippedWeapon_WeaponID-Player1", enum_releaseRegion)) == enum_weapon
+function current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) {
+	let_memAddrKey = format("8-bit:EquippedWeapon_WeaponID-Player{0}", enum_player)
+	return byte(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function is_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) =>
+	current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) == enum_weapon
 
 // #endregion Weapon ID
 // #region Accuracy
@@ -1886,6 +2025,15 @@ function on_PlayerDeaths_ChapterTotal_increment(enum_player, enum_releaseRegion)
 function current_Kills_Temp(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:Kills_Temp-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_Kills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_Kills_Temp(enum_player, enum_releaseRegion))
+
+function on_Kills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) > prev_Kills_Temp(enum_player, enum_releaseRegion)
+
+function on_Kills_Temp_incrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) == prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
 
 function current_Kills_ChapterSection(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:Kills_ChapterSection-Player{0}", enum_player)
@@ -2347,9 +2495,9 @@ achievements_coreData = {
 		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunBoneyard": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring xx kills with the Crossbow and also with the Carbine"},
+			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring xx kills with the Crossbow or Carbine (without using throwables)"},
 		// "a_GunDevilMine": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, using only the Redeemer to kill"},
 		// "a_GunDWOutpost": { // CONCEPT
@@ -2386,8 +2534,12 @@ achievements_coreData = {
 		// 	"id": 000000, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer
 		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		// "a_MultiKill": { // CONCEPT a_MultiKill (Title: Bloodlust)
-		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Kill xx enemies in short duration of eachother (explosive or powers??)"},
+		"a_Multikill": { // QA a_Multikill
+			"id": 000000, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
+		"a_AllPowersGood": { // QA a_AllPowersGood
+			"id": 000000, "points": 0000000, "devInfo": "Unlock all Good powers"},
+		"a_AllPowersEvil": { // QA a_AllPowersEvil
+			"id": 000000, "points": 0000000, "devInfo": "Unlock all Evil powers"},
 		},
 	}
 // -------------------------------------
@@ -3526,7 +3678,7 @@ achievements_triggers = {
 		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (..x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_2_RideDevil
 		const_MIN_REQUIRED_ACCURACY = 0.75
 		const_HP_THRESHOLD = CONST_MAX_PLAYER_HP * 0.5 // % of max HP
@@ -3675,10 +3827,136 @@ achievements_triggers = {
 		// [4+5+6+7] ==== (4x) Reset Groups ==== 				-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		// NOTE: This Chapter should have 100+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
+		const_CHAPTER = CHAPTER_3_Boneyard
+		const_REQUIRED_KILLS = 100
+		return	
+		// [1/8] ==== Alt Logic + Measured + Triggered Group ==== 	-> Group is responsible for unlocking the achievement + Displaying a Measured Indicator kills with required guns + Triggered Indicator when all kills are achieved
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When using a throwable explosive 
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Throwable_use(enum_releaseRegion)
+				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& measured(tally(const_REQUIRED_KILLS, [
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)), // --AddHit 1--> When Kills increment by 1
+
+				// --AddHit 1--> When Kills increment by 2, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(2, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 2--> When Kills increment by 3, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 3--> When Kills increment by 4, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 4--> When Kills increment by 5, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				]),
+				when = once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Triggered Group ====			-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When using a throwable explosive 
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Throwable_use(enum_releaseRegion)
+				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			&& unless(repeated(const_REQUIRED_KILLS, // --PauseLock--> When all required Carbine kills have been achieved (to hide this Trigger Indicator)
+				is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					---------
+						AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+						Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+						Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+						
+						AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0xB8
+						AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+						
+						AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0x7C
+						AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+						AddAddress	[Pointer:PlayerInput(preferred)]
+						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+						*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION
+		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
 	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
@@ -3792,6 +4070,108 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
+	// --------c_Bonus--------
+	"a_Multikill": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MULTI_KILL_COUNT = 4
+		return
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Kills_Temp_incrementBy(const_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion)
+		}),
+	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP // WARNING - (1x) MANUAL_CONSTRUCTION
+		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+			// WARNING - Edit in enum_textLookupKeyPowerName
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			------
+				PauseIf 	...
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+				
+				// -----------------------ResetNextIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+				// -----------------------ResetIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
+
+
+				// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+				AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
+				AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+
+
+				// -----------------------Trigger-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+				*/	
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
+			// && never(repeated(2, 
+			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer, enum_releaseRegion)
+				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
+				// && on_NewPowerMenu_render(enum_releaseRegion)
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		),
+	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP // WARNING - (1x) MANUAL_CONSTRUCTION
+		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+			// WARNING - Edit in enum_textLookupKeyPowerName
+			PAL:	xxxx
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_R:0xX0000006c!=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				*/	
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
+			// && never(repeated(2, 
+			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator, enum_releaseRegion)
+				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+				// && on_NewPowerMenu_render(enum_releaseRegion)
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		),
 	}
 // #endregion ACH - triggers
 
@@ -3846,9 +4226,9 @@ achievements_titles = {
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
-	"a_GunWrongTrain": 			{"en": "Full Steam Ahead"},
-	"a_GunRideDevil": 			{"en": "xxxxxxxxx"},
-	"a_GunBoneyard": 			{"en": "xxxxxxxxx"},
+	"a_GunWrongTrain": 			{"en": "Four Minutes to Midnight"},
+	"a_GunRideDevil": 			{"en": "A Devil's Ride with Angel's Precision"},
+	"a_GunBoneyard": 			{"en": "The Dead Rise, But They Won't Get Far"},
 	"a_GunDevilMine": 			{"en": "xxxxxxxxx"},
 	"a_GunDWOutpost": 			{"en": "xxxxxxxxx"},
 	"a_GunWarTrain": 			{"en": "xxxxxxxxx"},
@@ -3864,6 +4244,10 @@ achievements_titles = {
 	"a_GunDeadfall": 			{"en": "xxxxxxxxx"},
 	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
+	// --------c_Bonus--------
+	"a_Multikill":				{"en": "Bloodletting"},
+	"a_AllPowersEvil":			{"en": "Righteous Revenant"},
+	"a_AllPowersGood":			{"en": "Grim Phantom"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -3905,10 +4289,10 @@ achievements_descriptions = {
 	"a_Saver":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshot kills in Gunslinger Mode"},
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
-	// --------c_Gunslinger--------
-	"a_GunWrongTrain": 			{"en": "Lightning-fast and twice as deadly—blitz through Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes without dropping below 50% HP"},
-	"a_GunRideDevil": 			{"en": "Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty with an accuracy of 75% and without dropping below 50% HP"},
-	"a_GunBoneyard": 			{"en": "Complete Chapter 3, \"Boneyard\", on Deadeye difficulty"},
+	// --------c_Gunslinger-------- // TODO add "in Gunslinger Mode requirement to descriptions"
+	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
+	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
+	"a_GunBoneyard": 			{"en": "Graveyards ain't for resting—they're for reckoning. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty scoring at least 100 kills with the Carbine or Crossbow, without throwing a grenade"},
 	"a_GunDevilMine": 			{"en": "Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty"},
 	"a_GunDWOutpost": 			{"en": "Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty"},
 	"a_GunWarTrain": 			{"en": "Complete Chapter 6, \"War Train\", on Deadeye difficulty"},
@@ -3924,6 +4308,10 @@ achievements_descriptions = {
 	"a_GunDeadfall": 			{"en": "Complete Chapter 16, \"Deadfall\", on Deadeye difficulty"},
 	"a_GunCurseWest": 			{"en": "Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
+	// --------c_Bonus--------
+	"a_Multikill":				{"en": "xxxxxxxxx"},
+	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers within Single Player"},
+	"a_AllPowersGood":			{"en": "Your power serves justice, not damnation. Unlock all Good powers within Single Player"},
 	}
 // #endregion ACH - text
 
