@@ -193,6 +193,12 @@ memory_StructDefs = {
 				"offsetToPointedToMember": 0x14C},
 			},
 		},
+	"Pointer:Controls_ControllerConfig": {
+		"pointerChainToMember": {
+			"ASCII:ControllerConfig_NameID": {
+				"offsetToPointedToMember": 0x2},
+			},
+		}, 
 	"Pointer:LevelID": {
 		"pointerChainToMember": {
 			"ASCII:LevelID(full)": {
@@ -214,6 +220,9 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0x2F]},
 			"Float:BossHP(display)(preferred)": {
 				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0xEC]},
+			"ASCII:PowerIconTopLeft": {
+				"pointerChainOffsets": [0xC, 0x18, 0x10C],
+				"offsetToPointedToMember": 0x2},
 			},
 		}, 
 	"Pointer:UIcontrol": {
@@ -273,7 +282,11 @@ memory_StructDefs = {
 	"Struct:ControllerInput": {
 		"offsetToMember": {
 			"Bitflag:IsControllerConnected": 0x0,
-			"BitFlag:IsInputPressed_Cross": 0xB},
+			"BitFlag:IsInputPressed_Cross": 0xB,
+			"BitFlag:IsInputPressed_L3": 0xC,
+			"BitFlag:IsInputPressed_R3": 0xD,
+			"BitFlag:IsInputPressed_L2": 0x10,
+			"BitFlag:IsInputPressed_R2": 0x11},
 		},
 	"Struct:MainUIdata": {
 		"pointerChainToMember": {
@@ -352,6 +365,7 @@ memory_addresses = {
 	
 	"BitFlag:IsStoryGoodEndingAchieved": {RELEASE_REGION_USA: 0x953D20, RELEASE_REGION_EUR: 0x965d00, RELEASE_REGION_JPN: sNULL},
 	"BitFlag:IsStoryEvilEndingAchieved": {RELEASE_REGION_USA: 0x953D21, RELEASE_REGION_EUR: 0x965d01, RELEASE_REGION_JPN: sNULL},
+	"BitFlag:IsCinematicActive": {RELEASE_REGION_USA: 0x72bbe8, RELEASE_REGION_EUR: 0x73dce8, RELEASE_REGION_JPN: sNULL},
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
@@ -421,6 +435,7 @@ memory_addresses = {
 
 	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
 	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
+	"Pointer:Controls_ControllerConfig-Player1": {RELEASE_REGION_USA: 0x953CCC, RELEASE_REGION_EUR: 0x965cac, RELEASE_REGION_JPN: sNULL},
 	"Pointer:PlayerSavedStats-Player1": {RELEASE_REGION_USA: 0x953CF8, RELEASE_REGION_EUR: 0x965cd8, RELEASE_REGION_JPN: sNULL},
 	}
 
@@ -603,6 +618,10 @@ CONTROLLER_1 = 1
 CONTROLLER_2 = 2
 
 INPUT_Cross = "BitFlag:IsInputPressed_Cross"
+INPUT_L2 = "BitFlag:IsInputPressed_L2"
+INPUT_R2 = "BitFlag:IsInputPressed_R2"
+INPUT_L3 = "BitFlag:IsInputPressed_L3"
+INPUT_R3 = "BitFlag:IsInputPressed_R3"
 
 function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
@@ -616,6 +635,12 @@ function current_flagState_IsInputPressed(enum_controller, enum_input, enum_rele
 
 function prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) =>
 	prev(current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion))
+	
+function is_flagState_IsInputPressed_false(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 0
+	
+function is_flagState_IsInputPressed_true(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 1
 
 function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) > prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
@@ -641,6 +666,10 @@ LANGUAGE_Spanish = 0x53
 
 function current_DisplayLanguage(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:DisplayLanguageID", enum_releaseRegion))
+
+function is_AnyCinematic_active(enum_releaseRegion) =>
+	bit0(memory_getAddress("BitFlag:IsCinematicActive", enum_releaseRegion)) == 1
+
 // #endregion Misc Logic
 
 // #region MainMenu SubMenu Identification
@@ -1749,6 +1778,7 @@ function is_atMainMenu(enum_releaseRegion) =>
 // ◦ HUD Control Health ◦
 // ''''''''''''''''''''''
 // #region HUD Control Health
+// ---------------BossHP--------------------
 function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
@@ -1777,6 +1807,18 @@ function current_Boss_Health(enum_releaseRegion) {
 
 function prev_Boss_Health(enum_releaseRegion) =>
 	prev(current_Boss_Health(enum_releaseRegion))
+// ---------------PowerIcon(top-left)--------------------
+function ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	let_memAddr_ASCII = 
+		memGenerate_pointerChainAccessor("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_InSunlight(enum_releaseRegion) {
+	const_ASCII_FLAG_PowerIconTopLeft_SunlightState = "SunlightState"
+	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
+
 
 // #endregion HUD Control Health
 
@@ -1830,6 +1872,47 @@ function is_PlayerProfile_selected(enum_player, enum_releaseRegion) =>
 
 function is_PlayerProfile_notSelected(enum_player, enum_releaseRegion) =>
 	current_PlayerProfileID(enum_player, enum_releaseRegion) == CONST_FLAG_IsNoPlayerProfileSelected
+// ----------------ControllerConfig---------------------
+CONTROLLER_CONFIG_Default = "Defa" // FullString: "Default"
+CONTROLLER_CONFIG_Lefty = "Left" // FullString: "Lefty"
+CONTROLLER_CONFIG_Hopalong = "Hopa" // FullString: "Hopalong"
+CONTROLLER_CONFIG_Hoss = "Hoss" // FullString: "Hoss"
+
+CONST_CONTROLLER_CONFIG_DATA = { // Configs changes in-game controls
+	CONTROLLER_CONFIG_Default: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		},
+	CONTROLLER_CONFIG_Lefty: {
+		"Button_SightMode": "BitFlag:IsInputPressed_L3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_L2",
+		},
+	CONTROLLER_CONFIG_Hopalong: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		},
+	CONTROLLER_CONFIG_Hoss: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		},
+	}
+
+function CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_SightMode"]
+
+function CONTROLLER_CONFIG_DATA_getButtonActivatePower(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_ActivatePower"]
+
+function ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer:Controls_ControllerConfig-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	let_memAddr_ASCII = 
+		dword(let_memAddr_BasePointer) 
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_ControllerConfig(enum_player, enum_controllerConfig, enum_releaseRegion) =>
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion), enum_controllerConfig)
 
 
 // #region Player Gauges
@@ -2034,6 +2117,9 @@ function on_Kills_Temp_increment(enum_player, enum_releaseRegion) =>
 
 function on_Kills_Temp_incrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
 	current_Kills_Temp(enum_player, enum_releaseRegion) == prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
+
+function on_Kills_Temp_minIncrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) >= prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
 
 function current_Kills_ChapterSection(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:Kills_ChapterSection-Player{0}", enum_player)
@@ -2530,16 +2616,16 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
-		// "a_SunPower": { // CONCEPT a_SunPower
-		// 	"id": 000000, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		"a_SunPower": { // CONCEPT a_SunPower
+			"id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer
 		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		"a_Multikill": { // QA a_Multikill
-			"id": 000000, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
-		"a_AllPowersGood": { // QA a_AllPowersGood
-			"id": 000000, "points": 0000000, "devInfo": "Unlock all Good powers"},
-		"a_AllPowersEvil": { // QA a_AllPowersEvil
-			"id": 000000, "points": 0000000, "devInfo": "Unlock all Evil powers"},
+		"a_Multikill": { // VERIFIED
+			"id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
+		"a_AllPowersGood": { // VERIFIED
+			"id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
+		"a_AllPowersEvil": { // VERIFIED
+			"id": 510103, "points": 0000000, "devInfo": "Unlock all Evil powers"},
 		},
 	}
 // -------------------------------------
@@ -4071,6 +4157,33 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Bonus--------
+	"a_SunPower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> VampireVision HitCounts need to be reset when not activating it repeatedly 
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& !is_anyFMV_active(enum_releaseRegion)
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& tally_of(CONST_CONTROLLER_CONFIG_DATA, 3, (enum_controllerConfig) { // --Tally--OrNext--> Check if Power is activated whilst in sunlight, check this for each ControllerConfig
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(3,
+					is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_InSunlight(enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				})
+		),
 	"a_Multikill": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
 		const_MULTI_KILL_COUNT = 4
 		return
@@ -4078,9 +4191,9 @@ achievements_triggers = {
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
 			&& is_flagState_InGame_true(enum_releaseRegion)
-			&& on_Kills_Temp_incrementBy(const_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion)
+			&& on_Kills_Temp_minIncrementBy(const_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion) // --CheckIf--> Kills increment by xx amount or higher in 1 delta frame
 		}),
-	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP // WARNING - (1x) MANUAL_CONSTRUCTION
+	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
 			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
@@ -4152,7 +4265,7 @@ achievements_triggers = {
 				)
 			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
 		),
-	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP // WARNING - (1x) MANUAL_CONSTRUCTION
+	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
 			// WARNING - Edit in enum_textLookupKeyPowerName
 			PAL:	xxxx
@@ -4245,7 +4358,8 @@ achievements_titles = {
 	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
-	"a_Multikill":				{"en": "Bloodletting"},
+	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
+	"a_Multikill":				{"en": "Hell's Choir"},
 	"a_AllPowersEvil":			{"en": "Righteous Revenant"},
 	"a_AllPowersGood":			{"en": "Grim Phantom"},
 	}
@@ -4309,9 +4423,10 @@ achievements_descriptions = {
 	"a_GunCurseWest": 			{"en": "Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
-	"a_Multikill":				{"en": "xxxxxxxxx"},
-	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers within Single Player"},
-	"a_AllPowersGood":			{"en": "Your power serves justice, not damnation. Unlock all Good powers within Single Player"},
+	"a_SunPower":				{"en": "The sun burns down on you, but you refuse to yield. Activate Vampire Vision repeatedly under its relentless heat and see how long you can endure"},
+	"a_Multikill":				{"en": "Send four souls screaming to the afterlife at the same time in Single Player or Gunslinger Mode"},
+	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers in Single Player"},
+	"a_AllPowersGood":			{"en": "Your power serves justice, not damnation. Unlock all Good powers in Single Player"},
 	}
 // #endregion ACH - text
 
