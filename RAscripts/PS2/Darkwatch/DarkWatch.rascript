@@ -667,8 +667,17 @@ LANGUAGE_Spanish = 0x53
 function current_DisplayLanguage(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:DisplayLanguageID", enum_releaseRegion))
 
+function current_flagState_IsCinematicActive(enum_releaseRegion) =>
+	bit0(memory_getAddress("BitFlag:IsCinematicActive", enum_releaseRegion))
+
+function prev_flagState_IsCinematicActive(enum_releaseRegion) =>
+	prev(current_flagState_IsCinematicActive(enum_releaseRegion))
+
 function is_AnyCinematic_active(enum_releaseRegion) =>
-	bit0(memory_getAddress("BitFlag:IsCinematicActive", enum_releaseRegion)) == 1
+	current_flagState_IsCinematicActive(enum_releaseRegion) == 1
+
+function on_AnyCinematic_end(enum_releaseRegion) =>
+	current_flagState_IsCinematicActive(enum_releaseRegion) < prev_flagState_IsCinematicActive(enum_releaseRegion)
 
 // #endregion Misc Logic
 
@@ -1778,6 +1787,7 @@ function is_atMainMenu(enum_releaseRegion) =>
 // ◦ HUD Control Health ◦
 // ''''''''''''''''''''''
 // #region HUD Control Health
+
 // ---------------BossHP--------------------
 function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
@@ -1931,6 +1941,21 @@ function current_Player_HP(enum_player, enum_releaseRegion) {
 function prev_Player_HP(enum_player, enum_releaseRegion) =>
 	prev(current_Player_HP(enum_player, enum_releaseRegion))
 
+// ----------------BloodPowerGauge---------------------
+function current_BloodPowerGauge(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "Float:BloodPowerGauge(functional)", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = float)
+	}
+
+function prev_BloodPowerGauge(enum_player, enum_releaseRegion) =>
+	prev(current_BloodPowerGauge(enum_player, enum_releaseRegion))
+
+function on_Power_use(enum_player, enum_releaseRegion) =>
+	current_BloodPowerGauge(enum_player, enum_releaseRegion) == 0.0
+	&& prev_BloodPowerGauge(enum_player, enum_releaseRegion) == 30.0
 // #endregion Player Gauges
 
 
@@ -2581,51 +2606,51 @@ achievements_coreData = {
 		// "a_GunWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunRideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring xx kills with the Crossbow or Carbine (without using throwables)"},
-		// "a_GunDevilMine": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, using only the Redeemer to kill"},
+			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow or Carbine equipped (without using throwables)"},
+		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer or Dual Pistols equipped (without using any Good or Evil powers, Neutral powers excluded)"},
 		// "a_GunDWOutpost": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without losing any HP"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without losing any HP (ithout using any Good or Evil powers, Neutral powers excluded)"},
 		// "a_GunWarTrain": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
 		// "a_GunTortureMaze": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, using only the Scepter to kill"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only kill whilst having the Scepter equipped"},
 		// "a_GunBaptismFire": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, using the Rail Rocket only as a melee weapon to score at least xx kills"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer or Rail Rocket equipped (without using throwables)"},
 		// "a_GunRescue": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
 		// "a_GunPrism": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, using only the dual pistols to kill"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, within xx time and killing only with the Dual Pistols equipped"},
 		// "a_GunInvasion": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, without losing more than xx% HP (vampire shield excluded)"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, using only 1 Good or Evil power (Neutral powers excluded), without losing more than xx% HP (vampire shield excluded)"},
 		// "a_GunHangtown": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using only the Shotgun to kill"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, only killing with the Shotgun or Dual Pistol equipped"},
 		// "a_GunMorningAfter": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, only going for melee kills"},
 		// "a_GunShowdown": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, without using any vampire powers"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, without using any Good or Evil powers, Neutral powers excluded"},
 		// "a_GunRightTrain": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunDeadfall": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, using only the Range Rifle to kill, with a min. accuracy of xx%"},
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle or Carbine equipped, with a minimum accuracy of xx%"},
 		// "a_GunCurseWest": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with an accuracy of xx% and without losing more than "}, 
+			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with an accuracy of xx% and without dropping below xx% HP"}, 
 		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
 		"a_SunPower": { // CONCEPT a_SunPower
 			"id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
-		// "a_FanHammer": { // CONCEPT a_FanHammer
+		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
 		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
 		"a_Multikill": { // VERIFIED
 			"id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
-		"a_AllPowersGood": { // VERIFIED
-			"id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
-		"a_AllPowersEvil": { // VERIFIED
-			"id": 510103, "points": 0000000, "devInfo": "Unlock all Evil powers"},
+		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
+		// "a_AllPowersEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510103, "points": 0000000, "devInfo": "Unlock all Evil powers"},
 		},
 	}
 // -------------------------------------
@@ -3928,7 +3953,7 @@ achievements_triggers = {
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
 				never(is_flagState_InGame_true(enum_releaseRegion))
 				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
@@ -3990,15 +4015,12 @@ achievements_triggers = {
 					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
 			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/9] ==== Alt Triggered Group ====			-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+		// [2/9] ==== Alt Triggered Group ====						-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When using a throwable explosive 
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Throwable_use(enum_releaseRegion)
 				&& !on_ThrowableType_switch(enum_releaseRegion)))
-			&& unless(repeated(const_REQUIRED_KILLS, // --PauseLock--> When all required Carbine kills have been achieved (to hide this Trigger Indicator)
-				is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
-				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
 			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
@@ -4014,7 +4036,7 @@ achievements_triggers = {
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
-				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
 					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
 					---------
@@ -4039,14 +4061,77 @@ achievements_triggers = {
 						AddAddress	[Pointer:PlayerInput(preferred)]
 						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 						*/
-				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
 		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template
+		const_CHAPTER = CHAPTER_4_DevilMine
+		const_WEAPON_A = WEAPON_Redeemer
+		const_WEAPON_B = WEAPON_DualPistols
+
+		return	
+		// [1/8] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When using a Good or Evil power (Neutral powers allowed)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Triggered Group ====						-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When using a Good or Evil power (Neutral powers allowed)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> The very first cinematic of the Chapter is over (so the trigger indicator pops up after the intro cinematic is done)
+				on_AnyCinematic_end(enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
 	"a_GunDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
 		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
 			is_ReleaseRegion(enum_releaseRegion)
@@ -4406,8 +4491,8 @@ achievements_descriptions = {
 	// --------c_Gunslinger-------- // TODO add "in Gunslinger Mode requirement to descriptions"
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
 	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
-	"a_GunBoneyard": 			{"en": "Graveyards ain't for resting—they're for reckoning. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty scoring at least 100 kills with the Carbine or Crossbow, without throwing a grenade"},
-	"a_GunDevilMine": 			{"en": "Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty"},
+	"a_GunBoneyard": 			{"en": "Graveyards ain't for resting—they're for reckoning. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty only killing with the Carbine or Crossbow equipped, scoring at least 100 kills and without throwing a grenade"},
+	"a_GunDevilMine": 			{"en": "Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty killing only with the Redeemer or Dual Pistols equipped and without using any powers"},
 	"a_GunDWOutpost": 			{"en": "Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty"},
 	"a_GunWarTrain": 			{"en": "Complete Chapter 6, \"War Train\", on Deadeye difficulty"},
 	"a_GunTortureMaze": 		{"en": "Complete Chapter 7, \"Torture Maze\", on Deadeye difficulty"},
