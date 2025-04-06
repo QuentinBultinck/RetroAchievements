@@ -2723,50 +2723,50 @@ achievements_coreData = {
 			// "id": 506807, "points": 0000000, "devInfo": "Unlock Concept Art 'Darkwatch Archives'"},
 		},
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
-		"a_GunWrongTrain": { // PENDING update with new logic // DISABLED - MANUAL_CONSTRUCTION
-			"id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		"a_GunRideDevil": { // PENDING update with new logic  // DISABLED - MANUAL_CONSTRUCTION
-			"id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
-		"a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow or Carbine equipped (without using throwables)"},
-		"a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			"id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer or Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
-		"a_GunDWOutpost": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds"},
-		"a_GunWarTrain": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
-		"a_GunTortureMaze": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter or Shotgun equipped, with at least 80% melee kills"},
-		"a_GunBaptismFire": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer or Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
-		"a_GunRescue": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
-		"a_GunPrism": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, within xx time and killing only with the Dual Pistols or Shotgun equipped"},
-		"a_GunInvasion": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, using only 1 distinct power (Neutral powers excluded) and using it less than xx times"},
-		"a_GunHangtown": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using the Range Rifle as the only means of shooting, with a minimum accuracy of xx%"},
-		"a_GunMorningAfter": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, using only tier 2 or tier 3 powers with at least 45% melee kills"},
-		"a_GunShowdown": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, with a minimum accuracy of xx% using only tier 1 powers"},
-		"a_GunRightTrain": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		"a_GunDeadfall": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle or Carbine equipped and with at least 30% headshot kills"},
-		"a_GunCurseWest": { // CONCEPT logic coded
-			"id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with less than xx power activations (Neutral powers excluded) and without dropping below xx% HP"}, 
+		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow or Carbine equipped (without using throwables)"},
+		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer or Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
+		// "a_GunDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511019, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds consecutively"},
+		// "a_GunWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511009, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
+		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter or Shotgun equipped, with at least 80% melee kills"},
+		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer or Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
+		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511013, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
+		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511014, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, within xx time and killing only with the Dual Pistols or Shotgun equipped"},
+		// "a_GunInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511016, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, using only 1 distinct power (Neutral powers excluded) and using it less than xx times"},
+		// "a_GunHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511017, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using the Range Rifle as the only means of shooting, with a minimum accuracy of xx%"},
+		// "a_GunMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511015, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, using only tier 2 or tier 3 powers with at least 45% melee kills"},
+		// "a_GunShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511011, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, with a minimum accuracy of xx% using only tier 1 powers"},
+		// "a_GunRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511012, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511018, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle or Carbine equipped and with at least xx% headshot kills"},
+		// "a_GunCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511020, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with less than xx power activations (Neutral powers excluded) and without dropping below xx% HP"}, 
 		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size; weapon usage is incorporated into other achievements
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
-		"a_SunPower": { // CONCEPT a_SunPower
-			"id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		// "a_SunPower": { // VERIFIED
+			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
-		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		"a_Multikill": { // VERIFIED
-			"id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
+			// "id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
+		// "a_Multikill": { // VERIFIED
+			// "id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
 		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
 		// "a_AllPowersEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
@@ -4158,7 +4158,7 @@ achievements_triggers = {
 				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 				&& is_flagState_InGame_false(enum_releaseRegion))
 			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/9] ==== Alt Triggered Group ====						-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+		// [2/9] ==== Alt Triggered Group ====		-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4198,7 +4198,7 @@ achievements_triggers = {
 		const_ALLOWED_SECS_BELOW_MAX_HP = 20 // seconds consecutively below max HP
 
 		return	
-		// [1/9] ==== Alt Logic + Triggered Group ==== 			-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as player has not been been below max HP for xx secs consecutively
+		// [1/9] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as player has not been been below max HP for xx secs consecutively
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
@@ -4561,7 +4561,7 @@ achievements_triggers = {
 				- ResetIf: Chapter Restart/Quit
 			*/
 		
-		const_CHAPTER = CHAPTER_3_Boneyard
+		const_CHAPTER = CHAPTER_8_BaptismFire
 		const_WEAPON_A = WEAPON_Redeemer
 		const_WEAPON_B = WEAPON_RailRocket
 		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
@@ -4629,7 +4629,7 @@ achievements_triggers = {
 						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
 			&& memUtil_alwaysFalse(enum_releaseRegion)
-		// [4/12] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+		// [4/13] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(once( // --Lockout--> When using a throwable explosive 
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -4649,7 +4649,7 @@ achievements_triggers = {
 						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
 				&& is_flagState_InGame_true(enum_releaseRegion)
 				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
-		// [5/13] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -4665,7 +4665,7 @@ achievements_triggers = {
 		const_CHAPTER = CHAPTER_9_Rescue
 
 		return	
-		// [1/7] ==== Alt Logic + Triggered Group ==== 			-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as at max HP
+		// [1/7] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as at max HP
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When losing HP
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5239,7 +5239,7 @@ achievements_triggers = {
 		const_TIME_LIMIT = 420000 // 420.000 ms = 7 min
 		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.7 // % of max HP
 		return 
-		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
 				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
@@ -5796,21 +5796,21 @@ achievements_titles = {
 	// --------c_Gunslinger--------
 	"a_GunWrongTrain": 			{"en": "Four Minutes to Midnight"},
 	"a_GunRideDevil": 			{"en": "A Devil's Ride with Angel's Precision"},
-	"a_GunBoneyard": 			{"en": "The Dead Rise, But They Won't Get Far"},
-	"a_GunDevilMine": 			{"en": "xxxxxxxxx"},
-	"a_GunDWOutpost": 			{"en": "xxxxxxxxx"},
-	"a_GunWarTrain": 			{"en": "xxxxxxxxx"},
-	"a_GunTortureMaze": 		{"en": "xxxxxxxxx"},
-	"a_GunBaptismFire": 		{"en": "xxxxxxxxx"},
-	"a_GunRescue": 				{"en": "xxxxxxxxx"},
-	"a_GunPrism": 				{"en": "xxxxxxxxx"},
-	"a_GunInvasion": 			{"en": "xxxxxxxxx"},
-	"a_GunHangtown": 			{"en": "xxxxxxxxx"},
-	"a_GunMorningAfter": 		{"en": "xxxxxxxxx"},
-	"a_GunShowdown": 			{"en": "xxxxxxxxx"},
-	"a_GunRightTrain": 			{"en": "xxxxxxxxx"},
-	"a_GunDeadfall": 			{"en": "xxxxxxxxx"},
-	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
+	"a_GunBoneyard": 			{"en": "Waking the Reckoning"},
+	"a_GunDevilMine": 			{"en": "Six Shooters' Tirade"},
+	"a_GunDWOutpost": 			{"en": "The Hunger Within"},
+	"a_GunWarTrain": 			{"en": "Unburned by the Boiler"},
+	"a_GunTortureMaze": 		{"en": "The Butcher’s Gospel"},
+	"a_GunBaptismFire": 		{"en": "Clean Shots, Dirty Work"},
+	"a_GunRescue": 				{"en": "No Blood of Mine"},
+	"a_GunPrism": 				{"en": "Sunburst Rush"},
+	"a_GunInvasion": 			{"en": "Disciplined Wrath"},
+	"a_GunHangtown": 			{"en": "No Loose Lead"},
+	"a_GunMorningAfter": 		{"en": "Brutal Grace"},
+	"a_GunShowdown": 			{"en": "Bare-Fanged Brawl"},
+	"a_GunRightTrain": 			{"en": "Irons on the Rails"},
+	"a_GunDeadfall": 			{"en": "Deadshot Descent"},
+	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
 	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
@@ -5861,21 +5861,21 @@ achievements_descriptions = {
 	// --------c_Gunslinger-------- // TODO add "in Gunslinger Mode requirement to descriptions"
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
 	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
-	"a_GunBoneyard": 			{"en": "Graveyards ain't for resting—they're for reckoning. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty only killing with the Carbine or Crossbow equipped, scoring at least 100 kills and without throwing a grenade"},
-	"a_GunDevilMine": 			{"en": "Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty killing only with the Redeemer or Dual Pistols equipped and without using any powers"},
-	"a_GunDWOutpost": 			{"en": "Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty activating only xx powers (Neutral powers excluded) and being below max HP for 10 seconds"},
-	"a_GunWarTrain": 			{"en": "Complete Chapter 6, \"War Train\", on Deadeye difficulty"},
-	"a_GunTortureMaze": 		{"en": "Complete Chapter 7, \"Torture Maze\", on Deadeye difficulty"},
-	"a_GunBaptismFire": 		{"en": "Complete Chapter 8, \"Baptism of Fire\", on Deadeye difficulty"},
-	"a_GunRescue": 				{"en": "Complete Chapter 9, \"Rescue\", on Deadeye difficulty"},
-	"a_GunPrism": 				{"en": "Complete Chapter 10, \"The Deadlight Prism\", on Deadeye difficulty"},
-	"a_GunInvasion": 			{"en": "Complete Chapter 11, \"Invasion\", on Deadeye difficulty"},
-	"a_GunHangtown": 			{"en": "Complete Chapter 12, \"Hangtown\", on Deadeye difficulty"},
-	"a_GunMorningAfter": 		{"en": "Complete Chapter 13, \"The Morning After\", on Deadeye difficulty"},
-	"a_GunShowdown": 			{"en": "Complete Chapter 14, \"Showdown\", on Deadeye difficulty"},
-	"a_GunRightTrain": 			{"en": "Complete Chapter 15, \"The Right Train\", on Deadeye difficulty"},
-	"a_GunDeadfall": 			{"en": "Complete Chapter 16, \"Deadfall\", on Deadeye difficulty"},
-	"a_GunCurseWest": 			{"en": "Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty"},
+	"a_GunBoneyard": 			{"en": "The ground’s already full, but you kept digging. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty using only the Carbine or Crossbow, scoring at least 100 kills, and without throwing a grenade"},
+	"a_GunDevilMine": 			{"en": "The deeper the mine, the louder your pistols echo. Ain’t no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty using only the Redeemer or Dual Pistols, without using any powers"},
+	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty without being below max HP for more than 20 consecutive seconds"},
+	"a_GunWarTrain": 			{"en": "The train kept running. You didn’t bleed. Complete Chapter 6, \"War Train\", on Deadeye difficulty in under 5 minutes without losing any HP"},
+	"a_GunTortureMaze": 		{"en": "This ain’t no gunfight—it’s a sermon of steel. Complete Chapter 7, \"Torture Maze\", on Deadeye difficulty only killing with the Scepter or Shotgun, with at least 80% of kills being melee"},
+	"a_GunBaptismFire": 		{"en": "When the world burns, you bring precision. Complete Chapter 8, \"Baptism of Fire\", on Deadeye difficulty using only the Redeemer or Rail Rocket, and never scoring 5 body-shot kills in a row—mix headshot or melee kills to keep the chain going"},
+	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed—and you walked out clean. Complete Chapter 9, \"Rescue\", on Deadeye difficulty without losing any HP"},
+	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", on Deadeye difficulty within 15 minutes, killing only with the Dual Pistols or Shotgun"},
+	"a_GunInvasion": 			{"en": "One power. Five flickers of fury. The rest? Pure skill. Complete Chapter 11, \"Invasion\", on Deadeye difficulty using only one distinct power, with five activations or less"},
+	"a_GunHangtown": 			{"en": "One shot, one soul. No room for waste when the town’s already dead. Complete Chapter 12, \"Hangtown\", on Deadeye difficulty using the Range Rifle only, with at least 85% accuracy"},
+	"a_GunMorningAfter": 		{"en": "The citadel burns, but your powers cut clean and your hands cut cleaner. Complete Chapter 13, \"The Morning After\", on Deadeye difficulty using only Tier 2 or 3 powers, with at least 45% melee kills"},
+	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", on Deadeye difficulty with 65% accuracy or higher, using only Tier 1 powers"},
+	"a_GunRightTrain": 			{"en": "That train didn’t slow down and neither did you. Complete Chapter 15, \"The Right Train\", on Deadeye difficulty within 7 minutes and without falling below 70% HP"},
+	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", on Deadeye difficulty using only the Range Rifle or Carbine, with 30% or more headshots"},
+	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty using no more than 5 power activations, and never dropping below 40% HP"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
 	"a_SunPower":				{"en": "The sun burns down on you, but you refuse to yield. Activate Vampire Vision repeatedly under its relentless heat and see how long you can endure"},
