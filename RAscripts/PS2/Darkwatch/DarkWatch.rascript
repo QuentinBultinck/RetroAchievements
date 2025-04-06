@@ -193,6 +193,12 @@ memory_StructDefs = {
 				"offsetToPointedToMember": 0x14C},
 			},
 		},
+	"Pointer:Controls_ControllerConfig": {
+		"pointerChainToMember": {
+			"ASCII:ControllerConfig_NameID": {
+				"offsetToPointedToMember": 0x2},
+			},
+		}, 
 	"Pointer:LevelID": {
 		"pointerChainToMember": {
 			"ASCII:LevelID(full)": {
@@ -214,6 +220,9 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0x2F]},
 			"Float:BossHP(display)(preferred)": {
 				"pointerChainOffsets": [0xC, 0x8, 0xC, 0x2C, 0xEC]},
+			"ASCII:PowerIconTopLeft": {
+				"pointerChainOffsets": [0xC, 0x18, 0x10C],
+				"offsetToPointedToMember": 0x2},
 			},
 		}, 
 	"Pointer:UIcontrol": {
@@ -229,14 +238,31 @@ memory_StructDefs = {
 				"pointerChainOffsets": [0xC, 0x0, 0x30],
 				"offsetToPointedToMember": 0x2},
 			"32-bit:MainMenuTitle_TextLookupKeyID": {
-				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},				
+				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},	
+			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:HUDcontrol_Gear-Player1]------
+			"Pointer:EquippedWeaponName": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xFC]},	
+			"32-bit:EquippedWeapon_LoadedBullets(display)": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xF0]},	
+			"32-bit:ThrowableCountInInventory(display)": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xF8]},	
+			"ASCII:Equipped_ThrowableNameID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0x100],
+				"offsetToPointedToMember": 0x2},
+				
 			},
 		}, 	
 	"Struct:ChapterStats": {
 		"sizeInBytes": 56,
 		"offsetToMember": {
 			"32-bit:MissionTime": 0x8,
+			"32-bit:PlayerDeaths": 0xC,
 			"Lower4:Difficulty": 0x14,
+			"32-bit:Kills": 0x1C,
+			"32-bit:ShotsFired": 0x20,
+			"32-bit:ShotsHit": 0x24,
+			"32-bit:HeadshotKills": 0x28,
+			"32-bit:MeleeKills": 0x2C, 
 			"Pointer:WeaponEquipTimes": 0x34},
 		"pointerChainToMember": {
 			"ASCII:LevelID": {
@@ -260,7 +286,11 @@ memory_StructDefs = {
 	"Struct:ControllerInput": {
 		"offsetToMember": {
 			"Bitflag:IsControllerConnected": 0x0,
-			"BitFlag:IsInputPressed_Cross": 0xB},
+			"BitFlag:IsInputPressed_Cross": 0xB,
+			"BitFlag:IsInputPressed_L3": 0xC,
+			"BitFlag:IsInputPressed_R3": 0xD,
+			"BitFlag:IsInputPressed_L2": 0x10,
+			"BitFlag:IsInputPressed_R2": 0x11},
 		},
 	"Struct:MainUIdata": {
 		"pointerChainToMember": {
@@ -339,6 +369,7 @@ memory_addresses = {
 	
 	"BitFlag:IsStoryGoodEndingAchieved": {RELEASE_REGION_USA: 0x953D20, RELEASE_REGION_EUR: 0x965d00, RELEASE_REGION_JPN: sNULL},
 	"BitFlag:IsStoryEvilEndingAchieved": {RELEASE_REGION_USA: 0x953D21, RELEASE_REGION_EUR: 0x965d01, RELEASE_REGION_JPN: sNULL},
+	"BitFlag:IsCinematicActive": {RELEASE_REGION_USA: 0x72bbe8, RELEASE_REGION_EUR: 0x73dce8, RELEASE_REGION_JPN: sNULL},
 	
 	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
 	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
@@ -408,6 +439,7 @@ memory_addresses = {
 
 	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
 	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
+	"Pointer:Controls_ControllerConfig-Player1": {RELEASE_REGION_USA: 0x953CCC, RELEASE_REGION_EUR: 0x965cac, RELEASE_REGION_JPN: sNULL},
 	"Pointer:PlayerSavedStats-Player1": {RELEASE_REGION_USA: 0x953CF8, RELEASE_REGION_EUR: 0x965cd8, RELEASE_REGION_JPN: sNULL},
 	}
 
@@ -590,6 +622,10 @@ CONTROLLER_1 = 1
 CONTROLLER_2 = 2
 
 INPUT_Cross = "BitFlag:IsInputPressed_Cross"
+INPUT_L2 = "BitFlag:IsInputPressed_L2"
+INPUT_R2 = "BitFlag:IsInputPressed_R2"
+INPUT_L3 = "BitFlag:IsInputPressed_L3"
+INPUT_R3 = "BitFlag:IsInputPressed_R3"
 
 function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
@@ -603,6 +639,12 @@ function current_flagState_IsInputPressed(enum_controller, enum_input, enum_rele
 
 function prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) =>
 	prev(current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion))
+	
+function is_flagState_IsInputPressed_false(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 0
+	
+function is_flagState_IsInputPressed_true(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 1
 
 function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) > prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
@@ -628,6 +670,19 @@ LANGUAGE_Spanish = 0x53
 
 function current_DisplayLanguage(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:DisplayLanguageID", enum_releaseRegion))
+
+function current_flagState_IsCinematicActive(enum_releaseRegion) =>
+	bit0(memory_getAddress("BitFlag:IsCinematicActive", enum_releaseRegion))
+
+function prev_flagState_IsCinematicActive(enum_releaseRegion) =>
+	prev(current_flagState_IsCinematicActive(enum_releaseRegion))
+
+function is_AnyCinematic_active(enum_releaseRegion) =>
+	current_flagState_IsCinematicActive(enum_releaseRegion) == 1
+
+function on_AnyCinematic_end(enum_releaseRegion) =>
+	current_flagState_IsCinematicActive(enum_releaseRegion) < prev_flagState_IsCinematicActive(enum_releaseRegion)
+
 // #endregion Misc Logic
 
 // #region MainMenu SubMenu Identification
@@ -865,22 +920,22 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=870403064_I:{recall}_I:0xX0000007c_0xX00000068=1
 		---------
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-		
-		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0x7C
-					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
-		*/
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+						->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+			*/
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
 	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2FD)
@@ -920,30 +975,127 @@ function on_PauseMenu_Restart_OR_Quit(enum_releaseRegion) =>
 		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1
 		-----------
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-		AddAddress	[Pointer:UIcontrol(preferred)]
-		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-		OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-		
-		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0xB8
-					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
-		
-		AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-		AddAddress	->[Mem 32-bit] 0x7C
-					->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
-		*/
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			OrNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+						->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+			*/
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1FD)
 	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == 0xDEADBEEF
 	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4FD)
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+function on_NewPowerMenu_render(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-2CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c=2662373993_I:{recall}_d0xX0000006c!=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle != "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2CCD)
+
+function is_NewPowerMenu_displayed(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-5CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_I:0xX000000b8_0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddress	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	-->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"
+			*/	
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x5CCD)
+
+function is_NewPowerMenu_Power(enum_textLookupKeyPowerName, enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[1CCD-4CCD]:CheckNewPowerMenuPowerName - R/R usage
+		// WARNING - Edit in enum_textLookupKeyPowerName
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xC
+			AddAddress	->[Mem 32-bit] 0x4
+						->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+			*/
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	// && is_NewPowerMenu_displayed(enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == enum_textLookupKeyPowerName
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4CCD)
+
+function on_NewPowerMenu_close(enum_releaseRegion) => 
+	/* MANUAL_CONSTRUCTION[1CCD-3CCD]:on_NewPowerMenu_close - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c!=2662373993_I:{recall}_d0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle == "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3CCD)
+
 
 // #endregion Pause Menu
 
@@ -1044,11 +1196,15 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("in_A"), memUtil_asciiStringToHexBE("in_B")],
 		"Substring_ChapterSectionIDs_asHex": [0x696e5f41, 0x696e5f42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 0,
+		"SavedStatIndex_SinglePlayerMode": 0,
 		},
 	CHAPTER_2_RideDevil: {
 		"LevelID": "M02_CanyonShoot",
 		"FullString_ChapterSectionIDs": ["Hub_A"],
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 1,
+		"SavedStatIndex_SinglePlayerMode": 1,
 		},
 	CHAPTER_3_Boneyard: {
 		"LevelID": "M03_Cemetery",
@@ -1058,6 +1214,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("03_C"), memUtil_asciiStringToHexBE("03_B"), memUtil_asciiStringToHexBE("03_A")],
 		"Substring_ChapterSectionIDs_asHex": [0x30335F43, 0x30335F42, 0x30335F41], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 2,
+		"SavedStatIndex_SinglePlayerMode": 2,
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
@@ -1068,6 +1226,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("ub_C"), memUtil_asciiStringToHexBE("ub_D")],
 		"Substring_ChapterSectionIDs_asHex": [0x75625F41, 0x75625F42, 0x75625F43, 0x75625F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 3,
+		"SavedStatIndex_SinglePlayerMode": 3,
 		},
 	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
@@ -1077,11 +1237,15 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("07_A"), memUtil_asciiStringToHexBE("07_B")],
 		"Substring_ChapterSectionIDs_asHex": [0x30375F41, 0x30375F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 4,
+		"SavedStatIndex_SinglePlayerMode": 4,
 		},
 	CHAPTER_6_WarTrain: {
 		"LevelID": "Wartrain",
 		"FullString_ChapterSectionIDs": ["M07_C"],
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 5,
+		"SavedStatIndex_SinglePlayerMode": 5,
 		}, 
 	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
@@ -1093,6 +1257,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("09_E"), memUtil_asciiStringToHexBE("09_F")],
 		"Substring_ChapterSectionIDs_asHex": [0x30395F41, 0x30395F42, 0x30395F43, 0x30395F44, 0x30395F45, 0x30395F46], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 6,
+		"SavedStatIndex_SinglePlayerMode": 6,
 		},
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
@@ -1103,11 +1269,14 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("10_C"), memUtil_asciiStringToHexBE("10_D")],
 		"Substring_ChapterSectionIDs_asHex": [0x31305F41, 0x31305F42, 0x31305F43, 0x31305F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 7,
+		"SavedStatIndex_SinglePlayerMode": 7,
 		},
 	CHAPTER_Citadel: {
 		"LevelID": "Citadel_Launch",
 		"FullString_ChapterSectionIDs": ["Citadel_Launch_AA"],
 		"IsGunslingerLevel": false,
+		"SavedStatIndex_SinglePlayerMode": 8, // For some reason this Level has a [Struct:ChapterStats] only for [Array:SavedStats_Story] and not for [Array:SavedStats_Gunslinger]
 		},
 	CHAPTER_9_Rescue: {
 		"LevelID": "M08_Regulator",
@@ -1117,6 +1286,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("ub_A"), memUtil_asciiStringToHexBE("ub_B")],
 		"Substring_ChapterSectionIDs_asHex": [0x75625F41, 0x75625F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 9,
+		"SavedStatIndex_SinglePlayerMode": 10,
 		},
 	CHAPTER_10_Prism: {
 		"LevelID": "M15_SplittingPaths",
@@ -1127,6 +1298,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("15_F"), memUtil_asciiStringToHexBE("15_A"), memUtil_asciiStringToHexBE("15_C")],
 		"Substring_ChapterSectionIDs_asHex": [0x31355F44, 0x31355F45, 0x31355F46, 0x31355F41, 0x31355F43], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 8,
+		"SavedStatIndex_SinglePlayerMode": 9,
 		},
 	CHAPTER_11_Invasion: {
 		"LevelID": "M17_Invasion",
@@ -1136,6 +1309,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("17_B"), memUtil_asciiStringToHexBE("17_C"), memUtil_asciiStringToHexBE("17_D")],
 		"Substring_ChapterSectionIDs_asHex": [0x31375F42, 0x31375F43, 0x31375F44], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 10,
+		"SavedStatIndex_SinglePlayerMode": 11,
 		},
 	CHAPTER_12_Hangtown: {
 		"LevelID": "M11_Hangtown",
@@ -1145,6 +1320,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("11_F"), memUtil_asciiStringToHexBE("11_G"), memUtil_asciiStringToHexBE("11_H")],
 		"Substring_ChapterSectionIDs_asHex": [0x31315F46, 0x31315F47, 0x31315F48], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 11,
+		"SavedStatIndex_SinglePlayerMode": 12,
 		},
 	CHAPTER_13_MorningAfter: {
 		"LevelID": "M12_CitadelUnderAttack",
@@ -1155,6 +1332,8 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("2_C", 1), memUtil_asciiStringToHexBE("2_D", 1), memUtil_asciiStringToHexBE("2_A", 1)],
 		"Substring_ChapterSectionIDs_asHex": [0x325F4141, 0x325F4200, 0x325F4300, 0x325F4400, 0x325F4100], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 12,
+		"SavedStatIndex_SinglePlayerMode": 13,
 		},
 	CHAPTER_14_Showdown: {
 		"LevelID": "FallOfCitadel",
@@ -1164,11 +1343,15 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("el_A"), memUtil_asciiStringToHexBE("el_B")],
 		"Substring_ChapterSectionIDs_asHex": [0x656C5F41, 0x656C5F42], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 13,
+		"SavedStatIndex_SinglePlayerMode": 14,
 		},
 	CHAPTER_15_RightTrain: {
 		"LevelID": "M19_RidetoDeadfall",
 		"FullString_ChapterSectionIDs": ["M19_A"],
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 14,
+		"SavedStatIndex_SinglePlayerMode": 15,
 		},
 	CHAPTER_16_Deadfall: {
 		"LevelID": "M20_PenetratingDeadfall",
@@ -1179,11 +1362,15 @@ CONST_LEVEL_DATA = {
 			memUtil_asciiStringToHexBE("b_B2"), memUtil_asciiStringToHexBE("b_C", 1), memUtil_asciiStringToHexBE("b_C2")],
 		"Substring_ChapterSectionIDs_asHex": [0x625F4100, 0x625F4200, 0x625F4232, 0x625F4300, 0x625F4332], // --> Ordered as "FullString_ChapterSectionIDs"
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 15,
+		"SavedStatIndex_SinglePlayerMode": 16,
 		},
 	CHAPTER_17_CurseWest: {
 		"LevelID": "GroundZero",
 		"FullString_ChapterSectionIDs": ["GroundZero_A"],
 		"IsGunslingerLevel": true,
+		"SavedStatIndex_GunslingerMode": 16,
+		"SavedStatIndex_SinglePlayerMode": 17,
 		},	
 	}
 
@@ -1247,6 +1434,12 @@ function LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter) =>
 
 function LEVEL_DATA_getAllGunslingerLevels() => 
 	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter))
+
+function LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_GunslingerMode"]
+
+function LEVEL_DATA_getSavedStatIndex_Story(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_SinglePlayerMode"]
 
 CONST_MP_LEVEL_DATA = {
 	MULTIPLAYER_LEVEL_Asylum: {
@@ -1357,7 +1550,7 @@ function ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion) {
 
 function is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion) {
 	let_memAddr_ASCII = ASCII_MEM_ADDR_ChapterSectionID(enum_releaseRegion)
-	let_string_ChapterSectionID = LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection) // NOTE: Only checks [1-byte] of ASCII
+	let_string_ChapterSectionID = LEVEL_DATA_getFullStringChapterSectionID(enum_chapter, enum_chapterSection)
 
 	if(enum_chapter == CHAPTER_13_MorningAfter || enum_chapter == CHAPTER_16_Deadfall) { // NOTE: These Chapters require an extra check (eg. CHAPTER_13_MorningAfter has ChapterSectionIDs: "M12_AA" and "M12_A")
 		return 
@@ -1458,9 +1651,9 @@ function on_LastChapterSection_start(enum_chapter, enum_releaseRegion) {
 // #endregion Checkpoint ID
 
 // ..............
-// ◦ Statistics ◦
+// ◦ In-Game Statistics ◦
 // ''''''''''''''
-// #region Statistics
+// #region In-Game Statistics
 function current_MissionTime_Temp(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:MissionTime_Temp", enum_releaseRegion))
 
@@ -1471,6 +1664,11 @@ function on_MissionTime_Temp_start(enum_releaseRegion) =>
 	current_MissionTime_Temp(enum_releaseRegion) > 0
 	&& prev_MissionTime_Temp(enum_releaseRegion) == 0
 
+function on_MissionTime_Temp_secondPassed(enum_releaseRegion) =>
+	// NOTE: MissionTime is counted in milliseconds, thus divide by 1,000 ---> If (currentFrameMilliseconds / 1000) > (prevFrameMilliseconds / 1000) => a second has passed
+	// (current_MissionTime_Temp(enum_releaseRegion) / 1000) > (prev_MissionTime_Temp(enum_releaseRegion) / 1000)
+	(current_MissionTime_Temp(enum_releaseRegion) / 1000) - (prev_MissionTime_Temp(enum_releaseRegion) / 1000) > 0
+
 function current_MissionTime_ChapterSection(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:MissionTime_ChapterSection", enum_releaseRegion))
 
@@ -1479,6 +1677,9 @@ function prev_MissionTime_ChapterSection(enum_releaseRegion) =>
 
 function current_MissionTime_ChapterTotal(enum_releaseRegion) =>
 	dword(memory_getAddress("32-bit:MissionTime_ChapterTotal", enum_releaseRegion))
+
+function prior_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	prior(current_MissionTime_ChapterTotal(enum_releaseRegion))
 
 function prev_MissionTime_ChapterTotal(enum_releaseRegion) =>
 	prev(current_MissionTime_ChapterTotal(enum_releaseRegion))
@@ -1524,8 +1725,7 @@ function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegi
 function on_AnyChapterSection_startFromBeginning(enum_releaseRegion) =>
 	current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 	&& on_MissionTime_Temp_start(enum_releaseRegion)
-
-// #endregion Statistics
+// #endregion In-Game Statistics
 
 // ..........
 // ◦ FMV ID ◦
@@ -1596,6 +1796,8 @@ function is_atMainMenu(enum_releaseRegion) =>
 // ◦ HUD Control Health ◦
 // ''''''''''''''''''''''
 // #region HUD Control Health
+
+// ---------------BossHP--------------------
 function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
 	return memGenerate_pointerChainAccessor(
@@ -1624,10 +1826,146 @@ function current_Boss_Health(enum_releaseRegion) {
 
 function prev_Boss_Health(enum_releaseRegion) =>
 	prev(current_Boss_Health(enum_releaseRegion))
+// ---------------PowerIcon(top-left)--------------------
+POWER_SilverBrand = "Silv" // FullString: "SilverBrandRune"
+POWER_Fear = "Fear" // FullString: "FearRune"
+POWER_MysticArmour = "Myst" // FullString: "MysticArmourRune"
+POWER_Vindicator = "Vind" // FullString: "VindicatorRune"
+POWER_BloodFrenzy = "Bloo" // FullString: "BloodFrenzyRune"
+POWER_Turn = "Turn" // FullString: "TurnRune"
+POWER_BlackShroud = "Blac" // FullString: "BlackShroudRune"
+POWER_SoulStealer = "Soul" // FullString: "SoulStealerRune"
 
-// ----------------Divider---------------------
+CONST_POWER_DATA = {
+	POWER_SilverBrand: {
+		"PowerReputation": "Good",
+		"PowerTier": 1,
+		},
+	POWER_Fear: {
+		"PowerReputation": "Good",
+		"PowerTier": 2,
+		},
+	POWER_MysticArmour: {
+		"PowerReputation": "Good",
+		"PowerTier": 3,
+		},
+	POWER_Vindicator: {
+		"PowerReputation": "Good",
+		"PowerTier": 4,
+		},
+	POWER_BloodFrenzy: {
+		"PowerReputation": "Evil",
+		"PowerTier": 1,
+		},
+	POWER_Turn: {
+		"PowerReputation": "Evil",
+		"PowerTier": 2,
+		},
+	POWER_BlackShroud: {
+		"PowerReputation": "Evil",
+		"PowerTier": 3,
+		},
+	POWER_SoulStealer: {
+		"PowerReputation": "Evil",
+		"PowerTier": 4,
+		},
+	}
+
+function POWER_DATA_getPowerReputation(enum_power) =>
+	CONST_POWER_DATA[enum_power]["PowerReputation"]
+
+function POWER_DATA_getPowerTier(enum_power) =>
+	CONST_POWER_DATA[enum_power]["PowerTier"]
+
+function POWER_DATA_getAllEvilPowers() =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerReputation(enum_power) == "Evil") return true
+		return false
+	})
+
+function POWER_DATA_getAllGoodPowers() =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerReputation(enum_power) == "Good") return true
+		return false
+	})
+
+function POWER_DATA_getAllPowersOfTier(int_tier) =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerTier(enum_power) == int_tier) return true
+		return false 
+	})
+
+function POWER_DATA_getAllPowersOfTiers(array_tiers) =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (array_contains(array_tiers, POWER_DATA_getPowerTier(enum_power))) return true
+		return false 
+	})
+
+function ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	let_memAddr_ASCII = 
+		memGenerate_pointerChainAccessor("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_PowerIconTopLeft(enum_power, enum_releaseRegion) =>
+	dword(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion)) == memUtil_asciiStringToHexLE(enum_power)
+
+function is_InSunlight(enum_releaseRegion) {
+	const_ASCII_FLAG_PowerIconTopLeft_SunlightState = "SunlightState"
+	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
+
 
 // #endregion HUD Control Health
+
+// ....................
+// ◦ HUD Control Gear ◦
+// ''''''''''''''''''''
+// #region HUD Control Gear
+THROWABLE_Dynamite = "Dyna" // FullString: "Dynamite"
+THROWABLE_SplitterGrenades = "Spli" // FullString: "SplitterGrenades"
+
+function current_ThrowableType(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:Equipped_ThrowableNameID")
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "ASCII:Equipped_ThrowableNameID", 
+		let_memAddr_BasePointer, int_offsetToPointedToMember = let_offsetTo_ASCII,
+		memAccessorFunction_toPointedToMember = dword)}
+
+function prev_ThrowableType(enum_releaseRegion) =>
+	prev(current_ThrowableType(enum_releaseRegion))
+
+function on_ThrowableType_switch(enum_releaseRegion) =>
+	current_ThrowableType(enum_releaseRegion) != prev_ThrowableType(enum_releaseRegion)
+
+function current_ThrowableCountInInventory(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", "32-bit:ThrowableCountInInventory(display)", let_memAddr_BasePointer)}
+
+function prev_ThrowableCountInInventory(enum_releaseRegion) =>
+	prev(current_ThrowableCountInInventory(enum_releaseRegion))
+
+function on_Throwable_use(enum_releaseRegion) =>
+	current_ThrowableCountInInventory(enum_releaseRegion) < prev_ThrowableCountInInventory(enum_releaseRegion)
+
+function on_HUDcontrolGear_weaponSwap(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_memAccessor_SubPointer = memGenerate_pointerChainAccessor("Pointer:UIcontrol", "Pointer:EquippedWeaponName", let_memAddr_BasePointer)
+	return let_memAccessor_SubPointer != prev(let_memAccessor_SubPointer)}
+
+function current_HUDcontrolGear_LoadedBullets(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", "32-bit:EquippedWeapon_LoadedBullets(display)", let_memAddr_BasePointer)} 
+
+function prev_HUDcontrolGear_LoadedBullets(enum_releaseRegion) =>
+	prev(current_HUDcontrolGear_LoadedBullets(enum_releaseRegion))
+
+function on_HUDcontrolGear_LoadedBullets_decrement(enum_releaseRegion) =>
+	current_HUDcontrolGear_LoadedBullets(enum_releaseRegion) < prev_HUDcontrolGear_LoadedBullets(enum_releaseRegion)
+
+
+// #endregion HUD Control Gear
 
 // ...............
 // ◦ Player Data ◦
@@ -1646,13 +1984,61 @@ function is_PlayerProfile_selected(enum_player, enum_releaseRegion) =>
 
 function is_PlayerProfile_notSelected(enum_player, enum_releaseRegion) =>
 	current_PlayerProfileID(enum_player, enum_releaseRegion) == CONST_FLAG_IsNoPlayerProfileSelected
+// ----------------ControllerConfig---------------------
+CONTROLLER_CONFIG_Default = "Defa" // FullString: "Default"
+CONTROLLER_CONFIG_Lefty = "Left" // FullString: "Lefty"
+CONTROLLER_CONFIG_Hopalong = "Hopa" // FullString: "Hopalong"
+CONTROLLER_CONFIG_Hoss = "Hoss" // FullString: "Hoss"
+
+CONST_CONTROLLER_CONFIG_DATA = { // Configs changes in-game controls
+	CONTROLLER_CONFIG_Default: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	CONTROLLER_CONFIG_Lefty: {
+		"Button_SightMode": "BitFlag:IsInputPressed_L3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_L2",
+		"Button_Shoot": "BitFlag:IsInputPressed_L1",
+		},
+	CONTROLLER_CONFIG_Hopalong: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	CONTROLLER_CONFIG_Hoss: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	}
+
+function CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_SightMode"]
+
+function CONTROLLER_CONFIG_DATA_getButtonActivatePower(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_ActivatePower"]
+
+function CONTROLLER_CONFIG_DATA_getButtonShoot(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_Shoot"]
+
+function ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer:Controls_ControllerConfig-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	let_memAddr_ASCII = 
+		dword(let_memAddr_BasePointer) 
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_ControllerConfig(enum_player, enum_controllerConfig, enum_releaseRegion) =>
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion), enum_controllerConfig)
 
 
 // #region Player Gauges
 // ----------------Health (HP)---------------------
-CONST_MAX_PLAYER_HP = 100.0
-CONST_MAX_PLAYER_VAMPIRESHIELD = 100.0
-CONST_MAX_PLAYER_BLOODPOWER = 30.0
+CONST_PLAYER_MAX_HP = 100.0
+CONST_PLAYER_MAX_VAMPIRESHIELD = 100.0
+CONST_PLAYER_MAX_BLOODPOWER = 30.0
 
 function current_Player_HP(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
@@ -1663,7 +2049,21 @@ function current_Player_HP(enum_player, enum_releaseRegion) {
 
 function prev_Player_HP(enum_player, enum_releaseRegion) =>
 	prev(current_Player_HP(enum_player, enum_releaseRegion))
+// ----------------BloodPowerGauge---------------------
+function current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "Float:BloodPowerGauge(functional)", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = float)
+	}
 
+function prev_Player_BloodPowerGauge(enum_player, enum_releaseRegion) =>
+	prev(current_Player_BloodPowerGauge(enum_player, enum_releaseRegion))
+
+function on_Player_Power_use(enum_player, enum_releaseRegion) =>
+	current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == 0.0
+	&& prev_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == CONST_PLAYER_MAX_BLOODPOWER
 // #endregion Player Gauges
 
 
@@ -1735,7 +2135,7 @@ const_WEAPON_DATA = {
 		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Scepter",
 		"isDarkwatchWeapon": true
 		},
-}
+	}
 
 function WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon) =>
 	const_WEAPON_DATA[enum_weapon]["memberKey_WeaponEquipTime"]
@@ -1749,8 +2149,12 @@ function WEAPON_DATA_getAllDarkwatchWeaponIDs() =>
 function WEAPON_DATA_getAllWeaponIDs() =>
 	array_map(const_WEAPON_DATA, enum_weapon => enum_weapon)
 
-function current_EquippedWeapon(enum_weapon, enum_releaseRegion) =>
-	byte(memory_getAddress("8-bit:EquippedWeapon_WeaponID-Player1", enum_releaseRegion)) == enum_weapon
+function current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) {
+	let_memAddrKey = format("8-bit:EquippedWeapon_WeaponID-Player{0}", enum_player)
+	return byte(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function is_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) =>
+	current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) == enum_weapon
 
 // #endregion Weapon ID
 // #region Accuracy
@@ -1779,7 +2183,7 @@ function current_ShotsHit_ChapterTotal(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:ShotsHit_ChapterTotal-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
 // -------------------------------------
-function current_calculated_Accuracy_FullTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION(Function) - R/R usage
+function current_calculated_Accuracy_FullTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION:current_calculated_Accuracy_FullTotal - R/R usage
 	PAL:	A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_{recall}=3735928559
 	NTSCU:	xxxx
 	------------
@@ -1798,7 +2202,7 @@ function current_calculated_Accuracy_FullTotal(enum_player, enum_releaseRegion) 
 	+ current_ShotsHit_ChapterTotal(enum_player, enum_releaseRegion)
 	+ current_ShotsHit_ChapterSection(enum_player, enum_releaseRegion)
 
-function current_calculated_Accuracy_ChapterTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION[Function] - R/R usage
+function current_calculated_Accuracy_ChapterTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION:current_calculated_Accuracy_ChapterTotal - R/R usage
 	PAL:	K:0xX00965c54/f1.0_A:0xX00965c58/{recall}_f0.0=3735928559
 	NTSCU:	xxxxx
 	-------------
@@ -1838,6 +2242,18 @@ function current_Kills_Temp(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:Kills_Temp-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
 
+function prev_Kills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_Kills_Temp(enum_player, enum_releaseRegion))
+
+function on_Kills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) > prev_Kills_Temp(enum_player, enum_releaseRegion)
+
+function on_Kills_Temp_incrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) == prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
+
+function on_Kills_Temp_minIncrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) >= prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
+
 function current_Kills_ChapterSection(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:Kills_ChapterSection-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
@@ -1856,6 +2272,12 @@ function current_HeadshotKills_Temp(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:HeadshotKills_Temp-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
 
+function prev_HeadshotKills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_HeadshotKills_Temp(enum_player, enum_releaseRegion))
+
+function on_HeadshotKills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_HeadshotKills_Temp(enum_player, enum_releaseRegion) > prev_HeadshotKills_Temp(enum_player, enum_releaseRegion)
+
 function current_HeadshotKills_ChapterSection(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:HeadshotKills_ChapterSection-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
@@ -1873,6 +2295,12 @@ function current_calculated_HeadshotKills_FullTotal(enum_player, enum_releaseReg
 function current_MeleeKills_Temp(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:MeleeKills_Temp-Player{0}", enum_player)
 	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_MeleeKills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_MeleeKills_Temp(enum_player, enum_releaseRegion))
+
+function on_MeleeKills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion)
 
 function current_MeleeKills_ChapterSection(enum_player, enum_releaseRegion) {
 	let_memAddrKey = format("32-bit:MeleeKills_ChapterSection-Player{0}", enum_player)
@@ -1894,31 +2322,31 @@ function current_calculated_MeleeKills_FullTotal(enum_player, enum_releaseRegion
 // ----------------SavedStats_Gunslinger---------------------
 CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
 
-function current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) {
+function current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
 		let_offsetToMember_Pointer_SavedStatsGunslinger,
-		let_offsetToIndexedMember_SavedStat_MissionTime
-	]
+		let_offsetToIndexedMember_SavedStat_MissionTime]
 
-	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
-	}
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
 
-function prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) =>
-	prev(current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion))
+function prev_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) =>
+	prev(current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion))
 
-function on_SavedStatGunslinger_MissionTime_change(int_savedStatIndex, enum_releaseRegion) =>
-	current_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion) != prev_SavedStatGunslinger_MissionTime(int_savedStatIndex, enum_releaseRegion)
+function on_SavedStatGunslinger_MissionTime_change(enum_chapter, enum_releaseRegion) =>
+	current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) != prev_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion)
 
-function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_releaseRegion) {
+function current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 
 	let_array_pointerChainOffsets = [
 		let_offsetToMember_Pointer_SavedStatsGunslinger,
@@ -1930,11 +2358,98 @@ function current_SavedStatGunslinger_Difficulty(int_savedStatIndex, enum_release
 		memAccessorFunction_toPointedToMember = low4)
 	}
 
-function current_SavedStatGunslinger_WeaponEquipTime(int_savedStatIndex, enum_weapon, enum_releaseRegion) {
+function current_SavedStatGunslinger_PlayerDeaths(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
-	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * int_savedStatIndex)
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_Kills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_ShotsFired(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_ShotsHit(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+
+
+function current_SavedStatGunslinger_WeaponEquipTime(enum_chapter, enum_weapon, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")	
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
 	let_memberKey_WeaponEquipTime = WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon)
 	let_offsetToMember_WeaponEquipTime = memory_getStruct_OffsetToMember("Struct:WeaponEquipTimes", let_memberKey_WeaponEquipTime)
 
@@ -1946,6 +2461,120 @@ function current_SavedStatGunslinger_WeaponEquipTime(int_savedStatIndex, enum_we
 
 	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
 	}
+
+// ----------------SavedStats_Story (SinglePlayer)---------------------
+
+function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
 
 // #endregion Saved Stats
 
@@ -2096,48 +2725,52 @@ achievements_coreData = {
 	"c_Gunslinger": { // Category - "Custom" Gunslinger Challenges
 		// "a_GunWrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 508863, "points": 0000000, "devInfo": "Complete CHAPTER_1_WrongTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunRideDevil": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a min. accuracy of xx%  and without going below xx% HP (vampire shield excluded)"},
-		// "a_GunBoneyard": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring xx kills with the Crossbow and also with the Carbine"},
-		// "a_GunDevilMine": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, using only the Redeemer to kill"},
-		// "a_GunDWOutpost": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without losing any HP"},
-		// "a_GunWarTrain": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP"},
-		// "a_GunTortureMaze": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, using only the Scepter to kill"},
-		// "a_GunBaptismFire": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, using the Rail Rocket only as a melee weapon to score at least xx kills"},
-		// "a_GunRescue": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP"},
-		// "a_GunPrism": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, using only the dual pistols to kill"},
-		// "a_GunInvasion": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, without losing more than xx% HP (vampire shield excluded)"},
-		// "a_GunHangtown": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using only the Shotgun to kill"},
-		// "a_GunMorningAfter": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, only going for melee kills"},
-		// "a_GunShowdown": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, without using any vampire powers"},
-		// "a_GunRightTrain": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time"},
-		// "a_GunDeadfall": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, using only the Range Rifle to kill, with a min. accuracy of xx%"},
-		// "a_GunCurseWest": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with an accuracy of xx% and without losing more than "}, 
-		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size
+		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow or Carbine equipped (without using throwables)"},
+		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer or Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
+		// "a_GunDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511019, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds consecutively"},
+		// "a_GunWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511009, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
+		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter or Shotgun equipped, with at least 80% melee kills"},
+		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer or Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
+		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511013, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
+		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511014, "points": 0000000, "devInfo": "Complete CHAPTER_10_Prism on Deadeye difficulty, within xx time and killing only with the Dual Pistols or Shotgun equipped"},
+		// "a_GunInvasion": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511016, "points": 0000000, "devInfo": "Complete CHAPTER_11_Invasion on Deadeye difficulty, using only 1 distinct power (Neutral powers excluded) and using it less than xx times"},
+		// "a_GunHangtown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511017, "points": 0000000, "devInfo": "Complete CHAPTER_12_Hangtown on Deadeye difficulty, using the Range Rifle as the only means of shooting, with a minimum accuracy of xx%"},
+		// "a_GunMorningAfter": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511015, "points": 0000000, "devInfo": "Complete CHAPTER_13_MorningAfter on Deadeye difficulty, using only tier 2 or tier 3 powers with at least 45% melee kills"},
+		// "a_GunShowdown": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511011, "points": 0000000, "devInfo": "Complete CHAPTER_14_Showdown on Deadeye difficulty, with a minimum accuracy of xx% using only tier 1 powers"},
+		// "a_GunRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511012, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
+		// "a_GunDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511018, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle or Carbine equipped and with at least xx% headshot kills"},
+		// "a_GunCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 511020, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with less than xx power activations (Neutral powers excluded) and without dropping below xx% HP"}, 
+		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size; weapon usage is incorporated into other achievements
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
-		// "a_SunPower": { // CONCEPT a_SunPower
-		// 	"id": 000000, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
-		// "a_FanHammer": { // CONCEPT a_FanHammer
-		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
-		// "a_MultiKill": { // CONCEPT a_MultiKill (Title: Bloodlust)
-		// 	"id": 000000, "points": 0000000, "devInfo": "With Redeemer: Kill xx enemies in short duration of eachother (explosive or powers??)"},
+		// "a_SunPower": { // VERIFIED
+			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
+		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
+			// "id": 000000, "points": 0000000, "devInfo": "With Redeemer: Land xx shots in single Fan The Hammer volley"},
+		// "a_Multikill": { // VERIFIED
+			// "id": 510105, "points": 0000000, "devInfo": "Kill xx enemies in one frame (use explosives or powers)"},
+		// "a_AllPowersGood": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
+		// "a_AllPowersEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 510103, "points": 0000000, "devInfo": "Unlock all Evil powers"},
 		},
 	}
 // -------------------------------------
@@ -2339,29 +2972,29 @@ function achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_re
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
 			-------------
-			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
-			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+				AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+				AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
 
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
 
-			AddAddress	[Pointer:UIcontrol(preferred)]
-			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-			
-			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0xB8
-			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
-			
-			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-			AddAddress	->[Mem 32-bit] 0x7C
-			ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Quit	| CheckIf: FrameTitle == "Quit"
+				
+				AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0x7C
+				ResetIf		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
-			AddAddress	[Pointer:PlayerInput(preferred)]
-			ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+				AddAddress	[Pointer:PlayerInput(preferred)]
+				ResetIf		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
-						Val 0x0 == Val 0x1					*/	
+							Val 0x0 == Val 0x1					*/	
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
@@ -2414,7 +3047,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved
 			never(is_flagState_InGame_true(enum_releaseRegion))
 			
-			/* MANUAL_CONSTRUCTION[0ACC-4ACC] (below 3 lines): R/R usage 
+			/* MANUAL_CONSTRUCTION[0ACC-4ACC]:CheckAccuracy (below 3 lines): R/R usage 
 				// WARNING - Edit enum_minRequiredAccuracy
 				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
 				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
@@ -2436,7 +3069,7 @@ function achGenerate_FullTrigger_GunslingerUnlock_Accuracy(enum_chapter, enum_mi
 		&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
 	// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
-		/* MANUAL_CONSTRUCTION[0ACC-5ACC] (below Measured): R/R usage
+		/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracy (below Measured): R/R usage
 			PAL:	A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
 			NTSCU:	A:0xX00953c40+0xX00953c74_A:0xX00953ca8_K:0_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
 			-----------
@@ -2662,11 +3295,11 @@ function achGenerate_FullTrigger_GunslingerUnlock_HeadshotKills(enum_chapter, in
 		|| achGenerate_4x_AltResetGroups_GunslingerChallenge(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 // -------------------------------------
 function achGenerate_Measured_GunslingerChaptersCompletedOnDeadeyeDifficulty(enum_releaseRegion) {
-	let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
-	return measured(tally_of(let_array_AllGunslingerLevelIndices, CONST_NUMBER_OF_CHAPTERS, let_gunslingerLevelStatIndex => 
+	let_array_AllGunslingerLevels = LEVEL_DATA_getAllGunslingerLevels()
+	return measured(tally_of(let_array_AllGunslingerLevels, length(let_array_AllGunslingerLevels), enum_chapter => 
 			once(
-				never(current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) != DIFFICULTY_Deadeye) 
-				&& current_SavedStatGunslinger_Difficulty(let_gunslingerLevelStatIndex, enum_releaseRegion) == DIFFICULTY_Deadeye)
+				never(current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) != DIFFICULTY_Deadeye) 
+				&& current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) == DIFFICULTY_Deadeye)
 			)
 		)
 	}
@@ -3039,7 +3672,7 @@ achievements_triggers = {
 			*/
 		return achGenerate_FullTrigger_GunslingerUnlock_Time(CHAPTER_9_Rescue, const_TIME_LIMIT, enum_releaseRegion)}),	// --> (2x) MANUAL_CONSTRUCTION
 	"a_Archive": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
-		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
+		let_array_AllGunslingerLevels = LEVEL_DATA_getAllGunslingerLevels()
 		return
 		// [1] ==== Alt Logic Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement
 			unless(!is_ReleaseRegion(enum_releaseRegion))
@@ -3047,8 +3680,8 @@ achievements_triggers = {
 				on_AnyChapterSection_startFromBeginning(enum_releaseRegion))
 			&& once( // --CheckIf--> Player leaves InGame + All Gunslinger Chapters completed on Deadeye Difficulty
 				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& all_of(let_array_AllGunslingerLevelIndices, int_index => 
-					current_SavedStatGunslinger_Difficulty(int_index, enum_releaseRegion) == DIFFICULTY_Deadeye) // ---> No delta check included: This allow the achievement to be unlocked even if all Chapters have already been completed on Deadeye difficulty
+				&& all_of(let_array_AllGunslingerLevels, enum_chapter => 
+					current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) == DIFFICULTY_Deadeye) // ---> No delta check included: This allow the achievement to be unlocked even if all Chapters have already been completed on Deadeye difficulty
 				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 			&& repeated(2, // --CheckIf--> Player leaves InGame for xx frames
 				never(is_flagState_InGame_true(enum_releaseRegion))
@@ -3101,28 +3734,12 @@ achievements_triggers = {
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
 	// --------c_Gunslinger--------
-	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WIP _template // WARNING - (6x) MANUAL_CONSTRUCTION
+	"a_GunWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (4x) MANUAL_CONSTRUCTION
 		const_CHAPTER = CHAPTER_1_WrongTrain
 		const_TIME_LIMIT = 240000 // 240.000 ms = 4 min
-		const_HP_THRESHOLD = CONST_MAX_PLAYER_HP * 0.75 // % of max HP
-		/* MANUAL_CONSTRUCTION (AltGroup[1/8])
-			PAL: 	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._N:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c>240000_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f_N:0xX00965cc4!=0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_d0xX00965c08=0.1._I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00965c70=0_N:0xX00965c08>0_d0xX00965c08=0.1._Z:0xX00965cc4!=0_N:0xX00965c3c<=240000_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00965cc4=0_d0xX00965cc4!=0.1._Z:0xX00965cc4!=0_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1113550441_N:p0xX00965cc4!=0_0xX00965cc4=0.2._I:0xX00134214_T:0xX0000014c=1295143760_I:0xX00134214_T:0x 00000150=18753_I:0xX00134214_T:0xX0000012c=1684434771_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000002=1718579824_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000006=1600482409_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000a=1952543859_I:0xX007238b8_I:0xX0000000c_I:0xX00000000_I:0xX0000000c_I:0xX00000000_T:0xX00000048=261521834_I:0xX00721900_T:0xM0000000f>d0xM0000000f
-			NTSCU: 	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._N:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c>240000_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f_N:0xX00953ce4!=0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_d0xX00953c28=0.1._I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00953c90=0_N:0xX00953c28>0_d0xX00953c28=0.1._Z:0xX00953ce4!=0_N:0xX00953c5c<=240000_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:0xX00953ce4=0_d0xX00953ce4!=0.1._Z:0xX00953ce4!=0_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1113550441_N:p0xX00953ce4!=0_0xX00953ce4=0.2._I:0xX00134214_T:0xX0000014c=1295143760_I:0xX00134214_T:0x 00000150=18753_I:0xX00134214_T:0xX0000012c=1684434771_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000002=1718579824_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX00000006=1600482409_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX00000030_T:0xX0000000a=1952543859_I:0xX00721fb8_I:0xX0000000c_I:0xX00000000_I:0xX0000000c_I:0xX00000000_T:0xX00000048=261521834_I:0xX00720000_T:0xM0000000f>d0xM0000000f
-			*/
-		/* MANUAL_CONSTRUCTION (AltGroup[2/9])
-			PAL: 	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._N:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c>240000_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f_N:0xX00965cc4!=0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f240.0-{recall}_M:0=f240.0_Q:0xX00965cc4!=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
-			NTSCU: 	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._N:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c>240000_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f_N:0xX00953ce4!=0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f240.0-{recall}_M:0=f240.0_Q:0xX00953ce4!=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
-			*/
-		/* MANUAL_CONSTRUCTION (AltGroup[3/10)
-			PAL: 	P:0xX007215cc!=1397050451_N:0xX00965cc4!=0_A:d0xX00965c08_A:d0xX00965c70_N:d0xX00965c3c>=4294966295_A:0xX00965c08_A:0xX00965c70_P:0xX00965c3c<=1000.1._N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f_N:0xX00965cc4!=0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00965cc4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._K:0xX00965c3c/f1000.0_A:f240.0-{recall}_M:0=f240.0_Q:0xX00965cc4=0_I:0xX00721820_I:0xX00000020_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000002=1852797527_I:0xX00721820_I:0xX00000024_N:0xX00000006=1634882663_I:0xX00721820_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00965c3c=0_N:0xX00965c70=0_N:0xX00965c08>0_Q:d0xX00965c08=0.1._T:0=1
-			NTSCU: 	P:0xX0071fccc!=1398099027_N:0xX00953ce4!=0_A:d0xX00953c28_A:d0xX00953c90_N:d0xX00953c5c>=4294966295_A:0xX00953c28_A:0xX00953c90_P:0xX00953c5c<=1000.1._N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f_N:0xX00953ce4!=0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_N:fF00000098<f75.0_I:0xX00953ce4_I:0xX00000058_I:0xX0000007c_P:dfF00000098>=f75.0.1._K:0xX00953c5c/f1000.0_A:f240.0-{recall}_M:0=f240.0_Q:0xX00953ce4=0_I:0xX0071ff20_I:0xX00000020_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000002=1852797527_I:0xX0071ff20_I:0xX00000024_N:0xX00000006=1634882663_I:0xX0071ff20_I:0xX00000024_N:0xX0000000a=1096773225_N:0xX00953c5c=0_N:0xX00953c90=0_N:0xX00953c28>0_Q:d0xX00953c28=0.1._T:0=1
-			*/
-		/* MANUAL_CONSTRUCTION (AltGroup[7/14])
-			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
-			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
-			*/
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
 		return 
-		// [1/8] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement
+		// [1/9] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
 			unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -3131,58 +3748,33 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
-				/* MANUAL_CONSTRUCTION[F000-F001]:ResetNextIfOn_PauseMenu_Restart (below ResetNextIf) - R/R usage
-					PAL: 	N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f
-					NTSCU: 	N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f
-					---------
-
-					AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
-
-					AddAddress	[Pointer:UIcontrol(preferred)]
-					Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
-					Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
-
-					AddAddress	[Pointer:UIcontrol(preferred)]
-					AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
-					Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
-					
-					AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0xB8
-					AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
-					
-					AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
-					AddAddress	->[Mem 32-bit] 0x7C
-					AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
-
-					AddAddress	[Pointer:PlayerInput(preferred)]
-					ResetNextIf	->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
-					*/
-				never( // --ResetNextIf--> Restarting via PauseMenu
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xF000)
-					&& on_PauseMenu_Restart(enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xF001))
-				&& is_flagState_InGame_true(enum_releaseRegion)
+				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
-			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-				on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
-				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
-			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + MissionTime is within time limit
-				never(is_flagState_InGame_true(enum_releaseRegion))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + MissionTime is within time limit  + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
 
-				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+					&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
 
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
-			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
-				never(is_flagState_InGame_true(enum_releaseRegion))
-				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
-				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
-				&& is_flagState_InGame_false(enum_releaseRegion))
-			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
-		// [2/9] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/10] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
 			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
@@ -3190,15 +3782,7 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
-				/* MANUAL_CONSTRUCTION[F000-F001]:ResetNextIfOn_PauseMenu_Restart (below ResetNextIf) - R/R usage
-					PAL: 	N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f
-					NTSCU: 	N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f
-					*/
-				never( // --ResetNextIf--> Restarting via PauseMenu
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xF000)
-					&& on_PauseMenu_Restart(enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xF001))
-				&& is_flagState_InGame_true(enum_releaseRegion)
+				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
 			/* MANUAL_CONSTRUCTION[AA01-AA02]:MeasuredTimeWhileInGame (below Measured): R/R usage
@@ -3206,13 +3790,14 @@ achievements_triggers = {
 				PAL:	A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f240.0-{recall}_M:0=f240.0
 				NTSCU:	A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f240.0-{recall}_M:0=f240.0
 				''''''''''''''
-				AddSource	[32-bit:MissionTime_Temp]
-				AddSource	[32-bit:MissionTime_ChapterSection]
-				AddSource	[32-bit:MissionTime_ChapterTotal]
-				Remember	Val 0
-				Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
-				AddSource	(const_TIME_LIMIT/1000) - Recall
-				Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/
+					AddSource	[32-bit:MissionTime_Temp]
+					AddSource	[32-bit:MissionTime_ChapterSection]
+					AddSource	[32-bit:MissionTime_ChapterTotal]
+					Remember	Val 0
+					Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		
+					*/
 			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
 			&& measured(
 				current_MissionTime_Temp(enum_releaseRegion) 
@@ -3221,31 +3806,521 @@ achievements_triggers = {
 				when = 
 					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
 					&& is_flagState_InGame_true(enum_releaseRegion)
-					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-						on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 				)
 			&& trigger_when(always_false())
-		// [3/10] ==== Alt Measured Group (Not In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
-			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		// [3/11] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
 			&& unless(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 				is_flagState_InGame_true(enum_releaseRegion)
-				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion))) 
+				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+			&& unless( // --PauseIf--> MissionTime exceeds time limit
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
 			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
-				/* MANUAL_CONSTRUCTION[F000-F001]:ResetNextIfOn_PauseMenu_Restart (below ResetNextIf) - R/R usage
-					PAL: 	N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_Z:0xM0000000f>d0xM0000000f
-					NTSCU: 	N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_Z:0xM0000000f>d0xM0000000f
-					*/
-				never( // --ResetNextIf--> Restarting via PauseMenu
-					memUtil_ManualConstruction_PlaceHolderRequirement(0xF000)
-					&& on_PauseMenu_Restart(enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
-					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xF001))
-				&& is_flagState_InGame_true(enum_releaseRegion)
+				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
 			/* MANUAL_CONSTRUCTION[AA01-AA03]:MeasuredTimeWhileNotInGame (below Measured): R/R usage 
 				// WARNING - Edit const_TIME_LIMIT
 				PAL:	K:0xX00965c3c/f1000.0_A:f240.0-{recall}_M:0=f240.0
 				NTSCU:	K:0xX00953c5c/f1000.0_A:f240.0-{recall}_M:0=f240.0
+				''''''''''''''
+					Remember	[32-bit:MissionTime_ChapterTotal] / 1000.0					| current_MissionTime_ChapterTotal() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA03)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					---------
+						AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+						Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+						Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+						
+						AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0xB8
+						AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+						
+						AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0x7C
+						AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+						AddAddress	[Pointer:PlayerInput(preferred)]
+						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+						*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [5+6+7+8] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_2_RideDevil
+		const_MIN_REQUIRED_ACCURACY = 0.75
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.5 // % of max HP
+		return 
+		// [1/9] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as HP hasn't dropped below xx% 
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.75
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.75
+					-----------
+						Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_ACCURACY			*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_ACCURACY
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved +  Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					
+					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
+						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.75
+						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.75
+						-----------
+							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+					&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3ACC)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/10] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+			/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracyWhileInGame (below Measured): R/R usage
+				PAL:	A:0xX00965c20_K:0xX00965c54+0xX00965c88_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c40_K:0xX00953ca8+0xX00953c74_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				-----------
+					AddSource	[32-bit:ShotsFired_Temp]
+					Remember	[32-bit:ShotsFired_ChapterSection] + [32-bit:ShotsFired_ChapterTotal]
+					Remember	Recall / 1.0								--> Force 32-bit to Float
+					AddSource	[32-bit:ShotsHit_Temp] / Recall				--> Divide by Float, returns a Float
+					AddSource	[32-bit:ShotsHit_ChapterSection] / Recall	--> Divide by Float, returns a Float
+					Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(
+				current_calculated_Accuracy_FullTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 	
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x5ACC)
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_true(enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [3/11] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+			/* MANUAL_CONSTRUCTION[0ACC-6ACC]:MeasuredAccuracyWhileNotInGame (below Measured): R/R usage
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				-----------
+					Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+					Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0			*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(				
+				current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x6ACC)
+					&& once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_false(enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [5+6+7+8] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		// NOTE: This Chapter should have 100+ enemies, and even more when the player doesn't instakill the Marks of Evil, which keep spawning enemies
+		const_CHAPTER = CHAPTER_3_Boneyard
+		const_REQUIRED_KILLS = 100
+		return	
+		// [1/8] ==== Alt Logic + Measured + Triggered Group ==== 	-> Group is responsible for unlocking the achievement + Displaying a Measured Indicator kills with required guns + Triggered Indicator when all kills are achieved
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When using a throwable explosive 
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Throwable_use(enum_releaseRegion)
+				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& measured(tally(const_REQUIRED_KILLS, [
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)), // --AddHit 1--> When Kills increment by 1
+
+				// --AddHit 1--> When Kills increment by 2, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(2, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 2--> When Kills increment by 3, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(3, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 3--> When Kills increment by 4, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(4, PLAYER_1, enum_releaseRegion)), 
+
+				// --AddHit 4--> When Kills increment by 5, because of Explosiveness of Crossbow ammo - PLUS AddHit 1 When Kills increment by 1
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				repeated(const_REQUIRED_KILLS, 
+					is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& on_Kills_Temp_incrementBy(5, PLAYER_1, enum_releaseRegion)), 
+				]),
+				when = once( // --MeasuredIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+					is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Triggered Group ====						-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When using a throwable explosive 
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Throwable_use(enum_releaseRegion)
+				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					---------
+						AndNext		[8-bit:GameState] == 0x3						| CheckIf: is_AnyInGameMenu_active() 
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+						Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+						AddAddress	[Pointer:UIcontrol(preferred)]
+						AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+						Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+						
+						AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0xB8
+						AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 	| CheckIf: FrameTitle == "Restart"
+						
+						AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+						AddAddress	->[Mem 32-bit] 0x7C
+						AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_RestartConfirmationMenu_Yes_highlighted()
+
+						AddAddress	[Pointer:PlayerInput(preferred)]
+						AndNext		->[Mem Bit0] 0xF 	> 	->[Delta Bit0] 0xF		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+						*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_4_DevilMine
+		const_WEAPON_A = WEAPON_Redeemer
+		const_WEAPON_B = WEAPON_DualPistols
+
+		return	
+		// [1/8] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When using a power
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Triggered Group ====		-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When using a power
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> The very first cinematic of the Chapter is over (so the trigger indicator pops up after the intro cinematic is done)
+				on_AnyCinematic_end(enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_5_Outpost
+		const_ALLOWED_SECS_BELOW_MAX_HP = 20 // seconds consecutively below max HP
+
+		return	
+		// [1/9] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as player has not been been below max HP for xx secs consecutively
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/10] ==== Alt Measured Group ====				-> Group is only responsible for displaying a Measured Indicator for allowed seconds left whilst being below xx% HP
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& measured( // --Measured--> Allowed Seconds left whilst being below xx% HP 
+				tally(const_ALLOWED_SECS_BELOW_MAX_HP, [
+					repeated(const_ALLOWED_SECS_BELOW_MAX_HP/2, always_true()), // --AddHit--> as base
+					repeated(const_ALLOWED_SECS_BELOW_MAX_HP/2, always_true()), // --AddHit--> as base
+					deduct(repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --SubHit 1--> every passed in-game second
+						never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player back at max HP
+							is_flagState_InGame_true(enum_releaseRegion)
+							&& current_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP)
+						&& is_flagState_InGame_true(enum_releaseRegion)
+						&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
+						&& !is_AnyCinematic_active(enum_releaseRegion)
+						&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))				
+					]),
+				when = 
+					once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+		// [3/11] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(repeated(const_ALLOWED_SECS_BELOW_MAX_HP, // --Lockout-[ConsecutiveChallengeCondition]--> When player is below max HP for xx in-game seconds consecutively
+				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player back at max HP
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& current_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP)
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
+				&& !is_AnyCinematic_active(enum_releaseRegion)
+				&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
+		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [5+6+7+8] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (..x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_6_WarTrain
+		const_TIME_LIMIT = 300000 // 300.000 ms = 5 min
+		return	
+		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as at max HP
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + MissionTime is within time limit  + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+
+					&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA02]:MeasuredTimeWhileInGame (below Measured): R/R usage
+				PAL:	A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f300.0-{recall}_M:0=f300.0
+				NTSCU:	A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f300.0-{recall}_M:0=f300.0
+				''''''''''''''
+					AddSource	[32-bit:MissionTime_Temp]
+					AddSource	[32-bit:MissionTime_ChapterSection]
+					AddSource	[32-bit:MissionTime_ChapterTotal]
+					Remember	Val 0
+					Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_Temp(enum_releaseRegion) 
+				+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+				+ current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA03]:MeasuredTimeWhileNotInGame (below Measured): R/R usage 
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	K:0xX00965c3c/f1000.0_A:f300.0-{recall}_M:0=f300.0
+				NTSCU:	K:0xX00953c5c/f1000.0_A:f300.0-{recall}_M:0=f300.0
 				''''''''''''''
 				Remember	[32-bit:MissionTime_ChapterTotal] / 1000.0					| current_MissionTime_ChapterTotal() in seconds
 				AddSource	(const_TIME_LIMIT/1000) - Recall
@@ -3256,77 +4331,1229 @@ achievements_triggers = {
 				when = 
 					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA03)
 					&& is_flagState_InGame_false(enum_releaseRegion)
-					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning
-						on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 				)
 			&& trigger_when(always_false())
+		// [4/13] ==== Alt Lockout Group ==== 		-> Lockout achievement on challenge fail by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --PauseLock--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+			&& never( // --PauseIf--> MissionTime exceeds time limit
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
+			&& never(once( // --PauseLock--> When losing HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP))
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_7_TortureMaze
+		const_MIN_REQUIRED_MELEE_KILLS = 0.8 // Percentage
+		const_WEAPON_A = WEAPON_Scepter
+		const_WEAPON_B = WEAPON_Shotgun
+		return	
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required MeleeKills ratio % NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}<f0.8
+					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}<f0.8
+					-----------
+						Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_MELEE_KILLS
+						*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+				&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+					+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_MELEE_KILLS
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye + Required MeleeKills ratio % achieved
+					never(is_flagState_InGame_true(enum_releaseRegion))
+				
+					/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioAchieved (below 3 lines) - R/R usage 
+						PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}>=f0.8
+						NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}>=f0.8
+						-----------
+							Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_MELEE_KILLS
+							*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+					&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_MELEE_KILLS
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ====		-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			/* MANUAL_CONSTRUCTION[BC11-BC12]:MeasuredMeleeKillsRatioWhileInGame (below Measured) - R/R usage
+				PAL:	A:0xX00965c1c_K:0xX00965c84+0xX00965c50_K:{recall}/f1.0_A:0xX00965c2c/{recall}_A:0xX00965c94/{recall}_K:0xX00965c60/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c3c_K:0xX00953ca4+0xX00953c70_K:{recall}/f1.0_A:0xX00953c4c/{recall}_A:0xX00953cb4/{recall}_K:0xX00953c80/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					AddSource	[32-bit:Kills_Temp]
+					Remember	[32-bit:Kills_ChapterSection] + [32-bit:Kills_ChapterTotal]
+					Remember	Recall / 1.0						--> Force 32-bit to Float
+					AddSource	[32-bit:MeleeKills_Temp] / Recall				--> Divide by Float, returns a Float
+					AddSource	[32-bit:MeleeKills_ChapterSection] / Recall		--> Divide by Float, returns a Float
+					Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0	
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> MeleeKills to Kills Ratio %
+				current_Kills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) 
+				+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC12)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			/* MANUAL_CONSTRUCTION[BC11-BC13]:MeasuredMeleeKillsRatioWhileNotInGame (below Measured) - R/R usage
+				PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					Remember	[32-bit:Kills_ChapterTotal] / 1.0			--> Force 32-bit to Float
+					Remember	[32-bit:MeleeKills_ChapterTotal] / Recall	--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> MeleeKills to Kills Ratio %
+				current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC13)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [4/13] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		// NOTE: Multi-kills are regarded as 1 standard kill for this challenge
+		/* DEV_NOTE: PauseLocks into AltResetGroups OR PauseLocks into ResetNextIfs
+			Consider following achievement: "Finish Chapter from start to finish, without being below max HP for 10 seconds consecutively" 
+				(each passed second is a hitCount)
+			- PauseLocks into AltResetGroups  (this is preferred for this achievement)
+				(this is more scalable; eg. multiple challenges: can create more AltResetPauseLockGroups)
+				-------------------
+				CORE (logic to unlock cheevo)
+				- CheckIf: Chapter started from beginning (1)		--[StartCondition]--> Delta check, only hits when start chapter from beginning
+				- CheckIf: Chapter finished							--[TriggerCondition]--> Delta check, only hits when chapter is finished
+
+				ALT MEASURED (to display seconds left till challenge failure)
+				- ResetNextIf: back at max HP							--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
+				- Measured: xx seconds left being below max HP (10)		--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
+				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> Delta check, only hits when start chapter from beginning
+
+				ALT RESET (as PAUSE LOCK) 	--> When triggered once, functions as a PauseLock when below max HP for 10 seconds consecutively:as this will reset the hitcount for StartCondition, which can only trigger on ChapterStart
+				- AndNext: Chapter started from beginning (1)		--> Delta check, only hits when start chapter from beginning
+				- ResetNextIf: when at max HP						--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetIf: when below max HP for xx seconds (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition (in CORE and ALT MEASURED). Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+
+				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
+				- ResetIf: Chapter Restart/Quit
+
+			- PauseLocks into ResetNextIfs
+				(this is less scalable; eg. multiple challenges: can only attach one ResetNextIf to a hitCount, it becomes ugly with OrNextChains, although could have one StartCondition for each seperate challenge)			
+				-------------------
+				CORE (logic to unlock cheevo)
+				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+				- CheckIf: Chapter started from beginning (1) 	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
+				- CheckIf: Chapter finished			--[TriggerCondition]--> Delta check, only hits when chapter is finished
+
+				ALT MEASURED (to display seconds left till challenge failure)
+				- ResetNextIf: back at max HP								--[ConsecutiveResetCondition]--> If this triggers, it will reset the measured hitCount
+				- Measured: xx seconds left being below max HP (10)			--[ConsecutiveChallengeCondition(Measured)]--> display xx seconds left till challenge fails
+				- ResetNextIf: back at max HP										--[ConsecutiveResetCondition]--> If this triggers, it will reset the hitCount for ConsecutiveChallengeCondition, even if ConsecutiveChallengeCondition was already triggered it can't turn StartCondition back to true, since it was already reset by the ConsecutiveChallengeCondition
+				- ResetNextIf: 10 seconds spent below max HP consecutively (10) 	--[ConsecutiveChallengeCondition]--> If this triggers, it will reset the StartCondition. Thus this functions as a PauseLock, until the chapter restarts from the beginning, since the StartCondition only hits once when starting a Chapter
+				- MeasuredIf: Chapter started from beginning (1)	--[StartCondition]--> This is a delta check, only hits when start chapter from beginning
+
+				ALT RESET (Chapter Restart/Quit) --> Reset all HitCounts everywhere
+				- ResetIf: Chapter Restart/Quit
+			*/
+		
+		const_CHAPTER = CHAPTER_8_BaptismFire
+		const_WEAPON_A = WEAPON_Redeemer
+		const_WEAPON_B = WEAPON_RailRocket
+		const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW = 4
+
+		return	
+		// [1/10] ==== Alt Logic Group ==== 		-> Group is responsible for unlocking the achievement
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* DEV_NOTE: Example of PauseLock into ResetNextIf	(this is not preferred for this achievement as there's multiple challenges attached, which could "lock" the achievement)
+				------------
+				&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+					never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW + 1,  // --ResetNextIf--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills, without a melee or headshot kill to break the chain
+						never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+							is_flagState_InGame_true(enum_releaseRegion)
+							&& current_HeadshotKills_Temp(enum_releaseRegion)
+								+ current_MeleeKills_Temp(enum_releaseRegion) 
+								- prev_HeadshotKills_Temp(enum_releaseRegion)
+								- prev_MeleeKills_Temp(enum_releaseRegion) > 0)						
+						&& is_flagState_InGame_true(enum_releaseRegion)
+						&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+				*/
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+				on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+			&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion))
+			&& trigger_when(on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Triggered Group ====		-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Carbine, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, WEAPON_Crossbow, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group ====		-> Group is only responsible for displaying a Measured Indicator counting consecutive standard kills
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& measured(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Measured--> Count consecutive standard kills up to const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1
+				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
+						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)),
+				when =
+					once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)))
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [4/13] ==== Alt Lockout Group ===	-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When using a throwable explosive 
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Throwable_use(enum_releaseRegion)
+				&& !on_ThrowableType_switch(enum_releaseRegion)))
+			&& never(once( // --Lockout--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			&& never(repeated(const_MAX_ALLOWED_STANDARD_KILLS_IN_ROW +1, // --Lockout--[ConsecutiveChallengeCondition]--> When player scores xx consecutive standard kills in a row (without mixing in a headshot or melee kill)
+				never( // --ResetNextIf--[ConsecutiveResetCondition]--> When player scores a melee or headshot kill
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) 
+						- prev_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+						- prev_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) > 0)						
+				&& is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_9_Rescue
+
+		return	
+		// [1/7] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as at max HP
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When losing HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < CONST_PLAYER_MAX_HP
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) == CONST_PLAYER_MAX_HP))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/8] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [3+4+5+6] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (6x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_10_Prism
+		const_TIME_LIMIT = 900000 // 900.000 ms = 15 min
+		const_WEAPON_A = WEAPON_DualPistols
+		const_WEAPON_B = WEAPON_Shotgun
+		return
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + MissionTime is within time limit  + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+
+					&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA02]:MeasuredTimeWhileInGame (below Measured): R/R usage
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0
+				NTSCU:	A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f900.0-{recall}_M:0=f900.0
+				''''''''''''''
+					AddSource	[32-bit:MissionTime_Temp]
+					AddSource	[32-bit:MissionTime_ChapterSection]
+					AddSource	[32-bit:MissionTime_ChapterTotal]
+					Remember	Val 0
+					Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_Temp(enum_releaseRegion) 
+				+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+				+ current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA03]:MeasuredTimeWhileNotInGame (below Measured): R/R usage 
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	K:0xX00965c3c/f1000.0_A:f900.0-{recall}_M:0=f900.0
+				NTSCU:	K:0xX00953c5c/f1000.0_A:f900.0-{recall}_M:0=f900.0
+				''''''''''''''
+					Remember	[32-bit:MissionTime_ChapterTotal] / 1000.0					| current_MissionTime_ChapterTotal() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA03)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [4/13] ==== Alt Lockout Group ====		-> Lockout achievement on challenge failure by Resetting HitCounts on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+			&& never( // --Lockout--> MissionTime exceeds time limit
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
+			&& never(once( // --Lockout--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_11_Invasion
+		const_ALLOWED_DISTINCT_POWERS = 1 // Only xx of the 8 powers may be used throughout the whole Chapter
+		const_ALLOWED_POWER_USAGE_COUNT = 5 // It may only be activated xx times
+
+		return	
+		// [1/8] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(repeated(const_ALLOWED_POWER_USAGE_COUNT + 1, // --PauseLock--> When powers have been activated too many times
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& unless(tally_of(CONST_POWER_DATA, const_ALLOWED_DISTINCT_POWERS + 1, enum_power =>  // --PauseLock--> When too many different powers have been activated
+				once(
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& is_PowerIconTopLeft(enum_power, enum_releaseRegion)
+					&& on_Player_Power_use(PLAYER_1, enum_releaseRegion))
+				))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Measured Group ====				-> Group is only responsible for displaying a Measured Indicator for amount of PowerUsages left
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(repeated(const_ALLOWED_POWER_USAGE_COUNT + 1, // --PauseLock--> When powers have been activated too many times
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& unless(tally_of(CONST_POWER_DATA, const_ALLOWED_DISTINCT_POWERS + 1, enum_power =>  // --PauseLock--> When too many different powers have been activated
+				once(
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& is_PowerIconTopLeft(enum_power, enum_releaseRegion)
+					&& on_Player_Power_use(PLAYER_1, enum_releaseRegion))
+				))
+			&& measured( // --Measured--> Power Usage Count left; Starts at max const_ALLOWED_POWER_USAGE_COUNT; decrements with each power activation
+				tally(const_ALLOWED_POWER_USAGE_COUNT, [
+					repeated(const_ALLOWED_POWER_USAGE_COUNT, always_true()), // --AddHits--> Up to const_ALLOWED_POWER_USAGE_COUNT
+					deduct(repeated(const_ALLOWED_POWER_USAGE_COUNT, // --SubHits--> SubHit 1 when activating a power
+						is_flagState_InGame_true(enum_releaseRegion)
+						&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+					]),
+				when = 
+					once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))		
+				)
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
 		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
 			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
 		}),
-	"a_GunRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
-	"a_GunCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP _template
-		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
-			is_ReleaseRegion(enum_releaseRegion)
-			&& always_false()),
+	"a_GunHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (..x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_12_Hangtown
+		const_MIN_REQUIRED_ACCURACY = 0.85
+		const_REQUIRED_SHOOTING_WEAPON = WEAPON_RangeRifle
+		const_NON_ALLOWED_SHOOTING_WEAPONS = array_filter(const_WEAPON_DATA, (enum_weapon) {
+			if (enum_weapon == const_REQUIRED_SHOOTING_WEAPON) return false
+			return true
+		})
+		return
+		// [1/10] ==== Alt Logic + Triggered Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as player hasn't used any non-allowed powers
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.85
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.85
+					-----------
+						Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_ACCURACY			*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_ACCURACY
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved +  Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					
+					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
+						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.85
+						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.85
+						-----------
+							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+					&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3ACC)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracyWhileInGame (below Measured): R/R usage
+				PAL:	A:0xX00965c20_K:0xX00965c54+0xX00965c88_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c40_K:0xX00953ca8+0xX00953c74_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(
+				current_calculated_Accuracy_FullTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 	
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x5ACC)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-6ACC]:MeasuredAccuracyWhileNotInGame (below Measured): R/R usage
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(				
+				current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x6ACC)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [4/13] ==== Alt Lockout Group ===				-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When the player fires a shot from with a non-allowed weapon
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_REQUIRED_SHOOTING_WEAPON, enum_releaseRegion)
+				&& !on_HUDcontrolGear_weaponSwap(enum_releaseRegion)
+				&& on_HUDcontrolGear_LoadedBullets_decrement(enum_releaseRegion)))
+			&& always_false()
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_13_MorningAfter
+		const_NON_ALLOWED_POWERS = POWER_DATA_getAllPowersOfTiers([1,4])
+		const_MIN_REQUIRED_MELEE_KILLS = 0.45 // Percentage
+
+		return	
+		// [1/9] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required MeleeKills ratio % NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}<f0.45
+					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}<f0.45
+					-----------
+						Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_MELEE_KILLS
+						*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+				&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+					+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_MELEE_KILLS
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& unless(tally_of(const_NON_ALLOWED_POWERS, 1, enum_power => // --PauseLock--> When any non-allowed power is used
+				once(
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& is_PowerIconTopLeft(enum_power, enum_releaseRegion)
+					&& on_Player_Power_use(PLAYER_1, enum_releaseRegion))
+				))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye + Required MeleeKills ratio % achieved
+					never(is_flagState_InGame_true(enum_releaseRegion))
+				
+					/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckMeleeKillsRatioAchieved (below 3 lines) - R/R usage 
+						PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_N:{recall}>=f0.45
+						NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_N:{recall}>=f0.45
+						-----------
+							Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_MELEE_KILLS
+							*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+					&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+						+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_MELEE_KILLS
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/10] ==== Alt Measured Group (In-Game) ====		-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(tally_of(const_NON_ALLOWED_POWERS, 1, enum_power => // --PauseLock--> When any non-allowed power is used
+				once(
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& is_PowerIconTopLeft(enum_power, enum_releaseRegion)
+					&& on_Player_Power_use(PLAYER_1, enum_releaseRegion))
+				))
+			/* MANUAL_CONSTRUCTION[BC11-BC12]:MeasuredMeleeKillsRatioWhileInGame (below Measured) - R/R usage
+				PAL:	A:0xX00965c1c_K:0xX00965c84+0xX00965c50_K:{recall}/f1.0_A:0xX00965c2c/{recall}_A:0xX00965c94/{recall}_K:0xX00965c60/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c3c_K:0xX00953ca4+0xX00953c70_K:{recall}/f1.0_A:0xX00953c4c/{recall}_A:0xX00953cb4/{recall}_K:0xX00953c80/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					AddSource	[32-bit:Kills_Temp]
+					Remember	[32-bit:Kills_ChapterSection] + [32-bit:Kills_ChapterTotal]
+					Remember	Recall / 1.0						--> Force 32-bit to Float
+					AddSource	[32-bit:MeleeKills_Temp] / Recall				--> Divide by Float, returns a Float
+					AddSource	[32-bit:MeleeKills_ChapterSection] / Recall		--> Divide by Float, returns a Float
+					Remember	[32-bit:MeleeKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0	
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> MeleeKills to Kills Ratio %
+				current_Kills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) 
+				+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC12)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/11] ==== Alt Measured Group (Not In-Game) ==== 	-> Group is only responsible for displaying a Measured Indicator for kills to melee kills ratio % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(tally_of(const_NON_ALLOWED_POWERS, 1, enum_power => // --PauseLock--> When any non-allowed power is used
+				once(
+					is_flagState_InGame_true(enum_releaseRegion)
+					&& is_PowerIconTopLeft(enum_power, enum_releaseRegion)
+					&& on_Player_Power_use(PLAYER_1, enum_releaseRegion))
+				))
+			/* MANUAL_CONSTRUCTION[BC11-BC13]:MeasuredMeleeKillsRatioWhileNotInGame (below Measured) - R/R usage
+				PAL:	K:0xX00965c50/f1.0_K:0xX00965c60/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c80/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					Remember	[32-bit:Kills_ChapterTotal] / 1.0			--> Force 32-bit to Float
+					Remember	[32-bit:MeleeKills_ChapterTotal] / Recall	--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> MeleeKills to Kills Ratio %
+				current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC13)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [4/12] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [5+6+7+8] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (..x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_14_Showdown
+		const_MIN_REQUIRED_ACCURACY = 0.65
+		const_ALLOWED_POWER_A = POWER_BloodFrenzy
+		const_ALLOWED_POWER_B = POWER_SilverBrand
+		return
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying Trigger Indicator as long as player hasn't used any non-allowed powers
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[2ACC-1ACC]:CheckAccuracyNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}<f0.65
+					NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}<f0.65
+					-----------
+						Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_ACCURACY			*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+				&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_ACCURACY
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1ACC)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Required Accuracy achieved +  Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					
+					/* MANUAL_CONSTRUCTION[2ACC-3ACC]:CheckAccuracyAchieved (below 3 lines) - R/R usage 
+						PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_N:{recall}>=f0.65
+						NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_N:{recall}>=f0.65
+						-----------
+							Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_ACCURACY			*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2ACC)
+					&& current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_ACCURACY
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3ACC)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-5ACC]:MeasuredAccuracyWhileInGame (below Measured): R/R usage
+				PAL:	A:0xX00965c20_K:0xX00965c54+0xX00965c88_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c40_K:0xX00953ca8+0xX00953c74_K:{recall}/f1.0_A:0xX00953c44/{recall}_A:0xX00953c78/{recall}_K:0xX00953cac/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(
+				current_calculated_Accuracy_FullTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 	
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x5ACC)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_true(enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for Accuracy % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[0ACC-6ACC]:MeasuredAccuracyWhileNotInGame (below Measured): R/R usage
+				PAL:	K:0xX00965c54/f1.0_K:0xX00965c58/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c74/f1.0_K:0xX00953c78/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0x0ACC)
+			&& measured(				
+				current_calculated_Accuracy_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0x6ACC)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+					&& is_flagState_InGame_false(enum_releaseRegion),
+				format = "percent")
+			&& trigger_when(always_false())
+		// [4/13] ==== Alt Lockout Group ====		-> Lockout achievement on challenge fail by Resetting HitCounts on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once(  // --PauseLock--> When any non-allowed power is used
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_PowerIconTopLeft(const_ALLOWED_POWER_A, enum_releaseRegion)
+				&& !is_PowerIconTopLeft(const_ALLOWED_POWER_B, enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& always_false()
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (6x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_15_RightTrain
+		const_TIME_LIMIT = 420000 // 420.000 ms = 7 min
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.7 // % of max HP
+		return 
+		// [1/10] ==== Alt Logic + Triggered Group ==== 		-> This group handles the achievement logic; This group is responsible for unlocking the achievement + Displaying a Trigger Indicator as long as HP hasn't dropped below xx% 
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + MissionTime is within time limit  + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+
+					&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= const_TIME_LIMIT
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/11] ==== Alt Measured Group (In-Game) ==== 		-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_true()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA02]:MeasuredTimeWhileInGame (below Measured): R/R usage
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	A:0xX00965c08_A:0xX00965c70_A:0xX00965c3c_K:0_K:{recall}/f1000.0_A:f420.0-{recall}_M:0=f420.0
+				NTSCU:	A:0xX00953c28_A:0xX00953c90_A:0xX00953c5c_K:0_K:{recall}/f1000.0_A:f420.0-{recall}_M:0=f420.0
+				''''''''''''''
+					AddSource	[32-bit:MissionTime_Temp]
+					AddSource	[32-bit:MissionTime_ChapterSection]
+					AddSource	[32-bit:MissionTime_ChapterTotal]
+					Remember	Val 0
+					Remember	Recall / 1000.0							| current_calculated_TotalMissionTime_whileInGame() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_Temp(enum_releaseRegion) 
+				+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+				+ current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA02)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [3/12] ==== Alt Measured Group (Not In-Game) ==== 	-> This group is only responsible for displaying a Measured Indicator for seconds left within time limit, while is_flagState_InGame_false()
+			|| unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InGunslingerMode(enum_releaseRegion)) // --> Necessary as otherwise this Measured Indicator may be displayed for 1 frame
+			/* MANUAL_CONSTRUCTION[AA01-AA03]:MeasuredTimeWhileNotInGame (below Measured): R/R usage 
+				// WARNING - Edit const_TIME_LIMIT
+				PAL:	K:0xX00965c3c/f1000.0_A:f420.0-{recall}_M:0=f420.0
+				NTSCU:	K:0xX00953c5c/f1000.0_A:f420.0-{recall}_M:0=f420.0
+				''''''''''''''
+					Remember	[32-bit:MissionTime_ChapterTotal] / 1000.0					| current_MissionTime_ChapterTotal() in seconds
+					AddSource	(const_TIME_LIMIT/1000) - Recall
+					Measured	Val 0 == (const_TIME_LIMIT/1000) 		*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAA01)
+			&& measured(
+				current_MissionTime_ChapterTotal(enum_releaseRegion) == const_TIME_LIMIT / 1000,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xAA03)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --MeasuredIf--[StartCondition]--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				)
+			&& trigger_when(always_false())
+		// [5/13] ==== Alt Lockout Group ====		-> Lockout achievement on challenge failure by Resetting HitCounts on [StartCondition]
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)))
+			&& never( // --Lockout--> MissionTime exceeds time limit
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) > const_TIME_LIMIT)
+			&& never(once( // --Lockout--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+		// [6/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line) 
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [6+7+8+9] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (5x) MANUAL_CONSTRUCTION
+		// DEV_NOTE: Example of PauseLock into AltResetGroup (=AltLockoutGroup)
+		const_CHAPTER = CHAPTER_16_Deadfall
+		const_MIN_REQUIRED_HEADSHOT_KILLS = 0.3 // Percentage
+		const_WEAPON_A = WEAPON_RangeRifle
+		const_WEAPON_B = WEAPON_Carbine
+
+		return	
+		// [1/11] ==== Alt Logic + Triggered Group ==== 			-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When LastChapterSection from the Gunslinger Level/Chapter has ended + Required HeadshotKills ratio % NOT achieved (to hide Trigger Indicator)
+				never(is_flagState_InGame_true(enum_releaseRegion))
+				
+				/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckHeadshotKillsRatioNotAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c50/f1.0_K:0xX00965c5c/{recall}_N:{recall}<f0.3
+					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c7c/{recall}_N:{recall}<f0.3
+					-----------
+						Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+						Remember	[32-bit:HeadshotKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+						AndNext		Recall < const_MIN_REQUIRED_HEADSHOT_KILLS
+						*/
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+				&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+					+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) < const_MIN_REQUIRED_HEADSHOT_KILLS
+				&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+				&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+				&& on_flagState_InGame_toggleFalse(enum_releaseRegion)))
+			&& once( // --CheckIf--> [StartCondition] Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye + Required HeadshotKills ratio % achieved
+					never(is_flagState_InGame_true(enum_releaseRegion))
+				
+					/* MANUAL_CONSTRUCTION[BC10-BC17]:CheckHeadshotKillsRatioAchieved (below 3 lines) - R/R usage 
+					PAL:	K:0xX00965c50/f1.0_K:0xX00965c5c/{recall}_N:{recall}>=f0.3
+					NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c7c/{recall}_N:{recall}>=f0.3
+						-----------
+							Remember	[32-bit:Kills_ChapterTotal] / 1.0		--> Force 32-bit to Float
+							Remember	[32-bit:HeadshotKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+							AndNext		Recall >= const_MIN_REQUIRED_HEADSHOT_KILLS
+							*/
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC10)
+					&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+						+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= const_MIN_REQUIRED_HEADSHOT_KILLS
+					&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC17)
+
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/12] ==== Alt Measured Group (In-Game) ====			-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(once( // --PauseLock--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+			/* MANUAL_CONSTRUCTION[BC11-BC12]:MeasuredHeadshotKillsRatioWhileInGame (below Measured) - R/R usage
+				PAL:	A:0xX00965c1c_K:0xX00965c84+0xX00965c50_K:{recall}/f1.0_A:0xX00965c28/{recall}_A:0xX00965c90/{recall}_K:0xX00965c5c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	A:0xX00953c3c_K:0xX00953ca4+0xX00953c70_K:{recall}/f1.0_A:0xX00953c48/{recall}_A:0xX00953cb0/{recall}_K:0xX00953c7c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					AddSource	[32-bit:Kills_Temp]
+					Remember	[32-bit:Kills_ChapterSection] + [32-bit:Kills_ChapterTotal]
+					Remember	Recall / 1.0						--> Force 32-bit to Float
+					AddSource	[32-bit:HeadshotKills_Temp] / Recall				--> Divide by Float, returns a Float
+					AddSource	[32-bit:HeadshotKills_ChapterSection] / Recall		--> Divide by Float, returns a Float
+					Remember	[32-bit:HeadshotKills_ChapterTotal] / Recall		--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0	
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> HeadshotKills to Kills Ratio %
+				current_Kills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) 
+				+ current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion)
+				+ current_HeadshotKills_ChapterSection(PLAYER_1, enum_releaseRegion)
+				+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC12)
+					&& is_flagState_InGame_true(enum_releaseRegion)
+					&& once( // --CheckIf--> [StartCondition] Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/13] ==== Alt Measured Group (Not In-Game) ==== 	-> Group is only responsible for displaying a Measured Indicator for kills to Headshot Kills ratio % - When not in-game
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			/* MANUAL_CONSTRUCTION[BC11-BC13]:MeasuredHeadshotKillsRatioWhileNotInGame (below Measured) - R/R usage
+				PAL:	K:0xX00965c50/f1.0_K:0xX00965c5c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				NTSCU:	K:0xX00953c70/f1.0_K:0xX00953c7c/{recall}_K:{recall}*f100.0_G:{recall}=f100.0
+				------------
+					Remember	[32-bit:Kills_ChapterTotal] / 1.0			--> Force 32-bit to Float
+					Remember	[32-bit:HeadshotKills_ChapterTotal] / Recall	--> Divide by Float, returns a Float
+					Remember	Recall * 100.0
+					Measured	Recall == 100.0
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xBC11)
+			&& measured( // --Measured--> HeadshotKills to Kills Ratio %
+				current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion)
+				+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) == 100.0,
+				when = 
+					memUtil_ManualConstruction_PlaceHolderRequirement(0xBC13)
+					&& is_flagState_InGame_false(enum_releaseRegion)
+					&& once( // --CheckIf--> [StartCondition] Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion)),
+				format = "percent")
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [4/14] ==== Alt Triggered Group ====					-> Group is only responsible for displaying a Triggered Indicator, when player has any of the required weapons equipped 
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& once( // --CheckIf--> [StartCondition] Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& tally(1, [ // --Tally--OrNext--> CheckIf any of the required weapons are equipped
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion))),
+				once(is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+					&& never(!is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion))),
+				])
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& trigger_when(always_false())
+		// [5/15] ==== Alt Lockout Group ===				-> Lockout achievement on challenge failure by Resetting HitCount on [StartCondition]
+		 	|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& never(once( // --Lockout--> When earning a kill without any of the required weapons equipped
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_A, enum_releaseRegion)
+				&& !is_EquippedWeapon(PLAYER_1, const_WEAPON_B, enum_releaseRegion)
+				&& on_Kills_Temp_increment(PLAYER_1, enum_releaseRegion)))
+		// [6/16] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [7+8+9+10] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
+	"a_GunCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+		const_CHAPTER = CHAPTER_17_CurseWest
+		const_ALLOWED_POWER_USAGE_COUNT = 5
+		const_HP_THRESHOLD = CONST_PLAYER_MAX_HP * 0.4 // % of max HP
+
+		return	
+		// [1/8] ==== Alt Logic + Triggered Group ==== 		-> Group is responsible for unlocking the achievement + Displaying a Triggered Indicator as long as with power usage requirements and as long as not below xx% HP
+			unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(repeated(const_ALLOWED_POWER_USAGE_COUNT + 1, // --PauseLock--> When powers have been activated too many times
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
+			&& once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+				is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+				&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+			&& trigger_when(
+				once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter is started from beginning 
+					on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+				&& once( // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended + Difficulty Deadeye
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+				&& repeated(2, // --CheckIf--> LastChapterSection from the Gunslinger Level/Chapter has ended for xx frames
+					never(is_flagState_InGame_true(enum_releaseRegion))
+					&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+					&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+					&& is_flagState_InGame_false(enum_releaseRegion))
+				&& on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion))
+		// [2/9] ==== Alt Measured Group ====				-> Group is only responsible for displaying a Measured Indicator for amount of PowerUsages left
+			|| unless(!is_ReleaseRegion(enum_releaseRegion))
+			&& unless(repeated(const_ALLOWED_POWER_USAGE_COUNT + 1, // --PauseLock--> When powers have been activated too many times
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+			&& unless(once( // --PauseLock--> When player HP drops below xx% HP
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
+				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))			
+			&& measured( // --Measured--> Power Usage Count left; Starts at max const_ALLOWED_POWER_USAGE_COUNT; decrements with each power activation
+				tally(const_ALLOWED_POWER_USAGE_COUNT, [
+					repeated(const_ALLOWED_POWER_USAGE_COUNT, always_true()), // --AddHits--> Up to const_ALLOWED_POWER_USAGE_COUNT
+					deduct(repeated(const_ALLOWED_POWER_USAGE_COUNT, // --SubHits--> SubHit 1 when activating a power
+						is_flagState_InGame_true(enum_releaseRegion)
+						&& on_Player_Power_use(PLAYER_1, enum_releaseRegion)))
+					]),
+				when = 
+					once( // --CheckIf--> Gunslinger Level/Chapter is started from beginning + Difficulty Deadeye
+						is_DifficultyOrHarder(DIFFICULTY_Deadeye, enum_releaseRegion)
+						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))		
+				)
+			&& memUtil_alwaysFalse(enum_releaseRegion)
+		// [3/10] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+			|| never_toAlt(
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
+				/* MANUAL_CONSTRUCTION[1FD-2FD]:ResetNextIfOn_PauseMenu_Restart (below line)
+					PAL:	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					NTSCU:	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1
+					*/
+				&& on_PauseMenu_Restart(enum_releaseRegion)) // --> (1x) MANUAL_CONSTRUCTION[1FD-2FD]
+		// [4+5+6+7] ==== (4x) Reset Groups ==== 		-> Reset when not in Gunslinger Mode || when starting new Chapter from MainMenu || when LevelID is incorrect || when pressing PauseMenu->Quit
+			|| achGenerate_4x_AltResetGroups_GunslingerChallenge(const_CHAPTER, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+		}),
 	"a_WeaponMaster": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION // DISCONTINUED - Exceeds achievement logic size
 		let_array_AllGunslingerLevelIndices = util_generateArrayOfIntegers_startAtZero(CONST_NUMBER_OF_CHAPTERS - 1)
 		return
@@ -3384,6 +5611,135 @@ achievements_triggers = {
 				is_ReleaseRegion(enum_releaseRegion)
 				&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		}),
+	// --------c_Bonus--------
+	"a_SunPower": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>		
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion))
+			&& never(tally_of(CONST_CONTROLLER_CONFIG_DATA, 200, (enum_controllerConfig) { // --ResetIf--> VampireVision HitCounts need to be reset when not activating it repeatedly 
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(200,
+					never(
+						is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+						&& is_InSunlight(enum_releaseRegion)
+						&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))
+					&& is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_flagState_IsInputPressed_false(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				}))
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& !is_anyFMV_active(enum_releaseRegion)
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& tally_of(CONST_CONTROLLER_CONFIG_DATA, 3, (enum_controllerConfig) { // --Tally--OrNext--> Check if Power is activated whilst in sunlight, check this for each ControllerConfig
+				let_input_VampireVision = CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig)
+				return repeated(3,
+					is_ControllerConfig(PLAYER_1, enum_controllerConfig, enum_releaseRegion)
+					&& is_InSunlight(enum_releaseRegion)
+					&& on_PlayerInput_press(PLAYER_1, let_input_VampireVision, enum_releaseRegion))				
+				})
+		),
+	"a_Multikill": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) {
+		const_MULTI_KILL_COUNT = 4
+		return
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement			
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_Kills_Temp_minIncrementBy(const_MULTI_KILL_COUNT, PLAYER_1, enum_releaseRegion) // --CheckIf--> Kills increment by xx amount or higher in 1 delta frame
+		}),
+	"a_AllPowersEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+			// WARNING - Edit in enum_textLookupKeyPowerName
+			PAL:	P:0xX007215cc!=1397050451_P:0xL00911474!=1_P:0xL009114f0!=0_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00965cc4!=0_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_R:p0xX0000006c=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+			------
+				PauseIf 	...
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+				Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+				AddAddress	[Pointer:UIcontrol(preferred)]
+				AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+				Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+				
+				// -----------------------ResetNextIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetNextIf	->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+				// -----------------------ResetIf-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				ResetIf		->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  (2)	| CheckIf: PRIOR FrameTitle == "New Power"	
+
+
+				// -----------------------once(on_NewPowerMenuRender() && is_NewPowerMenu_Power())-----------------------
+				AndNext		[FlagState_InGame] == false			| is_flagState_InGame_true()
+				AndNext		[GameState] == 0x3					| is_AnyInGameMenu_active()
+
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: Mem FrameTitle == "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				AndNext		->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 	| CheckIf: DELTA FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xC
+				AddAddress	->[Mem 32-bit] 0x4
+							->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 	(1)		| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+
+
+				// -----------------------Trigger-----------------------
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"	
+				
+				AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+				AddAddress	->[Mem 32-bit] 0xB8
+				Trigger		->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower  		| CheckIf: DELTA FrameTitle == "New Power"				
+				*/	
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
+			// && never(repeated(2, 
+			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer, enum_releaseRegion)
+				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer
+				// && on_NewPowerMenu_render(enum_releaseRegion)
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		),
+	"a_AllPowersGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		/* MANUAL_CONSTRUCTION:CheckNewPowerUnlock (AltGroup[1/2])
+			// WARNING - Edit in enum_textLookupKeyPowerName
+			PAL:	xxxx
+			NTSCU:	P:0xX0071fccc!=1398099027_P:0xL008ff494!=1_P:0xL008ff510!=0_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_R:0xX0000006c!=2662373993.2._N:0xX00953ce4!=0_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2662373993_I:{recall}_I:0xX000000b8_N:d0xX0000006c!=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=1995014642.1._I:{recall}_I:0xX000000b8_T:0xX0000006c!=2662373993_I:{recall}_I:0xX000000b8_T:d0xX0000006c=2662373993
+				*/	
+		// [1/2] ==== Alt Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement					
+			unless(
+				!is_ReleaseRegion(enum_releaseRegion)
+				|| !is_InSinglePlayerMode(enum_releaseRegion))
+			// && never(repeated(2, 
+			// 	!is_NewPowerMenu_displayed(enum_releaseRegion)))
+			&& once(
+				is_flagState_InGame_true(enum_releaseRegion)
+				&& is_NewPowerMenu_Power(TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator, enum_releaseRegion)
+				&& dword(0xbb) == TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator
+				// && on_NewPowerMenu_render(enum_releaseRegion)
+				)
+			&& trigger_when(on_NewPowerMenu_close(enum_releaseRegion))
+		),
 	}
 // #endregion ACH - triggers
 
@@ -3438,24 +5794,29 @@ achievements_titles = {
 	"a_Moon":					{"en": "The Devil's Hour"},
 	"a_Archive":				{"en": "The Price of Immortality"},
 	// --------c_Gunslinger--------
-	"a_GunWrongTrain": 			{"en": "Full Steam Ahead"},
-	"a_GunRideDevil": 			{"en": "xxxxxxxxx"},
-	"a_GunBoneyard": 			{"en": "xxxxxxxxx"},
-	"a_GunDevilMine": 			{"en": "xxxxxxxxx"},
-	"a_GunDWOutpost": 			{"en": "xxxxxxxxx"},
-	"a_GunWarTrain": 			{"en": "xxxxxxxxx"},
-	"a_GunTortureMaze": 		{"en": "xxxxxxxxx"},
-	"a_GunBaptismFire": 		{"en": "xxxxxxxxx"},
-	"a_GunRescue": 				{"en": "xxxxxxxxx"},
-	"a_GunPrism": 				{"en": "xxxxxxxxx"},
-	"a_GunInvasion": 			{"en": "xxxxxxxxx"},
-	"a_GunHangtown": 			{"en": "xxxxxxxxx"},
-	"a_GunMorningAfter": 		{"en": "xxxxxxxxx"},
-	"a_GunShowdown": 			{"en": "xxxxxxxxx"},
-	"a_GunRightTrain": 			{"en": "xxxxxxxxx"},
-	"a_GunDeadfall": 			{"en": "xxxxxxxxx"},
-	"a_GunCurseWest": 			{"en": "xxxxxxxxx"},
+	"a_GunWrongTrain": 			{"en": "Four Minutes to Midnight"},
+	"a_GunRideDevil": 			{"en": "A Devil's Ride with Angel's Precision"},
+	"a_GunBoneyard": 			{"en": "Waking the Reckoning"},
+	"a_GunDevilMine": 			{"en": "Six Shooters' Tirade"},
+	"a_GunDWOutpost": 			{"en": "The Hunger Within"},
+	"a_GunWarTrain": 			{"en": "Unburned by the Boiler"},
+	"a_GunTortureMaze": 		{"en": "The Butcher’s Gospel"},
+	"a_GunBaptismFire": 		{"en": "Clean Shots, Dirty Work"},
+	"a_GunRescue": 				{"en": "No Blood of Mine"},
+	"a_GunPrism": 				{"en": "Sunburst Rush"},
+	"a_GunInvasion": 			{"en": "Disciplined Wrath"},
+	"a_GunHangtown": 			{"en": "No Loose Lead"},
+	"a_GunMorningAfter": 		{"en": "Brutal Grace"},
+	"a_GunShowdown": 			{"en": "Bare-Fanged Brawl"},
+	"a_GunRightTrain": 			{"en": "Irons on the Rails"},
+	"a_GunDeadfall": 			{"en": "Deadshot Descent"},
+	"a_GunCurseWest": 			{"en": "Balance of Blood"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
+	// --------c_Bonus--------
+	"a_SunPower":				{"en": "Sun-Kissed Suicide"},
+	"a_Multikill":				{"en": "Hell's Choir"},
+	"a_AllPowersEvil":			{"en": "Righteous Revenant"},
+	"a_AllPowersGood":			{"en": "Grim Phantom"},
 	}
 // -------------------------------------
 achievements_descriptions = {
@@ -3464,7 +5825,7 @@ achievements_descriptions = {
 	// --------c_SPstory--------
 	"a_WrongTrain": 			{"en": "You planned a heist, not a reckoning. Now the only thing getting robbed is your soul. Complete Chapter 1, \"The Wrong Train\", in Single Player or Gunslinger Mode"},
 	"a_RideDevil": 				{"en": "The Reaper's breathing down your neck, and the only way out is forward. Ride hard or get left in the dirt. Complete Chapter 2, \"Ride Like the Devil\", in Single Player or Gunslinger Mode"},
-	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcomes. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
+	"a_Boneyard":	 			{"en": "The dead ain't much for conversation, but they'll sure let you know when you're unwelcome. Complete Chapter 3, \"Boneyard\", in Single Player or Gunslinger Mode"},
 	"a_DevilMine":	 			{"en": "This mine's seen plenty of bodies, and if you're not careful, yours'll be next. Complete Chapter 4, \"Devil's Belly Mine\", in Single Player or Gunslinger Mode"},
 	"a_DWOutpost":	 			{"en": "A safe haven? Not anymore. The only thing left standing here is whatever's strong enough to survive. Complete Chapter 5, \"Darkwatch Outpost\", in Single Player or Gunslinger Mode"},
 	"a_WarTrain":	 			{"en": "This train ain't headed for salvation—just blood, fire, and a hell of a fight. Complete Chapter 6, \"War Train\", in Single Player or Gunslinger Mode"},
@@ -3497,25 +5858,30 @@ achievements_descriptions = {
 	"a_Saver":					{"en": "When the town teetered on ruin, your aim never wavered—each shot a vow to keep the dead where they belong. Unlock the \"Rescue Intro Movie\" concept art by completing Chapter 12, \"Hangtown\", with 20 or more headshot kills in Gunslinger Mode"},
 	"a_Moon":					{"en": "The moon's rising, and you've got minutes to make it count. Run fast, shoot faster, or be swallowed by the night. Unlock the \"Highmoon Trailer\" concept art by completing Chapter 9, \"Rescue\", in 15 minutes or less in Gunslinger Mode"},
 	"a_Archive":				{"en": "A gunslinger's tale ain't written in ink—it's carved in blood and lead. Survive the worst, and your legend might outlast you. Unlock the \"Darkwatch Archives\" concept art by completing all Chapters on Deadeye difficulty in Gunslinger Mode"},
-	// --------c_Gunslinger--------
-	"a_GunWrongTrain": 			{"en": "Lightning-fast and twice as deadly—blitz through Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes without dropping below 75% HP"},
-	"a_GunRideDevil": 			{"en": "Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty"},
-	"a_GunBoneyard": 			{"en": "Complete Chapter 3, \"Boneyard\", on Deadeye difficulty"},
-	"a_GunDevilMine": 			{"en": "Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty"},
-	"a_GunDWOutpost": 			{"en": "Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty"},
-	"a_GunWarTrain": 			{"en": "Complete Chapter 6, \"War Train\", on Deadeye difficulty"},
-	"a_GunTortureMaze": 		{"en": "Complete Chapter 7, \"Torture Maze\", on Deadeye difficulty"},
-	"a_GunBaptismFire": 		{"en": "Complete Chapter 8, \"Baptism of Fire\", on Deadeye difficulty"},
-	"a_GunRescue": 				{"en": "Complete Chapter 9, \"Rescue\", on Deadeye difficulty"},
-	"a_GunPrism": 				{"en": "Complete Chapter 10, \"The Deadlight Prism\", on Deadeye difficulty"},
-	"a_GunInvasion": 			{"en": "Complete Chapter 11, \"Invasion\", on Deadeye difficulty"},
-	"a_GunHangtown": 			{"en": "Complete Chapter 12, \"Hangtown\", on Deadeye difficulty"},
-	"a_GunMorningAfter": 		{"en": "Complete Chapter 13, \"The Morning After\", on Deadeye difficulty"},
-	"a_GunShowdown": 			{"en": "Complete Chapter 14, \"Showdown\", on Deadeye difficulty"},
-	"a_GunRightTrain": 			{"en": "Complete Chapter 15, \"The Right Train\", on Deadeye difficulty"},
-	"a_GunDeadfall": 			{"en": "Complete Chapter 16, \"Deadfall\", on Deadeye difficulty"},
-	"a_GunCurseWest": 			{"en": "Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty"},
+	// --------c_Gunslinger-------- // TODO add "in Gunslinger Mode requirement to descriptions"
+	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
+	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
+	"a_GunBoneyard": 			{"en": "The ground’s already full, but you kept digging. Complete Chapter 3, \"Boneyard\", on Deadeye difficulty using only the Carbine or Crossbow, scoring at least 100 kills, and without throwing a grenade"},
+	"a_GunDevilMine": 			{"en": "The deeper the mine, the louder your pistols echo. Ain’t no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", on Deadeye difficulty using only the Redeemer or Dual Pistols, without using any powers"},
+	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", on Deadeye difficulty without being below max HP for more than 20 consecutive seconds"},
+	"a_GunWarTrain": 			{"en": "The train kept running. You didn’t bleed. Complete Chapter 6, \"War Train\", on Deadeye difficulty in under 5 minutes without losing any HP"},
+	"a_GunTortureMaze": 		{"en": "This ain’t no gunfight—it’s a sermon of steel. Complete Chapter 7, \"Torture Maze\", on Deadeye difficulty only killing with the Scepter or Shotgun, with at least 80% of kills being melee"},
+	"a_GunBaptismFire": 		{"en": "When the world burns, you bring precision. Complete Chapter 8, \"Baptism of Fire\", on Deadeye difficulty using only the Redeemer or Rail Rocket, and never scoring 5 body-shot kills in a row—mix headshot or melee kills to keep the chain going"},
+	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed—and you walked out clean. Complete Chapter 9, \"Rescue\", on Deadeye difficulty without losing any HP"},
+	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", on Deadeye difficulty within 15 minutes, killing only with the Dual Pistols or Shotgun"},
+	"a_GunInvasion": 			{"en": "One power. Five flickers of fury. The rest? Pure skill. Complete Chapter 11, \"Invasion\", on Deadeye difficulty using only one distinct power, with five activations or less"},
+	"a_GunHangtown": 			{"en": "One shot, one soul. No room for waste when the town’s already dead. Complete Chapter 12, \"Hangtown\", on Deadeye difficulty using the Range Rifle only, with at least 85% accuracy"},
+	"a_GunMorningAfter": 		{"en": "The citadel burns, but your powers cut clean and your hands cut cleaner. Complete Chapter 13, \"The Morning After\", on Deadeye difficulty using only Tier 2 or 3 powers, with at least 45% melee kills"},
+	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", on Deadeye difficulty with 65% accuracy or higher, using only Tier 1 powers"},
+	"a_GunRightTrain": 			{"en": "That train didn’t slow down and neither did you. Complete Chapter 15, \"The Right Train\", on Deadeye difficulty within 7 minutes and without falling below 70% HP"},
+	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", on Deadeye difficulty using only the Range Rifle or Carbine, with 30% or more headshots"},
+	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", on Deadeye difficulty using no more than 5 power activations, and never dropping below 40% HP"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
+	// --------c_Bonus--------
+	"a_SunPower":				{"en": "The sun burns down on you, but you refuse to yield. Activate Vampire Vision repeatedly under its relentless heat and see how long you can endure"},
+	"a_Multikill":				{"en": "Send four souls screaming to the afterlife at the same time in Single Player or Gunslinger Mode"},
+	"a_AllPowersEvil":			{"en": "No redemption, no regret—only power. Unlock all Evil powers in Single Player"},
+	"a_AllPowersGood":			{"en": "Your power serves justice, not damnation. Unlock all Good powers in Single Player"},
 	}
 // #endregion ACH - text
 
@@ -3597,7 +5963,6 @@ function achievements_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region RICH PRESENCE
-// TODO implement Rich Presence
 
 // ======================
 // • RICH PRESENCE text •
@@ -3606,20 +5971,20 @@ function achievements_initialize() {
 //	- Contains text for the rich presence script
 richPresence_text = {
 	/* CONCEPT rp unicode characters
-		Default: ♰ ☩ ✟ ✞ ✝ ✠ ⛨ 🕂 ✟ 🕆  🕂 ᛭
+		Default: ♰ ☩ ✟ ✞ ✝ ✠ ⛨ 🕂 🕆 🕂 ᛭
 		Good-Evil: ⚡ 🔆 ☀️ ✨ - 🩸 🌙 🌕 ☠ - ⚖
 		
 		*/
 	// "rp_Template": 									{"en": "xxxxxxxx"},
 
-	"rp_Versus":							{"en": "{0} Playing Darkwatch ✟ Multiplayer Versus ᛭ {1} Gunslinger{2} {3} {4} {5}"},
+	"rp_Versus":							{"en": "{0} Playing Darkwatch ✟ Multiplayer Versus 🕂 {1} Gunslinger{2} {3} {4} {5}"},
 	"rp_Versus_Setup":						{"en": "{0} Playing Darkwatch ✟ setting up a Multiplayer Verus Match"},
-	"rp_Coop":								{"en": "{0} Playing Darkwatch ✟ Multiplayer Cooperative ᛭ {1} ᛭ {2}, {3} difficulty"},
-	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ✟ {1} ᛭ {2} ᛭ {3}, {4} difficulty"},
-	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Coop Story Completion: {1}%"},
-	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Complete: {1}{2} Ending"},
-	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Main Menu ᛭ Story Completion: {1}%"},
+	"rp_Coop":								{"en": "{0} Playing Darkwatch ✟ Multiplayer Cooperative 🕂 {1} 🕂 {2}, {3} difficulty"},
+	"rp_SinglePlayer":						{"en": "{0} Playing Darkwatch ✟ {1} 🕂 {2} 🕂 {3}, {4} difficulty"},
+	"rp_TitleScreen_CoopStoryFin":			{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Coop Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_CoopStoryProgress":		{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Coop Story Completion: {1}%"},
+	"rp_TitleScreen_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Story Complete: {1}{2} Ending"},
+	"rp_TitleScreen_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Main Menu 🕂 Story Completion: {1}%"},
 	"rp_TitleScreen_NoProfile":				{"en": "{0} Playing Darkwatch ✟ Main Menu"},
 	"rp_DefaultPlus_StoryFin":				{"en": "{0} Playing Darkwatch ✟ Story Complete: {1}{2} Ending"},
 	"rp_DefaultPlus_StoryProgress":			{"en": "{0} Playing Darkwatch ✟ Story Completion: {1}%"},
@@ -3807,6 +6172,7 @@ richPresence_LookupTablesText = {
 		"Spanish":				{"en": "ᵉˢ"},
 		"German":				{"en": "ᵈᵉ"},
 		"French":				{"en": "ᶠʳ"},
+		"Japanese":				{"en": "ʲᵃ"},
 		},
 	}
 richPresence_ReleaseRegion_toSuperScript = {
@@ -4669,7 +7035,6 @@ function richPresence_initialize() {
 //																										 \\
 // ***************************************************************************************************** \\
 // #region LEADERBOARDS
-// BUG lb_watchers, check live entries
 
 // =========================
 // • LEADERBOARD core data •
@@ -4708,10 +7073,10 @@ leaderboards_coreData = {
 
 	// "lb_Template": { // CONCEPT lb_template
 		// "id": 000000, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "xxxxxxx"},
-	// ------lb_Watchers------ // MANUAL_CONSTRUCTION (lb_Watchers) - (VALUEMEASURE) is identical in all lb_Watchers, not "lb_WatchersCurseWest" - (CANCEL,SUBMIT) is different depending on LevelID
+	// ------lb_Watchers------
 	// "lb_WatchersWrongTrain": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127404, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_1_WrongTrain, from start to finish (single session)"},
-	// "lb_WatchersRideDevil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
+	// "lb_WatchersRideDevil": { // VERIFIED  // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127405, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_2_RideDevil, from start to finish (single session)"},
 	// "lb_WatchersBoneyard": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127406, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_3_Boneyard, from start to finish (single session)"},
@@ -4802,6 +7167,9 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 		&& on_PauseMenu_Quit(enum_releaseRegion) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 		
 function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	/* NOTE: In Single Player, the ChapterStats saved during gameplay are zeroed out when game saves them to [Array:SavedStats_Story]
+		In Gunslinger Mode, the ChapterStats are saved to [Array:SavedStats_Gunslinger], but the ChapterStats saved during gameplay are NOT zeroed out
+		*/
 	// [1] ==== Alt Submit Group - SinglePlayer Mode ====	-> Submit when Chapter was started from beginning AND finished, then submits on_Loading_start() - When in SinglePlayer Mode
 		unless(
 			!is_ReleaseRegion(enum_releaseRegion)
@@ -4820,6 +7188,14 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
+		// && once( // --CheckIf--> ChapterStats have been saved to [Array:SavedStats_Story] // TODO update all lb_watchers, this check has been added + below lines
+		// 	current_MissionTime_Temp(enum_releaseRegion)
+		// 		+ current_MissionTime_ChapterSection(enum_releaseRegion)
+		// 		+ current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+		// 	&& prev_MissionTime_Temp(enum_releaseRegion)
+		// 		+ prev_MissionTime_ChapterSection(enum_releaseRegion)
+		// 		+ prev_MissionTime_ChapterTotal(enum_releaseRegion) > 0)
+		// && !is_anyFMV_active(enum_releaseRegion)
 		&& on_Loading_start(enum_releaseRegion)
 	// [2] ==== Alt Submit Group - Gunslinger Mode ====		-> Submit when Chapter was started from beginning AND finished, then submits on_MainMenu_PostChapterGunslingerStatsMenu_continue() - When in Gunslinger Mode
 		|| unless(
@@ -5039,39 +7415,36 @@ function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
 	return max_of(let_array_valueMeasures)}
 
-function lb_ValueMeasure_AllStatsScore() { // WARNING - (1x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
-		A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=0_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=1_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=2_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=0_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=1_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=2_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=0_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=1_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=2_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*1_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=0_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*2_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=1_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*3_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=2_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0$K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0
-		*/
-	/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
-		// WARNING - Edit in DifficultyModifier [0x1-0x4]
-		PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4!=0_A:0xX00965c08_A:0xX00965c70_Q:0xX00965c3c<=f25200000.0
-		NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4!=0_A:0xX00953c28_A:0xX00953c90_Q:0xX00953c5c<=f25200000.0
-		--------
-			(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
+function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_CONSTRUCTION
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
+		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
 
-			+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			+ [Kills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				+ [Kills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			* [Difficulty] [1-4] 		| in alt groups			*/
-	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) =>
+				* [Difficulty] [1-4] 		| in alt groups			*/
 		measured(
 			current_ShotsHit_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
 			- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
@@ -5093,7 +7466,7 @@ function lb_ValueMeasure_AllStatsScore() { // WARNING - (1x) MANUAL_CONSTRUCTION
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 
 			+ current_MissionTime_Temp(enum_releaseRegion)
 			+ current_MissionTime_ChapterSection(enum_releaseRegion)
@@ -5105,22 +7478,23 @@ function lb_ValueMeasure_AllStatsScore() { // WARNING - (1x) MANUAL_CONSTRUCTION
 				&& current_MissionTime_Temp(enum_releaseRegion)
 					+ current_MissionTime_ChapterSection(enum_releaseRegion)
 					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
-	/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterEnd - (below Measured) R/R usage
-		// WARNING - Edit in DifficultyModifier [0x1-0x4]
-		PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX007215cc=1397050451_Q:0xL00965c7c=3_Q:0xX00965cc4=0_Q:0xX00965c3c<=f25200000.0
-		NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}_Q:0xX0071fccc=1398099027_Q:0xL00953c9c=3_Q:0xX00953ce4=0_Q:0xX00953c5c<=f25200000.0
-		--------
-			(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
+	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure is submitted in Gunslinger Mode
+		//NOTE: In GunslingerMode, ChapterStats saved during gameplay are NOT zeroed out when the Chapter finishes, thus this ValueMeasure is submitted in GunslingerMode
+		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
 
-			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			* [Difficulty] [1-4] 		| in alt groups				*/
-	function valueMeasure_ChapterEnd(enum_difficulty, enum_releaseRegion) => // This is the valueMeasure which is submitted
+				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
 			current_MissionTime_ChapterTotal(enum_releaseRegion)
 
@@ -5131,59 +7505,98 @@ function lb_ValueMeasure_AllStatsScore() { // WARNING - (1x) MANUAL_CONSTRUCTION
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
 				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) > 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
+	
+	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
+		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
+		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([SavedStats_Story_MissionTime] / LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BaseScore_MissionTime
+
+				+ [SavedStats_Story_ShotsHit] * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- [SavedStats_Story_ShotFired] * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- [SavedStats_Story_PlayerDeaths] * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ [SavedStats_Story_Kills] * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ [SavedStats_Story_HeadshotKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ [SavedStats_Story_MeleeKills] * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+
+				* [Difficulty] [1-4] 		| in alt groups				*/
+		measured(
+			current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion)
+
+			+ current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+			- current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+			- current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+			+ current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+			
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& is_InSinglePlayerMode(enum_releaseRegion)
+				&& once( // --CheckIf--> Chapter is started + correct difficulty; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
+					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
+					&& is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+				&& current_MissionTime_Temp(enum_releaseRegion) == 0
+				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Greenhorn, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Cowboy, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Shootist, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Deadeye, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Greenhorn, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Cowboy, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Shootist, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Deadeye, enum_releaseRegion))
+		for enum_difficulty in [DIFFICULTY_Greenhorn, DIFFICULTY_Cowboy, DIFFICULTY_Shootist, DIFFICULTY_Deadeye] {
+			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // ValueMeasure[Value,3,6,9/12,15,18,21]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // ValueMeasure[1,4,7,10/13,16,19,22]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
+			}
 		}
 	return max_of(let_array_valueMeasures)}
 
-function lb_ValueMeasure_AllStatsScore_BossFight() { // WARNING - (1x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION:lb_ValueMeasure_AllStatsScore (whole ValueMeasure) 
-		xxxx
-		*/
-	/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured) R/R usage
-		// WARNING - Edit in DifficultyModifier [0x1-0x4]
-		PAL:	xxxxx
-		NTSCU:	xxxx
-		--------
-			(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
+function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3x) MANUAL_CONSTRUCTION
+	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) => // ValueMeasure[Value,3,6,9/12,15,18,21] --> ValueMeasure during during gameplay; This ValueMeasure is never submitted
+		/* MANUAL_CONSTRUCTION:AllStatsScore_InGame - (below Measured, without MeasuredIf) - R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	A:0xX00965c08_A:0xX00965c70_K:0xX00965c3c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c24*f12.0_B:0xX00965c20*f5.0_A:0xX00965c1c*f70.0_A:0xX00965c28*f30.0_A:0xX00965c2c*f10.0_A:0xX00965c8c*f12.0_B:0xX00965c88*f5.0_B:0xX00965c74*f5000.0_A:0xX00965c84*f70.0_A:0xX00965c90*f30.0_A:0xX00965c94*f10.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	A:0xX00953c28_A:0xX00953c90_K:0xX00953c5c_K:{recall}/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c44*f12.0_B:0xX00953c40*f5.0_A:0xX00953c3c*f70.0_A:0xX00953c48*f30.0_A:0xX00953c4c*f10.0_A:0xX00953cac*f12.0_B:0xX00953ca8*f5.0_B:0xX00953c94*f5000.0_A:0xX00953ca4*f70.0_A:0xX00953cb0*f30.0_A:0xX00953cb4*f10.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([MissionTime_Temp + MissionTime_ChapterSection + MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
-			+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-			- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-			+ [Kills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-			+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+				+ [ShotsHit_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+				- [ShotFired_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+				+ [Kills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+				+ [HeadshotKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_Temp] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
-			+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterSection] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
-			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
-			* [Difficulty] [1-4] 		| in alt groups			*/
-	function valueMeasure_InGame(enum_difficulty, enum_releaseRegion) =>
+				* [Difficulty] [1-4] 		| in alt groups			*/
 		measured(
 			current_ShotsHit_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 			- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
@@ -5201,11 +7614,12 @@ function lb_ValueMeasure_AllStatsScore_BossFight() { // WARNING - (1x) MANUAL_CO
 			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
 			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
 			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+					
 			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 
 			+ current_MissionTime_Temp(enum_releaseRegion)
 			+ current_MissionTime_ChapterSection(enum_releaseRegion)
@@ -5217,22 +7631,23 @@ function lb_ValueMeasure_AllStatsScore_BossFight() { // WARNING - (1x) MANUAL_CO
 				&& current_MissionTime_Temp(enum_releaseRegion)
 					+ current_MissionTime_ChapterSection(enum_releaseRegion)
 					+ current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
-	/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterEnd - (below Measured) R/R usage
-		// WARNING - Edit in DifficultyModifier [0x1-0x4]
-		PAL:	xxxxx
-		NTSCU:	xxxx
-		--------
-			(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
+	function valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion) => // ValueMeasure[1,4,7,10/13,16,19,22]--> ValueMeasure during loading screens or FMVs; This ValueMeasure is submitted in Gunslinger Mode
+		//NOTE: In GunslingerMode, ChapterStats saved during gameplay are NOT zeroed out when the Chapter finishes, thus this ValueMeasure is submitted in GunslingerMode
+		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterIntermission - (below Measured) - R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	K:0xX00965c3c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00965c58*f12.0_B:0xX00965c54*f5.0_B:0xX00965c40*f5000.0_A:0xX00965c50*f70.0_A:0xX00965c5c*f30.0_A:0xX00965c60*f10.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	K:0xX00953c5c/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_A:0xX00953c78*f12.0_B:0xX00953c74*f5.0_B:0xX00953c60*f5000.0_A:0xX00953c70*f70.0_A:0xX00953c7c*f30.0_A:0xX00953c80*f30.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([MissionTime_ChapterTotal] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
 
-			+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
-			- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
-			- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
-			+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
-			+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
-			+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+				+ [ShotsHit_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+				- [ShotFired_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+				- [PlayerDeaths_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+				+ [Kills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+				+ [HeadshotKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+				+ [MeleeKills_ChapterTotal] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 
-			* [Difficulty] [1-4] 		| in alt groups				*/
-	function valueMeasure_ChapterEnd(enum_difficulty, enum_releaseRegion) => // This is the valueMeasure which is submitted
+				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
 			current_MissionTime_ChapterTotal(enum_releaseRegion)
 
@@ -5243,46 +7658,88 @@ function lb_ValueMeasure_AllStatsScore_BossFight() { // WARNING - (1x) MANUAL_CO
 			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
 			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
 			
-			* LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty],
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
 				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) > 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+	
+	function valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion) => // ValueMeasure[2,5,8,11/14,17,20,23] --> ValueMeasure when the Chapter is finished in SinglePlayer; This ValueMeasure is submitted in SinglePlayer Mode
+		//NOTE: In SinglePlayer, ChapterStats saved during gameplay are zeroed out when the Chapter finishes, thus this ValueMeasure is necessary to submit in SinglePlayer
+		/* MANUAL_CONSTRUCTION:AllStatsScore_ChapterCompleted_SinglePlayer - (below Measured) R/R usage
+			// WARNING - Edit in DifficultyModifier [0x1-0x4]
+			PAL:	I:0xX00965cd8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00965cd8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00965cd8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00965cd8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00965cd8_I:0xX00000004_A:0xX0000002c*f20.0_K:{recall}_K:{recall}*4_M:{recall}
+			NTSCU:	I:0xX00953cf8_I:0xX00000004_K:0xX00000008/f25200000.0_K:f1.0-{recall}_K:{recall}*f25000.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000024*f12.0_I:0xX00953cf8_I:0xX00000004_B:0xX00000020*f5.0_I:0xX00953cf8_I:0xX00000004_B:0xX0000000c*f5000.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000001c*f70.0_I:0xX00953cf8_I:0xX00000004_A:0xX00000028*f30.0_I:0xX00953cf8_I:0xX00000004_A:0xX0000002c*f40.0_K:{recall}_K:{recall}*4_M:{recall}
+			--------
+				(1 - ([SavedStats_Story_MissionTime] / LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)) * LB_WATCHERS_SETIINGS_BOSSFIGHT_BaseScore_MissionTime
+
+				+ [SavedStats_Story_ShotsHit] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+				- [SavedStats_Story_ShotFired] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+				- [SavedStats_Story_PlayerDeaths] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+				+ [SavedStats_Story_Kills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+				+ [SavedStats_Story_HeadshotKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+				+ [SavedStats_Story_MeleeKills] * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+				* [Difficulty] [1-4] 		| in alt groups				*/
+		measured(
+			current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion)
+
+			+ current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit
+			- current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired
+			- current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths
+			+ current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_Kills
+			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_HeadshotKills
+			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills
+
+			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+			,
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
+				&& is_flagState_InGame_false(enum_releaseRegion)
+				&& is_InSinglePlayerMode(enum_releaseRegion)
+				&& once( // --CheckIf--> Chapter is started; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
+					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
+								&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+							&& current_MissionTime_Temp(enum_releaseRegion) == 0
+							&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+							&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
+							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Greenhorn, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Cowboy, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Shootist, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_InGame(DIFFICULTY_Deadeye, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Greenhorn, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Cowboy, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Shootist, enum_releaseRegion))
-		array_push(let_array_valueMeasures, valueMeasure_ChapterEnd(DIFFICULTY_Deadeye, enum_releaseRegion))
+		for enum_difficulty in [DIFFICULTY_Greenhorn, DIFFICULTY_Cowboy, DIFFICULTY_Shootist, DIFFICULTY_Deadeye] {
+			array_push(let_array_valueMeasures, valueMeasure_InGame(enum_difficulty, enum_releaseRegion)) // ValueMeasure[Value,3,6,9/12,15,18,21]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterIntermission(enum_difficulty, enum_releaseRegion)) // ValueMeasure[1,4,7,10/13,16,19,22]
+			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
+			}
 		}
 	return max_of(let_array_valueMeasures)}
 
 leaderboards_valueMeasures = {
 	// "lb_template": lb_ValueMeasure_Template(),
 	// ------lb_Watchers------
-	"lb_WatchersWrongTrain": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersRideDevil": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersBoneyard": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersDevilMine": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersDWOutpost": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersWarTrain": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersTortureMaze": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersBaptismFire": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersRescue": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersPrism": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersInvasion": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersHangtown": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersMorningAfter": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersShowdown": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersRightTrain": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersDeadfall": lb_ValueMeasure_AllStatsScore(),
-	"lb_WatchersCurseWest": lb_ValueMeasure_AllStatsScore_BossFight(),
+	"lb_WatchersWrongTrain": lb_ValueMeasure_AllStatsScore(CHAPTER_1_WrongTrain),
+	"lb_WatchersRideDevil": lb_ValueMeasure_AllStatsScore(CHAPTER_2_RideDevil),
+	"lb_WatchersBoneyard": lb_ValueMeasure_AllStatsScore(CHAPTER_3_Boneyard),
+	"lb_WatchersDevilMine": lb_ValueMeasure_AllStatsScore(CHAPTER_4_DevilMine),
+	"lb_WatchersDWOutpost": lb_ValueMeasure_AllStatsScore(CHAPTER_5_Outpost),
+	"lb_WatchersWarTrain": lb_ValueMeasure_AllStatsScore(CHAPTER_6_WarTrain),
+	"lb_WatchersTortureMaze": lb_ValueMeasure_AllStatsScore(CHAPTER_7_TortureMaze),
+	"lb_WatchersBaptismFire": lb_ValueMeasure_AllStatsScore(CHAPTER_8_BaptismFire),
+	"lb_WatchersRescue": lb_ValueMeasure_AllStatsScore(CHAPTER_9_Rescue),
+	"lb_WatchersPrism": lb_ValueMeasure_AllStatsScore(CHAPTER_10_Prism),
+	"lb_WatchersInvasion": lb_ValueMeasure_AllStatsScore(CHAPTER_11_Invasion),
+	"lb_WatchersHangtown": lb_ValueMeasure_AllStatsScore(CHAPTER_12_Hangtown),
+	"lb_WatchersMorningAfter": lb_ValueMeasure_AllStatsScore(CHAPTER_13_MorningAfter),
+	"lb_WatchersShowdown": lb_ValueMeasure_AllStatsScore(CHAPTER_14_Showdown),
+	"lb_WatchersRightTrain": lb_ValueMeasure_AllStatsScore(CHAPTER_15_RightTrain),
+	"lb_WatchersDeadfall": lb_ValueMeasure_AllStatsScore(CHAPTER_16_Deadfall),
+	"lb_WatchersCurseWest": lb_ValueMeasure_AllStatsScore_BossFight(CHAPTER_17_CurseWest),
 	}
 // #endregion LB - triggers
 
