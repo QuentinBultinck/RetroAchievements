@@ -239,6 +239,10 @@ memory_StructDefs = {
 				"offsetToPointedToMember": 0x2},
 			"32-bit:MainMenuTitle_TextLookupKeyID": {
 				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},	
+			"8-bit:DifficultySelectMenu_SelectedDifficultyID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x58, 0x68]},
+			"8-bit:MainMenu_HighlightedButton": {
+				"pointerChainOffsets": [0xC, 0x0, 0x58, 0x68]},
 			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:HUDcontrol_Gear-Player1]------
 			"Pointer:EquippedWeaponName": {
 				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xFC]},	
@@ -286,6 +290,7 @@ memory_StructDefs = {
 	"Struct:ControllerInput": {
 		"offsetToMember": {
 			"Bitflag:IsControllerConnected": 0x0,
+			"Bitflag:IsInputPressed_Select": 0x2,
 			"BitFlag:IsInputPressed_Cross": 0xB,
 			"BitFlag:IsInputPressed_L3": 0xC,
 			"BitFlag:IsInputPressed_R3": 0xD,
@@ -621,6 +626,7 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 CONTROLLER_1 = 1
 CONTROLLER_2 = 2
 
+INPUT_Select = "Bitflag:IsInputPressed_Select"
 INPUT_Cross = "BitFlag:IsInputPressed_Cross"
 INPUT_L2 = "BitFlag:IsInputPressed_L2"
 INPUT_R2 = "BitFlag:IsInputPressed_R2"
@@ -685,8 +691,9 @@ function on_AnyCinematic_end(enum_releaseRegion) =>
 
 // #endregion Misc Logic
 
-// #region MainMenu SubMenu Identification
-// -----------------MainMenu SubMenu Identification--------------------
+// #region MainMenu Control
+// -----------------MainMenu Control--------------------
+MAINMENU_SUBMENU_MainMenu = "main"
 MAINMENU_SUBMENU_StatisticsMenu = "profile_stat" // FullString: "profile_statistics"
 MAINMENU_SUBMENU_DifficultySelectMenu = "difficulty_s" // FullString: "difficulty_select"
 MAINMENU_SUBMENU_ChapterSelectMenu = "chapter_sele" // FullString: "chapter_select"
@@ -696,6 +703,12 @@ MAINMENU_SUBMENU_CreateMultiplayerMatchMenu = "create_m" // FullString: "create_
 MAINMENU_SUBMENU_ExtrasMenu = "extras" 
 TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger = 0x0F9681AA
 TEXTLOOKUPKEY_MainMenuSubMenuTitle_Cooperative = 0x0F9681AA
+
+function current_MainMenu_HighlightedButton(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "8-bit:MainMenu_HighlightedButton", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = byte)}
 
 function current_MainMenu_SubMenuTitle(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
@@ -718,33 +731,35 @@ function on_MainMenu_newSubMenu(enum_releaseRegion) {
 	let_memAccessor_SubPointer = memGenerate_pointerChainAccessor("Pointer:UIcontrol", "Pointer:UIcontrol_ptr-L2_A", let_memAddr_BasePointer)
 	return let_memAccessor_SubPointer != prev(let_memAccessor_SubPointer)}
 
-function is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) {
+function ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
-	let_memAddr_ASCII_MainMenuSubMenuID =  
+	return   
 		memGenerate_pointerChainAccessor("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID", let_memAddr_BasePointer)
-		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")
-	return is_ASCII_EqualTo(let_memAddr_ASCII_MainMenuSubMenuID, enum_mainMenuSubMenuID)}
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")}
 
-function wasPrev_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) {
-	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
-	let_memAddr_ASCII_MainMenuSubMenuID =  
-		memGenerate_pointerChainAccessor("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID", let_memAddr_BasePointer)
-		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")
-	return wasPrev_ASCII_EqualTo(let_memAddr_ASCII_MainMenuSubMenuID, enum_mainMenuSubMenuID)}
+function is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) => 
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
 
-function on_MainMenu_SubMenu_render(enum_mainMenuSubMenuID, enum_textLookupKey, enum_releaseRegion) =>
+function wasPrev_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) => 
+	wasPrev_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+
+function on_MainMenu_SubMenu_render(enum_mainMenuSubMenuID, enum_releaseRegion) =>
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+	&& !wasPrev_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+
+function on_MainMenu_SubMenu_render_withSubMenuTitle(enum_mainMenuSubMenuID, enum_titleTextLookupKey, enum_releaseRegion) =>
 	is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion)
-	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
 	&& on_MainMenu_newSubMenu(enum_releaseRegion)
 
-function on_MainMenu_SubMenu_close(enum_mainMenuSubMenuID, enum_textLookupKey, enum_releaseRegion) =>
+function on_MainMenu_SubMenu_close_withSubMenuTitle(enum_mainMenuSubMenuID, enum_titleTextLookupKey, enum_releaseRegion) =>
 	wasPrev_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
-	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
 	&& on_MainMenu_newSubMenu(enum_releaseRegion)
 
 function on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion) => 
 	is_atMainMenu(enum_releaseRegion)
-	&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render_withSubMenuTitle(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
 
 function on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) => // NOTE: This triggers earlier than on_MainMenu_PostChapterGunslingerStatsMenu_close()
 	is_atMainMenu(enum_releaseRegion)
@@ -754,11 +769,17 @@ function on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion)
 
 function on_MainMenu_PostChapterGunslingerStatsMenu_close(enum_releaseRegion) => // NOTE: This triggers later than on_MainMenu_PostChapterGunslingerStatsMenu_continue()
 	is_atMainMenu(enum_releaseRegion)
-	&& on_MainMenu_SubMenu_close(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+	&& on_MainMenu_SubMenu_close_withSubMenuTitle(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
 
 function on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion) =>
 	is_atMainMenu(enum_releaseRegion)
-	&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_ChapterSelectMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render_withSubMenuTitle(MAINMENU_SUBMENU_ChapterSelectMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+
+function current_MainMenu_DifficultySelectMenu_SelectedDifficulty(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "8-bit:DifficultySelectMenu_SelectedDifficultyID", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = byte)}
 
 function on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion) => // NOTE: This triggers when selecting a difficulty, thus starting the Chapter
 	is_atMainMenu(enum_releaseRegion)
@@ -766,7 +787,7 @@ function on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion) => //
 	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
 
 
-// #endregion MainMenu SubMenu Identification
+// #endregion MainMenu Control
 // #region Game Modes
 // ----------------GameModes---------------------
 function current_PlayerCount(enum_releaseRegion) =>
@@ -1524,12 +1545,12 @@ function MP_LEVEL_DATA_getAllUniqueOffsetsToSubstringLevelID() {
 	return let_array_UniqueOffsetsToSubstringLevelID}
 
 // ----------------StoryModeProgression---------------------
-function current_SinglePlayerStoryProgression(enum_releaseRegion) =>
+function current_InProgressStoryChapterID(enum_releaseRegion) =>
 	byte(memory_getAddress("8-bit:InProgress_StoryChapterID", enum_releaseRegion))
 
 function current_calculated_SinglePlayerStoryProgressionPercentage(enum_releaseRegion) {
 	const_MAX_STORY_PROGRESS = 22 // 0x15 + 1 = 22 (0x15 = Chapter 17, "Curse of the West") BUT to check if this Chapter is completed, use [BitFlag:IsStoryGoodEndingAchieved] OR [BitFlag:IsStoryEvilEndingAchieved]
-	return (current_SinglePlayerStoryProgression(enum_releaseRegion) / const_MAX_STORY_PROGRESS) * 100.0} 
+	return (current_InProgressStoryChapterID(enum_releaseRegion) / const_MAX_STORY_PROGRESS) * 100.0} 
 
 function current_flagState_IsStoryGoodEndingAchieved(enum_releaseRegion) =>
 	byte(memory_getAddress("BitFlag:IsStoryGoodEndingAchieved", enum_releaseRegion))
@@ -1789,6 +1810,9 @@ function is_WatchingFMV_viaExtrasMenu(enum_releaseRegion) =>
 
 function is_atMainMenu(enum_releaseRegion) =>
 	is_FMV_active(FMV_MainMenu, enum_releaseRegion)
+
+function on_MainMenu_enter(enum_releaseRegion) =>
+	on_FMV_start(FMV_MainMenu, enum_releaseRegion)
 
 // #endregion FMV ID
 
@@ -2077,6 +2101,9 @@ DIFFICULTY_Deadeye = 0x3
 function current_Difficulty(enum_releaseRegion) => 
 	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion))
 
+function is_Difficulty(enum_difficulty, enum_releaseRegion) => 
+	current_Difficulty(enum_releaseRegion) == enum_difficulty
+
 function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
 	current_Difficulty(enum_releaseRegion) >= enum_difficulty
 
@@ -2317,7 +2344,6 @@ function current_calculated_MeleeKills_FullTotal(enum_player, enum_releaseRegion
 
 
 // #endregion Other Stats
-
 // #region Saved Stats
 // ----------------SavedStats_Gunslinger---------------------
 CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
@@ -2463,7 +2489,6 @@ function current_SavedStatGunslinger_WeaponEquipTime(enum_chapter, enum_weapon, 
 	}
 
 // ----------------SavedStats_Story (SinglePlayer)---------------------
-
 function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
@@ -2478,7 +2503,7 @@ function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
 
 	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
 
-function current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) {
+function current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
 
 	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
@@ -2575,6 +2600,32 @@ function current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) {
 	]
 
 	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) =>
+	/* NOTE - OUTPUT:
+		[SavedStats_Story_MissionTime_Chapter1] 
+		+ [SavedStats_Story_MissionTime_Chapter2] 
+		+ ... 
+		+ [SavedStats_Story_MissionTime_Chapter8] 
+		+ [SavedStats_Story_MissionTime_ChapterHubCitadel] 
+		+ [SavedStats_Story_MissionTime_Chapter9] 
+		+ .... 
+		+ [SavedStats_Story_MissionTime_Chapter17]			*/
+	sum_of(CONST_LEVEL_DATA, enum_chapter => 
+		current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion)) 
+
+function current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) => 
+	current_MissionTime_Temp(enum_releaseRegion)
+	+ current_MissionTime_ChapterSection(enum_releaseRegion)
+	// + current_MissionTime_ChapterTotal(enum_releaseRegion) // DISABLED - Whenever [MissionTime_ChapterTotal] updates, it also updates the corresponding ChapterStat in [Array:SavedStats_Story] (thus when a StoryChapterSection ends && when a Chapter ends)
+	+ current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion)
+	
+function prev_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) =>
+	prev(current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion))
+
+function on_calculated_TotalStoryTime_whileInGame_overflow(enum_releaseRegion) => // NOTE: Triggers when 32-bit overflow occurs; MissionTime increments based on FPS (25FPS: increments by 40 --- 60FPS: increments by 16.67)
+	0xFFFFFFFF - 1000 <= prev_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) // --> 1 second (= 1000ms) under 0xFFFFFFFF
+	&& current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
 
 // #endregion Saved Stats
 
@@ -5314,7 +5365,7 @@ achievements_triggers = {
 						&& on_Chapter_startFromBeginning(const_CHAPTER, enum_releaseRegion))
 				)
 			&& trigger_when(always_false())
-		// [5/13] ==== Alt Lockout Group ====		-> Lockout achievement on challenge failure by Resetting HitCounts on [StartCondition]
+		// [4/13] ==== Alt Lockout Group ====		-> Lockout achievement on challenge failure by Resetting HitCounts on [StartCondition]
 			|| unless(!is_ReleaseRegion(enum_releaseRegion))
 			&& never(once( // --Lockout--> When calculated_TotalMissionTime() overflow occurs; 0xFFFFFFFF (= 1193 hours)
 				is_flagState_InGame_true(enum_releaseRegion)
@@ -5326,7 +5377,7 @@ achievements_triggers = {
 				is_flagState_InGame_true(enum_releaseRegion)
 				&& current_Player_HP(PLAYER_1, enum_releaseRegion) < const_HP_THRESHOLD
 				&& prev_Player_HP(PLAYER_1, enum_releaseRegion) >= const_HP_THRESHOLD))
-		// [6/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
+		// [5/14] ==== Alt Reset Group ====				-> Reset when PauseMenu->Restart while in ChapterSection_1
 			|| never_toAlt(
 				is_ReleaseRegion(enum_releaseRegion)
 				&& is_ChapterSection(const_CHAPTER, CHAPTER_SECTION_1, enum_releaseRegion)
@@ -5784,8 +5835,8 @@ achievements_titles = {
 	"a_Train":					{"en": "Wrong Train, Right Shot"},
 	"a_Guns":					{"en": "The Gunslinger's Craft"},
 	"a_Drivers":				{"en": "Highway to Hell"},
-	"a_Sights1":				{"en": "Unholy Ground"},
-	"a_Sights2":				{"en": "Blood on Sacred Ground"},
+	"a_Sights1":				{"en": "Coffins Can Wait"},
+	"a_Sights2":				{"en": "Where Ancestors Sleep"},
 	"a_Sights3":				{"en": "Ain't Got Time to Bleed"},
 	"a_Attract":				{"en": "Death's Calling Card"},
 	"a_Cowboy":					{"en": "Butcher of the Citadel"},
@@ -7040,7 +7091,7 @@ function richPresence_initialize() {
 // • LEADERBOARD core data •
 // =========================
 // #region LB - core data
-// -----------------Enums lb_Watchers--------------------
+// -----------------Leaderboard Settings--------------------
 LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime = 25200000.0 // 25.200.000 ms = 7 hours || MissionTime is the base value of the custom scoring system for lb_Watchers
 LB_WATCHERS_SETIINGS_BaseScore_MissionTime = 25000.0 // 25.000
 LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER = { // Because DIFFICULTY_Greenhorn = 0x0
@@ -7063,7 +7114,12 @@ LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_MeleeKills = 1000.0
 LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreIncrease_ShotsHit = 17.0 // 1 Hit = BaseScore + (Score_ShotsHit - Score_Shotsfired)
 LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_ShotsFired = 10.0 // 1 Miss = BaseScore - Score_Shotsfired
 LB_WATCHERS_SETIINGS_BOSSFIGHT_ScoreDecrease_PlayerDeaths = 5000.0
-// -------------------------------------
+
+LB_STORYTIME_Min_Missiontime_PerChapter = 20000 // 20 sec (=20.000 ms) 
+LB_STORYTIME_Min_Required_TotalStory_Missiontime = 4627000 // 4.627.000 ms (=1h 17min 7sec) (this is a random time, 30~ min below the fastest speedrun of this game, to counter softcore RAM altered save state or tampered saveFile cheating)
+LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_softcore = 180000000 // 180,000,000 ms (=50h)
+LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_hardcore = 36000000 // 36.000,000 ms (=10h)
+// ------------------------------------- 
 leaderboards_coreData = {
 	// DEV_NOTE: Leaderboards
 	// -----------------------------
@@ -7108,7 +7164,23 @@ leaderboards_coreData = {
 		// "id": 127415, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_16_Deadfall, from start to finish (single session)"},	
 	// "lb_WatchersCurseWest": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION (CANCEL,SUBMIT,VALUEMEASURE)
 		// "id": 127420, "isLowerBetter": false, "leaderboardFormat": "VALUE", "devInfo": "Complete CHAPTER_17_CurseWest, from start to finish (single session)"},
-	// ------lb_Challenges------
+	// ------lb_StoryTime------
+	// "lb_StoryTimeSoftGreenhorn": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128269, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Greenhorn difficulty"},
+	// "lb_StoryTimeSoftCowboy": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128267, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Cowboy difficulty"},
+	// "lb_StoryTimeSoftShootist": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128270, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Shootist difficulty"},
+	// "lb_StoryTimeSoftDeadeye": { // QA // DISABLED - MANUAL_CONSTRUCTION (START)
+		// "id": 128268, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Story Total Time (non-single session) Deadeye difficulty"},
+	// "lb_StoryTimeHardGreenhorn": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+		// "id": 128265, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Greenhorn difficulty (optional timer overlay)"},
+	// "lb_StoryTimeHardCowboy": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+		// "id": 128263, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Cowboy difficulty (optional timer overlay)"},
+	// "lb_StoryTimeHardShootist": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+		// "id": 128266, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Shootist difficulty (optional timer overlay)"},
+	// "lb_StoryTimeHardDeadeye": { // QA // DISABLED - MANUAL_CONSTRUCTION (START,CANCEL)
+		// "id": 128264, "isLowerBetter": true, "leaderboardFormat": "MILLISECS", "devInfo": "Single Player: Any% speedrun (single session) Deadeye difficulty (optional timer overlay)"},
 	}
 // #endregion LB - core data
 
@@ -7137,7 +7209,7 @@ function lbGenerate_FullCancelTrigger_ChapterCompletion(enum_chapter, enum_relea
 		&& prev_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime
 	// [4] ==== Alt Cancel Group ====		-> Cancel when pressing PauseMenu->Quit
 		/* MANUAL_CONSTRUCTION:CancelOn_PauseMenu_Quit - (AltGroup[4/8]) R/R usage
-			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext (refer to on_PauseMenu_Quit())
+			--> MANUAL_CONSTRUCTION[1FD-3FD]
 			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00721900_0xM0000000f>d0xM0000000f
 			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00720000_0xM0000000f>d0xM0000000f
 			-------------
@@ -7258,6 +7330,139 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 			is_ReleaseRegion(enum_releaseRegion)
 			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
 
+function lbGenerate_FullStartTrigger_SoftStoryCompletion(enum_difficulty, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+	const_HIGHEST_DIFFICULTY = DIFFICULTY_Deadeye
+	return
+	// [1] ==== Alt Start/Submit Group ====		-> Start/Submit when last Story Chapter is finished AND check if all of the completed chapters are finished on enum_difficulty or higher
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf--[StartCondition]--> Last Story Level/Chapter is started from beginning
+			is_Difficulty(enum_difficulty, enum_releaseRegion)
+			&& on_LastChapterSection_startFromBeginning(CHAPTER_17_CurseWest, enum_releaseRegion))
+		&& tally(1, [ // --CheckIf--> Any of the Ending FMVs have played
+			once(on_FMV_start(FMV_Hero, enum_releaseRegion)),
+			once(on_FMV_start(FMV_Monster, enum_releaseRegion))])
+		&& once( // --CheckIf--> Credits FMV starts 		
+			on_FMV_start(FMV_Credits, enum_releaseRegion)) 
+		&& all_of(CONST_LEVEL_DATA, (enum_chapter) { // --CheckIf--> All Chapters have been completed on enum_difficulty or higher (CHAPTER_Citadel excluded)
+			if (enum_chapter == CHAPTER_Citadel) return always_true() // --> Exclude CHAPTER_Citadel from this Check
+			return 
+				current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) >= LB_STORYTIME_Min_Missiontime_PerChapter
+				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) >= enum_difficulty
+				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) <= const_HIGHEST_DIFFICULTY
+			})
+		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) >= LB_STORYTIME_Min_Required_TotalStory_Missiontime
+		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) <= LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_softcore
+		&& on_FMV_end(FMV_Credits, enum_releaseRegion)
+	// [2] ==== Alt Reset Group ====		-> Reset when not in Single Player 
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InSinglePlayerMode(enum_releaseRegion))
+	// [3] ==== Alt Reset Group ====		-> Reset when not in CHAPTER_17_CurseWest
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_LevelSubstring_StoryChapter(CHAPTER_17_CurseWest, enum_releaseRegion))
+	// [4] ==== Alt Reset Group ====		-> Reset when starting a new Chapter from MainMenu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+	// [5/10] ==== Alt Reset Group ====		-> Reset on PauseMenu->Quit 
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit (AltGroup[5/10]) - R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+			*/	
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+	}
+
+function lbGenerate_FullStartTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+	// NOTE: When starting from a previously completed Chapter in Single Player Mode, all ChapterStats in [Array:SavedStats_Story] from succeeding Chapters and the selected Chapter will be zeroed out
+	const_IN_PROGRESS_STORYCHAPTER_ID_WrongTrain = 1 // CHAPTER_1_WrongTrain
+	const_MAINMENU_HIGHLIGHTED_BUTTON_SinglePlayer = 0
+	const_ALL_STORY_CHAPTERS = array_filter(CONST_LEVEL_DATA, (enum_chapter) { // All Chapters (CHAPTER_Citadel excluded)
+		if (enum_chapter == CHAPTER_Citadel) return false
+		else return true
+		})
+	return
+	// [1] ==== Alt Start Group (w/ Time Overlay) ====		-> Start when starting CHAPTER_1_WrongTrain from MainMenu with SELECT pressed - Runs leaderboard with an RAoverlay tracking time 
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf[A]--> player selects SinglePlayer at MainMenu (necessary check, as otherwise we can't check for Gunslinger or SinglePlayer within MainMenus)
+			never(on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_MainMenu, enum_releaseRegion))
+			&& is_atMainMenu(enum_releaseRegion)
+			&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_MainMenu, enum_releaseRegion)
+			&& current_MainMenu_HighlightedButton(enum_releaseRegion) == const_MAINMENU_HIGHLIGHTED_BUTTON_SinglePlayer
+			&& on_PlayerInput_press(PLAYER_1, INPUT_Cross, enum_releaseRegion))
+		&& all_of(CONST_LEVEL_DATA, enum_chapter => // --CheckIf--> [Array:SavedStats_Story] is clean
+			current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) == 0)
+		&& is_flagState_IsInputPressed_true(CONTROLLER_1, INPUT_Select, enum_releaseRegion)
+		&& current_InProgressStoryChapterID(enum_releaseRegion) == const_IN_PROGRESS_STORYCHAPTER_ID_WrongTrain // --> [8-bit:InProgress_StoryChapterID] is set when confirming the Chapter in MAINMENU_SUBMENU_ChapterSelectMenu
+		&& current_MainMenu_DifficultySelectMenu_SelectedDifficulty(enum_releaseRegion) == enum_difficulty
+		&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)
+	// [2] ==== Alt Start/Submit Group (no Time Overlay) ====		-> Start/Submit when completing Single Player Story Mode in one whole session, from start to finish
+		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf[A]--> player selects SinglePlayer at MainMenu (necessary check, as otherwise we can't check for Gunslinger or SinglePlayer within MainMenus)
+			never(on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_MainMenu, enum_releaseRegion))
+			&& is_atMainMenu(enum_releaseRegion)
+			&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_MainMenu, enum_releaseRegion)
+			&& current_MainMenu_HighlightedButton(enum_releaseRegion) == const_MAINMENU_HIGHLIGHTED_BUTTON_SinglePlayer
+			&& on_PlayerInput_press(PLAYER_1, INPUT_Cross, enum_releaseRegion))
+		&& once( // --CheckIf--> Started CHAPTER_1_WrongTrain
+			all_of(CONST_LEVEL_DATA, enum_chapter => // --CheckIf--> [Array:SavedStats_Story] is clean
+				current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) == 0)
+			&& current_InProgressStoryChapterID(enum_releaseRegion) == const_IN_PROGRESS_STORYCHAPTER_ID_WrongTrain // --> [8-bit:InProgress_StoryChapterID] is set when confirming the Chapter in MAINMENU_SUBMENU_ChapterSelectMenu
+			&& current_MainMenu_DifficultySelectMenu_SelectedDifficulty(enum_releaseRegion) == enum_difficulty
+			&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion))
+		&& tally_of(const_ALL_STORY_CHAPTERS, length(const_ALL_STORY_CHAPTERS), enum_chapter => // --CheckIf--> All Story Chapters have start from beginning once (CHAPTER_Citadel excluded)
+			once(on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion)))
+		&& tally(1, [ // --CheckIf--> Any of the Ending FMVs have played
+			once(on_FMV_start(FMV_Hero, enum_releaseRegion)),
+			once(on_FMV_start(FMV_Monster, enum_releaseRegion))])
+	// [3] ==== Alt Reset Group ====		-> Reset when entering MainMenu (necessary to reset HitCounts on CheckIf[A], when quiting back to MAINMENU_SUBMENU_MainMenu)
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_MainMenu_enter(enum_releaseRegion))
+	// [4] ==== Alt Reset Group ====		-> Reset on PauseMenu->Quit (may be unecessary due to AltGroup[3], but safest to keep this in)
+		/* MANUAL_CONSTRUCTION:ResetOn_PauseMenu_Quit (AltGroup[4]) - R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-3FD] with ResetIf+AndNext
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+			*/	
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+	}
+function lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	// NOTE: Cancel can only trigger when playing with Time Overlay enabled
+	// [1/4] ==== Alt Cancel Group ====		-> Cancel on PauseMenu->Quit 
+		/* MANUAL_CONSTRUCTION:CancelOn_PauseMenu_Quit (AltGroup[1/4]) - R/R usage
+			--> MANUAL_CONSTRUCTION[1FD-3FD]
+			PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00721900_0xM0000000f>d0xM0000000f
+			NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_0xX00000068=1_I:0xX00720000_0xM0000000f>d0xM0000000f
+			*/	
+		is_ReleaseRegion(enum_releaseRegion)
+		&& on_PauseMenu_Quit(enum_releaseRegion) // --> MANUAL_CONSTRUCTION[1FD-3FD]
+	// [2] ==== Alt Cancel Group ====		-> Cancel when TotalStoryTime overflow occurs, while IN-GAME
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_flagState_InGame_true(enum_releaseRegion)
+		&& on_calculated_TotalStoryTime_whileInGame_overflow(enum_releaseRegion) // --CheckIf--> overflow occurs; 0xFFFFFFFF (= 1193 hours)
+	// [3] ==== Alt Cancel Group ====		-> Cancel when TotalStoryTime while NOT IN-GAME exceeds LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_hardcore
+		|| is_ReleaseRegion(enum_releaseRegion)
+		&& is_flagState_InGame_false(enum_releaseRegion)
+		&& current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) > LB_STORYTIME_Max_Allowed_TotalStory_Missiontime_hardcore
+
+function lbGenerate_FullSubmitTrigger_HardStoryCompletion(enum_difficulty, enum_releaseRegion) =>
+	// [1] ==== Alt Submit Group ====			-> Submit when all Chapters have been started once AND FMV_Credits ends
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& tally_of(CONST_LEVEL_DATA, length(CONST_LEVEL_DATA), enum_chapter => 
+			once(on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))) // Side Note: Technically CHAPTER_Citadel is started 4x times, but HitCount only once 
+		&& on_FMV_start(FMV_Credits, enum_releaseRegion)
+	// [2] ==== Alt Reset Group ====		-> Reset when entering MainMenu
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& on_MainMenu_enter(enum_releaseRegion))
+
+
 // #endregion LB - trigger generators
 
 // ========================
@@ -7311,6 +7516,24 @@ leaderboards_startTriggers = {
 		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
 	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_FullStartTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_SoftStoryCompletion(DIFFICULTY_Greenhorn, enum_releaseRegion)),
+	"lb_StoryTimeSoftCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_SoftStoryCompletion(DIFFICULTY_Cowboy, enum_releaseRegion)),
+	"lb_StoryTimeSoftShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_SoftStoryCompletion(DIFFICULTY_Shootist, enum_releaseRegion)),
+	"lb_StoryTimeSoftDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_SoftStoryCompletion(DIFFICULTY_Deadeye, enum_releaseRegion)),
+	"lb_StoryTimeHardGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_HardStoryCompletion(DIFFICULTY_Greenhorn, enum_releaseRegion)),
+	"lb_StoryTimeHardCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_HardStoryCompletion(DIFFICULTY_Cowboy, enum_releaseRegion)),
+	"lb_StoryTimeHardShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_HardStoryCompletion(DIFFICULTY_Shootist, enum_releaseRegion)),
+	"lb_StoryTimeHardDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullStartTrigger_HardStoryCompletion(DIFFICULTY_Deadeye, enum_releaseRegion)),
+
 	}
 leaderboards_cancelTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -7359,6 +7582,23 @@ leaderboards_cancelTriggers = {
 		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
 	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_FullCancelTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()), 
+	"lb_StoryTimeSoftCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()), 
+	"lb_StoryTimeSoftShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()), 
+	"lb_StoryTimeSoftDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_false()), 
+	"lb_StoryTimeHardGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion)),
+	"lb_StoryTimeHardCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion)),
+	"lb_StoryTimeHardShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion)),
+	"lb_StoryTimeHardDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullCancelTrigger_HardStoryCompletion(enum_releaseRegion)),
 	}
 leaderboards_submitTriggers = {
 	// "lb_Template": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
@@ -7404,6 +7644,23 @@ leaderboards_submitTriggers = {
 		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_16_Deadfall, enum_releaseRegion)),
 	"lb_WatchersCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) =>
 		lbGenerate_FullSubmitTrigger_ChapterCompletion(CHAPTER_17_CurseWest, enum_releaseRegion)),
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()), 
+	"lb_StoryTimeSoftCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()), 
+	"lb_StoryTimeSoftShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()), 
+	"lb_StoryTimeSoftDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		always_true()), 
+	"lb_StoryTimeHardGreenhorn": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullSubmitTrigger_HardStoryCompletion(DIFFICULTY_Greenhorn, enum_releaseRegion)),
+	"lb_StoryTimeHardCowboy": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullSubmitTrigger_HardStoryCompletion(DIFFICULTY_Cowboy, enum_releaseRegion)),
+	"lb_StoryTimeHardShootist": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullSubmitTrigger_HardStoryCompletion(DIFFICULTY_Shootist, enum_releaseRegion)),
+	"lb_StoryTimeHardDeadeye": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		lbGenerate_FullSubmitTrigger_HardStoryCompletion(DIFFICULTY_Deadeye, enum_releaseRegion)),
 	}
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
@@ -7698,17 +7955,17 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
-				&& current_SavedStatstory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
 				&& is_flagState_InGame_false(enum_releaseRegion)
 				&& is_InSinglePlayerMode(enum_releaseRegion)
-				&& once( // --CheckIf--> Chapter is started; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
+				&& once( // --CheckIf--> Chapter is started + correct difficulty; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
 					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-								&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-							&& current_MissionTime_Temp(enum_releaseRegion) == 0
-							&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
-							&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
-							&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+					&& is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion)
+					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+				&& current_MissionTime_Temp(enum_releaseRegion) == 0
+				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
+				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
@@ -7718,6 +7975,33 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 			array_push(let_array_valueMeasures, valueMeasure_ChapterCompleted_SinglePlayer(enum_chapter, enum_difficulty, enum_releaseRegion)) // ValueMeasure[2,5,8,11/14,17,20,23]
 			}
 		}
+	return max_of(let_array_valueMeasures)}
+
+function lb_ValueMeasure_TotalStoryTime_instantSubmit() {
+	function valueMeasure(enum_releaseRegion) =>
+		measured(
+			current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) /10) // Divide by 10: milliseconds to centiseconds
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
+		array_push(let_array_valueMeasures, valueMeasure(enum_releaseRegion))
+	return max_of(let_array_valueMeasures)}
+
+function lb_ValueMeasure_TotalStoryTime_withInGameTimer() {
+	function valueMeasure_InGame(enum_releaseRegion) =>
+		measured(
+			current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) /10, // Divide by 10: milliseconds to centiseconds
+			when = is_flagState_InGame_true(enum_releaseRegion))
+	function valueMeasure_NotInGame(enum_releaseRegion) =>
+		measured(
+			current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) /10, // Divide by 10: milliseconds to centiseconds
+			when = is_flagState_InGame_false(enum_releaseRegion))
+
+	let_array_valueMeasures = []
+	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
+		array_push(let_array_valueMeasures, valueMeasure_InGame(enum_releaseRegion))
+		array_push(let_array_valueMeasures, valueMeasure_NotInGame(enum_releaseRegion))
+	}
 	return max_of(let_array_valueMeasures)}
 
 leaderboards_valueMeasures = {
@@ -7740,6 +8024,15 @@ leaderboards_valueMeasures = {
 	"lb_WatchersRightTrain": lb_ValueMeasure_AllStatsScore(CHAPTER_15_RightTrain),
 	"lb_WatchersDeadfall": lb_ValueMeasure_AllStatsScore(CHAPTER_16_Deadfall),
 	"lb_WatchersCurseWest": lb_ValueMeasure_AllStatsScore_BossFight(CHAPTER_17_CurseWest),
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": lb_ValueMeasure_TotalStoryTime_instantSubmit(),
+	"lb_StoryTimeSoftCowboy": lb_ValueMeasure_TotalStoryTime_instantSubmit(),
+	"lb_StoryTimeSoftShootist": lb_ValueMeasure_TotalStoryTime_instantSubmit(),
+	"lb_StoryTimeSoftDeadeye": lb_ValueMeasure_TotalStoryTime_instantSubmit(),
+	"lb_StoryTimeHardGreenhorn": lb_ValueMeasure_TotalStoryTime_withInGameTimer(),
+	"lb_StoryTimeHardCowboy": lb_ValueMeasure_TotalStoryTime_withInGameTimer(),
+	"lb_StoryTimeHardShootist": lb_ValueMeasure_TotalStoryTime_withInGameTimer(),
+	"lb_StoryTimeHardDeadeye": lb_ValueMeasure_TotalStoryTime_withInGameTimer(),
 	}
 // #endregion LB - triggers
 
@@ -7759,7 +8052,7 @@ leaderboards_titles = {
 	"lb_WatchersTortureMaze": 			{"en": "Torture Maze — Elite Regulators Watchlist"},
 	"lb_WatchersBaptismFire": 			{"en": "Baptism of Fire — Elite Regulators Watchlist"},
 	"lb_WatchersRescue": 				{"en": "Rescue — Elite Regulators Watchlist"},
-	"lb_WatchersPrism": 				{"en": "The Deadlist Prism — Elite Regulators Watchlist"},
+	"lb_WatchersPrism": 				{"en": "The Deadlight Prism — Elite Regulators Watchlist"},
 	"lb_WatchersInvasion": 				{"en": "Invasion — Elite Regulators Watchlist"},
 	"lb_WatchersHangtown": 				{"en": "Hangtown — Elite Regulators Watchlist"},
 	"lb_WatchersMorningAfter": 			{"en": "The Morning After — Elite Regulators Watchlist"},
@@ -7767,6 +8060,15 @@ leaderboards_titles = {
 	"lb_WatchersRightTrain": 			{"en": "The Right Train — Elite Regulators Watchlist"},
 	"lb_WatchersDeadfall": 				{"en": "Deadfall — Elite Regulators Watchlist"},
 	"lb_WatchersCurseWest": 			{"en": "Curse of the West — The Undying List"},
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": 	{"en": "Darkwatch Dispatches — Greenhorn Logs"},
+	"lb_StoryTimeSoftCowboy": 		{"en": "Darkwatch Dispatches — Cowboy Logs"},
+	"lb_StoryTimeSoftShootist": 	{"en": "Darkwatch Dispatches — Shootist Logs"},
+	"lb_StoryTimeSoftDeadeye": 		{"en": "Darkwatch Dispatches — Deadeye Logs"},
+	"lb_StoryTimeHardGreenhorn": 	{"en": "Hardcore Dispatches — Greenhorn Vanguards"},
+	"lb_StoryTimeHardCowboy": 		{"en": "Hardcore Dispatches — Cowboy Vanguards"},
+	"lb_StoryTimeHardShootist": 	{"en": "Hardcore Dispatches — Shootist Vanguards"},
+	"lb_StoryTimeHardDeadeye": 		{"en": "Hardcore Dispatches — Deadeye Vanguards"},
 	// ------lb_Challenges------
 	}
 leaderboards_descriptions = {
@@ -7789,7 +8091,16 @@ leaderboards_descriptions = {
 	"lb_WatchersRightTrain": 			{"en": "This train ain't bound for anywhere holy—just straight into the jaws of damnation. If you tore through the horrors on board and sent them screaming into the void, you belong on this list. Dominate Chapter 15, \"The Right Train\""},
 	"lb_WatchersDeadfall": 				{"en": "The city's crumbling, the sky's burning, and you're knee-deep in hell. If you walked through the fire and left nothing standing in your way, you've got a spot among the best. Prove your worth in Chapter 16, \"Deadfall\""},
 	"lb_WatchersCurseWest": 			{"en": "The night is over, or the nightmare is just beginning. Whether you brought salvation or destruction, the West won't forget your name. Only the most ruthless or righteous make the list. Shape your fate in Chapter 17, \"Curse of the West\""},
-	// ------lb_Challenges------
+	// ------lb_StoryTime------
+	"lb_StoryTimeSoftGreenhorn": 	{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Greenhorn difficulty"},
+	"lb_StoryTimeSoftCowboy": 		{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Cowboy difficulty"},
+	"lb_StoryTimeSoftShootist": 	{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Shootist difficulty"},
+	"lb_StoryTimeSoftDeadeye": 		{"en": "You took the oath, drew your gun, and cleared the West—whether for justice or damnation. Only those who finish what they started will have their names engraved into the Dispatches, tracking total Story completion time on Deadeye difficulty"},
+	"lb_StoryTimeHardGreenhorn": 	{"en": "Speed is salvation—or damnation. Beat the story on Greenhorn from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardCowboy": 		{"en": "Speed is salvation—or damnation. Beat the story on Cowboy from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardShootist": 	{"en": "Speed is salvation—or damnation. Beat the story on Shootist from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+	"lb_StoryTimeHardDeadeye": 		{"en": "Speed is salvation—or damnation. Beat the story on Deadeye from start to finish in one sitting and they'll stamp your name among the quickest. An optional timer overlay is available by holding \"Select\" whilst choosing the difficulty"},
+		// ------lb_Challenges------
 	}
 // #endregion LB - text
 
