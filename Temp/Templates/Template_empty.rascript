@@ -786,7 +786,9 @@ leaderboards_submitTriggers = {
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 	function valueMeasure(enum_releaseRegion) => 
-		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+		measured(
+			current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
+			when = is_ReleaseRegion(enum_releaseRegion))
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
