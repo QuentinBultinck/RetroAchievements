@@ -1427,7 +1427,7 @@ function LEVEL_DATA_IsChapterMultipleSectionsLong(enum_chapter) {
 function LEVEL_DATA_getAllChaptersWithSingleSection() =>
 	array_filter(CONST_LEVEL_DATA, enum_chapter => !LEVEL_DATA_IsChapterMultipleSectionsLong(enum_chapter))
 
-function LEVEL_DATA_getAllChaptersWithMultiplteSections() => 
+function LEVEL_DATA_getAllChaptersWithMultipleSections() => 
 	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterMultipleSectionsLong(enum_chapter))
 
 function LEVEL_DATA_getAllChaptersWithMultipleSections_withOffsetToSubstringChapterSectionID(int_offsetToSubstringChapterSectionID) =>
@@ -1724,7 +1724,7 @@ function on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion)
 function on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion) =>
 	is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
 	&& is_ChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
-	&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
+	&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0 
 	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 	&& on_MissionTime_Temp_start(enum_releaseRegion)
 
@@ -1734,7 +1734,7 @@ function on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSection,
 	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 	&& on_MissionTime_Temp_start(enum_releaseRegion)
 
-function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion) {
+function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion) { 
 	let_lastChapterSection = LEVEL_DATA_getLastFullStringChapterSectionIndex(enum_chapter)
 	return 
 		is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
@@ -2089,8 +2089,6 @@ function on_Player_Power_use(enum_player, enum_releaseRegion) =>
 	current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == 0.0
 	&& prev_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == CONST_PLAYER_MAX_BLOODPOWER
 // #endregion Player Gauges
-
-
 // #region Difficulty
 // ----------------Difficulty---------------------
 DIFFICULTY_Greenhorn = 0x0	// --> These are the DifficultyIDs
@@ -2779,17 +2777,17 @@ achievements_coreData = {
 		// "a_GunRideDevil": { // QA  // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 509576, "points": 0000000, "devInfo": "Complete CHAPTER_2_RideDevil on Deadeye difficulty, with a minimum accuracy of xx% and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunBoneyard": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow or Carbine equipped (without using throwables)"},
+			// "id": 510041, "points": 0000000, "devInfo": "Complete CHAPTER_3_Boneyard on Deadeye difficulty, scoring at least 100 kills with the Crossbow and Carbine equipped (without using throwables)"},
 		// "a_GunDevilMine": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer or Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
+			// "id": 510690, "points": 0000000, "devInfo": "Complete CHAPTER_4_DevilMine on Deadeye difficulty, killing only with the Redeemer and Dual Pistols equipped (without using any powers, Neutral powers excluded)"},
 		// "a_GunDWOutpost": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511019, "points": 0000000, "devInfo": "Complete CHAPTER_5_Outpost on Deadeye difficulty, without being below max HP for xx seconds consecutively"},
 		// "a_GunWarTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511009, "points": 0000000, "devInfo": "Complete CHAPTER_6_WarTrain on Deadeye difficulty, within xx time and without losing any HP (vampire shield excluded)"},
 		// "a_GunTortureMaze": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter or Shotgun equipped, with at least 80% melee kills"},
+			// "id": 511010, "points": 0000000, "devInfo": "Complete CHAPTER_7_TortureMaze on Deadeye difficulty, only killing with the Scepter and Shotgun equipped, with at least 80% melee kills"},
 		// "a_GunBaptismFire": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer or Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
+			// "id": 511021, "points": 0000000, "devInfo": "Complete CHAPTER_8_BaptismFire on Deadeye difficulty, only killing with the Redeemer and Rail Rocket equipped, and without scoring 5 body-shot kills in a row—mix it up with headshots or melee kills to break the chain"},
 		// "a_GunRescue": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511013, "points": 0000000, "devInfo": "Complete CHAPTER_9_Rescue on Deadeye difficulty, without losing any HP (vampire shield excluded)"},
 		// "a_GunPrism": { // QA // DISABLED - MANUAL_CONSTRUCTION
@@ -2805,13 +2803,17 @@ achievements_coreData = {
 		// "a_GunRightTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511012, "points": 0000000, "devInfo": "Complete CHAPTER_15_RightTrain on Deadeye difficulty, within xx time and without going below xx% HP (vampire shield excluded)"},
 		// "a_GunDeadfall": { // QA // DISABLED - MANUAL_CONSTRUCTION
-			// "id": 511018, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle or Carbine equipped and with at least xx% headshot kills"},
+			// "id": 511018, "points": 0000000, "devInfo": "Complete CHAPTER_16_Deadfall on Deadeye difficulty, only kill with the Range Rifle and Carbine equipped and with at least xx% headshot kills"},
 		// "a_GunCurseWest": { // QA // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 511020, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty, with less than xx power activations (Neutral powers excluded) and without dropping below xx% HP"}, 
 		// "a_WeaponMaster": { // DISCONTINUED - Exceeds achievement logic size; weapon usage is incorporated into other achievements
 			// "id": 000000, "points": 0000000, "devInfo": "Have each of the 9 Darkwatch weapons registered as a 'Favorite Weapon' for at least one Chapter in Gunslinger Mode (Pistol is excluded)"},
 		},
 	"c_Bonus": { // Category - Bonus/Easter Egg Achievements
+		// "a_Souler": { // CONCEPT a_Souler, something about finding all those taintedSouls??, although this is may only be trackable per Chapter??
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
+		// "a_Jacker": { // CONCEPT a_Jacker (jack of all trades), possible to unlock 3 powers of each evil/good??
+			// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 		// "a_SunPower": { // VERIFIED
 			// "id": 510106, "points": 0000000, "devInfo": "Activate Power when in sunlight"},
 		// "a_FanHammer": { // CONCEPT a_FanHammer, can't find a reliable method to check when in "Fan The Hammer" mode
@@ -2822,6 +2824,7 @@ achievements_coreData = {
 			// "id": 510104, "points": 0000000, "devInfo": "Unlock all Good powers"},
 		// "a_AllPowersEvil": { // VERIFIED // DISABLED - MANUAL_CONSTRUCTION
 			// "id": 510103, "points": 0000000, "devInfo": "Unlock all Evil powers"},
+		
 		},
 	}
 // -------------------------------------
@@ -5912,20 +5915,20 @@ achievements_descriptions = {
 	// --------c_Gunslinger-------- 
 	"a_GunWrongTrain": 			{"en": "No time for second chances—burn through the rails like hell's on your heels. Complete Chapter 1, \"The Wrong Train\", in Gunslinger Mode on Deadeye difficulty in under 4 minutes, without falling below 50% HP"},
 	"a_GunRideDevil": 			{"en": "You ain't just riding—you're making every bullet sing. Complete Chapter 2, \"Ride Like the Devil\", in Gunslinger Mode on Deadeye difficulty with 75% accuracy, without falling below 50% HP"},
-	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty using only the Carbine or Crossbow, scoring at least 100 kills, and without throwing a grenade"},
-	"a_GunDevilMine": 			{"en": "The deeper the mine, the louder your pistols echo. Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty using only the Redeemer or Dual Pistols, without using any powers"},
+	"a_GunBoneyard": 			{"en": "The ground's already full, but you kept digging. Complete Chapter 3, \"Boneyard\", in Gunslinger Mode on Deadeye difficulty using only the Carbine and Crossbow, scoring at least 100 kills, and without throwing a grenade"},
+	"a_GunDevilMine": 			{"en": "The deeper the mine, the louder your pistols echo. Ain't no darkness hiding what you came to do. Complete Chapter 4, \"Devil's Belly Mine\", in Gunslinger Mode on Deadeye difficulty using only the Redeemer and Dual Pistols, without using any powers"},
 	"a_GunDWOutpost": 			{"en": "The station is drowning in blood—and none of it is yours. Complete Chapter 5, \"Darkwatch Outpost\", in Gunslinger Mode on Deadeye difficulty without being below max HP for more than 20 consecutive seconds"},
 	"a_GunWarTrain": 			{"en": "The train kept running. You didn't bleed. Complete Chapter 6, \"War Train\", in Gunslinger Mode on Deadeye difficulty in under 5 minutes without losing any HP"},
-	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty only killing with the Scepter or Shotgun, with at least 80% of kills being melee"},
-	"a_GunBaptismFire": 		{"en": "The baptism ain't in water—it's in blood and lead. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty using only the Redeemer or Rail Rocket, without scoring 5 body-shot kills in a row—mix it up with headshot or melee kills"},
+	"a_GunTortureMaze": 		{"en": "This ain't no gunfight—it's a sermon of steel. Complete Chapter 7, \"Torture Maze\", in Gunslinger Mode on Deadeye difficulty only killing with the Scepter and Shotgun, with at least 80% of kills being melee"},
+	"a_GunBaptismFire": 		{"en": "The baptism ain't in water—it's in blood and lead. Complete Chapter 8, \"Baptism of Fire\", in Gunslinger Mode on Deadeye difficulty using only the Redeemer and Rail Rocket, without scoring 5 body-shot kills in a row—mix it up with headshot or melee kills"},
 	"a_GunRescue": 				{"en": "Bullets flew, the dead swarmed—and you walked out clean. Complete Chapter 9, \"Rescue\", in Gunslinger Mode on Deadeye difficulty without losing any HP"},
-	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, killing only with the Dual Pistols or Shotgun"},
+	"a_GunPrism": 				{"en": "The canyon lit up like Judgment Day—and you brought the thunder. Complete Chapter 10, \"The Deadlight Prism\", in Gunslinger Mode on Deadeye difficulty within 15 minutes, killing only with the Dual Pistols and Shotgun"},
 	"a_GunInvasion": 			{"en": "One power. Five flickers of fury. The rest? Pure skill. Complete Chapter 11, \"Invasion\", in Gunslinger Mode on Deadeye difficulty using only one distinct power, with five activations or less"},
 	"a_GunHangtown": 			{"en": "One shot, one soul. No room for waste when the town's already dead. Complete Chapter 12, \"Hangtown\", in Gunslinger Mode on Deadeye difficulty using the Range Rifle as the only means of firing bullets, with at least 85% accuracy"},
 	"a_GunMorningAfter": 		{"en": "The citadel burns, but your powers cut clean and your hands cut cleaner. Complete Chapter 13, \"The Morning After\", in Gunslinger Mode on Deadeye difficulty using only Tier 2 or 3 powers, with at least 45% melee kills"},
 	"a_GunShowdown": 			{"en": "No tricks, no frills—just clean shots and first-tier fury. Complete Chapter 14, \"Showdown\", in Gunslinger Mode on Deadeye difficulty with 65% accuracy or higher, using only Tier 1 powers"},
 	"a_GunRightTrain": 			{"en": "That train didn't slow down and neither did you. Complete Chapter 15, \"The Right Train\", in Gunslinger Mode on Deadeye difficulty within 7 minutes and without falling below 70% HP"},
-	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", in Gunslinger Mode on Deadeye difficulty using only the Range Rifle or Carbine, with 30% or more headshots"},
+	"a_GunDeadfall": 			{"en": "The streets were hell, but your aim never flinched. Complete Chapter 16, \"Deadfall\", in Gunslinger Mode on Deadeye difficulty using only the Range Rifle and Carbine, with 30% or more headshots"},
 	"a_GunCurseWest": 			{"en": "You walked the line between damnation and salvation—and bled for neither. Complete Chapter 17, \"Curse of the West\", in Gunslinger Mode on Deadeye difficulty using no more than 5 power activations, and never dropping below 40% HP"},
 	"a_WeaponMaster":			{"en": "xxxxxxxxx"},
 	// --------c_Bonus--------
@@ -6630,7 +6633,7 @@ function rp_Coop_MultipleChapterSections(enum_releaseRegion) {
 		is_ReleaseRegion(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
 		&& is_InMultiplayerCoopMode(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllChaptersWithMultiplteSections(), enum_chapter =>
+		&& any_of(LEVEL_DATA_getAllChaptersWithMultipleSections(), enum_chapter =>
 			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -6663,7 +6666,7 @@ function rp_SinglePlayer_MultipleChapterSections(enum_releaseRegion) {
 		&& is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion)
 		&& !is_atMainMenu(enum_releaseRegion)
 		&& !is_WatchingFMV_viaExtrasMenu(enum_releaseRegion)
-		&& any_of(LEVEL_DATA_getAllChaptersWithMultiplteSections(), enum_chapter =>
+		&& any_of(LEVEL_DATA_getAllChaptersWithMultipleSections(), enum_chapter =>
 			is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
 	return rich_presence_conditional_display( 
 		condition(enum_releaseRegion),
@@ -7260,7 +7263,7 @@ function lbGenerate_FullSubmitTrigger_ChapterCompletion(enum_chapter, enum_relea
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
-		// && once( // --CheckIf--> ChapterStats have been saved to [Array:SavedStats_Story] // TODO update all lb_watchers, this check has been added + below lines
+		// && once( // --CheckIf--> ChapterStats have been saved to [Array:SavedStats_Story] 
 		// 	current_MissionTime_Temp(enum_releaseRegion)
 		// 		+ current_MissionTime_ChapterSection(enum_releaseRegion)
 		// 		+ current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
@@ -7401,6 +7404,7 @@ function lbGenerate_FullStartTrigger_HardStoryCompletion(enum_difficulty, enum_r
 		&& on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)
 	// [2] ==== Alt Start/Submit Group (no Time Overlay) ====		-> Start/Submit when completing Single Player Story Mode in one whole session, from start to finish
 		|| unless(!is_ReleaseRegion(enum_releaseRegion))
+		// && is_InSinglePlayerMode(enum_releaseRegion) // --Line--> Could replace below once(), only for this altGroup
 		&& once( // --CheckIf[A]--> player selects SinglePlayer at MainMenu (necessary check, as otherwise we can't check for Gunslinger or SinglePlayer within MainMenus)
 			never(on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_MainMenu, enum_releaseRegion))
 			&& is_atMainMenu(enum_releaseRegion)
@@ -7665,7 +7669,11 @@ leaderboards_submitTriggers = {
 //-----------------ValueMeasures-------------------
 function lb_ValueMeasure_TimeSpentInLevel() { // lb_ValueMeasure_Template
 	function valueMeasure(enum_releaseRegion) => 
-		measured(current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion))
+		measured(
+			current_TimeSpentInLevel_inCentiSeconds(enum_releaseRegion),
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+			)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
@@ -7704,30 +7712,30 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 				* [Difficulty] [1-4] 		| in alt groups			*/
 		measured(
 			current_ShotsHit_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			+ current_Kills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				- current_ShotsFired_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				+ current_Kills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ current_HeadshotKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ current_MeleeKills_Temp(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			+ current_ShotsHit_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_ShotsFired_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- current_PlayerDeaths_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_HeadshotKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				+ current_ShotsHit_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- current_ShotsFired_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- current_PlayerDeaths_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ current_Kills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ current_HeadshotKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ current_MeleeKills_ChapterSection(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
 
-			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
-			
-			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+				+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				
+				// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 
-			+ current_MissionTime_Temp(enum_releaseRegion)
-			+ current_MissionTime_ChapterSection(enum_releaseRegion)
-			+ current_MissionTime_ChapterTotal(enum_releaseRegion),
+				+ current_MissionTime_Temp(enum_releaseRegion)
+				+ current_MissionTime_ChapterSection(enum_releaseRegion)
+				+ current_MissionTime_ChapterTotal(enum_releaseRegion),
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
 				&& current_Difficulty(enum_releaseRegion) == enum_difficulty
@@ -7755,14 +7763,14 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 		measured(
 			current_MissionTime_ChapterTotal(enum_releaseRegion)
 
-			+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
-			
-			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+				+ current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- current_PlayerDeaths_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ current_HeadshotKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ current_MeleeKills_ChapterTotal(PLAYER_1, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				
+				// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
@@ -7790,29 +7798,25 @@ function lb_ValueMeasure_AllStatsScore(enum_chapter) { // WARNING - (3x) MANUAL_
 				* [Difficulty] [1-4] 		| in alt groups				*/
 		measured(
 			current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion)
-
-			+ current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
-			- current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
-			- current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
-			+ current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
-			+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
-			+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
-			
-			// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
+				+ current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_ShotsHit
+				- current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_ShotsFired
+				- current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreDecrease_PlayerDeaths
+				+ current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_Kills
+				+ current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_HeadshotKills
+				+ current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) * LB_WATCHERS_SETIINGS_ScoreIncrease_MeleeKills
+				
+				// * LB_WATCHERS_SETIINGS_DIFFICULTY_TO_MODIFIER[enum_difficulty]
 			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
+				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
 				&& is_flagState_InGame_false(enum_releaseRegion)
 				&& is_InSinglePlayerMode(enum_releaseRegion)
-				&& once( // --CheckIf--> Chapter is started + correct difficulty; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
-					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-					&& is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion)
-					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& current_MissionTime_Temp(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
+				&& current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) > 0
+				&& current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
@@ -7955,17 +7959,14 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 			,
 			when = 
 				is_ReleaseRegion(enum_releaseRegion)
+				&& current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) == enum_difficulty
 				&& is_flagState_InGame_false(enum_releaseRegion)
 				&& is_InSinglePlayerMode(enum_releaseRegion)
-				&& once( // --CheckIf--> Chapter is started + correct difficulty; without this check this valueMeasure would display the previous acquired SavedStats for a few frames.
-					never(on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion)) // --ResetNextIf--> When starting new/continuing Chapter
-					&& is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion)
-					&& on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 				&& current_MissionTime_Temp(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
 				&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) > 0 // --2 Lines--> Prior checks, because Submit triggers a few frames after [MissionTime_ChapterTotal] is zeroed out OR Submit triggers at same frame but ValueMeasure is evaluated later??
-				&& prior_MissionTime_ChapterTotal(enum_releaseRegion) <= LB_WATCHERS_SETIINGS_BOSSFIGHT_MaxAllowed_MissionTime)
+				&& current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) > 0
+				&& current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) <= LB_WATCHERS_SETIINGS_MaxAllowed_MissionTime)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
@@ -7980,7 +7981,9 @@ function lb_ValueMeasure_AllStatsScore_BossFight(enum_chapter) { // WARNING - (3
 function lb_ValueMeasure_TotalStoryTime_instantSubmit() {
 	function valueMeasure(enum_releaseRegion) =>
 		measured(
-			current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) /10) // Divide by 10: milliseconds to centiseconds
+			current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) /10, // Divide by 10: milliseconds to centiseconds
+			when = is_ReleaseRegion(enum_releaseRegion)
+			) 
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED
@@ -7991,11 +7994,17 @@ function lb_ValueMeasure_TotalStoryTime_withInGameTimer() {
 	function valueMeasure_InGame(enum_releaseRegion) =>
 		measured(
 			current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) /10, // Divide by 10: milliseconds to centiseconds
-			when = is_flagState_InGame_true(enum_releaseRegion))
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_flagState_InGame_true(enum_releaseRegion)
+			)
 	function valueMeasure_NotInGame(enum_releaseRegion) =>
 		measured(
 			current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) /10, // Divide by 10: milliseconds to centiseconds
-			when = is_flagState_InGame_false(enum_releaseRegion))
+			when = 
+				is_ReleaseRegion(enum_releaseRegion)
+				&& is_flagState_InGame_false(enum_releaseRegion)
+			)
 
 	let_array_valueMeasures = []
 	for enum_releaseRegion in RELEASE_REGIONS_SUPPORTED {
@@ -8065,10 +8074,10 @@ leaderboards_titles = {
 	"lb_StoryTimeSoftCowboy": 		{"en": "Darkwatch Dispatches — Cowboy Logs"},
 	"lb_StoryTimeSoftShootist": 	{"en": "Darkwatch Dispatches — Shootist Logs"},
 	"lb_StoryTimeSoftDeadeye": 		{"en": "Darkwatch Dispatches — Deadeye Logs"},
-	"lb_StoryTimeHardGreenhorn": 	{"en": "Hardcore Dispatches — Greenhorn Vanguards"},
-	"lb_StoryTimeHardCowboy": 		{"en": "Hardcore Dispatches — Cowboy Vanguards"},
-	"lb_StoryTimeHardShootist": 	{"en": "Hardcore Dispatches — Shootist Vanguards"},
-	"lb_StoryTimeHardDeadeye": 		{"en": "Hardcore Dispatches — Deadeye Vanguards"},
+	"lb_StoryTimeHardGreenhorn": 	{"en": "Hardcore Vanguards — Greenhorn Records"},
+	"lb_StoryTimeHardCowboy": 		{"en": "Hardcore Vanguards — Cowboy Records"},
+	"lb_StoryTimeHardShootist": 	{"en": "Hardcore Vanguards — Shootist Records"},
+	"lb_StoryTimeHardDeadeye": 		{"en": "Hardcore Vanguards — Deadeye Records"},
 	// ------lb_Challenges------
 	}
 leaderboards_descriptions = {
