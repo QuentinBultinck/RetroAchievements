@@ -70,8 +70,27 @@ function util_throwError(string_errMsg) { // This function will throw an error i
 	let_dict = {}
 	return let_dict[format("ERROR: {0}", string_errMsg)]}
 
+function util_concatArrays(array_1, array_2) { // This function will concatenate two arrays (add values of array_2 to array_1)
+	let_array_concat = array_1
+	for let_index in range(0, length(array_2) - 1) {
+		array_push(let_array_concat, array_2[let_index])
+	}
+	return let_array_concat}
+
 function util_addToDictionary(dict, key, value) {
 	dict[key] = value}
+
+function util_getIndexOfLastItemInArray(array_a) =>
+	length(array_a) - 1
+
+function util_getLastItemInArray(array_a) =>
+	array_a[util_getIndexOfLastItemInArray(array_a)]
+
+function util_generateArrayOfIntegers_startAtZero(int_lastInteger) {
+	let_array_Integers = []
+	for let_index in range(0, int_lastInteger) 
+		array_push(let_array_Integers, let_index)
+	return let_array_Integers}
 // #endregion UTILITY
 
 // ***************************************************************************************************************************************************************** \\
@@ -96,6 +115,89 @@ function memory_getRegionOffset(string_structKey, string_offsetKey) =>
 	memory_regionOffsets[string_structKey][string_offsetKey]
 // -------------------------------------
 memory_StructDefs = {
+	"Pointer:PlayerInput": {
+		"offsetToMember": {
+			"Struct(ControllerInput):Controller-1": 0x4,
+			"Struct(ControllerInput):Controller-2": 0x38},
+		},
+	"Pointer:UIcontrol": {
+		"pointerChainToMember": {
+			"Lower4:ActiveMenuPointerIndex": {
+				"pointerChainOffsets": [0x8]},
+			"Array:UIcontrolPointers": {
+				"pointerChainOffsets": [0xC]},
+			"Pointer:UIcontrol_ptr-L2_A": {
+				"pointerChainOffsets": [0xC, 0x0]},
+			"Pointer:UIcontrol_ptr-L2_B": {
+				"pointerChainOffsets": [0xC, 0x4]},
+			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:MainMenuControl]------
+			"ASCII:MainMenuSubMenuID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x30],
+				"offsetToPointedToMember": 0x2},
+			"32-bit:MainMenuTitle_TextLookupKeyID": {
+				"pointerChainOffsets": [0xC, 0x0, 0xC, 0x0, 0x48]},	
+			"8-bit:DifficultySelectMenu_SelectedDifficultyID": {
+				"pointerChainOffsets": [0xC, 0x0, 0x58, 0x68]},
+			"8-bit:MainMenu_HighlightedButton": {
+				"pointerChainOffsets": [0xC, 0x0, 0x58, 0x68]},
+			// ------[Pointer:UIcontrol_ptr-L2_A].[Struct:HUDcontrol_Gear-Player1]------
+			"Pointer:EquippedWeaponName-Player1": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xFC]},	
+			"32-bit:EquippedWeapon_LoadedBullets(display)-Player1": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xF0]},	
+			"32-bit:ThrowableCountInInventory(display)-Player1": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0xF8]},	
+			"ASCII:Equipped_ThrowableNameID-Player1": {
+				"pointerChainOffsets": [0xC, 0x0, 0x70, 0x100],
+				"offsetToPointedToMember": 0x2},
+			// ------[Pointer:UIcontrol_ptr-L2_B].[Struct:HUDcontrol_Gear-Player2]------
+			"Pointer:EquippedWeaponName-Player2": {
+				"pointerChainOffsets": [0xC, 0x4, 0x70, 0xFC]},	
+			"32-bit:EquippedWeapon_LoadedBullets(display)-Player2": {
+				"pointerChainOffsets": [0xC, 0x4, 0x70, 0xF0]},	
+			"32-bit:ThrowableCountInInventory(display)-Player2": {
+				"pointerChainOffsets": [0xC, 0x4, 0x70, 0xF8]},	
+			"ASCII:Equipped_ThrowableNameID-Player2": {
+				"pointerChainOffsets": [0xC, 0x4, 0x70, 0x100],
+				"offsetToPointedToMember": 0x2},				
+			},
+		}, 
+	"Pointer:LevelID": {
+		"pointerChainToMember": {
+			"ASCII:LevelID(full)": {
+				"pointerChainOffsets": [0x20],
+				"offsetToPointedToMember": 0x2},
+			"ASCII:StoryChapterSectionID(preferred)": {
+				"pointerChainOffsets": [0x24],
+				"offsetToPointedToMember": 0x2}
+			},
+		},
+	"Pointer:SofdecStreamData": {
+		"pointerChainToMember": {
+			"ASCIIFlag:Sofdec_IsFMVactive": {
+				"offsetToPointedToMember": 0x12C},
+			"ASCII:Sofdec_FMVID": {
+				"offsetToPointedToMember": 0x14C},
+			},
+		},	
+	"Struct:MainUIdata": {
+		"pointerChainToMember": {
+			"32-bit:LoadingState": {
+				"pointerChainOffsets": {
+					RELEASE_REGION_USA: [0x510],
+					RELEASE_REGION_EUR: [0x450]}},
+			},
+		},
+	"Struct:ControllerInput": {
+		"offsetToMember": {
+			"Bitflag:IsControllerConnected": 0x0,
+			"Bitflag:IsInputPressed_Select": 0x2,
+			"BitFlag:IsInputPressed_Cross": 0xB,
+			"BitFlag:IsInputPressed_L3": 0xC,
+			"BitFlag:IsInputPressed_R3": 0xD,
+			"BitFlag:IsInputPressed_L2": 0x10,
+			"BitFlag:IsInputPressed_R2": 0x11},
+		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
 	memory_StructDefs[string_structKey]["sizeInBytes"]
@@ -152,6 +254,86 @@ function memGenerate_pointerChainAccessor_fromOffsets(memAdrr_basePointer, array
 // #region MEM - address storage
 memory_addresses = {
 	// "memAddrKey": {RELEASE_REGION_USA: sNULL, RELEASE_REGION_EUR: sNULL, RELEASE_REGION_JPN: sNULL},
+	
+	"BitFlag:IsCinematicActive": {RELEASE_REGION_USA: 0x72bbe8, RELEASE_REGION_EUR: 0x73dce8, RELEASE_REGION_JPN: sNULL},
+	
+	"BitFlag:IsStoryGoodEndingAchieved-Player1": {RELEASE_REGION_USA: 0x953D20, RELEASE_REGION_EUR: 0x965d00, RELEASE_REGION_JPN: sNULL},
+	"BitFlag:IsStoryEvilEndingAchieved-Player1": {RELEASE_REGION_USA: 0x953D21, RELEASE_REGION_EUR: 0x965d01, RELEASE_REGION_JPN: sNULL},
+
+	"BitFlag:IsStoryGoodEndingAchieved-Player2": {RELEASE_REGION_USA: 0x953E28, RELEASE_REGION_EUR: 0x965e08, RELEASE_REGION_JPN: sNULL},
+	"BitFlag:IsStoryEvilEndingAchieved-Player2": {RELEASE_REGION_USA: 0x953E29, RELEASE_REGION_EUR: 0x965e09, RELEASE_REGION_JPN: sNULL},
+
+	"Lower4:PlayerCount(preferred)": {RELEASE_REGION_USA: 0x8ff494, RELEASE_REGION_EUR: 0x911474, RELEASE_REGION_JPN: sNULL},
+	"Lower4:GameMode": {RELEASE_REGION_USA: 0x8ff510, RELEASE_REGION_EUR: 0x9114f0, RELEASE_REGION_JPN: sNULL},
+	"Lower4:MultiplayerVersusGameModeID(non-functional)": {RELEASE_REGION_USA: 0x8FF534, RELEASE_REGION_EUR: 0x911514, RELEASE_REGION_JPN: sNULL},
+	"Lower4:DifficultyID(preferred)": {RELEASE_REGION_USA: 0x953c9c, RELEASE_REGION_EUR: 0x965c7c, RELEASE_REGION_JPN: sNULL},
+
+	"8-bit:MatchDuration(non-functional)": {RELEASE_REGION_USA: 0x8FF524, RELEASE_REGION_EUR: 0x911504, RELEASE_REGION_JPN: sNULL},
+	"8-bit:DeathmatchSetting_KillsToWin(non-functional)": {RELEASE_REGION_USA: 0x8FF528, RELEASE_REGION_EUR: 0x911508, RELEASE_REGION_JPN: sNULL},
+	"8-bit:InProgress_StoryChapterID": {RELEASE_REGION_USA: 0x953d18, RELEASE_REGION_EUR: 0x965cf8, RELEASE_REGION_JPN: sNULL},
+	"8-bit:GameState": {RELEASE_REGION_USA: 0x729330, RELEASE_REGION_EUR: 0x73b430, RELEASE_REGION_JPN: sNULL},
+	"8-bit:AlwaysNULL": {RELEASE_REGION_USA: 0x71fcf0, RELEASE_REGION_EUR: 0x7215f0, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player1": {RELEASE_REGION_USA: 0x953C24, RELEASE_REGION_EUR: 0x965c04, RELEASE_REGION_JPN: sNULL},
+	"8-bit:EquippedWeapon_WeaponID-Player2": {RELEASE_REGION_USA: 0x953D50, RELEASE_REGION_EUR: 0x965d30, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:MissionTime_Temp": {RELEASE_REGION_USA: 0x953C28, RELEASE_REGION_EUR: 0x965c08, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MissionTime_ChapterSection": {RELEASE_REGION_USA: 0x953C90, RELEASE_REGION_EUR: 0x965c70, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MissionTime_ChapterTotal": {RELEASE_REGION_USA: 0x953C5C, RELEASE_REGION_EUR: 0x965c3c, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:SelectedPlayerProfileID:Player-1": {RELEASE_REGION_USA: 0x953d24, RELEASE_REGION_EUR: 0x965d04, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953C94, RELEASE_REGION_EUR: 0x965c74, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C60, RELEASE_REGION_EUR: 0x965c40, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_Temp-Player1": {RELEASE_REGION_USA: 0x953C3C, RELEASE_REGION_EUR: 0x965c1c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CA4, RELEASE_REGION_EUR: 0x965c84, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C70, RELEASE_REGION_EUR: 0x965c50, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_Temp-Player1": {RELEASE_REGION_USA: 0x953C40, RELEASE_REGION_EUR: 0x965c20, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CA8, RELEASE_REGION_EUR: 0x965c88, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c74, RELEASE_REGION_EUR: 0x965c54, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_Temp-Player1": {RELEASE_REGION_USA: 0x953C44, RELEASE_REGION_EUR: 0x965c24, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CAC, RELEASE_REGION_EUR: 0x965c8c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953c78, RELEASE_REGION_EUR: 0x965C58, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_Temp-Player1": {RELEASE_REGION_USA: 0x953C48, RELEASE_REGION_EUR: 0x965c28, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB0, RELEASE_REGION_EUR: 0x965c90, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C7C, RELEASE_REGION_EUR: 0x965c5c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_Temp-Player1": {RELEASE_REGION_USA: 0x953C4C, RELEASE_REGION_EUR: 0x965c2c, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterSection-Player1": {RELEASE_REGION_USA: 0x953CB4, RELEASE_REGION_EUR: 0x965c94, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterTotal-Player1": {RELEASE_REGION_USA: 0x953C80, RELEASE_REGION_EUR: 0x965c60, RELEASE_REGION_JPN: sNULL},
+
+	"32-bit:PlayerDeaths_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DC0, RELEASE_REGION_EUR: 0x965DA0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:PlayerDeaths_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D8C, RELEASE_REGION_EUR: 0x965D6C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_Temp-Player2": {RELEASE_REGION_USA: 0x953D68, RELEASE_REGION_EUR: 0x965D48, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD0, RELEASE_REGION_EUR: 0x965DB0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:Kills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953D9C, RELEASE_REGION_EUR: 0x965D7C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_Temp-Player2": {RELEASE_REGION_USA: 0x953D6C, RELEASE_REGION_EUR: 0x965D4C, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD4, RELEASE_REGION_EUR: 0x965DB4, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsFired_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA0, RELEASE_REGION_EUR: 0x965D80, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_Temp-Player2": {RELEASE_REGION_USA: 0x953D70, RELEASE_REGION_EUR: 0x965D50, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DD8, RELEASE_REGION_EUR: 0x965DB8, RELEASE_REGION_JPN: sNULL},
+	"32-bit:ShotsHit_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA4, RELEASE_REGION_EUR: 0x965D84, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_Temp-Player2": {RELEASE_REGION_USA: 0x953D74, RELEASE_REGION_EUR: 0x965D54, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DDC, RELEASE_REGION_EUR: 0x965DBC, RELEASE_REGION_JPN: sNULL},
+	"32-bit:HeadshotKills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DA8, RELEASE_REGION_EUR: 0x965D88, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_Temp-Player2": {RELEASE_REGION_USA: 0x953D78, RELEASE_REGION_EUR: 0x965D58, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterSection-Player2": {RELEASE_REGION_USA: 0x953DE0, RELEASE_REGION_EUR: 0x965DC0, RELEASE_REGION_JPN: sNULL},
+	"32-bit:MeleeKills_ChapterTotal-Player2": {RELEASE_REGION_USA: 0x953DAC, RELEASE_REGION_EUR: 0x965D8C, RELEASE_REGION_JPN: sNULL},
+	
+	"ASCII:GameID": {RELEASE_REGION_USA: 0x71fccc, RELEASE_REGION_EUR: 0x7215cc, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:MainUIdata_A": {RELEASE_REGION_USA: 0x71faf0, RELEASE_REGION_EUR: 0x7213f0, RELEASE_REGION_JPN: sNULL},
+	"Pointer:SofdecStreamData(preferred)": {RELEASE_REGION_USA: 0x134214, RELEASE_REGION_EUR: 0x134214, RELEASE_REGION_JPN: sNULL},
+	"Pointer:LevelID(preferred)": {RELEASE_REGION_USA: 0x71ff20, RELEASE_REGION_EUR: 0x721820, RELEASE_REGION_JPN: sNULL},
+	"Pointer:ControllerInput(preferred)": {RELEASE_REGION_USA: 0x720000, RELEASE_REGION_EUR: 0x721900, RELEASE_REGION_JPN: sNULL},
+	"Pointer:UIcontrol(preferred)": {RELEASE_REGION_USA: 0x721fb8, RELEASE_REGION_EUR: 0x7238b8, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:HUDcontrol_Health-Player1": {RELEASE_REGION_USA: 0x953d4c, RELEASE_REGION_EUR: 0x965d2c, RELEASE_REGION_JPN: sNULL},
+	"Pointer(EntityData_B):PlayerActorData-Player1": {RELEASE_REGION_USA: 0x953ce4, RELEASE_REGION_EUR: 0x965cc4, RELEASE_REGION_JPN: sNULL},
+	"Pointer:Controls_ControllerConfig-Player1": {RELEASE_REGION_USA: 0x953CCC, RELEASE_REGION_EUR: 0x965cac, RELEASE_REGION_JPN: sNULL},
+	"Pointer:PlayerSavedStats-Player1": {RELEASE_REGION_USA: 0x953CF8, RELEASE_REGION_EUR: 0x965cd8, RELEASE_REGION_JPN: sNULL},
+
+	"Pointer:HUDcontrol_Health-Player2": {RELEASE_REGION_USA: 0x953E78, RELEASE_REGION_EUR: 0x965e58, RELEASE_REGION_JPN: sNULL},
+	"Pointer(EntityData_B):PlayerActorData-Player2": {RELEASE_REGION_USA: 0x953E10, RELEASE_REGION_EUR: 0x965df0, RELEASE_REGION_JPN: sNULL},
+	"Pointer:Controls_ControllerConfig-Player2": {RELEASE_REGION_USA: 0x953DF8, RELEASE_REGION_EUR: 0x965dd8, RELEASE_REGION_JPN: sNULL},
+	"Pointer:PlayerSavedStats-Player2": {RELEASE_REGION_USA: 0x953E24, RELEASE_REGION_EUR: 0x965E04, RELEASE_REGION_JPN: sNULL},
 	}
 
 function memory_getAddress(string_addrKey, enum_releaseRegion) {
@@ -166,7 +348,6 @@ function memory_getAddress(string_addrKey, enum_releaseRegion) {
 // #region MEM - utility
 // #region Custom ASCII comparitors
 // NOTE: Custom ASCII comparitors are necessary to use with pointers, built-in RAtools ascii_string_equals() generates weird logic, when using pointers as the memAddrr
-
 function ASCII_Equals(memAddr_ASCII, string_s, wrapper = c => c) {
 	let_array_comparisons = []
 	for let_stepBy4Index in range(0, length(string_s) - 1, step = 4) {
@@ -196,12 +377,104 @@ function wasPrev_ASCII_EqualTo(memAddr_ASCII, string_s) =>
 
 function wasPrev_ASCII_notEqualTo(memAddr_ASCII, string_s) =>
 	ASCII_NotEquals(memAddr_ASCII, string_s, c => prev(c))
+
+memUtil_asciiToHex = {
+  "A": 0x41,  "B": 0x42,  "C": 0x43,  "D": 0x44,  "E": 0x45,  "F": 0x46,  "G": 0x47, 
+  "H": 0x48,  "I": 0x49,  "J": 0x4A,  "K": 0x4B,  "L": 0x4C,  "M": 0x4D,  "N": 0x4E, 
+  "O": 0x4F,  "P": 0x50,  "Q": 0x51,  "R": 0x52,  "S": 0x53,  "T": 0x54,  "U": 0x55, 
+  "V": 0x56,  "W": 0x57,  "X": 0x58,  "Y": 0x59,  "Z": 0x5A,  "a": 0x61,  "b": 0x62, 
+  "c": 0x63,  "d": 0x64,  "e": 0x65,  "f": 0x66,  "g": 0x67,  "h": 0x68,  "i": 0x69, 
+  "j": 0x6A,  "k": 0x6B,  "l": 0x6C,  "m": 0x6D,  "n": 0x6E,  "o": 0x6F,  "p": 0x70, 
+  "q": 0x71,  "r": 0x72,  "s": 0x73,  "t": 0x74,  "u": 0x75,  "v": 0x76,  "w": 0x77, 
+  "x": 0x78,  "y": 0x79,  "z": 0x7A,  "0": 0x30,  "1": 0x31,  "2": 0x32,  "3": 0x33, 
+  "4": 0x34,  "5": 0x35,  "6": 0x36,  "7": 0x37,  "8": 0x38,  "9": 0x39,  " ": 0x20, 
+  "!": 0x21,  "#": 0x23,  "$": 0x24,  "%": 0x25,  "&": 0x26,  "\"": 0x27, 
+  "(": 0x28,  ")": 0x29,  "*": 0x2A,  "+": 0x2B,  ",": 0x2C,  "-": 0x2D,  ".": 0x2E, 
+  "/": 0x2F,  ":": 0x3A,  ";": 0x3B,  "<": 0x3C,  "=": 0x3D,  ">": 0x3E,  "?": 0x3F, 
+  "@": 0x40,  "[": 0x5B,  "\\": 0x5C,  "]": 0x5D,  "^": 0x5E,  "_": 0x5F,  "`": 0x60, 
+  "{": 0x7B,  "|": 0x7C,  "}": 0x7D,  "~": 0x7E}
+ 
+memUtil_asciiToFloat = {
+  "A": 65.0, "B": 66.0, "C": 67.0, "D": 68.0, "E": 69.0, "F": 70.0, "G": 71.0,
+  "H": 72.0, "I": 73.0, "J": 74.0, "K": 75.0, "L": 76.0, "M": 77.0, "N": 78.0,
+  "O": 79.0, "P": 80.0, "Q": 81.0, "R": 82.0, "S": 83.0, "T": 84.0, "U": 85.0,
+  "V": 86.0, "W": 87.0, "X": 88.0, "Y": 89.0, "Z": 90.0, "a": 97.0, "b": 98.0,
+  "c": 99.0, "d": 100.0, "e": 101.0, "f": 102.0, "g": 103.0, "h": 104.0, "i": 105.0,
+  "j": 106.0, "k": 107.0, "l": 108.0, "m": 109.0, "n": 110.0, "o": 111.0, "p": 112.0,
+  "q": 113.0, "r": 114.0, "s": 115.0, "t": 116.0, "u": 117.0, "v": 118.0, "w": 119.0,
+  "x": 120.0, "y": 121.0, "z": 122.0, "0": 48.0, "1": 49.0, "2": 50.0, "3": 51.0,
+  "4": 52.0, "5": 53.0, "6": 54.0, "7": 55.0, "8": 56.0, "9": 57.0, " ": 32.0,
+  "!": 33.0, "#": 35.0, "$": 36.0, "%": 37.0, "&": 38.0, "\"": 39.0,
+  "(": 40.0, ")": 41.0, "*": 42.0, "+": 43.0, ",": 44.0, "-": 45.0, ".": 46.0,
+  "/": 47.0, ":": 58.0, ";": 59.0, "<": 60.0, "=": 61.0, ">": 62.0, "?": 63.0,
+  "@": 64.0, "[": 91.0, "\\": 92.0, "]": 93.0, "^": 94.0, "_": 95.0, "`": 96.0,
+  "{": 123.0, "|": 124.0, "}": 125.0, "~": 126.0}
+
+function memUtil_asciiStringToHexLE(string_s, int_numberOfZeroedOutBytesToCheckBeforeString = 0) { // NOTE: Returns a Little Endian hex; int_numberOfZeroedOutBytesToCheckBeforeString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x6E 6F 72 57 ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x6E6F7257) --LittleEndianView--> [6E 6F 72 57] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x72 57 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword(memUtil_asciiStringToHexLE("Wr", 2)) == dword(0x72570000) --LittleEndianView--> [00 00 57 72] "  Wr"
+		*/
+
+	let_stringLength = length(string_s)
+
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckBeforeString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckBeforeString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckBeforeString))
+
+	let_hexValue = 0
+
+	if (int_numberOfZeroedOutBytesToCheckBeforeString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckBeforeString == 3) let_hexValue = let_hexValue * 0x1000000
+
+	for let_characterIndex in range(0, let_stringLength - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = let_hexValue + (let_characterAsHex * 0x100)
+		else if (let_characterIndex == 2) let_hexValue = let_hexValue + (let_characterAsHex * 0x10000)
+		else let_hexValue = let_hexValue + (let_characterAsHex * 0x1000000)}
+
+	return let_hexValue}
+
+function memUtil_asciiStringToHexBE(string_s, int_numberOfZeroedOutBytesToCheckAfterString = 0) { // NOTE: Returns a Big Endian hex; int_numberOfZeroedOutBytesToCheckAfterString allows for checking zeroud out bytes after the ASCII bytes witin a 32-bit size
+	/* NOTE Example usages
+		- memUtil_asciiStringToHexLE("Wron") --> Returns 0x57 72 6F 6E  ("W": 0x57 - "r": 0x72 - "o": 0x6F - "n": 0x6E)  | String as Little Endian Hex
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57726F6E) --BigEndianView--> [57 72 6F 6E] "Wron"
+		- memUtil_asciiStringToHexLE("Wr", 2) --> Returns 0x57 72 00 00 ("W": 0x57 - "r": 0x72 - 2x zeroedBytes: 0x0000) | String as Little Endian Hex + with 2 zeroed out bytes appended
+			dword_be(memUtil_asciiStringToHexLE("Wr", 2)) == dword_be(0x57720000) --BigEndianView--> [57 72 00 00] "Wr  "
+		*/
+
+	let_stringLength = length(string_s)
+
+	if (let_stringLength == 0 || int_numberOfZeroedOutBytesToCheckAfterString >= 4)
+		util_throwError("One of the parameters given to memUtil_asciiStringToHexLE() is out of range OR invalid")
+	if (let_stringLength + int_numberOfZeroedOutBytesToCheckAfterString > 4)
+		util_throwError(format("String length of {0} + {1} zeroed out bytes, is too large to handle", let_stringLength, int_numberOfZeroedOutBytesToCheckAfterString))
+
+	let_hexValue = 0
+	for let_characterIndex in range(0, let_stringLength - 1) {
+		let_characterAsHex = memUtil_asciiToHex[substring(string_s, let_characterIndex, 1)]
+		if (let_characterIndex == 0) let_hexValue = let_characterAsHex
+		else if (let_characterIndex == 1) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else if (let_characterIndex == 2) let_hexValue = (let_hexValue * 0x100) + let_characterAsHex
+		else let_hexValue = (let_hexValue * 0x100) + let_characterAsHex}
+
+	if (int_numberOfZeroedOutBytesToCheckAfterString == 1) let_hexValue = let_hexValue * 0x100
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 2) let_hexValue = let_hexValue * 0x10000
+	else if (int_numberOfZeroedOutBytesToCheckAfterString == 3) let_hexValue = let_hexValue * 0x1000000
+
+	return let_hexValue}
+
 // #endregion Custom ASCII comparitors
-function is_ReleaseRegion(enum_releaseRegion) { // TODO implement is_ReleaseRegion()
+function is_ReleaseRegion(enum_releaseRegion) {
 	let_string_GameID = sNULL
-	if(enum_releaseRegion == RELEASE_REGION_USA) let_string_GameID = sNULL // FullString: "xxxxx"
+	if(enum_releaseRegion == RELEASE_REGION_USA) let_string_GameID = "SLUS" // FullString: "SLUS_210.42"
 	else if(enum_releaseRegion == RELEASE_REGION_JPN) let_string_GameID = sNULL // FullString: "xxxxx"
-	else if(enum_releaseRegion == RELEASE_REGION_EUR) let_string_GameID = sNULL // FullString: "xxxxx"
+	else if(enum_releaseRegion == RELEASE_REGION_EUR) let_string_GameID = "SLES" // FullString: "SLES_535.64"
 	
 	if (let_string_GameID == sNULL) util_throwError(format("Game region '{0}' is not supported", enum_releaseRegion))
 	return is_ASCII_EqualTo(memory_getAddress("ASCII:GameID", enum_releaseRegion), let_string_GameID)
@@ -231,6 +504,578 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 		)
 	)
 // #endregion MEM - utility
+
+// ...............
+// ◦ Player Input ◦
+// '''''''''''''''
+// #region Player Input
+CONTROLLER_1 = 1
+CONTROLLER_2 = 2
+
+INPUT_Select = "Bitflag:IsInputPressed_Select"
+INPUT_Cross = "BitFlag:IsInputPressed_Cross"
+INPUT_L2 = "BitFlag:IsInputPressed_L2"
+INPUT_R2 = "BitFlag:IsInputPressed_R2"
+INPUT_L3 = "BitFlag:IsInputPressed_L3"
+INPUT_R3 = "BitFlag:IsInputPressed_R3"
+
+function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return bit0(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", enum_input)
+	)}
+
+function prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) =>
+	prev(current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion))
+	
+function is_flagState_IsInputPressed_false(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 0
+	
+function is_flagState_IsInputPressed_true(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 1
+
+function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) > prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
+function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) < prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
+// ----------------Divider---------------------
+
+// #endregion Player Input
+
+// ......................
+// ◦ General Game Logic ◦
+// ''''''''''''''''''''''
+// #region General Game Logic
+
+// #region Misc Logic
+LANGUAGE_French = 0x46
+LANGUAGE_German = 0x47
+LANGUAGE_Italian = 0x49
+LANGUAGE_English = 0x51
+LANGUAGE_Spanish = 0x53
+
+function current_DisplayLanguage(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:DisplayLanguageID", enum_releaseRegion))
+
+function current_flagState_IsCinematicActive(enum_releaseRegion) =>
+	bit0(memory_getAddress("BitFlag:IsCinematicActive", enum_releaseRegion))
+
+function prev_flagState_IsCinematicActive(enum_releaseRegion) =>
+	prev(current_flagState_IsCinematicActive(enum_releaseRegion))
+
+function is_AnyCinematic_active(enum_releaseRegion) =>
+	current_flagState_IsCinematicActive(enum_releaseRegion) == 1
+
+function on_AnyCinematic_end(enum_releaseRegion) =>
+	current_flagState_IsCinematicActive(enum_releaseRegion) < prev_flagState_IsCinematicActive(enum_releaseRegion)
+
+// #endregion Misc Logic
+// #region MainMenu Control
+// -----------------MainMenu Control--------------------
+MAINMENU_SUBMENU_MainMenu = "main"
+MAINMENU_SUBMENU_StatisticsMenu = "profile_stat" // FullString: "profile_statistics"
+MAINMENU_SUBMENU_DifficultySelectMenu = "difficulty_s" // FullString: "difficulty_select"
+MAINMENU_SUBMENU_ChapterSelectMenu = "chapter_sele" // FullString: "chapter_select"
+MAINMENU_SUBMENU_CoopProfileSelectMenu = "coop_pro" // FullString: "coop_profile"
+MAINMENU_SUBMENU_MultiplayerProfileSelectMenu = "multiplayer_prof" // FullString: "multiplayer_profile_select_ps2"
+MAINMENU_SUBMENU_CreateMultiplayerMatchMenu = "create_m" // FullString: "create_match"
+MAINMENU_SUBMENU_ExtrasMenu = "extras" 
+TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger = 0x0F9681AA
+TEXTLOOKUPKEY_MainMenuSubMenuTitle_Cooperative = 0x0F9681AA
+
+function current_MainMenu_HighlightedButton(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "8-bit:MainMenu_HighlightedButton", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = byte)}
+
+function current_MainMenu_SubMenuTitle(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", "32-bit:MainMenuTitle_TextLookupKeyID", let_memAddr_BasePointer)}
+
+function prev_MainMenu_SubMenuTitle(enum_releaseRegion) =>
+	prev(current_MainMenu_SubMenuTitle(enum_releaseRegion))
+	
+function on_MainMenu_SubMenuTitle_changeTo(enum_textLookupKey, enum_releaseRegion) =>
+	current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) != enum_textLookupKey
+	
+function on_MainMenu_SubMenuTitle_changeFrom(enum_textLookupKey, enum_releaseRegion) =>
+	current_MainMenu_SubMenuTitle(enum_releaseRegion) != enum_textLookupKey
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_textLookupKey
+
+function on_MainMenu_newSubMenu(enum_releaseRegion) {
+	// NOTE: When a new MainMenuSubMenu is created AND an old MainMenuSubMenu is cleared, [Pointer:UIcontrol_ptr-L2_A] changes values; 
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_memAccessor_SubPointer = memGenerate_pointerChainAccessor("Pointer:UIcontrol", "Pointer:UIcontrol_ptr-L2_A", let_memAddr_BasePointer)
+	return let_memAccessor_SubPointer != prev(let_memAccessor_SubPointer)}
+
+function ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return   
+		memGenerate_pointerChainAccessor("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", "ASCII:MainMenuSubMenuID")}
+
+function is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) => 
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+
+function wasPrev_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion) => 
+	wasPrev_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+
+function on_MainMenu_SubMenu_render(enum_mainMenuSubMenuID, enum_releaseRegion) =>
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+	&& !wasPrev_ASCII_EqualTo(ASCII_MEM_ADDR_MainMenuSubMenuID(enum_releaseRegion), enum_mainMenuSubMenuID)
+
+function on_MainMenu_SubMenu_render_withSubMenuTitle(enum_mainMenuSubMenuID, enum_titleTextLookupKey, enum_releaseRegion) =>
+	is_MainMenu_SubMenuID(enum_mainMenuSubMenuID, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
+	&& on_MainMenu_newSubMenu(enum_releaseRegion)
+
+function on_MainMenu_SubMenu_close_withSubMenuTitle(enum_mainMenuSubMenuID, enum_titleTextLookupKey, enum_releaseRegion) =>
+	wasPrev_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& prev_MainMenu_SubMenuTitle(enum_releaseRegion) == enum_titleTextLookupKey
+	&& on_MainMenu_newSubMenu(enum_releaseRegion)
+
+function on_MainMenu_PostChapterGunslingerStatsMenu_render(enum_releaseRegion) => 
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render_withSubMenuTitle(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+
+function on_MainMenu_PostChapterGunslingerStatsMenu_continue(enum_releaseRegion) => // NOTE: This triggers earlier than on_MainMenu_PostChapterGunslingerStatsMenu_close()
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_StatisticsMenu, enum_releaseRegion)
+	&& current_MainMenu_SubMenuTitle(enum_releaseRegion) == TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+function on_MainMenu_PostChapterGunslingerStatsMenu_close(enum_releaseRegion) => // NOTE: This triggers later than on_MainMenu_PostChapterGunslingerStatsMenu_continue()
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_close_withSubMenuTitle(MAINMENU_SUBMENU_StatisticsMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+
+function on_MainMenu_GunslingerChapterSelectMenu_render(enum_releaseRegion) =>
+	is_atMainMenu(enum_releaseRegion)
+	&& on_MainMenu_SubMenu_render_withSubMenuTitle(MAINMENU_SUBMENU_ChapterSelectMenu, TEXTLOOKUPKEY_MainMenuSubMenuTitle_Gunslinger, enum_releaseRegion)
+
+function current_MainMenu_DifficultySelectMenu_SelectedDifficulty(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "8-bit:DifficultySelectMenu_SelectedDifficultyID", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = byte)}
+
+function on_MainMenu_DifficultySelectMenu_chapterStart(enum_releaseRegion) => // NOTE: This triggers when selecting a difficulty, thus starting the Chapter
+	is_atMainMenu(enum_releaseRegion)
+	&& is_MainMenu_SubMenuID(MAINMENU_SUBMENU_DifficultySelectMenu, enum_releaseRegion)
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+
+
+// #endregion MainMenu Control
+// #region Game Modes
+// ----------------GameModes---------------------
+function current_PlayerCount(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:PlayerCount(preferred)", enum_releaseRegion))
+
+function current_GameMode(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:GameMode", enum_releaseRegion))
+
+function is_InSinglePlayerMode(enum_releaseRegion) {
+	const_GAMEMODE_SinglePlayer = 0 // NOTE: same GameModeID as MultiplayerCoop
+	return 
+		current_PlayerCount(enum_releaseRegion) == 1
+		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_SinglePlayer
+	}
+
+function is_InGunslingerMode(enum_releaseRegion) {
+	const_GAMEMODE_Gunslinger = 1
+	return 
+		current_PlayerCount(enum_releaseRegion) == 1
+		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_Gunslinger
+	}
+
+function is_InSinglePlayer_OR_GunslingerMode(enum_releaseRegion) {
+	const_GAMEMODE_Gunslinger = 1
+	return 
+		current_PlayerCount(enum_releaseRegion) == 1
+		&& current_GameMode(enum_releaseRegion) <= const_GAMEMODE_Gunslinger // --CheckIf--> GameMode is 0 OR 1 (SinglePlayer OR Gunslinger)
+	}
+
+function is_InMultiplayerVersusMode(enum_releaseRegion) {
+	const_GAMEMODE_MultiplayerVersus = 3
+	return 
+		current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerVersus
+	}
+
+function is_InMultiplayerCoopMode(enum_releaseRegion) {
+	const_GAMEMODE_MultiplayerCoop = 0 // NOTE: same GameModeID as SinglePlayer
+	return 
+		current_PlayerCount(enum_releaseRegion) == 2
+		&& current_GameMode(enum_releaseRegion) == const_GAMEMODE_MultiplayerCoop
+	}
+// #endregion Game Modes
+// #region Game States
+// ----------------LoadingState---------------------
+CONST_LOADING_STATE_Loading = {RELEASE_REGION_USA: 0x10000048, RELEASE_REGION_EUR: 0x1000003C, RELEASE_REGION_JPN: sNULL}
+function current_LoadingState(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:MainUIdata_A", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor_byReleaseRegion(
+		"Struct:MainUIdata", "32-bit:LoadingState", 
+		let_memAddr_BasePointer, enum_releaseRegion,
+		memAccessorFunction_toPointedToMember = dword)
+	}
+
+function prev_LoadingState(enum_releaseRegion) =>
+	prev(current_LoadingState(enum_releaseRegion))
+
+function is_Loading(enum_releaseRegion) => 
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_start(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+
+function on_Loading_end(enum_releaseRegion) =>
+	current_LoadingState(enum_releaseRegion) != CONST_LOADING_STATE_Loading[enum_releaseRegion]
+	&& prev_LoadingState(enum_releaseRegion) == CONST_LOADING_STATE_Loading[enum_releaseRegion]
+// ----------------Other Game States---------------------
+CONST_GAME_STATE_AnyInGameMenu_active = 0x3
+function current_pointerState_PlayerActorData(enum_releaseRegion) {
+	let_memAddr_Pointer = memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)
+	return dword(let_memAddr_Pointer)}
+
+function prior_pointerState_PlayerActorData(enum_releaseRegion) =>
+	prior(current_pointerState_PlayerActorData(enum_releaseRegion))
+
+function wasPrior_flagState_InGame_true(enum_releaseRegion) =>
+	prior_pointerState_PlayerActorData(enum_releaseRegion) != 0
+
+function prev_pointerState_PlayerActorData(enum_releaseRegion) =>
+	prev(current_pointerState_PlayerActorData(enum_releaseRegion))
+
+function is_flagState_InGame_true(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) != 0
+
+function is_flagState_InGame_false(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) == 0	
+
+function on_flagState_InGame_toggleTrue(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
+	&& prev_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
+
+function on_flagState_InGame_toggleFalse(enum_releaseRegion) =>
+	current_pointerState_PlayerActorData(enum_releaseRegion) == 0x0
+	&& prev_pointerState_PlayerActorData(enum_releaseRegion) != 0x0
+
+function current_GameState(enum_releaseRegion) =>
+	byte(memory_getAddress("8-bit:GameState", enum_releaseRegion))
+
+function prior_GameState(enum_releaseRegion) =>
+	prior(current_GameState(enum_releaseRegion))
+
+function prev_GameState(enum_releaseRegion) =>
+	prev(current_GameState(enum_releaseRegion))
+
+function is_AnyInGameMenu_active(enum_releaseRegion) =>
+	current_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
+
+function on_AnyInGameMenu_deactivate(enum_releaseRegion) =>
+	current_GameState(enum_releaseRegion) != CONST_GAME_STATE_AnyInGameMenu_active
+	&& prev_GameState(enum_releaseRegion) == CONST_GAME_STATE_AnyInGameMenu_active
+
+// #endregion Game States
+// #region Pause Menu
+// -----------------PauseMenu--------------------
+TEXTLOOKUPKEY_PauseMenu_FrameTitle_Paused = 0xE5E853D8
+TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart = 0x33E14BF8
+TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit = 0x8B239878
+TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower = 0x9EB09A69
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SilverBullet = 0x8BBEEDB1
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Fear = 0x2AD14BD8
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_MysticArmor = 0x337DD749
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Vindicator = 0x76E981F2
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_BloodFrenzy = 0xBE5D5443
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_Turn = 0xC6607CC3
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_BlackShroud = 0x8657504F
+TEXTLOOKUPKEY_NewPowerMenu_MsgBoxText_SoulStealer = 0xEC61D4E0
+
+function is_PauseMenu_active(enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[FF] of above 2 lines: R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX00000118_0xX0000006c=3857208280
+		NTSCU: 	xxxx
+
+		AddAddress	[Pointer:UIcontrol(preferred)]
+		Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+		Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+		AddAddress	[Pointer:UIcontrol(preferred)]
+		AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+		Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+		
+		AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+		AddAddress	->[Mem 32-bit] 0x118
+					->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_PauseMenu_FrameTitle_Paused 	| CheckIf: FrameTitle == "Paused"
+		*/
+		&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFF)
+
+function on_PauseMenu_Restart(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[FD1-FD2]:ResetOn_PauseMenu_Restart - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c!=870403064_N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=870403064_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._Z:0xX00965cc4!=0_N:0xX00965cc4=0_C:d0xX00965cc4!=0.1._Z:0xX00965df0!=0_N:0xX00965df0=0_C:d0xX00965df0!=0.1._R:0=1.3.
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+			---------ResetNextIf_A--------- (-> ResetNextIf when ConfirmationMenu not displayed)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| ResetNextIf: FrameTitle != "Restart"
+			---------AddHit_A--------- (-> when any player presses X while at ConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart 			| CheckIf: FrameTitle == "Restart"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+			---------ResetNextIf_B---------
+			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player1] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_1)
+			---------AddHit_B--------
+			AndNext		Mem [Pointer(EntityData_B):PlayerActorData-Player1] == 0x0		
+			AddHits		Delta [Pointer(EntityData_B):PlayerActorData-Player1] != 0x0	(1)		| CheckIf: on_flagState_InGame_toggleFalse(PLAYER_1)
+
+			---------ResetNextIf_C---------
+			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player2] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_2)
+			---------AddHit_C--------
+			AndNext		Mem [Pointer(EntityData_B):PlayerActorData-Player2] == 0x0		
+			AddHits		Delta [Pointer(EntityData_B):PlayerActorData-Player2] != 0x0	(1)		| CheckIf: on_flagState_InGame_toggleFalse(PLAYER_2)
+
+			ResetIf		Val 0x0 == Val 0x1		(3)				*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0xFD1)
+	&& is_ReleaseRegion(enum_releaseRegion)
+	&& is_AnyInGameMenu_active(enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_RestartConfirmationMenu_FrameTitle_Restart
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+	&& on_PlayerInput_press(CONTROLLER_2, INPUT_Cross, enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player1", enum_releaseRegion)) != 0
+	&& dword(memory_getAddress("Pointer(EntityData_B):PlayerActorData-Player2", enum_releaseRegion)) != 0
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD2)
+
+function on_PauseMenu_Quit(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2.
+		NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2.
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+
+			---------ResetNextIf_A1--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
+			---------ResetNextIf_A2--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| CheckIf: MEM FrameTitle != "Quit"
+
+			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			ResetNextIf	->[Prior 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 		(2)	| ResetNextIf: PRIOR FrameTitle == "Quit"
+			---------AddHit_A--------- (-> when any player presses X while at ConfirmationMenu, whilst YES highlighted)
+			AndNext		[ASCII:GameID] == "SLES"			| CheckIf: is_ReleaseRegion()
+			AndNext		[8-bit:GameState] == 0x3			| CheckIf: is_AnyInGameMenu_active()
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 			| CheckIf: FrameTitle == "Quit"
+			
+			AddAddress	Recall									| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0x7C
+			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+
+			AddAddress	[Pointer:PlayerInput(preferred)]
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+
+			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
+			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
+			---------AddHit_B--------
+			AndNext		Mem [Lower4:ActiveMenuPointerIndex] == 0x0		
+			AddHits		Delta [Lower4:ActiveMenuPointerIndex] != 0x0	(1)		| CheckIf: [Lower4:ActiveMenuPointerIndex] turns 0
+
+			ResetIf		Val 0x0 == Val 0x1		(2)				*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0xFD1)
+	&& is_ReleaseRegion(enum_releaseRegion)
+	&& is_AnyInGameMenu_active(enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit
+	&& on_PlayerInput_press(CONTROLLER_1, INPUT_Cross, enum_releaseRegion)
+	&& on_PlayerInput_press(CONTROLLER_2, INPUT_Cross, enum_releaseRegion)
+	&& memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", "Lower4:ActiveMenuPointerIndex", 
+		memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion),
+		memAccessorFunction_toPointedToMember = low4) == 0
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0xFD3)
+
+function on_NewPowerMenu_render(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-2CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c=2662373993_I:{recall}_d0xX0000006c!=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle != "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x2CCD)
+
+function is_NewPowerMenu_displayed(enum_releaseRegion) =>
+	/* MANUAL_CONSTRUCTION[1CCD-5CCD]:on_NewPowerMenu_render - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_I:0xX000000b8_0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddress	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	-->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"
+			*/	
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x5CCD)
+
+function is_NewPowerMenu_Power(enum_textLookupKeyPowerName, enum_releaseRegion) =>
+	is_AnyInGameMenu_active(enum_releaseRegion)
+	/* MANUAL_CONSTRUCTION[1CCD-4CCD]:CheckNewPowerMenuPowerName - R/R usage
+		// WARNING - Edit in enum_textLookupKeyPowerName
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_0xX0000006c=2662373993_I:{recall}_I:0xX0000000c_I:0xX00000004_0xX00000048=3965834464
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xB8
+						->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle == "New Power"	
+			
+			AddAddress	Recall											| Recall: The active [Pointer:UIcontrol_ptr-L2] 
+			AddAddress	->[Mem 32-bit] 0xC
+			AddAddress	->[Mem 32-bit] 0x4
+						->[Mem 32-bit] 0x48 == enum_textLookupKeyPowerName 			| CheckIf: MsgBoxText == enum_textLookupKeyPowerName
+			*/
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	// && is_NewPowerMenu_displayed(enum_releaseRegion)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == enum_textLookupKeyPowerName
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x4CCD)
+
+function on_NewPowerMenu_close(enum_releaseRegion) => 
+	/* MANUAL_CONSTRUCTION[1CCD-3CCD]:on_NewPowerMenu_close - R/R usage
+		PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_I:0xX00000000_K:0xX000000b8_I:{recall}_0xX0000006c!=2662373993_I:{recall}_d0xX0000006c=2662373993
+		NTSCU: 	xxxx
+		-----------
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			Remember	->[Lower4:ActiveMenuPointerIndex] - Val 0x1
+			Remember	Recall * Val 0x4								| Remember: Index of the active [Pointer:UIcontrol_ptr-L2]
+
+			AddAddress	[Pointer:UIcontrol(preferred)]
+			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
+			AddAddrss	->[Mem 32-bit] 0x0								| The active [Pointer:UIcontrol_ptr-L2] 
+			Remember	-->[Mem 32-bit] 0xB8							
+
+			AddAddrss	Recall
+			AndNext		->[Mem 32-bit] 0x6C != TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 			| CheckIf: MEM FrameTitle != "New Power"			
+			
+			AddAddrss	Recall
+			AddAddress	->[Delta 32-bit] 0x6C == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower 		| CheckIf: DELTA FrameTitle == "New Power"
+			*/
+	memUtil_ManualConstruction_PlaceHolderRequirement(0x1CCD)
+	&& dword(memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)) == TEXTLOOKUPKEY_NewPowerMenu_FrameTitle_NewPower
+	&& memUtil_ManualConstruction_PlaceHolderRequirement(0x3CCD)
+
+
+// #endregion Pause Menu
+// #region Multiplayer Match Settings
+// ----------------Multiplayer Match Settings---------------------
+MP_VS_GAMEMODE_Deathmatch = 0x1
+MP_VS_GAMEMODE_SoulHunter = 0x4
+
+MP_VS_MATCHDURATION_NoTimeLimit = 0xFF
+MP_VS_MATCHDURATION_5min = 0x5
+MP_VS_MATCHDURATION_10mins = 0xA
+MP_VS_MATCHDURATION_15mins = 0xF
+MP_VS_MATCHDURATION_30mins = 0x1E
+
+MP_VS_KillsToWin_NoKillLimit = 0xFF
+MP_VS_KillsToWin_5Kills = 0x5
+MP_VS_KillsToWin_10Kills = 0xA
+MP_VS_KillsToWin_15Kills = 0xF
+MP_VS_KillsToWin_25Kills = 0x19
+MP_VS_KillsToWin_50Kills = 0x32
+
+function current_MultiplayerVersusGameMode(enum_releaseRegion) =>
+	low4(memory_getAddress("Lower4:MultiplayerVersusGameModeID(non-functional)", enum_releaseRegion))
+
+function is_MultiplayerVersusGameMode(enum_multiplayerVersusGameMode, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_multiplayerVersusGameMode
+
+function current_DeathmatchSetting_KillsToWin(enum_releaseRegion) =>
+	low4(memory_getAddress("8-bit:DeathmatchSetting_KillsToWin(non-functional)", enum_releaseRegion))
+
+function is_DeathmatchSetting_KillsToWin(enum_multiplayerVersusKillsToWin, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_multiplayerVersusKillsToWin
+
+function current_MultiplayerSetting_MatchDuration(enum_releaseRegion) =>
+	low4(memory_getAddress("8-bit:MatchDuration(non-functional)", enum_releaseRegion))
+
+function is_MultiplayerSetting_MatchDuration(enum_MultiplayerMatchDuration, enum_releaseRegion) =>
+	current_MultiplayerVersusGameMode(enum_releaseRegion) == enum_MultiplayerMatchDuration
+// #endregion Multiplayer Match Settings
+
+// #endregion General Game Logic
 
 // ............
 // ◦ Level ID ◦
@@ -529,7 +1374,7 @@ function LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter) =>
 function LEVEL_DATA_getAllGunslingerLevels() => 
 	array_filter(CONST_LEVEL_DATA, enum_chapter => LEVEL_DATA_IsChapterGunslingerLevel(enum_chapter))
 
-function LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter) => // TODO check how stats are saved in Coop
+function LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_GunslingerMode"]
 
 function LEVEL_DATA_getSavedStatIndex_Story(enum_chapter) =>
@@ -654,6 +1499,10 @@ function is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion
 		return is_ASCII_EqualTo(let_memAddr_ASCII, let_string_ChapterSectionID)
 	}}
 
+function is_LastChapterSection_active(enum_chapter, enum_releaseRegion) {
+	let_lastChapterSection = LEVEL_DATA_getLastFullStringChapterSectionIndex(enum_chapter)
+	return is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)}
+
 // ----------------LevelID---------------------
 function ASCII_MEM_ADDR_LevelID(enum_releaseRegion, int_offsetTo_substringLevelID = 0) {
 	let_memAddr_BasePointer = memory_getAddress("Pointer:LevelID(preferred)", enum_releaseRegion)
@@ -679,6 +1528,969 @@ function is_LevelSubstring_Multiplayer(enum_MPlevel, enum_releaseRegion) {
 	return is_LevelSubstring(let_substring_LevelID, let_int_offsetTo_SubstringLevelID, enum_releaseRegion)}
 
 // #endregion Level ID
+
+// ..............
+// ◦ In-Game Statistics ◦
+// ''''''''''''''
+// #region In-Game Statistics
+function current_MissionTime_Temp(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_Temp", enum_releaseRegion))
+
+function prev_MissionTime_Temp(enum_releaseRegion) =>
+	prev(current_MissionTime_Temp(enum_releaseRegion))
+
+function on_MissionTime_Temp_start(enum_releaseRegion) =>
+	current_MissionTime_Temp(enum_releaseRegion) > 0
+	&& prev_MissionTime_Temp(enum_releaseRegion) == 0
+
+function on_MissionTime_Temp_secondPassed(enum_releaseRegion) =>
+	// NOTE: MissionTime is counted in milliseconds, thus divide by 1,000 ---> If (currentFrameMilliseconds / 1000) > (prevFrameMilliseconds / 1000) => a second has passed
+	// (current_MissionTime_Temp(enum_releaseRegion) / 1000) > (prev_MissionTime_Temp(enum_releaseRegion) / 1000)
+	(current_MissionTime_Temp(enum_releaseRegion) / 1000) - (prev_MissionTime_Temp(enum_releaseRegion) / 1000) > 0
+
+function current_MissionTime_ChapterSection(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_ChapterSection", enum_releaseRegion))
+
+function prev_MissionTime_ChapterSection(enum_releaseRegion) =>
+	prev(current_MissionTime_ChapterSection(enum_releaseRegion))
+
+function current_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:MissionTime_ChapterTotal", enum_releaseRegion))
+
+function prior_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	prior(current_MissionTime_ChapterTotal(enum_releaseRegion))
+
+function prev_MissionTime_ChapterTotal(enum_releaseRegion) =>
+	prev(current_MissionTime_ChapterTotal(enum_releaseRegion))
+
+function current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) =>
+	// NOTE: only valid when is_flagState_InGame_true() - when is_flagState_InGame_false(): only check current_MissionTime_ChapterTotal()
+	current_MissionTime_Temp(enum_releaseRegion) 
+	+ current_MissionTime_ChapterSection(enum_releaseRegion) 
+	+ current_MissionTime_ChapterTotal(enum_releaseRegion)
+	
+function prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) =>
+	prev(current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion))
+
+function on_calculated_TotalMissionTime_whileInGame_overflow(enum_releaseRegion) => // NOTE: Triggers when 32-bit overflow occurs; calculated_TotalMissionTime() increments based on FPS (25FPS increments by 40; 60FPS increments by 16.67)
+	0xFFFFFFFF - 1000 <= prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) // --> 1 second (= 1000ms) under 0xFFFFFFFF
+	// && prev_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) <= 0xFFFFFFFF // DISABLED - Line is alwaysTrue (unnecessary)
+	// && 0x0 <= current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) // DISABLED - Line is alwaysTrue (unnecessary)
+	&& current_calculated_TotalMissionTime_whileInGame(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
+
+// -------------------------------------
+function on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion) =>
+	is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+	&& is_ChapterSection(enum_chapter, CHAPTER_SECTION_1, enum_releaseRegion)
+	&& current_MissionTime_ChapterTotal(enum_releaseRegion) == 0 
+	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
+
+function on_ChapterSection_startFromBeginning(enum_chapter, enum_chapterSection, enum_releaseRegion) =>
+	is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+	&& is_ChapterSection(enum_chapter, enum_chapterSection, enum_releaseRegion)
+	&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
+
+function on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion) { 
+	let_lastChapterSection = LEVEL_DATA_getLastFullStringChapterSectionIndex(enum_chapter)
+	return 
+		is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion)
+		&& is_ChapterSection(enum_chapter, let_lastChapterSection, enum_releaseRegion)
+		&& current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+		&& on_MissionTime_Temp_start(enum_releaseRegion)
+	}
+
+function on_AnyChapterSection_startFromBeginning(enum_releaseRegion) =>
+	current_MissionTime_ChapterSection(enum_releaseRegion) == 0
+	&& on_MissionTime_Temp_start(enum_releaseRegion)
+// #endregion In-Game Statistics
+
+// ...............
+// ◦ Player Data ◦
+// '''''''''''''''
+// #region Player Data
+PLAYER_1 = "1"
+PLAYER_2 = "2"
+
+CONST_FLAG_IsNoPlayerProfileSelected = 0xFFFFFFFF
+
+function current_PlayerProfileID(enum_player, enum_releaseRegion) =>
+	dword(memory_getAddress("32-bit:SelectedPlayerProfileID:Player-1", enum_releaseRegion))
+
+function is_PlayerProfile_selected(enum_player, enum_releaseRegion) =>
+	current_PlayerProfileID(enum_player, enum_releaseRegion) != CONST_FLAG_IsNoPlayerProfileSelected
+
+function is_PlayerProfile_notSelected(enum_player, enum_releaseRegion) =>
+	current_PlayerProfileID(enum_player, enum_releaseRegion) == CONST_FLAG_IsNoPlayerProfileSelected
+// ----------------ControllerConfig---------------------
+CONTROLLER_CONFIG_Default = "Defa" // FullString: "Default"
+CONTROLLER_CONFIG_Lefty = "Left" // FullString: "Lefty"
+CONTROLLER_CONFIG_Hopalong = "Hopa" // FullString: "Hopalong"
+CONTROLLER_CONFIG_Hoss = "Hoss" // FullString: "Hoss"
+
+CONST_CONTROLLER_CONFIG_DATA = { // Configs changes in-game controls
+	CONTROLLER_CONFIG_Default: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	CONTROLLER_CONFIG_Lefty: {
+		"Button_SightMode": "BitFlag:IsInputPressed_L3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_L2",
+		"Button_Shoot": "BitFlag:IsInputPressed_L1",
+		},
+	CONTROLLER_CONFIG_Hopalong: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	CONTROLLER_CONFIG_Hoss: {
+		"Button_SightMode": "BitFlag:IsInputPressed_R3",
+		"Button_ActivatePower": "BitFlag:IsInputPressed_R2",
+		"Button_Shoot": "BitFlag:IsInputPressed_R1",
+		},
+	}
+
+function CONTROLLER_CONFIG_DATA_getButtonSightMode(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_SightMode"]
+
+function CONTROLLER_CONFIG_DATA_getButtonActivatePower(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_ActivatePower"]
+
+function CONTROLLER_CONFIG_DATA_getButtonShoot(enum_controllerConfig) =>
+	CONST_CONTROLLER_CONFIG_DATA[enum_controllerConfig]["Button_Shoot"]
+
+function ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer:Controls_ControllerConfig-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	let_memAddr_ASCII = 
+		dword(let_memAddr_BasePointer) 
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_ControllerConfig(enum_player, enum_controllerConfig, enum_releaseRegion) =>
+	is_ASCII_EqualTo(ASCII_MEM_ADDR_ControllerConfig(enum_player, enum_releaseRegion), enum_controllerConfig)
+
+
+// #region Player Gauges
+// ----------------Health (HP)---------------------
+CONST_PLAYER_MAX_HP = 100.0
+CONST_PLAYER_MAX_VAMPIRESHIELD = 100.0
+CONST_PLAYER_MAX_BLOODPOWER = 30.0
+
+function current_Player_HP(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "Float:PlayerHealth(functional)", let_memAddr_BasePointer,
+		memAccessorFunction_toPointedToMember = float)}
+
+function prev_Player_HP(enum_player, enum_releaseRegion) =>
+	prev(current_Player_HP(enum_player, enum_releaseRegion))
+// ----------------BloodPowerGauge---------------------
+function current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer(EntityData_B):PlayerActorData-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Struct:PlayerEntityData", "Float:BloodPowerGauge(functional)", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = float)
+	}
+
+function prev_Player_BloodPowerGauge(enum_player, enum_releaseRegion) =>
+	prev(current_Player_BloodPowerGauge(enum_player, enum_releaseRegion))
+
+function on_Player_Power_use(enum_player, enum_releaseRegion) =>
+	current_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == 0.0
+	&& prev_Player_BloodPowerGauge(enum_player, enum_releaseRegion) == CONST_PLAYER_MAX_BLOODPOWER
+// #endregion Player Gauges
+// #region Difficulty
+// ----------------Difficulty---------------------
+DIFFICULTY_Greenhorn = 0x0	// --> These are the DifficultyIDs
+DIFFICULTY_Cowboy = 0x1
+DIFFICULTY_Shootist = 0x2
+DIFFICULTY_Deadeye = 0x3
+
+function current_Difficulty(enum_releaseRegion) => 
+	low4(memory_getAddress("Lower4:DifficultyID(preferred)", enum_releaseRegion))
+
+function is_Difficulty(enum_difficulty, enum_releaseRegion) => 
+	current_Difficulty(enum_releaseRegion) == enum_difficulty
+
+function is_DifficultyOrHarder(enum_difficulty, enum_releaseRegion) =>
+	current_Difficulty(enum_releaseRegion) >= enum_difficulty
+
+// #endregion Difficulty
+// #region Weapon ID
+// ----------------WeaponID---------------------
+WEAPON_Pistol = 0x0		// --> These are the WeaponIDs
+WEAPON_Redeemer = 0x1
+WEAPON_DualPistols = 0x2
+WEAPON_HorseRevolver = 0x3
+WEAPON_Carbine = 0x4
+WEAPON_Shotgun = 0x5
+WEAPON_RailRocket = 0x6
+WEAPON_Crossbow = 0x7
+WEAPON_RangeRifle = 0x8
+WEAPON_Scepter = 0x9
+
+const_WEAPON_DATA = {
+	WEAPON_Pistol: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Pistol",
+		"isDarkwatchWeapon": false // --> Starting Pistol
+		},
+	WEAPON_Redeemer: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Redeemer",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_DualPistols: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_DualPistols",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_HorseRevolver: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_HorseRevolver",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Carbine: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Carbine",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Shotgun: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Shotgun",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RailRocket: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RailRocket",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Crossbow: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Crossbow",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_RangeRifle: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_RangeRifle",
+		"isDarkwatchWeapon": true
+		},
+	WEAPON_Scepter: {
+		"memberKey_WeaponEquipTime": "32-bit:WeaponEquipTime_Scepter",
+		"isDarkwatchWeapon": true
+		},
+	}
+
+function WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["memberKey_WeaponEquipTime"]
+
+function WEAPON_DATA_IsDarkwatchWeapon(enum_weapon) =>
+	const_WEAPON_DATA[enum_weapon]["isDarkwatchWeapon"]
+
+function WEAPON_DATA_getAllDarkwatchWeaponIDs() =>
+	array_filter(const_WEAPON_DATA, enum_weapon => WEAPON_DATA_IsDarkwatchWeapon(enum_weapon))
+
+function WEAPON_DATA_getAllWeaponIDs() =>
+	array_map(const_WEAPON_DATA, enum_weapon => enum_weapon)
+
+function current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) {
+	let_memAddrKey = format("8-bit:EquippedWeapon_WeaponID-Player{0}", enum_player)
+	return byte(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function is_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) =>
+	current_EquippedWeapon(enum_player, enum_weapon, enum_releaseRegion) == enum_weapon
+
+// #endregion Weapon ID
+// #region Accuracy
+// ----------------Accuracy---------------------
+function current_ShotsFired_Temp(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_Temp-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_Temp(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_Temp-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+	
+function current_ShotsFired_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsFired_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsFired_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_ShotsHit_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:ShotsHit_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+// -------------------------------------
+function current_calculated_Accuracy_FullTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION:current_calculated_Accuracy_FullTotal - R/R usage
+	PAL:	A:0xX00965c20+0xX00965c54_A:0xX00965c88_K:0_K:{recall}/f1.0_A:0xX00965c24/{recall}_A:0xX00965c58/{recall}_K:0xX00965c8c/{recall}_{recall}=3735928559
+	NTSCU:	xxxx
+	------------
+	AddSource	[32-bit:ShotsFired_Temp] + [32-bit:ShotsFired_ChapterTotal]
+	AddSource	[32-bit:ShotsFired_ChapterSection]
+	Remember 	Val	0
+	Remember	Recall / 1.0								--> Force 32-bit to Float
+	AddSource	[32-bit:ShotsHit_Temp] / Recall				--> Divide by float, creates a float
+	AddSource	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by float, creates a float
+	Remember	[32-bit:ShotsHit_ChapterSection] / Recall	--> Divide by float, creates a float
+				Recall == 0xDEADBEEF 							*/
+	current_ShotsFired_Temp(enum_player, enum_releaseRegion) 
+	+ current_ShotsFired_ChapterTotal(enum_player, enum_releaseRegion)
+	+ current_ShotsFired_ChapterSection(enum_player, enum_releaseRegion)
+	+ current_ShotsHit_Temp(enum_player, enum_releaseRegion) 
+	+ current_ShotsHit_ChapterTotal(enum_player, enum_releaseRegion)
+	+ current_ShotsHit_ChapterSection(enum_player, enum_releaseRegion)
+
+function current_calculated_Accuracy_ChapterTotal(enum_player, enum_releaseRegion) => /* MANUAL_CONSTRUCTION:current_calculated_Accuracy_ChapterTotal - R/R usage
+	PAL:	K:0xX00965c54/f1.0_A:0xX00965c58/{recall}_f0.0=3735928559
+	NTSCU:	xxxxx
+	-------------
+	Remember	[32-bit:ShotsFired_ChapterTotal] / 1.0		--> Force 32-bit to Float
+	AddSource	[32-bit:ShotsHit_ChapterTotal] / Recall		--> Divide by float, creates a float
+				Float 0.0 == 0xDEADBEEF
+	*/
+	current_ShotsFired_ChapterTotal(enum_player, enum_releaseRegion) 
+	+ current_ShotsHit_ChapterTotal(enum_player, enum_releaseRegion)
+	
+
+// #endregion Accuracy
+// #region Other Stats
+// ----------------PlayerDeaths---------------------
+function current_PlayerDeaths_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:PlayerDeaths_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_PlayerDeaths_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:PlayerDeaths_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_PlayerDeaths_ChapterSection(enum_player, enum_releaseRegion) =>
+	prev(current_PlayerDeaths_ChapterSection(enum_player, enum_releaseRegion))
+
+function prev_PlayerDeaths_ChapterTotal(enum_player, enum_releaseRegion) =>
+	prev(current_PlayerDeaths_ChapterTotal(enum_player, enum_releaseRegion))
+
+function on_PlayerDeaths_ChapterSection_increment(enum_player, enum_releaseRegion) =>
+	current_PlayerDeaths_ChapterSection(enum_player, enum_releaseRegion) > prev_PlayerDeaths_ChapterSection(enum_player, enum_releaseRegion)
+
+function on_PlayerDeaths_ChapterTotal_increment(enum_player, enum_releaseRegion) =>
+	current_PlayerDeaths_ChapterTotal(enum_player, enum_releaseRegion) > prev_PlayerDeaths_ChapterTotal(enum_player, enum_releaseRegion)
+
+// ----------------Kills---------------------
+function current_Kills_Temp(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:Kills_Temp-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_Kills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_Kills_Temp(enum_player, enum_releaseRegion))
+
+function on_Kills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) > prev_Kills_Temp(enum_player, enum_releaseRegion)
+
+function on_Kills_Temp_incrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) == prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
+
+function on_Kills_Temp_minIncrementBy(int_incrementNumber, enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion) >= prev_Kills_Temp(enum_player, enum_releaseRegion) + int_incrementNumber
+
+function current_Kills_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:Kills_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_Kills_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:Kills_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_calculated_Kills_FullTotal(enum_player, enum_releaseRegion) =>
+	current_Kills_Temp(enum_player, enum_releaseRegion)
+	+ current_Kills_ChapterSection(enum_player, enum_releaseRegion)
+	+ current_Kills_ChapterTotal(enum_player, enum_releaseRegion)
+
+// ----------------HeadshotKills---------------------
+function current_HeadshotKills_Temp(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:HeadshotKills_Temp-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_HeadshotKills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_HeadshotKills_Temp(enum_player, enum_releaseRegion))
+
+function on_HeadshotKills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_HeadshotKills_Temp(enum_player, enum_releaseRegion) > prev_HeadshotKills_Temp(enum_player, enum_releaseRegion)
+
+function current_HeadshotKills_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:HeadshotKills_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_HeadshotKills_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:HeadshotKills_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_calculated_HeadshotKills_FullTotal(enum_player, enum_releaseRegion) =>
+	current_HeadshotKills_Temp(enum_player, enum_releaseRegion)
+	+ current_HeadshotKills_ChapterSection(enum_player, enum_releaseRegion)
+	+ current_HeadshotKills_ChapterTotal(enum_player, enum_releaseRegion)
+
+// ----------------MeleeKills---------------------
+function current_MeleeKills_Temp(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:MeleeKills_Temp-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function prev_MeleeKills_Temp(enum_player, enum_releaseRegion) =>
+	prev(current_MeleeKills_Temp(enum_player, enum_releaseRegion))
+
+function on_MeleeKills_Temp_increment(enum_player, enum_releaseRegion) =>
+	current_MeleeKills_Temp(enum_player, enum_releaseRegion) > prev_MeleeKills_Temp(enum_player, enum_releaseRegion)
+
+function current_MeleeKills_ChapterSection(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:MeleeKills_ChapterSection-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_MeleeKills_ChapterTotal(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("32-bit:MeleeKills_ChapterTotal-Player{0}", enum_player)
+	return dword(memory_getAddress(let_memAddrKey, enum_releaseRegion))}
+
+function current_calculated_MeleeKills_FullTotal(enum_player, enum_releaseRegion) =>
+	current_MeleeKills_Temp(enum_player, enum_releaseRegion)
+	+ current_MeleeKills_ChapterSection(enum_player, enum_releaseRegion)
+	+ current_MeleeKills_ChapterTotal(enum_player, enum_releaseRegion)
+
+
+// #endregion Other Stats
+// #region Saved Stats
+// ----------------SavedStats_Gunslinger---------------------
+CONST_NUMBER_OF_CHAPTERS = length(LEVEL_DATA_getAllGunslingerLevels()) // = 17
+
+function current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat_MissionTime = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_MissionTime]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function prev_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) =>
+	prev(current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion))
+
+function on_SavedStatGunslinger_MissionTime_change(enum_chapter, enum_releaseRegion) =>
+	current_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion) != prev_SavedStatGunslinger_MissionTime(enum_chapter, enum_releaseRegion)
+
+function current_SavedStatGunslinger_Difficulty(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat_Difficulty = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat_Difficulty
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(
+		let_memAddr_BasePointer, let_array_pointerChainOffsets, 
+		memAccessorFunction_toPointedToMember = low4)
+	}
+
+function current_SavedStatGunslinger_PlayerDeaths(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_HeadshotKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_Kills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_MeleeKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_ShotsFired(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatGunslinger_ShotsHit(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+
+
+function current_SavedStatGunslinger_WeaponEquipTime(enum_chapter, enum_weapon, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Gunslinger")	
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter)
+	let_offsetToIndexedMember_Pointer_WeaponEquipTimes = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Pointer:WeaponEquipTimes") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+	let_memberKey_WeaponEquipTime = WEAPON_DATA_getMemberKey_WeaponEquipTime(enum_weapon)
+	let_offsetToMember_WeaponEquipTime = memory_getStruct_OffsetToMember("Struct:WeaponEquipTimes", let_memberKey_WeaponEquipTime)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_Pointer_WeaponEquipTimes,
+		let_offsetToMember_WeaponEquipTime
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)
+	}
+
+// ----------------SavedStats_Story (SinglePlayer)---------------------
+function current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MissionTime") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_Difficulty(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "Lower4:Difficulty") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_PlayerDeaths(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:PlayerDeaths") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_HeadshotKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:HeadshotKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_Kills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:Kills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_MeleeKills(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:MeleeKills") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_ShotsFired(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsFired") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_SavedStatStory_ShotsHit(enum_chapter, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:PlayerSavedStats-Player1", enum_releaseRegion)
+
+	let_offsetToMember_Pointer_SavedStatsGunslinger = memory_getStruct_OffsetToMember("Pointer:PlayerSavedStats", "Pointer:SavedStats_Story")
+	let_savedStatIndex = LEVEL_DATA_getSavedStatIndex_Story(enum_chapter)
+	let_offsetToIndexedMember_SavedStat = memory_getStruct_OffsetToMember("Struct:ChapterStats", "32-bit:ShotsHit") + (memory_getStruct_SizeInBytes("Struct:ChapterStats") * let_savedStatIndex)
+
+	let_array_pointerChainOffsets = [
+		let_offsetToMember_Pointer_SavedStatsGunslinger,
+		let_offsetToIndexedMember_SavedStat
+	]
+
+	return memGenerate_pointerChainAccessor_fromOffsets(let_memAddr_BasePointer, let_array_pointerChainOffsets)}
+
+function current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion) =>
+	/* NOTE - OUTPUT:
+		[SavedStats_Story_MissionTime_Chapter1] 
+		+ [SavedStats_Story_MissionTime_Chapter2] 
+		+ ... 
+		+ [SavedStats_Story_MissionTime_Chapter8] 
+		+ [SavedStats_Story_MissionTime_ChapterHubCitadel] 
+		+ [SavedStats_Story_MissionTime_Chapter9] 
+		+ .... 
+		+ [SavedStats_Story_MissionTime_Chapter17]			*/
+	sum_of(CONST_LEVEL_DATA, enum_chapter => 
+		current_SavedStatStory_MissionTime(enum_chapter, enum_releaseRegion)) 
+
+function current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) => 
+	current_MissionTime_Temp(enum_releaseRegion)
+	+ current_MissionTime_ChapterSection(enum_releaseRegion)
+	// + current_MissionTime_ChapterTotal(enum_releaseRegion) // DISABLED - Whenever [MissionTime_ChapterTotal] updates, it also updates the corresponding ChapterStat in [Array:SavedStats_Story] (thus when a StoryChapterSection ends && when a Chapter ends)
+	+ current_calculated_SavedStats_TotalStoryMissionTime(enum_releaseRegion)
+	
+function prev_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) =>
+	prev(current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion))
+
+function on_calculated_TotalStoryTime_whileInGame_overflow(enum_releaseRegion) => // NOTE: Triggers when 32-bit overflow occurs; MissionTime increments based on FPS (25FPS: increments by 40 --- 60FPS: increments by 16.67)
+	0xFFFFFFFF - 1000 <= prev_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) // --> 1 second (= 1000ms) under 0xFFFFFFFF
+	&& current_calculated_TotalStoryTime_whileInGame(enum_releaseRegion) <= 0x0 + 1000 // --> 1 second (= 1000ms) above 0x0
+
+// #endregion Saved Stats
+
+// #endregion Player Data
+
+// ......................
+// ◦ HUD Control Health ◦
+// ''''''''''''''''''''''
+// #region HUD Control Health
+
+// ---------------BossHP-------------------- // NOTE: one Boss HP bar is displayed for each player, thus twice the same boss HP bar
+function current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:HUDcontrol_Health", "BitFlag:IsBossHPbarDisplayed", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = bit0)
+	}
+
+function prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion) =>
+	prev(current_flagState_IsBossHPbarDisplayed(enum_releaseRegion))
+
+function is_BossHealthBar_Display_active(enum_releaseRegion) =>
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) == 1
+
+function on_BossHealthBar_Display_render(enum_releaseRegion) =>
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) > prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion)
+
+function on_BossHealthBar_Display_remove(enum_releaseRegion) => 
+	current_flagState_IsBossHPbarDisplayed(enum_releaseRegion) < prev_flagState_IsBossHPbarDisplayed(enum_releaseRegion)
+
+function current_Boss_Health(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:HUDcontrol_Health-Player1", enum_releaseRegion)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:HUDcontrol_Health", "Float:BossHP(display)(preferred)", 
+		let_memAddr_BasePointer, memAccessorFunction_toPointedToMember = float)
+	}
+
+function prev_Boss_Health(enum_releaseRegion) =>
+	prev(current_Boss_Health(enum_releaseRegion))
+// ---------------PowerIcon(top-left)--------------------
+POWER_SilverBrand = "Silv" // FullString: "SilverBrandRune"
+POWER_Fear = "Fear" // FullString: "FearRune"
+POWER_MysticArmour = "Myst" // FullString: "MysticArmourRune"
+POWER_Vindicator = "Vind" // FullString: "VindicatorRune"
+POWER_BloodFrenzy = "Bloo" // FullString: "BloodFrenzyRune"
+POWER_Turn = "Turn" // FullString: "TurnRune"
+POWER_BlackShroud = "Blac" // FullString: "BlackShroudRune"
+POWER_SoulStealer = "Soul" // FullString: "SoulStealerRune"
+
+CONST_POWER_DATA = {
+	POWER_SilverBrand: {
+		"PowerReputation": "Good",
+		"PowerTier": 1,
+		},
+	POWER_Fear: {
+		"PowerReputation": "Good",
+		"PowerTier": 2,
+		},
+	POWER_MysticArmour: {
+		"PowerReputation": "Good",
+		"PowerTier": 3,
+		},
+	POWER_Vindicator: {
+		"PowerReputation": "Good",
+		"PowerTier": 4,
+		},
+	POWER_BloodFrenzy: {
+		"PowerReputation": "Evil",
+		"PowerTier": 1,
+		},
+	POWER_Turn: {
+		"PowerReputation": "Evil",
+		"PowerTier": 2,
+		},
+	POWER_BlackShroud: {
+		"PowerReputation": "Evil",
+		"PowerTier": 3,
+		},
+	POWER_SoulStealer: {
+		"PowerReputation": "Evil",
+		"PowerTier": 4,
+		},
+	}
+
+function POWER_DATA_getPowerReputation(enum_power) =>
+	CONST_POWER_DATA[enum_power]["PowerReputation"]
+
+function POWER_DATA_getPowerTier(enum_power) =>
+	CONST_POWER_DATA[enum_power]["PowerTier"]
+
+function POWER_DATA_getAllEvilPowers() =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerReputation(enum_power) == "Evil") return true
+		return false
+	})
+
+function POWER_DATA_getAllGoodPowers() =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerReputation(enum_power) == "Good") return true
+		return false
+	})
+
+function POWER_DATA_getAllPowersOfTier(int_tier) =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (POWER_DATA_getPowerTier(enum_power) == int_tier) return true
+		return false 
+	})
+
+function POWER_DATA_getAllPowersOfTiers(array_tiers) =>
+	array_filter(CONST_POWER_DATA, (enum_power) {
+		if (array_contains(array_tiers, POWER_DATA_getPowerTier(enum_power))) return true
+		return false 
+	})
+
+function ASCII_MEM_ADDR_PowerIconTopLeft(enum_player, enum_releaseRegion) {
+	let_memAddrKey = format("Pointer:HUDcontrol_Health-Player{0}", enum_player)
+	let_memAddr_BasePointer = memory_getAddress(let_memAddrKey, enum_releaseRegion)
+	let_memAddr_ASCII = 
+		memGenerate_pointerChainAccessor("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft", let_memAddr_BasePointer)
+		+ memory_getStruct_OffsetToPointedToMember("Pointer:HUDcontrol_Health", "ASCII:PowerIconTopLeft")
+	return let_memAddr_ASCII}
+
+function is_PowerIconTopLeft(enum_power, enum_releaseRegion) =>
+	dword(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion)) == memUtil_asciiStringToHexLE(enum_power)
+
+function is_InSunlight(enum_releaseRegion) {
+	const_ASCII_FLAG_PowerIconTopLeft_SunlightState = "SunlightState"
+	return is_ASCII_EqualTo(ASCII_MEM_ADDR_PowerIconTopLeft(enum_releaseRegion), const_ASCII_FLAG_PowerIconTopLeft_SunlightState)}	
+
+
+// #endregion HUD Control Health
+
+// ....................
+// ◦ HUD Control Gear ◦
+// ''''''''''''''''''''
+// #region HUD Control Gear
+THROWABLE_Dynamite = "Dyna" // FullString: "Dynamite"
+THROWABLE_SplitterGrenades = "Spli" // FullString: "SplitterGrenades"
+
+function current_ThrowableType(enum_player, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_pointerChainKey = format("ASCII:Equipped_ThrowableNameID-Player{0}", enum_player)
+	let_offsetTo_ASCII = memory_getStruct_OffsetToPointedToMember("Pointer:UIcontrol", let_pointerChainKey)
+	return memGenerate_pointerChainAccessor(
+		"Pointer:UIcontrol", let_pointerChainKey, 
+		let_memAddr_BasePointer, int_offsetToPointedToMember = let_offsetTo_ASCII,
+		memAccessorFunction_toPointedToMember = dword)}
+
+function prev_ThrowableType(enum_player, enum_releaseRegion) =>
+	prev(current_ThrowableType(enum_player, enum_releaseRegion))
+
+function on_ThrowableType_switch(enum_player, enum_releaseRegion) =>
+	current_ThrowableType(enum_player, enum_releaseRegion) != prev_ThrowableType(enum_player, enum_releaseRegion)
+
+function current_ThrowableCountInInventory(enum_player, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_pointerChainKey = format("32-bit:ThrowableCountInInventory(display)-Player{0}", enum_player)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", let_pointerChainKey, let_memAddr_BasePointer)}
+
+function prev_ThrowableCountInInventory(enum_player, enum_releaseRegion) =>
+	prev(current_ThrowableCountInInventory(enum_player, enum_releaseRegion))
+
+function on_Throwable_use(enum_player, enum_releaseRegion) =>
+	current_ThrowableCountInInventory(enum_player, enum_releaseRegion) < prev_ThrowableCountInInventory(enum_player, enum_releaseRegion)
+
+function on_HUDcontrolGear_weaponSwap(enum_player, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_pointerChainKey = format("Pointer:EquippedWeaponName-Player{0}", enum_player)
+	let_memAccessor_SubPointer = memGenerate_pointerChainAccessor("Pointer:UIcontrol", let_pointerChainKey, let_memAddr_BasePointer)
+	return let_memAccessor_SubPointer != prev(let_memAccessor_SubPointer)}
+
+function current_HUDcontrolGear_LoadedBullets(enum_player, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:UIcontrol(preferred)", enum_releaseRegion)
+	let_pointerChainKey = format("32-bit:EquippedWeapon_LoadedBullets(display)-Player{0}", enum_player)
+	return memGenerate_pointerChainAccessor("Pointer:UIcontrol", let_pointerChainKey, let_memAddr_BasePointer)} 
+
+function prev_HUDcontrolGear_LoadedBullets(enum_player, enum_releaseRegion) =>
+	prev(current_HUDcontrolGear_LoadedBullets(enum_player, enum_releaseRegion))
+
+function on_HUDcontrolGear_LoadedBullets_decrement(enum_player, enum_releaseRegion) =>
+	current_HUDcontrolGear_LoadedBullets(enum_player, enum_releaseRegion) < prev_HUDcontrolGear_LoadedBullets(enum_player, enum_releaseRegion)
+
+
+// #endregion HUD Control Gear
+
+// ..........
+// ◦ FMV ID ◦
+// ''''''''''
+// #region FMV ID
+CONST_ASCII_FLAG_SofdecIsFMVactive_true = "Sofd" // FullString: "SofdecStream"
+FMV_MainMenu = "PS2MAI"
+FMV_Shadow = "M01S4_"
+FMV_LazarusLives = "M02S1_"
+FMV_CassidyDies = "M04S1_"
+FMV_TheHaunting = "M05S1_"
+FMV_GiddyUp = "M09S3_"
+FMV_PromNight = "M11S2_"
+FMV_Monster = "M22S4_"
+FMV_Hero = "M22S3_"
+FMV_Credits = "FINALD"
+
+function is_anyFMV_active(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return is_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function on_anyFMV_start(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)
+		&& wasPrev_ASCII_notEqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function on_anyFMV_end(enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCIIFlag = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCIIFlag:Sofdec_IsFMVactive")
+	return 
+		is_ASCII_notEqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)
+		&& wasPrev_ASCII_EqualTo(let_memAddr_ASCIIFlag, CONST_ASCII_FLAG_SofdecIsFMVactive_true)}
+
+function is_FMV_active(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& is_anyFMV_active(enum_releaseRegion)}
+
+function on_FMV_start(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		is_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& on_anyFMV_start(enum_releaseRegion)}
+
+function on_FMV_end(enum_fmv, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:SofdecStreamData(preferred)", enum_releaseRegion)
+	let_memAddr_ASCII = dword(let_memAddr_BasePointer) + memory_getStruct_OffsetToPointedToMember("Pointer:SofdecStreamData", "ASCII:Sofdec_FMVID")
+	return 
+		wasPrev_ASCII_EqualTo(let_memAddr_ASCII, enum_fmv)
+		&& on_anyFMV_end(enum_releaseRegion)}
+// -------------------------------------
+function is_WatchingFMV_viaExtrasMenu(enum_releaseRegion) =>
+	is_MainMenu_SubMenuID(MAINMENU_SUBMENU_ExtrasMenu, enum_releaseRegion)
+	&& is_anyFMV_active(enum_releaseRegion)
+
+function is_atMainMenu(enum_releaseRegion) =>
+	is_FMV_active(FMV_MainMenu, enum_releaseRegion)
+
+function on_MainMenu_enter(enum_releaseRegion) =>
+	on_FMV_start(FMV_MainMenu, enum_releaseRegion)
+
+// #endregion FMV ID
 
 // ................
 // ◦ Sub_Header_1 ◦
@@ -759,8 +2571,8 @@ achievements_coreData = {
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
 	
 	"c_Story": { // Category - Story Progression Achievements
-		// "a_WrongTrain": { // CONCEPT
-			// "id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		"a_WrongTrain": { // CONCEPT
+			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
 		// "a_RideDevil": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
 		// "a_Boneyard": { // CONCEPT
@@ -835,13 +2647,13 @@ achievements_coreData = {
 			// "id": 000000, "points": 0000000, "devInfo": "Complete CHAPTER_17_CurseWest on Deadeye difficulty with no deaths and where each player can only use each power once"},
 		},
 	"c_Bonus": { // Category - Bonus achievements
-		// "a_MultiKillers": {
+		// "a_MultiKillers": { // CONCEPT
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Complete a Chapter, where each player scored at least one multikill"}
-		// "a_SunHi": {
+		// "a_SunHi": { // CONCEPT
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Both player use powers in sunlight"}
-		// "a_AllEvil": {
+		// "a_AllEvil": { // CONCEPT
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Evil powers"}
-		// "a_AllGood": {
+		// "a_AllGood": { // CONCEPT
 			// "id": 000000, "points": achievement_POINTS_0, "devInfo": "Unlock all Good powers"}
 		},
 	}
@@ -851,7 +2663,7 @@ achievements_coreData = {
 	achievement_TYPE_Missable = "missable"
 	achievement_TYPE_Standard = ""
 
-achievements_typeByCategory = { // TODO set achievement types
+achievements_typeByCategory = {
 	// DEV_NOTE: Achievement property 'type'
 	//	- Possible type keys: "missable" - "progression" - "win_condition" 
 	//	- sNULL => when it's not necessarily a missable achievement --> will result in type: "standard"
@@ -875,6 +2687,110 @@ achievements_typeByCategory = { // TODO set achievement types
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
 
+function achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) =>
+	// [1] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Coop Mode
+		never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_InMultiplayerCoopMode(enum_releaseRegion))
+	// [2] ==== Alt Reset Group ==== 			-> Reset when not in correct Level
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& !is_LevelSubstring_StoryChapter(enum_chapter, enum_releaseRegion))
+	// [3] ==== Alt Reset Group ==== 			-> Reset when at MainMenu --> Necessary next to AltResetGroup[4], to reset hitCounts on AltLogicGroup
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion)
+			&& is_atMainMenu(enum_releaseRegion))
+	// [4] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Quit
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5])
+			PAL: 	xxxx
+			NTSCU: 	xxxx
+			*/
+		|| never_toAlt(
+			is_ReleaseRegion(enum_releaseRegion) 
+			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD3]
+	// [5] ==== Alt Reset Group ==== 			-> Reset when 1 player has no "active" participation
+		// TODO write this ResetIf
+
+
+function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
+		PAL: 	xxxxx
+		NTSCU: 	xxxx
+		*/
+	// [1] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf--[StartCondition]--> The last StoryChapterSection of the Level has started from the beginning
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(
+			once(
+				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
+				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
+			&& on_Loading_start(enum_releaseRegion))
+	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
+		|| achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+
+function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
+		PAL: 	xxxxx
+		NTSCU: 	xxxx
+		*/
+	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf--[StartCondition]--> The last StoryChapterSection of the Level has started from the beginning
+			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(on_Loading_start(enum_releaseRegion))
+	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
+		|| achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+
+function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
+	const_CHAPTER = CHAPTER_17_CurseWest
+	const_FMV_ending = FMV_Monster
+	if (bool_IsGoodEnding) const_FMV_ending = FMV_Hero
+	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
+		PAL: 	N:0xX007215cc=1397050451_N:0xH0073b430=3_I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_R:0xM0000000f>d0xM0000000f_0=1
+		NTSCU: 	N:0xX0071fccc=1398099027_N:0xH00729330=3_I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_O:0xX0000006c=870403064_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_R:0xM0000000f>d0xM0000000f_0=1
+		*/
+	return
+	// [1] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& once( // --CheckIf--[StartCondition]--> The last StoryChapterSection of the Level has started from the beginning
+			on_LastChapterSection_startFromBeginning(const_CHAPTER, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
+		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
+			never(is_flagState_InGame_true(enum_releaseRegion))
+			&& is_LastChapterSection_active(const_CHAPTER, enum_releaseRegion)
+			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
+			&& is_flagState_InGame_false(enum_releaseRegion))
+		&& trigger_when(
+			once(
+				never(on_FMV_start(const_FMV_ending, enum_releaseRegion))
+				&& on_FMV_end(const_FMV_ending, enum_releaseRegion))
+			&& on_FMV_end(FMV_Credits, enum_releaseRegion))
+	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
+		|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+	}
+
 // #endregion ACH - trigger generators
 
 // ========================
@@ -886,6 +2802,130 @@ achievements_triggers = {
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
+	// ----------------c_Story----------------
+	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_1_WrongTrain, FMV_Shadow, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_RideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_2_RideDevil, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Boneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_3_Boneyard, FMV_CassidyDies, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_DevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_4_DevilMine, FMV_TheHaunting, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_DWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_5_Outpost, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_WarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_6_WarTrain, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_TortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_7_TortureMaze, FMV_GiddyUp, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_BaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_8_BaptismFire, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Rescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_9_Rescue, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Prism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_10_Prism, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Invasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_11_Invasion, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Hangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_12_Hangtown, FMV_PromNight, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_MorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_13_MorningAfter, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Showdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_14_Showdown, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_RightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_15_RightTrain, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_Deadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(CHAPTER_16_Deadfall, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	// ----------------c_StoryEnd----------------
+	"a_CurseWestGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_StoryEnd(true, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	"a_CurseWestEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
+		achGenerate_FullTrigger_StoryEnd(false, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
+	// ----------------c_Challenge----------------
+	"a_ClgWrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgRideDevil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgBoneyard": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgDevilMine": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgDWOutpost": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgWarTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgTortureMaze": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgBaptismFire": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgRescue": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgPrism": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgInvasion": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgHangtown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgMorningAfter": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgShowdown": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgRightTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgDeadfall": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_ClgCurseWest": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	// ----------------c_Bonus----------------
+	"a_MultiKillers": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_SunHi": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_AllEvil": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
+	"a_AllGood": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WIP
+		// [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
+			is_ReleaseRegion(enum_releaseRegion)
+			&& always_false()),
 	}
 // #endregion ACH - triggers
 
@@ -895,10 +2935,96 @@ achievements_triggers = {
 // #region ACH - text
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	// ----------------c_Story----------------
+	"a_WrongTrain":		{"en": "xxxxxxxxx"},
+	"a_RideDevil":		{"en": "xxxxxxxxx"},
+	"a_Boneyard":		{"en": "xxxxxxxxx"},
+	"a_DevilMine":		{"en": "xxxxxxxxx"},
+	"a_DWOutpost":		{"en": "xxxxxxxxx"},
+	"a_WarTrain":		{"en": "xxxxxxxxx"},
+	"a_TortureMaze":	{"en": "xxxxxxxxx"},
+	"a_BaptismFire":	{"en": "xxxxxxxxx"},
+	"a_Rescue":			{"en": "xxxxxxxxx"},
+	"a_Prism":			{"en": "xxxxxxxxx"},
+	"a_Invasion":		{"en": "xxxxxxxxx"},
+	"a_Hangtown":		{"en": "xxxxxxxxx"},
+	"a_MorningAfter":	{"en": "xxxxxxxxx"},
+	"a_Showdown":		{"en": "xxxxxxxxx"},
+	"a_RightTrain":		{"en": "xxxxxxxxx"},
+	"a_Deadfall":		{"en": "xxxxxxxxx"},
+	// ----------------c_StoryEnd----------------
+	"a_CurseWestGood":		{"en": "xxxxxxxxx"},
+	"a_CurseWestEvil":		{"en": "xxxxxxxxx"},
+	// ----------------c_Challenge----------------
+	"a_ClgWrongTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgRideDevil":		{"en": "xxxxxxxxx"},
+	"a_ClgBoneyard":		{"en": "xxxxxxxxx"},
+	"a_ClgDevilMine":		{"en": "xxxxxxxxx"},
+	"a_ClgDWOutpost":		{"en": "xxxxxxxxx"},
+	"a_ClgWarTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgTortureMaze":		{"en": "xxxxxxxxx"},
+	"a_ClgBaptismFire":		{"en": "xxxxxxxxx"},
+	"a_ClgRescue":			{"en": "xxxxxxxxx"},
+	"a_ClgPrism":			{"en": "xxxxxxxxx"},
+	"a_ClgInvasion":		{"en": "xxxxxxxxx"},
+	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
+	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
+	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
+	"a_ClgRightTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
+	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
+	// ----------------c_Bonus----------------
+	"a_MultiKillers":	{"en": "xxxxxxxxx"},
+	"a_SunHi":			{"en": "xxxxxxxxx"},
+	"a_AllEvil":		{"en": "xxxxxxxxx"},
+	"a_AllGood":		{"en": "xxxxxxxxx"},
 	}
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	// ----------------c_Story----------------
+	"a_WrongTrain":		{"en": "xxxxxxxxx"},
+	"a_RideDevil":		{"en": "xxxxxxxxx"},
+	"a_Boneyard":		{"en": "xxxxxxxxx"},
+	"a_DevilMine":		{"en": "xxxxxxxxx"},
+	"a_DWOutpost":		{"en": "xxxxxxxxx"},
+	"a_WarTrain":		{"en": "xxxxxxxxx"},
+	"a_TortureMaze":	{"en": "xxxxxxxxx"},
+	"a_BaptismFire":	{"en": "xxxxxxxxx"},
+	"a_Rescue":			{"en": "xxxxxxxxx"},
+	"a_Prism":			{"en": "xxxxxxxxx"},
+	"a_Invasion":		{"en": "xxxxxxxxx"},
+	"a_Hangtown":		{"en": "xxxxxxxxx"},
+	"a_MorningAfter":	{"en": "xxxxxxxxx"},
+	"a_Showdown":		{"en": "xxxxxxxxx"},
+	"a_RightTrain":		{"en": "xxxxxxxxx"},
+	"a_Deadfall":		{"en": "xxxxxxxxx"},
+	// ----------------c_StoryEnd----------------
+	"a_CurseWestGood":		{"en": "xxxxxxxxx"},
+	"a_CurseWestEvil":		{"en": "xxxxxxxxx"},
+	// ----------------c_Challenge----------------
+	"a_ClgWrongTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgRideDevil":		{"en": "xxxxxxxxx"},
+	"a_ClgBoneyard":		{"en": "xxxxxxxxx"},
+	"a_ClgDevilMine":		{"en": "xxxxxxxxx"},
+	"a_ClgDWOutpost":		{"en": "xxxxxxxxx"},
+	"a_ClgWarTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgTortureMaze":		{"en": "xxxxxxxxx"},
+	"a_ClgBaptismFire":		{"en": "xxxxxxxxx"},
+	"a_ClgRescue":			{"en": "xxxxxxxxx"},
+	"a_ClgPrism":			{"en": "xxxxxxxxx"},
+	"a_ClgInvasion":		{"en": "xxxxxxxxx"},
+	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
+	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
+	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
+	"a_ClgRightTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
+	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
+	// ----------------c_Bonus----------------
+	"a_MultiKillers":	{"en": "xxxxxxxxx"},
+	"a_SunHi":			{"en": "xxxxxxxxx"},
+	"a_AllEvil":		{"en": "xxxxxxxxx"},
+	"a_AllGood":		{"en": "xxxxxxxxx"},
 	}
 // #endregion ACH - text
 
@@ -1009,7 +3135,7 @@ richPresence_ReleaseRegion_toSuperScript = {
 function richPresence_getText(string_textKey) =>
 	richPresence_text[string_textKey][util_language]
 
-funciotn richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
+function richPresence_getText_withRegionSuperScript(string_textKey, enum_releaseRegion) =>
 	format("{0} {1}", richPresence_ReleaseRegion_toSuperScript[enum_releaseRegion], richPresence_getText(string_textKey))
 
 function richPresence_getLookupTableText(string_lookupTableKey, let_lookupTableTextKey) =>
