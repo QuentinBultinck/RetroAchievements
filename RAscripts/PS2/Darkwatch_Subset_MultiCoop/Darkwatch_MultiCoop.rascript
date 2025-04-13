@@ -190,13 +190,23 @@ memory_StructDefs = {
 		},
 	"Struct:ControllerInput": {
 		"offsetToMember": {
-			"Bitflag:IsControllerConnected": 0x0,
-			"Bitflag:IsInputPressed_Select": 0x2,
+			"BitFlag:IsControllerConnected": 0x0,
+			"BitFlag:IsInputPressed_Select": 0x2,
+			"BitFlag:IsInputPressed_Start": 0x3,
+			"BitFlag:IsInputPressed_Dpad_Left": 0x4,
+			"BitFlag:IsInputPressed_Dpad_Right": 0x5,
+			"BitFlag:IsInputPressed_Dpad_Up": 0x6,
+			"BitFlag:IsInputPressed_Dpad_Down": 0x7,
+			"BitFlag:IsInputPressed_Square": 0x8,
+			"BitFlag:IsInputPressed_Circle": 0x9,
+			"BitFlag:IsInputPressed_Triangle": 0xA,
 			"BitFlag:IsInputPressed_Cross": 0xB,
 			"BitFlag:IsInputPressed_L3": 0xC,
 			"BitFlag:IsInputPressed_R3": 0xD,
+			"BitFlag:IsInputPressed_L1": 0xE,
+			"BitFlag:IsInputPressed_R1": 0xF,
 			"BitFlag:IsInputPressed_L2": 0x10,
-			"BitFlag:IsInputPressed_R2": 0x11},
+			"BitFlag:IsInputPressed_R2": 0x11}
 		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -512,21 +522,34 @@ function never_toAlt(comparison) => // never_toAlt() => creates a single alt gro
 CONTROLLER_1 = 1
 CONTROLLER_2 = 2
 
-INPUT_Select = "Bitflag:IsInputPressed_Select"
-INPUT_Cross = "BitFlag:IsInputPressed_Cross"
-INPUT_L2 = "BitFlag:IsInputPressed_L2"
-INPUT_R2 = "BitFlag:IsInputPressed_R2"
-INPUT_L3 = "BitFlag:IsInputPressed_L3"
-INPUT_R3 = "BitFlag:IsInputPressed_R3"
+IPNUT_Start = "Start"
+INPUT_Select = "Select"
+INPUT_Dpad_Left = "Dpad_Left"
+INPUT_Dpad_Right = "Dpad_Right"
+INPUT_Dpad_Up = "Dpad_Up"
+INPUT_Dpad_Down = "Dpad_Down"
+INPUT_Square = "Square"
+INPUT_Circle = "Circle"
+INPUT_Triangle = "Triangle"
+INPUT_Cross = "Cross"
+INPUT_L1 = "L1"
+INPUT_L2 = "L2"
+INPUT_L3 = "L3"
+INPUT_R1 = "R1"
+INPUT_R2 = "R2"
+INPUT_R3 = "R3"
+
+
 
 function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
+	let_memberKey_Input = format("BitFlag:IsInputPressed_{0}", enum_input)
 	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
 	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
 	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
 	return bit0(
 		dword(let_memAddr_BasePointer) 
 		+ let_offsetTo_Struct_PlayerInput 
-		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", enum_input)
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", let_memberKey_Input)
 	)}
 
 function prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) =>
@@ -538,11 +561,22 @@ function is_flagState_IsInputPressed_false(enum_controller, enum_input, enum_rel
 function is_flagState_IsInputPressed_true(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) == 1
 
+function on_flagState_IsInputPressed_change(enum_controller, enum_input, enum_releaseRegion) =>
+	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) != prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
 function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) > prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
 
 function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) < prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
+
+function on_PlayerInput_anyGameplayInputUse(enum_controller, enum_releaseRegion) {// NOTE: Movement/Look + Select/Start not included
+	const_GAMEPLAY_INPUTS = [
+		INPUT_Dpad_Left, INPUT_Dpad_Right, INPUT_Dpad_Up, INPUT_Dpad_Down, 
+		INPUT_Square, INPUT_Circle, INPUT_Triangle, INPUT_Cross,
+		INPUT_L1, INPUT_L2, INPUT_L3, INPUT_R1, INPUT_R2, INPUT_R3]
+	return any_of(const_GAMEPLAY_INPUTS, enum_input => on_flagState_IsInputPressed_change(enum_controller, enum_input, enum_releaseRegion))}
+
 
 // ----------------Divider---------------------
 
@@ -850,10 +884,10 @@ function on_PauseMenu_Restart(enum_releaseRegion) =>
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
 			---------ResetNextIf_B---------
 			ResetNextIf	[Pointer(EntityData_B):PlayerActorData-Player1] != 0x0 			| ResetNextIf: is_flagState_InGame_true(PLAYER_1)
@@ -916,10 +950,10 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 			AndNext		->[Mem 32-bit] 0x68 == 0x1 				| CheckIf: is_PauseMenu_QuitConfirmationMenu_Yes_highlighted()
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
+			OrNext		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]		| CheckIf: on_PlayerInput_press(CONTROLLER_1, INPUT_Cross)
 
 			AddAddress	[Pointer:PlayerInput(preferred)]
-			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [Bitflag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
+			AddHits		Mem [BitFlag:IsInputPressed_Cross] > Delta [BitFlag:IsInputPressed_Cross]	(1)	| CheckIf: on_PlayerInput_press(CONTROLLER_2, INPUT_Cross)
 
 			---------ResetNextIf_B--------- (-> when pressing Quit, [Lower4:ActiveMenuPointerIndex] becomes 0, the next frame)
 			ResetNextIf	Mem [Lower4:ActiveMenuPointerIndex] != 0x0 			| ResetNextIf: [Lower4:ActiveMenuPointerIndex] != 0
@@ -2678,7 +2712,11 @@ achievements_typeByCategory = {
 	"c_Challenge": 	achievement_TYPE_Standard,
 	"c_Bonus": 		achievement_TYPE_Standard}
 
-	
+// ----------------Global Achievement Settings---------------------
+PARTICIPATION_TRACKING_Min_Required_Inputs = 77 // playerInput while in-game ("GameplayInput": firing gun, movement, using powers...; NOT: select/start) 
+PARTICIPATION_TRACKING_Max_Inactive_Seconds = 33 // No playerInput for xx seconds consecutively
+PARTICIPATION_TRACKING_Min_Required_Kill_Percent = 0.09 // Each player must contribute at least 10% of the total kills, no one player can account for more than 90%, unless Boss Fight
+
 // #endregion ACH - core data
 
 // ==================================
@@ -2687,7 +2725,20 @@ achievements_typeByCategory = {
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
 
-function achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) =>
+function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_releaseRegion) =>
+	// [1] ==== Alt Lockout Group ===	-> Lockout achievement when one player has lacking inactivity, by Resetting HitCount on [StartCondition]
+		unless(!is_ReleaseRegion(enum_releaseRegion))
+		&& never(repeated(PARTICIPATION_TRACKING_Max_Inactive_Seconds, // --LockoutIf--> PLAYER_1 is inactive for xx seconds
+			never(on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion)) // --ResetNextIf--> PLAYER_1 uses GameplayInput
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
+		&& never(repeated(PARTICIPATION_TRACKING_Max_Inactive_Seconds, // --LockoutIf--> PLAYER_2 is inactive for xx seconds
+			never(on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion)) // --ResetNextIf--> PLAYER_2 uses GameplayInput
+			&& !is_AnyCinematic_active(enum_releaseRegion)
+			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
+
+
+function achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) =>
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Coop Mode
 		never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion)
@@ -2708,21 +2759,45 @@ function achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_rel
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD3]
-	// [5] ==== Alt Reset Group ==== 			-> Reset when 1 player has no "active" participation
-		// TODO write this ResetIf
 
 
-function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
-		PAL: 	xxxxx
-		NTSCU: 	xxxx
-		*/
+function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
 	// [1] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& once( // --CheckIf--[StartCondition]--> The last StoryChapterSection of the Level has started from the beginning
+		// -------- Core Logic --------
+		&& once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1)
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Kills)
 			never(is_flagState_InGame_true(enum_releaseRegion))
+
+			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingKills
+				PAL:	K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.09_A:0xX00965d7c/{recall}_N:f0.0>=f0.09
+				NTSCU:	K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.09_A:0xX00953d9c/{recall}_N:f0.0>=f0.09
+				----------
+					Remember	[Kills_ChapterTotal(PLAYER_1)] + [Kills_ChapterTotal(PLAYER_2)]
+					Remember	Recall / 1.0			--> Force 32-bit to Float
+					AddSource	[Kills_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+					AddSource	[Kills_ChapterTotal(PLAYER_2)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
+
+			// TODO check if below block, is generated OK, otherwise create MANUAL_CONSTRUCTION
+			// && (current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) / 
+			// 	((current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) + current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion)) / 1.0))
+			// 	>= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+			// && (current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) / 
+			// 	((current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) + current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion)) / 1.0))
+			// 	>= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+
+			&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+			&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)
+
+
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
@@ -2730,13 +2805,29 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_ch
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
+
+		// -------- ParticipationTrackingInputs --------
+		&& repeated(PARTICIPATION_TRACKING_Min_Required_Inputs, // --CheckIf--> PLAYER_1 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+			!is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion))
+		&& repeated(PARTICIPATION_TRACKING_Min_Required_Inputs, // --CheckIf--> PLAYER_2 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+			!is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_PlayerInput_anyGameplayInputUse(PLAYER_2, enum_releaseRegion))
+		
+		// -------- Trigger Indicator --------
 		&& trigger_when(
 			once(
 				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
 				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
 			&& on_Loading_start(enum_releaseRegion))
-	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
-		|| achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+	// [2] ==== Alt Lockout Group ==== 			-> Lockout achievement when one player has lacking inactivity, by Resetting HitCount on [StartCondition]
+		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_releaseRegion)
+	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit
+		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 
 function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
@@ -2758,7 +2849,7 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chap
 			&& is_flagState_InGame_false(enum_releaseRegion))
 		&& trigger_when(on_Loading_start(enum_releaseRegion))
 	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
-		|| achGenerate_5x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 
 function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 	const_CHAPTER = CHAPTER_17_CurseWest
@@ -2788,7 +2879,7 @@ function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion)
 				&& on_FMV_end(const_FMV_ending, enum_releaseRegion))
 			&& on_FMV_end(FMV_Credits, enum_releaseRegion))
 	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
-		|| achGenerate_5x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+		|| achGenerate_4x_AltResetGroups_ChapterProgression(const_CHAPTER, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
 	}
 
 // #endregion ACH - trigger generators
