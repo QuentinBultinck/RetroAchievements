@@ -2,7 +2,7 @@
 //	 █▀▄ ▄▀█ █▀█ █▄▀ █░█░█ ▄▀█ ▀█▀ █▀▀ █░█	 						\\
 //	 █▄▀ █▀█ █▀▄ █░█ ▀▄▀▄▀ █▀█ ░█░ █▄▄ █▀█	MULTIPLAYER COOPERATIVE \\
 // **************************************************************** \\
-// #ID = 19111
+// #ID = 24401
 // md5: [hash_here] (region_here)
 // RA Hash: [hash_here] (region_here)
 // Platform: PlayStation 2
@@ -206,7 +206,11 @@ memory_StructDefs = {
 			"BitFlag:IsInputPressed_L1": 0xE,
 			"BitFlag:IsInputPressed_R1": 0xF,
 			"BitFlag:IsInputPressed_L2": 0x10,
-			"BitFlag:IsInputPressed_R2": 0x11}
+			"BitFlag:IsInputPressed_R2": 0x11,
+			"Float:LeftAnalogStick_Yaw": 0x24,
+			"Float:LeftAnalogStick_Pitch": 0x28,
+			"Float:RightAnalogStick_Yaw": 0x2C,
+			"Float:RightAnalogStick_Pitch": 0x30}
 		},
 	}
 function memory_getStruct_SizeInBytes(string_structKey) =>
@@ -539,7 +543,10 @@ INPUT_R1 = "R1"
 INPUT_R2 = "R2"
 INPUT_R3 = "R3"
 
-
+CONST_GAMEPLAY_INPUTS = [
+	INPUT_Dpad_Left, INPUT_Dpad_Right, INPUT_Dpad_Up, INPUT_Dpad_Down, 
+	INPUT_Square, INPUT_Circle, INPUT_Triangle, INPUT_Cross,
+	INPUT_L1, INPUT_L2, INPUT_L3, INPUT_R1, INPUT_R2, INPUT_R3]
 
 function current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) {
 	let_memberKey_Input = format("BitFlag:IsInputPressed_{0}", enum_input)
@@ -570,12 +577,77 @@ function on_PlayerInput_press(enum_controller, enum_input, enum_releaseRegion) =
 function on_PlayerInput_release(enum_controller, enum_input, enum_releaseRegion) =>
 	current_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion) < prev_flagState_IsInputPressed(enum_controller, enum_input, enum_releaseRegion)
 
-function on_PlayerInput_anyGameplayInputUse(enum_controller, enum_releaseRegion) {// NOTE: Movement/Look + Select/Start not included
-	const_GAMEPLAY_INPUTS = [
-		INPUT_Dpad_Left, INPUT_Dpad_Right, INPUT_Dpad_Up, INPUT_Dpad_Down, 
-		INPUT_Square, INPUT_Circle, INPUT_Triangle, INPUT_Cross,
-		INPUT_L1, INPUT_L2, INPUT_L3, INPUT_R1, INPUT_R2, INPUT_R3]
-	return any_of(const_GAMEPLAY_INPUTS, enum_input => on_flagState_IsInputPressed_change(enum_controller, enum_input, enum_releaseRegion))}
+function current_LeftAnalogStick_Yaw(enum_controller, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return float(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", "Float:LeftAnalogStick_Yaw")
+	)}
+
+function prev_LeftAnalogStick_Yaw(enum_controller, enum_releaseRegion) =>
+	prev(current_LeftAnalogStick_Yaw(enum_controller, enum_releaseRegion))
+
+function current_RightAnalogStick_Yaw(enum_controller, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return float(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", "Float:RightAnalogStick_Yaw")
+	)}
+
+function prev_RightAnalogStick_Yaw(enum_controller, enum_releaseRegion) =>
+	prev(current_RightAnalogStick_Yaw(enum_controller, enum_releaseRegion))
+
+function current_LeftAnalogStick_Pitch(enum_controller, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return float(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", "Float:LeftAnalogStick_Pitch")
+	)}
+
+function prev_LeftAnalogStick_Pitch(enum_controller, enum_releaseRegion) =>
+	prev(current_LeftAnalogStick_Pitch(enum_controller, enum_releaseRegion))
+
+function current_RightAnalogStick_Pitch(enum_controller, enum_releaseRegion) {
+	let_memAddr_BasePointer = memory_getAddress("Pointer:ControllerInput(preferred)", enum_releaseRegion)
+	let_string_memberKey_ControllerInput = format("Struct(ControllerInput):Controller-{0}", enum_controller)
+	let_offsetTo_Struct_PlayerInput = memory_getStruct_OffsetToMember("Pointer:PlayerInput", let_string_memberKey_ControllerInput)
+	return float(
+		dword(let_memAddr_BasePointer) 
+		+ let_offsetTo_Struct_PlayerInput 
+		+ memory_getStruct_OffsetToMember("Struct:ControllerInput", "Float:RightAnalogStick_Pitch")
+	)}
+
+function prev_RightAnalogStick_Pitch(enum_controller, enum_releaseRegion) =>
+	prev(current_RightAnalogStick_Pitch(enum_controller, enum_releaseRegion))
+
+function on_LeftAnalogStick_use(enum_controller, enum_releaseRegion) =>
+	current_LeftAnalogStick_Yaw(enum_controller, enum_releaseRegion)
+	+ current_LeftAnalogStick_Pitch(enum_controller, enum_releaseRegion) 
+	- prev_LeftAnalogStick_Yaw(enum_controller, enum_releaseRegion)
+	- prev_LeftAnalogStick_Pitch(enum_controller, enum_releaseRegion) > 0
+
+function on_RightAnalogStick_use(enum_controller, enum_releaseRegion) =>
+	current_RightAnalogStick_Yaw(enum_controller, enum_releaseRegion)
+	+ current_RightAnalogStick_Pitch(enum_controller, enum_releaseRegion) 
+	- prev_RightAnalogStick_Yaw(enum_controller, enum_releaseRegion)
+	- prev_RightAnalogStick_Pitch(enum_controller, enum_releaseRegion) > 0
+
+function on_PlayerInput_anyGameplayInputUse(enum_controller, enum_releaseRegion) => // NOTE: Movement/Look and Select/Start excluded from check
+	any_of(CONST_GAMEPLAY_INPUTS, enum_input => on_flagState_IsInputPressed_change(enum_controller, enum_input, enum_releaseRegion))
+
+function on_PlayerInput_anyInputUse(enum_controller, enum_releaseRegion) => // NOTE: Movement/Look included in check; Select/Start excluded from check
+	any_of(CONST_GAMEPLAY_INPUTS, enum_input => on_flagState_IsInputPressed_change(enum_controller, enum_input, enum_releaseRegion))
+	// || on_LeftAnalogStick_use(enum_controller, enum_releaseRegion)
+	// || on_RightAnalogStick_use(enum_controller, enum_releaseRegion)
 
 
 // ----------------Divider---------------------
@@ -616,7 +688,7 @@ MAINMENU_SUBMENU_MainMenu = "main"
 MAINMENU_SUBMENU_StatisticsMenu = "profile_stat" // FullString: "profile_statistics"
 MAINMENU_SUBMENU_DifficultySelectMenu = "difficulty_s" // FullString: "difficulty_select"
 MAINMENU_SUBMENU_ChapterSelectMenu = "chapter_sele" // FullString: "chapter_select"
-MAINMENU_SUBMENU_CoopProfileSelectMenu = "coop_pro" // FullString: "coop_profile"
+MAINMENU_SUBMENU_MultiplayerCoopProfileSelectMenu  = "coop_pro" // FullString: "coop_profile"
 MAINMENU_SUBMENU_MultiplayerProfileSelectMenu = "multiplayer_prof" // FullString: "multiplayer_profile_select_ps2"
 MAINMENU_SUBMENU_CreateMultiplayerMatchMenu = "create_m" // FullString: "create_match"
 MAINMENU_SUBMENU_ExtrasMenu = "extras" 
@@ -925,7 +997,7 @@ function on_PauseMenu_Quit(enum_releaseRegion) =>
 			AddAddress	->[Pointer:UIcontrolPointerArray] + Recall
 			Remember	->[Pointer:UIcontrol_ptr-L2]					| Remember: The active [Pointer:UIcontrol_ptr-L2] 
 
-			---------ResetNextIf_A1--------- (-> ResetNextIf has_QuitConfirmationMenu_closed for 2 frames)
+			---------ResetNextIf_A1--------- (-> ResetNextIf is_QuitConfirmationMenu_displayed)
 			AddAddress	Recall								| Recall: The active [Pointer:UIcontrol_ptr-L2] 
 			AddAddress	->[Mem 32-bit] 0xB8
 			AndNext		->[Mem 32-bit] 0x6C == TEXTLOOKUPKEY_QuitConfirmationMenu_FrameTitle_Quit 				| ResetNextIf: MEM FrameTitle == "Quit"
@@ -1171,6 +1243,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 0,
 		"SavedStatIndex_SinglePlayerMode": 0,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_2_RideDevil: {
 		"LevelID": "M02_CanyonShoot",
@@ -1178,6 +1251,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 1,
 		"SavedStatIndex_SinglePlayerMode": 1,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_3_Boneyard: {
 		"LevelID": "M03_Cemetery",
@@ -1189,6 +1263,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 2,
 		"SavedStatIndex_SinglePlayerMode": 2,
+		"ChapterLength": "ChapterLength_Medium",
 		},
 	CHAPTER_4_DevilMine: {
 		"LevelID": "M05_DevilsBelly",
@@ -1201,6 +1276,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 3,
 		"SavedStatIndex_SinglePlayerMode": 3,
+		"ChapterLength": "ChapterLength_Long",
 		},
 	CHAPTER_5_Outpost: {
 		"LevelID": "M07_DWOutpost",
@@ -1212,6 +1288,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 4,
 		"SavedStatIndex_SinglePlayerMode": 4,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_6_WarTrain: {
 		"LevelID": "Wartrain",
@@ -1219,6 +1296,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 5,
 		"SavedStatIndex_SinglePlayerMode": 5,
+		"ChapterLength": "ChapterLength_Short",
 		}, 
 	CHAPTER_7_TortureMaze: {
 		"LevelID": "M09_TortureMaze",
@@ -1232,6 +1310,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 6,
 		"SavedStatIndex_SinglePlayerMode": 6,
+		"ChapterLength": "ChapterLength_Long",
 		},
 	CHAPTER_8_BaptismFire: {
 		"LevelID": "M10_TradingPost",
@@ -1244,6 +1323,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 7,
 		"SavedStatIndex_SinglePlayerMode": 7,
+		"ChapterLength": "ChapterLength_Medium",
 		},
 	CHAPTER_Citadel: {
 		"LevelID": "Citadel_Launch",
@@ -1261,6 +1341,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 9,
 		"SavedStatIndex_SinglePlayerMode": 10,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_10_Prism: {
 		"LevelID": "M15_SplittingPaths",
@@ -1273,6 +1354,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 8,
 		"SavedStatIndex_SinglePlayerMode": 9,
+		"ChapterLength": "ChapterLength_Medium",
 		},
 	CHAPTER_11_Invasion: {
 		"LevelID": "M17_Invasion",
@@ -1284,6 +1366,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 10,
 		"SavedStatIndex_SinglePlayerMode": 11,
+		"ChapterLength": "ChapterLength_Medium",
 		},
 	CHAPTER_12_Hangtown: {
 		"LevelID": "M11_Hangtown",
@@ -1295,6 +1378,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 11,
 		"SavedStatIndex_SinglePlayerMode": 12,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_13_MorningAfter: {
 		"LevelID": "M12_CitadelUnderAttack",
@@ -1307,6 +1391,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 12,
 		"SavedStatIndex_SinglePlayerMode": 13,
+		"ChapterLength": "ChapterLength_Medium",
 		},
 	CHAPTER_14_Showdown: {
 		"LevelID": "FallOfCitadel",
@@ -1318,6 +1403,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 13,
 		"SavedStatIndex_SinglePlayerMode": 14,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_15_RightTrain: {
 		"LevelID": "M19_RidetoDeadfall",
@@ -1325,6 +1411,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 14,
 		"SavedStatIndex_SinglePlayerMode": 15,
+		"ChapterLength": "ChapterLength_Short",
 		},
 	CHAPTER_16_Deadfall: {
 		"LevelID": "M20_PenetratingDeadfall",
@@ -1337,6 +1424,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 15,
 		"SavedStatIndex_SinglePlayerMode": 16,
+		"ChapterLength": "ChapterLength_Long",
 		},
 	CHAPTER_17_CurseWest: {
 		"LevelID": "GroundZero",
@@ -1344,6 +1432,7 @@ CONST_LEVEL_DATA = {
 		"IsGunslingerLevel": true,
 		"SavedStatIndex_GunslingerMode": 16,
 		"SavedStatIndex_SinglePlayerMode": 17,
+		"ChapterLength": "ChapterLength_BossFight",
 		},	
 	}
 
@@ -1413,6 +1502,9 @@ function LEVEL_DATA_getSavedStatIndex_Gunslinger(enum_chapter) =>
 
 function LEVEL_DATA_getSavedStatIndex_Story(enum_chapter) =>
 	CONST_LEVEL_DATA[enum_chapter]["SavedStatIndex_SinglePlayerMode"]
+
+function LEVEl_DATA_getChapterLength(enum_chapter) =>
+	CONST_LEVEL_DATA[enum_chapter]["ChapterLength"]
 
 CONST_MP_LEVEL_DATA = {
 	MULTIPLAYER_LEVEL_Asylum: {
@@ -2603,10 +2695,13 @@ achievements_coreData = {
 
 	// "a_Template": { // CONCEPT a_template
 		// "id": 000000, "points": 0000000, "devInfo": "xxxxxxx"},
-	
+	"c_Misc": { // Category - Misc dummy achievements for player info
+		// "a_INFOcoop": { // VERIFIED
+			// "id": 512749, "points": achievement_POINTS_0, "devInfo": "Info about Participation Tracking"},	
+		},
 	"c_Story": { // Category - Story Progression Achievements
-		"a_WrongTrain": { // CONCEPT
-			"id": 000000, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
+		// "a_WrongTrain": { // QA // DISABLED - MANUAL_CONSTRUCTION
+			// "id": 512750, "points": 0000000, "devInfo": "CHAPTER_1_WrongTrain Completion"}, 
 		// "a_RideDevil": { // CONCEPT
 			// "id": 000000, "points": 0000000, "devInfo": "CHAPTER_2_RideDevil Completion"},
 		// "a_Boneyard": { // CONCEPT
@@ -2707,16 +2802,66 @@ achievements_typeByCategory = {
 	//	- Refer to https://docs.retroachievements.org/Progression-and-Win-Condition-Guidelines/
 	// ------------------------------------------------------
 	
+	"c_Misc":		achievement_TYPE_Standard,
 	"c_Story": 		achievement_TYPE_Progression,
 	"c_StoryEnd": 	achievement_TYPE_WinCondition,
 	"c_Challenge": 	achievement_TYPE_Standard,
 	"c_Bonus": 		achievement_TYPE_Standard}
 
-// ----------------Global Achievement Settings---------------------
-PARTICIPATION_TRACKING_Min_Required_Inputs = 77 // playerInput while in-game ("GameplayInput": firing gun, movement, using powers...; NOT: select/start) 
-PARTICIPATION_TRACKING_Max_Inactive_Seconds = 33 // No playerInput for xx seconds consecutively
-PARTICIPATION_TRACKING_Min_Required_Kill_Percent = 0.09 // Each player must contribute at least 10% of the total kills, no one player can account for more than 90%, unless Boss Fight
+// #region Global Achievement Settings
+/* NOTE: Participation Tracking:
+	Chapter has to be completed from start to finish, where each player:
+	- must never be inactive for 30 seconds consecutively					(all inputs, but Select/Start are checked)
+	- must have executed at least 30-100 "GameplayInputs" 					(all inputs, but analogSticks and Select/Start are checked)
+	- must have at least 5-10% of the kills
+	- must have at least fired 10-50 shots
+	- must have at least 5-10% accuracy
+	(The exact amount of each requirement is based on length of the Chapter)
 
+	*/ 
+CONST_PARTICIPATION_TRACKING_DATA = {
+	"Max_Inactive_Seconds": 30, // Player must not be inactive for xx seconds consecutively (only counted while no cinematic is active and PauseMenu not also active)
+	"Min_Required_Inputs": { // Each player must execute xx "GameplayInputs" while in-game ("GameplayInput": firing gun, using powers...; NOT: select, start, movement) 
+		"ChapterLength_Short": 36,
+		"ChapterLength_Medium": 73,
+		"ChapterLength_Long": 94,
+		"ChapterLength_BossFight": 44,
+		},
+	"Min_Required_ShotsHit": { // Each player must have at least hit xx shots
+		"ChapterLength_Short": 12,
+		"ChapterLength_Medium": 31,
+		"ChapterLength_Long": 47,
+		"ChapterLength_BossFight": 42,
+		},
+	"Min_Required_Accuracy_Percent": { // Each player must have at least xx% accuracy
+		"ChapterLength_Short": 0.05,
+		"ChapterLength_Medium": 0.07,
+		"ChapterLength_Long": 0.09,
+		"ChapterLength_BossFight": 0.06,
+		},
+	"Min_Required_Kills_Percent": { // Each player must contribute at least xx% of the total kills, no one player can account for more than xx% of the kills, unless Boss Fight
+		"ChapterLength_Short": 0.06,
+		"ChapterLength_Medium": 0.08,
+		"ChapterLength_Long": 0.10, 
+		"ChapterLength_BossFight": sNULL, // --> CHAPTER_17_CurseWest has only 1 enemy, so don't track this
+		},
+	}
+
+function PARTICIPATION_TRACKING_DATA_getMaxInactiveSeconds(enum_chapter) =>
+	CONST_PARTICIPATION_TRACKING_DATA["Max_Inactive_Seconds"]
+
+function PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter) =>
+	CONST_PARTICIPATION_TRACKING_DATA["Min_Required_Inputs"][LEVEl_DATA_getChapterLength(enum_chapter)]
+
+function PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(enum_chapter) =>
+	CONST_PARTICIPATION_TRACKING_DATA["Min_Required_Kills_Percent"][LEVEl_DATA_getChapterLength(enum_chapter)]
+
+function PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(enum_chapter) =>
+	CONST_PARTICIPATION_TRACKING_DATA["Min_Required_ShotsHit"][LEVEl_DATA_getChapterLength(enum_chapter)]
+
+function PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(enum_chapter) =>
+	CONST_PARTICIPATION_TRACKING_DATA["Min_Required_Accuracy_Percent"][LEVEl_DATA_getChapterLength(enum_chapter)]
+// #endregion Participation Tracking
 // #endregion ACH - core data
 
 // ==================================
@@ -2725,18 +2870,22 @@ PARTICIPATION_TRACKING_Min_Required_Kill_Percent = 0.09 // Each player must cont
 // #region ACH - trigger generators
 //	- For achievement logic that's reoccuring across multiple triggers
 
-function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_releaseRegion) =>
-	// [1] ==== Alt Lockout Group ===	-> Lockout achievement when one player has lacking inactivity, by Resetting HitCount on [StartCondition]
+function achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, enum_releaseRegion) {
+	PARTICIPATION_TRACKING_MaxInactiveSeconds = PARTICIPATION_TRACKING_DATA_getMaxInactiveSeconds(enum_chapter)
+	return 
+	// [1] ==== Alt Lockout Group ==== 			-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
 		unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& never(repeated(PARTICIPATION_TRACKING_Max_Inactive_Seconds, // --LockoutIf--> PLAYER_1 is inactive for xx seconds
-			never(on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion)) // --ResetNextIf--> PLAYER_1 uses GameplayInput
+		&& never(repeated(PARTICIPATION_TRACKING_MaxInactiveSeconds, // --LockoutIf--> PLAYER_1 is inactive for xx seconds
+			never(on_PlayerInput_anyInputUse(PLAYER_1, enum_releaseRegion)) // --ResetNextIf--> PLAYER_1 uses any input
+			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
 			&& !is_AnyCinematic_active(enum_releaseRegion)
 			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
-		&& never(repeated(PARTICIPATION_TRACKING_Max_Inactive_Seconds, // --LockoutIf--> PLAYER_2 is inactive for xx seconds
-			never(on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion)) // --ResetNextIf--> PLAYER_2 uses GameplayInput
+		&& never(repeated(PARTICIPATION_TRACKING_MaxInactiveSeconds, // --LockoutIf--> PLAYER_2 is inactive for xx seconds
+			never(on_PlayerInput_anyInputUse(PLAYER_2, enum_releaseRegion)) // --ResetNextIf--> PLAYER_2 uses any input
+			// && !is_AnyInGameMenu_active(enum_releaseRegion) // DISABLED - Unnecessary as [MissionTime_Temp] only increments while the PauseMenu is inactive
 			&& !is_AnyCinematic_active(enum_releaseRegion)
 			&& on_MissionTime_Temp_secondPassed(enum_releaseRegion)))
-
+	}
 
 function achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) =>
 	// [1] ==== Alt Reset Group ==== 			-> Reset when not in Multiplayer Coop Mode
@@ -2752,51 +2901,61 @@ function achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_rel
 			is_ReleaseRegion(enum_releaseRegion)
 			&& is_atMainMenu(enum_releaseRegion))
 	// [4] ==== Alt Reset Group ==== 			-> Reset on PauseMenu->Quit
-		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[5])
-			PAL: 	xxxx
-			NTSCU: 	xxxx
+		/* MANUAL_CONSTRUCTION[FD1-FD3]:ResetOn_PauseMenu_Quit (AltGroup[4])
+			PAL: 	I:0xX007238b8_K:0xL00000008-1_K:{recall}*4_I:0xX007238b8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX007215cc=1397050451_N:0xH0073b430=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00721900_O:0xM0000000f>d0xM0000000f_I:0xX00721900_C:0xM00000043>d0xM00000043.1._I:0xX007238b8_Z:0xL00000008!=0_I:0xX007238b8_N:0xL00000008=0_I:0xX007238b8_C:d0xL00000008!=0.1._R:0=1.2.
+			NTSCU: 	I:0xX00721fb8_K:0xL00000008-1_K:{recall}*4_I:0xX00721fb8_I:0xX0000000c+{recall}_K:0xX00000000_I:{recall}_I:0xX000000b8_Z:0xX0000006c=2334365816_I:{recall}_I:0xX000000b8_N:0xX0000006c!=2334365816_I:{recall}_I:0xX000000b8_Z:p0xX0000006c=2334365816.2._N:0xX0071fccc=1398099027_N:0xH00729330=3_I:{recall}_I:0xX000000b8_N:0xX0000006c=2334365816_I:{recall}_I:0xX0000007c_N:0xX00000068=1_I:0xX00720000_O:0xM0000000f>d0xM0000000f_I:0xX00720000_C:0xM00000043>d0xM00000043.1._I:0xX00721fb8_Z:0xL00000008!=0_I:0xX00721fb8_N:0xL00000008=0_I:0xX00721fb8_C:d0xL00000008!=0.1._R:0=1.2.
 			*/
 		|| never_toAlt(
 			is_ReleaseRegion(enum_releaseRegion) 
 			&& on_PauseMenu_Quit(enum_releaseRegion)) // --> MANUAL_CONSTRUCTION[FD1-FD3]
 
 
-function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) => // WARNING - (2x) MANUAL_CONSTRUCTION
-	// [1] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
+function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_chapter, enum_endingFMV, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(enum_chapter)
+	return
+	// [1/7] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
 		// -------- Core Logic --------
 		&& once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1)
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
 		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started
 			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Kills)
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Accuracy+Shots+Kills)
 			never(is_flagState_InGame_true(enum_releaseRegion))
 
-			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingKills
-				PAL:	K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.09_A:0xX00965d7c/{recall}_N:f0.0>=f0.09
-				NTSCU:	K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.09_A:0xX00953d9c/{recall}_N:f0.0>=f0.09
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+
+			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingAccuracyAndKills
+				PAL:	K:0xH00965c54/f1.0_K:0xH00965c58/{recall}_N:{recall}>=f0.05_K:0xH00965d80/f1.0_K:0xH00965d84/{recall}_N:{recall}>=f0.05_K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.06_A:0xX00965d7c/{recall}_N:f0.0>=f0.06
+				NTSCU:	K:0xH00953c74/f1.0_K:0xH00953c78/{recall}_N:{recall}>=f0.05_K:0xH00953da0/f1.0_K:0xH00953da4/{recall}_N:{recall}>=f0.05_K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.06_A:0xX00953d9c/{recall}_N:f0.0>=f0.06
 				----------
+					---------Participation Tracking (Accuracy)---------
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					---------Participation Tracking (Kills)---------
 					Remember	[Kills_ChapterTotal(PLAYER_1)] + [Kills_ChapterTotal(PLAYER_2)]
-					Remember	Recall / 1.0			--> Force 32-bit to Float
+					Remember	Recall / 1.0								--> Force 32-bit to Float
 					AddSource	[Kills_ChapterTotal(PLAYER_1)] / Recall
-					AndNext		0.0 >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
 					AddSource	[Kills_ChapterTotal(PLAYER_2)] / Recall
-					AndNext		0.0 >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
 					*/
 			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
-
-			// TODO check if below block, is generated OK, otherwise create MANUAL_CONSTRUCTION
-			// && (current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) / 
-			// 	((current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) + current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion)) / 1.0))
-			// 	>= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
-			// && (current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) / 
-			// 	((current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) + current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion)) / 1.0))
-			// 	>= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
-
-			&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
-			&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_Min_Required_Kill_Percent
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
 			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)
-
 
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
@@ -2806,13 +2965,13 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_ch
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
 
-		// -------- ParticipationTrackingInputs --------
-		&& repeated(PARTICIPATION_TRACKING_Min_Required_Inputs, // --CheckIf--> PLAYER_1 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+		// -------- Participation Tracking (Inputs) --------
+		&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_1 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
 			!is_AnyCinematic_active(enum_releaseRegion)
 			&& !is_AnyInGameMenu_active(enum_releaseRegion)
 			&& is_flagState_InGame_true(enum_releaseRegion)
 			&& on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion))
-		&& repeated(PARTICIPATION_TRACKING_Min_Required_Inputs, // --CheckIf--> PLAYER_2 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+		&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_2 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
 			!is_AnyCinematic_active(enum_releaseRegion)
 			&& !is_AnyInGameMenu_active(enum_releaseRegion)
 			&& is_flagState_InGame_true(enum_releaseRegion)
@@ -2824,22 +2983,59 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(enum_ch
 				never(on_FMV_start(enum_endingFMV, enum_releaseRegion))
 				&& on_FMV_end(enum_endingFMV, enum_releaseRegion))
 			&& on_Loading_start(enum_releaseRegion))
-	// [2] ==== Alt Lockout Group ==== 			-> Lockout achievement when one player has lacking inactivity, by Resetting HitCount on [StartCondition]
-		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_releaseRegion)
+	// [2] ==== Alt Lockout Group ==== 			-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, enum_releaseRegion)
 	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit
-		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+	}
 
-function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chapter, enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
-	/* MANUAL_CONSTRUCTION (AltGroup[6/12])
-		PAL: 	xxxxx
-		NTSCU: 	xxxx
-		*/
-	// [1] ==== Alt Logic Group ==== 	-> This group is responsible for unlocking the achievement
+function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chapter, enum_releaseRegion) { // WARNING - (2x) MANUAL_CONSTRUCTION
+	PARTICIPATION_TRACKING_MinRequiredInputs = PARTICIPATION_TRACKING_DATA_getMinRequiredInputs(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredShotsHit = PARTICIPATION_TRACKING_DATA_getMinRequiredShotsHit(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredAccuracyPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredAccuracyPercent(enum_chapter)
+	PARTICIPATION_TRACKING_MinRequiredKillsPercent = PARTICIPATION_TRACKING_DATA_getMinRequiredKillsPercent(enum_chapter)
+	return
+	// [1] ==== Alt Logic Group ==== 			-> Group is responsible for unlocking the achievement
 		unless(!is_ReleaseRegion(enum_releaseRegion))
-		&& once( // --CheckIf--[StartCondition]--> The last StoryChapterSection of the Level has started from the beginning
-			on_LastChapterSection_startFromBeginning(enum_chapter, enum_releaseRegion))
-		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended
+		// -------- Core Logic --------
+		&& once( // --CheckIf--[StartCondition]--> Chapter has started from the beginning (StoryChapterSection_1)
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has started
+			on_Chapter_startFromBeginning(enum_chapter, enum_releaseRegion))
+		&& once( // --CheckIf--> The last StoryChapterSection of the Level has ended + Participation Tracking (Accuracy+Shots+Kills)
 			never(is_flagState_InGame_true(enum_releaseRegion))
+
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredShotsHit
+
+			/* MANUAL_CONSTRUCTION[AC1-AC2]:ParticipationTrackingAccuracyAndKills
+				PAL:	xxx K:0xX00965c50+0xX00965d7c_K:{recall}/f1.0_A:0xX00965c50/{recall}_N:f0.0>=f0.09_A:0xX00965d7c/{recall}_N:f0.0>=f0.09
+				NTSCU:	xxx K:0xX00953c70+0xX00953d9c_K:{recall}/f1.0_A:0xX00953c70/{recall}_N:f0.0>=f0.09_A:0xX00953d9c/{recall}_N:f0.0>=f0.09
+				----------
+					---------Participation Tracking (Accuracy)---------
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					Remember	[ShotsFired_ChapterTotal(PLAYER_1)] / 1.0	--> Force 32-bit to Float
+					Remember	[ShotsHit_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		Recall >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent
+
+					---------Participation Tracking (Kills)---------
+					Remember	[Kills_ChapterTotal(PLAYER_1)] + [Kills_ChapterTotal(PLAYER_2)]
+					Remember	Recall / 1.0								--> Force 32-bit to Float
+					AddSource	[Kills_ChapterTotal(PLAYER_1)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
+					AddSource	[Kills_ChapterTotal(PLAYER_2)] / Recall
+					AndNext		0.0 >= PARTICIPATION_TRACKING_MinRequiredKillsPercent
+					*/
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC1)
+			&& current_ShotsHit_ChapterTotal(PLAYER_1, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_ShotsHit_ChapterTotal(PLAYER_2, enum_releaseRegion) / current_ShotsFired_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredAccuracyPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_1, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
+			&& current_Kills_ChapterTotal(PLAYER_2, enum_releaseRegion) >= PARTICIPATION_TRACKING_MinRequiredKillsPercent * 100
+			&& memUtil_ManualConstruction_PlaceHolderRequirement(0xAC2)
+
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& on_flagState_InGame_toggleFalse(enum_releaseRegion))
 		&& repeated(2, // --CheckIf--> The last StoryChapterSection of the Level has ended for xx frames
@@ -2847,9 +3043,26 @@ function achGenerate_FullTrigger_ChapterProgressionCompletion_noEndFMV(enum_chap
 			&& is_LastChapterSection_active(enum_chapter, enum_releaseRegion)
 			&& wasPrior_flagState_InGame_true(enum_releaseRegion)
 			&& is_flagState_InGame_false(enum_releaseRegion))
+
+		// -------- Participation Tracking (Inputs) --------
+		&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_1 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+			!is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_PlayerInput_anyGameplayInputUse(PLAYER_1, enum_releaseRegion))
+		&& repeated(PARTICIPATION_TRACKING_MinRequiredInputs, // --CheckIf--> PLAYER_2 has executed enough inputs while in-game (eg. firing gun, movement, using powers) 
+			!is_AnyCinematic_active(enum_releaseRegion)
+			&& !is_AnyInGameMenu_active(enum_releaseRegion)
+			&& is_flagState_InGame_true(enum_releaseRegion)
+			&& on_PlayerInput_anyGameplayInputUse(PLAYER_2, enum_releaseRegion))
+
+		// -------- Trigger Indicator --------
 		&& trigger_when(on_Loading_start(enum_releaseRegion))
-	// [2+3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit || when 1 player has no "active" participation
-		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (2x) MANUAL_CONSTRUCTION
+	// [2] ==== Alt Lockout Group ==== 			-> Lockout achievement when one player is inactive for xx seconds conesutively, by Resetting HitCount on [StartCondition]
+		|| achGenerate_LockoutGroup_ParticipationTrackingInactivity(enum_chapter, enum_releaseRegion)
+	// [3+4+5+6] ==== 4x Alt Reset Groups ==== 				-> Reset when not in Multiplayer Coop || when LevelID is incorrect || when at MainMenu || on PauseMenu->Quit
+		|| achGenerate_4x_AltResetGroups_ChapterProgression(enum_chapter, enum_releaseRegion) // --> (1x) MANUAL_CONSTRUCTION
+	}
 
 function achGenerate_FullTrigger_StoryEnd(bool_IsGoodEnding, enum_releaseRegion) { // WARNING - (1x) MANUAL_CONSTRUCTION
 	const_CHAPTER = CHAPTER_17_CurseWest
@@ -2893,6 +3106,12 @@ achievements_triggers = {
 		// // [0] ==== Core Logic Group ==== 			-> This group handles the achievement logic; This group is responsible for unlocking the achievement	
 		// 	is_ReleaseRegion(enum_releaseRegion)
 		// 	&& always_false()),
+	// ----------------c_Misc----------------
+	"a_INFOcoop": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => 
+		is_ReleaseRegion(enum_releaseRegion) 
+		&& is_InMultiplayerCoopMode(enum_releaseRegion) // --> TogglesTrue when confirming 2 players at MultiplayerCoopProfileSelectMenu; TogglesFalse when back at MainMenu(proper)
+		&& is_atMainMenu(enum_releaseRegion)
+		&& on_MainMenu_SubMenu_render(MAINMENU_SUBMENU_ChapterSelectMenu, enum_releaseRegion)),
 	// ----------------c_Story----------------
 	"a_WrongTrain": any_of(RELEASE_REGIONS_SUPPORTED, (enum_releaseRegion) => // WARNING - (1x) MANUAL_CONSTRUCTION
 		achGenerate_FullTrigger_ChapterProgressionCompletion_withEndFMV(CHAPTER_1_WrongTrain, FMV_Shadow, enum_releaseRegion)), // --> (1x) MANUAL_CONSTRUCTION
@@ -3026,8 +3245,10 @@ achievements_triggers = {
 // #region ACH - text
 achievements_titles = {
 	// "a_Template": 			{"en": "xxxxxxxxx"},
+	// ----------------c_Misc----------------
+	"a_INFOcoop":		{"en": "Info — Coop Participation Tracking"},
 	// ----------------c_Story----------------
-	"a_WrongTrain":		{"en": "xxxxxxxxx"},
+	"a_WrongTrain":		{"en": "Partners in Derailment"},
 	"a_RideDevil":		{"en": "xxxxxxxxx"},
 	"a_Boneyard":		{"en": "xxxxxxxxx"},
 	"a_DevilMine":		{"en": "xxxxxxxxx"},
@@ -3073,8 +3294,10 @@ achievements_titles = {
 // -------------------------------------
 achievements_descriptions = {
 	// "a_Template": 			{"en": "xxxxxxxx"},
+	// ----------------c_Misc----------------
+	"a_INFOcoop":		{"en": "No freeloaders in this posse! Achievements require \"active\" participation of both players. If one player slacks or is not engaging with combat, achievements of the current Chapter will be disabled. See RAguide for details on participation tracking"},
 	// ----------------c_Story----------------
-	"a_WrongTrain":		{"en": "xxxxxxxxx"},
+	"a_WrongTrain":		{"en": "You planned a heist, not a reckoning—now it's two guns against the darkness. Complete Chapter 1, \"The Wrong Train\", from start to finish in a single session"},
 	"a_RideDevil":		{"en": "xxxxxxxxx"},
 	"a_Boneyard":		{"en": "xxxxxxxxx"},
 	"a_DevilMine":		{"en": "xxxxxxxxx"},
@@ -3094,8 +3317,8 @@ achievements_descriptions = {
 	"a_CurseWestGood":		{"en": "xxxxxxxxx"},
 	"a_CurseWestEvil":		{"en": "xxxxxxxxx"},
 	// ----------------c_Challenge----------------
-	"a_ClgWrongTrain":		{"en": "xxxxxxxxx"},
-	"a_ClgRideDevil":		{"en": "xxxxxxxxx"},
+	"a_ClgWrongTrain":		{"en": "What started as a score turned into a sentence. Only grit and lead will get you both out. xxxxxxxx"},
+	"a_ClgRideDevil":		{"en": "Two guns, one way out—survive the ride to hell. xxxxxxxxxx"},
 	"a_ClgBoneyard":		{"en": "xxxxxxxxx"},
 	"a_ClgDevilMine":		{"en": "xxxxxxxxx"},
 	"a_ClgDWOutpost":		{"en": "xxxxxxxxx"},
@@ -3108,7 +3331,7 @@ achievements_descriptions = {
 	"a_ClgHangtown":		{"en": "xxxxxxxxx"},
 	"a_ClgMorningAfter":	{"en": "xxxxxxxxx"},
 	"a_ClgShowdown":		{"en": "xxxxxxxxx"},
-	"a_ClgRightTrain":		{"en": "xxxxxxxxx"},
+	"a_ClgRightTrain":		{"en": "The train don’t stop for heroes. Or cowards. xxxxxxxxx"},
 	"a_ClgDeadfall":		{"en": "xxxxxxxxx"},
 	"a_ClgCurseWest":		{"en": "xxxxxxxxx"},
 	// ----------------c_Bonus----------------
